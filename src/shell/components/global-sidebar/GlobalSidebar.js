@@ -17,11 +17,10 @@ import {
 } from "@mui/material";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalCustomApps from "shell/components/global-custom-apps";
-import GlobalActions from "shell/components/global-actions";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
-import onboardingIcon from "../../../../public/images/onboardingIcon.svg";
+import salesAvatar from "../../../../public/images/salesAvatar.png";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -34,46 +33,42 @@ const globalSideBarThemeStyles = {
   backgroundColor: theme.palette.grey[900],
 };
 
-const OnboardingCallSection = ({ openNav, createdAt }) => {
+const OnboardingCallSection = () => {
   const [showMeetModal, setShowMeetModal] = useState(false);
 
   return (
     <>
-      {moment().diff(moment(createdAt), "days") <= 15 && openNav && (
-        <>
-          <Box sx={{ px: 2.3, py: 1.7 }}>
-            <Avatar
-              src={onboardingIcon}
-              sx={{
-                width: "32px",
-                height: "32px",
-              }}
-            />
-            <Box sx={{ mt: 1.5 }}>
-              <Typography variant="h6" sx={{ color: "common.white" }}>
-                Schedule an onboarding call
-              </Typography>
-              <Typography variant="body3" sx={{ mt: 0.5, color: "grey.400" }}>
-                Our support team will set <br /> up you in just 20 minutes.
-              </Typography>
-            </Box>
-            <Button
-              variant="outlined"
-              sx={{ mt: 1 }}
-              onClick={() => setShowMeetModal(true)}
-            >
-              Schedule a call
-            </Button>
-          </Box>
-          <Dialog open={showMeetModal} onClose={() => setShowMeetModal(false)}>
-            <iframe
-              width="364"
-              height="800"
-              src="https://www.zesty.io/meet/"
-            ></iframe>
-          </Dialog>
-        </>
-      )}
+      <Box sx={{ p: 2 }}>
+        <Avatar
+          src={salesAvatar}
+          sx={{
+            width: "32px",
+            height: "32px",
+          }}
+        />
+        <Box sx={{ mt: 1.5 }}>
+          <Typography variant="h6" sx={{ color: "common.white" }}>
+            Schedule an onboarding call
+          </Typography>
+          <Typography variant="body3" sx={{ mt: 0.5, color: "grey.400" }}>
+            Our support team will set <br /> up you in just 20 minutes.
+          </Typography>
+        </Box>
+        <Button
+          variant="outlined"
+          sx={{ mt: 1 }}
+          onClick={() => setShowMeetModal(true)}
+        >
+          Schedule a call
+        </Button>
+      </Box>
+      <Dialog open={showMeetModal} onClose={() => setShowMeetModal(false)}>
+        <iframe
+          width="364"
+          height="800"
+          src="https://zesty.zohobookings.com/portal-embed#/customer/3973976000000039370"
+        ></iframe>
+      </Dialog>
     </>
   );
 };
@@ -175,11 +170,8 @@ export default connect((state) => {
         </IconButton>
         <GlobalMenu openNav={props.ui.openNav} />
         <GlobalCustomApps openNav={props.ui.openNav} />
-        <OnboardingCallSection
-          openNav={props.ui.openNav}
-          createdAt={instanceCreationDate}
-        />
-        {/* <GlobalActions hash={props.instance.randomHashID} /> */}
+        {moment().diff(moment(instanceCreationDate), "days") <= 15 &&
+          props.ui.openNav && <OnboardingCallSection />}
         <Box
           sx={{
             position: "absolute",
@@ -245,7 +237,6 @@ export default connect((state) => {
             sx={{
               display: "flex",
               px: 2,
-              mt: 0.3,
             }}
           >
             <IconButton
