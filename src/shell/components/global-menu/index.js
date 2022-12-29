@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
-import { ListItem, ListItemIcon, Typography } from "@mui/material";
+import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import EditIcon from "@mui/icons-material/Edit";
 import ImageIcon from "@mui/icons-material/Image";
@@ -84,14 +84,17 @@ export default memo(function GlobalMenu() {
               <MenuItemIcon product={product} />
 
               {openNav && (
-                <Typography
-                  variant="body3"
+                <ListItemText
+                  primary={name}
+                  primaryTypographyProps={{
+                    variant: "body3",
+                  }}
                   sx={{
                     color: slug === product ? "common.white" : "grey.500",
                   }}
                 >
                   {name}
-                </Typography>
+                </ListItemText>
               )}
             </ListItem>
           </Link>

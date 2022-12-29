@@ -17,12 +17,11 @@ import {
 } from "@mui/material";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalCustomApps from "shell/components/global-custom-apps";
-import GlobalActions from "shell/components/global-actions";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import Favicon from "../favicon";
 import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
-import onboardingIcon from "../../../../public/images/onboardingIcon.svg";
+import salesAvatar from "../../../../public/images/salesAvatar.png";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -42,7 +41,7 @@ const OnboardingCallSection = () => {
     <>
       <Box sx={{ p: 2 }}>
         <Avatar
-          src={onboardingIcon}
+          src={salesAvatar}
           sx={{
             width: "32px",
             height: "32px",
@@ -179,7 +178,6 @@ export default connect((state) => {
           <GlobalCustomApps openNav={props.ui.openNav} />
           {moment().diff(moment(instanceCreationDate), "days") <= 15 &&
             props.ui.openNav && <OnboardingCallSection />}
-          {/* <GlobalActions hash={props.instance.randomHashID} /> */}
           <Box
             sx={{
               position: "absolute",
@@ -245,7 +243,6 @@ export default connect((state) => {
               sx={{
                 display: "flex",
                 px: 2,
-                mt: 0.3,
               }}
             >
               <IconButton
@@ -259,22 +256,22 @@ export default connect((state) => {
                 <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
               </IconButton>
             </Box>
+            {showInviteModal && (
+              <InviteMembersModal onClose={() => setShowInviteModal(false)} />
+            )}
+            {showInstanceFlyoutMenu && (
+              <InstanceFlyoutMenuModal
+                instanceFaviconUrl={faviconURL}
+                instanceName={props.instance?.name}
+                instanceZUID={props.instance?.ZUID}
+                onSetShowFaviconModal={() => {
+                  setShowFaviconModal(!showFaviconModal);
+                  setShowInstanceFlyoutMenu(false);
+                }}
+                onClose={() => setShowInstanceFlyoutMenu(false)}
+              />
+            )}
           </Box>
-          {showInviteModal && (
-            <InviteMembersModal onClose={() => setShowInviteModal(false)} />
-          )}
-          {showInstanceFlyoutMenu && (
-            <InstanceFlyoutMenuModal
-              instanceFaviconUrl={faviconURL}
-              instanceName={props.instance?.name}
-              instanceZUID={props.instance?.ZUID}
-              onSetShowFaviconModal={() => {
-                setShowFaviconModal(!showFaviconModal);
-                setShowInstanceFlyoutMenu(false);
-              }}
-              onClose={() => setShowInstanceFlyoutMenu(false)}
-            />
-          )}
         </aside>
       </ThemeProvider>
       {showFaviconModal && (
