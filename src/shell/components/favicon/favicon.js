@@ -186,26 +186,11 @@ export default connect((state) => {
 
   return (
     <>
-      {/* <div className={styles.display}>
-        {hover ? (
-          <FontAwesomeIcon
-            title="Select Instance Favicon"
-            icon={faFileImage}
-            onClick={() => setOpen(!open)}
-          />
-        ) : faviconURL ? (
-          <img
-            src={faviconURL}
-            width="60px"
-            height="60px"
-            alt=" Select Favicon"
-          />
-        ) : (
-          <FontAwesomeIcon icon={faGlobe} />
-        )}
-      </div> */}
-
-      <Modal open={open} className={styles.Modal}>
+      <Modal
+        open={open}
+        className={styles.Modal}
+        onClose={() => props.onCloseFaviconModal()}
+      >
         <ModalHeader>
           <h1 className={styles.headline}>Select Instance Favicon</h1>
         </ModalHeader>

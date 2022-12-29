@@ -277,7 +277,9 @@ export default connect((state) => {
           )}
         </aside>
       </ThemeProvider>
-      {showFaviconModal && <Favicon />}
+      {showFaviconModal && (
+        <Favicon onCloseFaviconModal={() => setShowFaviconModal(false)} />
+      )}
     </>
   );
 });
