@@ -27,21 +27,7 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
   const instance = useSelector((state) => state.instance);
 
   return (
-    <Dialog
-      PaperProps={{
-        style: {
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          width: "448px",
-          height: "392px",
-        },
-      }}
-      open={true}
-      onClose={onClose}
-      fullWidth
-      maxWidth={"xs"}
-    >
+    <>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
         <ListItem sx={{ p: 0, width: 0 }}>
           <ListItemIcon sx={{ minWidth: "30px" }} onClick={() => onClose()}>
@@ -100,7 +86,7 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
           </ListItem>
         ))}
       </Box>
-    </Dialog>
+    </>
   );
 };
 
