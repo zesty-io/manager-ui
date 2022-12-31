@@ -23,15 +23,14 @@ interface Props {
 
 const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
   // @ts-ignore
-  // @Note: check if we can migrate this to rtk
-  const instance = useSelector((state) => state.instance);
+  const instance = useSelector((RootState) => RootState.instance);
 
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
         <ListItem sx={{ p: 0, width: 0 }}>
-          <ListItemIcon sx={{ minWidth: "30px" }} onClick={() => onClose()}>
-            <IconButton sx={{ p: 0 }}>
+          <ListItemIcon sx={{ minWidth: "30px" }}>
+            <IconButton sx={{ p: 0 }} onClick={() => onClose()}>
               <ArrowBackIcon fontSize="small" />
             </IconButton>
           </ListItemIcon>
