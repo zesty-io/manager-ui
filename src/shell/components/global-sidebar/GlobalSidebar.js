@@ -18,6 +18,7 @@ import {
 import GlobalMenu from "shell/components/global-menu";
 import GlobalCustomApps from "shell/components/global-custom-apps";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import Favicon from "../favicon";
 import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import salesAvatar from "../../../../public/images/salesAvatar.png";
@@ -81,6 +82,7 @@ export default connect((state) => {
   };
 })(function GlobalSidebar(props) {
   const dispatch = useDispatch();
+  const [showFaviconModal, setShowFaviconModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const user = useSelector((state) => state.user);
   const [faviconURL, setFaviconURL] = useState("");
@@ -106,163 +108,175 @@ export default connect((state) => {
   }, [props.headTags]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <aside className={styles.GlobalSidebar} style={globalSideBarThemeStyles}>
-        <Box sx={{ px: 2.5, pb: 0, pt: 2.5 }}>
-          {props.openNav ? (
-            <Box
-              component="img"
-              data-src={fullZestyLogo}
-              src={fullZestyLogo}
-              sx={{
-                width: "84.17px",
-                height: "24px",
-              }}
-            />
-          ) : (
-            <Box
-              component="img"
-              data-src={zestyLogo}
-              src={zestyLogo}
-              sx={{
-                width: "24px",
-                height: "24px",
-              }}
-            />
-          )}
-        </Box>
-        <IconButton
-          onClick={props.onClick}
-          sx={{
-            borderColor: "grey.600",
-            borderStyle: "solid",
-            borderWidth: "1px",
-            backgroundColor: "grey.900",
-            float: "right",
-            mr: -1.5,
-            zIndex: 50,
-            width: "24px",
-            height: "24px",
-
-            "&:hover": {
-              backgroundColor: "primary.main",
-              borderColor: "common.white",
-
-              ".MuiSvgIcon-root": {
-                color: "common.white",
-              },
-            },
-          }}
+    <>
+      <ThemeProvider theme={theme}>
+        <aside
+          className={styles.GlobalSidebar}
+          style={globalSideBarThemeStyles}
         >
-          {props.openNav ? (
-            <KeyboardDoubleArrowLeftIcon
-              fontSize="small"
-              sx={{
-                color: "grey.600",
-              }}
-            />
-          ) : (
-            <KeyboardDoubleArrowRightIcon
-              fontSize="small"
-              sx={{ color: "grey.600" }}
-            />
-          )}
-        </IconButton>
-        <GlobalMenu openNav={props.ui.openNav} />
-        <GlobalCustomApps openNav={props.ui.openNav} />
-        {moment().diff(moment(instanceCreationDate), "days") <= 15 &&
-          props.ui.openNav && <OnboardingCallSection />}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            display: "flex",
-            width: "inherit",
-            justifyContent: "space-between",
-            overflow: "hidden",
-            borderTopColor: "grey.800",
-            borderTopWidth: "1px",
-            borderTopStyle: "solid",
-            alignItems: "center",
-            flexDirection: props.openNav ? "row" : "column-reverse",
-            py: 1,
-          }}
-        >
-          <Box
+          <Box sx={{ px: 2.5, pb: 0, pt: 2.5 }}>
+            {props.openNav ? (
+              <Box
+                component="img"
+                data-src={fullZestyLogo}
+                src={fullZestyLogo}
+                sx={{
+                  width: "84.17px",
+                  height: "24px",
+                }}
+              />
+            ) : (
+              <Box
+                component="img"
+                data-src={zestyLogo}
+                src={zestyLogo}
+                sx={{
+                  width: "24px",
+                  height: "24px",
+                }}
+              />
+            )}
+          </Box>
+          <IconButton
+            onClick={props.onClick}
             sx={{
-              px: 2,
-              display: "flex",
-              cursor: "pointer",
-              mt: !props.openNav && 1,
-            }}
-            onClick={() => setShowInstanceFlyoutMenu(true)}
-          >
-            <AvatarGroup
-              total={2}
-              sx={{
-                flexDirection: props.openNav ? "row-reverse" : "column",
-                "& .MuiAvatar-root": {
-                  width: "32px",
-                  height: "32px",
-                  border: "none",
+              borderColor: "grey.600",
+              borderStyle: "solid",
+              borderWidth: "1px",
+              backgroundColor: "grey.900",
+              float: "right",
+              mr: -1.5,
+              zIndex: 50,
+              width: "24px",
+              height: "24px",
+
+              "&:hover": {
+                backgroundColor: "primary.main",
+                borderColor: "common.white",
+
+                ".MuiSvgIcon-root": {
+                  color: "common.white",
                 },
-              }}
-            >
-              <Avatar
-                src={faviconURL}
-                style={{
-                  marginTop: props.openNav ? "0" : "-8px",
-                }}
-              />
-              <Avatar
-                style={{
-                  marginLeft: props.openNav ? "-8px" : "0px",
-                }}
-                alt={`${user.firstName} ${user.lastName} Avatar`}
-                src={`https://www.gravatar.com/avatar/${user.faviconURL}?d=mm&s=40`}
-              />
-            </AvatarGroup>
-            <ArrowDropDownIcon
-              fontSize="small"
-              sx={{
-                color: "grey.500",
-                mt: 0.5,
-                display: props.openNav ? "block" : "none",
-              }}
-            />
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              px: 2,
+              },
             }}
           >
-            <IconButton
-              onClick={() => setShowInviteModal(true)}
+            {props.openNav ? (
+              <KeyboardDoubleArrowLeftIcon
+                fontSize="small"
+                sx={{
+                  color: "grey.600",
+                }}
+              />
+            ) : (
+              <KeyboardDoubleArrowRightIcon
+                fontSize="small"
+                sx={{ color: "grey.600" }}
+              />
+            )}
+          </IconButton>
+          <GlobalMenu openNav={props.ui.openNav} />
+          <GlobalCustomApps openNav={props.ui.openNav} />
+          {moment().diff(moment(instanceCreationDate), "days") <= 15 &&
+            props.ui.openNav && <OnboardingCallSection />}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              display: "flex",
+              width: "inherit",
+              justifyContent: "space-between",
+              overflow: "hidden",
+              borderTopColor: "grey.800",
+              borderTopWidth: "1px",
+              borderTopStyle: "solid",
+              alignItems: "center",
+              flexDirection: props.openNav ? "row" : "column-reverse",
+              py: 1,
+            }}
+          >
+            <Box
               sx={{
-                backgroundColor: "grey.800",
-                height: "26px",
-                borderRadius: "4px",
+                px: 2,
+                display: "flex",
+                cursor: "pointer",
+                mt: !props.openNav && 1,
+              }}
+              onClick={() => setShowInstanceFlyoutMenu(true)}
+            >
+              <AvatarGroup
+                total={2}
+                sx={{
+                  flexDirection: props.openNav ? "row-reverse" : "column",
+                  "& .MuiAvatar-root": {
+                    width: "32px",
+                    height: "32px",
+                    border: "none",
+                  },
+                }}
+              >
+                <Avatar
+                  src={faviconURL}
+                  style={{
+                    marginTop: props.openNav ? "0" : "-8px",
+                  }}
+                />
+                <Avatar
+                  style={{
+                    marginLeft: props.openNav ? "-8px" : "0px",
+                  }}
+                  alt={`${user.firstName} ${user.lastName} Avatar`}
+                  src={`https://www.gravatar.com/avatar/${user.faviconURL}?d=mm&s=40`}
+                />
+              </AvatarGroup>
+              <ArrowDropDownIcon
+                fontSize="small"
+                sx={{
+                  color: "grey.500",
+                  mt: 0.5,
+                  display: props.openNav ? "block" : "none",
+                }}
+              />
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                px: 2,
               }}
             >
-              <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
-            </IconButton>
+              <IconButton
+                onClick={() => setShowInviteModal(true)}
+                sx={{
+                  backgroundColor: "grey.800",
+                  height: "26px",
+                  borderRadius: "4px",
+                }}
+              >
+                <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
+              </IconButton>
+            </Box>
+            {showInviteModal && (
+              <InviteMembersModal onClose={() => setShowInviteModal(false)} />
+            )}
+            {showInstanceFlyoutMenu && (
+              <InstanceFlyoutMenuModal
+                instanceFaviconUrl={faviconURL}
+                instanceName={props.instance?.name}
+                instanceZUID={props.instance?.ZUID}
+                onSetShowFaviconModal={() => {
+                  setShowFaviconModal(!showFaviconModal);
+                  setShowInstanceFlyoutMenu(false);
+                }}
+                onClose={() => setShowInstanceFlyoutMenu(false)}
+              />
+            )}
           </Box>
-        </Box>
-        {showInviteModal && (
-          <InviteMembersModal onClose={() => setShowInviteModal(false)} />
-        )}
-        {showInstanceFlyoutMenu && (
-          <InstanceFlyoutMenuModal
-            instanceFaviconUrl={faviconURL}
-            instanceName={props.instance?.name}
-            instanceZUID={props.instance?.ZUID}
-            onClose={() => setShowInstanceFlyoutMenu(false)}
-          />
-        )}
-      </aside>
-    </ThemeProvider>
+        </aside>
+      </ThemeProvider>
+      {showFaviconModal && (
+        <Favicon onCloseFaviconModal={() => setShowFaviconModal(false)} />
+      )}
+    </>
   );
 });
