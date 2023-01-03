@@ -10,14 +10,17 @@ type ContentList = {
   loading: boolean;
 };
 
-export const ContentList: FC<ContentList> = ({ results, loading }) => {
-  const r = loading
+export const ContentList: FC<ContentList> = ({
+  results: backendResults,
+  loading,
+}) => {
+  const results = loading
     ? new Array(5) // arbitrary length array of junk data
-    : results;
+    : backendResults;
   const Row = useCallback(
     ({ index, style }) => {
       if (!loading) {
-        const result = results[index];
+        const result = backendResults[index];
         return (
           <ContentListItem
             key={result.meta.ZUID}
@@ -29,14 +32,14 @@ export const ContentList: FC<ContentList> = ({ results, loading }) => {
         return (
           <ContentListItem
             key={index}
-            result={r[index]}
+            result={results[index]}
             style={style}
             loading={loading}
           />
         );
       }
     },
-    [results]
+    [backendResults]
   );
 
   return (
@@ -46,7 +49,7 @@ export const ContentList: FC<ContentList> = ({ results, loading }) => {
           <FixedSizeList
             itemSize={72}
             width={width}
-            itemCount={r.length}
+            itemCount={results.length}
             height={height}
           >
             {Row}
