@@ -7,15 +7,34 @@ import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 type ContentList = {
   results: ContentItem[];
+  loading: boolean;
 };
 
-export const ContentList: FC<ContentList> = ({ results }) => {
+export const ContentList: FC<ContentList> = ({ results, loading }) => {
+  const r = loading
+    ? new Array(5) // arbitrary length array of junk data
+    : results;
   const Row = useCallback(
     ({ index, style }) => {
-      const result = results[index];
-      return (
-        <ContentListItem key={result.meta.ZUID} result={result} style={style} />
-      );
+      if (!loading) {
+        const result = results[index];
+        return (
+          <ContentListItem
+            key={result.meta.ZUID}
+            result={result}
+            style={style}
+          />
+        );
+      } else {
+        return (
+          <ContentListItem
+            key={index}
+            result={r[index]}
+            style={style}
+            loading={loading}
+          />
+        );
+      }
     },
     [results]
   );
@@ -27,7 +46,7 @@ export const ContentList: FC<ContentList> = ({ results }) => {
           <FixedSizeList
             itemSize={72}
             width={width}
-            itemCount={results.length}
+            itemCount={r.length}
             height={height}
           >
             {Row}

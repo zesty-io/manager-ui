@@ -15,10 +15,15 @@ import moment from "moment-timezone";
 import PencilIcon from "@mui/icons-material/Create";
 type ContentListItem = {
   result: ContentItem;
+  loading?: boolean;
   style: any;
 };
 
-export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
+export const ContentListItem: FC<ContentListItem> = ({
+  result,
+  style,
+  loading: parentIsLoading = false,
+}) => {
   const affectedZUID = result?.meta?.ZUID;
   const { data: auditData, isLoading: auditLoading } = useGetAuditsQuery(
     { affectedZUID, limit: 1, dir: "desc", order: "created" },
@@ -70,7 +75,8 @@ export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
   const url = contentData?.meta
     ? `/content/${contentData?.meta?.contentModelZUID}/${contentData?.meta?.ZUID}`
     : null;
-  const loading = auditLoading || contentLoading || modelLoading;
+  const loading =
+    auditLoading || contentLoading || modelLoading || parentIsLoading;
   // Search Result List Item
   return (
     <Box
@@ -118,7 +124,7 @@ export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
                 sx={{ mb: 1 }}
               />
             ) : (
-              result.web.metaTitle || "Item missing meta title"
+              result?.web?.metaTitle || "Item missing meta title"
             )}
           </Typography>
           {/* @ts-ignore */}
