@@ -18,6 +18,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
 import DomainsMenu from "./DomainsMenu";
+import DocsMenu from "./DocsMenu";
 interface Props {
   instanceFaviconUrl?: string;
   instanceName?: string;
@@ -47,6 +48,7 @@ const InstanceFlyoutMenuModal = ({
   ] = useRefreshCacheMutation();
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
   const [showDomainsMenu, setShowDomainsMenu] = useState(false);
+  const [showDocsMenu, setShowDocsMenu] = useState(false);
 
   const handleNavigation = (url: string) => {
     window.open(url, "_blank");
@@ -85,6 +87,11 @@ const InstanceFlyoutMenuModal = ({
       {showDomainsMenu ? (
         <DomainsMenu
           onClose={() => setShowDomainsMenu(false)}
+          instanceZUID={instanceZUID}
+        />
+      ) : showDocsMenu ? (
+        <DocsMenu
+          onClose={() => setShowDocsMenu(false)}
           instanceZUID={instanceZUID}
         />
       ) : (
@@ -167,6 +174,9 @@ const InstanceFlyoutMenuModal = ({
                   {userFullname}
                 </Typography>
               </ListItem>
+              <MenuItem onClick={() => setShowDocsMenu(true)}>
+                <Typography variant="body2">Docs</Typography>
+              </MenuItem>
             </Box>
           </Box>
 
