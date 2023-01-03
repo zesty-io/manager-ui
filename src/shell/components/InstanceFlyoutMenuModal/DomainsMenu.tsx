@@ -40,7 +40,7 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
         <Button
           variant="outlined"
           color="inherit"
-          sx={{ height: "32px" }}
+          size="small"
           onClick={() =>
             window.open(
               `https://www.zesty.io/instances/${instanceZUID}/domains/`,
@@ -56,7 +56,7 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
         <ListItem>
           <Button
             variant="outlined"
-            sx={{ height: "32px" }}
+            size="small"
             onClick={() =>
               window.open(
                 // @ts-ignore
