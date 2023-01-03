@@ -18,9 +18,7 @@ export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q");
   console.log("query", query);
-  //return <Typography variant="h1">Search for {query}</Typography>;
-  const res = useSearchContentQuery({ query }, { skip: !query });
-  const results = res.data;
+  const { data: results } = useSearchContentQuery({ query }, { skip: !query });
   return (
     <ThemeProvider theme={theme}>
       <Box
