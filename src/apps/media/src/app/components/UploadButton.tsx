@@ -47,7 +47,7 @@ export const UploadButton: FC<UploadButton> = ({
   const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    if (loading) return;
+    if (loading || !binData) return;
     const currentBin = binData[0];
 
     dispatch(
