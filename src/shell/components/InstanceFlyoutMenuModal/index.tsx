@@ -85,7 +85,7 @@ const InstanceFlyoutMenuModal = ({
         />
       ) : (
         <>
-          <Box sx={{ py: 1 }}>
+          <Box sx={{ py: 1, height: "340px" }}>
             <ListItem>
               <Avatar src={instanceFaviconUrl} />
               <Typography variant="body2" sx={{ ml: 1.5, fontWeight: 700 }}>
@@ -143,10 +143,6 @@ const InstanceFlyoutMenuModal = ({
             padding={2}
             sx={{
               backgroundColor: "grey.100",
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
             }}
           >
             {/* @ts-ignore */}
