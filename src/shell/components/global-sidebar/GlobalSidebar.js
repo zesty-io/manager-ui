@@ -264,6 +264,8 @@ export default connect((state) => {
                 instanceFaviconUrl={faviconURL}
                 instanceName={props.instance?.name}
                 instanceZUID={props.instance?.ZUID}
+                userFaviconUrl={user.faviconURL}
+                userFullname={`${user.firstName} ${user.lastName}`}
                 onSetShowFaviconModal={() => {
                   setShowFaviconModal(!showFaviconModal);
                   setShowInstanceFlyoutMenu(false);
