@@ -51,6 +51,7 @@ export default memo(function GlobalCustomApps(props) {
         >
           <ListItemIcon sx={{ minWidth: "36px" }}>
             <ExtensionIcon
+              fontSize="small"
               sx={{
                 color: slug === "Marketplace" ? "primary.main" : "grey.500",
               }}
@@ -58,7 +59,7 @@ export default memo(function GlobalCustomApps(props) {
           </ListItemIcon>
           {props.openNav && (
             <Typography
-              variant="body2"
+              variant="body3"
               sx={{
                 color: slug === "Marketplace" ? "common.white" : "grey.500",
               }}
