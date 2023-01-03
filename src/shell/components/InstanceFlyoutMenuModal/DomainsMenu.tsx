@@ -53,22 +53,24 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
         </Button>
       </Box>
       <Box>
-        <ListItem>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() =>
-              window.open(
-                // @ts-ignore
-                `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`,
-                "_blank"
-              )
-            }
-            startIcon={<RemoveRedEyeIcon fontSize="small" />}
-          >
-            View Web Engine Preview
-          </Button>
-        </ListItem>
+        <Button
+          variant="outlined"
+          size="small"
+          sx={{
+            mx: 2,
+            my: 1,
+          }}
+          onClick={() =>
+            window.open(
+              // @ts-ignore
+              `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`,
+              "_blank"
+            )
+          }
+          startIcon={<RemoveRedEyeIcon fontSize="small" />}
+        >
+          View Web Engine Preview
+        </Button>
         {instance.domains.map((domain: any) => (
           <>
             <ListItem
