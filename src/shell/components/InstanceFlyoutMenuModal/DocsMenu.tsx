@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Link,
   Typography,
   Divider,
   ListItemButton,
@@ -43,14 +44,33 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
           </Typography>
         </ListItem>
         <Box>
-          <Button
+          {/* <ListItem
+            button
             variant="contained"
             color="inherit"
             size="small"
+            target="_top"
+            rel="noopener noreferrer"
+            href={`support@zesty.io`}
             startIcon={<EmailIcon fontSize="small" />}
           >
             support@zesty.io
-          </Button>
+          </ListItem> */}
+          <Link
+            title="Support"
+            href="mailto:support@zesty.io"
+            color="secondary"
+            underline="none"
+          >
+            <Button
+              variant="contained"
+              color="inherit"
+              size="small"
+              startIcon={<EmailIcon fontSize="small" />}
+            >
+              support@zesty.io
+            </Button>
+          </Link>
           <Button
             variant="contained"
             color="inherit"
