@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { ContentItem } from "../../services/types";
+import { LinksContainer } from "./LinksContainer";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -50,6 +51,10 @@ export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
     ? `${dateInfo} by ${userInfo}`
     : "No actions found";
   const chips = [titleChip, appChip, userDateChip].join(" • ");
+  // create url if meta data exists
+  const url = contentData?.meta
+    ? `/content/${contentData?.meta?.contentModelZUID}/${contentData?.meta?.ZUID}`
+    : null;
   // Search Result List Item
   return (
     <Box
@@ -73,6 +78,7 @@ export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
           alignItems: "center",
           gap: 2,
         }}
+        width="100%"
       >
         <PencilIcon fontSize="small" />
         {/* Text Container */}
@@ -81,6 +87,7 @@ export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
           sx={{
             alignItems: "flex-start",
           }}
+          width="100%"
         >
           <Typography variant="body2" color="text.primary">
             {result.web.metaTitle || "Item missing meta title"}
@@ -90,6 +97,7 @@ export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
             {chips}
           </Typography>
         </Stack>
+        <LinksContainer url={url} />
       </Stack>
     </Box>
   );
