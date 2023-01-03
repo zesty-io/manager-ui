@@ -7,6 +7,7 @@ import {
   DialogTitle,
   IconButton,
   Typography,
+  Divider,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -69,20 +70,20 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
           </Button>
         </ListItem>
         {instance.domains.map((domain: any) => (
-          <ListItem
-            sx={{
-              cursor: "pointer",
-              borderBottomStyle: "solid",
-              borderBottomWidth: "1px",
-              borderBottomColor: "grey.100",
-            }}
-            onClick={() => window.open(`http://${domain.domain}`, "_blank")}
-          >
-            <ListItemIcon sx={{ minWidth: "35px" }}>
-              <OpenInNewIcon />
-            </ListItemIcon>
-            <ListItemText>{domain.domain}</ListItemText>
-          </ListItem>
+          <>
+            <ListItem
+              sx={{
+                cursor: "pointer",
+              }}
+              onClick={() => window.open(`http://${domain.domain}`, "_blank")}
+            >
+              <ListItemIcon sx={{ minWidth: "35px" }}>
+                <OpenInNewIcon />
+              </ListItemIcon>
+              <ListItemText>{domain.domain}</ListItemText>
+            </ListItem>
+            <Divider />
+          </>
         ))}
       </Box>
     </>
