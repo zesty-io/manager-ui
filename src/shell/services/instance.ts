@@ -147,9 +147,10 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["ContentModels"],
     }),
-    getContentModelFields: builder.query<ContentModelField, string>({
+    getContentModelFields: builder.query<ContentModelField[], string>({
       query: (modelZUID) => `content/models/${modelZUID}/fields`,
-      transformResponse: getResponseData,
+      transformResponse: (res: { data: ContentModelField[] }) =>
+        res.data.sort((a, b) => a.sort - b.sort),
       providesTags: (result, error, modelZUID) => [
         { type: "ContentModelFields", id: modelZUID },
       ],

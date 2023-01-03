@@ -95,7 +95,7 @@ export const ModelList = ({ title, models }: Props) => {
             </ListItemIcon>
             <ListItemText
               sx={{ m: 0 }}
-              primary={model.name}
+              primary={model.label}
               primaryTypographyProps={{
                 fontWeight: 500,
                 variant: "caption",

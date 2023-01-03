@@ -1,9 +1,8 @@
 import { Box, ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { Sidebar } from "./components/Sidebar";
-import { Header } from "./components/Header";
 import { Route, Switch } from "react-router";
-import { Fields } from "./components/Fields";
+import { Model } from "./views/Model";
 
 export const SchemaApp = () => {
   return (
@@ -27,13 +26,10 @@ export const SchemaApp = () => {
         }}
       >
         <Sidebar />
-        <Box flex="1">
-          <Header />
-          <Switch>
-            <Route exact path="/schema" render={() => <div>All Models</div>} />
-            <Route exact path="/schema/:id" render={() => <Fields />} />
-          </Switch>
-        </Box>
+        <Switch>
+          <Route exact path="/schema" render={() => <div>All Models</div>} />
+          <Route path="/schema/:id" render={() => <Model />} />
+        </Switch>
       </Box>
     </ThemeProvider>
   );
