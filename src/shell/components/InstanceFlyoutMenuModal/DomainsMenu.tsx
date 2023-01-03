@@ -35,7 +35,9 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
               <ArrowBackIcon fontSize="small" />
             </IconButton>
           </ListItemIcon>
-          <Typography variant="h5">Domains</Typography>
+          <Typography variant="h5" fontWeight={600}>
+            Domains
+          </Typography>
         </ListItem>
         <Button
           variant="outlined"
