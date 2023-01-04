@@ -4,6 +4,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import IconButton from "@mui/material/IconButton";
 
 import ChevronRightOutlined from "@mui/icons-material/ChevronRightOutlined";
 import MovieCreationRounded from "@mui/icons-material/MovieCreationRounded";
@@ -37,8 +39,8 @@ export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
         <ListItemIcon>
           <MovieCreationRounded fontSize="small" />
         </ListItemIcon>
-        <Typography variant="body1">Videos</Typography>
-        <ListItemIcon>
+        <ListItemText>Videos</ListItemText>
+        <ListItemIcon style={{ minWidth: "0px" }}>
           <ChevronRightOutlined fontSize="small" />
         </ListItemIcon>
       </MenuItem>
