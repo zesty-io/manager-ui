@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { DefaultRootState, RootStateOrAny, useSelector } from "react-redux";
 import {
   Box,
   Button,
@@ -17,14 +17,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LanguageIcon from "@mui/icons-material/Language";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { AppState } from "../../../shell/store/types";
 interface Props {
   onClose?: () => void;
   instanceZUID?: string;
 }
 
 const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
-  // @ts-ignore
-  const instance = useSelector((RootState) => RootState.instance);
+  const instance = useSelector((state: AppState) => state.instance);
 
   return (
     <>
