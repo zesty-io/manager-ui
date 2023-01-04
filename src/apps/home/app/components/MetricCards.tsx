@@ -18,39 +18,44 @@ const iconStyles = {
 
 const date = new Date();
 
-export const MetricCards = () => {
+interface Props {
+  dateRange: number;
+}
+
+export const MetricCards = ({ dateRange }: Props) => {
   const instanceCreatedAtDate = useSelector(
     (state: any) => state.instance.createdAt
   );
-  const is2MonthsOld = moment(date).diff(instanceCreatedAtDate, "months") >= 2;
+  const hasPriorData =
+    moment(date).diff(instanceCreatedAtDate, "days") >= dateRange * 2;
+
+  const startDate = moment(date).subtract(dateRange, "days");
+  const endDate = moment(date);
+  const priorStartDate = moment(date).subtract(dateRange * 2, "days");
+  const priorEndDate = moment(date).subtract(dateRange, "days");
+
   const { data: priorRequests, isFetching: isPriorRequestsFetching } =
     metricsApi.useGetRequestsQuery([
-      moment(date).subtract(2, "months").format(),
-      moment(date).subtract(1, "months").format(),
+      priorStartDate.format(),
+      priorEndDate.format(),
     ]);
   const { data: requests, isFetching: isRequestsFetching } =
-    metricsApi.useGetRequestsQuery([
-      moment(date).subtract(1, "months").format(),
-      moment(date).format(),
-    ]);
+    metricsApi.useGetRequestsQuery([startDate.format(), endDate.format()]);
   const { data: priorUsage, isFetching: isPriorUsageFetching } =
     metricsApi.useGetUsageQuery([
-      moment(date).subtract(2, "months").format(),
-      moment(date).subtract(1, "months").format(),
+      priorStartDate.format(),
+      priorEndDate.format(),
     ]);
   const { data: usage, isFetching: isUsageFetching } =
-    metricsApi.useGetUsageQuery([
-      moment(date).subtract(1, "months").format(),
-      moment(date).format(),
-    ]);
+    metricsApi.useGetUsageQuery([startDate.format(), endDate.format()]);
   const { data: priorAudit, isFetching: isPriorAuditFetching } =
     useGetAuditsQuery({
-      start_date: moment(date).subtract(2, "months").format("L"),
-      end_date: moment(date).subtract(1, "months").format("L"),
+      start_date: priorStartDate.format("L"),
+      end_date: priorEndDate.format("L"),
     });
   const { data: audit, isFetching: isAuditFetching } = useGetAuditsQuery({
-    start_date: moment(date).subtract(1, "months").format("L"),
-    end_date: moment(date).format("L"),
+    start_date: startDate.format("L"),
+    end_date: endDate.format("L"),
   });
   const requestsFetching = isPriorRequestsFetching || isRequestsFetching;
   const usageFetching = isPriorUsageFetching || isUsageFetching;
@@ -89,11 +94,11 @@ export const MetricCards = () => {
           </Box>
         }
         delta={
-          is2MonthsOld
+          hasPriorData
             ? getDelta(priorRequests?.TotalRequests, requests?.TotalRequests)
             : null
         }
-        deltaLabel={"VS Prior 30 Days"}
+        deltaLabel={`VS Prior ${dateRange} Days`}
         loading={requestsFetching}
       />
       <MetricCard
@@ -113,14 +118,14 @@ export const MetricCards = () => {
           </Box>
         }
         delta={
-          is2MonthsOld
+          hasPriorData
             ? getDelta(
                 priorUsage?.MediaConsumption?.TotalRequests,
                 usage?.MediaConsumption?.TotalRequests
               )
             : null
         }
-        deltaLabel={"VS Prior 30 Days"}
+        deltaLabel={`VS Prior ${dateRange} Days`}
         loading={usageFetching}
       />
       {/* <MetricCard
@@ -143,7 +148,7 @@ export const MetricCards = () => {
             ? getDelta(priorScheduledPublishes, scheduledPublishes)
             : null
         }
-        deltaLabel={"VS Prior 30 Days"}
+        deltaLabel={`VS Prior ${dateRange} Days`}
         loading={auditFetching}
       /> */}
       <MetricCard
@@ -162,8 +167,8 @@ export const MetricCards = () => {
             />
           </Box>
         }
-        delta={is2MonthsOld ? getDelta(priorPublishes, publishes) : null}
-        deltaLabel={"VS Prior 30 Days"}
+        delta={hasPriorData ? getDelta(priorPublishes, publishes) : null}
+        deltaLabel={`VS Prior ${dateRange} Days`}
         loading={auditFetching}
       />
     </Box>
