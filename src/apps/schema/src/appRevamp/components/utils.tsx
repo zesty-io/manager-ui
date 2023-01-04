@@ -31,118 +31,146 @@ type Icons = {
 const icons: Icons = {
   article_writer: {
     icon: NewspaperRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "green.50",
+    borderColor: "green.500",
   },
   color: {
     icon: ColorLensRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
   currency: {
     icon: PaymentsRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
   date: {
     icon: CalendarTodayRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "deepOrange.50",
+    borderColor: "deepOrange.500",
   },
   datetime: {
     icon: ScheduleRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "deepOrange.50",
+    borderColor: "deepOrange.500",
   },
   dropdown: {
     icon: KeyboardArrowDownRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
   files: {
     icon: AttachmentRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "blue.50",
+    borderColor: "blue.500",
   },
   fontawesome: {
     icon: PublicRoundedIcon,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
   images: {
     icon: AttachmentRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "blue.50",
+    borderColor: "blue.500",
   },
   internal_link: {
     icon: DocumentScannerRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "pink.50",
+    borderColor: "pink.600",
   },
   link: {
     icon: LinkRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "pink.50",
+    borderColor: "pink.600",
   },
   markdown: {
     icon: Markdown as SvgIconComponent,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "green.50",
+    borderColor: "green.500",
   },
   number: {
     icon: PinRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "red.50",
+    borderColor: "red.600",
   },
   one_to_many: {
     icon: AccountTreeRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "pink.50",
+    borderColor: "pink.600",
   },
   one_to_one: {
     icon: OneToOne as SvgIconComponent,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "pink.50",
+    borderColor: "pink.600",
   },
   sort: {
     icon: FormatListNumberedRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
   text: {
     icon: TitleRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "green.50",
+    borderColor: "green.600",
   },
   textarea: {
     icon: SubjectRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "green.50",
+    borderColor: "green.600",
   },
   uuid: {
     icon: PublicRoundedIcon,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
   wysiwyg_advanced: {
     icon: NewspaperRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "green.50",
+    borderColor: "green.500",
   },
   wysiwyg_basic: {
     icon: NewspaperRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "green.50",
+    borderColor: "green.500",
   },
   yes_no: {
     icon: ToggleOnRounded,
-    backgroundColor: "",
-    borderColor: "",
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
 };
 
 export const generateIcon = (type: string) => {
   const icon = icons[type].icon;
+  const borderColor = icons[type].borderColor;
+  const bgcolor = icons[type].backgroundColor;
+  const transform =
+    type === "files" || type === "images" ? "rotate(-45deg)" : "";
 
-  return <SvgIcon component={icon} sx={{ verticalAlign: "middle" }} />;
+  return (
+    <Box
+      border="1px solid red"
+      borderColor={borderColor}
+      borderRadius={1}
+      bgcolor={bgcolor}
+      color={borderColor}
+      width="24px"
+      height="24px"
+      fontSize="12px"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <SvgIcon
+        component={icon}
+        fontSize="inherit"
+        sx={{
+          verticalAlign: "middle",
+          transform,
+          textAlign: "center",
+        }}
+      />
+    </Box>
+  );
 };
