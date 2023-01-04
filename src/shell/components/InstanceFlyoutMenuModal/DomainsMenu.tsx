@@ -29,16 +29,16 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
-        <ListItem sx={{ p: 0, width: 0 }}>
-          <ListItemIcon sx={{ minWidth: "30px" }}>
+        <Box sx={{ p: 0, width: 0 }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton onClick={() => onClose()}>
               <ArrowBackIcon fontSize="small" />
             </IconButton>
-          </ListItemIcon>
-          <Typography variant="h5" fontWeight={600}>
-            Domains
-          </Typography>
-        </ListItem>
+            <Typography variant="h5" fontWeight={600}>
+              Domains
+            </Typography>
+          </Box>
+        </Box>
         <Button
           variant="outlined"
           color="inherit"
