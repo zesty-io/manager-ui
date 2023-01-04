@@ -16,7 +16,10 @@ export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q");
   console.log("query", query);
-  const { data: results } = useSearchContentQuery({ query }, { skip: !query });
+  const { data: results, isLoading } = useSearchContentQuery(
+    { query },
+    { skip: !query }
+  );
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -48,8 +51,8 @@ export const SearchPage: FC = () => {
           height: "100%",
         }}
       >
-        {!results?.length && <NoSearchResults query={query} />}
-        {results?.length && <ContentList results={results} />}
+        {!isLoading && !results?.length && <NoSearchResults query={query} />}
+        <ContentList results={results} loading={isLoading} />
       </Box>
     </ThemeProvider>
   );

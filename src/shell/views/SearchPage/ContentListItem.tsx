@@ -2,6 +2,7 @@ import { FC } from "react";
 import { ContentItem } from "../../services/types";
 import { LinksContainer } from "./LinksContainer";
 import Box from "@mui/material/Box";
+import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import {
@@ -14,40 +15,59 @@ import moment from "moment-timezone";
 import PencilIcon from "@mui/icons-material/Create";
 type ContentListItem = {
   result: ContentItem;
+  loading?: boolean;
   style: any;
 };
 
-export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
+export const ContentListItem: FC<ContentListItem> = ({
+  result,
+  style,
+  loading: parentIsLoading = false,
+}) => {
   const affectedZUID = result?.meta?.ZUID;
+  const { data: auditData, isLoading: auditLoading } = useGetAuditsQuery(
+    { affectedZUID, limit: 1, dir: "desc", order: "created" },
+    { skip: !affectedZUID }
+  );
+  const { data: contentData, isLoading: contentLoading } =
+    useGetContentItemQuery(auditData?.[0]?.affectedZUID, {
+      skip: !auditData?.[0]?.affectedZUID,
+    });
+  const { data: modelData, isLoading: modelLoading } = useGetContentModelQuery(
+    contentData?.meta.contentModelZUID,
+    { skip: !contentData?.meta.contentModelZUID }
+  );
+  // For logging / debugging purposes
   const auditRes = useGetAuditsQuery(
     { affectedZUID, limit: 1, dir: "desc", order: "created" },
     { skip: !affectedZUID }
   );
-  const { data: contentData } = useGetContentItemQuery(
-    auditRes.data?.[0]?.affectedZUID,
-    {
-      skip: !auditRes.data?.[0]?.affectedZUID,
-    }
-  );
-  const { data: modelData } = useGetContentModelQuery(
-    contentData?.meta.contentModelZUID,
-    { skip: !contentData?.meta.contentModelZUID }
-  );
+  const contentRes = useGetContentItemQuery(auditData?.[0]?.affectedZUID, {
+    skip: !auditData?.[0]?.affectedZUID,
+  });
   const modelRes = useGetContentModelQuery(contentData?.meta.contentModelZUID, {
     skip: !contentData?.meta.contentModelZUID,
   });
-  console.log({ affectedZUID, auditRes, contentData, modelData, modelRes });
+  console.log({
+    affectedZUID,
+    auditData,
+    contentData,
+    modelData,
+    modelRes,
+    contentRes,
+    auditRes,
+  });
 
   // Chips
   const titleChip = modelData?.metaTitle || contentData?.meta.contentModelZUID;
   const appChip = "Content";
-  const actionDate = auditRes?.data?.[0]?.happenedAt;
+  const actionDate = auditData?.[0]?.happenedAt;
   const dateInfo = moment(actionDate).fromNow();
-  const firstName = auditRes?.data?.[0]?.firstName;
-  const lastName = auditRes?.data?.[0]?.lastName;
+  const firstName = auditData?.[0]?.firstName;
+  const lastName = auditData?.[0]?.lastName;
   const userInfo =
     firstName || lastName ? `${firstName} ${lastName}` : "Unknown User";
-  const userDateChip = auditRes?.data?.[0]
+  const userDateChip = auditData?.[0]
     ? `${dateInfo} by ${userInfo}`
     : "No actions found";
   const chips = [titleChip, appChip, userDateChip].join(" • ");
@@ -55,6 +75,8 @@ export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
   const url = contentData?.meta
     ? `/content/${contentData?.meta?.contentModelZUID}/${contentData?.meta?.ZUID}`
     : null;
+  const loading =
+    auditLoading || contentLoading || modelLoading || parentIsLoading;
   // Search Result List Item
   return (
     <Box
@@ -80,7 +102,11 @@ export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
         }}
         width="100%"
       >
-        <PencilIcon fontSize="small" />
+        {loading ? (
+          <Skeleton variant="circular" width={20} height={20} />
+        ) : (
+          <PencilIcon fontSize="small" />
+        )}
         {/* Text Container */}
         <Stack
           direction="column"
@@ -90,11 +116,29 @@ export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
           width="100%"
         >
           <Typography variant="body2" color="text.primary">
-            {result.web.metaTitle || "Item missing meta title"}
+            {loading ? (
+              <Skeleton
+                variant="rectangular"
+                height={16}
+                width={555}
+                sx={{ mb: 1 }}
+              />
+            ) : (
+              result?.web?.metaTitle || "Item missing meta title"
+            )}
           </Typography>
           {/* @ts-ignore */}
           <Typography variant="body3" color="text.secondary">
-            {chips}
+            {loading ? (
+              <Skeleton
+                variant="rectangular"
+                height={14}
+                width={425}
+                sx={{ mb: 0.75 }}
+              />
+            ) : (
+              chips
+            )}
           </Typography>
         </Stack>
         <LinksContainer url={url} />
