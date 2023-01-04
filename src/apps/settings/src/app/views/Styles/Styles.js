@@ -203,7 +203,7 @@ export default connect((state) => {
               onChange={(e) => setValue(e.target.value, field.name)}
             >
               <MenuItem value="">- None -</MenuItem>
-              {Object.keys(field.options).map((option, idx) => (
+              {Object.keys(field?.options).map((option, idx) => (
                 <MenuItem key={idx} value={option}>
                   {field.options[option]}
                 </MenuItem>
