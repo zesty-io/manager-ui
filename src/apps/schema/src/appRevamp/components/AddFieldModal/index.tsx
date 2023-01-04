@@ -1,10 +1,15 @@
+import { Dispatch, SetStateAction } from "react";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
+  IconButton,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
 
 interface Props {
   open: boolean;
@@ -18,9 +23,30 @@ export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
       fullWidth
       maxWidth="md"
     >
-      <DialogTitle>Select a Field Type</DialogTitle>
-      <DialogContent>
-        <DialogContentText>Search</DialogContentText>
+      <DialogTitle
+        display="flex"
+        sx={{
+          justifyContent: "space-between",
+          padding: 3,
+        }}
+      >
+        Select a Field Type
+        <IconButton onClick={() => handleCloseModal(false)}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        <DialogContentText>
+          <TextField
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </DialogContentText>
       </DialogContent>
     </Dialog>
   );
