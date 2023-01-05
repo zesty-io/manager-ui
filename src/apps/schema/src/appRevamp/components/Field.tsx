@@ -19,6 +19,8 @@ interface Props {
   onReorder: () => void;
   setDraggedIndex: (index: number) => void;
   setHoveredIndex: (index: number) => void;
+  hasDragIcon: boolean;
+  customSecondaryText?: string;
 }
 
 export const Field = ({
@@ -27,6 +29,8 @@ export const Field = ({
   index,
   setDraggedIndex,
   setHoveredIndex,
+  hasDragIcon,
+  customSecondaryText,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -58,10 +62,11 @@ export const Field = ({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  // TODO: verify what to show when field is not required
-  const secondaryText = `${field.datatype} • ${
-    field.required ? "Required" : "Not Required"
-  } •  ${field.name}`;
+  const secondaryText = customSecondaryText
+    ? customSecondaryText
+    : `${field.datatype} • ${field.required ? "Required" : "Not Required"} •  ${
+        field.name
+      }`;
 
   return (
     <Box
@@ -81,15 +86,17 @@ export const Field = ({
       display="flex"
       alignItems="center"
     >
-      <IconButton
-        size="small"
-        disableRipple
-        onMouseEnter={() => setIsDraggable(true)}
-        onMouseLeave={() => setIsDraggable(false)}
-        sx={{ cursor: "grab" }}
-      >
-        <DragIndicatorRoundedIcon />
-      </IconButton>
+      {hasDragIcon && (
+        <IconButton
+          size="small"
+          disableRipple
+          onMouseEnter={() => setIsDraggable(true)}
+          onMouseLeave={() => setIsDraggable(false)}
+          sx={{ cursor: "grab" }}
+        >
+          <DragIndicatorRoundedIcon />
+        </IconButton>
+      )}
       <ListItem
         sx={{
           py: 1,

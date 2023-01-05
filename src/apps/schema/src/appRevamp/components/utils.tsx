@@ -20,7 +20,12 @@ import { Markdown, OneToOne } from "@zesty-io/material";
 import { Box } from "@mui/system";
 import { SvgIcon } from "@mui/material";
 
-// TODO: Verify with Zosh the missing icons
+/**
+ * TODO: Update icons for the ff once Zosh provides the correct icons:
+ * - UUID
+ * - WYSIWYG
+ * - Article Writer
+ */
 type Icons = {
   [key: string]: {
     icon: SvgIconComponent;
@@ -56,16 +61,6 @@ const icons: Icons = {
   },
   dropdown: {
     icon: KeyboardArrowDownRounded,
-    backgroundColor: "purple.50",
-    borderColor: "purple.700",
-  },
-  files: {
-    icon: AttachmentRounded,
-    backgroundColor: "blue.50",
-    borderColor: "blue.500",
-  },
-  fontawesome: {
-    icon: PublicRoundedIcon,
     backgroundColor: "purple.50",
     borderColor: "purple.700",
   },
@@ -123,11 +118,6 @@ const icons: Icons = {
     icon: PublicRoundedIcon,
     backgroundColor: "purple.50",
     borderColor: "purple.700",
-  },
-  wysiwyg_advanced: {
-    icon: NewspaperRounded,
-    backgroundColor: "green.50",
-    borderColor: "green.500",
   },
   wysiwyg_basic: {
     icon: NewspaperRounded,
