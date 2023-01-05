@@ -25,6 +25,7 @@ interface Props {
   primaryText?: string;
   secondaryText?: string;
   fieldType?: string;
+  onFieldClick?: () => void;
 }
 
 export const Field = ({
@@ -37,6 +38,7 @@ export const Field = ({
   primaryText,
   secondaryText,
   fieldType,
+  onFieldClick,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -92,10 +94,12 @@ export const Field = ({
       borderColor="border"
       borderRadius={1}
       ref={ref}
+      onClick={onFieldClick}
       sx={{
         ...style,
         "&:hover": {
           backgroundColor: "action.hover",
+          cursor: "pointer",
 
           "& button.copy-zuid": {
             display: "inline-flex",
@@ -129,7 +133,7 @@ export const Field = ({
           sx={{
             flexShrink: "3",
             py: 1,
-            px: 0,
+            px: isDynamic ? 0 : 2,
           }}
         >
           <ListItemIcon sx={{ minWidth: "36px" }}>

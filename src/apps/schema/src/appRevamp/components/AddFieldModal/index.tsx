@@ -33,13 +33,13 @@ const fields: { [key: string]: FieldData[] } = {
       secondaryText: "Descriptions, summaries, and blurbs",
     },
     {
-      // TODO: Change label just need confirmation from zosh
+      // TODO: Change primaryText just need confirmation from Zosh
       type: "article_writer",
       primaryText: "Rich Text (Article Writer)",
       secondaryText: "Long text content with links & images such as blogs",
     },
     {
-      // TODO: Change label just need confirmation from zosh
+      // TODO: Change primaryText just need confirmation from Zosh
       type: "wysiwyg_basic",
       primaryText: "Rich Text (WYSIWYG)",
       secondaryText: "Long text content with links & images such as blogs",
@@ -143,6 +143,11 @@ interface Props {
   handleCloseModal: Dispatch<SetStateAction<boolean>>;
 }
 export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
+  const handleFieldClick = (fieldType: string) => {
+    // Show appropriate field options
+    console.log("Field clicked: ", fieldType);
+  };
+
   return (
     <Dialog
       open={open}
@@ -206,6 +211,7 @@ export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
                   primaryText={field.primaryText}
                   secondaryText={field.secondaryText}
                   fieldType={field.type}
+                  onFieldClick={() => handleFieldClick(field.type)}
                 />
               ))}
             </Box>
