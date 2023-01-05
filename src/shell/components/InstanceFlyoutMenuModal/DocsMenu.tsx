@@ -20,6 +20,7 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import EmailIcon from "@mui/icons-material/Email";
 import ChatIcon from "@mui/icons-material/Chat";
+import { AppState } from "../../store/types";
 
 interface Props {
   onClose?: () => void;
@@ -27,8 +28,7 @@ interface Props {
 }
 
 const DocsMenu = ({ onClose, instanceZUID }: Props) => {
-  // @ts-ignore
-  const instance = useSelector((RootState) => RootState.instance);
+  const instance = useSelector((state: AppState) => state.instance);
 
   return (
     <>
@@ -44,18 +44,6 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
           </Typography>
         </ListItem>
         <Box>
-          {/* <ListItem
-            button
-            variant="contained"
-            color="inherit"
-            size="small"
-            target="_top"
-            rel="noopener noreferrer"
-            href={`support@zesty.io`}
-            startIcon={<EmailIcon fontSize="small" />}
-          >
-            support@zesty.io
-          </ListItem> */}
           <Link
             title="Support"
             href="mailto:support@zesty.io"
