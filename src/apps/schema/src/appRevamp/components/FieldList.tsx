@@ -45,6 +45,7 @@ export const FieldList = () => {
       {sortedFields?.map((field, index) => (
         <Field
           hasDragIcon
+          isStatic={false}
           key={field.ZUID}
           index={index}
           field={field}

@@ -7,6 +7,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from "@mui/material";
+import { SxProps } from "@mui/system";
 
 import { ContentModelField } from "../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
@@ -14,13 +15,17 @@ import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import { generateIcon } from "./utils";
 
 interface Props {
-  field: ContentModelField;
-  index: number;
-  onReorder: () => void;
-  setDraggedIndex: (index: number) => void;
-  setHoveredIndex: (index: number) => void;
+  field?: ContentModelField;
+  index?: number;
+  onReorder?: () => void;
+  setDraggedIndex?: (index: number) => void;
+  setHoveredIndex?: (index: number) => void;
+  isStatic: boolean;
   hasDragIcon: boolean;
+  customPrimaryText?: string;
   customSecondaryText?: string;
+  customFieldType?: string;
+  sx?: SxProps;
 }
 
 export const Field = ({
@@ -29,8 +34,12 @@ export const Field = ({
   index,
   setDraggedIndex,
   setHoveredIndex,
+  isStatic,
   hasDragIcon,
+  customPrimaryText,
   customSecondaryText,
+  customFieldType,
+  sx,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -62,11 +71,15 @@ export const Field = ({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const secondaryText = customSecondaryText
+  const icon = isStatic
+    ? generateIcon(customFieldType)
+    : generateIcon(field?.datatype);
+  const primaryText = isStatic ? customPrimaryText : field?.label;
+  const secondaryText = isStatic
     ? customSecondaryText
-    : `${field.datatype} • ${field.required ? "Required" : "Not Required"} •  ${
-        field.name
-      }`;
+    : `${field?.datatype} • ${
+        field?.required ? "Required" : "Not Required"
+      } •  ${field?.name}`;
 
   return (
     <Box
@@ -75,7 +88,10 @@ export const Field = ({
       borderColor="border"
       borderRadius={1}
       ref={ref}
-      sx={style}
+      sx={{
+        ...style,
+        ...sx,
+      }}
       draggable={isDraggable}
       onDragStart={handleDragStart}
       onDrag={handleDrag}
@@ -103,11 +119,9 @@ export const Field = ({
           px: 0,
         }}
       >
-        <ListItemIcon sx={{ minWidth: "36px" }}>
-          {generateIcon(field.datatype)}
-        </ListItemIcon>
+        <ListItemIcon sx={{ minWidth: "36px" }}>{icon}</ListItemIcon>
         <ListItemText
-          primary={field.label}
+          primary={primaryText}
           secondary={secondaryText}
           primaryTypographyProps={{
             fontSize: 14,
