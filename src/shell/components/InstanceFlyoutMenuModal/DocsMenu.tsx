@@ -251,8 +251,8 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
             }}
             onClick={() => handleNavigation("https://zesty.org/")}
           >
-            <ListItemIcon sx={{ minWidth: "36px" }}>
-              <MenuBookRoundedIcon color="info" />
+            <ListItemIcon sx={{ minWidth: "32px" }}>
+              <MenuBookRoundedIcon color="info" fontSize="large" />
             </ListItemIcon>
             <ListItemText
               primary="Platform Docs"
@@ -269,10 +269,10 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
               display: "block",
               textAlign: "center",
             }}
-            onClick={() => handleNavigation("https://instances-api.zesty.org/")}
+            onClick={() => handleNavigation("https://accounts-api.zesty.org/")}
           >
-            <ListItemIcon sx={{ minWidth: "36px" }}>
-              <img src={postmanIcon} />
+            <ListItemIcon sx={{ minWidth: "32px" }}>
+              <img src={postmanIcon} width="32px" height="32px" />
             </ListItemIcon>
             <ListItemText
               primary="Auth API"
@@ -293,8 +293,8 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
             }}
             onClick={() => handleNavigation("https://instances-api.zesty.org/")}
           >
-            <ListItemIcon sx={{ minWidth: "36px" }}>
-              <img src={postmanIcon} />
+            <ListItemIcon sx={{ minWidth: "32px" }}>
+              <img src={postmanIcon} width="32px" height="32px" />
             </ListItemIcon>
             <ListItemText
               primary="Instance API Docs"
@@ -315,8 +315,8 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
               handleNavigation("https://github.com/zesty-io/graphql-zesty")
             }
           >
-            <ListItemIcon sx={{ minWidth: "36px" }}>
-              <img src={graphQLIcon} />
+            <ListItemIcon sx={{ minWidth: "32px" }}>
+              <img src={graphQLIcon} width="32px" height="32px" />
             </ListItemIcon>
             <ListItemText
               primary="GraphQL Docs"
@@ -335,8 +335,8 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
             }}
             onClick={() => handleNavigation("https://parsley.zesty.io/")}
           >
-            <ListItemIcon sx={{ minWidth: "36px" }}>
-              <img width="24px" height="24px" src={parsleyIcon} />
+            <ListItemIcon sx={{ minWidth: "32px" }}>
+              <img width="32px" height="32px" src={parsleyIcon} />
             </ListItemIcon>
             <ListItemText
               primary="Parsley Docs"
