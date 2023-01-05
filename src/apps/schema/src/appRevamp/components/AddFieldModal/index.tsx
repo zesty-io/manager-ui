@@ -7,9 +7,21 @@ import {
   IconButton,
   TextField,
   InputAdornment,
+  Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
+
+// TODO: add static flag to field.tsx, if true, set primary and secondary text manually
+const fields: { [key: string]: [] } = {
+  text: [],
+  media: [],
+  relationship: [],
+  number: [],
+  number2: [],
+  date: [],
+  other: [],
+};
 
 interface Props {
   open: boolean;
@@ -35,17 +47,27 @@ export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent
+        dividers
+        sx={{
+          "&.MuiDialogContent-dividers": {
+            borderColor: "grey.100",
+          },
+        }}
+      >
         <DialogContentText>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+          <Box py={2} width="349px">
+            <TextField
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
         </DialogContentText>
       </DialogContent>
     </Dialog>
