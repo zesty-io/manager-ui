@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { DefaultRootState, RootStateOrAny, useSelector } from "react-redux";
 import {
   Box,
   Button,
@@ -17,28 +17,26 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LanguageIcon from "@mui/icons-material/Language";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { AppState } from "../../../shell/store/types";
 interface Props {
   onClose?: () => void;
   instanceZUID?: string;
 }
 
 const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
-  // @ts-ignore
-  const instance = useSelector((RootState) => RootState.instance);
+  const instance = useSelector((state: AppState) => state.instance);
 
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
-        <ListItem sx={{ p: 0, width: 0 }}>
-          <ListItemIcon sx={{ minWidth: "30px" }}>
-            <IconButton onClick={() => onClose()}>
-              <ArrowBackIcon fontSize="small" />
-            </IconButton>
-          </ListItemIcon>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <IconButton onClick={() => onClose()}>
+            <ArrowBackIcon fontSize="small" />
+          </IconButton>
           <Typography variant="h5" fontWeight={600}>
             Domains
           </Typography>
-        </ListItem>
+        </Box>
         <Button
           variant="outlined"
           color="inherit"
