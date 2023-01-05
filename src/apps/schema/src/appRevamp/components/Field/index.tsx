@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import {
   Box,
@@ -8,7 +8,6 @@ import {
   ListItemIcon,
   Button,
 } from "@mui/material";
-import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 
 import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
@@ -59,6 +58,16 @@ export const Field = ({
 
   const handleDragEnter = (e: React.DragEvent) => {
     setHoveredIndex(index);
+  };
+
+  const handleCopyZuid = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    try {
+      await navigator.clipboard.writeText(field?.ZUID);
+    } catch (error) {
+      console.error("Failed to copy ZUID", error);
+    }
   };
 
   const style = {
@@ -141,6 +150,7 @@ export const Field = ({
         size="small"
         variant="outlined"
         startIcon={<ContentCopyRoundedIcon />}
+        onClick={handleCopyZuid}
         sx={{
           display: "none",
           mr: 1,
