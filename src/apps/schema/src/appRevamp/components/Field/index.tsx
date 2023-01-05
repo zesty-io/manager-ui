@@ -16,13 +16,15 @@ import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import { FieldIcon } from "./FieldIcon";
 
 interface Props {
-  field: ContentModelField;
-  index: number;
-  onReorder: () => void;
-  setDraggedIndex: (index: number) => void;
-  setHoveredIndex: (index: number) => void;
-  hasDragIcon: boolean;
+  field?: ContentModelField;
+  index?: number;
+  onReorder?: () => void;
+  setDraggedIndex?: (index: number) => void;
+  setHoveredIndex?: (index: number) => void;
+  isDynamic: boolean;
+  primaryText?: string;
   secondaryText?: string;
+  fieldType?: string;
 }
 
 export const Field = ({
@@ -31,8 +33,10 @@ export const Field = ({
   index,
   setDraggedIndex,
   setHoveredIndex,
-  hasDragIcon,
+  isDynamic,
+  primaryText,
   secondaryText,
+  fieldType,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -109,7 +113,7 @@ export const Field = ({
       justifyContent="space-between"
     >
       <Box display="flex">
-        {hasDragIcon && (
+        {isDynamic && (
           <IconButton
             className="drag-handle"
             size="small"
@@ -129,10 +133,10 @@ export const Field = ({
           }}
         >
           <ListItemIcon sx={{ minWidth: "36px" }}>
-            <FieldIcon type={field.datatype} />
+            <FieldIcon type={fieldType || field?.datatype} />
           </ListItemIcon>
           <ListItemText
-            primary={field.label}
+            primary={primaryText || field?.label}
             secondary={_secondaryText}
             primaryTypographyProps={{
               fontSize: 14,
@@ -145,26 +149,28 @@ export const Field = ({
           />
         </ListItem>
       </Box>
-      <Button
-        className="copy-zuid"
-        size="small"
-        variant="outlined"
-        startIcon={<ContentCopyRoundedIcon />}
-        onClick={handleCopyZuid}
-        sx={{
-          display: "none",
-          mr: 1,
-          border: "1px solid",
-          borderColor: "border",
-          color: "text.secondary",
-          "&:hover": {
+      {isDynamic && (
+        <Button
+          className="copy-zuid"
+          size="small"
+          variant="outlined"
+          startIcon={<ContentCopyRoundedIcon />}
+          onClick={handleCopyZuid}
+          sx={{
+            display: "none",
+            mr: 1,
+            border: "1px solid",
             borderColor: "border",
-            backgroundColor: "inherit",
-          },
-        }}
-      >
-        Copy ZUID
-      </Button>
+            color: "text.secondary",
+            "&:hover": {
+              borderColor: "border",
+              backgroundColor: "inherit",
+            },
+          }}
+        >
+          Copy ZUID
+        </Button>
+      )}
     </Box>
   );
 };

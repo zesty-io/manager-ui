@@ -168,48 +168,49 @@ export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
           "&.MuiDialogContent-dividers": {
             borderColor: "grey.100",
           },
+          "& div.field-type-group:not(:last-of-type)": {
+            borderBottom: "1px solid",
+            borderColor: "border",
+            mb: 2,
+            pb: 2,
+          },
         }}
       >
-        <DialogContentText>
-          <Box py={2} width="349px">
-            <TextField
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
-          {Object.keys(fields).map((fieldKey) => (
-            <Box>
-              <Typography component="h1" variant="overline" mb={2}>
-                {fieldKey}
-              </Typography>
-              <Box
-                display="grid"
-                gridTemplateColumns="1fr 1fr"
-                rowGap={2}
-                columnGap={2}
-              >
-                {fields[fieldKey].map((field: FieldData) => (
-                  <Field
-                    isStatic
-                    hasDragIcon={false}
-                    customPrimaryText={field.primaryText}
-                    customSecondaryText={field.secondaryText}
-                    customFieldType={field.type}
-                    sx={{
-                      width: "418px",
-                    }}
-                  />
-                ))}
-              </Box>
+        <Box py={2} width="349px">
+          <TextField
+            fullWidth
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
+        {Object.keys(fields).map((fieldKey) => (
+          <Box className="field-type-group" key={fieldKey}>
+            <Typography component="p" variant="overline" mb={2}>
+              {fieldKey}
+            </Typography>
+            <Box
+              display="grid"
+              gridTemplateColumns="1fr 1fr"
+              rowGap={2}
+              columnGap={2}
+            >
+              {fields[fieldKey].map((field: FieldData, index) => (
+                <Field
+                  key={index}
+                  isDynamic={false}
+                  primaryText={field.primaryText}
+                  secondaryText={field.secondaryText}
+                  fieldType={field.type}
+                />
+              ))}
             </Box>
-          ))}
-        </DialogContentText>
+          </Box>
+        ))}
       </DialogContent>
     </Dialog>
   );
