@@ -17,7 +17,7 @@ import discordIcon from "../../../../public/images/discordIcon.svg";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
-
+import DomainsMenu from "./DomainsMenu";
 interface Props {
   instanceFaviconUrl?: string;
   instanceName?: string;
@@ -42,6 +42,7 @@ const InstanceFlyoutMenuModal = ({
     },
   ] = useRefreshCacheMutation();
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
+  const [showDomainsMenu, setShowDomainsMenu] = useState(false);
 
   const handleNavigation = (url: string) => {
     window.open(url, "_blank");
@@ -68,6 +69,8 @@ const InstanceFlyoutMenuModal = ({
           position: "absolute",
           bottom: 0,
           left: 0,
+          width: "448px",
+          height: "392px",
         },
       }}
       open={true}
@@ -75,96 +78,110 @@ const InstanceFlyoutMenuModal = ({
       maxWidth={"xs"}
       onClose={onClose}
     >
-      <Box sx={{ py: 1 }}>
-        <ListItem>
-          <Avatar src={instanceFaviconUrl} />
-          <Typography variant="body2" sx={{ ml: 1.5, fontWeight: 700 }}>
-            {instanceName}
-          </Typography>
-        </ListItem>
-        <MenuItem onClick={onSetShowFaviconModal}>
-          <Typography variant="body2">Update Favicon</Typography>
-        </MenuItem>
-        <Box sx={{ p: 1 }}>
-          <Button
-            variant="outlined"
-            color="inherit"
-            onClick={() => refreshCache()}
-            startIcon={
-              <>
-                {isLoadingRefreshCache ? (
-                  <CircularProgress size="18px" color="inherit" />
-                ) : !isLoadingRefreshCache && isSuccessRefreshCache ? (
-                  <CheckIcon fontSize="small" />
-                ) : (
-                  <RefreshIcon fontSize="small" />
-                )}
-              </>
-            }
+      {showDomainsMenu ? (
+        <DomainsMenu
+          onClose={() => setShowDomainsMenu(false)}
+          instanceZUID={instanceZUID}
+        />
+      ) : (
+        <>
+          <Box sx={{ py: 1, height: "340px" }}>
+            <ListItem>
+              <Avatar src={instanceFaviconUrl} />
+              <Typography variant="body2" sx={{ ml: 1.5, fontWeight: 700 }}>
+                {instanceName}
+              </Typography>
+            </ListItem>
+            <MenuItem onClick={onSetShowFaviconModal}>
+              <Typography variant="body2">Update Favicon</Typography>
+            </MenuItem>
+            <MenuItem onClick={() => setShowDomainsMenu(true)}>
+              <Typography variant="body2">Domains</Typography>
+            </MenuItem>
+            <Box sx={{ p: 1 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => refreshCache()}
+                startIcon={
+                  <>
+                    {isLoadingRefreshCache ? (
+                      <CircularProgress size="18px" color="inherit" />
+                    ) : !isLoadingRefreshCache && isSuccessRefreshCache ? (
+                      <CheckIcon fontSize="small" />
+                    ) : (
+                      <RefreshIcon fontSize="small" />
+                    )}
+                  </>
+                }
+              >
+                Refresh Cache
+              </Button>
+            </Box>
+            <Box sx={{ p: 1 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => handleCopyInstanceZUID()}
+                startIcon={
+                  <>
+                    {isCopiedZuid ? (
+                      <CheckIcon fontSize="small" />
+                    ) : (
+                      <ContentCopyIcon fontSize="small" />
+                    )}
+                  </>
+                }
+              >
+                Get Instance ZUID
+              </Button>
+            </Box>
+          </Box>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            padding={2}
+            sx={{
+              backgroundColor: "grey.100",
+            }}
           >
-            Refresh Cache
-          </Button>
-        </Box>
-        <Box sx={{ p: 1 }}>
-          <Button
-            variant="outlined"
-            color="inherit"
-            onClick={() => handleCopyInstanceZUID()}
-            startIcon={
-              <>
-                {isCopiedZuid ? (
-                  <CheckIcon fontSize="small" />
-                ) : (
-                  <ContentCopyIcon fontSize="small" />
-                )}
-              </>
-            }
-          >
-            Get Instance ZUID
-          </Button>
-        </Box>
-      </Box>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        padding={2}
-        sx={{
-          backgroundColor: "grey.100",
-        }}
-      >
-        {/* @ts-ignore */}
-        <Typography variant="body3" color="text.secondary">
-          CONNECT WITH ZESTY
-        </Typography>
-        <Box
-          display="flex"
-          gap={2}
-          sx={{
-            img: {
-              cursor: "pointer",
-            },
-          }}
-        >
-          <img
-            src={slackIcon}
-            onClick={() =>
-              handleNavigation(
-                "https://join.slack.com/t/zestyiodevs/shared_invite/zt-1jv3ct6k4-uuDM5ZNLy3NgK2FCzK~xuw"
-              )
-            }
-          />
-          <img
-            src={youtubeIcon}
-            onClick={() =>
-              handleNavigation("https://www.youtube.com/c/Zestyio/videos")
-            }
-          />
-          <img
-            src={discordIcon}
-            onClick={() => handleNavigation("https://discord.gg/uqDqeX8RXE")}
-          />
-        </Box>
-      </Box>
+            {/* @ts-ignore */}
+            <Typography variant="body3" color="text.secondary">
+              CONNECT WITH ZESTY
+            </Typography>
+            <Box
+              display="flex"
+              gap={2}
+              sx={{
+                img: {
+                  cursor: "pointer",
+                },
+              }}
+            >
+              <img
+                src={slackIcon}
+                onClick={() =>
+                  handleNavigation(
+                    "https://join.slack.com/t/zestyiodevs/shared_invite/zt-1jv3ct6k4-uuDM5ZNLy3NgK2FCzK~xuw"
+                  )
+                }
+              />
+              <img
+                src={youtubeIcon}
+                onClick={() =>
+                  handleNavigation("https://www.youtube.com/c/Zestyio/videos")
+                }
+              />
+              <img
+                src={discordIcon}
+                onClick={() =>
+                  handleNavigation("https://discord.gg/uqDqeX8RXE")
+                }
+              />
+            </Box>
+          </Box>
+        </>
+      )}
     </Dialog>
   );
 };
