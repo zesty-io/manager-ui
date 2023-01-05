@@ -33,16 +33,14 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
-        <ListItem sx={{ p: 0, width: 0 }}>
-          <ListItemIcon sx={{ minWidth: "30px" }}>
-            <IconButton onClick={() => onClose()}>
-              <ArrowBackIcon fontSize="small" />
-            </IconButton>
-          </ListItemIcon>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <IconButton onClick={() => onClose()}>
+            <ArrowBackIcon fontSize="small" />
+          </IconButton>
           <Typography variant="h5" fontWeight={600}>
             Docs
           </Typography>
-        </ListItem>
+        </Box>
         <Box>
           <Link
             title="Support"
