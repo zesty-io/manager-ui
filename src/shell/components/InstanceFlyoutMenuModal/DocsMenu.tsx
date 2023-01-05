@@ -218,7 +218,7 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
       </Box>
 
       {/* Docs items */}
-      <Box sx={{ p: 1 }}>
+      <Box>
         <Box sx={{ display: "flex" }}>
           <ListItemButton
             sx={{
@@ -361,12 +361,19 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
               onClick={() => handleNavigation(link.url)}
               sx={{
                 cursor: "pointer",
+                py: "4px",
               }}
             >
               <ListItemIcon sx={{ minWidth: "35px" }}>
                 <BookIcon />
               </ListItemIcon>
-              <ListItemText>{link.name}</ListItemText>
+              <ListItemText
+                primaryTypographyProps={{
+                  variant: "body2",
+                }}
+              >
+                {link.name}
+              </ListItemText>
             </ListItem>
             <Divider />
           </>
