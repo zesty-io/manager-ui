@@ -26,6 +26,7 @@ import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { theme } from "@zesty-io/material";
+import GlobalActions from "shell/components/global-actions";
 
 import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
@@ -114,6 +115,7 @@ export default connect((state) => {
           className={styles.GlobalSidebar}
           style={globalSideBarThemeStyles}
         >
+          <GlobalActions hash={props.instance.randomHashID} />
           <Box sx={{ px: 2.5, pb: 0, pt: 2.5 }}>
             {props.openNav ? (
               <Box

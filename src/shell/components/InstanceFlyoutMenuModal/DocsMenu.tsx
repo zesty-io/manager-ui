@@ -20,18 +20,151 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import EmailIcon from "@mui/icons-material/Email";
 import ChatIcon from "@mui/icons-material/Chat";
+import BookIcon from "@mui/icons-material/Book";
 import { AppState } from "../../store/types";
-
 interface Props {
   onClose?: () => void;
   instanceZUID?: string;
 }
 
+const defaultLinks = [
+  {
+    name: "Introduction",
+    url: "https://zesty.org/",
+  },
+  {
+    name: "Getting Started",
+    url: "https://zesty.org/getting-started",
+  },
+  {
+    name: "Guides",
+    url: "https://zesty.org/guides",
+  },
+];
+const linkMap = {
+  content: [
+    {
+      name: "Content Overview",
+      url: "https://zesty.org/services/manager-ui/content",
+    },
+    {
+      name: "Content Entry, Drafts, and Publishing",
+      url: "https://zesty.org/guides/content-entry-drafts-and-publishing",
+    },
+    {
+      name: "Adding and Managing Content",
+      url: "https://zesty.org/services/manager-ui/content/adding-and-managing-content",
+    },
+  ],
+  media: [
+    {
+      name: "Media Overview",
+      url: "https://zesty.org/services/manager-ui/media",
+    },
+    {
+      name: "Adding Image Alt Text",
+      url: "https://zesty.org/guides/adding-image-alt-text",
+    },
+    {
+      name: "How to upload multiple images",
+      url: "https://zesty.org/services/manager-ui/media/how-to-upload-multiple-images",
+    },
+  ],
+  schema: [
+    {
+      name: "Schema Overview",
+      url: "https://zesty.org/services/manager-ui/schema",
+    },
+    {
+      name: "Building The Schema",
+      url: "https://zesty.org/guides/building-the-schema-and-selecting-fields",
+    },
+    {
+      name: "Schema, Content, and Code",
+      url: "https://zesty.org/guides/the-connection-between-schema-content-and-code",
+    },
+  ],
+  code: [
+    {
+      name: "Code Overview",
+      url: "https://zesty.org/services/manager-ui/editor",
+    },
+    {
+      name: "Editor and Coding Basics",
+      url: "https://zesty.org/guides/editor-and-coding-basics",
+    },
+    {
+      name: "Schema, Content, and Code",
+      url: "https://zesty.org/guides/the-connection-between-schema-content-and-code",
+    },
+  ],
+  leads: [
+    {
+      name: "Leads Overview",
+      url: "https://zesty.org/services/manager-ui/leads",
+    },
+    {
+      name: "Creating a Lead Form",
+      url: "https://zesty.org/guides/how-to-create-a-lead-form",
+    },
+    {
+      name: "Capturing form data to Leads",
+      url: "https://zesty.org/services/web-engine/forms-and-form-webhooks#capturing-form-data-to-an-instances-leads-feature",
+    },
+  ],
+  "reports/analytics": [
+    {
+      name: "Analytics Setup",
+      url: "https://zesty.org/services/web-engine/analytics",
+    },
+    {
+      name: "Analytics Settings",
+      url: "https://zesty.org/services/manager-ui/settings/instance-settings#analytics",
+    },
+  ],
+  seo: [
+    {
+      name: "SEO Overview",
+      url: "https://zesty.org/services/manager-ui/health",
+    },
+    {
+      name: "Manage Redirects",
+      url: "https://zesty.org/services/manager-ui/health#manage-redirects",
+    },
+    {
+      name: "SEO Redirects",
+      url: "https://zesty.org/services/manager-ui/health/redirects",
+    },
+  ],
+  "reports/audit-trail": [
+    {
+      name: "Audit Trail Overview",
+      url: "https://zesty.org/services/manager-ui/audit-trail",
+    },
+  ],
+  settings: [
+    {
+      name: "Settings Overview",
+      url: "https://zesty.org/services/manager-ui/settings",
+    },
+    {
+      name: "Instance Settings",
+      url: "https://zesty.org/services/manager-ui/settings/instance-settings",
+    },
+  ],
+};
+
 const DocsMenu = ({ onClose, instanceZUID }: Props) => {
   const instance = useSelector((state: AppState) => state.instance);
+  const mainApp = location.pathname.split("/")[1];
+  const subApp = location.pathname.split("/")[2];
+  const section = mainApp === "reports" ? `reports/${subApp}` : mainApp;
+
+  // @ts-ignore
+  const links = linkMap[section] || defaultLinks;
 
   return (
-    <>
+    <Box>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <IconButton onClick={() => onClose()}>
@@ -71,7 +204,31 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
           </Button>
         </Box>
       </Box>
-    </>
+
+      {/* Learn section */}
+      <Box>
+        <Typography variant="body1" sx={{ ml: 2, mb: 1 }}>
+          Learn
+        </Typography>
+        <Divider />
+        {links.map((link: any) => (
+          <>
+            <ListItem
+              onClick={() => window.open(link.url, "_blank")}
+              sx={{
+                cursor: "pointer",
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: "35px" }}>
+                <BookIcon />
+              </ListItemIcon>
+              <ListItemText>{link.name}</ListItemText>
+            </ListItem>
+            <Divider />
+          </>
+        ))}
+      </Box>
+    </Box>
   );
 };
 
