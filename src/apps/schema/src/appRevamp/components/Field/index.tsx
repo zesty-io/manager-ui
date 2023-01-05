@@ -6,10 +6,13 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  Button,
 } from "@mui/material";
+import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 
 import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 
 import { FieldIcon } from "./FieldIcon";
 
@@ -68,6 +71,7 @@ export const Field = ({
       field.name
     }`;
 
+  // TODO: Icon colors on hover needs to be verified with Zosh
   return (
     <Box
       minHeight="62px"
@@ -75,7 +79,16 @@ export const Field = ({
       borderColor="border"
       borderRadius={1}
       ref={ref}
-      sx={style}
+      sx={{
+        ...style,
+        "&:hover": {
+          backgroundColor: "action.hover",
+
+          "& button.copy-zuid": {
+            display: "inline-flex",
+          },
+        },
+      }}
       draggable={isDraggable}
       onDragStart={handleDragStart}
       onDrag={handleDrag}
@@ -84,40 +97,64 @@ export const Field = ({
       bgcolor="common.white"
       display="flex"
       alignItems="center"
+      justifyContent="space-between"
     >
-      {hasDragIcon && (
-        <IconButton
-          size="small"
-          disableRipple
-          onMouseEnter={() => setIsDraggable(true)}
-          onMouseLeave={() => setIsDraggable(false)}
-          sx={{ cursor: "grab" }}
+      <Box display="flex">
+        {hasDragIcon && (
+          <IconButton
+            className="drag-handle"
+            size="small"
+            disableRipple
+            onMouseEnter={() => setIsDraggable(true)}
+            onMouseLeave={() => setIsDraggable(false)}
+            sx={{ cursor: "grab" }}
+          >
+            <DragIndicatorRoundedIcon />
+          </IconButton>
+        )}
+        <ListItem
+          sx={{
+            flexShrink: "3",
+            py: 1,
+            px: 0,
+          }}
         >
-          <DragIndicatorRoundedIcon />
-        </IconButton>
-      )}
-      <ListItem
+          <ListItemIcon sx={{ minWidth: "36px" }}>
+            <FieldIcon type={field.datatype} />
+          </ListItemIcon>
+          <ListItemText
+            primary={field.label}
+            secondary={_secondaryText}
+            primaryTypographyProps={{
+              fontSize: 14,
+              fontWeight: 700,
+            }}
+            secondaryTypographyProps={{
+              // @ts-expect-error missing body3 module augmentation
+              variant: "body3",
+            }}
+          />
+        </ListItem>
+      </Box>
+      <Button
+        className="copy-zuid"
+        size="small"
+        variant="outlined"
+        startIcon={<ContentCopyRoundedIcon />}
         sx={{
-          py: 1,
-          px: 0,
+          display: "none",
+          mr: 1,
+          border: "1px solid",
+          borderColor: "border",
+          color: "text.secondary",
+          "&:hover": {
+            borderColor: "border",
+            backgroundColor: "inherit",
+          },
         }}
       >
-        <ListItemIcon sx={{ minWidth: "36px" }}>
-          <FieldIcon type={field.datatype} />
-        </ListItemIcon>
-        <ListItemText
-          primary={field.label}
-          secondary={_secondaryText}
-          primaryTypographyProps={{
-            fontSize: 14,
-            fontWeight: 700,
-          }}
-          secondaryTypographyProps={{
-            // @ts-expect-error missing body3 module augmentation
-            variant: "body3",
-          }}
-        />
-      </ListItem>
+        Copy ZUID
+      </Button>
     </Box>
   );
 };
