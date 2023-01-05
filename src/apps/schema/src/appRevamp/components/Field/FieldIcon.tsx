@@ -131,7 +131,10 @@ const icons: Icons = {
   },
 };
 
-export const generateIcon = (type: string) => {
+interface Props {
+  type: string;
+}
+export const FieldIcon = ({ type }: Props) => {
   const icon = icons[type].icon;
   const borderColor = icons[type].borderColor;
   const bgcolor = icons[type].backgroundColor;
