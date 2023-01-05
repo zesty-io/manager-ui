@@ -44,7 +44,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
   const currentMediaView = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.currentMediaView
   );
-  const defaultBin = bins?.find((bin) => bin.default);
+  const defaultBin = bins?.find((bin) => bin.default) || bins?.[0];
   const { data: unsortedFiles, isFetching: isFilesFetching } =
     useGetAllBinFilesQuery(
       bins?.map((bin) => bin.id),

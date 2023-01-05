@@ -453,11 +453,19 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
 
     const { pathname, search } = location;
     const parsedPath = parsePath({ pathname, search });
-    const t = createTab(state, parsedPath, queryData);
-    const { app } = t;
-    const item = t.name || t.pathname;
-    const title = `${app} - ${item} - Zesty.io - ${instanceName} - Manager`;
-    // set the title
+    const tab = createTab(state, parsedPath, queryData);
+    const { app } = tab;
+    let item = tab.name || tab.pathname;
+
+    // Don't repeat the sub-app name
+    if (app === item) {
+      item = "";
+    }
+
+    const title = [app, item, "Zesty.io", instanceName, "Manager"]
+      .filter((elem) => elem)
+      .join(" - ");
+
     document.title = title;
   };
 }

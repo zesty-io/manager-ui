@@ -83,7 +83,12 @@ class CSVImport extends Component {
         warn: "You selected a file that is not a CSV",
       });
     }
-    this.setState({ warn: "" });
+
+    this.setState({
+      complete: false,
+      warn: "",
+    });
+
     // takes the file object and reads it
     // as a text string into local state
     const reader = new FileReader();
@@ -185,6 +190,7 @@ class CSVImport extends Component {
 
   handleWebToCSVMap = (csvCol, webKey) => {
     this.setState({
+      complete: false,
       webMaps: {
         ...this.state.webMaps,
         [webKey]: csvCol === "none" ? "" : csvCol,
