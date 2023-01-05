@@ -21,6 +21,14 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import EmailIcon from "@mui/icons-material/Email";
 import ChatIcon from "@mui/icons-material/Chat";
 import BookIcon from "@mui/icons-material/Book";
+import RocketLaunchRoundedIcon from "@mui/icons-material/RocketLaunchRounded";
+import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import postmanIcon from "../../../../public/images/postmanIcon.svg";
+import graphQLIcon from "../../../../public/images/graphQLIcon.svg";
+import parsleyIcon from "../../../../public/images/parsleyIcon.svg";
+import starCheckIcon from "../../../../public/images/starCheckIcon.svg";
+import CollectionsBookmarkRoundedIcon from "@mui/icons-material/CollectionsBookmarkRounded";
+
 import { AppState } from "../../store/types";
 interface Props {
   onClose?: () => void;
@@ -163,6 +171,10 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
   // @ts-ignore
   const links = linkMap[section] || defaultLinks;
 
+  const handleNavigation = (url: string) => {
+    window.open(url, "_blank");
+  };
+
   return (
     <Box>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
@@ -205,6 +217,138 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
         </Box>
       </Box>
 
+      {/* Docs items */}
+      <Box sx={{ p: 1 }}>
+        <Box sx={{ display: "flex" }}>
+          <ListItemButton
+            sx={{
+              width: "138.67px",
+              height: "88px",
+              display: "block",
+              textAlign: "center",
+            }}
+            onClick={() =>
+              handleNavigation("https://zesty.org/quick-start-guide")
+            }
+          >
+            <ListItemIcon sx={{ minWidth: "32px" }}>
+              <RocketLaunchRoundedIcon color="primary" fontSize="large" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Get Started"
+              primaryTypographyProps={{
+                // @ts-ignore
+                variant: "body3",
+              }}
+            />
+          </ListItemButton>
+          <ListItemButton
+            sx={{
+              width: "138.67px",
+              height: "88px",
+              display: "block",
+              textAlign: "center",
+            }}
+            onClick={() => handleNavigation("https://zesty.org/")}
+          >
+            <ListItemIcon sx={{ minWidth: "36px" }}>
+              <MenuBookRoundedIcon color="info" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Platform Docs"
+              primaryTypographyProps={{
+                // @ts-ignore
+                variant: "body3",
+              }}
+            />
+          </ListItemButton>
+          <ListItemButton
+            sx={{
+              width: "138.67px",
+              height: "88px",
+              display: "block",
+              textAlign: "center",
+            }}
+            onClick={() => handleNavigation("https://instances-api.zesty.org/")}
+          >
+            <ListItemIcon sx={{ minWidth: "36px" }}>
+              <img src={postmanIcon} />
+            </ListItemIcon>
+            <ListItemText
+              primary="Auth API"
+              primaryTypographyProps={{
+                // @ts-ignore
+                variant: "body3",
+              }}
+            />
+          </ListItemButton>
+        </Box>
+        <Box sx={{ display: "flex" }}>
+          <ListItemButton
+            sx={{
+              width: "138.67px",
+              height: "88px",
+              display: "block",
+              textAlign: "center",
+            }}
+            onClick={() => handleNavigation("https://instances-api.zesty.org/")}
+          >
+            <ListItemIcon sx={{ minWidth: "36px" }}>
+              <img src={postmanIcon} />
+            </ListItemIcon>
+            <ListItemText
+              primary="Instance API Docs"
+              primaryTypographyProps={{
+                // @ts-ignore
+                variant: "body3",
+              }}
+            />
+          </ListItemButton>
+          <ListItemButton
+            sx={{
+              width: "138.67px",
+              height: "88px",
+              display: "block",
+              textAlign: "center",
+            }}
+            onClick={() =>
+              handleNavigation("https://github.com/zesty-io/graphql-zesty")
+            }
+          >
+            <ListItemIcon sx={{ minWidth: "36px" }}>
+              <img src={graphQLIcon} />
+            </ListItemIcon>
+            <ListItemText
+              primary="GraphQL Docs"
+              primaryTypographyProps={{
+                // @ts-ignore
+                variant: "body3",
+              }}
+            />
+          </ListItemButton>
+          <ListItemButton
+            sx={{
+              width: "138.67px",
+              height: "88px",
+              display: "block",
+              textAlign: "center",
+            }}
+            onClick={() => handleNavigation("https://parsley.zesty.io/")}
+          >
+            <ListItemIcon sx={{ minWidth: "36px" }}>
+              <img width="24px" height="24px" src={parsleyIcon} />
+            </ListItemIcon>
+            <ListItemText
+              primary="Parsley Docs"
+              primaryTypographyProps={{
+                // @ts-ignore
+                variant: "body3",
+              }}
+            />
+          </ListItemButton>
+        </Box>
+      </Box>
+
       {/* Learn section */}
       <Box>
         <Typography variant="body1" sx={{ ml: 2, mb: 1 }}>
@@ -214,7 +358,7 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
         {links.map((link: any) => (
           <>
             <ListItem
-              onClick={() => window.open(link.url, "_blank")}
+              onClick={() => handleNavigation(link.url)}
               sx={{
                 cursor: "pointer",
               }}
