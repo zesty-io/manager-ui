@@ -9,18 +9,25 @@ import {
 } from "@mui/material";
 
 import { FieldIcon } from "../Field/FieldIcon";
+import { TooltipBody } from "./TooltipBody";
 
 interface Props {
-  primaryText?: string;
-  secondaryText?: string;
-  fieldType?: string;
-  onFieldClick?: () => void;
+  fieldName: string;
+  shortDescription: string;
+  fieldType: string;
+  description: string;
+  commonUses: string[];
+  proTip: string;
+  onFieldClick: () => void;
 }
 
 export const FieldItem = ({
-  primaryText,
-  secondaryText,
+  fieldName,
+  shortDescription,
   fieldType,
+  description,
+  commonUses,
+  proTip,
   onFieldClick,
 }: Props) => {
   return (
@@ -43,22 +50,16 @@ export const FieldItem = ({
     >
       <Tooltip
         title={
-          <Paper
-            sx={{
-              maxWidth: "420px",
-            }}
-          >
-            <Typography variant="h1">Lorem Ipsum</Typography>
-            <Typography variant="body1">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos
-              facilis amet minima doloremque perferendis perspiciatis tenetur
-              vitae rerum reprehenderit. Hic voluptatum porro, eius, architecto
-              atque praesentium itaque explicabo dicta sed, modi impedit quo
-              nulla facilis nam. Autem possimus tempora veniam?
-            </Typography>
-          </Paper>
+          <TooltipBody
+            fieldName={fieldName}
+            fieldType={fieldType}
+            description={description}
+            commonUses={commonUses}
+            proTip={proTip}
+          />
         }
         components={{ Tooltip: Box }}
+        followCursor
       >
         <ListItem
           sx={{
@@ -70,8 +71,8 @@ export const FieldItem = ({
             <FieldIcon type={fieldType} />
           </ListItemIcon>
           <ListItemText
-            primary={primaryText}
-            secondary={secondaryText}
+            primary={fieldName}
+            secondary={shortDescription}
             primaryTypographyProps={{
               fontSize: 14,
               fontWeight: 700,
