@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   IconButton,
   TextField,
   InputAdornment,
@@ -13,7 +12,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 
-import { Field } from "../Field";
+import { FieldItem } from "./FieldItem";
 
 interface FieldData {
   type: string;
@@ -33,15 +32,13 @@ const fields: { [key: string]: FieldData[] } = {
       secondaryText: "Descriptions, summaries, and blurbs",
     },
     {
-      // TODO: Change primaryText just need confirmation from Zosh
       type: "article_writer",
-      primaryText: "Rich Text (Article Writer)",
+      primaryText: "Article Writer",
       secondaryText: "Long text content with links & images such as blogs",
     },
     {
-      // TODO: Change primaryText just need confirmation from Zosh
       type: "wysiwyg_basic",
-      primaryText: "Rich Text (WYSIWYG)",
+      primaryText: "WYSIWYG",
       secondaryText: "Long text content with links & images such as blogs",
     },
     {
@@ -85,22 +82,21 @@ const fields: { [key: string]: FieldData[] } = {
       primaryText: "Integer",
       secondaryText: "Whole numbers",
     },
+    {
+      type: "uuid",
+      primaryText: "UUID",
+      secondaryText: "Lorem ipsum", // TODO: Zosh to provide text
+    },
   ],
-  // TODO: Need to confirm with Zosh what the header title for this group is
+  // TODO: Zosh to provide correct Group Header Text
   locale: [
     {
       type: "currency",
       primaryText: "Currency",
       secondaryText: "Perfect for product prices",
     },
-    // TODO: Will probably need to move somewhere, need Zosh's verification as to where this will be
-    {
-      type: "uuid",
-      primaryText: "UUID",
-      secondaryText: "Lorem ipsum",
-    },
   ],
-  // TODO: Need to confirm with Zosh what the header title for this group is
+  // TODO: Zosh to provide correct Group Header Text
   date: [
     {
       type: "date",
@@ -113,7 +109,7 @@ const fields: { [key: string]: FieldData[] } = {
       secondaryText: "Track dates along with specific times",
     },
   ],
-  // TODO: Need to confirm with Zosh what the header title for this group is
+  // TODO: Zosh to provide correct Group Header Text
   other: [
     {
       type: "yes_no",
@@ -205,9 +201,8 @@ export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
               columnGap={2}
             >
               {fields[fieldKey].map((field: FieldData, index) => (
-                <Field
+                <FieldItem
                   key={index}
-                  isDynamic={false}
                   primaryText={field.primaryText}
                   secondaryText={field.secondaryText}
                   fieldType={field.type}
