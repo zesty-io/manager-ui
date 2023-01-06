@@ -98,10 +98,6 @@ export const Field = ({
         ...style,
         "&:hover": {
           backgroundColor: "action.hover",
-
-          "& button.copy-zuid": {
-            display: "inline-flex",
-          },
         },
       }}
       draggable={isDraggable}
