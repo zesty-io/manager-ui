@@ -4,7 +4,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
 import Popper from "@mui/material/Popper";
 import Paper from "@mui/material/Paper";
-import { MenuItem, MenuList } from "@mui/material";
+import { MenuItem, MenuList, ListItemIcon, ListItemText } from "@mui/material";
+import PencilIcon from "@mui/icons-material/Create";
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
 
@@ -22,7 +23,7 @@ const ContentSearch: FC = () => {
     setAnchorEl(event.currentTarget);
   };
   const blur = () => {
-    setAnchorEl(null);
+    //setAnchorEl(null);
   };
   const selected = (event: any) => {
     console.log("Selected", event.currentTarget.innerText);
@@ -45,7 +46,8 @@ const ContentSearch: FC = () => {
   const res = useSearchContentQuery({ query: value }, { skip: !value });
   console.log(res);
 
-  const suggestions = res.data || [];
+  const suggestions = res.data;
+  const topSuggestions = suggestions && suggestions.slice(0, 4);
 
   //@ts-ignore TODO fix typing for useMetaKey
   const thing = useMetaKey("k", () => {
@@ -88,14 +90,25 @@ const ContentSearch: FC = () => {
       >
         <Paper elevation={3}>
           <MenuList>
-            {suggestions.map((suggestion) => (
-              <Suggestion
-                key={suggestion.meta.ZUID}
-                onClick={selected}
-                onFocus={focused}
-                suggestion={suggestion.web.metaTitle}
-              />
-            ))}
+            <MenuItem
+              onClick={selected}
+              onFocus={focused}
+              sx={{ height: "36px" }}
+            >
+              <ListItemIcon>
+                <SearchIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary={value} />
+            </MenuItem>
+            {topSuggestions &&
+              topSuggestions.map((suggestion) => (
+                <Suggestion
+                  key={suggestion.meta.ZUID}
+                  onClick={selected}
+                  onFocus={focused}
+                  suggestion={suggestion.web.metaTitle}
+                />
+              ))}
           </MenuList>
         </Paper>
       </Popper>
@@ -111,7 +124,15 @@ type SuggestionProps = {
   onFocus: (event: any) => void;
 };
 const Suggestion: FC<SuggestionProps> = ({ suggestion, onClick, onFocus }) => (
-  <MenuItem key={suggestion} onClick={onClick} onFocus={onFocus}>
-    {suggestion}
+  <MenuItem
+    key={suggestion}
+    onClick={onClick}
+    onFocus={onFocus}
+    sx={{ height: "36px" }}
+  >
+    <ListItemIcon>
+      <PencilIcon fontSize="small" />
+    </ListItemIcon>
+    <ListItemText primary={suggestion} />
   </MenuItem>
 );
