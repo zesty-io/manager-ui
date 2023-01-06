@@ -36,7 +36,6 @@ interface Props {
   onReorder: () => void;
   setDraggedIndex: (index: number) => void;
   setHoveredIndex: (index: number) => void;
-  hasDragIcon: boolean;
 }
 
 export const Field = ({
@@ -45,7 +44,6 @@ export const Field = ({
   index,
   setDraggedIndex,
   setHoveredIndex,
-  hasDragIcon,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -113,18 +111,16 @@ export const Field = ({
       pl={0.5}
     >
       <Box display="flex" alignItems="center">
-        {hasDragIcon && (
-          <IconButton
-            className="drag-handle"
-            size="small"
-            disableRipple
-            onMouseEnter={() => setIsDraggable(true)}
-            onMouseLeave={() => setIsDraggable(false)}
-            sx={{ cursor: "grab" }}
-          >
-            <DragIndicatorRoundedIcon />
-          </IconButton>
-        )}
+        <IconButton
+          className="drag-handle"
+          size="small"
+          disableRipple
+          onMouseEnter={() => setIsDraggable(true)}
+          onMouseLeave={() => setIsDraggable(false)}
+          sx={{ cursor: "grab" }}
+        >
+          <DragIndicatorRoundedIcon />
+        </IconButton>
         <FieldIcon type={field.datatype} />
         <Typography px={1.5} variant="body2" fontWeight="700">
           {field.label}

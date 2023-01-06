@@ -44,7 +44,6 @@ export const FieldList = () => {
     >
       {sortedFields?.map((field, index) => (
         <Field
-          isDynamic
           key={field.ZUID}
           index={index}
           field={field}
