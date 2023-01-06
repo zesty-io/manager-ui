@@ -16,16 +16,10 @@ import ToggleOnRounded from "@mui/icons-material/ToggleOnRounded";
 import KeyboardArrowDownRounded from "@mui/icons-material/KeyboardArrowDownRounded";
 import ColorLensRounded from "@mui/icons-material/ColorLensRounded";
 import FormatListNumberedRounded from "@mui/icons-material/FormatListNumberedRounded";
-import { Markdown, OneToOne } from "@zesty-io/material";
+import { Markdown, OneToOne, EditNote } from "@zesty-io/material";
 import { Box } from "@mui/system";
 import { SvgIcon } from "@mui/material";
 
-/**
- * TODO: Update icons for the ff once Zosh provides the correct icons:
- * - UUID
- * - WYSIWYG
- * - Article Writer
- */
 type Icons = {
   [key: string]: {
     icon: SvgIconComponent;
@@ -35,7 +29,7 @@ type Icons = {
 };
 const icons: Icons = {
   article_writer: {
-    icon: NewspaperRounded,
+    icon: EditNote as SvgIconComponent,
     backgroundColor: "green.50",
     borderColor: "green.500",
   },
@@ -115,9 +109,9 @@ const icons: Icons = {
     borderColor: "green.600",
   },
   uuid: {
-    icon: PublicRoundedIcon,
-    backgroundColor: "purple.50",
-    borderColor: "purple.700",
+    icon: TagRounded,
+    backgroundColor: "red.50",
+    borderColor: "red.600",
   },
   wysiwyg_basic: {
     icon: NewspaperRounded,
