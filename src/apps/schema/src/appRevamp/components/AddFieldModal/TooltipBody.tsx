@@ -72,12 +72,13 @@ export const TooltipBody = ({
             Common Uses
           </Typography>
           <Box pl={2} component="ul">
-            {commonUses.map((string) => (
+            {commonUses.map((string, index) => (
               <Typography
                 // @ts-expect-error missing body3 module augmentation
                 variant="body3"
                 color="text.secondary"
                 component="li"
+                key={index}
               >
                 {string}
               </Typography>
