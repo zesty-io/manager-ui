@@ -1,4 +1,12 @@
-import { Box, ListItem, ListItemText, ListItemIcon } from "@mui/material";
+import {
+  Box,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Tooltip,
+  Paper,
+  Typography,
+} from "@mui/material";
 
 import { FieldIcon } from "../Field/FieldIcon";
 
@@ -33,28 +41,48 @@ export const FieldItem = ({
       alignItems="center"
       justifyContent="space-between"
     >
-      <ListItem
-        sx={{
-          py: 1,
-          px: 2,
-        }}
+      <Tooltip
+        title={
+          <Paper
+            sx={{
+              maxWidth: "420px",
+            }}
+          >
+            <Typography variant="h1">Lorem Ipsum</Typography>
+            <Typography variant="body1">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos
+              facilis amet minima doloremque perferendis perspiciatis tenetur
+              vitae rerum reprehenderit. Hic voluptatum porro, eius, architecto
+              atque praesentium itaque explicabo dicta sed, modi impedit quo
+              nulla facilis nam. Autem possimus tempora veniam?
+            </Typography>
+          </Paper>
+        }
+        components={{ Tooltip: Box }}
       >
-        <ListItemIcon sx={{ minWidth: "36px" }}>
-          <FieldIcon type={fieldType} />
-        </ListItemIcon>
-        <ListItemText
-          primary={primaryText}
-          secondary={secondaryText}
-          primaryTypographyProps={{
-            fontSize: 14,
-            fontWeight: 700,
+        <ListItem
+          sx={{
+            py: 1,
+            px: 2,
           }}
-          secondaryTypographyProps={{
-            // @ts-expect-error missing body3 module augmentation
-            variant: "body3",
-          }}
-        />
-      </ListItem>
+        >
+          <ListItemIcon sx={{ minWidth: "36px" }}>
+            <FieldIcon type={fieldType} />
+          </ListItemIcon>
+          <ListItemText
+            primary={primaryText}
+            secondary={secondaryText}
+            primaryTypographyProps={{
+              fontSize: 14,
+              fontWeight: 700,
+            }}
+            secondaryTypographyProps={{
+              // @ts-expect-error missing body3 module augmentation
+              variant: "body3",
+            }}
+          />
+        </ListItem>
+      </Tooltip>
     </Box>
   );
 };
