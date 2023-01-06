@@ -39,6 +39,8 @@ export const TooltipBody = ({
         sx={{
           py: 1.5,
           px: 2,
+          borderBottom: 1,
+          borderColor: "border",
         }}
       >
         <ListItemIcon sx={{ minWidth: "36px" }}>
@@ -57,13 +59,40 @@ export const TooltipBody = ({
           }}
         />
       </ListItem>
-      <Box px={2}>
-        <Typography variant="body1">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos facilis
-          amet minima doloremque perferendis perspiciatis tenetur vitae rerum
-          reprehenderit. Hic voluptatum porro, eius, architecto atque
-          praesentium itaque explicabo dicta sed, modi impedit quo nulla facilis
-          nam. Autem possimus tempora veniam?
+      <Box px={2} py={1}>
+        <Typography
+          // @ts-expect-error missing body3 module augmentation
+          variant="body3"
+          color="text.secondary"
+        >
+          {description}
+        </Typography>
+        <Box py={2}>
+          <Typography variant="body2" fontWeight="700">
+            Common Uses
+          </Typography>
+          <Box pl={2} component="ul">
+            {commonUses.map((string) => (
+              <Typography
+                // @ts-expect-error missing body3 module augmentation
+                variant="body3"
+                color="text.secondary"
+                component="li"
+              >
+                {string}
+              </Typography>
+            ))}
+          </Box>
+        </Box>
+        <Typography variant="body2" fontWeight="700">
+          Pro Tip
+        </Typography>
+        <Typography
+          // @ts-expect-error missing body3 module augmentation
+          variant="body3"
+          color="text.secondary"
+        >
+          {proTip}
         </Typography>
       </Box>
     </Paper>

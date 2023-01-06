@@ -4,8 +4,6 @@ import {
   ListItemText,
   ListItemIcon,
   Tooltip,
-  Paper,
-  Typography,
 } from "@mui/material";
 
 import { FieldIcon } from "../Field/FieldIcon";
