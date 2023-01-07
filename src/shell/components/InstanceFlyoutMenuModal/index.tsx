@@ -174,8 +174,35 @@ const InstanceFlyoutMenuModal = ({
                   {userFullname}
                 </Typography>
               </ListItem>
+              <MenuItem
+                onClick={() =>
+                  handleNavigation("https://www.zesty.io/profile/")
+                }
+              >
+                <Typography variant="body2">User Settings</Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={() =>
+                  handleNavigation("https://www.zesty.io/instances/")
+                }
+              >
+                <Typography variant="body2">See All Instances</Typography>
+              </MenuItem>
               <MenuItem onClick={() => setShowDocsMenu(true)}>
                 <Typography variant="body2">Docs</Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleNavigation("https://www.zesty.io/chat/")}
+              >
+                <Typography variant="body2">Get Help</Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  // @ts-ignore
+                  window.open(`${CONFIG.URL_ACCOUNTS}/logout`, "_self");
+                }}
+              >
+                <Typography variant="body2">Log Out</Typography>
               </MenuItem>
             </Box>
           </Box>
