@@ -59,8 +59,8 @@ const fields: { [key: string]: FieldData[] } = {
     {
       type: "article_writer",
       name: "Article Writer",
+      shortDescription: "Perfect for writing articles",
       // TODO: Details pending c/o Zosh
-      shortDescription: "Long text content with links & images such as blogs",
       description: "Lorem ipsum",
       commonUses: ["test", "test2"],
       proTip: "lorem lorem",
