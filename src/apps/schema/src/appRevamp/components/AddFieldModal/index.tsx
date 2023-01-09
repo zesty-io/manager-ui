@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 
 import { FieldItem } from "./FieldItem";
+import { ChangeEvent } from "react";
 
 interface FieldData {
   type: string;
@@ -22,7 +23,7 @@ interface FieldData {
   commonUses: string[];
   proTip: string;
 }
-const fields: { [key: string]: FieldData[] } = {
+const fields_config: { [key: string]: FieldData[] } = {
   text: [
     {
       type: "text",
@@ -295,9 +296,31 @@ interface Props {
   handleCloseModal: Dispatch<SetStateAction<boolean>>;
 }
 export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
+  const [fieldTypes, setFieldTypes] = useState(fields_config);
   const handleFieldClick = (fieldType: string) => {
     // Show appropriate field options
     console.log("Field clicked: ", fieldType);
+  };
+
+  const handleFilterFields = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const userInput = e.target.value.toLowerCase();
+    let filteredFields: { [key: string]: FieldData[] } = {};
+
+    Object.keys(fields_config).forEach((category) => {
+      const matchedFields = fields_config[category].filter((field) => {
+        const name = field.name.toLowerCase();
+
+        if (name.includes(userInput)) {
+          return field;
+        }
+      });
+
+      if (matchedFields.length) {
+        filteredFields[category] = matchedFields;
+      }
+    });
+
+    setFieldTypes(filteredFields);
   };
 
   return (
@@ -343,34 +366,40 @@ export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
                 </InputAdornment>
               ),
             }}
+            onChange={handleFilterFields}
           />
         </Box>
-        {Object.keys(fields).map((fieldKey) => (
-          <Box className="field-type-group" key={fieldKey}>
-            <Typography component="p" variant="overline" mb={2}>
-              {fieldKey}
-            </Typography>
-            <Box
-              display="grid"
-              gridTemplateColumns="1fr 1fr"
-              rowGap={2}
-              columnGap={2}
-            >
-              {fields[fieldKey].map((field: FieldData, index) => (
-                <FieldItem
-                  key={index}
-                  fieldName={field.name}
-                  shortDescription={field.shortDescription}
-                  fieldType={field.type}
-                  description={field.description}
-                  commonUses={field.commonUses}
-                  proTip={field.proTip}
-                  onFieldClick={() => handleFieldClick(field.type)}
-                />
-              ))}
+        <Box minHeight="100vh">
+          {!Object.keys(fieldTypes).length && (
+            <Typography>No matches found.</Typography>
+          )}
+          {Object.keys(fieldTypes).map((fieldKey) => (
+            <Box className="field-type-group" key={fieldKey}>
+              <Typography component="p" variant="overline" mb={2}>
+                {fieldKey}
+              </Typography>
+              <Box
+                display="grid"
+                gridTemplateColumns="1fr 1fr"
+                rowGap={2}
+                columnGap={2}
+              >
+                {fieldTypes[fieldKey].map((field: FieldData, index) => (
+                  <FieldItem
+                    key={index}
+                    fieldName={field.name}
+                    shortDescription={field.shortDescription}
+                    fieldType={field.type}
+                    description={field.description}
+                    commonUses={field.commonUses}
+                    proTip={field.proTip}
+                    onFieldClick={() => handleFieldClick(field.type)}
+                  />
+                ))}
+              </Box>
             </Box>
-          </Box>
-        ))}
+          ))}
+        </Box>
       </DialogContent>
     </Dialog>
   );
