@@ -13,7 +13,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 
 import { FieldItem } from "./FieldItem";
-import { ChangeEvent } from "react";
 
 interface FieldData {
   type: string;
