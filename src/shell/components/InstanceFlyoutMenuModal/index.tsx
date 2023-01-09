@@ -8,12 +8,14 @@ import {
   MenuItem,
   Button,
   ListItem,
+  IconButton,
   CircularProgress,
 } from "@mui/material";
 import { useRefreshCacheMutation } from "../../services/cloudFunctions";
 import slackIcon from "../../../../public/images/slackIcon.svg";
 import youtubeIcon from "../../../../public/images/youtubeIcon.svg";
 import discordIcon from "../../../../public/images/discordIcon.svg";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
@@ -74,43 +76,56 @@ const InstanceFlyoutMenuModal = ({
       });
   };
 
-  const instanceAvatarColors = [
-    "green.500",
-    "blue.500",
-    "red.500",
-    "purple.500",
-    "pink.500",
-    "deepOrange.500",
-    "deepPurple.500",
-  ];
+  const FavoriteInstancesMenu = () => {
+    const instanceAvatarColors = [
+      "green.500",
+      "blue.500",
+      "red.500",
+      "purple.500",
+      "pink.500",
+      "deepOrange.500",
+      "deepPurple.500",
+    ];
 
-  const FavoriteInstances = () => {
+    const styledActiveInstance = {
+      borderWidth: "1px",
+      borderStyle: "solid",
+      borderRadius: 100,
+      mx: "auto",
+      width: 32,
+      mb: 1,
+      p: "2px",
+      height: 32,
+      borderColor: "primary.main",
+    };
+
     return (
-      <>
-        {favoriteInstances.slice(0, 8).map((favInstance: any) => (
-          <Box
-            sx={{
-              width: "48px",
-              py: 2,
-            }}
-          >
-            <Avatar
-              sx={{
-                textTransform: "uppercase",
-                mx: "auto",
-                width: 32,
-                height: 32,
-                backgroundColor:
-                  instanceAvatarColors[
-                    Math.floor(Math.random() * instanceAvatarColors.length)
-                  ],
-              }}
-            >
-              {favInstance?.name.charAt(0)}
-            </Avatar>
-          </Box>
-        ))}
-      </>
+      <Box sx={{ width: "48px", py: 2 }}>
+        <Box>
+          {favoriteInstances.slice(0, 8).map((favInstance: any) => (
+            <Box sx={favInstance.ZUID === instanceZUID && styledActiveInstance}>
+              <Avatar
+                sx={{
+                  textTransform: "uppercase",
+                  mx: "auto",
+                  mb: 1,
+                  width: 32,
+                  height: 32,
+                  backgroundColor:
+                    instanceAvatarColors[
+                      Math.floor(Math.random() * instanceAvatarColors.length)
+                    ],
+                }}
+              >
+                {favInstance?.name.charAt(0)}
+              </Avatar>
+            </Box>
+          ))}
+        </Box>
+        <IconButton sx={{ mx: "auto", width: "100%" }}>
+          <ManageSearchIcon fontSize="small" sx={{ mx: "auto" }} />
+        </IconButton>
+      </Box>
     );
   };
 
@@ -121,7 +136,7 @@ const InstanceFlyoutMenuModal = ({
           position: "absolute",
           bottom: 0,
           left: 0,
-          width: "448px",
+          width: "450px",
           height: "392px",
         },
       }}
@@ -142,7 +157,7 @@ const InstanceFlyoutMenuModal = ({
         />
       ) : (
         <Box sx={{ display: "flex" }}>
-          <FavoriteInstances />
+          <FavoriteInstancesMenu />
 
           <Box>
             <Box
