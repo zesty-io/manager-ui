@@ -13,6 +13,8 @@ const typeText: { [key: string]: string } = {
   date: "Date",
   datetime: "Date and Time",
   dropdown: "Dropdown",
+  files: "Files",
+  font_awesome: "Font Awesome",
   images: "Media",
   internal_link: "Internal Link",
   link: "External URL",
@@ -24,6 +26,7 @@ const typeText: { [key: string]: string } = {
   text: "Single Line Text",
   textarea: "Multi Line Text",
   uuid: "UUID",
+  wysiwyg_advanced: "WYSYWYG (Advanced)",
   wysiwyg_basic: "WYSIWYG",
   yes_no: "Toggle",
 };
