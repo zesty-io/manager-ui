@@ -70,7 +70,7 @@ export interface ContentModel {
   metaTitle?: any;
   metaDescription?: any;
   metaKeywords?: any;
-  type: string;
+  type: "pageset" | "templateset" | "dataset";
   name: string;
   sort: number;
   listed: boolean;

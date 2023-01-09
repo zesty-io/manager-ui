@@ -7,22 +7,12 @@ import { ModelList } from "./ModelList";
 export const Sidebar = () => {
   const { data: models } = useGetContentModelsQuery();
 
-  const collections = useMemo(
-    () =>
-      models?.filter(
-        (model) => model.type === "templateset" || model.type === "dataset"
-      ),
-    [models]
-  );
-  const pages = useMemo(
-    () => models?.filter((model) => model.type === "pageset"),
-    [models]
-  );
-
   return (
-    <Box width={220} height="100%" display="flex" flexDirection="column">
+    <Box width={240} height="100%" display="flex" flexDirection="column">
       <Box sx={{ px: 2, pt: 2, pb: 1 }}>
-        <Typography variant="h4">Schema</Typography>
+        <Typography variant="h4" fontWeight={600}>
+          Schema
+        </Typography>
       </Box>
       <Box
         sx={{
@@ -36,9 +26,23 @@ export const Sidebar = () => {
           height: "100%",
         }}
       >
-        <ModelList title="collections" models={collections || []} />
+        <ModelList
+          title="single page"
+          models={models?.filter((model) => model.type === "pageset") || []}
+        />
         <Box sx={{ mt: 1 }}>
-          <ModelList title="single page" models={pages || []} />
+          <ModelList
+            title="multi page"
+            models={
+              models?.filter((model) => model.type === "templateset") || []
+            }
+          />
+        </Box>
+        <Box sx={{ mt: 1 }}>
+          <ModelList
+            title="headless dataset"
+            models={models?.filter((model) => model.type === "dataset") || []}
+          />
         </Box>
       </Box>
     </Box>

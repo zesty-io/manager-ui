@@ -13,7 +13,7 @@ import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBullete
 import AddIcon from "@mui/icons-material/Add";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import { ContentModel } from "../../../../../../shell/services/types";
-import { Database } from "@zesty-io/material";
+import { FileTable } from "@zesty-io/material";
 import { useHistory, useLocation } from "react-router";
 import { useMemo, useState } from "react";
 import { useLocalStorage } from "react-use";
@@ -25,7 +25,7 @@ interface Props {
 
 const listIconMap = {
   templateset: <FormatListBulletedRoundedIcon fontSize="small" />,
-  dataset: <Database fontSize="small" />,
+  dataset: <FileTable fontSize="small" />,
   pageset: <DescriptionRoundedIcon fontSize="small" />,
 };
 
@@ -80,6 +80,7 @@ export const ModelList = ({ title, models }: Props) => {
         const selected = location.pathname.includes(model.ZUID);
         return (
           <ListItemButton
+            key={model.ZUID}
             sx={{ py: "6px", px: "12px" }}
             selected={selected}
             onClick={() => history.push(`/schema/${model.ZUID}`)}
