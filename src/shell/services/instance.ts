@@ -8,6 +8,7 @@ import {
   ContentModelField,
   Publishing,
 } from "./types";
+import { batchApiRequests } from "../../utility/batchApiRequests";
 
 // Define a service using a base URL and expected endpoints
 export const instanceApi = createApi({
@@ -171,13 +172,39 @@ export const instanceApi = createApi({
     updateContentModelField: builder.mutation<
       any,
       // Could also be refactored to use single object param and destructure ZUID if needed
-      { modelZUID: string; fieldZUID: string; body: Partial<ContentModelField> }
+      { modelZUID: string; fieldZUID: string; body: ContentModelField }
     >({
       query: ({ modelZUID, fieldZUID, body }) => ({
         url: `content/models/${modelZUID}/fields/${fieldZUID}`,
         method: "PUT",
         body,
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModelFields", id: arg.modelZUID },
+      ],
+    }),
+    bulkUpdateContentModelField: builder.mutation<
+      any,
+      { modelZUID: string; fields: ContentModelField[] }
+    >({
+      async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
+        try {
+          const requests = args.fields.map((field) => ({
+            url: `content/models/${args.modelZUID}/fields/${field.ZUID}`,
+            method: "PUT",
+            body: field,
+          }));
+          const responses = await batchApiRequests(requests, fetchWithBQ);
+          return {
+            data: {
+              success: responses.success,
+              error: responses.error,
+            },
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
       invalidatesTags: (result, error, arg) => [
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
@@ -210,4 +237,5 @@ export const {
   useGetContentModelItemsQuery,
   useGetContentItemPublishingsQuery,
   useGetContentModelFieldsQuery,
+  useBulkUpdateContentModelFieldMutation,
 } = instanceApi;

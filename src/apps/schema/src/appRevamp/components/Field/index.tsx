@@ -1,7 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
 import { Box, IconButton, Typography } from "@mui/material";
-
 import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
@@ -36,6 +34,7 @@ interface Props {
   onReorder: () => void;
   setDraggedIndex: (index: number) => void;
   setHoveredIndex: (index: number) => void;
+  disableDrag: boolean;
 }
 
 export const Field = ({
@@ -44,11 +43,13 @@ export const Field = ({
   index,
   setDraggedIndex,
   setHoveredIndex,
+  disableDrag,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
   const handleDragStart = (e: React.DragEvent) => {
+    // TODO: Test on other browsers
     // console.log('testing', e, e.target, e.currentTarget);
     // e.preventDefault();
     // return;
@@ -115,6 +116,7 @@ export const Field = ({
           className="drag-handle"
           size="small"
           disableRipple
+          disabled={disableDrag}
           onMouseEnter={() => setIsDraggable(true)}
           onMouseLeave={() => setIsDraggable(false)}
           sx={{ cursor: "grab" }}
