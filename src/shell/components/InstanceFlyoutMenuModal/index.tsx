@@ -102,14 +102,22 @@ const InstanceFlyoutMenuModal = ({
         />
       ) : (
         <Box sx={{ display: "flex" }}>
-          <Box
-            sx={{
-              width: "48px",
-              p: "10px 4px",
-            }}
-          >
-            <Avatar />
-          </Box>
+          {favoriteInstances.map((favInstance: any) => (
+            <Box
+              sx={{
+                width: "48px",
+                p: "10px 4px",
+              }}
+            >
+              <Avatar
+                sx={{
+                  textTransform: "uppercase",
+                }}
+              >
+                {favInstance?.name.charAt(0)}
+              </Avatar>
+            </Box>
+          ))}
 
           <Box>
             <Box

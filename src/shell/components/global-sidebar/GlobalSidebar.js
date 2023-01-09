@@ -85,13 +85,22 @@ export default connect((state) => {
   const [showFaviconModal, setShowFaviconModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const user = useSelector((state) => state.user);
+  const instances = useSelector((state) => state.instances);
   const [faviconURL, setFaviconURL] = useState("");
   const [instanceCreationDate, setInstanceCreationDate] = useState("");
   const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
+  const [favoriteInstances, setFavoriteInstances] = useState();
 
   useEffect(() => {
     dispatch(fetchHeadTags());
   }, []);
+
+  useEffect(() => {
+    JSON.parse(user?.prefs).favorite_sites.forEach((fav) => {
+      const res = instances.filter((instance) => instance.ZUID === fav);
+      setFavoriteInstances(res);
+    });
+  }, [instances]);
 
   // @Note: Need to refactor this to rtk query
   useEffect(() => {
@@ -266,7 +275,7 @@ export default connect((state) => {
                 instanceZUID={props.instance?.ZUID}
                 userFaviconUrl={user.faviconURL}
                 userFullname={`${user.firstName} ${user.lastName}`}
-                favoriteInstances={JSON.parse(user?.prefs).favorite_sites}
+                favoriteInstances={favoriteInstances}
                 onSetShowFaviconModal={() => {
                   setShowFaviconModal(!showFaviconModal);
                   setShowInstanceFlyoutMenu(false);
