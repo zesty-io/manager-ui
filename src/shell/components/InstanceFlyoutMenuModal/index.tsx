@@ -84,6 +84,36 @@ const InstanceFlyoutMenuModal = ({
     "deepPurple.500",
   ];
 
+  const FavoriteInstances = () => {
+    return (
+      <>
+        {favoriteInstances.map((favInstance: any) => (
+          <Box
+            sx={{
+              width: "48px",
+              py: 2,
+            }}
+          >
+            <Avatar
+              sx={{
+                textTransform: "uppercase",
+                mx: "auto",
+                width: 32,
+                height: 32,
+                backgroundColor:
+                  instanceAvatarColors[
+                    Math.floor(Math.random() * instanceAvatarColors.length)
+                  ],
+              }}
+            >
+              {favInstance?.name.charAt(0)}
+            </Avatar>
+          </Box>
+        ))}
+      </>
+    );
+  };
+
   return (
     <Dialog
       PaperProps={{
@@ -112,26 +142,7 @@ const InstanceFlyoutMenuModal = ({
         />
       ) : (
         <Box sx={{ display: "flex" }}>
-          {favoriteInstances.map((favInstance: any) => (
-            <Box
-              sx={{
-                width: "48px",
-                p: "10px 4px",
-              }}
-            >
-              <Avatar
-                sx={{
-                  textTransform: "uppercase",
-                  backgroundColor:
-                    instanceAvatarColors[
-                      Math.floor(Math.random() * instanceAvatarColors.length)
-                    ],
-                }}
-              >
-                {favInstance?.name.charAt(0)}
-              </Avatar>
-            </Box>
-          ))}
+          <FavoriteInstances />
 
           <Box>
             <Box
@@ -145,7 +156,10 @@ const InstanceFlyoutMenuModal = ({
             >
               <Box sx={{ width: "200px", py: 1 }}>
                 <ListItem>
-                  <Avatar src={instanceFaviconUrl} />
+                  <Avatar
+                    src={instanceFaviconUrl}
+                    sx={{ width: 32, height: 32 }}
+                  />
                   <Typography variant="body2" sx={{ ml: 1.5, fontWeight: 700 }}>
                     {instanceName}
                   </Typography>
@@ -210,6 +224,7 @@ const InstanceFlyoutMenuModal = ({
                   <Avatar
                     alt={`${userFullname} Avatar`}
                     src={`https://www.gravatar.com/avatar/${userFaviconUrl}?d=mm&s=40`}
+                    sx={{ width: 32, height: 32 }}
                   />
                   <Typography variant="body2" sx={{ ml: 1.5, fontWeight: 700 }}>
                     {userFullname}
