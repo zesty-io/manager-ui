@@ -328,6 +328,11 @@ export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
       onClose={() => handleCloseModal(false)}
       fullWidth
       maxWidth="md"
+      PaperProps={{
+        sx: {
+          minHeight: "95vh",
+        },
+      }}
     >
       <DialogTitle
         display="flex"
@@ -368,37 +373,35 @@ export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
             onChange={handleFilterFields}
           />
         </Box>
-        <Box minHeight="100vh">
-          {!Object.keys(fieldTypes).length && (
-            <Typography>No matches found.</Typography>
-          )}
-          {Object.keys(fieldTypes).map((fieldKey) => (
-            <Box className="field-type-group" key={fieldKey}>
-              <Typography component="p" variant="overline" mb={2}>
-                {fieldKey}
-              </Typography>
-              <Box
-                display="grid"
-                gridTemplateColumns="1fr 1fr"
-                rowGap={2}
-                columnGap={2}
-              >
-                {fieldTypes[fieldKey].map((field: FieldData, index) => (
-                  <FieldItem
-                    key={index}
-                    fieldName={field.name}
-                    shortDescription={field.shortDescription}
-                    fieldType={field.type}
-                    description={field.description}
-                    commonUses={field.commonUses}
-                    proTip={field.proTip}
-                    onFieldClick={() => handleFieldClick(field.type)}
-                  />
-                ))}
-              </Box>
+        {!Object.keys(fieldTypes).length && (
+          <Typography>No matches found.</Typography>
+        )}
+        {Object.keys(fieldTypes).map((fieldKey) => (
+          <Box className="field-type-group" key={fieldKey}>
+            <Typography component="p" variant="overline" mb={2}>
+              {fieldKey}
+            </Typography>
+            <Box
+              display="grid"
+              gridTemplateColumns="1fr 1fr"
+              rowGap={2}
+              columnGap={2}
+            >
+              {fieldTypes[fieldKey].map((field: FieldData, index) => (
+                <FieldItem
+                  key={index}
+                  fieldName={field.name}
+                  shortDescription={field.shortDescription}
+                  fieldType={field.type}
+                  description={field.description}
+                  commonUses={field.commonUses}
+                  proTip={field.proTip}
+                  onFieldClick={() => handleFieldClick(field.type)}
+                />
+              ))}
             </Box>
-          ))}
-        </Box>
+          </Box>
+        ))}
       </DialogContent>
     </Dialog>
   );
