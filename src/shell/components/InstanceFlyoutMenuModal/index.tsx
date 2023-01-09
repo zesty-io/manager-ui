@@ -74,6 +74,16 @@ const InstanceFlyoutMenuModal = ({
       });
   };
 
+  const instanceAvatarColors = [
+    "green.500",
+    "blue.500",
+    "red.500",
+    "purple.500",
+    "pink.500",
+    "deepOrange.500",
+    "deepPurple.500",
+  ];
+
   return (
     <Dialog
       PaperProps={{
@@ -112,6 +122,10 @@ const InstanceFlyoutMenuModal = ({
               <Avatar
                 sx={{
                   textTransform: "uppercase",
+                  backgroundColor:
+                    instanceAvatarColors[
+                      Math.floor(Math.random() * instanceAvatarColors.length)
+                    ],
                 }}
               >
                 {favInstance?.name.charAt(0)}
