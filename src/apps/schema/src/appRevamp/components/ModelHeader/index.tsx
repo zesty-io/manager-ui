@@ -45,7 +45,7 @@ export const ModelHeader = () => {
                 size="small"
                 variant="outlined"
                 color="inherit"
-                startIcon={<PostAddRoundedIcon />}
+                startIcon={<PostAddRoundedIcon color="action" />}
                 onClick={() => history.push(`/content/${model?.ZUID}/new`)}
               >
                 Create {model?.label}
@@ -69,20 +69,28 @@ export const ModelHeader = () => {
           </Box>
           {/* TODO: Update tab theme to match design */}
           <Tabs
-            sx={{ position: "relative", top: "1px" }}
+            sx={{
+              position: "relative",
+              top: "1px",
+              ".Mui-selected": {
+                svg: {
+                  color: "primary.main",
+                },
+              },
+            }}
             value={location.pathname.split("/").pop()}
             onChange={(event, value) =>
               history.push(`/schema/${model?.ZUID}/${value}`)
             }
           >
             <Tab
-              icon={<SplitscreenRoundedIcon />}
+              icon={<SplitscreenRoundedIcon color="action" />}
               iconPosition="start"
               label="Fields"
               value="fields"
             />
             <Tab
-              icon={<RemoveRedEyeRoundedIcon />}
+              icon={<RemoveRedEyeRoundedIcon color="action" />}
               iconPosition="start"
               label="Info"
               value="info"
