@@ -75,16 +75,13 @@ export const ModelHeader = () => {
               history.push(`/schema/${model?.ZUID}/${value}`)
             }
           >
-            {/* Removing border applied by theme. Should confirm with Zosh if theme can be updated */}
             <Tab
-              sx={{ border: "none" }}
               icon={<SplitscreenRoundedIcon />}
               iconPosition="start"
               label="Fields"
               value="fields"
             />
             <Tab
-              sx={{ border: "none" }}
               icon={<RemoveRedEyeRoundedIcon />}
               iconPosition="start"
               label="Info"
