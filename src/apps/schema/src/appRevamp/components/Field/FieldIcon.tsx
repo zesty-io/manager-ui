@@ -16,6 +16,7 @@ import ToggleOnRounded from "@mui/icons-material/ToggleOnRounded";
 import KeyboardArrowDownRounded from "@mui/icons-material/KeyboardArrowDownRounded";
 import ColorLensRounded from "@mui/icons-material/ColorLensRounded";
 import FormatListNumberedRounded from "@mui/icons-material/FormatListNumberedRounded";
+import ListAltRoundedIcon from "@mui/icons-material/ListAltRounded";
 import { Markdown, OneToOne, EditNote } from "@zesty-io/material";
 import { Box } from "@mui/system";
 import { SvgIcon } from "@mui/material";
@@ -123,17 +124,23 @@ const icons: Icons = {
     backgroundColor: "purple.50",
     borderColor: "purple.700",
   },
+  generic: {
+    icon: AttachmentRounded,
+    backgroundColor: "grey.100",
+    borderColor: "grey.700",
+  },
 };
 
 interface Props {
   type: string;
 }
 export const FieldIcon = ({ type }: Props) => {
-  const icon = icons[type].icon;
-  const borderColor = icons[type].borderColor;
-  const bgcolor = icons[type].backgroundColor;
-  const transform =
-    type === "files" || type === "images" ? "rotate(-45deg)" : "";
+  const icon = icons[type]?.icon || icons["generic"].icon;
+  const borderColor = icons[type]?.borderColor || icons["generic"].borderColor;
+  const bgcolor =
+    icons[type]?.backgroundColor || icons["generic"].backgroundColor;
+  // Since we're using the paper clip icon for generic types we also rotate the icon
+  const transform = type === "images" || !icons[type] ? "rotate(-45deg)" : "";
 
   return (
     <Box
