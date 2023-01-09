@@ -87,7 +87,7 @@ const InstanceFlyoutMenuModal = ({
   const FavoriteInstances = () => {
     return (
       <>
-        {favoriteInstances.map((favInstance: any) => (
+        {favoriteInstances.slice(0, 8).map((favInstance: any) => (
           <Box
             sx={{
               width: "48px",
