@@ -64,7 +64,10 @@ const InstancesListMenu = ({
               sx={{
                 cursor: "pointer",
               }}
-              // onClick={() => window.open(`http://${domain.domain}`, "_blank")}
+              onClick={() => {
+                // @ts-ignore
+                window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${favInstance.ZUID}${CONFIG.URL_MANAGER}`;
+              }}
             >
               <ListItemAvatar sx={{ minWidth: "45px" }}>
                 <Avatar
