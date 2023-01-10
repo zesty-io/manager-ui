@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, IconButton, Typography, Button } from "@mui/material";
 import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
@@ -85,6 +85,16 @@ export const Field = ({
     }
   };
 
+  const handleCopyFieldName = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    try {
+      await navigator.clipboard.writeText(field?.name);
+    } catch (error) {
+      console.error("Failed to copy ZUID", error);
+    }
+  };
+
   const style = {
     opacity: isDragging ? 0.5 : 1,
   };
@@ -138,26 +148,22 @@ export const Field = ({
           {typeText[field.datatype]}
         </Typography>
       </Box>
+      {/* TODO: Need confirmation from Zosh on how to let the user know that the field name was copied */}
       <Box display="flex" alignItems="center">
-        <Typography
-          component="span"
-          bgcolor="grey.100"
-          border="1px solid"
-          borderColor="grey.100"
-          boxSizing="border-box"
-          borderRadius={1}
-          px={1.25}
-          py={0.5}
-          mr={1}
-          fontFamily="Roboto Mono"
-          fontWeight="400"
-          fontSize="12px"
-          lineHeight="20px"
-          letterSpacing="0.46px"
-          color="text.secondary"
+        <Button
+          size="small"
+          variant="contained"
+          sx={{
+            bgcolor: "grey.100",
+            color: "text.secondary",
+            "&:hover": {
+              bgcolor: "grey.200",
+            },
+          }}
+          onClick={handleCopyFieldName}
         >
           {field.name}
-        </Typography>
+        </Button>
         {/* TODO: More button click action handler, still pending confirmation from zosh on what will happen */}
         <IconButton>
           <MoreHorizRoundedIcon />
