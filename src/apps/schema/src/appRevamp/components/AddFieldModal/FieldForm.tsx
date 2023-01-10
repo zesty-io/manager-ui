@@ -12,6 +12,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import { ViewMode } from "./index";
 import { FieldIcon } from "../Field/FieldIcon";
+import { stringStartsWithVowel } from "../utils";
 
 interface Props {
   type: string;
@@ -20,6 +21,10 @@ interface Props {
   onBackClick: Dispatch<SetStateAction<ViewMode>>;
 }
 export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
+  const headerText = stringStartsWithVowel(name)
+    ? `Add an ${name} Field`
+    : `Add a ${name} Field`;
+
   return (
     <>
       <DialogTitle
@@ -33,8 +38,10 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
           <IconButton size="small" onClick={() => onBackClick("fields_list")}>
             <ArrowBackIcon />
           </IconButton>
-          <FieldIcon type={type} height="28px" width="28px" fontSize="16px" />
-          Add a {name} Field
+          <Box px={1.5}>
+            <FieldIcon type={type} height="28px" width="28px" fontSize="16px" />
+          </Box>
+          {headerText}
         </Box>
         <IconButton size="small" onClick={onModalClose}>
           <CloseIcon />

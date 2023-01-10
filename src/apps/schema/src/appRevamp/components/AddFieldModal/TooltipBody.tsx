@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 
 import { FieldIcon } from "../Field/FieldIcon";
+import { stringStartsWithVowel } from "../utils";
 
 interface Props {
   fieldName: string;
@@ -23,9 +24,7 @@ export const TooltipBody = ({
   commonUses,
   proTip,
 }: Props) => {
-  const headerText = ["a", "e", "i", "o", "u"].includes(
-    fieldName[0].toLocaleLowerCase()
-  )
+  const headerText = stringStartsWithVowel(fieldName)
     ? `What is an ${fieldName} Field?`
     : `What is a ${fieldName} Field?`;
 
