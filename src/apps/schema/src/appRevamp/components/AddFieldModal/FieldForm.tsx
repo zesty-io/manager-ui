@@ -11,6 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import { ViewMode } from "./index";
+import { FieldIcon } from "../Field/FieldIcon";
 
 interface Props {
   type: string;
@@ -29,12 +30,13 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
         }}
       >
         <Box display="flex" alignItems="center">
-          <IconButton onClick={() => onBackClick("fields_list")}>
+          <IconButton size="small" onClick={() => onBackClick("fields_list")}>
             <ArrowBackIcon />
           </IconButton>
+          <FieldIcon type={type} height="28px" width="28px" fontSize="16px" />
           Add a {name} Field
         </Box>
-        <IconButton onClick={onModalClose}>
+        <IconButton size="small" onClick={onModalClose}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>

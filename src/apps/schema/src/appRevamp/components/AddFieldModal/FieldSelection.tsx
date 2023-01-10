@@ -304,7 +304,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         }}
       >
         Select a Field Type
-        <IconButton onClick={onModalClose}>
+        <IconButton size="small" onClick={onModalClose}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
