@@ -81,7 +81,12 @@ const InstancesListMenu = ({
                   {favInstance?.name.charAt(0)}
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText>{favInstance?.name}</ListItemText>
+              <ListItemText
+                primary={favInstance?.name}
+                primaryTypographyProps={{
+                  variant: "body2",
+                }}
+              />
             </ListItem>
             <Divider />
           </>
