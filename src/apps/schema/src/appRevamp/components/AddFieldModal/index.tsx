@@ -4,18 +4,21 @@ import { Dialog, Box } from "@mui/material";
 import { FieldSelection } from "./FieldSelection";
 import { FieldForm } from "./FieldForm";
 
-type ViewMode = "fields_list" | "new_field" | "update_field";
+export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
   open: boolean;
   onModalClose: Dispatch<SetStateAction<boolean>>;
 }
 export const AddFieldModal = ({ open, onModalClose }: Props) => {
   const [viewMode, setViewMode] = useState<ViewMode>("fields_list");
+  const [selectedField, setSelectedField] = useState({
+    fieldType: "",
+    fieldName: "",
+  });
 
-  const handleFieldClick = (fieldType: string) => {
+  const handleFieldClick = (fieldType: string, fieldName: string) => {
     setViewMode("new_field");
-    // Show appropriate field options
-    console.log("Field clicked: ", fieldType);
+    setSelectedField({ fieldType, fieldName });
   };
 
   const handleModalClose = () => {
@@ -37,7 +40,12 @@ export const AddFieldModal = ({ open, onModalClose }: Props) => {
         />
       )}
       {viewMode === "new_field" && (
-        <FieldForm onModalClose={handleModalClose} />
+        <FieldForm
+          type={selectedField?.fieldType}
+          name={selectedField?.fieldName}
+          onModalClose={handleModalClose}
+          onBackClick={setViewMode}
+        />
       )}
     </Dialog>
   );

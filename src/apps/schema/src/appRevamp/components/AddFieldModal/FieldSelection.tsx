@@ -290,7 +290,7 @@ const fields: { [key: string]: FieldData[] } = {
 };
 
 interface Props {
-  onFieldClick: Dispatch<SetStateAction<string>>;
+  onFieldClick: (fieldType: string, fieldName: string) => void;
   onModalClose: () => void;
 }
 export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
@@ -354,7 +354,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
                   description={field.description}
                   commonUses={field.commonUses}
                   proTip={field.proTip}
-                  onFieldClick={() => onFieldClick(field.type)}
+                  onFieldClick={() => onFieldClick(field.type, field.name)}
                 />
               ))}
             </Box>
