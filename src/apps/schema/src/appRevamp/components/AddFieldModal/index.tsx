@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Dialog, Box } from "@mui/material";
 
-import { FieldSelection } from "./FieldSelection";
-import { FieldForm } from "./FieldForm";
+import { FieldSelection } from "./views/FieldSelection";
+import { FieldForm } from "./views/FieldForm";
 
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {

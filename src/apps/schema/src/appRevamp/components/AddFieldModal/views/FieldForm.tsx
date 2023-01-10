@@ -10,9 +10,9 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import { ViewMode } from "./index";
-import { FieldIcon } from "../Field/FieldIcon";
-import { stringStartsWithVowel } from "../utils";
+import { ViewMode } from "../index";
+import { FieldIcon } from "../../Field/FieldIcon";
+import { stringStartsWithVowel } from "../../utils";
 
 interface Props {
   type: string;

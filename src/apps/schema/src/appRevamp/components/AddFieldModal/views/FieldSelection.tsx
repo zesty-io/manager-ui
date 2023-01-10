@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import {
   DialogContent,
   DialogTitle,
@@ -11,7 +10,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { FieldItem } from "./FieldItem";
+import { FieldItem } from "../FieldItem";
 
 interface FieldData {
   type: string;
