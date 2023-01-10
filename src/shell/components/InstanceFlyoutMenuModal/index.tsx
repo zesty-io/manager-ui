@@ -90,7 +90,7 @@ const InstanceFlyoutMenuModal = ({
     "deepOrange.900",
   ];
 
-  const FavoriteInstancesMenu = () => {
+  const FavoriteInstances = () => {
     const styledActiveInstance = {
       borderWidth: "1px",
       borderStyle: "solid",
@@ -172,7 +172,7 @@ const InstanceFlyoutMenuModal = ({
         />
       ) : (
         <Box sx={{ display: "flex" }}>
-          <FavoriteInstancesMenu />
+          <FavoriteInstances />
 
           <Box>
             <Box
@@ -327,12 +327,6 @@ const InstanceFlyoutMenuModal = ({
                   src={youtubeIcon}
                   onClick={() =>
                     handleNavigation("https://www.youtube.com/c/Zestyio/videos")
-                  }
-                />
-                <img
-                  src={discordIcon}
-                  onClick={() =>
-                    handleNavigation("https://discord.gg/uqDqeX8RXE")
                   }
                 />
               </Box>
