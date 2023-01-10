@@ -38,7 +38,7 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
       <DialogTitle
         sx={{
           padding: 3,
-          paddingBottom: "0px",
+          paddingBottom: 0,
         }}
       >
         <Box
