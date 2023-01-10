@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   DialogContent,
   DialogTitle,
@@ -20,7 +21,7 @@ interface FieldData {
   commonUses: string[];
   proTip: string;
 }
-const fields: { [key: string]: FieldData[] } = {
+const fields_config: { [key: string]: FieldData[] } = {
   text: [
     {
       type: "text",
@@ -293,6 +294,29 @@ interface Props {
   onModalClose: () => void;
 }
 export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
+  const [fieldTypes, setFieldTypes] = useState(fields_config);
+
+  const handleFilterFields = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const userInput = e.target.value.toLowerCase();
+    let filteredFields: { [key: string]: FieldData[] } = {};
+
+    Object.keys(fields_config).forEach((category) => {
+      const matchedFields = fields_config[category].filter((field) => {
+        const name = field.name.toLowerCase();
+
+        if (name.includes(userInput)) {
+          return field;
+        }
+      });
+
+      if (matchedFields.length) {
+        filteredFields[category] = matchedFields;
+      }
+    });
+
+    setFieldTypes(filteredFields);
+  };
+
   return (
     <>
       <DialogTitle
@@ -333,9 +357,13 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
                 </InputAdornment>
               ),
             }}
+            onChange={handleFilterFields}
           />
         </Box>
-        {Object.keys(fields).map((fieldKey) => (
+        {!Object.keys(fieldTypes).length && (
+          <Typography>No matches found.</Typography>
+        )}
+        {Object.keys(fieldTypes).map((fieldKey) => (
           <Box className="field-type-group" key={fieldKey}>
             <Typography component="p" variant="overline" mb={2}>
               {fieldKey}
@@ -346,7 +374,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
               rowGap={2}
               columnGap={2}
             >
-              {fields[fieldKey].map((field: FieldData, index) => (
+              {fieldTypes[fieldKey].map((field: FieldData, index) => (
                 <FieldItem
                   key={index}
                   fieldName={field.name}

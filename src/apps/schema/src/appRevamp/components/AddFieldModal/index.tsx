@@ -32,7 +32,17 @@ export const AddFieldModal = ({ open, onModalClose }: Props) => {
   };
 
   return (
-    <Dialog open={open} onClose={handleModalClose} fullWidth maxWidth="md">
+    <Dialog
+      open={open}
+      onClose={handleModalClose}
+      fullWidth
+      maxWidth="md"
+      PaperProps={{
+        sx: {
+          minHeight: "95vh",
+        },
+      }}
+    >
       {viewMode === "fields_list" && (
         <FieldSelection
           onModalClose={handleModalClose}
