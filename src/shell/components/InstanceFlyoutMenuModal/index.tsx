@@ -54,10 +54,6 @@ const InstanceFlyoutMenuModal = ({
   const [showDomainsMenu, setShowDomainsMenu] = useState(false);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
 
-  useEffect(() => {
-    console.log("favoriteInstances", favoriteInstances);
-  }, [favoriteInstances]);
-
   const handleNavigation = (url: string) => {
     window.open(url, "_blank");
   };
