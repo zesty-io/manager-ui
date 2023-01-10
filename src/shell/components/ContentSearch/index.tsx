@@ -9,11 +9,17 @@ import { MenuItem, MenuList, ListItemIcon, ListItemText } from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
+import { ContentItem } from "../../services/types";
+import { useHistory } from "react-router";
+import { useDispatch } from "react-redux";
+import { notify } from "../../store/notifications";
 
 // input with a search icon and "search instance" placeholder text
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
+  const history = useHistory();
+  const dispatch = useDispatch();
 
   //POPPER stuff
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -48,7 +54,7 @@ const ContentSearch: FC = () => {
   console.log(res);
 
   const suggestions = res.data;
-  const topSuggestions = suggestions && suggestions.slice(0, 4);
+  const topSuggestions = suggestions ? [value, ...suggestions.slice(0, 5)] : [];
   console.log(value, suggestions);
 
   //@ts-ignore TODO fix typing for useMetaKey
@@ -59,19 +65,53 @@ const ContentSearch: FC = () => {
   // options={topSuggestions ? topSuggestions.map(s => s.web.metaTitle) : []}
   return (
     <Autocomplete
-      id="global-search-autocomplete"
       value={value}
-      freeSolo
-      options={["option 1", "option 2", "option 3"]}
-      filterOptions={(x) => x}
-      onInputChange={(thing, newVal) => {
+      onInputChange={(event, newVal) => {
         console.log("change");
-        console.log({ thing, newVal });
+        console.log({ thing: event, newVal });
         setValue(newVal);
+      }}
+      onChange={(event, newVal) => {
+        console.log("change", newVal);
+        if (!newVal) return;
+        if (typeof newVal === "string") history.push(`/search?q=${newVal}`);
+        else {
+          if (newVal?.meta) {
+            history.push(
+              `/content/${newVal.meta.contentModelZUID}/${newVal.meta.ZUID}`
+            );
+          } else {
+            dispatch(
+              notify({
+                kind: "warn",
+                message: "Selected item is missing meta data",
+              })
+            );
+          }
+        }
+      }}
+      id="global-search-autocomplete"
+      freeSolo
+      options={topSuggestions}
+      getOptionLabel={(option: ContentItem) => {
+        console.log({ option, suggestions });
+        return typeof option === "string" ? option : option.web.metaTitle;
       }}
       renderOption={(props, option) => {
         console.log("rendering option", option, props);
-        return <li {...props}>{option} </li>;
+        if (typeof option === "string")
+          return (
+            <li {...props} key={"topline"}>
+              {option}{" "}
+            </li>
+          );
+        else {
+          return (
+            <li {...props} key={option.meta.ZUID}>
+              {option.web.metaTitle}{" "}
+            </li>
+          );
+        }
       }}
       renderInput={(params: any) => {
         console.log("input rendered");
@@ -79,86 +119,125 @@ const ContentSearch: FC = () => {
           <TextField
             {...params}
             fullWidth
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                console.log("Enter pressed", e);
+                history.push(`/search?q=${value}`);
+              }
+            }}
             sx={{
               gap: "10px",
-            }}
-            InputProps={{
-              label: "Search instance",
-              type: "search",
-              startAdornment: <SearchIcon fontSize="small" />,
-              endAdornment: <TuneIcon fontSize="small" />,
-              sx: {
-                borderRadius: 1,
-                padding: "6px 8px",
-                gap: "10px",
-              },
             }}
           />
         );
       }}
     />
   );
-
-  return (
-    <>
-      <TextField
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Search instance"
-        fullWidth
-        InputProps={{
-          startAdornment: <SearchIcon fontSize="small" />,
-          endAdornment: <TuneIcon fontSize="small" />,
-          sx: {
-            borderRadius: 1,
-            padding: "6px 8px",
+  /*
+return (
+  <Autocomplete
+    id="global-search-autocomplete"
+    value={value}
+    inputValue={value}
+    freeSolo
+    options={["option 1", "option 2", "option 3"]}
+    filterOptions={(x) => x}
+    onInputChange={(thing, newVal) => {
+      console.log("change");
+      console.log({ thing, newVal });
+      setValue(newVal);
+    }}
+    renderOption={(props, option) => {
+      console.log("rendering option", option, props);
+      return <li {...props}>{option} </li>;
+    }}
+    renderInput={(params: any) => {
+      console.log("input rendered");
+      return (
+        <TextField
+          {...params}
+          fullWidth
+          sx={{
             gap: "10px",
-          },
-        }}
-        sx={{
+          }}
+          InputProps={{
+            label: "Search instance",
+            type: "search",
+            startAdornment: <SearchIcon fontSize="small" />,
+            endAdornment: <TuneIcon fontSize="small" />,
+            sx: {
+              borderRadius: 1,
+              padding: "6px 8px",
+              gap: "10px",
+            },
+          }}
+        />
+      );
+    }}
+  />
+);
+
+return (
+  <>
+    <TextField
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Search instance"
+      fullWidth
+      InputProps={{
+        startAdornment: <SearchIcon fontSize="small" />,
+        endAdornment: <TuneIcon fontSize="small" />,
+        sx: {
+          borderRadius: 1,
+          padding: "6px 8px",
           gap: "10px",
-        }}
-        onFocus={focus}
-        onBlur={blur}
-        inputRef={inputRef}
-        ref={textfieldRef}
-      />
-      <Popper
-        id={id}
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        style={{ zIndex: 1000 }}
-        sx={{
-          width: textfieldRef?.current?.clientWidth,
-        }}
-        placement="bottom-start"
-      >
-        <Paper elevation={3}>
-          <MenuList>
-            <MenuItem
-              onClick={selected}
-              onFocus={focused}
-              sx={{ height: "36px" }}
-            >
-              <ListItemIcon>
-                <SearchIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary={value} />
-            </MenuItem>
-            {topSuggestions &&
-              topSuggestions.map((suggestion) => (
-                <Suggestion
-                  key={suggestion.meta.ZUID}
-                  onClick={selected}
-                  onFocus={focused}
-                  suggestion={suggestion.web.metaTitle}
-                />
-              ))}
-          </MenuList>
-        </Paper>
-      </Popper>
-    </>
-  );
+        },
+      }}
+      sx={{
+        gap: "10px",
+      }}
+      onFocus={focus}
+      onBlur={blur}
+      inputRef={inputRef}
+      ref={textfieldRef}
+    />
+    <Popper
+      id={id}
+      open={Boolean(anchorEl)}
+      anchorEl={anchorEl}
+      style={{ zIndex: 1000 }}
+      sx={{
+        width: textfieldRef?.current?.clientWidth,
+      }}
+      placement="bottom-start"
+    >
+      <Paper elevation={3}>
+        <MenuList>
+          <MenuItem
+            onClick={selected}
+            onFocus={focused}
+            sx={{ height: "36px" }}
+          >
+            <ListItemIcon>
+              <SearchIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={value} />
+          </MenuItem>
+          {topSuggestions &&
+            topSuggestions.map((suggestion) => (
+              <Suggestion
+                key={suggestion.meta.ZUID}
+                onClick={selected}
+                onFocus={focused}
+                suggestion={suggestion.web.metaTitle}
+              />
+            ))}
+        </MenuList>
+      </Paper>
+    </Popper>
+  </>
+);
+*/
 };
 
 export default ContentSearch;
