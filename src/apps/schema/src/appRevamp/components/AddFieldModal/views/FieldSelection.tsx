@@ -313,7 +313,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
           px: 3,
           pb: 3,
           "&.MuiDialogContent-dividers": {
-            borderColor: "grey.100",
+            borderColor: "border",
           },
           "& div.field-type-group:not(:last-of-type)": {
             borderBottom: "1px solid",
