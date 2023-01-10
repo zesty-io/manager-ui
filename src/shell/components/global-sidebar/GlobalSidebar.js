@@ -22,6 +22,7 @@ import Favicon from "../favicon";
 import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import salesAvatar from "../../../../public/images/salesAvatar.png";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -89,6 +90,7 @@ export default connect((state) => {
   const [faviconURL, setFaviconURL] = useState("");
   const [instanceCreationDate, setInstanceCreationDate] = useState("");
   const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
+  const [showDocsMenu, setShowDocsMenu] = useState(false);
 
   useEffect(() => {
     dispatch(fetchHeadTags());
@@ -213,7 +215,10 @@ export default connect((state) => {
                 cursor: "pointer",
                 mt: !props.openNav && 1,
               }}
-              onClick={() => setShowInstanceFlyoutMenu(true)}
+              onClick={() => {
+                setShowDocsMenu(false);
+                setShowInstanceFlyoutMenu(true);
+              }}
             >
               <AvatarGroup
                 total={2}
@@ -252,7 +257,9 @@ export default connect((state) => {
             <Box
               sx={{
                 display: "flex",
-                px: 2,
+                flexDirection: props.openNav ? "row" : "column",
+                pr: props.openNav ? 2 : 0,
+                alignItems: "center",
               }}
             >
               <IconButton
@@ -260,10 +267,27 @@ export default connect((state) => {
                 sx={{
                   backgroundColor: "grey.800",
                   height: "26px",
+                  width: "32px",
                   borderRadius: "4px",
+                  mr: props.openNav ? 1 : 0,
                 }}
               >
                 <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
+              </IconButton>
+              <IconButton
+                onClick={() => {
+                  setShowDocsMenu(true);
+                  setShowInstanceFlyoutMenu(true);
+                }}
+                sx={{
+                  backgroundColor: "grey.800",
+                  width: "32px",
+                  mt: props.openNav ? 0 : 1,
+                  height: "26px",
+                  borderRadius: "4px",
+                }}
+              >
+                <MenuBookIcon fontSize="small" sx={{ color: "grey.500" }} />
               </IconButton>
             </Box>
             {showInviteModal && (
@@ -277,6 +301,8 @@ export default connect((state) => {
                 userFaviconUrl={user.faviconURL}
                 userFullname={`${user.firstName} ${user.lastName}`}
                 favoriteInstances={getFavoriteInstances()}
+                showDocsMenu={showDocsMenu}
+                onSetShowDocsMenu={(val) => setShowDocsMenu(val)}
                 onSetShowFaviconModal={() => {
                   setShowFaviconModal(!showFaviconModal);
                   setShowInstanceFlyoutMenu(false);

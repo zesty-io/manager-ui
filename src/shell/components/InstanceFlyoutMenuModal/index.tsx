@@ -29,6 +29,8 @@ interface Props {
   userFaviconUrl?: string;
   userFullname?: string;
   onSetShowFaviconModal?: any;
+  showDocsMenu?: boolean;
+  onSetShowDocsMenu?: any;
   favoriteInstances?: any;
   onClose?: () => void;
 }
@@ -37,6 +39,8 @@ const InstanceFlyoutMenuModal = ({
   instanceFaviconUrl,
   instanceName,
   instanceZUID,
+  showDocsMenu,
+  onSetShowDocsMenu,
   userFaviconUrl,
   favoriteInstances,
   userFullname,
@@ -53,7 +57,6 @@ const InstanceFlyoutMenuModal = ({
   ] = useRefreshCacheMutation();
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
   const [showDomainsMenu, setShowDomainsMenu] = useState(false);
-  const [showDocsMenu, setShowDocsMenu] = useState(false);
   const [showInstancesListMenu, setShowInstancesListMenu] = useState(false);
 
   const handleNavigation = (url: string) => {
@@ -156,7 +159,7 @@ const InstanceFlyoutMenuModal = ({
         />
       ) : showDocsMenu ? (
         <DocsMenu
-          onClose={() => setShowDocsMenu(false)}
+          onClose={() => onSetShowDocsMenu(false)}
           instanceZUID={instanceZUID}
         />
       ) : showInstancesListMenu ? (
@@ -270,7 +273,7 @@ const InstanceFlyoutMenuModal = ({
                 >
                   <Typography variant="body2">See All Instances</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => setShowDocsMenu(true)}>
+                <MenuItem onClick={() => onSetShowDocsMenu(true)}>
                   <Typography variant="body2">Docs</Typography>
                 </MenuItem>
                 <MenuItem
