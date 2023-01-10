@@ -58,6 +58,10 @@ const InstanceFlyoutMenuModal = ({
     window.open(url, "_blank");
   };
 
+  useEffect(() => {
+    console.log("test123");
+  }, []);
+
   const handleCopyInstanceZUID = () => {
     navigator?.clipboard
       ?.writeText(instanceZUID)
