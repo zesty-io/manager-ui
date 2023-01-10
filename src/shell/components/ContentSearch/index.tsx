@@ -4,6 +4,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
 import Popper from "@mui/material/Popper";
 import Paper from "@mui/material/Paper";
+import Autocomplete from "@mui/material/Autocomplete";
 import { MenuItem, MenuList, ListItemIcon, ListItemText } from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
@@ -48,11 +49,55 @@ const ContentSearch: FC = () => {
 
   const suggestions = res.data;
   const topSuggestions = suggestions && suggestions.slice(0, 4);
+  console.log(value, suggestions);
 
   //@ts-ignore TODO fix typing for useMetaKey
   const thing = useMetaKey("k", () => {
     focus({ currentTarget: textfieldRef });
   });
+
+  // options={topSuggestions ? topSuggestions.map(s => s.web.metaTitle) : []}
+  return (
+    <Autocomplete
+      id="global-search-autocomplete"
+      value={value}
+      freeSolo
+      options={["option 1", "option 2", "option 3"]}
+      filterOptions={(x) => x}
+      onInputChange={(thing, newVal) => {
+        console.log("change");
+        console.log({ thing, newVal });
+        setValue(newVal);
+      }}
+      renderOption={(props, option) => {
+        console.log("rendering option", option, props);
+        return <li {...props}>{option} </li>;
+      }}
+      renderInput={(params: any) => {
+        console.log("input rendered");
+        return (
+          <TextField
+            {...params}
+            fullWidth
+            sx={{
+              gap: "10px",
+            }}
+            InputProps={{
+              label: "Search instance",
+              type: "search",
+              startAdornment: <SearchIcon fontSize="small" />,
+              endAdornment: <TuneIcon fontSize="small" />,
+              sx: {
+                borderRadius: 1,
+                padding: "6px 8px",
+                gap: "10px",
+              },
+            }}
+          />
+        );
+      }}
+    />
+  );
 
   return (
     <>
