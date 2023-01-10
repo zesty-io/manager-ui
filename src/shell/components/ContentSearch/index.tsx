@@ -5,7 +5,13 @@ import TuneIcon from "@mui/icons-material/Tune";
 import Popper from "@mui/material/Popper";
 import Paper from "@mui/material/Paper";
 import Autocomplete from "@mui/material/Autocomplete";
-import { MenuItem, MenuList, ListItemIcon, ListItemText } from "@mui/material";
+import {
+  MenuItem,
+  MenuList,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
@@ -54,7 +60,8 @@ const ContentSearch: FC = () => {
   console.log(res);
 
   const suggestions = res.data;
-  const topSuggestions = suggestions ? [value, ...suggestions.slice(0, 5)] : [];
+  const topSuggestions =
+    suggestions && value ? [value, ...suggestions.slice(0, 5)] : [];
   console.log(value, suggestions);
 
   //@ts-ignore TODO fix typing for useMetaKey
@@ -65,17 +72,23 @@ const ContentSearch: FC = () => {
   // options={topSuggestions ? topSuggestions.map(s => s.web.metaTitle) : []}
   return (
     <Autocomplete
-      value={value}
+      value={"asdf"}
+      open={true}
       onInputChange={(event, newVal) => {
         console.log("change");
         console.log({ thing: event, newVal });
         setValue(newVal);
       }}
+      fullWidth
       onChange={(event, newVal) => {
         console.log("change", newVal);
-        if (!newVal) return;
-        if (typeof newVal === "string") history.push(`/search?q=${newVal}`);
-        else {
+        if (!newVal) {
+          setValue("");
+          return;
+        }
+        if (typeof newVal === "string") {
+          history.push(`/search?q=${newVal}`);
+        } else {
           if (newVal?.meta) {
             history.push(
               `/content/${newVal.meta.contentModelZUID}/${newVal.meta.ZUID}`
@@ -101,15 +114,31 @@ const ContentSearch: FC = () => {
         console.log("rendering option", option, props);
         if (typeof option === "string")
           return (
-            <li {...props} key={"topline"}>
-              {option}{" "}
-            </li>
+            <ListItem
+              {...props}
+              key={"topline"}
+              sx={{ padding: "4px 16px 4px 16px" }}
+            >
+              <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
+                <SearchIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary={option}
+                primaryTypographyProps={{ variant: "body2" }}
+              />
+            </ListItem>
           );
         else {
           return (
-            <li {...props} key={option.meta.ZUID}>
-              {option.web.metaTitle}{" "}
-            </li>
+            <ListItem {...props} key={option.meta.ZUID}>
+              <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
+                <PencilIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary={option.web.metaTitle}
+                primaryTypographyProps={{ variant: "body2" }}
+              />
+            </ListItem>
           );
         }
       }}
@@ -124,6 +153,16 @@ const ContentSearch: FC = () => {
                 console.log("Enter pressed", e);
                 history.push(`/search?q=${value}`);
               }
+            }}
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: <SearchIcon fontSize="small" />,
+              sx: {
+                borderRadius: 1,
+                padding: "6px 8px",
+                gap: "10px",
+                width: "100%",
+              },
             }}
             sx={{
               gap: "10px",
