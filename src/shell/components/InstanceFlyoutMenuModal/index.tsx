@@ -21,6 +21,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
 import DomainsMenu from "./DomainsMenu";
 import DocsMenu from "./DocsMenu";
+import InstancesListMenu from "./InstancesListMenu";
 interface Props {
   instanceFaviconUrl?: string;
   instanceName?: string;
@@ -53,6 +54,7 @@ const InstanceFlyoutMenuModal = ({
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
   const [showDomainsMenu, setShowDomainsMenu] = useState(false);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
+  const [showInstancesListMenu, setShowInstancesListMenu] = useState(false);
 
   const handleNavigation = (url: string) => {
     window.open(url, "_blank");
@@ -76,19 +78,19 @@ const InstanceFlyoutMenuModal = ({
       });
   };
 
-  const FavoriteInstancesMenu = () => {
-    const instanceAvatarColors = [
-      "green.500",
-      "blue.500",
-      "red.500",
-      "purple.500",
-      "pink.500",
-      "deepOrange.500",
-      "deepPurple.500",
-      "blue.900",
-      "deepOrange.900",
-    ];
+  const instanceAvatarColors = [
+    "green.500",
+    "blue.500",
+    "red.500",
+    "purple.500",
+    "pink.500",
+    "deepOrange.500",
+    "deepPurple.500",
+    "blue.900",
+    "deepOrange.900",
+  ];
 
+  const FavoriteInstancesMenu = () => {
     const styledActiveInstance = {
       borderWidth: "1px",
       borderStyle: "solid",
@@ -125,7 +127,10 @@ const InstanceFlyoutMenuModal = ({
               </Box>
             ))}
         </Box>
-        <IconButton sx={{ mx: "auto", width: "100%" }}>
+        <IconButton
+          sx={{ mx: "auto", width: "100%" }}
+          onClick={() => setShowInstancesListMenu(true)}
+        >
           <ManageSearchIcon fontSize="small" sx={{ mx: "auto" }} />
         </IconButton>
       </Box>
@@ -157,6 +162,13 @@ const InstanceFlyoutMenuModal = ({
         <DocsMenu
           onClose={() => setShowDocsMenu(false)}
           instanceZUID={instanceZUID}
+        />
+      ) : showInstancesListMenu ? (
+        <InstancesListMenu
+          onClose={() => setShowInstancesListMenu(false)}
+          instanceZUID={instanceZUID}
+          favoriteInstances={favoriteInstances}
+          instanceAvatarColors={instanceAvatarColors}
         />
       ) : (
         <Box sx={{ display: "flex" }}>
