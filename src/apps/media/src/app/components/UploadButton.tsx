@@ -47,7 +47,6 @@ export const UploadButton: FC<UploadButton> = ({
   const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    if (loading) return;
     const currentBin = binData[0];
 
     dispatch(
@@ -75,7 +74,7 @@ export const UploadButton: FC<UploadButton> = ({
         color="primary"
         size="small"
         startIcon={<FileUpload />}
-        disabled={!binData}
+        disabled={loading || !binData}
       >
         {text || "Upload"}
       </Button>
