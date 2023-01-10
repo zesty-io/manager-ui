@@ -81,6 +81,8 @@ const InstanceFlyoutMenuModal = ({
       "pink.500",
       "deepOrange.500",
       "deepPurple.500",
+      "blue.900",
+      "deepOrange.900",
     ];
 
     const styledActiveInstance = {
@@ -98,25 +100,26 @@ const InstanceFlyoutMenuModal = ({
     return (
       <Box sx={{ width: "48px", py: 2 }}>
         <Box>
-          {favoriteInstances.slice(0, 8).map((favInstance: any) => (
-            <Box sx={favInstance.ZUID === instanceZUID && styledActiveInstance}>
-              <Avatar
-                sx={{
-                  textTransform: "uppercase",
-                  mx: "auto",
-                  mb: 1,
-                  width: 32,
-                  height: 32,
-                  backgroundColor:
-                    instanceAvatarColors[
-                      Math.floor(Math.random() * instanceAvatarColors.length)
-                    ],
-                }}
+          {favoriteInstances
+            .slice(0, 8)
+            .map((favInstance: any, key: number) => (
+              <Box
+                sx={favInstance.ZUID === instanceZUID && styledActiveInstance}
               >
-                {favInstance?.name.charAt(0)}
-              </Avatar>
-            </Box>
-          ))}
+                <Avatar
+                  sx={{
+                    textTransform: "uppercase",
+                    mx: "auto",
+                    mb: 1,
+                    width: 32,
+                    height: 32,
+                    backgroundColor: instanceAvatarColors[key],
+                  }}
+                >
+                  {favInstance?.name.charAt(0)}
+                </Avatar>
+              </Box>
+            ))}
         </Box>
         <IconButton sx={{ mx: "auto", width: "100%" }}>
           <ManageSearchIcon fontSize="small" sx={{ mx: "auto" }} />
