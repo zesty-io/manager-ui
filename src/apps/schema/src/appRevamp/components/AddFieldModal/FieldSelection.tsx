@@ -311,6 +311,8 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
       <DialogContent
         dividers
         sx={{
+          px: 3,
+          pb: 3,
           "&.MuiDialogContent-dividers": {
             borderColor: "grey.100",
           },

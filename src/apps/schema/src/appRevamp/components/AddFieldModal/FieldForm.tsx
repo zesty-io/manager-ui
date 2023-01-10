@@ -28,7 +28,7 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
           padding: 3,
         }}
       >
-        <Box>
+        <Box display="flex" alignItems="center">
           <IconButton onClick={() => onBackClick("fields_list")}>
             <ArrowBackIcon />
           </IconButton>
@@ -38,7 +38,12 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent
+        sx={{
+          px: 3,
+          pb: 3,
+        }}
+      >
         <Typography>Field form page</Typography>
       </DialogContent>
     </>
