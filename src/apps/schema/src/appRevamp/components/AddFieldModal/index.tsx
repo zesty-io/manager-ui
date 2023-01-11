@@ -335,6 +335,8 @@ export const AddFieldModal = ({ open, handleCloseModal }: Props) => {
       >
         <Box py={2} width="349px">
           <TextField
+            autoFocus
+            placeholder="Search for a field type"
             fullWidth
             InputProps={{
               startAdornment: (

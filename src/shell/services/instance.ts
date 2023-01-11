@@ -238,4 +238,5 @@ export const {
   useGetContentItemPublishingsQuery,
   useGetContentModelFieldsQuery,
   useBulkUpdateContentModelFieldMutation,
+  useUpdateContentModelMutation,
 } = instanceApi;
