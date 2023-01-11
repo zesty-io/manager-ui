@@ -1,15 +1,14 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Dialog, Box } from "@mui/material";
+import { Dialog } from "@mui/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
 
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
-  open: boolean;
   onModalClose: Dispatch<SetStateAction<boolean>>;
 }
-export const AddFieldModal = ({ open, onModalClose }: Props) => {
+export const AddFieldModal = ({ onModalClose }: Props) => {
   const [viewMode, setViewMode] = useState<ViewMode>("fields_list");
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
@@ -21,31 +20,27 @@ export const AddFieldModal = ({ open, onModalClose }: Props) => {
     setSelectedField({ fieldType, fieldName });
   };
 
-  const handleModalClose = () => {
-    onModalClose(false);
-
-    /**
-     * Sort of a hacky way to make sure that the modal has closed
-     * before we reset to the default fields_list view
-     */
-    setTimeout(() => setViewMode("fields_list"), 300);
-  };
-
   return (
     <Dialog
-      open={open}
-      onClose={handleModalClose}
-      fullWidth
-      maxWidth="md"
+      open
+      onClose={() => onModalClose(false)}
+      fullScreen
+      sx={{
+        "& .MuiDialog-container": {
+          flexDirection: "column", //Needed so that the y-axis margins show up
+        },
+      }}
       PaperProps={{
         sx: {
-          minHeight: "95vh",
+          maxWidth: "900px",
+          my: "5vh",
+          borderRadius: 2,
         },
       }}
     >
       {viewMode === "fields_list" && (
         <FieldSelection
-          onModalClose={handleModalClose}
+          onModalClose={() => onModalClose(false)}
           onFieldClick={handleFieldClick}
         />
       )}
@@ -53,8 +48,8 @@ export const AddFieldModal = ({ open, onModalClose }: Props) => {
         <FieldForm
           type={selectedField?.fieldType}
           name={selectedField?.fieldName}
-          onModalClose={handleModalClose}
-          onBackClick={setViewMode}
+          onModalClose={() => onModalClose(false)}
+          onBackClick={() => setViewMode("fields_list")}
         />
       )}
     </Dialog>

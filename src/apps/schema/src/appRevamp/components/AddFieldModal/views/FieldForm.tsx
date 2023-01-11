@@ -24,7 +24,7 @@ interface Props {
   type: string;
   name: string;
   onModalClose: () => void;
-  onBackClick: Dispatch<SetStateAction<ViewMode>>;
+  onBackClick: () => void;
 }
 export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
@@ -48,7 +48,7 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
           pb={0.5}
         >
           <Box display="flex" alignItems="center">
-            <IconButton size="small" onClick={() => onBackClick("fields_list")}>
+            <IconButton size="small" onClick={onBackClick}>
               <ArrowBackIcon />
             </IconButton>
             <Box px={1.5}>
@@ -78,9 +78,6 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
         sx={{
           px: 3,
           py: 3,
-          "&.MuiDialogContent-dividers": {
-            borderColor: "border",
-          },
         }}
       >
         {activeTab === "details" && <Typography>Field form page</Typography>}

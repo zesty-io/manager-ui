@@ -98,10 +98,9 @@ export const ModelHeader = () => {
           </Tabs>
         </Box>
       </Box>
-      <AddFieldModal
-        onModalClose={setAddFieldModalOpen}
-        open={isAddFieldModalOpen}
-      />
+      {isAddFieldModalOpen && (
+        <AddFieldModal onModalClose={setAddFieldModalOpen} />
+      )}
     </>
   );
 };
