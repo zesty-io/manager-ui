@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Typography,
   DialogContent,
@@ -9,15 +9,79 @@ import {
   Tabs,
   Tab,
   Button,
+  TextField,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
-import { ViewMode } from "../index";
 import { FieldIcon } from "../../Field/FieldIcon";
 import { stringStartsWithVowel } from "../../utils";
+import { InputField, FieldFormInput } from "../FieldFormInput";
+
+const generalFields: InputField[] = [
+  {
+    name: "label",
+    type: "textfield",
+    label: "Label",
+    required: true,
+    helperText: "This field is required",
+    fullWidth: true,
+  },
+  {
+    name: "parsleyReference",
+    type: "textfield",
+    label: "API / Parsley Code Reference",
+    required: true,
+    helperText: "This field is required",
+    fullWidth: true,
+  },
+  {
+    name: "description",
+    type: "textfield",
+    label: "Description (optional)",
+    subLabel: "Appears below the label to help content-writers and API users",
+    required: false,
+    fullWidth: true,
+    multiline: true,
+  },
+  {
+    name: "requiredField",
+    type: "checkbox",
+    label: "Required field",
+    subLabel: "Ensures an item cannot be created if field is empty",
+    required: false,
+  },
+  {
+    name: "addInTableListing",
+    type: "checkbox",
+    label: "Add as column in table listing",
+    subLabel: "Shows field as a column in the table in the content view",
+    required: false,
+  },
+];
+const formConfig: { [key: string]: InputField[] } = {
+  article_writer: [],
+  color: [],
+  currency: [],
+  date: [],
+  datetime: [],
+  dropdown: [],
+  images: [],
+  internal_link: [],
+  link: [],
+  markdown: [],
+  number: [],
+  one_to_many: [],
+  one_to_one: [],
+  sort: [],
+  text: [...generalFields],
+  textarea: [],
+  uuid: [],
+  wysiwyg_basic: [],
+  yes_no: [],
+};
 
 type ActiveTab = "details" | "rules";
 interface Props {
@@ -28,6 +92,13 @@ interface Props {
 }
 export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
+  const formRef = useRef(null);
+
+  const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    console.log(e);
+  };
 
   const headerText = stringStartsWithVowel(name)
     ? `Add an ${name} Field`
@@ -80,7 +151,13 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
           py: 3,
         }}
       >
-        {activeTab === "details" && <Typography>Field form page</Typography>}
+        {activeTab === "details" && (
+          <Box component="form" ref={formRef} onSubmit={handleSubmitForm}>
+            {formConfig[type].map((fieldConfig) => (
+              <FieldFormInput fieldConfig={fieldConfig} />
+            ))}
+          </Box>
+        )}
 
         {activeTab === "rules" && <Typography>Coming soon...</Typography>}
       </DialogContent>
@@ -106,7 +183,14 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
           >
             Add another field
           </Button>
-          <Button variant="contained">Done</Button>
+          <Button
+            onClick={() =>
+              formRef?.current.dispatchEvent(new CustomEvent("submit"))
+            }
+            variant="contained"
+          >
+            Done
+          </Button>
         </Box>
       </DialogActions>
     </>

@@ -358,6 +358,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
               ),
             }}
             onChange={handleFilterFields}
+            placeholder="Search field types"
           />
         </Box>
         {!Object.keys(fieldTypes).length && (
