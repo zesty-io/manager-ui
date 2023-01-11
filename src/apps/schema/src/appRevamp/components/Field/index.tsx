@@ -158,7 +158,7 @@ export const Field = ({
           px={1.5}
           variant="body2"
           fontWeight="700"
-          maxWidth="200px"
+          maxWidth="20vw"
           textOverflow="ellipsis"
           overflow="hidden"
           whiteSpace="nowrap"
@@ -173,7 +173,6 @@ export const Field = ({
           {typeText[field.datatype]}
         </Typography>
       </Box>
-      {/* TODO: Need confirmation from Zosh on how to let the user know that the field name was copied */}
       <Box display="flex" alignItems="center" maxWidth="200px">
         <Button
           size="small"
