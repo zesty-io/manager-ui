@@ -8,6 +8,7 @@ import {
   MenuItem,
   Button,
   ListItem,
+  Tooltip,
   IconButton,
   CircularProgress,
 } from "@mui/material";
@@ -115,19 +116,21 @@ const InstanceFlyoutMenuModal = ({
                   window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${favInstance.ZUID}${CONFIG.URL_MANAGER}`;
                 }}
               >
-                <Avatar
-                  sx={{
-                    textTransform: "uppercase",
-                    cursor: "pointer",
-                    mx: "auto",
-                    mb: 1,
-                    width: 32,
-                    height: 32,
-                    backgroundColor: instanceAvatarColors[key],
-                  }}
-                >
-                  {favInstance?.name.charAt(0)}
-                </Avatar>
+                <Tooltip title={favInstance.name} placement="right">
+                  <Avatar
+                    sx={{
+                      textTransform: "uppercase",
+                      cursor: "pointer",
+                      mx: "auto",
+                      mb: 1,
+                      width: 32,
+                      height: 32,
+                      backgroundColor: instanceAvatarColors[key],
+                    }}
+                  >
+                    {favInstance?.name.charAt(0)}
+                  </Avatar>
+                </Tooltip>
               </Box>
             ))}
         </Box>
