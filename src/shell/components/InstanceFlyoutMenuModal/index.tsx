@@ -110,10 +110,15 @@ const InstanceFlyoutMenuModal = ({
             .map((favInstance: any, key: number) => (
               <Box
                 sx={favInstance.ZUID === instanceZUID && styledActiveInstance}
+                onClick={() => {
+                  // @ts-ignore
+                  window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${favInstance.ZUID}${CONFIG.URL_MANAGER}`;
+                }}
               >
                 <Avatar
                   sx={{
                     textTransform: "uppercase",
+                    cursor: "pointer",
                     mx: "auto",
                     mb: 1,
                     width: 32,

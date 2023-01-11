@@ -94,18 +94,18 @@ export default connect((state) => {
 
   useEffect(() => {
     dispatch(fetchHeadTags());
+    getFavoriteInstances();
   }, []);
 
   const getFavoriteInstances = () => {
     let data = [];
     JSON.parse(user?.prefs).favorite_sites.forEach((fav) => {
       const res = instances.filter((instance) => instance.ZUID === fav);
-      data = res;
+      data.push(...res);
     });
     return data;
   };
 
-  // @Note: Need to refactor this to rtk query
   useEffect(() => {
     const tag = Object.values(props?.headTags).find((tag) =>
       tag?.attributes.find(
