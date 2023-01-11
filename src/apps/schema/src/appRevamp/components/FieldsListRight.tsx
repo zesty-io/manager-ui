@@ -22,14 +22,14 @@ interface Props {
 }
 
 export const FieldsListRight = ({ model }: Props) => {
-  const [description, setDescription] = useState(null);
+  const [description, setDescription] = useState("");
   const [isCopied, setIsCopied] = useState(null);
 
   const [updateContentModel, { isLoading }] = useUpdateContentModelMutation();
 
   useEffect(() => {
     if (model?.description) {
-      setDescription(model?.description);
+      setDescription(model?.description || "");
     }
   }, [model]);
 

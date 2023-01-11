@@ -1,10 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Box,
-  CircularProgress,
   Button,
   TextField,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import { useParams } from "react-router";
 import {
@@ -27,14 +27,19 @@ export const FieldList = () => {
   const { id } = params;
   const [search, setSearch] = useState("");
   const { data: models } = useGetContentModelsQuery();
-  const { data: fields, isFetching: isFieldsFetching } =
+  const { data: fields, isLoading: isFieldsLoading } =
     useGetContentModelFieldsQuery(id);
   const [bulkUpdateContentModelField, { isLoading: isBulkFieldsUpdating }] =
     useBulkUpdateContentModelFieldMutation();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const showSpinner = isFieldsFetching || isBulkFieldsUpdating;
+  const showSpinner = isFieldsLoading;
   const model = models?.find((model) => model.ZUID === id);
+
+  useEffect(() => {
+    setDraggedIndex(null);
+    setHoveredIndex(null);
+  }, [fields]);
 
   const sortedFields = useMemo(() => {
     if (draggedIndex === null || hoveredIndex === null) {
@@ -46,7 +51,7 @@ export const FieldList = () => {
       newFields.splice(hoveredIndex, 0, draggedField);
       return newFields;
     }
-  }, [fields, draggedIndex, hoveredIndex]);
+  }, [isFieldsLoading, draggedIndex, hoveredIndex]);
 
   const filteredFields = useMemo(() => {
     if (search) {
@@ -68,8 +73,6 @@ export const FieldList = () => {
         sort: index,
       })),
     });
-    setDraggedIndex(null);
-    setHoveredIndex(null);
   };
 
   if (showSpinner) {

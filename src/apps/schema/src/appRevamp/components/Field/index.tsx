@@ -75,6 +75,10 @@ export const Field = ({
     setHoveredIndex(index);
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
   const handleCopyZuid = async (e: React.MouseEvent) => {
     e.stopPropagation();
 
@@ -86,7 +90,7 @@ export const Field = ({
   };
 
   const style = {
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.01 : 1,
   };
 
   return (
@@ -107,6 +111,7 @@ export const Field = ({
       onDrag={handleDrag}
       onDragEnter={handleDragEnter}
       onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
       bgcolor="common.white"
       display="flex"
       alignItems="center"
