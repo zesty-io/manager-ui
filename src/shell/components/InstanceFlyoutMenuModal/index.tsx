@@ -138,7 +138,7 @@ const InstanceFlyoutMenuModal = ({
           sx={{ mx: "auto", width: "100%" }}
           onClick={() => setShowInstancesListMenu(true)}
         >
-          <ManageSearchIcon fontSize="small" sx={{ mx: "auto" }} />
+          <ManageSearchIcon sx={{ mx: "auto" }} />
         </IconButton>
       </Box>
     );
