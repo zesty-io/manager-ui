@@ -16,6 +16,7 @@ import { Field } from "./Field";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import { AddFieldDivider } from "./AddFieldDivider";
+import { FieldsListRight } from "./FieldsListRight";
 
 type Params = {
   id: string;
@@ -85,62 +86,66 @@ export const FieldList = () => {
   }
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="100%"
-      gap={2}
-      sx={{ pr: 3, pt: 2, overflowY: "scroll" }}
-    >
-      <TextField
-        size="small"
-        placeholder="Search Fields"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        sx={{ width: "360px", px: 3 }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        }}
-      />
-      <Box sx={{ overflowY: "scroll" }}>
-        {filteredFields?.map((field, index) => {
-          return (
-            <Box key={field.ZUID}>
-              {index !== 0 && (
-                <AddFieldDivider indexToInsert={index} disabled={!!search} />
-              )}
-              <Box sx={{ pl: 3 }}>
-                <Field
-                  index={index}
-                  field={field}
-                  setDraggedIndex={setDraggedIndex}
-                  setHoveredIndex={setHoveredIndex}
-                  onReorder={handleReorder}
-                  disableDrag={!!search}
-                />
+    <Box display="flex" height="100%" sx={{ overflowY: "scroll" }}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        height="100%"
+        gap={2}
+        flex={1}
+        sx={{ pr: 3, pt: 2, overflowY: "scroll" }}
+      >
+        <TextField
+          size="small"
+          placeholder="Search Fields"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          sx={{ width: "360px", px: 3 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Box sx={{ overflowY: "scroll" }}>
+          {filteredFields?.map((field, index) => {
+            return (
+              <Box key={field.ZUID}>
+                {index !== 0 && (
+                  <AddFieldDivider indexToInsert={index} disabled={!!search} />
+                )}
+                <Box sx={{ pl: 3 }}>
+                  <Field
+                    index={index}
+                    field={field}
+                    setDraggedIndex={setDraggedIndex}
+                    setHoveredIndex={setHoveredIndex}
+                    onReorder={handleReorder}
+                    disableDrag={!!search}
+                  />
+                </Box>
               </Box>
-            </Box>
-          );
-        })}
-        <Box pl={3}>
-          <Button
-            sx={{
-              justifyContent: "flex-start",
-              my: 1,
-            }}
-            size="large"
-            variant="outlined"
-            startIcon={<AddRoundedIcon />}
-            fullWidth
-          >
-            Add Another Field to {model?.label}
-          </Button>
+            );
+          })}
+          <Box pl={3}>
+            <Button
+              sx={{
+                justifyContent: "flex-start",
+                my: 1,
+              }}
+              size="large"
+              variant="outlined"
+              startIcon={<AddRoundedIcon />}
+              fullWidth
+            >
+              Add Another Field to {model?.label}
+            </Button>
+          </Box>
         </Box>
       </Box>
+      <FieldsListRight model={model} />
     </Box>
   );
 };
