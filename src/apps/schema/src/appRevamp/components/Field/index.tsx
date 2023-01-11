@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Box, IconButton, Typography, Button } from "@mui/material";
 import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
+import CheckIcon from "@mui/icons-material/Check";
 
 import { FieldIcon } from "./FieldIcon";
 
@@ -51,6 +52,20 @@ export const Field = ({
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
+  const [isFieldNameCopied, setIsFieldNameCopied] = useState(false);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (isFieldNameCopied) {
+      timeoutId = setTimeout(() => setIsFieldNameCopied(false), 3000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [isFieldNameCopied]);
+
   const handleDragStart = (e: React.DragEvent) => {
     // TODO: Test on other browsers
     // console.log('testing', e, e.target, e.currentTarget);
@@ -90,6 +105,8 @@ export const Field = ({
 
     try {
       await navigator.clipboard.writeText(field?.name);
+
+      setIsFieldNameCopied(true);
     } catch (error) {
       console.error("Failed to copy ZUID", error);
     }
@@ -137,7 +154,15 @@ export const Field = ({
           <DragIndicatorRoundedIcon />
         </IconButton>
         <FieldIcon type={field.datatype} />
-        <Typography px={1.5} variant="body2" fontWeight="700">
+        <Typography
+          px={1.5}
+          variant="body2"
+          fontWeight="700"
+          maxWidth="200px"
+          textOverflow="ellipsis"
+          overflow="hidden"
+          whiteSpace="nowrap"
+        >
           {field.label}
         </Typography>
         <Typography
@@ -149,20 +174,27 @@ export const Field = ({
         </Typography>
       </Box>
       {/* TODO: Need confirmation from Zosh on how to let the user know that the field name was copied */}
-      <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="center" maxWidth="200px">
         <Button
           size="small"
           variant="contained"
+          color="inherit"
+          startIcon={isFieldNameCopied && <CheckIcon />}
           sx={{
-            bgcolor: "grey.100",
-            color: "text.secondary",
             "&:hover": {
               bgcolor: "grey.200",
             },
           }}
           onClick={handleCopyFieldName}
         >
-          {field.name}
+          <Box
+            component="span"
+            textOverflow="ellipsis"
+            overflow="hidden"
+            whiteSpace="nowrap"
+          >
+            {isFieldNameCopied ? "Copied" : field.name}
+          </Box>
         </Button>
         {/* TODO: More button click action handler, still pending confirmation from zosh on what will happen */}
         <IconButton>
