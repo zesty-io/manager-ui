@@ -40,8 +40,8 @@ const icons: Icons = {
   },
   currency: {
     icon: PaymentsRounded,
-    backgroundColor: "purple.50",
-    borderColor: "purple.700",
+    backgroundColor: "red.50",
+    borderColor: "red.600",
   },
   date: {
     icon: CalendarTodayRounded,
@@ -110,8 +110,8 @@ const icons: Icons = {
   },
   uuid: {
     icon: TagRounded,
-    backgroundColor: "red.50",
-    borderColor: "red.600",
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
   wysiwyg_basic: {
     icon: NewspaperRounded,
@@ -132,8 +132,11 @@ const icons: Icons = {
 
 interface Props {
   type: string;
+  height?: string;
+  width?: string;
+  fontSize?: string;
 }
-export const FieldIcon = ({ type }: Props) => {
+export const FieldIcon = ({ type, height, width, fontSize }: Props) => {
   const icon = icons[type]?.icon || icons["generic"].icon;
   const borderColor = icons[type]?.borderColor || icons["generic"].borderColor;
   const bgcolor =
@@ -148,12 +151,13 @@ export const FieldIcon = ({ type }: Props) => {
       borderRadius={1}
       bgcolor={bgcolor}
       color={borderColor}
-      width="24px"
-      height="24px"
-      fontSize="12px"
+      width={width || "24px"}
+      height={height || "24px"}
+      fontSize={fontSize || "12px"}
       display="flex"
       alignItems="center"
       justifyContent="center"
+      boxSizing="border-box"
     >
       <SvgIcon
         component={icon}

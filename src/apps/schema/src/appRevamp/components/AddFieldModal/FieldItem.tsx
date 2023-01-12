@@ -47,6 +47,7 @@ export const FieldItem = ({
       justifyContent="space-between"
     >
       <Tooltip
+        enterDelay={500}
         title={
           <TooltipBody
             fieldName={fieldName}
