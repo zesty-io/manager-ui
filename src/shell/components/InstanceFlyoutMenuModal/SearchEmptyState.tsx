@@ -30,7 +30,7 @@ export const SearchEmptyState = ({ searchTerm, onEmptySearch }: Props) => {
           color="text.secondary"
         >
           Try adjusting your search. We suggest checking all words are spelled
-          correctly or try using different keywords
+          correctly or try using different keywords.
         </Typography>
         <Stack direction="row" justifyContent="center">
           <Button
