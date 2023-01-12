@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Typography,
   DialogContent,
@@ -19,7 +19,7 @@ import { FieldIcon } from "../../Field/FieldIcon";
 import { stringStartsWithVowel } from "../../utils";
 import { InputField, FieldFormInput } from "../FieldFormInput";
 
-const generalFields: InputField[] = [
+const commonFields: InputField[] = [
   {
     name: "label",
     type: "input",
@@ -75,7 +75,7 @@ const formConfig: { [key: string]: InputField[] } = {
   one_to_many: [],
   one_to_one: [],
   sort: [],
-  text: [...generalFields],
+  text: [...commonFields],
   textarea: [],
   uuid: [],
   wysiwyg_basic: [],
@@ -91,14 +91,14 @@ interface Props {
 }
 export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
-  const [formErrors, setFormErrors] = useState({});
-  const [formData, setFormData] = useState({});
-  const [requiredFields, setRequiredFields] = useState([]);
-  const formRef = useRef(null);
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  interface FormData {
+    [key: string]: string | boolean;
+  }
+  const [formData, setFormData] = useState<FormData>({});
 
   useEffect(() => {
-    let formFields: { [key: string]: {} } = {};
-    let requiredFields: string[] = [];
+    let formFields: { [key: string]: string | boolean } = {};
 
     // Set initial form data object
     formConfig[type].forEach(
@@ -107,18 +107,12 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
     );
 
     setFormData(formFields);
-
-    // Set required fields
-    formConfig[type].forEach(
-      (field) => field.required && requiredFields.push(field.name)
-    );
-
-    setRequiredFields(requiredFields);
   }, [type]);
 
-  const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmitForm = () => {
+    setIsSubmitClicked(true);
 
+    // TODO: Add RTK query call
     console.log(formData);
   };
 
@@ -187,15 +181,20 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
         }}
       >
         {activeTab === "details" && (
-          <Box component="form" ref={formRef} onSubmit={handleSubmitForm}>
+          <>
             {formConfig[type].map((fieldConfig, index) => (
               <FieldFormInput
                 key={index}
                 fieldConfig={fieldConfig}
                 onDataChange={handleFieldDataChange}
+                error={
+                  isSubmitClicked &&
+                  fieldConfig.required &&
+                  !formData[fieldConfig.name]
+                }
               />
             ))}
-          </Box>
+          </>
         )}
 
         {activeTab === "rules" && <Typography>Coming soon...</Typography>}
@@ -222,14 +221,7 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
           >
             Add another field
           </Button>
-          <Button
-            onClick={() =>
-              formRef?.current.dispatchEvent(
-                new Event("submit", { cancelable: true, bubbles: true })
-              )
-            }
-            variant="contained"
-          >
+          <Button onClick={handleSubmitForm} variant="contained">
             Done
           </Button>
         </Box>

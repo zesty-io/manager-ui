@@ -32,13 +32,6 @@ interface Props {
   }) => void;
 }
 export const FieldFormInput = ({ fieldConfig, error, onDataChange }: Props) => {
-  // TODO: Figure out a way to show/hide the error when required fields are empty
-  const [fieldValue, setFieldValue] = useState(undefined);
-
-  const validateField = () => {
-    console.log("validate field", fieldConfig.name);
-  };
-
   return (
     <Box mb={2.5}>
       {fieldConfig.type === "input" && (
