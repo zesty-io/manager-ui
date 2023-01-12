@@ -12,7 +12,7 @@ export const instanceApi = createApi({
     baseUrl: `${__CONFIG__.API_INSTANCE_PROTOCOL}${instanceZUID}${__CONFIG__.API_INSTANCE}`,
     prepareHeaders,
   }),
-  tagTypes: ["ItemPublishing"],
+  tagTypes: ["ItemPublishing", "ContentModels"],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
       Publishing[],
@@ -99,6 +99,19 @@ export const instanceApi = createApi({
       // Restore cache once content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
     }),
+    createContentModelFromTemplate: builder.mutation<
+      any,
+      { instance_zuid: string; repository: string; parent_zuid: string }
+    >({
+      query: (body) => ({
+        // url: 'https://installer-m3rbwjxm5q-uc.a.run.app/install/model',
+        // @ts-ignore
+        url: `${CONFIG.SERVICE_INSTANCE_INSTALLER}/install/model`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["ContentModels"],
+    }),
   }),
 });
 
@@ -113,4 +126,5 @@ export const {
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
   useGetContentItemPublishingsQuery,
+  useCreateContentModelFromTemplateMutation,
 } = instanceApi;
