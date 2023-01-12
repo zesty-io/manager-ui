@@ -23,6 +23,7 @@ import LanguageIcon from "@mui/icons-material/Language";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { AppState } from "../../../shell/store/types";
+import { SearchEmptyState } from "./SearchEmptyState";
 
 interface Props {
   onClose?: () => void;
@@ -106,6 +107,12 @@ const InstancesListMenu = ({
           </>
         ))}
       </Box>
+      {!filteredInstances.length && (
+        <SearchEmptyState
+          searchTerm={searchInstance}
+          onEmptySearch={() => setSearchInstance("")}
+        />
+      )}
     </>
   );
 };
