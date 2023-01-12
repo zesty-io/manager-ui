@@ -81,7 +81,7 @@ export const ModelList = ({ title, models }: Props) => {
         return (
           <ListItemButton
             key={model.ZUID}
-            sx={{ py: "6px", px: "12px" }}
+            sx={{ py: "6px", px: "12px", borderRadius: "4px" }}
             selected={selected}
             onClick={() => history.push(`/schema/${model.ZUID}`)}
           >
