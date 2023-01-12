@@ -154,15 +154,7 @@ export const Field = ({
           <DragIndicatorRoundedIcon />
         </IconButton>
         <FieldIcon type={field.datatype} />
-        <Typography
-          px={1.5}
-          variant="body2"
-          fontWeight="700"
-          maxWidth="20vw"
-          textOverflow="ellipsis"
-          overflow="hidden"
-          whiteSpace="nowrap"
-        >
+        <Typography px={1.5} variant="body2" fontWeight="700" noWrap>
           {field.label}
         </Typography>
         <Typography
