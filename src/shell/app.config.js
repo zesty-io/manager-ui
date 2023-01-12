@@ -67,7 +67,7 @@ module.exports = {
       "https://us-central1-zesty-stage.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
-    SERVICE_INSTANCE_INSTALLER: "https://installer-xytrmaqk4a-uc.a.run.app",
+    SERVICE_INSTANCE_INSTALLER: "https://installer-m3rbwjxm5q-uc.a.run.app",
 
     URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
@@ -107,7 +107,7 @@ module.exports = {
       "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
-    SERVICE_INSTANCE_INSTALLER: "https://installer-xytrmaqk4a-uc.a.run.app",
+    SERVICE_INSTANCE_INSTALLER: "https://installer-m3rbwjxm5q-uc.a.run.app",
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {
@@ -149,7 +149,7 @@ module.exports = {
       "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
-    SERVICE_INSTANCE_INSTALLER: "https://installer-xytrmaqk4a-uc.a.run.app",
+    SERVICE_INSTANCE_INSTALLER: "https://installer-m3rbwjxm5q-uc.a.run.app",
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {
