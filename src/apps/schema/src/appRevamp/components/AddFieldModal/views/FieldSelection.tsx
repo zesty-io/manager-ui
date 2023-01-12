@@ -307,17 +307,27 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
 
   return (
     <>
-      <DialogTitle
-        display="flex"
-        sx={{
-          justifyContent: "space-between",
-          padding: 3,
-        }}
-      >
-        Select a Field Type
-        <IconButton size="small" onClick={onModalClose}>
-          <CloseIcon />
-        </IconButton>
+      <DialogTitle px={3} py={2.5}>
+        <Box display="flex" justifyContent="space-between" pb={2}>
+          Select a Field Type
+          <IconButton size="small" onClick={onModalClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Box width="349px">
+          <TextField
+            fullWidth
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            onChange={handleFilterFields}
+            placeholder="Search field types"
+          />
+        </Box>
       </DialogTitle>
       <DialogContent
         dividers
@@ -332,19 +342,6 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
           },
         }}
       >
-        <Box py={2} width="349px">
-          <TextField
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleFilterFields}
-          />
-        </Box>
         {!Object.keys(fieldTypes).length && (
           <Typography>No matches found.</Typography>
         )}
