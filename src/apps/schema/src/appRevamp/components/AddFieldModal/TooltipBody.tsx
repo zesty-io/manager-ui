@@ -36,7 +36,7 @@ export const TooltipBody = ({
     >
       <ListItem
         sx={{
-          py: 1.5,
+          py: 1,
           px: 2,
           borderBottom: 1,
           borderColor: "border",

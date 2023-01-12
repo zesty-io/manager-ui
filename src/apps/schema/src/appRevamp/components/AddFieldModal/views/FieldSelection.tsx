@@ -328,10 +328,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
             borderColor: "border",
           },
           "& div.field-type-group:not(:last-of-type)": {
-            borderBottom: "1px solid",
-            borderColor: "border",
-            mb: 2,
-            pb: 2,
+            mb: 1.5,
           },
         }}
       >
@@ -353,13 +350,13 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         )}
         {Object.keys(fieldTypes).map((fieldKey) => (
           <Box className="field-type-group" key={fieldKey}>
-            <Typography component="p" variant="overline" mb={2}>
+            <Typography component="p" variant="overline" mb={1.5}>
               {fieldKey === "dateandtime" ? "Date & Time" : fieldKey}
             </Typography>
             <Box
               display="grid"
               gridTemplateColumns="1fr 1fr"
-              rowGap={2}
+              rowGap={1.5}
               columnGap={2}
             >
               {fieldTypes[fieldKey].map((field: FieldData, index) => (
