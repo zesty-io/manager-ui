@@ -56,15 +56,6 @@ const fields_config: { [key: string]: FieldData[] } = {
         "This field works great when you want to ensure that contributors cannot apply any styling to text.",
     },
     {
-      type: "article_writer",
-      name: "Article Writer",
-      shortDescription: "Perfect for writing articles",
-      // TODO: Details pending c/o Zosh
-      description: "Lorem ipsum",
-      commonUses: ["test", "test2"],
-      proTip: "lorem lorem",
-    },
-    {
       type: "wysiwyg_basic",
       name: "WYSIWYG",
       shortDescription: "Long text content with links & images such as blogs",
@@ -166,7 +157,7 @@ const fields_config: { [key: string]: FieldData[] } = {
       proTip: "Lorem ipsum sit dolor",
     },
   ],
-  number: [
+  numeric: [
     {
       type: "number",
       name: "Integer",
@@ -176,18 +167,6 @@ const fields_config: { [key: string]: FieldData[] } = {
       commonUses: ["Quantity of Products in Inventory", "Rankings", "Ratings"],
       proTip: "If you want your numbers with decimals use a float field.",
     },
-    {
-      type: "uuid",
-      name: "UUID",
-      // TODO: Details pending c/o Zosh
-      shortDescription: "Lorem ipsum",
-      description: "Lorem",
-      commonUses: ["test", "test"],
-      proTip: "Lorem ipsum",
-    },
-  ],
-  // TODO: Zosh to provide correct Group Header Text
-  locale: [
     {
       type: "currency",
       name: "Currency",
@@ -200,7 +179,7 @@ const fields_config: { [key: string]: FieldData[] } = {
     },
   ],
   // TODO: Zosh to provide correct Group Header Text
-  date: [
+  dateandtime: [
     {
       type: "date",
       name: "Date",
@@ -231,7 +210,7 @@ const fields_config: { [key: string]: FieldData[] } = {
     },
   ],
   // TODO: Zosh to provide correct Group Header Text
-  other: [
+  options: [
     {
       type: "yes_no",
       name: "Boolean",
@@ -285,6 +264,15 @@ const fields_config: { [key: string]: FieldData[] } = {
       description: "Lorem ipsum dolor sit amet consectetur adipisicing.",
       commonUses: ["test", "test"],
       proTip: "Lorem, ipsum.",
+    },
+    {
+      type: "uuid",
+      name: "UUID",
+      // TODO: Details pending c/o Zosh
+      shortDescription: "Lorem ipsum",
+      description: "Lorem",
+      commonUses: ["test", "test"],
+      proTip: "Lorem ipsum",
     },
   ],
 };
@@ -366,7 +354,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         {Object.keys(fieldTypes).map((fieldKey) => (
           <Box className="field-type-group" key={fieldKey}>
             <Typography component="p" variant="overline" mb={2}>
-              {fieldKey}
+              {fieldKey === "dateandtime" ? "Date & Time" : fieldKey}
             </Typography>
             <Box
               display="grid"
