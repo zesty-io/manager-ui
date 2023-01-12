@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Box, IconButton, Typography, Button } from "@mui/material";
+import { Box, IconButton, Typography, Button, Tooltip } from "@mui/material";
 import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
@@ -140,8 +140,13 @@ export const Field = ({
       justifyContent="space-between"
       pr={1}
       pl={0.5}
+      gap={1}
     >
-      <Box display="flex" alignItems="center">
+      <Box
+        display="grid"
+        gridTemplateColumns="28px 24px minmax(auto, min-content) 90px"
+        alignItems="center"
+      >
         <IconButton
           className="drag-handle"
           size="small"
@@ -154,9 +159,11 @@ export const Field = ({
           <DragIndicatorRoundedIcon />
         </IconButton>
         <FieldIcon type={field.datatype} />
-        <Typography px={1.5} variant="body2" fontWeight="700" noWrap>
-          {field.label}
-        </Typography>
+        <Tooltip title={field.label} enterDelay={3000}>
+          <Typography px={1.5} variant="body2" fontWeight="700" noWrap>
+            {field.label}
+          </Typography>
+        </Tooltip>
         <Typography
           // @ts-expect-error missing body3 module augmentation
           variant="body3"
@@ -165,7 +172,7 @@ export const Field = ({
           {typeText[field.datatype]}
         </Typography>
       </Box>
-      <Box display="flex" alignItems="center" maxWidth="200px">
+      <Box display="flex" alignItems="center" maxWidth="180px">
         <Button
           size="small"
           variant="contained"
@@ -178,14 +185,9 @@ export const Field = ({
           }}
           onClick={handleCopyFieldName}
         >
-          <Box
-            component="span"
-            textOverflow="ellipsis"
-            overflow="hidden"
-            whiteSpace="nowrap"
-          >
+          <Typography component="span" variant="caption" noWrap>
             {isFieldNameCopied ? "Copied" : field.name}
-          </Box>
+          </Typography>
         </Button>
         {/* TODO: More button click action handler, still pending confirmation from zosh on what will happen */}
         <IconButton>
