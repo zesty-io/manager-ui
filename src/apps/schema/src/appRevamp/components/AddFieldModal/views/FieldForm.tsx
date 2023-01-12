@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Typography,
   DialogContent,
@@ -9,7 +9,6 @@ import {
   Tabs,
   Tab,
   Button,
-  TextField,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -23,23 +22,23 @@ import { InputField, FieldFormInput } from "../FieldFormInput";
 const generalFields: InputField[] = [
   {
     name: "label",
-    type: "textfield",
+    type: "input",
     label: "Label",
     required: true,
-    helperText: "This field is required",
+    errorMsg: "This field is required",
     fullWidth: true,
   },
   {
     name: "parsleyReference",
-    type: "textfield",
+    type: "input",
     label: "API / Parsley Code Reference",
     required: true,
-    helperText: "This field is required",
+    errorMsg: "This field is required",
     fullWidth: true,
   },
   {
     name: "description",
-    type: "textfield",
+    type: "input",
     label: "Description (optional)",
     subLabel: "Appears below the label to help content-writers and API users",
     required: false,
@@ -92,12 +91,48 @@ interface Props {
 }
 export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
+  const [formErrors, setFormErrors] = useState({});
+  const [formData, setFormData] = useState({});
+  const [requiredFields, setRequiredFields] = useState([]);
   const formRef = useRef(null);
+
+  useEffect(() => {
+    let formFields: { [key: string]: {} } = {};
+    let requiredFields: string[] = [];
+
+    // Set initial form data object
+    formConfig[type].forEach(
+      (field) =>
+        (formFields[field.name] = field.type === "checkbox" ? false : "")
+    );
+
+    setFormData(formFields);
+
+    // Set required fields
+    formConfig[type].forEach(
+      (field) => field.required && requiredFields.push(field.name)
+    );
+
+    setRequiredFields(requiredFields);
+  }, [type]);
 
   const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(e);
+    console.log(formData);
+  };
+
+  const handleFieldDataChange = ({
+    name,
+    value,
+  }: {
+    name: string;
+    value: string | boolean;
+  }) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const headerText = stringStartsWithVowel(name)
@@ -153,8 +188,12 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
       >
         {activeTab === "details" && (
           <Box component="form" ref={formRef} onSubmit={handleSubmitForm}>
-            {formConfig[type].map((fieldConfig) => (
-              <FieldFormInput fieldConfig={fieldConfig} />
+            {formConfig[type].map((fieldConfig, index) => (
+              <FieldFormInput
+                key={index}
+                fieldConfig={fieldConfig}
+                onDataChange={handleFieldDataChange}
+              />
             ))}
           </Box>
         )}
@@ -185,7 +224,9 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
           </Button>
           <Button
             onClick={() =>
-              formRef?.current.dispatchEvent(new CustomEvent("submit"))
+              formRef?.current.dispatchEvent(
+                new Event("submit", { cancelable: true, bubbles: true })
+              )
             }
             variant="contained"
           >
