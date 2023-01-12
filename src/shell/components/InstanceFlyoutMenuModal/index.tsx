@@ -174,7 +174,6 @@ const InstanceFlyoutMenuModal = ({
         <InstancesListMenu
           onClose={() => setShowInstancesListMenu(false)}
           instanceZUID={instanceZUID}
-          favoriteInstances={favoriteInstances}
           instanceAvatarColors={instanceAvatarColors}
         />
       ) : (

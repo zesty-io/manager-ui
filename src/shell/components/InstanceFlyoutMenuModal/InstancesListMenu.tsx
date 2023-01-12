@@ -1,3 +1,4 @@
+import { useEffect, useState, useMemo } from "react";
 import { DefaultRootState, RootStateOrAny, useSelector } from "react-redux";
 import {
   Box,
@@ -26,23 +27,36 @@ import { AppState } from "../../../shell/store/types";
 interface Props {
   onClose?: () => void;
   instanceZUID?: string;
-  favoriteInstances?: any;
   instanceAvatarColors?: Array<string>;
 }
 
 const InstancesListMenu = ({
   onClose,
   instanceZUID,
-  favoriteInstances,
   instanceAvatarColors,
 }: Props) => {
-  const instance = useSelector((state: AppState) => state.instance);
+  const instances = useSelector((state: any) => state.instances);
+  const [searchInstance, setSearchInstance] = useState("");
+
+  const filteredInstances = useMemo(
+    () =>
+      instances.filter((instance: any) => {
+        return instance.name
+          .toLowerCase()
+          .includes(searchInstance.toLowerCase());
+      }),
+    [searchInstance]
+  );
 
   return (
     <>
       <Box sx={{ p: 2 }}>
         <TextField
           placeholder="Search Instances"
+          value={searchInstance}
+          onChange={(evt) => {
+            setSearchInstance(evt.target.value);
+          }}
           sx={{
             width: "100%",
           }}
@@ -58,7 +72,7 @@ const InstancesListMenu = ({
         />
       </Box>
       <Box>
-        {favoriteInstances.map((favInstance: any, key: number) => (
+        {filteredInstances.map((instance: any, key: number) => (
           <>
             <ListItem
               sx={{
@@ -66,7 +80,7 @@ const InstancesListMenu = ({
               }}
               onClick={() => {
                 // @ts-ignore
-                window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${favInstance.ZUID}${CONFIG.URL_MANAGER}`;
+                window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}`;
               }}
             >
               <ListItemAvatar sx={{ minWidth: "45px" }}>
@@ -78,11 +92,11 @@ const InstancesListMenu = ({
                     backgroundColor: instanceAvatarColors[key],
                   }}
                 >
-                  {favInstance?.name.charAt(0)}
+                  {instance?.name.charAt(0)}
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
-                primary={favInstance?.name}
+                primary={instance?.name}
                 primaryTypographyProps={{
                   variant: "body2",
                 }}
