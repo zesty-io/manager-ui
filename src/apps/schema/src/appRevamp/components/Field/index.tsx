@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
-import { Box, IconButton, Typography } from "@mui/material";
+import React, { useRef, useState, useEffect } from "react";
+import { Box, IconButton, Typography, Button, Tooltip } from "@mui/material";
 import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
+import CheckIcon from "@mui/icons-material/Check";
 
 import { FieldIcon } from "./FieldIcon";
 
@@ -51,6 +52,20 @@ export const Field = ({
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
+  const [isFieldNameCopied, setIsFieldNameCopied] = useState(false);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (isFieldNameCopied) {
+      timeoutId = setTimeout(() => setIsFieldNameCopied(false), 3000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [isFieldNameCopied]);
+
   const handleDragStart = (e: React.DragEvent) => {
     // TODO: Test on other browsers
     // console.log('testing', e, e.target, e.currentTarget);
@@ -89,6 +104,18 @@ export const Field = ({
     }
   };
 
+  const handleCopyFieldName = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    try {
+      await navigator.clipboard.writeText(field?.name);
+
+      setIsFieldNameCopied(true);
+    } catch (error) {
+      console.error("Failed to copy ZUID", error);
+    }
+  };
+
   const style = {
     opacity: isDragging ? 0.01 : 1,
   };
@@ -118,8 +145,13 @@ export const Field = ({
       justifyContent="space-between"
       pr={1}
       pl={0.5}
+      gap={1}
     >
-      <Box display="flex" alignItems="center">
+      <Box
+        display="grid"
+        gridTemplateColumns="28px 24px minmax(auto, min-content) 90px"
+        alignItems="center"
+      >
         <IconButton
           className="drag-handle"
           size="small"
@@ -132,9 +164,11 @@ export const Field = ({
           <DragIndicatorRoundedIcon />
         </IconButton>
         <FieldIcon type={field.datatype} />
-        <Typography px={1.5} variant="body2" fontWeight="700">
-          {field.label}
-        </Typography>
+        <Tooltip title={field.label} enterDelay={3000}>
+          <Typography px={1.5} variant="body2" fontWeight="700" noWrap>
+            {field.label}
+          </Typography>
+        </Tooltip>
         <Typography
           // @ts-expect-error missing body3 module augmentation
           variant="body3"
@@ -143,26 +177,23 @@ export const Field = ({
           {typeText[field.datatype]}
         </Typography>
       </Box>
-      <Box display="flex" alignItems="center">
-        <Typography
-          component="span"
-          bgcolor="grey.100"
-          border="1px solid"
-          borderColor="grey.100"
-          boxSizing="border-box"
-          borderRadius={1}
-          px={1.25}
-          py={0.5}
-          mr={1}
-          fontFamily="Roboto Mono"
-          fontWeight="400"
-          fontSize="12px"
-          lineHeight="20px"
-          letterSpacing="0.46px"
-          color="text.secondary"
+      <Box display="flex" alignItems="center" maxWidth="180px">
+        <Button
+          size="small"
+          variant="contained"
+          color="inherit"
+          startIcon={isFieldNameCopied && <CheckIcon />}
+          sx={{
+            "&:hover": {
+              bgcolor: "grey.200",
+            },
+          }}
+          onClick={handleCopyFieldName}
         >
-          {field.name}
-        </Typography>
+          <Typography component="span" variant="caption" noWrap>
+            {isFieldNameCopied ? "Copied" : field.name}
+          </Typography>
+        </Button>
         {/* TODO: More button click action handler, still pending confirmation from zosh on what will happen */}
         <IconButton>
           <MoreHorizRoundedIcon />
