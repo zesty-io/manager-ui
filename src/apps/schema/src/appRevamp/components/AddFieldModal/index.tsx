@@ -33,8 +33,9 @@ export const AddFieldModal = ({ onModalClose }: Props) => {
       PaperProps={{
         sx: {
           maxWidth: "900px",
-          my: "5vh",
+          my: "20px",
           borderRadius: 2,
+          maxHeight: "1000px",
         },
       }}
     >
