@@ -40,8 +40,8 @@ const icons: Icons = {
   },
   currency: {
     icon: PaymentsRounded,
-    backgroundColor: "purple.50",
-    borderColor: "purple.700",
+    backgroundColor: "red.50",
+    borderColor: "red.600",
   },
   date: {
     icon: CalendarTodayRounded,
@@ -110,8 +110,8 @@ const icons: Icons = {
   },
   uuid: {
     icon: TagRounded,
-    backgroundColor: "red.50",
-    borderColor: "red.600",
+    backgroundColor: "purple.50",
+    borderColor: "purple.700",
   },
   wysiwyg_basic: {
     icon: NewspaperRounded,

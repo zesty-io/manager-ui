@@ -56,15 +56,6 @@ const fields_config: { [key: string]: FieldData[] } = {
         "This field works great when you want to ensure that contributors cannot apply any styling to text.",
     },
     {
-      type: "article_writer",
-      name: "Article Writer",
-      shortDescription: "Perfect for writing articles",
-      // TODO: Details pending c/o Zosh
-      description: "Lorem ipsum",
-      commonUses: ["test", "test2"],
-      proTip: "lorem lorem",
-    },
-    {
       type: "wysiwyg_basic",
       name: "WYSIWYG",
       shortDescription: "Long text content with links & images such as blogs",
@@ -166,7 +157,7 @@ const fields_config: { [key: string]: FieldData[] } = {
       proTip: "Lorem ipsum sit dolor",
     },
   ],
-  number: [
+  numeric: [
     {
       type: "number",
       name: "Integer",
@@ -176,18 +167,6 @@ const fields_config: { [key: string]: FieldData[] } = {
       commonUses: ["Quantity of Products in Inventory", "Rankings", "Ratings"],
       proTip: "If you want your numbers with decimals use a float field.",
     },
-    {
-      type: "uuid",
-      name: "UUID",
-      // TODO: Details pending c/o Zosh
-      shortDescription: "Lorem ipsum",
-      description: "Lorem",
-      commonUses: ["test", "test"],
-      proTip: "Lorem ipsum",
-    },
-  ],
-  // TODO: Zosh to provide correct Group Header Text
-  locale: [
     {
       type: "currency",
       name: "Currency",
@@ -200,7 +179,7 @@ const fields_config: { [key: string]: FieldData[] } = {
     },
   ],
   // TODO: Zosh to provide correct Group Header Text
-  date: [
+  dateandtime: [
     {
       type: "date",
       name: "Date",
@@ -231,7 +210,7 @@ const fields_config: { [key: string]: FieldData[] } = {
     },
   ],
   // TODO: Zosh to provide correct Group Header Text
-  other: [
+  options: [
     {
       type: "yes_no",
       name: "Boolean",
@@ -286,6 +265,15 @@ const fields_config: { [key: string]: FieldData[] } = {
       commonUses: ["test", "test"],
       proTip: "Lorem, ipsum.",
     },
+    {
+      type: "uuid",
+      name: "UUID",
+      // TODO: Details pending c/o Zosh
+      shortDescription: "Lorem ipsum",
+      description: "Lorem",
+      commonUses: ["test", "test"],
+      proTip: "Lorem ipsum",
+    },
   ],
 };
 
@@ -319,35 +307,14 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
 
   return (
     <>
-      <DialogTitle
-        display="flex"
-        sx={{
-          justifyContent: "space-between",
-          padding: 3,
-        }}
-      >
-        Select a Field Type
-        <IconButton size="small" onClick={onModalClose}>
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent
-        dividers
-        sx={{
-          px: 3,
-          pb: 3,
-          "&.MuiDialogContent-dividers": {
-            borderColor: "border",
-          },
-          "& div.field-type-group:not(:last-of-type)": {
-            borderBottom: "1px solid",
-            borderColor: "border",
-            mb: 2,
-            pb: 2,
-          },
-        }}
-      >
-        <Box py={2} width="349px">
+      <DialogTitle px={3} py={2.5}>
+        <Box display="flex" justifyContent="space-between" pb={2}>
+          Select a Field Type
+          <IconButton size="small" onClick={onModalClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Box width="349px">
           <TextField
             fullWidth
             InputProps={{
@@ -361,18 +328,32 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
             placeholder="Search field types"
           />
         </Box>
+      </DialogTitle>
+      <DialogContent
+        dividers
+        sx={{
+          px: 3,
+          py: 1.5,
+          "&.MuiDialogContent-dividers": {
+            borderColor: "border",
+          },
+          "& div.field-type-group:not(:last-of-type)": {
+            mb: 1.5,
+          },
+        }}
+      >
         {!Object.keys(fieldTypes).length && (
           <Typography>No matches found.</Typography>
         )}
         {Object.keys(fieldTypes).map((fieldKey) => (
           <Box className="field-type-group" key={fieldKey}>
-            <Typography component="p" variant="overline" mb={2}>
-              {fieldKey}
+            <Typography component="p" variant="overline" mb={1.5}>
+              {fieldKey === "dateandtime" ? "Date & Time" : fieldKey}
             </Typography>
             <Box
               display="grid"
               gridTemplateColumns="1fr 1fr"
-              rowGap={2}
+              rowGap={1.5}
               columnGap={2}
             >
               {fieldTypes[fieldKey].map((field: FieldData, index) => (
