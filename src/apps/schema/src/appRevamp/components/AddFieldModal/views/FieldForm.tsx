@@ -20,10 +20,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { FieldIcon } from "../../Field/FieldIcon";
 import { stringStartsWithVowel } from "../../utils";
 import { InputField, FieldFormInput } from "../FieldFormInput";
-import {
-  useCreateContentModelFieldMutation,
-  useGetContentModelFieldsQuery,
-} from "../../../../../../../shell/services/instance";
+import { useCreateContentModelFieldMutation } from "../../../../../../../shell/services/instance";
 import { ContentModelField } from "../../../../../../../shell/services/types";
 
 const commonFields: InputField[] = [
