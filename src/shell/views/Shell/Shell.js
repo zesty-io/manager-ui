@@ -22,6 +22,7 @@ import SeoApp from "apps/seo/src";
 import SettingsApp from "apps/settings/src";
 import CustomApp from "apps/custom-app/src";
 import HomeApp from "apps/home";
+import MarketplaceApp from "apps/marketplace/src";
 
 import styles from "./Shell.less";
 
@@ -99,6 +100,14 @@ export default memo(function Shell() {
                         key={product}
                         path="/settings"
                         component={SettingsApp}
+                      />
+                    );
+                  case "marketplace":
+                    return (
+                      <Route
+                        key={product}
+                        path="/marketplace"
+                        component={MarketplaceApp}
                       />
                     );
                   default:
