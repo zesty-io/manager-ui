@@ -54,6 +54,7 @@ export const AddFieldModal = ({ onModalClose, fields }: Props) => {
           name={selectedField?.fieldName}
           onModalClose={() => onModalClose(false)}
           onBackClick={() => setViewMode("fields_list")}
+          onFieldCreationSuccesssful={() => onModalClose(false)}
         />
       )}
     </Dialog>

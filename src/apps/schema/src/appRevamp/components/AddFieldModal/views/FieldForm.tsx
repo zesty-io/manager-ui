@@ -100,6 +100,7 @@ interface Props {
   onModalClose: () => void;
   onBackClick: () => void;
   fields: ContentModelField[];
+  onFieldCreationSuccesssful: () => void;
 }
 export const FieldForm = ({
   type,
@@ -107,6 +108,7 @@ export const FieldForm = ({
   onModalClose,
   onBackClick,
   fields,
+  onFieldCreationSuccesssful,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -132,6 +134,13 @@ export const FieldForm = ({
     setFormData(formFields);
     setErrors(errors);
   }, [type]);
+
+  useEffect(() => {
+    // TODO: Field creation flow is not yet completed, closing modal on success for now
+    if (isSuccess) {
+      onFieldCreationSuccesssful();
+    }
+  }, [isSuccess]);
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
