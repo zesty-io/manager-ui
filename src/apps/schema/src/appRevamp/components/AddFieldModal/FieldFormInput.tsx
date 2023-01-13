@@ -34,6 +34,7 @@ interface Props {
 export const FieldFormInput = ({ fieldConfig, error, onDataChange }: Props) => {
   return (
     <Box mb={2.5}>
+      {/* TODO: Pending confirmation from Zosh if name will autopopulate and have char limit */}
       {fieldConfig.type === "input" && (
         <>
           <Box mb={0.5}>

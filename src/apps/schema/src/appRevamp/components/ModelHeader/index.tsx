@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Box, Typography, Button, Tabs, Tab } from "@mui/material";
 import { useHistory, useLocation, useParams } from "react-router";
-import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
+import {
+  useGetContentModelsQuery,
+  useGetContentModelFieldsQuery,
+} from "../../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import PostAddRoundedIcon from "@mui/icons-material/PostAddRounded";
 import moment from "moment";
@@ -27,6 +30,8 @@ export const ModelHeader = () => {
   const { data: models } = useGetContentModelsQuery();
   const location = useLocation();
   const history = useHistory();
+  const { data: fields, isSuccess: isFieldsLoaded } =
+    useGetContentModelFieldsQuery(id);
 
   const model = models?.find((model) => model.ZUID === id);
 
@@ -55,6 +60,7 @@ export const ModelHeader = () => {
                 variant="contained"
                 startIcon={<AddRoundedIcon />}
                 onClick={() => setAddFieldModalOpen(true)}
+                disabled={!isFieldsLoaded}
               >
                 Add Field
               </Button>
@@ -99,7 +105,7 @@ export const ModelHeader = () => {
         </Box>
       </Box>
       {isAddFieldModalOpen && (
-        <AddFieldModal onModalClose={setAddFieldModalOpen} />
+        <AddFieldModal fields={fields} onModalClose={setAddFieldModalOpen} />
       )}
     </>
   );

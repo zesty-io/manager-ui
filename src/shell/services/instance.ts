@@ -158,7 +158,13 @@ export const instanceApi = createApi({
     }),
     createContentModelField: builder.mutation<
       any,
-      { modelZUID: string; body: Omit<ContentModelField, "ZUID"> }
+      {
+        modelZUID: string;
+        body: Omit<
+          ContentModelField,
+          "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
+        >;
+      }
     >({
       query: ({ modelZUID, body }) => ({
         url: `content/models/${modelZUID}/fields`,
@@ -239,4 +245,5 @@ export const {
   useGetContentModelFieldsQuery,
   useBulkUpdateContentModelFieldMutation,
   useUpdateContentModelMutation,
+  useCreateContentModelFieldMutation,
 } = instanceApi;

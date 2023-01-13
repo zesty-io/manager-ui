@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router";
 import {
   Typography,
   DialogContent,
@@ -10,6 +11,7 @@ import {
   Tab,
   Button,
 } from "@mui/material";
+import { snakeCase } from "lodash";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -18,6 +20,11 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { FieldIcon } from "../../Field/FieldIcon";
 import { stringStartsWithVowel } from "../../utils";
 import { InputField, FieldFormInput } from "../FieldFormInput";
+import {
+  useCreateContentModelFieldMutation,
+  useGetContentModelFieldsQuery,
+} from "../../../../../../../shell/services/instance";
+import { ContentModelField } from "../../../../../../../shell/services/types";
 
 const commonFields: InputField[] = [
   {
@@ -29,7 +36,7 @@ const commonFields: InputField[] = [
     fullWidth: true,
   },
   {
-    name: "parsleyReference",
+    name: "name",
     type: "input",
     label: "API / Parsley Code Reference",
     required: true,
@@ -46,14 +53,14 @@ const commonFields: InputField[] = [
     multiline: true,
   },
   {
-    name: "requiredField",
+    name: "required",
     type: "checkbox",
     label: "Required field",
     subLabel: "Ensures an item cannot be created if field is empty",
     required: false,
   },
   {
-    name: "addInTableListing",
+    name: "list",
     type: "checkbox",
     label: "Add as column in table listing",
     subLabel: "Shows field as a column in the table in the content view",
@@ -83,19 +90,33 @@ const formConfig: { [key: string]: InputField[] } = {
 };
 
 type ActiveTab = "details" | "rules";
+type Params = {
+  id: string;
+};
+interface FormData {
+  [key: string]: string | boolean;
+}
 interface Props {
   type: string;
   name: string;
   onModalClose: () => void;
   onBackClick: () => void;
+  fields: ContentModelField[];
 }
-export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
+export const FieldForm = ({
+  type,
+  name,
+  onModalClose,
+  onBackClick,
+  fields,
+}: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
-  interface FormData {
-    [key: string]: string | boolean;
-  }
   const [formData, setFormData] = useState<FormData>({});
+  const params = useParams<Params>();
+  const { id } = params;
+  const [createContentModelField, { isLoading, isSuccess }] =
+    useCreateContentModelFieldMutation();
 
   useEffect(() => {
     let formFields: { [key: string]: string | boolean } = {};
@@ -112,8 +133,23 @@ export const FieldForm = ({ type, name, onModalClose, onBackClick }: Props) => {
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
 
-    // TODO: Add RTK query call
-    console.log(formData);
+    const body: Omit<
+      ContentModelField,
+      "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
+    > = {
+      contentModelZUID: id,
+      name: snakeCase(formData.name as string),
+      label: formData.label as string,
+      description: formData.description as string,
+      datatype: type,
+      required: formData.required as boolean,
+      settings: {
+        list: formData.list as boolean,
+      },
+      sort: fields?.length, // Just use the length since sort starts at 0
+    };
+
+    createContentModelField({ modelZUID: id, body });
   };
 
   const handleFieldDataChange = ({

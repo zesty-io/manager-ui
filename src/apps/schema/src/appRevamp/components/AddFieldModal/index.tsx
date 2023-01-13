@@ -3,12 +3,14 @@ import { Dialog } from "@mui/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
+import { ContentModelField } from "../../../../../../shell/services/types";
 
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
   onModalClose: Dispatch<SetStateAction<boolean>>;
+  fields: ContentModelField[];
 }
-export const AddFieldModal = ({ onModalClose }: Props) => {
+export const AddFieldModal = ({ onModalClose, fields }: Props) => {
   const [viewMode, setViewMode] = useState<ViewMode>("fields_list");
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
@@ -47,6 +49,7 @@ export const AddFieldModal = ({ onModalClose }: Props) => {
       )}
       {viewMode === "new_field" && (
         <FieldForm
+          fields={fields}
           type={selectedField?.fieldType}
           name={selectedField?.fieldName}
           onModalClose={() => onModalClose(false)}
