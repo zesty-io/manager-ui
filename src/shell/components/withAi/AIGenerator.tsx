@@ -57,7 +57,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
     if (isError) {
       dispatch(
         notify({
-          message: aiResponse?.message || "Error has occurred",
+          message: aiResponse?.message || "Generation has been stopped",
           kind: "error",
         })
       );
