@@ -105,7 +105,7 @@ const InstanceFlyoutMenuModal = ({
 
     return (
       <Box sx={{ width: "48px", py: 2 }}>
-        <Box>
+        <Box sx={{ height: "325px" }}>
           {favoriteInstances
             .slice(0, 8)
             .map((favInstance: any, key: number) => (
@@ -135,7 +135,10 @@ const InstanceFlyoutMenuModal = ({
             ))}
         </Box>
         <IconButton
-          sx={{ mx: "auto", width: "100%" }}
+          sx={{
+            mx: "auto",
+            width: "100%",
+          }}
           onClick={() => setShowInstancesListMenu(true)}
         >
           <ManageSearchIcon sx={{ mx: "auto" }} />
@@ -151,6 +154,7 @@ const InstanceFlyoutMenuModal = ({
           position: "absolute",
           bottom: 0,
           left: 0,
+          overflow: "hidden",
           width: "450px",
           height: "392px",
         },
@@ -191,12 +195,8 @@ const InstanceFlyoutMenuModal = ({
               }}
             >
               <Box sx={{ width: "200px", py: 1 }}>
-                <ListItem>
-                  <Avatar
-                    src={instanceFaviconUrl}
-                    sx={{ width: 32, height: 32 }}
-                  />
-                  <Typography variant="body2" sx={{ ml: 1.5, fontWeight: 700 }}>
+                <ListItem sx={{ mt: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
                     {instanceName}
                   </Typography>
                 </ListItem>
