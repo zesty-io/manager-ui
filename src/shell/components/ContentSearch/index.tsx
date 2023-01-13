@@ -72,23 +72,34 @@ const ContentSearch: FC = () => {
   // options={topSuggestions ? topSuggestions.map(s => s.web.metaTitle) : []}
   return (
     <Autocomplete
-      value={"asdf"}
+      value={value}
       open={true}
+      includeInputInList
+      fullWidth
+      id="global-search-autocomplete"
+      freeSolo
+      selectOnFocus
+      clearOnBlur
+      handleHomeEndKeys
+      options={topSuggestions}
+      filterOptions={(x) => x}
       onInputChange={(event, newVal) => {
         console.log("change");
         console.log({ thing: event, newVal });
         setValue(newVal);
       }}
-      fullWidth
       onChange={(event, newVal) => {
         console.log("change", newVal);
+        // null represents "X" button clicked
         if (!newVal) {
           setValue("");
           return;
         }
+        // string represents search term entered
         if (typeof newVal === "string") {
           history.push(`/search?q=${newVal}`);
         } else {
+          // ContentItem represents a suggestion being clicked
           if (newVal?.meta) {
             history.push(
               `/content/${newVal.meta.contentModelZUID}/${newVal.meta.ZUID}`
@@ -103,12 +114,9 @@ const ContentSearch: FC = () => {
           }
         }
       }}
-      id="global-search-autocomplete"
-      freeSolo
-      options={topSuggestions}
       getOptionLabel={(option: ContentItem) => {
         console.log({ option, suggestions });
-        return typeof option === "string" ? option : option.web.metaTitle;
+        return typeof option === "string" ? `${option}` : option.web.metaTitle;
       }}
       renderOption={(props, option) => {
         console.log("rendering option", option, props);
@@ -116,6 +124,8 @@ const ContentSearch: FC = () => {
           return (
             <ListItem
               {...props}
+              // TODO: aria-selected is required for accessibility but the underlying component is not setting it correctly
+              aria-selected={false}
               key={"topline"}
               sx={{ padding: "4px 16px 4px 16px" }}
             >
