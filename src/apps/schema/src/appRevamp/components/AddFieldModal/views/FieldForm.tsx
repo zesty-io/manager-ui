@@ -29,7 +29,6 @@ const commonFields: InputField[] = [
     type: "input",
     label: "Label",
     required: true,
-    errorMsg: "This field is required",
     fullWidth: true,
   },
   {
@@ -37,7 +36,6 @@ const commonFields: InputField[] = [
     type: "input",
     label: "API / Parsley Code Reference",
     required: true,
-    errorMsg: "This field is required",
     fullWidth: true,
   },
   {
@@ -93,6 +91,9 @@ type Params = {
 interface FormData {
   [key: string]: string | boolean;
 }
+interface Errors {
+  [key: string]: string;
+}
 interface Props {
   type: string;
   name: string;
@@ -109,6 +110,7 @@ export const FieldForm = ({
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [errors, setErrors] = useState<Errors>({});
   const [formData, setFormData] = useState<FormData>({});
   const params = useParams<Params>();
   const { id } = params;
@@ -117,18 +119,27 @@ export const FieldForm = ({
 
   useEffect(() => {
     let formFields: { [key: string]: string | boolean } = {};
+    let errors: { [key: string]: string } = {};
 
-    // Set initial form data object
-    formConfig[type].forEach(
-      (field) =>
-        (formFields[field.name] = field.type === "checkbox" ? false : "")
-    );
+    formConfig[type].forEach((field) => {
+      formFields[field.name] = field.type === "checkbox" ? false : "";
+
+      if (field.required) {
+        errors[field.name] = "This field is required";
+      }
+    });
 
     setFormData(formFields);
+    setErrors(errors);
   }, [type]);
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
+    const hasErrors = Object.values(errors).some((error) => error.length);
+
+    if (hasErrors) {
+      return;
+    }
 
     const body: Omit<
       ContentModelField,
@@ -160,6 +171,22 @@ export const FieldForm = ({
       ...prevData,
       [name]: value,
     }));
+
+    const currFieldNames = fields.map((field) => field.name);
+    let errorMsg = value ? "" : "This field is required";
+
+    if (value && name === "name") {
+      errorMsg = currFieldNames.includes(value as string)
+        ? "Field name already exists"
+        : "";
+    }
+
+    if (name in errors) {
+      setErrors((prevData) => ({
+        ...prevData,
+        [name]: errorMsg,
+      }));
+    }
   };
 
   const headerText = stringStartsWithVowel(name)
@@ -215,18 +242,16 @@ export const FieldForm = ({
       >
         {activeTab === "details" && (
           <>
-            {formConfig[type].map((fieldConfig, index) => (
-              <FieldFormInput
-                key={index}
-                fieldConfig={fieldConfig}
-                onDataChange={handleFieldDataChange}
-                error={
-                  isSubmitClicked &&
-                  fieldConfig.required &&
-                  !formData[fieldConfig.name]
-                }
-              />
-            ))}
+            {formConfig[type].map((fieldConfig, index) => {
+              return (
+                <FieldFormInput
+                  key={index}
+                  fieldConfig={fieldConfig}
+                  onDataChange={handleFieldDataChange}
+                  errorMsg={isSubmitClicked && errors[fieldConfig.name]}
+                />
+              );
+            })}
           </>
         )}
 
@@ -254,7 +279,11 @@ export const FieldForm = ({
           >
             Add another field
           </Button>
-          <Button onClick={handleSubmitForm} variant="contained">
+          <Button
+            disabled={isLoading}
+            onClick={handleSubmitForm}
+            variant="contained"
+          >
             Done
           </Button>
         </Box>

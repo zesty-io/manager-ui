@@ -16,13 +16,12 @@ export interface InputField {
   label: string;
   required: boolean;
   subLabel?: string;
-  errorMsg?: string;
   fullWidth?: boolean;
   multiline?: boolean;
 }
 interface Props {
   fieldConfig: InputField;
-  error?: boolean;
+  errorMsg?: string;
   onDataChange: ({
     name,
     value,
@@ -31,7 +30,11 @@ interface Props {
     value: string | boolean;
   }) => void;
 }
-export const FieldFormInput = ({ fieldConfig, error, onDataChange }: Props) => {
+export const FieldFormInput = ({
+  fieldConfig,
+  errorMsg,
+  onDataChange,
+}: Props) => {
   return (
     <Box mb={2.5}>
       {/* TODO: Pending confirmation from Zosh if name will autopopulate and have char limit */}
@@ -52,7 +55,7 @@ export const FieldFormInput = ({ fieldConfig, error, onDataChange }: Props) => {
           <InputBase
             sx={{
               border: "1px solid",
-              borderColor: error ? "red.500" : "grey.200",
+              borderColor: errorMsg ? "red.500" : "grey.200",
               borderRadius: 2,
               py: 1.25,
               px: 1.5,
@@ -76,9 +79,9 @@ export const FieldFormInput = ({ fieldConfig, error, onDataChange }: Props) => {
               });
             }}
           />
-          {error && (
+          {errorMsg && (
             <Typography mt={0.5} variant="body2" color="error.dark">
-              {fieldConfig.errorMsg}
+              {errorMsg}
             </Typography>
           )}
         </>
