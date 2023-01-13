@@ -13,6 +13,7 @@ import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ExtensionIcon from "@mui/icons-material/Extension";
 import { Database } from "@zesty-io/material";
 
 import styles from "./styles.less";
@@ -33,6 +34,7 @@ export default memo(function GlobalMenu() {
     seo: RecommendIcon,
     settings: SettingsIcon,
     release: RocketLaunchIcon,
+    marketplace: ExtensionIcon,
   };
 
   const MenuItemIcon = ({ product }) => {
