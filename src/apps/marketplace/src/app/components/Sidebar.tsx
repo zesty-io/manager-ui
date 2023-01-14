@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   MenuItem,
   ListItemIcon,
@@ -8,6 +9,7 @@ import {
   Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchInstalledApps } from "../../../../../shell/store/apps";
 import SearchIcon from "@mui/icons-material/Search";
 import { AppState } from "../../../../../shell/store/types";
 import { useHistory } from "react-router";
@@ -16,6 +18,11 @@ import PowerIcon from "@mui/icons-material/Power";
 export const Sidebar = () => {
   const installedApps = useSelector((state: AppState) => state.apps.installed);
   const history = useHistory();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchInstalledApps());
+  }, []);
 
   return (
     <Box
@@ -57,8 +64,8 @@ export const Sidebar = () => {
       {installedApps.map((app: any) => {
         return (
           <MenuItem
-            onClick={() => history.push(`/app/${app.ZUID}`)}
-            selected={location.pathname === `/app/${app.ZUID}`}
+            onClick={() => history.push(`/marketplace/app/${app.ZUID}`)}
+            selected={location.pathname === `/marketplace/app/${app.ZUID}`}
             sx={{
               mt: 1,
               borderRadius: "4px",

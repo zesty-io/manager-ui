@@ -187,7 +187,7 @@ export default connect((state) => {
             )}
           </IconButton>
           <GlobalMenu openNav={props.ui.openNav} />
-          <GlobalCustomApps openNav={props.ui.openNav} />
+          {/* <GlobalCustomApps openNav={props.ui.openNav} /> */}
           {moment().diff(moment(instanceCreationDate), "days") <= 15 &&
             props.ui.openNav && <OnboardingCallSection />}
           <Box

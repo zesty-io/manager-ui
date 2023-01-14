@@ -103,7 +103,7 @@ export default memo(function Shell() {
                     return (
                       <Route
                         key={product}
-                        path="/app*"
+                        path="/marketplace*"
                         component={MarketplaceApp}
                       />
                     );
