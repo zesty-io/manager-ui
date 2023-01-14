@@ -41,7 +41,10 @@ export const Sidebar = () => {
         <Button
           variant="contained"
           startIcon={<SearchIcon fontSize="small" />}
-          sx={{ mt: 2 }}
+          onClick={() =>
+            window.open("https://www.zesty.io/marketplace/apps/", "_blank")
+          }
+          sx={{ mt: 2, width: "100%" }}
         >
           <Typography
             // @ts-ignore
@@ -71,8 +74,8 @@ export const Sidebar = () => {
               <PowerIcon />
             </ListItemIcon>
             <ListItemText
-              //@ts-expect-error body3 additional variant is not on Typography augmentation
               primaryTypographyProps={{
+                // @ts-ignore
                 variant: "body3",
                 color: "text.secondary",
               }}
