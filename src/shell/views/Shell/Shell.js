@@ -20,7 +20,6 @@ import LeadsApp from "apps/leads/src";
 import SchemaApp from "apps/schema/src";
 import SeoApp from "apps/seo/src";
 import SettingsApp from "apps/settings/src";
-import CustomApp from "apps/custom-app/src";
 import HomeApp from "apps/home";
 import MarketplaceApp from "apps/marketplace/src";
 
@@ -49,8 +48,6 @@ export default memo(function Shell() {
               <Route path="/media/:groupID/file/:fileID" component={DamApp} />
               <Route path="/media/:groupID" component={DamApp} />
               <Route path="/media" component={DamApp} />
-
-              <Route path="/app*" component={CustomApp} />
 
               {products.map((product) => {
                 switch (product) {
@@ -106,7 +103,7 @@ export default memo(function Shell() {
                     return (
                       <Route
                         key={product}
-                        path="/marketplace"
+                        path="/app*"
                         component={MarketplaceApp}
                       />
                     );
