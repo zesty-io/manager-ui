@@ -12,6 +12,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { snakeCase, isEmpty } from "lodash";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -364,13 +365,13 @@ export const FieldForm = ({
           >
             Add another field
           </Button>
-          <Button
-            disabled={isCreatingField || isUpdatingField}
+          <LoadingButton
+            loading={isCreatingField || isUpdatingField}
             onClick={handleSubmitForm}
             variant="contained"
           >
             Done
-          </Button>
+          </LoadingButton>
         </Box>
       </DialogActions>
     </>
