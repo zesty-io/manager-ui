@@ -9,6 +9,8 @@ import {
   InputBase,
 } from "@mui/material";
 
+import { FormValue } from "./views/FieldForm";
+
 type FieldType = "input" | "checkbox" | "dropdown";
 export interface InputField {
   name: string;
@@ -22,18 +24,14 @@ export interface InputField {
 interface Props {
   fieldConfig: InputField;
   errorMsg?: string;
-  onDataChange: ({
-    name,
-    value,
-  }: {
-    name: string;
-    value: string | boolean;
-  }) => void;
+  onDataChange: ({ name, value }: { name: string; value: FormValue }) => void;
+  prefillData?: FormValue;
 }
 export const FieldFormInput = ({
   fieldConfig,
   errorMsg,
   onDataChange,
+  prefillData,
 }: Props) => {
   return (
     <Box mb={2.5}>
@@ -78,6 +76,7 @@ export const FieldFormInput = ({
                 value: e.target.value,
               });
             }}
+            value={prefillData}
           />
           {errorMsg && (
             <Typography mt={0.5} variant="body2" color="error.dark">
@@ -100,6 +99,7 @@ export const FieldFormInput = ({
                   value: e.target.checked,
                 });
               }}
+              checked={Boolean(prefillData)}
             />
           }
           label={

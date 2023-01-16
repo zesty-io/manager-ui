@@ -28,7 +28,11 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
   const params = useParams<Params>();
   const { id, fieldId } = params;
   const { data: fields } = useGetContentModelFieldsQuery(id);
-  const { data: fieldData } = useGetContentModelFieldQuery({
+  const {
+    data: fieldData,
+    isLoading: isFieldDataLoading,
+    isSuccess: isFieldDataLoaded,
+  } = useGetContentModelFieldQuery({
     modelZUID: id,
     fieldZUID: fieldId,
   });
@@ -73,7 +77,16 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
           onFieldCreationSuccesssful={() => onModalClose(false)}
         />
       )}
-      {viewMode === "update_field" && <Typography>Update field</Typography>}
+      {viewMode === "update_field" && isFieldDataLoaded && (
+        <FieldForm
+          fields={fields}
+          type={fieldData?.datatype}
+          name={fieldData?.label}
+          onModalClose={() => onModalClose(false)}
+          onFieldCreationSuccesssful={() => onModalClose(false)}
+          fieldData={fieldData}
+        />
+      )}
     </Dialog>
   );
 };

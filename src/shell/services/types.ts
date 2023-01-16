@@ -147,6 +147,8 @@ export interface FieldSettings {
   tooltip?: string;
 }
 
+export type ContentModelFieldValue = string | number | boolean | FieldSettings;
+
 export interface ContentModelField {
   ZUID: string;
   contentModelZUID: string;
@@ -165,4 +167,5 @@ export interface ContentModelField {
   relatedFieldZUID?: any;
   createdAt: string;
   updatedAt: string;
+  [key: string]: ContentModelFieldValue;
 }

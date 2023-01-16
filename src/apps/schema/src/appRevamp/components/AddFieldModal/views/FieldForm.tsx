@@ -11,7 +11,7 @@ import {
   Tab,
   Button,
 } from "@mui/material";
-import { snakeCase } from "lodash";
+import { snakeCase, isEmpty } from "lodash";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -21,7 +21,11 @@ import { FieldIcon } from "../../Field/FieldIcon";
 import { stringStartsWithVowel } from "../../utils";
 import { InputField, FieldFormInput } from "../FieldFormInput";
 import { useCreateContentModelFieldMutation } from "../../../../../../../shell/services/instance";
-import { ContentModelField } from "../../../../../../../shell/services/types";
+import {
+  ContentModelField,
+  FieldSettings,
+  ContentModelFieldValue,
+} from "../../../../../../../shell/services/types";
 
 const commonFields: InputField[] = [
   {
@@ -88,8 +92,9 @@ type ActiveTab = "details" | "rules";
 type Params = {
   id: string;
 };
+export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
 interface FormData {
-  [key: string]: string | boolean;
+  [key: string]: FormValue;
 }
 interface Errors {
   [key: string]: string;
@@ -98,9 +103,10 @@ interface Props {
   type: string;
   name: string;
   onModalClose: () => void;
-  onBackClick: () => void;
+  onBackClick?: () => void;
   fields: ContentModelField[];
   onFieldCreationSuccesssful: () => void;
+  fieldData?: ContentModelField;
 }
 export const FieldForm = ({
   type,
@@ -109,6 +115,7 @@ export const FieldForm = ({
   onBackClick,
   fields,
   onFieldCreationSuccesssful,
+  fieldData,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -118,22 +125,39 @@ export const FieldForm = ({
   const { id } = params;
   const [createContentModelField, { isLoading, isSuccess }] =
     useCreateContentModelFieldMutation();
+  const isUpdateField = !isEmpty(fieldData);
 
   useEffect(() => {
-    let formFields: { [key: string]: string | boolean } = {};
+    let formFields: { [key: string]: FormValue } = {};
     let errors: { [key: string]: string } = {};
 
     formConfig[type].forEach((field) => {
-      formFields[field.name] = field.type === "checkbox" ? false : "";
+      if (isUpdateField) {
+        if (field.name === "list") {
+          formFields[field.name] = fieldData.settings[field.name];
+        } else {
+          formFields[field.name] = fieldData[field.name] as FormValue;
+        }
 
-      if (field.required) {
-        errors[field.name] = "This field is required";
+        // Pre-fill error messages based on content
+        if (field.required) {
+          errors[field.name] = isEmpty(fieldData[field.name])
+            ? "This field is required"
+            : "";
+        }
+      } else {
+        formFields[field.name] = field.type === "checkbox" ? false : "";
+
+        // Pre-fill required fields error msgs
+        if (field.required) {
+          errors[field.name] = "This field is required";
+        }
       }
     });
 
     setFormData(formFields);
     setErrors(errors);
-  }, [type]);
+  }, [type, fieldData]);
 
   useEffect(() => {
     // TODO: Field creation flow is not yet completed, closing modal on success for now
@@ -163,10 +187,14 @@ export const FieldForm = ({
       settings: {
         list: formData.list as boolean,
       },
-      sort: fields?.length, // Just use the length since sort starts at 0
+      sort: isUpdateField ? fieldData.sort : fields?.length, // Just use the length since sort starts at 0
     };
 
-    createContentModelField({ modelZUID: id, body });
+    if (isUpdateField) {
+      console.log(body);
+    } else {
+      createContentModelField({ modelZUID: id, body });
+    }
   };
 
   const handleFieldDataChange = ({
@@ -185,9 +213,17 @@ export const FieldForm = ({
     let errorMsg = value ? "" : "This field is required";
 
     if (value && name === "name") {
-      errorMsg = currFieldNames.includes(value as string)
-        ? "Field name already exists"
-        : "";
+      if (isUpdateField) {
+        // Re-using its original name is fine when updating a field
+        errorMsg =
+          currFieldNames.includes(value as string) && value !== fieldData.name
+            ? "Field name already exists"
+            : "";
+      } else {
+        errorMsg = currFieldNames.includes(value as string)
+          ? "Field name already exists"
+          : "";
+      }
     }
 
     if (name in errors) {
@@ -258,6 +294,7 @@ export const FieldForm = ({
                   fieldConfig={fieldConfig}
                   onDataChange={handleFieldDataChange}
                   errorMsg={isSubmitClicked && errors[fieldConfig.name]}
+                  prefillData={formData[fieldConfig.name]}
                 />
               );
             })}
