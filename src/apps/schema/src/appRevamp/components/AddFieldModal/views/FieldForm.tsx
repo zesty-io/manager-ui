@@ -261,7 +261,7 @@ export const FieldForm = ({
     : `Add a ${name} Field`;
 
   if (isLoading) {
-    // TODO: Verify with Zosh what will be shown here. Just showing a skeleton for now.
+    // TODO: Verify with Zosh what will be shown here. Just showing a loading spinner for now.
     return (
       <Box
         display="flex"
