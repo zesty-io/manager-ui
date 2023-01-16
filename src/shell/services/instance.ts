@@ -188,6 +188,7 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "ContentModelFields", id: arg.modelZUID },
+        { type: "ContentModelField", id: arg.fieldZUID },
       ],
     }),
     bulkUpdateContentModelField: builder.mutation<
@@ -259,4 +260,5 @@ export const {
   useUpdateContentModelMutation,
   useCreateContentModelFieldMutation,
   useGetContentModelFieldQuery,
+  useUpdateContentModelFieldMutation,
 } = instanceApi;

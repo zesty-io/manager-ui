@@ -20,7 +20,10 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { FieldIcon } from "../../Field/FieldIcon";
 import { stringStartsWithVowel } from "../../utils";
 import { InputField, FieldFormInput } from "../FieldFormInput";
-import { useCreateContentModelFieldMutation } from "../../../../../../../shell/services/instance";
+import {
+  useCreateContentModelFieldMutation,
+  useUpdateContentModelFieldMutation,
+} from "../../../../../../../shell/services/instance";
 import {
   ContentModelField,
   FieldSettings,
@@ -123,8 +126,14 @@ export const FieldForm = ({
   const [formData, setFormData] = useState<FormData>({});
   const params = useParams<Params>();
   const { id } = params;
-  const [createContentModelField, { isLoading, isSuccess }] =
-    useCreateContentModelFieldMutation();
+  const [
+    createContentModelField,
+    { isLoading: isCreatingField, isSuccess: isFieldCreated },
+  ] = useCreateContentModelFieldMutation();
+  const [
+    updateContentModelField,
+    { isLoading: isUpdatingField, isSuccess: isFieldUpdated },
+  ] = useUpdateContentModelFieldMutation();
   const isUpdateField = !isEmpty(fieldData);
 
   useEffect(() => {
@@ -161,10 +170,10 @@ export const FieldForm = ({
 
   useEffect(() => {
     // TODO: Field creation flow is not yet completed, closing modal on success for now
-    if (isSuccess) {
+    if (isFieldCreated || isFieldUpdated) {
       onFieldCreationSuccesssful();
     }
-  }, [isSuccess]);
+  }, [isFieldCreated, isFieldUpdated]);
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
@@ -191,7 +200,16 @@ export const FieldForm = ({
     };
 
     if (isUpdateField) {
-      console.log(body);
+      const updateBody: ContentModelField = {
+        ...fieldData,
+        ...body,
+      };
+
+      updateContentModelField({
+        modelZUID: id,
+        fieldZUID: fieldData.ZUID,
+        body: updateBody,
+      });
     } else {
       createContentModelField({ modelZUID: id, body });
     }
@@ -328,7 +346,7 @@ export const FieldForm = ({
             Add another field
           </Button>
           <Button
-            disabled={isLoading}
+            disabled={isCreatingField || isUpdatingField}
             onClick={handleSubmitForm}
             variant="contained"
           >
