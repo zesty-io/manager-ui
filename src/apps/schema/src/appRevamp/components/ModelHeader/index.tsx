@@ -83,7 +83,7 @@ export const ModelHeader = () => {
                 },
               },
             }}
-            value={location.pathname.split("/").pop()}
+            value={location.pathname.split("/")[3]}
             onChange={(event, value) =>
               history.push(`/schema/${model?.ZUID}/${value}`)
             }
