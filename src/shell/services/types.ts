@@ -140,10 +140,10 @@ export interface FieldSettingsOptions {
 }
 
 export interface FieldSettings {
-  options: FieldSettingsOptions;
-  group_id: string;
+  options?: FieldSettingsOptions;
+  group_id?: string;
   limit?: number;
-  list?: boolean;
+  list: boolean;
   tooltip?: string;
 }
 

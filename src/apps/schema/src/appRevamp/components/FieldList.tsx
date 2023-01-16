@@ -27,8 +27,11 @@ export const FieldList = () => {
   const { id } = params;
   const [search, setSearch] = useState("");
   const { data: models } = useGetContentModelsQuery();
-  const { data: fields, isLoading: isFieldsLoading } =
-    useGetContentModelFieldsQuery(id);
+  const {
+    data: fields,
+    isLoading: isFieldsLoading,
+    isFetching: isFieldsFetching,
+  } = useGetContentModelFieldsQuery(id);
   const [bulkUpdateContentModelField, { isLoading: isBulkFieldsUpdating }] =
     useBulkUpdateContentModelFieldMutation();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -36,7 +39,7 @@ export const FieldList = () => {
   const showSpinner = isFieldsLoading;
   const model = models?.find((model) => model.ZUID === id);
 
-  useEffect(() => {
+  useMemo(() => {
     setDraggedIndex(null);
     setHoveredIndex(null);
   }, [fields]);
@@ -51,7 +54,7 @@ export const FieldList = () => {
       newFields.splice(hoveredIndex, 0, draggedField);
       return newFields;
     }
-  }, [isFieldsLoading, draggedIndex, hoveredIndex]);
+  }, [isFieldsFetching, isFieldsLoading, draggedIndex, hoveredIndex]);
 
   const filteredFields = useMemo(() => {
     if (search) {
