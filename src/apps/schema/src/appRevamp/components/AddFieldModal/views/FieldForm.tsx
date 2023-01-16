@@ -282,7 +282,7 @@ export const FieldForm = ({
                 fontSize="16px"
               />
             </Box>
-            {headerText}
+            {isUpdateField ? fieldData.label : headerText}
           </Box>
           <IconButton size="small" onClick={onModalClose}>
             <CloseIcon />
