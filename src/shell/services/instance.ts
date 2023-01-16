@@ -23,6 +23,7 @@ export const instanceApi = createApi({
     "ContentModels",
     "ContentModel",
     "ContentModelFields",
+    "ContentModelField",
   ],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
@@ -228,6 +229,17 @@ export const instanceApi = createApi({
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
     }),
+    getContentModelField: builder.query<
+      ContentModelField,
+      { modelZUID: string; fieldZUID: string }
+    >({
+      query: ({ modelZUID, fieldZUID }) =>
+        `/content/models/${modelZUID}/fields/${fieldZUID}`,
+      transformResponse: getResponseData,
+      providesTags: (result, error, { modelZUID, fieldZUID }) => [
+        { type: "ContentModelField", id: fieldZUID },
+      ],
+    }),
   }),
 });
 
@@ -246,4 +258,5 @@ export const {
   useBulkUpdateContentModelFieldMutation,
   useUpdateContentModelMutation,
   useCreateContentModelFieldMutation,
+  useGetContentModelFieldQuery,
 } = instanceApi;

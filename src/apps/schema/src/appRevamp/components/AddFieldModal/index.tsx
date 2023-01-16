@@ -5,29 +5,33 @@ import { Dialog, Typography } from "@mui/material";
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
 import { ContentModelField } from "../../../../../../shell/services/types";
+import {
+  useGetContentModelFieldsQuery,
+  useGetContentModelFieldQuery,
+} from "../../../../../../shell/services/instance";
 
 type Params = {
+  id: string;
   fieldId: string;
 };
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
   onModalClose: Dispatch<SetStateAction<boolean>>;
-  fields?: ContentModelField[];
   mode: ViewMode;
 }
-export const AddFieldModal = ({ onModalClose, fields, mode }: Props) => {
+export const AddFieldModal = ({ onModalClose, mode }: Props) => {
   const [viewMode, setViewMode] = useState<ViewMode>(mode);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
     fieldName: "",
   });
   const params = useParams<Params>();
-  const { fieldId } = params;
-
-  useEffect(() => {
-    if (fieldId) {
-    }
-  }, [fieldId]);
+  const { id, fieldId } = params;
+  const { data: fields } = useGetContentModelFieldsQuery(id);
+  const { data: fieldData } = useGetContentModelFieldQuery({
+    modelZUID: id,
+    fieldZUID: fieldId,
+  });
 
   const handleFieldClick = (fieldType: string, fieldName: string) => {
     setViewMode("new_field");
