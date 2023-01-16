@@ -10,6 +10,7 @@ import {
   Tabs,
   Tab,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import { snakeCase, isEmpty } from "lodash";
 
@@ -110,6 +111,7 @@ interface Props {
   fields: ContentModelField[];
   onFieldCreationSuccesssful: () => void;
   fieldData?: ContentModelField;
+  isLoading?: boolean;
 }
 export const FieldForm = ({
   type,
@@ -119,6 +121,7 @@ export const FieldForm = ({
   fields,
   onFieldCreationSuccesssful,
   fieldData,
+  isLoading = false,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -140,7 +143,7 @@ export const FieldForm = ({
     let formFields: { [key: string]: FormValue } = {};
     let errors: { [key: string]: string } = {};
 
-    formConfig[type].forEach((field) => {
+    formConfig[type]?.forEach((field) => {
       if (isUpdateField) {
         if (field.name === "list") {
           formFields[field.name] = fieldData.settings[field.name];
@@ -256,6 +259,20 @@ export const FieldForm = ({
     ? `Add an ${name} Field`
     : `Add a ${name} Field`;
 
+  if (isLoading) {
+    // TODO: Verify with Zosh what will be shown here. Just showing a skeleton for now.
+    return (
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        height="100%"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <>
       <DialogTitle
@@ -271,9 +288,11 @@ export const FieldForm = ({
           pb={0.5}
         >
           <Box display="flex" alignItems="center">
-            <IconButton size="small" onClick={onBackClick}>
-              <ArrowBackIcon />
-            </IconButton>
+            {!isUpdateField && (
+              <IconButton size="small" onClick={onBackClick}>
+                <ArrowBackIcon />
+              </IconButton>
+            )}
             <Box px={1.5}>
               <FieldIcon
                 type={type}

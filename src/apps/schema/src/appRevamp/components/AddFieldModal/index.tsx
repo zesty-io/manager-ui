@@ -77,8 +77,7 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
           onFieldCreationSuccesssful={() => onModalClose(false)}
         />
       )}
-      {/* TODO: Add loading indicator */}
-      {viewMode === "update_field" && isFieldDataLoaded && (
+      {viewMode === "update_field" && (
         <FieldForm
           fields={fields}
           type={fieldData?.datatype}
@@ -86,6 +85,7 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
           onModalClose={() => onModalClose(false)}
           onFieldCreationSuccesssful={() => onModalClose(false)}
           fieldData={fieldData}
+          isLoading={isFieldDataLoading}
         />
       )}
     </Dialog>
