@@ -1,21 +1,33 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import { Dialog } from "@mui/material";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { useParams } from "react-router";
+import { Dialog, Typography } from "@mui/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
 import { ContentModelField } from "../../../../../../shell/services/types";
 
+type Params = {
+  fieldId: string;
+};
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
   onModalClose: Dispatch<SetStateAction<boolean>>;
-  fields: ContentModelField[];
+  fields?: ContentModelField[];
+  mode: ViewMode;
 }
-export const AddFieldModal = ({ onModalClose, fields }: Props) => {
-  const [viewMode, setViewMode] = useState<ViewMode>("fields_list");
+export const AddFieldModal = ({ onModalClose, fields, mode }: Props) => {
+  const [viewMode, setViewMode] = useState<ViewMode>(mode);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
     fieldName: "",
   });
+  const params = useParams<Params>();
+  const { fieldId } = params;
+
+  useEffect(() => {
+    if (fieldId) {
+    }
+  }, [fieldId]);
 
   const handleFieldClick = (fieldType: string, fieldName: string) => {
     setViewMode("new_field");
@@ -57,6 +69,7 @@ export const AddFieldModal = ({ onModalClose, fields }: Props) => {
           onFieldCreationSuccesssful={() => onModalClose(false)}
         />
       )}
+      {viewMode === "update_field" && <Typography>Update field</Typography>}
     </Dialog>
   );
 };

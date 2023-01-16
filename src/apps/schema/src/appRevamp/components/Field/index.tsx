@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useLocation, useHistory } from "react-router";
 import {
   Box,
   IconButton,
@@ -70,6 +71,8 @@ export const Field = ({
   const [isFieldNameCopied, setIsFieldNameCopied] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isMenuOpen = Boolean(anchorEl);
+  const location = useLocation();
+  const history = useHistory();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -237,7 +240,9 @@ export const Field = ({
             </ListItemIcon>
             <ListItemText>Duplicate Field</ListItemText>
           </MenuItem>
-          <MenuItem>
+          <MenuItem
+            onClick={() => history.push(`${location.pathname}/${field.ZUID}`)}
+          >
             <ListItemIcon>
               <DriveFileRenameOutlineRoundedIcon />
             </ListItemIcon>
