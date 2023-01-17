@@ -104,7 +104,6 @@ export const instanceApi = createApi({
       { instance_zuid: string; repository: string; parent_zuid: string }
     >({
       query: (body) => ({
-        // url: 'https://installer-m3rbwjxm5q-uc.a.run.app/install/model',
         // @ts-ignore
         url: `${CONFIG.SERVICE_INSTANCE_INSTALLER}/install/model`,
         method: "POST",
