@@ -30,8 +30,8 @@ export const ContentListItem: FC<ContentListItem> = ({
     { skip: !affectedZUID }
   );
   const { data: contentData, isLoading: contentLoading } =
-    useGetContentItemQuery(auditData?.[0]?.affectedZUID, {
-      skip: !auditData?.[0]?.affectedZUID,
+    useGetContentItemQuery(affectedZUID, {
+      skip: !affectedZUID,
     });
   const { data: modelData, isLoading: modelLoading } = useGetContentModelQuery(
     contentData?.meta.contentModelZUID,
@@ -59,7 +59,10 @@ export const ContentListItem: FC<ContentListItem> = ({
   });
 
   // Chips
-  const titleChip = modelData?.metaTitle || contentData?.meta.contentModelZUID;
+  const titleChip =
+    modelData?.metaTitle ||
+    modelData?.label ||
+    contentData?.meta.contentModelZUID;
   const appChip = "Content";
   const actionDate = auditData?.[0]?.happenedAt;
   const dateInfo = moment(actionDate).fromNow();
