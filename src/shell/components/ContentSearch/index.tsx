@@ -1,5 +1,5 @@
 import TextField from "@mui/material/TextField";
-import { FC, useState, useRef } from "react";
+import { FC, useState, useRef, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import Autocomplete from "@mui/material/Autocomplete";
 import { HTMLAttributes } from "react";
@@ -12,14 +12,34 @@ import { useHistory } from "react-router";
 import { useDispatch } from "react-redux";
 import { notify } from "../../store/notifications";
 
+function useDebounce(value: string, delay: number): string {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
+  const debouncedValue = useDebounce(value, 650);
   const history = useHistory();
   const dispatch = useDispatch();
 
   const textfieldRef = useRef<HTMLDivElement>();
 
-  const res = useSearchContentQuery({ query: value }, { skip: !value });
+  const res = useSearchContentQuery(
+    { query: debouncedValue },
+    { skip: !value }
+  );
   console.log("rtk response", res);
 
   const suggestions = res.data;
