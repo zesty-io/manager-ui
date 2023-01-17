@@ -212,6 +212,15 @@ const InstanceFlyoutMenuModal = ({
                 >
                   <Typography variant="body2">Configure Instance</Typography>
                 </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleNavigation(
+                      `https://www.zesty.io/instances/${instanceZUID}/users`
+                    )
+                  }
+                >
+                  <Typography variant="body2">Users</Typography>
+                </MenuItem>
                 <MenuItem onClick={() => setShowDomainsMenu(true)}>
                   <Typography variant="body2">Domains</Typography>
                 </MenuItem>
