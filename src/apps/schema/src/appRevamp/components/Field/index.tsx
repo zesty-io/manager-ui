@@ -1,9 +1,25 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Box, IconButton, Typography, Button, Tooltip } from "@mui/material";
+import { useLocation, useHistory } from "react-router";
+import {
+  Box,
+  IconButton,
+  Typography,
+  Button,
+  Tooltip,
+  Menu,
+  MenuList,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import CheckIcon from "@mui/icons-material/Check";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
+import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
+import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
+import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
 
 import { FieldIcon } from "./FieldIcon";
 
@@ -53,6 +69,10 @@ export const Field = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
   const [isFieldNameCopied, setIsFieldNameCopied] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const isMenuOpen = Boolean(anchorEl);
+  const location = useLocation();
+  const history = useHistory();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -114,6 +134,10 @@ export const Field = ({
     } catch (error) {
       console.error("Failed to copy ZUID", error);
     }
+  };
+
+  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(e.currentTarget);
   };
 
   const style = {
@@ -194,10 +218,49 @@ export const Field = ({
             {isFieldNameCopied ? "Copied" : field.name}
           </Typography>
         </Button>
-        {/* TODO: More button click action handler, still pending confirmation from zosh on what will happen */}
-        <IconButton>
+        <IconButton onClick={handleMenuClick}>
           <MoreHorizRoundedIcon />
         </IconButton>
+        <Menu
+          open={isMenuOpen}
+          onClose={() => setAnchorEl(null)}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <MenuItem>
+            <ListItemIcon>
+              <ContentCopyRoundedIcon />
+            </ListItemIcon>
+            <ListItemText>Duplicate Field</ListItemText>
+          </MenuItem>
+          <MenuItem
+            onClick={() => history.push(`${location.pathname}/${field.ZUID}`)}
+          >
+            <ListItemIcon>
+              <DriveFileRenameOutlineRoundedIcon />
+            </ListItemIcon>
+            <ListItemText>Edit Field</ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <WidgetsRoundedIcon />
+            </ListItemIcon>
+            <ListItemText>Copy ZUID</ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <HighlightOffRoundedIcon />
+            </ListItemIcon>
+            <ListItemText>De-activate Field</ListItemText>
+          </MenuItem>
+        </Menu>
       </Box>
     </Box>
   );

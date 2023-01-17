@@ -30,8 +30,7 @@ export const ModelHeader = () => {
   const { data: models } = useGetContentModelsQuery();
   const location = useLocation();
   const history = useHistory();
-  const { data: fields, isSuccess: isFieldsLoaded } =
-    useGetContentModelFieldsQuery(id);
+  const { isSuccess: isFieldsLoaded } = useGetContentModelFieldsQuery(id);
 
   const model = models?.find((model) => model.ZUID === id);
 
@@ -84,7 +83,7 @@ export const ModelHeader = () => {
                 },
               },
             }}
-            value={location.pathname.split("/").pop()}
+            value={location.pathname.split("/")[3]}
             onChange={(event, value) =>
               history.push(`/schema/${model?.ZUID}/${value}`)
             }
@@ -105,7 +104,7 @@ export const ModelHeader = () => {
         </Box>
       </Box>
       {isAddFieldModalOpen && (
-        <AddFieldModal fields={fields} onModalClose={setAddFieldModalOpen} />
+        <AddFieldModal mode="fields_list" onModalClose={setAddFieldModalOpen} />
       )}
     </>
   );

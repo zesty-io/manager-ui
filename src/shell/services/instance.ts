@@ -23,6 +23,7 @@ export const instanceApi = createApi({
     "ContentModels",
     "ContentModel",
     "ContentModelFields",
+    "ContentModelField",
   ],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
@@ -246,4 +247,5 @@ export const {
   useBulkUpdateContentModelFieldMutation,
   useUpdateContentModelMutation,
   useCreateContentModelFieldMutation,
+  useUpdateContentModelFieldMutation,
 } = instanceApi;

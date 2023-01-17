@@ -1,21 +1,33 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, useMemo } from "react";
+import { useParams } from "react-router";
 import { Dialog } from "@mui/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
-import { ContentModelField } from "../../../../../../shell/services/types";
+import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 
+type Params = {
+  id: string;
+  fieldId: string;
+};
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
   onModalClose: Dispatch<SetStateAction<boolean>>;
-  fields: ContentModelField[];
+  mode: ViewMode;
 }
-export const AddFieldModal = ({ onModalClose, fields }: Props) => {
-  const [viewMode, setViewMode] = useState<ViewMode>("fields_list");
+export const AddFieldModal = ({ onModalClose, mode }: Props) => {
+  const [viewMode, setViewMode] = useState<ViewMode>(mode);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
     fieldName: "",
   });
+  const params = useParams<Params>();
+  const { id, fieldId } = params;
+  const { data: fields } = useGetContentModelFieldsQuery(id);
+
+  const fieldData = useMemo(() => {
+    return fields?.find((field) => field.ZUID === fieldId);
+  }, [fieldId, fields]);
 
   const handleFieldClick = (fieldType: string, fieldName: string) => {
     setViewMode("new_field");
@@ -55,6 +67,16 @@ export const AddFieldModal = ({ onModalClose, fields }: Props) => {
           onModalClose={() => onModalClose(false)}
           onBackClick={() => setViewMode("fields_list")}
           onFieldCreationSuccesssful={() => onModalClose(false)}
+        />
+      )}
+      {viewMode === "update_field" && (
+        <FieldForm
+          fields={fields}
+          type={fieldData?.datatype}
+          name={fieldData?.label}
+          onModalClose={() => onModalClose(false)}
+          onFieldCreationSuccesssful={() => onModalClose(false)}
+          fieldData={fieldData}
         />
       )}
     </Dialog>
