@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
 import DomainsMenu from "./DomainsMenu";
 import DocsMenu from "./DocsMenu";
+import { AppState } from "../../../shell/store/types";
 import InstancesListMenu from "./InstancesListMenu";
 interface Props {
   instanceFaviconUrl?: string;
@@ -56,6 +58,7 @@ const InstanceFlyoutMenuModal = ({
       isLoading: isLoadingRefreshCache,
     },
   ] = useRefreshCacheMutation();
+  const instance = useSelector((state: AppState) => state.instance);
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
   const [showDomainsMenu, setShowDomainsMenu] = useState(false);
   const [showInstancesListMenu, setShowInstancesListMenu] = useState(false);
@@ -233,7 +236,17 @@ const InstanceFlyoutMenuModal = ({
                 <MenuItem onClick={() => setShowDomainsMenu(true)}>
                   <Typography variant="body2">Domains</Typography>
                 </MenuItem>
-                <Box sx={{ p: 1 }}>
+                <MenuItem
+                  onClick={() =>
+                    handleNavigation(
+                      // @ts-ignore
+                      `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
+                    )
+                  }
+                >
+                  <Typography variant="body2">Go to Live Site</Typography>
+                </MenuItem>
+                <Box sx={{ px: 1, py: "5px" }}>
                   <Button
                     variant="outlined"
                     color="inherit"
@@ -253,7 +266,7 @@ const InstanceFlyoutMenuModal = ({
                     Refresh Cache
                   </Button>
                 </Box>
-                <Box sx={{ p: 1 }}>
+                <Box sx={{ px: 1, py: "5px" }}>
                   <Button
                     variant="outlined"
                     color="inherit"
