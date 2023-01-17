@@ -1,10 +1,11 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   Box,
   Button,
   TextField,
   InputAdornment,
   CircularProgress,
+  Typography,
 } from "@mui/material";
 import { useParams } from "react-router";
 import {
@@ -15,8 +16,10 @@ import {
 import { Field } from "./Field";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { AddFieldDivider } from "./AddFieldDivider";
 import { FieldsListRight } from "./FieldsListRight";
+import noResults from "../../../../../../public/images/noSearchResults.svg";
 
 type Params = {
   id: string;
@@ -38,6 +41,7 @@ export const FieldList = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const showSpinner = isFieldsLoading;
   const model = models?.find((model) => model.ZUID === id);
+  const searchRef = useRef<HTMLDivElement>();
 
   useMemo(() => {
     setDraggedIndex(null);
@@ -78,6 +82,12 @@ export const FieldList = () => {
     });
   };
 
+  const handleSearchAgain = () => {
+    setSearch("");
+
+    searchRef.current.focus();
+  };
+
   if (showSpinner) {
     return (
       <Box
@@ -114,41 +124,67 @@ export const FieldList = () => {
               </InputAdornment>
             ),
           }}
+          inputRef={searchRef}
         />
         <Box sx={{ overflowY: "scroll" }}>
-          {filteredFields?.map((field, index) => {
-            return (
-              <Box key={field.ZUID}>
-                {index !== 0 && (
-                  <AddFieldDivider indexToInsert={index} disabled={!!search} />
-                )}
-                <Box sx={{ pl: 3 }}>
-                  <Field
-                    index={index}
-                    field={field}
-                    setDraggedIndex={setDraggedIndex}
-                    setHoveredIndex={setHoveredIndex}
-                    onReorder={handleReorder}
-                    disableDrag={!!search}
-                  />
-                </Box>
+          {filteredFields.length ? (
+            <>
+              {filteredFields?.map((field, index) => {
+                return (
+                  <Box key={field.ZUID}>
+                    {index !== 0 && (
+                      <AddFieldDivider
+                        indexToInsert={index}
+                        disabled={!!search}
+                      />
+                    )}
+                    <Box sx={{ pl: 3 }}>
+                      <Field
+                        index={index}
+                        field={field}
+                        setDraggedIndex={setDraggedIndex}
+                        setHoveredIndex={setHoveredIndex}
+                        onReorder={handleReorder}
+                        disableDrag={!!search}
+                      />
+                    </Box>
+                  </Box>
+                );
+              })}
+              <Box pl={3}>
+                <Button
+                  sx={{
+                    justifyContent: "flex-start",
+                    my: 1,
+                  }}
+                  size="large"
+                  variant="outlined"
+                  startIcon={<AddRoundedIcon />}
+                  fullWidth
+                >
+                  Add Another Field to {model?.label}
+                </Button>
               </Box>
-            );
-          })}
-          <Box pl={3}>
-            <Button
-              sx={{
-                justifyContent: "flex-start",
-                my: 1,
-              }}
-              size="large"
-              variant="outlined"
-              startIcon={<AddRoundedIcon />}
-              fullWidth
-            >
-              Add Another Field to {model?.label}
-            </Button>
-          </Box>
+            </>
+          ) : (
+            <Box textAlign="center" pt={8} px={20.5}>
+              <img src={noResults} alt="No search results" />
+              <Typography pt={1.5} pb={1} variant="h4" fontWeight={600}>
+                Your search “{search}” could not find any results
+              </Typography>
+              <Typography variant="body2" pb={3} color="text.secondary">
+                Try adjusting your search. We suggest check all words are
+                spelled correctly or try using different keywords.
+              </Typography>
+              <Button
+                onClick={handleSearchAgain}
+                variant="contained"
+                startIcon={<SearchRoundedIcon />}
+              >
+                Search Again
+              </Button>
+            </Box>
+          )}
         </Box>
       </Box>
       <FieldsListRight model={model} />
