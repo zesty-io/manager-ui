@@ -203,6 +203,15 @@ const InstanceFlyoutMenuModal = ({
                 <MenuItem onClick={onSetShowFaviconModal}>
                   <Typography variant="body2">Update Favicon</Typography>
                 </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleNavigation(
+                      `https://www.zesty.io/instances/${instanceZUID}`
+                    )
+                  }
+                >
+                  <Typography variant="body2">Configure Instance</Typography>
+                </MenuItem>
                 <MenuItem onClick={() => setShowDomainsMenu(true)}>
                   <Typography variant="body2">Domains</Typography>
                 </MenuItem>
