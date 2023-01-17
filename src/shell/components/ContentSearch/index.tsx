@@ -57,12 +57,12 @@ const ContentSearch: FC = () => {
   ] as const; //TODO RTK query
   */
   const res = useSearchContentQuery({ query: value }, { skip: !value });
-  console.log(res);
+  console.log("rtk response", res);
 
   const suggestions = res.data;
   const topSuggestions =
     suggestions && value ? [value, ...suggestions.slice(0, 5)] : [];
-  console.log(value, suggestions);
+  console.log({ value, suggestions });
 
   //@ts-ignore TODO fix typing for useMetaKey
   const thing = useMetaKey("k", () => {
@@ -84,12 +84,16 @@ const ContentSearch: FC = () => {
       options={topSuggestions}
       filterOptions={(x) => x}
       onInputChange={(event, newVal) => {
-        console.log("change");
-        console.log({ thing: event, newVal });
         setValue(newVal);
+        console.log("onInputChange", { event, newVal });
+        if (event?.type === "change") {
+          console.log("onInputChange change");
+        } else if (event?.type === "keydown") {
+          console.log("onInputChange keydown", newVal);
+        }
       }}
       onChange={(event, newVal) => {
-        console.log("change", newVal);
+        console.log("onChange", { event, newVal });
         // null represents "X" button clicked
         if (!newVal) {
           setValue("");
@@ -115,16 +119,17 @@ const ContentSearch: FC = () => {
         }
       }}
       getOptionLabel={(option: ContentItem) => {
-        console.log({ option, suggestions });
+        console.log("getOptionLabel", { option, suggestions, value });
         return typeof option === "string" ? `${option}` : option.web.metaTitle;
       }}
       renderOption={(props, option) => {
-        console.log("rendering option", option, props);
+        console.log("renderOption", option, props);
+        // type of string represents the top-row search term
         if (typeof option === "string")
           return (
             <ListItem
               {...props}
-              // TODO: aria-selected is required for accessibility but the underlying component is not setting it correctly
+              // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
               aria-selected={false}
               key={"topline"}
               sx={{ padding: "4px 16px 4px 16px" }}
@@ -153,7 +158,7 @@ const ContentSearch: FC = () => {
         }
       }}
       renderInput={(params: any) => {
-        console.log("input rendered");
+        console.log("renderInput");
         return (
           <TextField
             {...params}
