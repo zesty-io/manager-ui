@@ -132,6 +132,9 @@ const ContentSearch: FC = () => {
             {...params}
             ref={textfieldRef}
             fullWidth
+            type="search"
+            variant="outlined"
+            size="small"
             placeholder={`Search Instance ${shortcutHelpText}`}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
