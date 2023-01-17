@@ -16,10 +16,9 @@ import {
 import { Field } from "./Field";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { AddFieldDivider } from "./AddFieldDivider";
 import { FieldsListRight } from "./FieldsListRight";
-import noResults from "../../../../../../public/images/noSearchResults.svg";
+import { NoSearchResults } from "./NoSearchResults";
 
 type Params = {
   id: string;
@@ -167,23 +166,14 @@ export const FieldList = () => {
               </Box>
             </>
           ) : (
-            <Box textAlign="center" pt={8} px={20.5}>
-              <img src={noResults} alt="No search results" />
-              <Typography pt={1.5} pb={1} variant="h4" fontWeight={600}>
-                Your search “{search}” could not find any results
-              </Typography>
-              <Typography variant="body2" pb={3} color="text.secondary">
-                Try adjusting your search. We suggest check all words are
-                spelled correctly or try using different keywords.
-              </Typography>
-              <Button
-                onClick={handleSearchAgain}
-                variant="contained"
-                startIcon={<SearchRoundedIcon />}
-              >
-                Search Again
-              </Button>
-            </Box>
+            <NoSearchResults
+              searchTerm={search}
+              onSearchAgain={handleSearchAgain}
+              sx={{
+                pt: 8,
+                px: 20.5,
+              }}
+            />
           )}
         </Box>
       </Box>
