@@ -2,7 +2,6 @@ import { useDispatch } from "react-redux";
 import { useRef } from "react";
 
 import { useHistory } from "react-router-dom";
-import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import ContentSearch from "shell/components/ContentSearch";
 import { notify } from "shell/store/notifications";
@@ -11,11 +10,7 @@ import { ThemeProvider } from "@mui/material/styles";
 
 export default function GlobalSearch() {
   const dispatch = useDispatch();
-  const ref = useRef();
   const history = useHistory();
-  const metaShortcut = useMetaKey("k", "shift", () => {
-    ref.current.focus();
-  });
 
   const handleSelect = (item) => {
     if (item?.meta) {
@@ -33,7 +28,6 @@ export default function GlobalSearch() {
   return (
     <ThemeProvider theme={theme}>
       <ContentSearch
-        ref={ref}
         placeholder="Search Instance"
         onSelect={handleSelect}
         value=""

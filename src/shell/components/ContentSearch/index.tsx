@@ -1,18 +1,9 @@
 import TextField from "@mui/material/TextField";
 import { FC, useState, useRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import TuneIcon from "@mui/icons-material/Tune";
-import Popper from "@mui/material/Popper";
-import Paper from "@mui/material/Paper";
 import Autocomplete from "@mui/material/Autocomplete";
 import { HTMLAttributes } from "react";
-import {
-  MenuItem,
-  MenuList,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
@@ -21,42 +12,13 @@ import { useHistory } from "react-router";
 import { useDispatch } from "react-redux";
 import { notify } from "../../store/notifications";
 
-// input with a search icon and "search instance" placeholder text
-
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
   const history = useHistory();
   const dispatch = useDispatch();
 
-  //POPPER stuff
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const inputRef = useRef<HTMLDivElement>(null);
-  const textfieldRef = useRef<HTMLDivElement>(null);
+  const textfieldRef = useRef<HTMLDivElement>();
 
-  const focus = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const blur = () => {
-    //setAnchorEl(null);
-  };
-  const selected = (event: any) => {
-    console.log("Selected", event.currentTarget.innerText);
-    inputRef.current.focus();
-  };
-  const focused = (event: any) => {
-    console.log("Focused", event.currentTarget.innerText);
-  };
-
-  const id = "search-popover";
-
-  /*
-  const suggestions = [
-    "Suggestion 1",
-    "Suggestion 2",
-    "Suggestion 3",
-    "Suggestion 4",
-  ] as const; //TODO RTK query
-  */
   const res = useSearchContentQuery({ query: value }, { skip: !value });
   console.log("rtk response", res);
 
@@ -66,11 +28,10 @@ const ContentSearch: FC = () => {
   console.log({ value, suggestions });
 
   //@ts-ignore TODO fix typing for useMetaKey
-  const thing = useMetaKey("k", () => {
-    focus({ currentTarget: textfieldRef });
+  const shortcutHelpText = useMetaKey("k", () => {
+    textfieldRef.current?.querySelector("input").focus();
   });
 
-  // options={topSuggestions ? topSuggestions.map(s => s.web.metaTitle) : []}
   return (
     <Autocomplete
       value={value}
@@ -148,7 +109,9 @@ const ContentSearch: FC = () => {
         return (
           <TextField
             {...params}
+            ref={textfieldRef}
             fullWidth
+            placeholder={`Search Instance ${shortcutHelpText}`}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 console.log("Enter pressed", e);
