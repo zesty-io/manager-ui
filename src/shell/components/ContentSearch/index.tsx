@@ -89,6 +89,7 @@ const ContentSearch: FC = () => {
               aria-selected={false}
               key={"global-search-term"}
               icon="search"
+              onClick={() => history.push(`/search?q=${option}`)}
               text={option}
             />
           );
