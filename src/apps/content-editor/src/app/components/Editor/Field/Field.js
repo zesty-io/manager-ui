@@ -55,7 +55,9 @@ import {
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
+import { withAI } from "../../../../../../../shell/components/withAi";
 
+const AITextField = withAI(FieldTypeText);
 const FieldLabel = memo((props) => {
   return (
     <>
@@ -266,9 +268,20 @@ export default function Field({
     () => <FieldLabel label={label} name={name} datatype={datatype} />,
     [label, name, datatype]
   );
-
   switch (datatype) {
     case "text":
+      return (
+        <AITextField
+          name={name}
+          label={FieldTypeLabel}
+          helperText={description}
+          tooltip={settings.tooltip}
+          required={required}
+          value={value}
+          onChange={(evt) => onChange(evt.target.value, name)}
+          aiType="text"
+        />
+      );
     case "fontawesome":
       return (
         <FieldTypeText
@@ -314,7 +327,7 @@ export default function Field({
 
     case "textarea":
       return (
-        <FieldTypeText
+        <AITextField
           name={name}
           label={FieldTypeLabel}
           helperText={description}
@@ -325,6 +338,7 @@ export default function Field({
           datatype={datatype}
           multiline={true}
           rows={6}
+          aiType="paragraph"
           onChange={(evt) => {
             onChange(evt.target.value, name);
           }}

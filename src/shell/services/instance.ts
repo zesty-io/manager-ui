@@ -99,6 +99,10 @@ export const instanceApi = createApi({
       // Restore cache once content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
     }),
+    getLangsMapping: builder.query<any, void>({
+      query: () => `env/langs/all`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -113,4 +117,5 @@ export const {
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
   useGetContentItemPublishingsQuery,
+  useGetLangsMappingQuery,
 } = instanceApi;
