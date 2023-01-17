@@ -1,10 +1,11 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   Box,
   Button,
   TextField,
   InputAdornment,
   CircularProgress,
+  Typography,
 } from "@mui/material";
 import { useParams } from "react-router";
 import {
@@ -17,6 +18,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import { AddFieldDivider } from "./AddFieldDivider";
 import { FieldsListRight } from "./FieldsListRight";
+import { NoSearchResults } from "./NoSearchResults";
 
 type Params = {
   id: string;
@@ -38,6 +40,7 @@ export const FieldList = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const showSpinner = isFieldsLoading;
   const model = models?.find((model) => model.ZUID === id);
+  const searchRef = useRef<HTMLDivElement>();
 
   useMemo(() => {
     setDraggedIndex(null);
@@ -78,6 +81,12 @@ export const FieldList = () => {
     });
   };
 
+  const handleSearchAgain = () => {
+    setSearch("");
+
+    searchRef.current.focus();
+  };
+
   if (showSpinner) {
     return (
       <Box
@@ -114,42 +123,64 @@ export const FieldList = () => {
               </InputAdornment>
             ),
           }}
+          inputRef={searchRef}
         />
-        <Box sx={{ overflowY: "scroll" }}>
-          {filteredFields?.map((field, index) => {
-            return (
-              <Box key={field.ZUID}>
-                {index !== 0 && (
-                  <AddFieldDivider indexToInsert={index} disabled={!!search} />
-                )}
-                <Box sx={{ pl: 3 }}>
-                  <Field
-                    index={index}
-                    field={field}
-                    setDraggedIndex={setDraggedIndex}
-                    setHoveredIndex={setHoveredIndex}
-                    onReorder={handleReorder}
-                    disableDrag={!!search}
-                  />
+
+        {!Boolean(filteredFields.length) && search && (
+          <NoSearchResults
+            searchTerm={search}
+            onSearchAgain={handleSearchAgain}
+            sx={{
+              p: 3,
+            }}
+          />
+        )}
+
+        {!Boolean(filteredFields.length) && !search && (
+          // TODO: Replace with the no fields state component when figma provided
+          <Typography>No fields</Typography>
+        )}
+
+        {Boolean(filteredFields.length) && (
+          <Box sx={{ overflowY: "scroll" }}>
+            {filteredFields?.map((field, index) => {
+              return (
+                <Box key={field.ZUID}>
+                  {index !== 0 && (
+                    <AddFieldDivider
+                      indexToInsert={index}
+                      disabled={!!search}
+                    />
+                  )}
+                  <Box sx={{ pl: 3 }}>
+                    <Field
+                      index={index}
+                      field={field}
+                      setDraggedIndex={setDraggedIndex}
+                      setHoveredIndex={setHoveredIndex}
+                      onReorder={handleReorder}
+                      disableDrag={!!search}
+                    />
+                  </Box>
                 </Box>
-              </Box>
-            );
-          })}
-          <Box pl={3}>
-            <Button
-              sx={{
-                justifyContent: "flex-start",
-                my: 1,
-              }}
-              size="large"
-              variant="outlined"
-              startIcon={<AddRoundedIcon />}
-              fullWidth
-            >
-              Add Another Field to {model?.label}
-            </Button>
+              );
+            })}
+            <Box pl={3}>
+              <Button
+                sx={{
+                  justifyContent: "flex-start",
+                  my: 1,
+                }}
+                size="large"
+                variant="outlined"
+                startIcon={<AddRoundedIcon />}
+                fullWidth
+              >
+                Add Another Field to {model?.label}
+              </Button>
+            </Box>
           </Box>
-        </Box>
+        )}
       </Box>
       <FieldsListRight model={model} />
     </Box>
