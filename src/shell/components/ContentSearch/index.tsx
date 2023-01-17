@@ -100,7 +100,7 @@ const ContentSearch: FC = () => {
               {...props}
               key={option.meta.ZUID}
               icon="pencil"
-              text={option.web.metaTitle}
+              text={option?.web?.metaTitle || "Missing Meta Title"}
             />
           );
         }
