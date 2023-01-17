@@ -94,6 +94,15 @@ export const ContentListItem: FC<ContentListItem> = ({
         backgroundColor: "background.paper",
         border: (theme) => `1px solid ${theme.palette.grey[100]}`,
         height: 9,
+        "&:hover": {
+          backgroundColor: "action.hover",
+        },
+        "&:hover button": {
+          visibility: "visible",
+        },
+        "&:hover a": {
+          visibility: "visible",
+        },
       }}
     >
       {/* Left Container */}
