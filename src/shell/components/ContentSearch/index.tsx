@@ -74,7 +74,6 @@ const ContentSearch: FC = () => {
     <Autocomplete
       value={value}
       open={true}
-      includeInputInList
       fullWidth
       id="global-search-autocomplete"
       freeSolo
@@ -120,7 +119,8 @@ const ContentSearch: FC = () => {
       }}
       getOptionLabel={(option: ContentItem) => {
         console.log("getOptionLabel", { option, suggestions, value });
-        return typeof option === "string" ? `${option}` : option.web.metaTitle;
+        // do not change the input value when a suggestion is selected
+        return value;
       }}
       renderOption={(props, option) => {
         console.log("renderOption", option, props);
