@@ -126,7 +126,23 @@ export const FieldList = () => {
           inputRef={searchRef}
         />
         <Box sx={{ overflowY: "scroll" }}>
-          {filteredFields.length ? (
+          {!Boolean(filteredFields.length) && search && (
+            <NoSearchResults
+              searchTerm={search}
+              onSearchAgain={handleSearchAgain}
+              sx={{
+                pt: 8,
+                px: 20.5,
+              }}
+            />
+          )}
+
+          {!Boolean(filteredFields.length) && !search && (
+            // TODO: Replace with the no fields state component when figma provided
+            <Typography>No fields</Typography>
+          )}
+
+          {Boolean(filteredFields.length) && (
             <>
               {filteredFields?.map((field, index) => {
                 return (
@@ -165,15 +181,6 @@ export const FieldList = () => {
                 </Button>
               </Box>
             </>
-          ) : (
-            <NoSearchResults
-              searchTerm={search}
-              onSearchAgain={handleSearchAgain}
-              sx={{
-                pt: 8,
-                px: 20.5,
-              }}
-            />
           )}
         </Box>
       </Box>
