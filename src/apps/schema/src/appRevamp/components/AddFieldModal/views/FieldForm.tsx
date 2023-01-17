@@ -112,7 +112,6 @@ interface Props {
   fields: ContentModelField[];
   onFieldCreationSuccesssful: () => void;
   fieldData?: ContentModelField;
-  isLoading?: boolean;
 }
 export const FieldForm = ({
   type,
@@ -122,7 +121,6 @@ export const FieldForm = ({
   fields,
   onFieldCreationSuccesssful,
   fieldData,
-  isLoading = false,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -260,20 +258,6 @@ export const FieldForm = ({
     ? `Add an ${name} Field`
     : `Add a ${name} Field`;
 
-  if (isLoading) {
-    // TODO: Verify with Zosh what will be shown here. Just showing a loading spinner for now.
-    return (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        height="100%"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   return (
     <>
       <DialogTitle
@@ -325,7 +309,7 @@ export const FieldForm = ({
       >
         {activeTab === "details" && (
           <>
-            {formConfig[type].map((fieldConfig, index) => {
+            {formConfig[type]?.map((fieldConfig, index) => {
               return (
                 <FieldFormInput
                   key={index}

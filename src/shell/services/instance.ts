@@ -188,7 +188,6 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "ContentModelFields", id: arg.modelZUID },
-        { type: "ContentModelField", id: arg.fieldZUID },
       ],
     }),
     bulkUpdateContentModelField: builder.mutation<
@@ -230,17 +229,6 @@ export const instanceApi = createApi({
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
     }),
-    getContentModelField: builder.query<
-      ContentModelField,
-      { modelZUID: string; fieldZUID: string }
-    >({
-      query: ({ modelZUID, fieldZUID }) =>
-        `/content/models/${modelZUID}/fields/${fieldZUID}`,
-      transformResponse: getResponseData,
-      providesTags: (result, error, { modelZUID, fieldZUID }) => [
-        { type: "ContentModelField", id: fieldZUID },
-      ],
-    }),
   }),
 });
 
@@ -259,6 +247,5 @@ export const {
   useBulkUpdateContentModelFieldMutation,
   useUpdateContentModelMutation,
   useCreateContentModelFieldMutation,
-  useGetContentModelFieldQuery,
   useUpdateContentModelFieldMutation,
 } = instanceApi;

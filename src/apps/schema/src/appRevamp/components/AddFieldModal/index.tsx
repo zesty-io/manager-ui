@@ -1,14 +1,10 @@
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { Dispatch, SetStateAction, useState, useMemo } from "react";
 import { useParams } from "react-router";
-import { Dialog, Typography } from "@mui/material";
+import { Dialog } from "@mui/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
-import { ContentModelField } from "../../../../../../shell/services/types";
-import {
-  useGetContentModelFieldsQuery,
-  useGetContentModelFieldQuery,
-} from "../../../../../../shell/services/instance";
+import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 
 type Params = {
   id: string;
@@ -28,14 +24,10 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
   const params = useParams<Params>();
   const { id, fieldId } = params;
   const { data: fields } = useGetContentModelFieldsQuery(id);
-  const {
-    data: fieldData,
-    isLoading: isFieldDataLoading,
-    isSuccess: isFieldDataLoaded,
-  } = useGetContentModelFieldQuery({
-    modelZUID: id,
-    fieldZUID: fieldId,
-  });
+
+  const fieldData = useMemo(() => {
+    return fields?.find((field) => field.ZUID === fieldId);
+  }, [fieldId, fields]);
 
   const handleFieldClick = (fieldType: string, fieldName: string) => {
     setViewMode("new_field");
@@ -85,7 +77,6 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
           onModalClose={() => onModalClose(false)}
           onFieldCreationSuccesssful={() => onModalClose(false)}
           fieldData={fieldData}
-          isLoading={isFieldDataLoading}
         />
       )}
     </Dialog>
