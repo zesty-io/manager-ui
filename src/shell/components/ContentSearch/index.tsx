@@ -73,7 +73,6 @@ const ContentSearch: FC = () => {
   return (
     <Autocomplete
       value={value}
-      open={true}
       fullWidth
       id="global-search-autocomplete"
       freeSolo
@@ -127,7 +126,15 @@ const ContentSearch: FC = () => {
               // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
               aria-selected={false}
               key={"topline"}
-              sx={{ padding: "4px 16px 4px 16px" }}
+              sx={{
+                padding: "4px 16px 4px 16px",
+                height: "36px",
+                "&.Mui-focused": {
+                  borderLeft: (theme) =>
+                    "4px solid " + theme.palette.primary.main,
+                  padding: "4px 16px 4px 12px",
+                },
+              }}
             >
               <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
                 <SearchIcon fontSize="small" />
@@ -138,9 +145,22 @@ const ContentSearch: FC = () => {
               />
             </ListItem>
           );
+        // type of ContentItem represents a suggestion from the search API
         else {
           return (
-            <ListItem {...props} key={option.meta.ZUID}>
+            <ListItem
+              {...props}
+              key={option.meta.ZUID}
+              sx={{
+                padding: "4px 16px 4px 16px",
+                height: "36px",
+                "&.Mui-focused": {
+                  borderLeft: (theme) =>
+                    "4px solid " + theme.palette.primary.main,
+                  padding: "4px 16px 4px 12px",
+                },
+              }}
+            >
               <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
                 <PencilIcon fontSize="small" />
               </ListItemIcon>
