@@ -5,6 +5,7 @@ import TuneIcon from "@mui/icons-material/Tune";
 import Popper from "@mui/material/Popper";
 import Paper from "@mui/material/Paper";
 import Autocomplete from "@mui/material/Autocomplete";
+import { HTMLAttributes } from "react";
 import {
   MenuItem,
   MenuList,
@@ -121,54 +122,24 @@ const ContentSearch: FC = () => {
         // type of string represents the top-row search term
         if (typeof option === "string")
           return (
-            <ListItem
+            <Suggestion
               {...props}
               // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
               aria-selected={false}
-              key={"topline"}
-              sx={{
-                padding: "4px 16px 4px 16px",
-                height: "36px",
-                "&.Mui-focused": {
-                  borderLeft: (theme) =>
-                    "4px solid " + theme.palette.primary.main,
-                  padding: "4px 16px 4px 12px",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
-                <SearchIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={option}
-                primaryTypographyProps={{ variant: "body2" }}
-              />
-            </ListItem>
+              key={"global-search-term"}
+              icon="search"
+              text={option}
+            />
           );
         // type of ContentItem represents a suggestion from the search API
         else {
           return (
-            <ListItem
+            <Suggestion
               {...props}
               key={option.meta.ZUID}
-              sx={{
-                padding: "4px 16px 4px 16px",
-                height: "36px",
-                "&.Mui-focused": {
-                  borderLeft: (theme) =>
-                    "4px solid " + theme.palette.primary.main,
-                  padding: "4px 16px 4px 12px",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
-                <PencilIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={option.web.metaTitle}
-                primaryTypographyProps={{ variant: "body2" }}
-              />
-            </ListItem>
+              icon="pencil"
+              text={option.web.metaTitle}
+            />
           );
         }
       }}
@@ -207,21 +178,31 @@ const ContentSearch: FC = () => {
 
 export default ContentSearch;
 
-type SuggestionProps = {
-  suggestion: string;
-  onClick: (event: any) => void;
-  onFocus: (event: any) => void;
+type SuggestionProps = HTMLAttributes<HTMLLIElement> & {
+  text: string;
+  icon: "search" | "pencil";
 };
-const Suggestion: FC<SuggestionProps> = ({ suggestion, onClick, onFocus }) => (
-  <MenuItem
-    key={suggestion}
-    onClick={onClick}
-    onFocus={onFocus}
-    sx={{ height: "36px" }}
-  >
-    <ListItemIcon>
-      <PencilIcon fontSize="small" />
-    </ListItemIcon>
-    <ListItemText primary={suggestion} />
-  </MenuItem>
-);
+const Suggestion: FC<SuggestionProps> = ({ text, icon, ...props }) => {
+  const Icon = icon === "search" ? SearchIcon : PencilIcon;
+  return (
+    <ListItem
+      {...props}
+      sx={{
+        padding: "4px 16px 4px 16px",
+        height: "36px",
+        "&.Mui-focused": {
+          borderLeft: (theme) => "4px solid " + theme.palette.primary.main,
+          padding: "4px 16px 4px 12px",
+        },
+      }}
+    >
+      <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
+        <Icon fontSize="small" />
+      </ListItemIcon>
+      <ListItemText
+        primary={text}
+        primaryTypographyProps={{ variant: "body2" }}
+      />
+    </ListItem>
+  );
+};
