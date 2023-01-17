@@ -81,15 +81,15 @@ const formConfig: { [key: string]: InputField[] } = {
   images: [],
   internal_link: [],
   link: [],
-  markdown: [],
+  markdown: [...commonFields],
   number: [],
   one_to_many: [],
   one_to_one: [],
   sort: [],
   text: [...commonFields],
-  textarea: [],
+  textarea: [...commonFields],
   uuid: [],
-  wysiwyg_basic: [],
+  wysiwyg_basic: [...commonFields],
   yes_no: [],
 };
 
