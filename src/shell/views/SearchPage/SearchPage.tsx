@@ -14,7 +14,7 @@ import { BackButton } from "./BackButton";
 
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
-  const query = params.get("q");
+  const query = params.get("q") || "";
   console.log("query", query);
   const { data: results, isLoading } = useSearchContentQuery(
     { query },
@@ -40,20 +40,23 @@ export const SearchPage: FC = () => {
         </Typography>
         <BackButton />
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          padding: "16px 24px 0px",
-          gap: 2,
-          backgroundColor: "grey.50",
-          height: "100%",
-        }}
-      >
-        {!isLoading && !results?.length && <NoSearchResults query={query} />}
-        <ContentList results={results} loading={isLoading} />
-      </Box>
+      {!isLoading && !results?.length && <NoSearchResults query={query} />}
+      {isLoading ||
+        (results?.length && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              padding: "16px 24px 0px",
+              gap: 2,
+              backgroundColor: "grey.50",
+              height: "100%",
+            }}
+          >
+            <ContentList results={results} loading={isLoading} />
+          </Box>
+        ))}
     </ThemeProvider>
   );
 };
