@@ -83,13 +83,8 @@ const ContentSearch: FC = () => {
       options={topSuggestions}
       filterOptions={(x) => x}
       onInputChange={(event, newVal) => {
-        setValue(newVal);
         console.log("onInputChange", { event, newVal });
-        if (event?.type === "change") {
-          console.log("onInputChange change");
-        } else if (event?.type === "keydown") {
-          console.log("onInputChange keydown", newVal);
-        }
+        setValue(newVal);
       }}
       onChange={(event, newVal) => {
         console.log("onChange", { event, newVal });
