@@ -6,6 +6,8 @@ import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import ContentSearch from "shell/components/ContentSearch";
 import { notify } from "shell/store/notifications";
+import { theme } from "@zesty-io/material";
+import { ThemeProvider } from "@mui/material/styles";
 
 export default function GlobalSearch() {
   const dispatch = useDispatch();
@@ -29,11 +31,13 @@ export default function GlobalSearch() {
   };
 
   return (
-    <ContentSearch
-      ref={ref}
-      placeholder="Search Instance"
-      onSelect={handleSelect}
-      value=""
-    />
+    <ThemeProvider theme={theme}>
+      <ContentSearch
+        ref={ref}
+        placeholder="Search Instance"
+        onSelect={handleSelect}
+        value=""
+      />
+    </ThemeProvider>
   );
 }

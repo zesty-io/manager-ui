@@ -172,6 +172,7 @@ const ContentSearch: FC = () => {
                 padding: "6px 8px",
                 gap: "10px",
                 width: "100%",
+                backgroundColor: (theme) => theme.palette.background.paper,
               },
             }}
             sx={{
