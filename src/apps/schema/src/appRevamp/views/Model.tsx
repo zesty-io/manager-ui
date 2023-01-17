@@ -5,8 +5,13 @@ import { FieldList } from "../components/FieldList";
 import { ModelHeader } from "../components/ModelHeader";
 import { AddFieldModal } from "../components/AddFieldModal";
 
+type Params = {
+  id: string;
+};
 export const Model = () => {
   const history = useHistory();
+  const params = useParams<Params>();
+  const { id } = params;
 
   return (
     <Box flex="1" display="flex" height="100%" flexDirection="column">
@@ -19,7 +24,7 @@ export const Model = () => {
           render={() => (
             <AddFieldModal
               mode="update_field"
-              onModalClose={() => history.goBack()}
+              onModalClose={() => history.push(`/schema/${id}/fields`)}
             />
           )}
         />
