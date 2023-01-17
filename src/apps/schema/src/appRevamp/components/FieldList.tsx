@@ -125,64 +125,62 @@ export const FieldList = () => {
           }}
           inputRef={searchRef}
         />
-        <Box sx={{ overflowY: "scroll" }}>
-          {!Boolean(filteredFields.length) && search && (
-            <NoSearchResults
-              searchTerm={search}
-              onSearchAgain={handleSearchAgain}
-              sx={{
-                pt: 8,
-                px: 20.5,
-              }}
-            />
-          )}
 
-          {!Boolean(filteredFields.length) && !search && (
-            // TODO: Replace with the no fields state component when figma provided
-            <Typography>No fields</Typography>
-          )}
+        {!Boolean(filteredFields.length) && search && (
+          <NoSearchResults
+            searchTerm={search}
+            onSearchAgain={handleSearchAgain}
+            sx={{
+              p: 3,
+            }}
+          />
+        )}
 
-          {Boolean(filteredFields.length) && (
-            <>
-              {filteredFields?.map((field, index) => {
-                return (
-                  <Box key={field.ZUID}>
-                    {index !== 0 && (
-                      <AddFieldDivider
-                        indexToInsert={index}
-                        disabled={!!search}
-                      />
-                    )}
-                    <Box sx={{ pl: 3 }}>
-                      <Field
-                        index={index}
-                        field={field}
-                        setDraggedIndex={setDraggedIndex}
-                        setHoveredIndex={setHoveredIndex}
-                        onReorder={handleReorder}
-                        disableDrag={!!search}
-                      />
-                    </Box>
+        {!Boolean(filteredFields.length) && !search && (
+          // TODO: Replace with the no fields state component when figma provided
+          <Typography>No fields</Typography>
+        )}
+
+        {Boolean(filteredFields.length) && (
+          <Box sx={{ overflowY: "scroll" }}>
+            {filteredFields?.map((field, index) => {
+              return (
+                <Box key={field.ZUID}>
+                  {index !== 0 && (
+                    <AddFieldDivider
+                      indexToInsert={index}
+                      disabled={!!search}
+                    />
+                  )}
+                  <Box sx={{ pl: 3 }}>
+                    <Field
+                      index={index}
+                      field={field}
+                      setDraggedIndex={setDraggedIndex}
+                      setHoveredIndex={setHoveredIndex}
+                      onReorder={handleReorder}
+                      disableDrag={!!search}
+                    />
                   </Box>
-                );
-              })}
-              <Box pl={3}>
-                <Button
-                  sx={{
-                    justifyContent: "flex-start",
-                    my: 1,
-                  }}
-                  size="large"
-                  variant="outlined"
-                  startIcon={<AddRoundedIcon />}
-                  fullWidth
-                >
-                  Add Another Field to {model?.label}
-                </Button>
-              </Box>
-            </>
-          )}
-        </Box>
+                </Box>
+              );
+            })}
+            <Box pl={3}>
+              <Button
+                sx={{
+                  justifyContent: "flex-start",
+                  my: 1,
+                }}
+                size="large"
+                variant="outlined"
+                startIcon={<AddRoundedIcon />}
+                fullWidth
+              >
+                Add Another Field to {model?.label}
+              </Button>
+            </Box>
+          </Box>
+        )}
       </Box>
       <FieldsListRight model={model} />
     </Box>
