@@ -124,7 +124,7 @@ export const ResourceTable = ({ dateRange }: Props) => {
       history.push("/code/file/" + meta?.uri.split("/").slice(3).join("/"));
     }
     if (meta?.url) {
-      history.push(new URL(meta?.url || meta?.uri)?.pathname);
+      history.push(new URL(meta?.url)?.pathname);
     } else {
       history.push("/content/" + meta?.uri.split("/").slice(4)[0]);
     }
