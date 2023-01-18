@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
 import DomainsMenu from "./DomainsMenu";
 import DocsMenu from "./DocsMenu";
+import { AppState } from "../../../shell/store/types";
 import InstancesListMenu from "./InstancesListMenu";
 interface Props {
   instanceFaviconUrl?: string;
@@ -56,6 +58,7 @@ const InstanceFlyoutMenuModal = ({
       isLoading: isLoadingRefreshCache,
     },
   ] = useRefreshCacheMutation();
+  const instance = useSelector((state: AppState) => state.instance);
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
   const [showDomainsMenu, setShowDomainsMenu] = useState(false);
   const [showInstancesListMenu, setShowInstancesListMenu] = useState(false);
@@ -105,7 +108,7 @@ const InstanceFlyoutMenuModal = ({
 
     return (
       <Box sx={{ width: "48px", py: 2 }}>
-        <Box>
+        <Box sx={{ height: "325px" }}>
           {favoriteInstances
             .slice(0, 8)
             .map((favInstance: any, key: number) => (
@@ -135,7 +138,10 @@ const InstanceFlyoutMenuModal = ({
             ))}
         </Box>
         <IconButton
-          sx={{ mx: "auto", width: "100%" }}
+          sx={{
+            mx: "auto",
+            width: "100%",
+          }}
           onClick={() => setShowInstancesListMenu(true)}
         >
           <ManageSearchIcon sx={{ mx: "auto" }} />
@@ -151,6 +157,7 @@ const InstanceFlyoutMenuModal = ({
           position: "absolute",
           bottom: 0,
           left: 0,
+          overflow: "hidden",
           width: "450px",
           height: "392px",
         },
@@ -191,22 +198,55 @@ const InstanceFlyoutMenuModal = ({
               }}
             >
               <Box sx={{ width: "200px", py: 1 }}>
-                <ListItem>
-                  <Avatar
-                    src={instanceFaviconUrl}
-                    sx={{ width: 32, height: 32 }}
-                  />
-                  <Typography variant="body2" sx={{ ml: 1.5, fontWeight: 700 }}>
+                <ListItem sx={{ mt: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
                     {instanceName}
                   </Typography>
                 </ListItem>
                 <MenuItem onClick={onSetShowFaviconModal}>
                   <Typography variant="body2">Update Favicon</Typography>
                 </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleNavigation(
+                      `https://www.zesty.io/instances/${instanceZUID}`
+                    )
+                  }
+                >
+                  <Typography variant="body2">Configure Instance</Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleNavigation(
+                      `https://www.zesty.io/instances/${instanceZUID}/users`
+                    )
+                  }
+                >
+                  <Typography variant="body2">Users</Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleNavigation(
+                      `https://www.zesty.io/instances/${instanceZUID}/apis`
+                    )
+                  }
+                >
+                  <Typography variant="body2">APIs</Typography>
+                </MenuItem>
                 <MenuItem onClick={() => setShowDomainsMenu(true)}>
                   <Typography variant="body2">Domains</Typography>
                 </MenuItem>
-                <Box sx={{ p: 1 }}>
+                <MenuItem
+                  onClick={() =>
+                    handleNavigation(
+                      // @ts-ignore
+                      `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
+                    )
+                  }
+                >
+                  <Typography variant="body2">Go to Live Site</Typography>
+                </MenuItem>
+                <Box sx={{ px: 1, py: "5px" }}>
                   <Button
                     variant="outlined"
                     color="inherit"
@@ -226,7 +266,7 @@ const InstanceFlyoutMenuModal = ({
                     Refresh Cache
                   </Button>
                 </Box>
-                <Box sx={{ p: 1 }}>
+                <Box sx={{ px: 1, py: "5px" }}>
                   <Button
                     variant="outlined"
                     color="inherit"
