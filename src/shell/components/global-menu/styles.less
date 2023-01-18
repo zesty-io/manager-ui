@@ -1,15 +1,13 @@
 @import "~@zesty-io/core/colors.less";
 
 .GlobalMenu {
-  border-top: 1px solid #212636;
-  border-bottom: 1px solid #212636;
-  display: grid;
-  grid-gap: 12px;
-  padding: 8px 0;
+  width: 100%;
+  padding: 2px 8px;
+  box-sizing: border-box;
 
   // let app link scroll on devices with constrained heights
   overflow: auto;
-  max-height: calc(100vh - 290px);
+  // max-height: calc(100vh - 290px);
 
   .SubAppLink {
     text-align: left;

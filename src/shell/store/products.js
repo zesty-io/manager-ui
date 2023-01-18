@@ -31,6 +31,7 @@ export function fetchProducts() {
           "reports",
           // "release",
           "settings",
+          "marketplace",
         ];
         break;
       case "31-71cfc74-d3v3l0p3r":
@@ -45,6 +46,7 @@ export function fetchProducts() {
           "reports",
           // "release",
           "settings",
+          "marketplace",
         ];
         break;
       case "31-71cfc74-p0bl1shr":
@@ -54,14 +56,23 @@ export function fetchProducts() {
           "media",
           "leads",
           "reports",
+          "marketplace",
           // "release"
         ];
         break;
       case "31-71cfc74-s30":
-        data = ["launchpad", "content", "media", "leads", "seo", "reports"];
+        data = [
+          "home",
+          "content",
+          "media",
+          "leads",
+          "seo",
+          "reports",
+          "marketplace",
+        ];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
-        data = ["launchpad", "content", "media"];
+        data = ["home", "content", "media", "marketplace"];
         break;
       case "31-71cfc74-m3d14":
         data = ["media"];
@@ -80,6 +91,7 @@ export function fetchProducts() {
         "leads",
         "seo",
         "reports",
+        "marketplace",
         // "release",
         "settings",
       ];
