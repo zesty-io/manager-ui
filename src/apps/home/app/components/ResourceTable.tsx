@@ -122,8 +122,11 @@ export const ResourceTable = ({ dateRange }: Props) => {
   const handleRowClick = ({ affectedZUID, resourceType, meta }: any) => {
     if (resourceType === "code") {
       history.push("/code/file/" + meta?.uri.split("/").slice(3).join("/"));
+    }
+    if (meta?.url) {
+      history.push(new URL(meta?.url || meta?.uri)?.pathname);
     } else {
-      history.push(new URL(meta?.url)?.pathname);
+      history.push("/content/" + meta?.uri.split("/").slice(4)[0]);
     }
   };
 
