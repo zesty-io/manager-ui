@@ -36,12 +36,17 @@ const InstancesListMenu = ({
   instanceZUID,
   instanceAvatarColors,
 }: Props) => {
-  const instances = useSelector((state: any) => state.instances);
+  const instances = useSelector((state: any) => {
+    return state.instances.map((instance: any, key: number) => ({
+      ...instance,
+      color: instanceAvatarColors[key % instanceAvatarColors.length],
+    }));
+  });
   const [searchInstance, setSearchInstance] = useState("");
 
   const filteredInstances = useMemo(
     () =>
-      instances.filter((instance: any) => {
+      instances?.filter((instance: any) => {
         return instance.name
           .toLowerCase()
           .includes(searchInstance.toLowerCase());
@@ -72,7 +77,7 @@ const InstancesListMenu = ({
           }}
         />
       </Box>
-      <Box>
+      <Box sx={{ overflow: "auto" }}>
         {filteredInstances.map((instance: any, key: number) => (
           <>
             <ListItem
@@ -90,7 +95,7 @@ const InstancesListMenu = ({
                     textTransform: "uppercase",
                     width: 32,
                     height: 32,
-                    backgroundColor: instanceAvatarColors[key],
+                    backgroundColor: instance.color,
                   }}
                 >
                   {instance?.name.charAt(0)}
