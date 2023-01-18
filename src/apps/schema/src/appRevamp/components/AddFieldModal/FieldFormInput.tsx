@@ -24,7 +24,13 @@ export interface InputField {
 interface Props {
   fieldConfig: InputField;
   errorMsg?: string;
-  onDataChange: ({ name, value }: { name: string; value: FormValue }) => void;
+  onDataChange: ({
+    inputName,
+    value,
+  }: {
+    inputName: string;
+    value: FormValue;
+  }) => void;
   prefillData?: FormValue;
 }
 export const FieldFormInput = ({
@@ -35,7 +41,6 @@ export const FieldFormInput = ({
 }: Props) => {
   return (
     <Box mb={2.5}>
-      {/* TODO: Pending confirmation from Zosh if name will autopopulate and have char limit */}
       {fieldConfig.type === "input" && (
         <>
           <Box mb={0.5}>
@@ -72,7 +77,7 @@ export const FieldFormInput = ({
             minRows={fieldConfig.multiline && 2}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               onDataChange({
-                name: fieldConfig.name,
+                inputName: fieldConfig.name,
                 value: e.target.value,
               });
             }}
@@ -95,7 +100,7 @@ export const FieldFormInput = ({
               required={fieldConfig.required}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 onDataChange({
-                  name: fieldConfig.name,
+                  inputName: fieldConfig.name,
                   value: e.target.checked,
                 });
               }}
