@@ -228,6 +228,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
               Generate Again
             </Button>
             <Button
+              data-cy="AIApprove"
               variant="contained"
               onClick={() => {
                 onApprove(data);
@@ -241,6 +242,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
           </Box>
         ) : (
           <Button
+            data-cy="AIGenerate"
             variant="contained"
             onClick={handleGenerate}
             disabled={!topic}

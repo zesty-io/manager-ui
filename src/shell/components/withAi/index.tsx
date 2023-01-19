@@ -40,6 +40,7 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
           endLabel={
             <ThemeProvider theme={theme}>
               <IconButton
+                data-cy="AIOpen"
                 color="primary"
                 sx={{
                   svg: {
@@ -64,6 +65,7 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
         />
         <ThemeProvider theme={theme}>
           <Popover
+            data-cy="AIPopover"
             open={Boolean(anchorEl)}
             anchorEl={anchorEl}
             anchorOrigin={{
