@@ -24,10 +24,7 @@ type Params = {
   id: string;
 };
 
-interface Props {
-  onNewFieldModalClick: () => void;
-}
-export const FieldList = ({ onNewFieldModalClick }: Props) => {
+export const FieldList = () => {
   const params = useParams<Params>();
   const { id } = params;
   const [search, setSearch] = useState("");
@@ -178,7 +175,6 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 variant="outlined"
                 startIcon={<AddRoundedIcon />}
                 fullWidth
-                onClick={onNewFieldModalClick}
               >
                 Add Another Field to {model?.label}
               </Button>
