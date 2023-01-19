@@ -85,7 +85,11 @@ export default connect((state) => {
   const dispatch = useDispatch();
   const [showFaviconModal, setShowFaviconModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => {
+    return {
+      ...state.user,
+    };
+  });
   const instances = useSelector((state) => state.instances);
   const [faviconURL, setFaviconURL] = useState("");
   const [instanceCreationDate, setInstanceCreationDate] = useState("");
@@ -99,10 +103,12 @@ export default connect((state) => {
 
   const getFavoriteInstances = () => {
     let data = [];
-    JSON.parse(user?.prefs).favorite_sites.forEach((fav) => {
-      const res = instances.filter((instance) => instance.ZUID === fav);
-      data.push(...res);
-    });
+    if (user?.prefs) {
+      JSON.parse(user?.prefs)?.favorite_sites?.forEach((fav) => {
+        const res = instances.filter((instance) => instance.ZUID === fav);
+        data.push(...res);
+      });
+    }
     return data;
   };
 

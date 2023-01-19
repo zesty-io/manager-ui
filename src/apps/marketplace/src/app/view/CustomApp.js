@@ -32,7 +32,6 @@ function LoadApp(props) {
   );
 
   const instance = useSelector((state) => state.instance);
-
   const [sessionToken] = useState(Cookies.get(CONFIG.COOKIE_NAME));
 
   useEffect(() => {

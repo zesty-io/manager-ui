@@ -109,33 +109,63 @@ const InstanceFlyoutMenuModal = ({
     return (
       <Box sx={{ width: "48px", py: 2 }}>
         <Box sx={{ height: "325px" }}>
-          {favoriteInstances
-            .slice(0, 8)
-            .map((favInstance: any, key: number) => (
-              <Box
-                sx={favInstance.ZUID === instanceZUID && styledActiveInstance}
-                onClick={() => {
-                  // @ts-ignore
-                  window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${favInstance.ZUID}${CONFIG.URL_MANAGER}`;
-                }}
-              >
-                <Tooltip title={favInstance.name} placement="right">
-                  <Avatar
-                    sx={{
-                      textTransform: "uppercase",
-                      cursor: "pointer",
-                      mx: "auto",
-                      mb: 1,
-                      width: 32,
-                      height: 32,
-                      backgroundColor: instanceAvatarColors[key],
+          {favoriteInstances.length > 0 ? (
+            <>
+              {favoriteInstances
+                .slice(0, 8)
+                .map((favInstance: any, key: number) => (
+                  <Box
+                    sx={
+                      favInstance.ZUID === instanceZUID && styledActiveInstance
+                    }
+                    onClick={() => {
+                      // @ts-ignore
+                      window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${favInstance.ZUID}${CONFIG.URL_MANAGER}`;
                     }}
                   >
-                    {favInstance?.name.charAt(0)}
-                  </Avatar>
-                </Tooltip>
-              </Box>
-            ))}
+                    <Tooltip title={favInstance.name} placement="right">
+                      <Avatar
+                        sx={{
+                          textTransform: "uppercase",
+                          cursor: "pointer",
+                          mx: "auto",
+                          mb: 1,
+                          width: 32,
+                          height: 32,
+                          backgroundColor: instanceAvatarColors[key],
+                        }}
+                      >
+                        {favInstance?.name.charAt(0)}
+                      </Avatar>
+                    </Tooltip>
+                  </Box>
+                ))}
+            </>
+          ) : (
+            <Box
+              sx={styledActiveInstance}
+              onClick={() => {
+                // @ts-ignore
+                window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${instanceZUID}${CONFIG.URL_MANAGER}`;
+              }}
+            >
+              <Tooltip title={instanceName} placement="right">
+                <Avatar
+                  sx={{
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    mx: "auto",
+                    mb: 1,
+                    width: 32,
+                    height: 32,
+                    backgroundColor: instanceAvatarColors[0],
+                  }}
+                >
+                  {instanceName.charAt(0)}
+                </Avatar>
+              </Tooltip>
+            </Box>
+          )}
         </Box>
         <IconButton
           sx={{

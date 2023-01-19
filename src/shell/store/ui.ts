@@ -17,6 +17,7 @@ import {
   faAddressCard,
   IconDefinition,
   faHome,
+  faPuzzlePiece,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
 
@@ -204,6 +205,10 @@ export function createTab(
     settings: {
       name: "Settings",
       icon: faCog,
+    },
+    marketplace: {
+      name: "Marketplace",
+      icon: faPuzzlePiece,
     },
   };
 
