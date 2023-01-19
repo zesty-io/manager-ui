@@ -11,8 +11,6 @@ import moment from "moment";
 import SplitscreenRoundedIcon from "@mui/icons-material/SplitscreenRounded";
 import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
 
-import { AddFieldModal } from "../AddFieldModal";
-
 type Params = {
   id: string;
 };
@@ -23,8 +21,10 @@ const modelTypeName = {
   dataset: "Headless Data Item",
 };
 
-export const ModelHeader = () => {
-  const [isAddFieldModalOpen, setAddFieldModalOpen] = useState(false);
+interface Props {
+  onNewFieldModalClick: () => void;
+}
+export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const params = useParams<Params>();
   const { id } = params;
   const { data: models } = useGetContentModelsQuery();
@@ -58,7 +58,7 @@ export const ModelHeader = () => {
                 size="small"
                 variant="contained"
                 startIcon={<AddRoundedIcon />}
-                onClick={() => setAddFieldModalOpen(true)}
+                onClick={onNewFieldModalClick}
                 disabled={!isFieldsLoaded}
               >
                 Add Field
@@ -103,9 +103,6 @@ export const ModelHeader = () => {
           </Tabs>
         </Box>
       </Box>
-      {isAddFieldModalOpen && (
-        <AddFieldModal mode="fields_list" onModalClose={setAddFieldModalOpen} />
-      )}
     </>
   );
 };
