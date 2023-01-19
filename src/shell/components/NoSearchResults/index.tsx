@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -16,6 +16,7 @@ type Props = {
 };
 
 export const NoSearchResults: FC<Props> = ({ query }) => {
+  const history = useHistory();
   const [params, setParams] = useParams();
   return (
     <Box
@@ -47,7 +48,8 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
           <Stack direction="row" justifyContent="center" sx={{ gap: 2 }}>
             <Button
               startIcon={<ArrowBack />}
-              onClick={() => console.log("TODO go back")}
+              onClick={() => history.goBack()}
+              disabled={history.action === "POP"}
               color="inherit"
               variant="contained"
             >
