@@ -33,7 +33,7 @@ export const MediaApp = ({
   showHeaderActions = true,
   isSelectDialog = false,
   addImagesCallback,
-  limitSelected = 50,
+  limitSelected,
 }: Props) => {
   const history = useHistory();
   const dispatch = useDispatch();

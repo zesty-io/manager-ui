@@ -111,6 +111,10 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["SearchQuery"],
     }),
+    getLangsMapping: builder.query<any, void>({
+      query: () => `env/langs/all`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -126,4 +130,5 @@ export const {
   useGetContentModelItemsQuery,
   useGetContentItemPublishingsQuery,
   useSearchContentQuery,
+  useGetLangsMappingQuery,
 } = instanceApi;
