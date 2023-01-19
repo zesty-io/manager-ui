@@ -38,8 +38,6 @@ export const MoveFileDialog = ({
     id: binId,
   });
 
-  // console.log('testing binGroups', binGroups, [...(binGroups ? binGroups : [])]?.sort((a, b) => a?.name?.localeCompare(b?.name)))
-
   const sortedBinGroups = useMemo(() => {
     if (!binGroups) return [];
     return [...binGroups].sort((a, b) => a?.name?.localeCompare(b?.name));
@@ -87,7 +85,11 @@ export const MoveFileDialog = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button color="inherit" onClick={() => onClose()}>
+        <Button
+          color="inherit"
+          onClick={() => onClose()}
+          disabled={showSpinner}
+        >
           Cancel
         </Button>
         <Button
