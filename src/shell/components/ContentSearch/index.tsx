@@ -1,5 +1,5 @@
 import TextField from "@mui/material/TextField";
-import { FC, useState, useRef, useEffect } from "react";
+import { FC, useState, useRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import Autocomplete from "@mui/material/Autocomplete";
 import { HTMLAttributes } from "react";
@@ -43,6 +43,15 @@ const ContentSearch: FC = () => {
       handleHomeEndKeys
       options={topSuggestions}
       filterOptions={(x) => x}
+      sx={{
+        height: "40px",
+        borderWidth: "0px 1px 1px 0px",
+        borderStyle: "solid",
+        borderColor: "grey.100",
+        "& .MuiFormControl-root": {
+          gap: "10px",
+        },
+      }}
       onInputChange={(event, newVal) => {
         console.log("onInputChange", { event, newVal });
         setValue(newVal);
@@ -114,8 +123,10 @@ const ContentSearch: FC = () => {
             fullWidth
             type="text"
             variant="outlined"
-            size="small"
             placeholder={`Search Instance ${shortcutHelpText}`}
+            sx={{
+              height: "40px",
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 console.log("Enter pressed", e);
@@ -132,9 +143,6 @@ const ContentSearch: FC = () => {
                 width: "100%",
                 backgroundColor: (theme) => theme.palette.background.paper,
               },
-            }}
-            sx={{
-              gap: "10px",
             }}
           />
         );
