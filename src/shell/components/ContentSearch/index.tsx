@@ -112,7 +112,7 @@ const ContentSearch: FC = () => {
             {...params}
             ref={textfieldRef}
             fullWidth
-            type="search"
+            type="text"
             variant="outlined"
             size="small"
             placeholder={`Search Instance ${shortcutHelpText}`}
