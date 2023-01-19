@@ -24,7 +24,7 @@ export default memo(function GlobalMenu() {
 
   const slug = location.pathname.split("/")[1];
   const icons = {
-    home: RocketLaunchIcon,
+    launchpad: RocketLaunchIcon,
     content: EditIcon,
     media: ImageIcon,
     schema: Database,
@@ -34,7 +34,6 @@ export default memo(function GlobalMenu() {
     seo: RecommendIcon,
     settings: SettingsIcon,
     release: RocketLaunchIcon,
-    // @ts-ignore
     marketplace: ExtensionIcon,
   };
 
@@ -84,8 +83,7 @@ export default memo(function GlobalMenu() {
                 backgroundColor: slug === product ? "grey.800" : "transparent",
               }}
             >
-              {/* @ts-ignore */}
-              {/* <MenuItemIcon product={product} /> */}
+              <MenuItemIcon product={product} />
 
               {openNav && (
                 <ListItemText

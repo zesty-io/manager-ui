@@ -99,10 +99,12 @@ export default connect((state) => {
 
   const getFavoriteInstances = () => {
     let data = [];
-    JSON.parse(user?.prefs).favorite_sites.forEach((fav) => {
-      const res = instances.filter((instance) => instance.ZUID === fav);
-      data.push(...res);
-    });
+    if (user?.prefs) {
+      JSON.parse(user?.prefs)?.favorite_sites?.forEach((fav) => {
+        const res = instances.filter((instance) => instance.ZUID === fav);
+        data.push(...res);
+      });
+    }
     return data;
   };
 

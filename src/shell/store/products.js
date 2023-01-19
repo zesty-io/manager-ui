@@ -62,7 +62,7 @@ export function fetchProducts() {
         break;
       case "31-71cfc74-s30":
         data = [
-          "home",
+          "launchpad",
           "content",
           "media",
           "leads",
@@ -72,7 +72,7 @@ export function fetchProducts() {
         ];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
-        data = ["home", "content", "media", "marketplace"];
+        data = ["launchpad", "content", "media", "marketplace"];
         break;
       case "31-71cfc74-m3d14":
         data = ["media"];

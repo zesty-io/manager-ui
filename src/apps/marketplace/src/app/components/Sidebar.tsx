@@ -13,31 +13,21 @@ import { fetchInstalledApps } from "../../../../../shell/store/apps";
 import SearchIcon from "@mui/icons-material/Search";
 import { AppState } from "../../../../../shell/store/types";
 import { useHistory } from "react-router";
+import { useLocation } from "react-router-dom";
 import PowerIcon from "@mui/icons-material/Power";
 
 export const Sidebar = () => {
-  // const installedApps = useSelector((state: AppState) => state.apps.installed);
+  const installedApps = useSelector((state: AppState) => state.apps.installed);
   const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchInstalledApps());
+    if (installedApps.length) {
+      history.push(`/marketplace/app/${installedApps[0]?.ZUID}`);
+    }
   }, []);
-
-  const installedApps = [
-    {
-      ZUID: "80-d8abaff6ef-wxs830",
-      createdAt: "2022-06-24T14:00:57Z",
-      createdByUserZUID: "5-44ccc74-sn4pc4st3r",
-      description: "",
-      label: "Analytics",
-      name: "google-analytics",
-      public: true,
-      publisher: "Zesty.io",
-      updatedAt: "2022-07-29T14:26:23Z",
-      url: "https://apps.zesty.io/google-analytics/",
-    },
-  ];
 
   return (
     <Box
