@@ -21,7 +21,6 @@ export default memo(function GlobalMenu() {
   const location = useLocation();
   const openNav = useSelector((state) => state.ui.openNav);
   const products = useSelector((state) => state.products);
-  const installedApps = useSelector((state) => state.apps.installed);
 
   const slug = location.pathname.split("/")[1];
   const icons = {
@@ -72,11 +71,7 @@ export default memo(function GlobalMenu() {
             style={{
               textDecoration: "none",
             }}
-            to={
-              product === "marketplace"
-                ? `/marketplace/app/${installedApps[0]?.ZUID || ""}`
-                : `/${product}`
-            }
+            to={`/${product}`}
             title={`${name} App`}
           >
             <ListItem
