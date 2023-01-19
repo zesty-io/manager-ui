@@ -269,7 +269,7 @@ export function createTab(
     tab.icon = appNameMap[name].icon;
     tab.app = appNameMap[name].name;
     if (parts[0] === "content" && parts[2] === "new" && zuidIsValid(parts[1])) {
-      tab.name = `New ${state.models[parts[1]].label} Item`;
+      tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
     }
   }
   // resolve ZUID from store to determine display information
@@ -459,11 +459,19 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
 
     const { pathname, search } = location;
     const parsedPath = parsePath({ pathname, search });
-    const t = createTab(state, parsedPath, queryData);
-    const { app } = t;
-    const item = t.name || t.pathname;
-    const title = `${app} - ${item} - Zesty.io - ${instanceName} - Manager`;
-    // set the title
+    const tab = createTab(state, parsedPath, queryData);
+    const { app } = tab;
+    let item = tab.name || tab.pathname;
+
+    // Don't repeat the sub-app name
+    if (app === item) {
+      item = "";
+    }
+
+    const title = [app, item, "Zesty.io", instanceName, "Manager"]
+      .filter((elem) => elem)
+      .join(" - ");
+
     document.title = title;
   };
 }

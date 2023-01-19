@@ -44,7 +44,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
   const currentMediaView = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.currentMediaView
   );
-  const defaultBin = bins?.find((bin) => bin.default);
+  const defaultBin = bins?.find((bin) => bin.default) || bins?.[0];
   const { data: unsortedFiles, isFetching: isFilesFetching } =
     useGetAllBinFilesQuery(
       bins?.map((bin) => bin.id),
@@ -124,7 +124,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
       ) : (
         <>
           <Controls />
-          {(filetypeFilter || dateRangeFilter) && files.length > 0 && (
+          {(filetypeFilter || dateRangeFilter) && files?.length > 0 && (
             <Typography
               color="text.secondary"
               variant="h6"
@@ -141,7 +141,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
           >
             {!isFilesFetching && !isBinsFetching && !files?.length ? (
               <>
-                {unsortedFiles.length ? (
+                {unsortedFiles?.length ? (
                   <NoResultsState filetype={filetypeFilter} />
                 ) : (
                   <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />

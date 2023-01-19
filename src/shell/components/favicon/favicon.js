@@ -40,6 +40,7 @@ import {
 import { notify } from "shell/store/notifications";
 
 import styles from "./favicon.less";
+import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
 
 export default connect((state) => {
   return {
@@ -236,6 +237,7 @@ export default connect((state) => {
                   isSelectDialog={true}
                   showHeaderActions={false}
                   addImagesCallback={(images) => {
+                    if (!isImage(images[0])) return;
                     imageModal.callback(images);
                     setImageModal();
                   }}
