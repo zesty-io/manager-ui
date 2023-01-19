@@ -83,6 +83,8 @@ export const ContentListItem: FC<ContentListItem> = ({
   // Search Result List Item
   return (
     <Box
+      component="a"
+      href={url}
       style={style}
       sx={{
         boxSizing: "border-box",
@@ -94,6 +96,8 @@ export const ContentListItem: FC<ContentListItem> = ({
         backgroundColor: "background.paper",
         border: (theme) => `1px solid ${theme.palette.grey[100]}`,
         height: 9,
+        color: "inherit",
+        textDecoration: "none",
         "&:hover": {
           backgroundColor: "action.hover",
         },
@@ -105,7 +109,6 @@ export const ContentListItem: FC<ContentListItem> = ({
         },
       }}
     >
-      {/* Left Container */}
       <Stack
         direction="row"
         sx={{

@@ -9,9 +9,9 @@ export type CopyButtonProps = {
 };
 export const CopyButton: FC<CopyButtonProps> = ({ url }) => {
   const [isCopied, setIsCopied] = useState(false);
+  const { origin } = window.location;
 
   const handleCopyClick = (data: string) => {
-    console.log("Click");
     navigator?.clipboard
       ?.writeText(data)
       .then(() => {
@@ -29,7 +29,13 @@ export const CopyButton: FC<CopyButtonProps> = ({ url }) => {
   return isCopied ? (
     <CheckIcon />
   ) : (
-    <IconButton onClick={() => handleCopyClick(url)}>
+    <IconButton
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        handleCopyClick(origin + url);
+      }}
+    >
       <LinkRounded fontSize="small" />
     </IconButton>
   );
