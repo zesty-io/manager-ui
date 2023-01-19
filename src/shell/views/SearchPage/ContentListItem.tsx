@@ -10,9 +10,10 @@ import {
   useGetContentModelQuery,
   useGetContentItemQuery,
 } from "../../services/instance";
-import moment from "moment-timezone";
+import moment, { lang } from "moment-timezone";
 
 import PencilIcon from "@mui/icons-material/Create";
+import { useSelector } from "react-redux";
 type ContentListItem = {
   result: ContentItem;
   loading?: boolean;
@@ -58,6 +59,12 @@ export const ContentListItem: FC<ContentListItem> = ({
     auditRes,
   });
 
+  const languages = useSelector((state: any) => state.languages);
+  const langCode = languages.find(
+    (lang: any) => lang.ID === result?.meta?.langID
+  )?.code;
+  const langDisplay = langCode ? `(${langCode}) ` : null;
+  console.log({ langDisplay });
   // Chips
   const titleChip =
     modelData?.metaTitle ||
@@ -139,7 +146,13 @@ export const ContentListItem: FC<ContentListItem> = ({
                 sx={{ mb: 1 }}
               />
             ) : (
-              result?.web?.metaTitle || "Item missing meta title"
+              <>
+                {contentData &&
+                  contentData.siblings &&
+                  Object.keys(contentData.siblings).length > 0 &&
+                  langDisplay}
+                {result?.web?.metaTitle || "Item missing meta title"}
+              </>
             )}
           </Typography>
           {/* @ts-ignore */}
