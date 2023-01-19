@@ -27,25 +27,12 @@ export default function CustomApp() {
 function LoadApp(props) {
   const dispatch = useDispatch();
   const frame = useRef();
-  // const app = useSelector((state) =>
-  //   state.apps.installed.find((app) => app.ZUID === props.match.params.zuid)
-  // );
+  const app = useSelector((state) =>
+    state.apps.installed.find((app) => app.ZUID === props.match.params.zuid)
+  );
 
   const instance = useSelector((state) => state.instance);
   const [sessionToken] = useState(Cookies.get(CONFIG.COOKIE_NAME));
-
-  const app = {
-    ZUID: "80-d8abaff6ef-wxs830",
-    createdAt: "2022-06-24T14:00:57Z",
-    createdByUserZUID: "5-44ccc74-sn4pc4st3r",
-    description: null,
-    label: "Analytics",
-    name: "google-analytics",
-    public: true,
-    publisher: "Zesty.io",
-    updatedAt: "2022-07-29T14:26:23Z",
-    url: "https://apps.zesty.io/google-analytics/",
-  };
 
   useEffect(() => {
     if (frame.current) {
