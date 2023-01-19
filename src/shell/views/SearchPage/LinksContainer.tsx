@@ -16,6 +16,10 @@ export const LinksContainer: FC<LinksContainerProps> = ({ url }) => {
       sx={{
         alignItems: "center",
         gap: 1,
+        visibility: "hidden",
+        "&:hover": {
+          visibility: "visible",
+        },
       }}
     >
       <CopyButton url={url} />

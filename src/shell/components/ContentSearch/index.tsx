@@ -9,7 +9,7 @@ import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
 import { ContentItem } from "../../services/types";
 import { useHistory } from "react-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../../store/notifications";
 
 const ContentSearch: FC = () => {
@@ -31,6 +31,7 @@ const ContentSearch: FC = () => {
   const shortcutHelpText = useMetaKey("k", () => {
     textfieldRef.current?.querySelector("input").focus();
   });
+  const languages = useSelector((state: any) => state.languages);
 
   return (
     <Autocomplete
@@ -43,6 +44,16 @@ const ContentSearch: FC = () => {
       handleHomeEndKeys
       options={topSuggestions}
       filterOptions={(x) => x}
+      sx={{
+        height: "40px",
+        width: "288px",
+        borderWidth: "0px 1px 1px 0px",
+        borderStyle: "solid",
+        borderColor: "grey.100",
+        "& .MuiFormControl-root": {
+          gap: "10px",
+        },
+      }}
       onInputChange={(event, newVal) => {
         console.log("onInputChange", { event, newVal });
         setValue(newVal);
@@ -95,12 +106,20 @@ const ContentSearch: FC = () => {
           );
         // type of ContentItem represents a suggestion from the search API
         else {
+          const getText = () => {
+            const title = option?.web?.metaTitle || "Missing Meta Title";
+            const langCode = languages.find(
+              (lang: any) => lang.ID === option?.meta?.langID
+            )?.code;
+            const langDisplay = langCode ? `(${langCode}) ` : null;
+            return langDisplay ? `${langDisplay}${title}` : title;
+          };
           return (
             <Suggestion
               {...props}
               key={option.meta.ZUID}
               icon="pencil"
-              text={option?.web?.metaTitle || "Missing Meta Title"}
+              text={getText()}
             />
           );
         }
@@ -112,7 +131,12 @@ const ContentSearch: FC = () => {
             {...params}
             ref={textfieldRef}
             fullWidth
+            type="text"
+            variant="outlined"
             placeholder={`Search Instance ${shortcutHelpText}`}
+            sx={{
+              height: "40px",
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 console.log("Enter pressed", e);
@@ -129,9 +153,6 @@ const ContentSearch: FC = () => {
                 width: "100%",
                 backgroundColor: (theme) => theme.palette.background.paper,
               },
-            }}
-            sx={{
-              gap: "10px",
             }}
           />
         );
@@ -153,7 +174,7 @@ const Suggestion: FC<SuggestionProps> = ({ text, icon, ...props }) => {
       {...props}
       sx={{
         padding: "4px 16px 4px 16px",
-        height: "36px",
+        minHeight: "36px",
         "&.Mui-focused": {
           borderLeft: (theme) => "4px solid " + theme.palette.primary.main,
           padding: "4px 16px 4px 12px",
