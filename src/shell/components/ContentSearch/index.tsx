@@ -20,12 +20,10 @@ const ContentSearch: FC = () => {
   const textfieldRef = useRef<HTMLDivElement>();
 
   const res = useSearchContentQuery({ query: value }, { skip: !value });
-  console.log("rtk response", res);
 
   const suggestions = res.data;
   const topSuggestions =
     suggestions && value ? [value, ...suggestions.slice(0, 5)] : [];
-  console.log({ value, suggestions });
 
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
@@ -55,11 +53,9 @@ const ContentSearch: FC = () => {
         },
       }}
       onInputChange={(event, newVal) => {
-        console.log("onInputChange", { event, newVal });
         setValue(newVal);
       }}
       onChange={(event, newVal) => {
-        console.log("onChange", { event, newVal });
         // null represents "X" button clicked
         if (!newVal) {
           setValue("");
@@ -85,12 +81,10 @@ const ContentSearch: FC = () => {
         }
       }}
       getOptionLabel={(option: ContentItem) => {
-        console.log("getOptionLabel", { option, suggestions, value });
         // do not change the input value when a suggestion is selected
         return value;
       }}
       renderOption={(props, option) => {
-        console.log("renderOption", option, props);
         // type of string represents the top-row search term
         if (typeof option === "string")
           return (
@@ -125,7 +119,6 @@ const ContentSearch: FC = () => {
         }
       }}
       renderInput={(params: any) => {
-        console.log("renderInput");
         return (
           <TextField
             {...params}
@@ -139,7 +132,6 @@ const ContentSearch: FC = () => {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                console.log("Enter pressed", e);
                 history.push(`/search?q=${value}`);
               }
             }}

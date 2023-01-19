@@ -10,7 +10,7 @@ import {
   useGetContentModelQuery,
   useGetContentItemQuery,
 } from "../../services/instance";
-import moment, { lang } from "moment-timezone";
+import moment from "moment-timezone";
 
 import PencilIcon from "@mui/icons-material/Create";
 import { useSelector } from "react-redux";
@@ -49,22 +49,12 @@ export const ContentListItem: FC<ContentListItem> = ({
   const modelRes = useGetContentModelQuery(contentData?.meta.contentModelZUID, {
     skip: !contentData?.meta.contentModelZUID,
   });
-  console.log({
-    affectedZUID,
-    auditData,
-    contentData,
-    modelData,
-    modelRes,
-    contentRes,
-    auditRes,
-  });
 
   const languages = useSelector((state: any) => state.languages);
   const langCode = languages.find(
     (lang: any) => lang.ID === result?.meta?.langID
   )?.code;
   const langDisplay = langCode ? `(${langCode}) ` : null;
-  console.log({ langDisplay });
   // Chips
   const titleChip =
     modelData?.metaTitle ||

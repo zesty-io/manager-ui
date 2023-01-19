@@ -8,14 +8,12 @@ import { theme } from "@zesty-io/material";
 
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
-import { ContentListItem } from "./ContentListItem";
 import { ContentList } from "./ContentList";
 import { BackButton } from "./BackButton";
 
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q") || "";
-  console.log("query", query);
   const { data: results, isLoading } = useSearchContentQuery(
     { query },
     { skip: !query }
