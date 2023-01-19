@@ -3,11 +3,16 @@
 .CustomApp {
   height: calc(100vh - 54px);
   width: 100%;
+  overflow: scroll;
 
   iframe {
     height: calc(100vh - 54px);
-    width: 100%;
+    width: 130%;
     overflow: scroll;
+
+    @media screen and (min-width: 1600px) {
+      width: 100%;
+    }
   }
 }
 
