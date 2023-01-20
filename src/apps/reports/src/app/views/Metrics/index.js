@@ -186,7 +186,8 @@ const Content = ({
   };
   const barChartLabels = [];
   const barChartSeries = [];
-  for (const req of requestData.ResponseCodes) {
+  const responseCodes = requestData.ResponseCodes || [];
+  for (const req of responseCodes) {
     barChartLabels.push(req.Code);
     barChartSeries.push(req.RequestCount);
   }
@@ -249,9 +250,9 @@ const Content = ({
     404: 0,
     403: 0,
   };
-  for (let i = 0; i < requestData.ResponseCodes.length; i++) {
-    const code = requestData.ResponseCodes[i].Code;
-    const count = requestData.ResponseCodes[i].RequestCount;
+  for (let i = 0; i < responseCodes.length; i++) {
+    const code = responseCodes[i].Code;
+    const count = responseCodes[i].RequestCount;
     switch (code) {
       case 200:
       case 301:
@@ -610,7 +611,7 @@ const Content = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {requestData.ResponseCodes?.map((req, i) => (
+                  {responseCodes.map((req, i) => (
                     <TopReqAllRow req={req} key={i} />
                   ))}
                 </tbody>
