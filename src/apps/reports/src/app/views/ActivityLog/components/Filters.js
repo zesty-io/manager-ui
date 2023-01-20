@@ -45,6 +45,22 @@ export const Filters = (props) => {
             </Select>
           </>
         );
+      case "sortByUsers":
+        return (
+          <>
+            <FormLabel>Sort By</FormLabel>
+            <Select
+              value={params.get("sortByUsers") || ""}
+              onChange={(evt) => setParams(evt.target.value, "sortByUsers")}
+              size="small"
+              displayEmpty
+            >
+              <MenuItem value="">Most Active</MenuItem>
+              <MenuItem value="happenedAt">Most Recently Active</MenuItem>
+              <MenuItem value="leastActive">Least Active</MenuItem>
+            </Select>
+          </>
+        );
       case "resourceType":
         return (
           <>

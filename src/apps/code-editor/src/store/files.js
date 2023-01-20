@@ -174,10 +174,16 @@ export function files(state = [], action) {
           file.ZUID === action.payload.ZUID &&
           file.status === action.payload.status
         ) {
+          /*
+            The code comparison could potentially be very expensive, so we check
+            the dirty flag in the store and only do the comparison if needed
+            (taking advantage of lazy evaluation)
+          */
+          const dirty = file.dirty || file.code !== action.payload.code;
           return {
             ...file,
             code: action.payload.code,
-            dirty: true,
+            dirty,
             synced: true,
           };
         }
@@ -211,6 +217,27 @@ export function files(state = [], action) {
         `${action.payload.instanceZUID}:openFiles`,
         files.filter((file) => file.open)
       );
+
+      return files;
+
+    case "UNMARK_FILE_DIRTY":
+      files = state.map((file) => {
+        if (file.ZUID === action.payload.ZUID && file.dirty) {
+          return {
+            ...file,
+            dirty: false,
+          };
+        }
+
+        return file;
+      });
+
+      /*
+      idb.set(
+        `${action.payload.instanceZUID}:openFiles`,
+        files.filter((file) => file.open)
+      );
+      */
 
       return files;
 

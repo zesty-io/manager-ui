@@ -21,6 +21,7 @@ import SchemaApp from "apps/schema/src";
 import SeoApp from "apps/seo/src";
 import SettingsApp from "apps/settings/src";
 import CustomApp from "apps/custom-app/src";
+import HomeApp from "apps/home";
 
 import styles from "./Shell.less";
 
@@ -52,6 +53,14 @@ export default memo(function Shell() {
 
               {products.map((product) => {
                 switch (product) {
+                  case "launchpad":
+                    return (
+                      <Route
+                        key={product}
+                        path="/launchpad"
+                        component={HomeApp}
+                      />
+                    );
                   case "content":
                     return (
                       <Route
@@ -101,7 +110,7 @@ export default memo(function Shell() {
                 }
               })}
 
-              <Redirect exact from="/" to="/content" />
+              <Redirect exact from="/" to="/launchpad" />
               <Route path="*" component={Missing} />
             </Switch>
           </Sentry.ErrorBoundary>

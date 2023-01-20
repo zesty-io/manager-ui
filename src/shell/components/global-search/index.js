@@ -31,7 +31,7 @@ export default function GlobalSearch() {
   return (
     <ContentSearch
       ref={ref}
-      placeholder={`Global Search ${metaShortcut}`}
+      placeholder="Search Instance"
       onSelect={handleSelect}
       value=""
     />

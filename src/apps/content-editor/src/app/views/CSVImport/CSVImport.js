@@ -68,14 +68,27 @@ class CSVImport extends Component {
 
   handleFile = (evt) => {
     evt.preventDefault();
+
+    // Do nothing if no file was selected because onChange gets triggered even if
+    // cancel button was clicked
+    if (!evt.target.files.length) {
+      return;
+    }
+
     const csvToParse = evt.target.files[0];
+
     // make sure we have a csv and throw an error if we dont
     if (csvToParse.name.slice(-3).toLowerCase() !== "csv") {
       return this.setState({
         warn: "You selected a file that is not a CSV",
       });
     }
-    this.setState({ warn: "" });
+
+    this.setState({
+      complete: false,
+      warn: "",
+    });
+
     // takes the file object and reads it
     // as a text string into local state
     const reader = new FileReader();
@@ -94,6 +107,15 @@ class CSVImport extends Component {
       skip_empty_lines: true,
       skip_lines_with_empty_values: true,
     });
+
+    // Handle empty csv imports
+    if (!records.length) {
+      return this.setState({
+        warn: "You have imported an empty CSV file",
+        cols: [],
+        records: [],
+      });
+    }
 
     // build an array of object to reference data across columns
     const columnsWithValues = records.slice(1).reduce((acc, item, i) => {
@@ -168,6 +190,7 @@ class CSVImport extends Component {
 
   handleWebToCSVMap = (csvCol, webKey) => {
     this.setState({
+      complete: false,
       webMaps: {
         ...this.state.webMaps,
         [webKey]: csvCol === "none" ? "" : csvCol,

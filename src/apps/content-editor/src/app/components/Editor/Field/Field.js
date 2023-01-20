@@ -5,7 +5,7 @@ import moment from "moment-timezone";
 import zuid from "zuid";
 
 import { fetchFields } from "shell/store/fields";
-import { fetchItem, fetchItems, searchItems } from "shell/store/content";
+import { fetchItems, searchItems } from "shell/store/content";
 
 import {
   ToggleButtonGroup,
@@ -20,9 +20,12 @@ import {
   Stack,
   Chip,
   TextField,
+  Dialog,
+  IconButton,
 } from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,13 +35,11 @@ import {
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Modal } from "@zesty-io/core/Modal";
-import MediaApp from "../../../../../../media/src/app/MediaApp";
+import { MediaApp } from "../../../../../../media/src/app";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
-import { FieldTypeSort } from "@zesty-io/material";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
 import {
@@ -48,10 +49,16 @@ import {
   FieldTypeText,
   FieldTypeDate,
   FieldTypeDateTime,
+  FieldTypeSort,
 } from "@zesty-io/material";
 
 import styles from "./Field.less";
-import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
+import { MemoryRouter } from "react-router";
+import { withAI } from "../../../../../../../shell/components/withAi";
+
+const AITextField = withAI(FieldTypeText);
+const AIEditorField = withAI(FieldTypeEditor);
+const AITinyMCEField = withAI(FieldTypeTinyMCE);
 
 const FieldLabel = memo((props) => {
   return (
@@ -222,21 +229,38 @@ export default function Field({
 
   function renderMediaModal() {
     return ReactDOM.createPortal(
-      <Modal
-        open={true}
-        type="global"
-        onClose={() => setImageModal()}
-        className={MediaStyles.MediaAppModal}
-      >
-        <MediaApp
-          limitSelected={imageModal.limit}
-          modal={true}
-          addImages={(images) => {
-            imageModal.callback(images);
-            setImageModal();
+      <MemoryRouter>
+        <Dialog
+          open
+          fullScreen
+          sx={{ my: 2.5, mx: 10 }}
+          PaperProps={{
+            style: {
+              borderRadius: "4px",
+            },
           }}
-        />
-      </Modal>,
+          onClose={() => setImageModal()}
+        >
+          <IconButton
+            sx={{
+              position: "fixed",
+              right: 15,
+              top: 10,
+            }}
+            onClick={() => setImageModal()}
+          >
+            <CloseIcon sx={{ color: "common.white" }} />
+          </IconButton>
+          <MediaApp
+            limitSelected={imageModal.limit}
+            isSelectDialog={true}
+            addImagesCallback={(images) => {
+              imageModal.callback(images);
+              setImageModal();
+            }}
+          />
+        </Dialog>
+      </MemoryRouter>,
       document.getElementById("modalMount")
     );
   }
@@ -246,9 +270,20 @@ export default function Field({
     () => <FieldLabel label={label} name={name} datatype={datatype} />,
     [label, name, datatype]
   );
-
   switch (datatype) {
     case "text":
+      return (
+        <AITextField
+          name={name}
+          label={FieldTypeLabel}
+          helperText={description}
+          tooltip={settings.tooltip}
+          required={required}
+          value={value}
+          onChange={(evt) => onChange(evt.target.value, name)}
+          aiType="text"
+        />
+      );
     case "fontawesome":
       return (
         <FieldTypeText
@@ -294,7 +329,7 @@ export default function Field({
 
     case "textarea":
       return (
-        <FieldTypeText
+        <AITextField
           name={name}
           label={FieldTypeLabel}
           helperText={description}
@@ -305,6 +340,7 @@ export default function Field({
           datatype={datatype}
           multiline={true}
           rows={6}
+          aiType="paragraph"
           onChange={(evt) => {
             onChange(evt.target.value, name);
           }}
@@ -316,7 +352,7 @@ export default function Field({
     case "wysiwyg_basic":
       return (
         <div className={styles.WYSIWYGFieldType}>
-          <FieldTypeTinyMCE
+          <AITinyMCEField
             name={name}
             label={FieldTypeLabel}
             description={description}
@@ -328,6 +364,7 @@ export default function Field({
             onSave={onSave}
             datatype={datatype}
             maxLength="16000"
+            aiType="paragraph"
             skin="oxide"
             skinURL="/vendors/tinymce/skins/ui/oxide"
             contentCSS="/vendors/tinymce/content.css"
@@ -349,7 +386,7 @@ export default function Field({
     case "article_writer":
       return (
         <div className={styles.WYSIWYGFieldType}>
-          <FieldTypeEditor
+          <AIEditorField
             name={name}
             label={FieldTypeLabel}
             description={description}
@@ -360,6 +397,7 @@ export default function Field({
             onChange={onChange}
             datatype={datatype}
             maxLength="16000"
+            aiType="paragraph"
             mediaBrowser={(opts) => {
               setImageModal(opts);
             }}
@@ -401,22 +439,44 @@ export default function Field({
             }}
           />
           {imageModal && (
-            <Modal
-              open={true}
-              type="global"
-              onClose={() => setImageModal()}
-              className={MediaStyles.MediaAppModal}
-            >
-              <MediaApp
-                {...mediaAppProps}
-                limitSelected={imageModal.limit - images.length}
-                modal={true}
-                addImages={(images) => {
-                  imageModal.callback(images);
-                  setImageModal();
+            <MemoryRouter>
+              <Dialog
+                open
+                fullScreen
+                sx={{ my: 2.5, mx: 10 }}
+                PaperProps={{
+                  style: {
+                    borderRadius: "4px",
+                  },
                 }}
-              />
-            </Modal>
+                onClose={() => setImageModal()}
+              >
+                <IconButton
+                  sx={{
+                    position: "fixed",
+                    right: 5,
+                    top: 0,
+                  }}
+                  onClick={() => setImageModal()}
+                >
+                  <CloseIcon sx={{ color: "common.white" }} />
+                </IconButton>
+                <MediaApp
+                  limitSelected={imageModal.limit - images.length}
+                  isSelectDialog={true}
+                  showHeaderActions={false}
+                  lockedToGroupId={
+                    settings?.group_id && settings?.group_id !== "0"
+                      ? settings.group_id
+                      : null
+                  }
+                  addImagesCallback={(images) => {
+                    imageModal.callback(images);
+                    setImageModal();
+                  }}
+                />
+              </Dialog>
+            </MemoryRouter>
           )}
         </>
       );
@@ -899,7 +959,7 @@ export default function Field({
           }
           helperText={description}
           required={required}
-          value={moment(value).format("YYYY-MM-DD HH:mm:ss")}
+          value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
           inputFormat="yyyy-MM-dd"
           onChange={(date) => onDateChange(date, name, datatype)}
         />
@@ -931,7 +991,7 @@ export default function Field({
           }
           helperText={description}
           required={required}
-          value={moment(value).format("YYYY-MM-DD HH:mm:ss")}
+          value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
           inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
           onChange={(date) => onDateTimeChange(date, name, datatype)}
         />

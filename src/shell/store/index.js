@@ -27,6 +27,7 @@ import { notifications } from "./notifications";
 import { platform } from "./platform";
 import { headTags } from "./headTags";
 import media from "./media";
+import mediaRevamp from "./media-revamp";
 import { ui } from "./ui";
 import { users } from "./users";
 import { releases } from "./releases";
@@ -34,6 +35,9 @@ import { releaseMembers } from "./releaseMembers";
 import apps from "./apps";
 import { instanceApi } from "../services/instance";
 import { accountsApi } from "../services/accounts";
+import { mediaManagerApi } from "../services/mediaManager";
+import { metricsApi } from "../services/metrics";
+import { cloudFunctionsApi } from "../services/cloudFunctions";
 
 // Middleware is applied in order of array
 const middlewares = [
@@ -46,6 +50,9 @@ const middlewares = [
   thunkMiddleware,
   instanceApi.middleware,
   accountsApi.middleware,
+  mediaManagerApi.middleware,
+  metricsApi.middleware,
+  cloudFunctionsApi.middleware,
 ];
 
 /**
@@ -99,6 +106,7 @@ function createReducer(asyncReducers) {
     content,
     contentVersions,
     media,
+    mediaRevamp,
     logs,
     notifications,
     platform,
@@ -106,6 +114,9 @@ function createReducer(asyncReducers) {
     ui: ui.reducer,
     [instanceApi.reducerPath]: instanceApi.reducer,
     [accountsApi.reducerPath]: accountsApi.reducer,
+    [mediaManagerApi.reducerPath]: mediaManagerApi.reducer,
+    [metricsApi.reducerPath]: metricsApi.reducer,
+    [cloudFunctionsApi.reducerPath]: cloudFunctionsApi.reducer,
   };
 
   return combineReducers({

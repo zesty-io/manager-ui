@@ -26,13 +26,13 @@ export default memo(function PendingEditsModal(props) {
   // Expose globals so external components can invoke
   // NOTE: Should this be a portal?
   useEffect(() => {
-    window.openNavigationModal = (callback) => {
+    window.openContentNavigationModal = (callback) => {
       setOpen(true);
       setAnswer(() => callback);
     };
 
     return () => {
-      window.openNavigationModal = null;
+      window.openContentNavigationModal = null;
     };
   }, []);
 
@@ -64,7 +64,7 @@ export default memo(function PendingEditsModal(props) {
 
   return (
     <>
-      <Prompt when={Boolean(props.show)} message={"confirm"} />
+      <Prompt when={Boolean(props.show)} message={"content_confirm"} />
       <Modal
         className={styles.PendingEditsModal}
         onClose={() => {

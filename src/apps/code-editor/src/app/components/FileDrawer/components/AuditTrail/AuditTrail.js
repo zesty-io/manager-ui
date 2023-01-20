@@ -33,7 +33,10 @@ export default function AuditTrail(props) {
       ></CardHeader>
 
       <CardContent>
-        {props.logs.length === 0 && (
+        {props.logs === null && (
+          <Notice className={styles.NoLogs}>Unable to load activity log</Notice>
+        )}
+        {props.logs && props.logs?.length === 0 && (
           <Notice className={styles.NoLogs}>
             When this file is saved or published you will be able to see logs of
             when and by whom.
@@ -41,17 +44,18 @@ export default function AuditTrail(props) {
         )}
 
         <ul>
-          {props.logs.map((log) => (
-            <li key={log.ZUID} className={styles.Log}>
-              {`${moment(log.createdAt).format("YYYY-MM-DD")} ${
-                log.firstName
-              } ${log.lastName}`}
-              {log.firstName === "Unknown" && log.lastName === "User"
-                ? `(${log.actionByUserZUID})`
-                : null}
-              {`: ${log.meta.message}`}
-            </li>
-          ))}
+          {props.logs &&
+            props.logs.map((log) => (
+              <li key={log.ZUID} className={styles.Log}>
+                {`${moment(log.createdAt).format("YYYY-MM-DD")} ${
+                  log.firstName
+                } ${log.lastName}`}
+                {log.firstName === "Unknown" && log.lastName === "User"
+                  ? `(${log.actionByUserZUID})`
+                  : null}
+                {`: ${log.meta.message}`}
+              </li>
+            ))}
         </ul>
       </CardContent>
       <CardActions sx={{ marginTop: "auto" }}>

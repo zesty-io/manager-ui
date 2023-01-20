@@ -242,6 +242,18 @@ export const HeadTag = (props) => {
         })}
       </CardContent>
       <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
+        {tag.hasOwnProperty("createdAt") && (
+          <Button
+            color="error"
+            variant="contained"
+            onClick={onDelete}
+            startIcon={
+              saving ? <CircularProgress size="20px" /> : <DeleteIcon />
+            }
+          >
+            Delete Head Tag
+          </Button>
+        )}
         <Button
           title={
             tag.hasOwnProperty("createdAt")

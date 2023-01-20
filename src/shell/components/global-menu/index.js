@@ -25,6 +25,7 @@ export default memo(function GlobalMenu() {
 
   const slug = location.pathname.split("/")[1];
   const icons = {
+    launchpad: faRocket,
     content: faEdit,
     media: faImage,
     schema: faDatabase,

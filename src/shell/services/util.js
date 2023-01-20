@@ -9,3 +9,6 @@ export const prepareHeaders = (headers) => {
   }
   return headers;
 };
+
+export const generateThumbnail = (file) =>
+  `${file.url}?width=300&height=300&fit=bounds`;

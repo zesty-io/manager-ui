@@ -4,7 +4,6 @@ import SaveIcon from "@mui/icons-material/Save";
 
 import { FieldTypeColor, FieldTypeText } from "@zesty-io/material";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
-import { Modal } from "@zesty-io/core/Modal";
 import {
   Button,
   CircularProgress,
@@ -13,14 +12,16 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  Dialog,
+  IconButton,
 } from "@mui/material";
 
-import MediaApp from "../../../../../media/src/app/MediaApp";
+import { MediaApp } from "../../../../../media/src/app";
 import { notify } from "shell/store/notifications";
 import { saveStyleVariable } from "shell/store/settings";
+import CloseIcon from "@mui/icons-material/Close";
 
 import styles from "./Styles.less";
-import MediaStyles from "../../../../../media/src/app/MediaAppModal.less";
 
 export default connect((state) => {
   return {
@@ -202,7 +203,7 @@ export default connect((state) => {
               onChange={(e) => setValue(e.target.value, field.name)}
             >
               <MenuItem value="">- None -</MenuItem>
-              {Object.keys(field.options).map((option, idx) => (
+              {Object.keys(field?.options).map((option, idx) => (
                 <MenuItem key={idx} value={option}>
                   {field.options[option]}
                 </MenuItem>
@@ -286,21 +287,34 @@ export default connect((state) => {
               }}
             />
             {imageModal && (
-              <Modal
-                open={true}
-                type="global"
-                onClose={() => setImageModal()}
-                className={MediaStyles.MediaAppModal}
-              >
-                <MediaApp
-                  limitSelected={imageModal.limit - images.length}
-                  modal={true}
-                  addImages={(images) => {
-                    imageModal.callback(images);
-                    setImageModal();
-                  }}
-                />
-              </Modal>
+              <MemoryRouter>
+                <Dialog
+                  open
+                  fullScreen
+                  sx={{ my: 2.5, mx: 10 }}
+                  onClose={() => setImageModal()}
+                >
+                  <IconButton
+                    sx={{
+                      position: "fixed",
+                      right: 5,
+                      top: 0,
+                    }}
+                    onClick={() => setImageModal()}
+                  >
+                    <CloseIcon sx={{ color: "common.white" }} />
+                  </IconButton>
+                  <MediaApp
+                    limitSelected={imageModal.limit - images.length}
+                    isSelectDialog={true}
+                    showHeaderActions={false}
+                    addImagesCallback={(images) => {
+                      imageModal.callback(images);
+                      setImageModal();
+                    }}
+                  />
+                </Dialog>
+              </MemoryRouter>
             )}
           </>
         );

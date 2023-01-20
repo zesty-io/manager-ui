@@ -45,12 +45,14 @@ export const MemoizedEditor = memo(
 
         // Saves cursor position to the store on file change
         return () => {
-          dispatch(
-            actions.setCodeEditorPosition({
-              ...codeEditorPosition,
-              [props.fileZUID]: ref.current.editor.getPosition(),
-            })
-          );
+          if (ref.current) {
+            dispatch(
+              actions.setCodeEditorPosition({
+                ...codeEditorPosition,
+                [props.fileZUID]: ref.current.editor.getPosition(),
+              })
+            );
+          }
         };
       }
     }, [props.fileName]);
@@ -69,6 +71,7 @@ export const MemoizedEditor = memo(
         theme="vs-dark"
         options={{
           selectOnLineNumbers: true,
+          automaticLayout: true,
           wordWrap: "on",
         }}
         onChange={(newValue) => {

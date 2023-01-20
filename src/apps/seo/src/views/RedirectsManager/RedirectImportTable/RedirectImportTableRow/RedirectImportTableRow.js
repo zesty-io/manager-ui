@@ -15,21 +15,23 @@ import AddIcon from "@mui/icons-material/Add";
 import { createRedirect } from "../../../../store/redirects";
 import { importTarget } from "../../../../store/imports";
 import { importQuery } from "../../../../store/imports";
+import { importCode } from "../../../../store/imports";
+import { importTargetType } from "../../../../store/imports";
 
 import styles from "./RedirectImportTableRow.less";
 
 function RedirectImportTableRow(props) {
-  const [code, setCode] = useState(301); // Toggle defaults to 301
-  const [type, setType] = useState("page");
-
-  const handlePageTarget = (evt) => {
-    const path = props.paths[evt.target.dataset.value];
-    props.dispatch(importTarget(props.path, path.path_full, path.zuid));
+  const handleCode = (val) => {
+    props.dispatch(importCode(props.path, val));
   };
 
   const handlePathTarget = (evt) => {
-    console.log("// TODO handlePathTarget", evt);
-    // setType()
+    // const path = props.paths[evt.target.dataset.value];
+    props.dispatch(importTarget(props.path, evt.target.value, ""));
+  };
+
+  const handleTargetType = (evt) => {
+    props.dispatch(importTargetType(props.path, evt.target.value));
   };
 
   const handleQuery = (evt) => {
@@ -41,16 +43,16 @@ function RedirectImportTableRow(props) {
       createRedirect({
         path: props.path,
         query_string: props.query_string,
-        targetType: props.target_type,
+        targetType: props.targetType,
         target: props.target_zuid || props.target,
-        code, // API expects a 301/302 value
+        code: Number(props.code), // API expects a 301/302 numeric value
       })
     );
   };
 
   const handleToggle = (val) => {
     if (val === null) return;
-    setCode(val);
+    handleCode(val);
   };
 
   return (
@@ -60,21 +62,34 @@ function RedirectImportTableRow(props) {
       <span className={styles.RedirectCreatorCell}>
         <ToggleButtonGroup
           color="secondary"
-          value={code}
+          value={props.code}
           size="small"
           exclusive
           onChange={(evt, val) => handleToggle(val)}
         >
-          <ToggleButton value={302}>302</ToggleButton>
-          <ToggleButton value={301}>301</ToggleButton>
+          <ToggleButton value={"302"}>302</ToggleButton>
+          <ToggleButton value={"301"}>301</ToggleButton>
         </ToggleButtonGroup>
       </span>
 
       <span className={styles.RowCell}>
-        {props.target_type === "page" ? (
+        <Select
+          onChange={handleTargetType}
+          size="small"
+          fullWidth
+          value={props.targetType}
+        >
+          <MenuItem value={"path"}>Wildcard</MenuItem>
+          <MenuItem value={"page"}>Internal</MenuItem>
+          <MenuItem value={"external"}>External</MenuItem>
+        </Select>
+      </span>
+
+      <span className={styles.RowCell}>
+        {/* {props.target_type === "page" ? (
           <Select
             className={styles.selector}
-            onChange={(evt) => handlePageTarget(evt.target.value)}
+            onChange={(evt) => handlePathTarget(evt.target.value)}
             size="small"
             fullWidth
           >
@@ -96,23 +111,25 @@ function RedirectImportTableRow(props) {
               }
             })}
           </Select>
-        ) : (
+        ) : ( */}
+        <TextField
+          onChange={handlePathTarget}
+          defaultValue={props.target}
+          size="small"
+          variant="outlined"
+          color="primary"
+        />
+        {/* )} */}
+        {props.targetType === "path" && (
           <TextField
-            onChange={handlePathTarget}
-            defaultValue={props.target}
+            onChange={handleQuery}
+            placeholder="Redirect query string"
+            defaultValue={props.query_string}
             size="small"
             variant="outlined"
             color="primary"
           />
         )}
-        <TextField
-          onChange={handleQuery}
-          placeholder="Redirect query string"
-          defaultValue={props.query_string}
-          size="small"
-          variant="outlined"
-          color="primary"
-        />
       </span>
 
       <span className={cx(styles.RowCell, styles.RedirectButton)}>

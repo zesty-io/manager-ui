@@ -30,7 +30,7 @@ const tabPaths = ["resources", "users", "timeline", "insights"];
 
 const filtersOnView = {
   resources: ["happenedAt", "resourceType", "actionByUserZUID"],
-  users: ["happenedAt", "userRole"],
+  users: ["sortByUsers", "userRole"],
   timeline: ["action", , "resourceType", "actionByUserZUID"],
   insights: ["action", "actionByUserZUID"],
 };
@@ -76,7 +76,7 @@ export const Home = () => {
   // Sets date parameters to 3 months
   const setDefaultDateParams = () => {
     setParams(moment().add(-3, "months").format("YYYY-MM-DD"), "from");
-    setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
+    setParams(moment().format("YYYY-MM-DD"), "to");
   };
 
   const filteredActions = useMemo(
@@ -207,6 +207,7 @@ export const Home = () => {
                 onReset={() => {
                   setParams("", "action");
                   setParams("", "actionByUserZUID");
+                  setParams("", "resourceType");
                   setDefaultDateParams();
                 }}
               />

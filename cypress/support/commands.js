@@ -32,3 +32,11 @@ Cypress.Commands.add("waitOn", (path, cb) => {
     timeout: 15000,
   });
 });
+
+Cypress.Commands.add("assertClipboardValue", (value) => {
+  cy.window().then((win) => {
+    win.navigator?.clipboard?.readText().then((text) => {
+      expect(text).to.eq(value);
+    });
+  });
+});

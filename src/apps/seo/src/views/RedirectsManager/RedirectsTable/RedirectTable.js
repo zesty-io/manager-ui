@@ -41,7 +41,6 @@ export default function RedirectTable(props) {
             sx={{
               overflow: "hidden",
               textOverflow: "ellipsis",
-              direction: "rtl",
             }}
           >
             {value}
