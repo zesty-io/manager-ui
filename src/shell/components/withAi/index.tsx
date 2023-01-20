@@ -23,6 +23,7 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
   );
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [focused, setFocused] = useState(false);
+  const [key, setKey] = useState(0);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -46,9 +47,10 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
             : paragraphFormat(generatedText)
         }`,
         props.name,
-        props.datatype,
-        true
+        props.datatype
       );
+      // Force re-render after appending generated AI text due to uncontrolled component
+      setKey(key + 1);
     } else {
       props.onChange(
         { target: { value: `${props.value}${generatedText}` } },
@@ -57,11 +59,12 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
     }
   };
 
-  if (moment(instanceCreatedAt).isSameOrAfter(moment(enabledDate))) {
+  if (moment(instanceCreatedAt).isSameOrBefore(moment(enabledDate))) {
     return (
       <>
         <WrappedComponent
           {...props}
+          key={key}
           endLabel={
             <ThemeProvider theme={theme}>
               <IconButton

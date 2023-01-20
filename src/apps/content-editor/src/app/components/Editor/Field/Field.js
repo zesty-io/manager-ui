@@ -211,7 +211,6 @@ export default function Field({
   const allLanguages = useSelector((state) => state.languages);
 
   const [imageModal, setImageModal] = useState();
-  const [key, setKey] = useState(0);
 
   const value = item?.data?.[name];
   const version = item?.meta?.version;
@@ -354,7 +353,6 @@ export default function Field({
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AITinyMCEField
-            key={key}
             name={name}
             label={FieldTypeLabel}
             description={description}
@@ -362,11 +360,7 @@ export default function Field({
             required={required}
             value={value}
             version={version}
-            onChange={(value, name, datatype, rerender) => {
-              onChange(value, name);
-              // NOTE: flag to force rerender due to uncontrollable component
-              if (rerender) setKey(key + 1);
-            }}
+            onChange={onChange}
             onSave={onSave}
             datatype={datatype}
             maxLength="16000"
@@ -393,7 +387,6 @@ export default function Field({
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AIEditorField
-            key={key}
             name={name}
             label={FieldTypeLabel}
             description={description}
@@ -401,11 +394,7 @@ export default function Field({
             required={required}
             value={value}
             version={version}
-            onChange={(value, name, datatype, rerender) => {
-              onChange(value, name);
-              // NOTE: flag to force rerender due to uncontrollable component
-              if (rerender) setKey(key + 1);
-            }}
+            onChange={onChange}
             datatype={datatype}
             maxLength="16000"
             aiType="paragraph"
