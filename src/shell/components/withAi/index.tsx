@@ -59,7 +59,7 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
     }
   };
 
-  if (moment(instanceCreatedAt).isSameOrBefore(moment(enabledDate))) {
+  if (moment(instanceCreatedAt).isSameOrAfter(moment(enabledDate))) {
     return (
       <>
         <WrappedComponent
