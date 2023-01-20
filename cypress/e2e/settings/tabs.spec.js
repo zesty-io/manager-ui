@@ -112,7 +112,7 @@ describe("Tabs actions", () => {
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
-    cy.wait(1000);
+    cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Pin tab #3 and ensure it is pinned
     cy.waitOn("/seo", () => {
