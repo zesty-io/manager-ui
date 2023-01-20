@@ -8,7 +8,7 @@ import { fetchVersions } from "shell/store/contentVersions";
 import { Button, Select, MenuItem } from "@mui/material";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 
-import ContentSearch from "shell/components/ContentSearch";
+import ContentSearch from "shell/components/LegacyContentSearch";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { PublishAll } from "./components/PublishAll";

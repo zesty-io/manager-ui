@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
-import { ContentItem, ContentModel, Publishing } from "./types";
+import { ContentItem, ContentModel, Publishing, SearchQuery } from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const instanceApi = createApi({
@@ -12,7 +12,7 @@ export const instanceApi = createApi({
     baseUrl: `${__CONFIG__.API_INSTANCE_PROTOCOL}${instanceZUID}${__CONFIG__.API_INSTANCE}`,
     prepareHeaders,
   }),
-  tagTypes: ["ItemPublishing"],
+  tagTypes: ["ItemPublishing", "SearchQuery"],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
       Publishing[],
@@ -99,6 +99,18 @@ export const instanceApi = createApi({
       // Restore cache once content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
     }),
+    searchContent: builder.query<ContentItem[], SearchQuery>({
+      query: ({ query, limit, ...restOpts }) => {
+        const params = new URLSearchParams({
+          q: query,
+          ...restOpts,
+        });
+        if (limit) params.set("limit", limit.toString());
+        return `search/items?${params.toString()}`;
+      },
+      transformResponse: getResponseData,
+      providesTags: ["SearchQuery"],
+    }),
     getLangsMapping: builder.query<any, void>({
       query: () => `env/langs/all`,
       transformResponse: getResponseData,
@@ -117,5 +129,6 @@ export const {
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
   useGetContentItemPublishingsQuery,
+  useSearchContentQuery,
   useGetLangsMappingQuery,
 } = instanceApi;
