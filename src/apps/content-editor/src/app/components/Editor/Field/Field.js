@@ -5,7 +5,7 @@ import moment from "moment-timezone";
 import zuid from "zuid";
 
 import { fetchFields } from "shell/store/fields";
-import { fetchItem, fetchItems, searchItems } from "shell/store/content";
+import { fetchItems, searchItems } from "shell/store/content";
 
 import {
   ToggleButtonGroup,
@@ -22,7 +22,6 @@ import {
   TextField,
   Dialog,
   IconButton,
-  DialogTitle,
 } from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
@@ -41,7 +40,6 @@ import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
-import { FieldTypeSort } from "@zesty-io/material";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
 import {
@@ -51,6 +49,7 @@ import {
   FieldTypeText,
   FieldTypeDate,
   FieldTypeDateTime,
+  FieldTypeSort,
 } from "@zesty-io/material";
 
 import styles from "./Field.less";
@@ -58,6 +57,9 @@ import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
 
 const AITextField = withAI(FieldTypeText);
+const AIEditorField = withAI(FieldTypeEditor);
+const AITinyMCEField = withAI(FieldTypeTinyMCE);
+
 const FieldLabel = memo((props) => {
   return (
     <>
@@ -350,7 +352,7 @@ export default function Field({
     case "wysiwyg_basic":
       return (
         <div className={styles.WYSIWYGFieldType}>
-          <FieldTypeTinyMCE
+          <AITinyMCEField
             name={name}
             label={FieldTypeLabel}
             description={description}
@@ -362,6 +364,7 @@ export default function Field({
             onSave={onSave}
             datatype={datatype}
             maxLength="16000"
+            aiType="paragraph"
             skin="oxide"
             skinURL="/vendors/tinymce/skins/ui/oxide"
             contentCSS="/vendors/tinymce/content.css"
@@ -383,7 +386,7 @@ export default function Field({
     case "article_writer":
       return (
         <div className={styles.WYSIWYGFieldType}>
-          <FieldTypeEditor
+          <AIEditorField
             name={name}
             label={FieldTypeLabel}
             description={description}
@@ -394,6 +397,7 @@ export default function Field({
             onChange={onChange}
             datatype={datatype}
             maxLength="16000"
+            aiType="paragraph"
             mediaBrowser={(opts) => {
               setImageModal(opts);
             }}
