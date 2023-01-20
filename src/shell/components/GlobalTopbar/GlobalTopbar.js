@@ -1,29 +1,45 @@
 import GlobalSearch from "shell/components/global-search";
-import GlobalAccount from "shell/components/global-account";
-import GlobalInstance from "shell/components/global-instance";
 import GlobalTabs from "shell/components/global-tabs";
 import { GlobalNotifications } from "shell/components/global-notifications";
 
-import styles from "./GlobalTopbar.less";
-import { theme } from "@zesty-io/material";
-
-const globalTopBarThemeStyles = {
-  backgroundColor: theme.palette.grey[900],
-  boxShadow: `0px 0px 3px ${theme.palette.grey[900]}`,
-};
+import { theme, legacyTheme } from "@zesty-io/material";
+import { ThemeProvider } from "@mui/material/styles";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 
 export function GlobalTopbar() {
   return (
-    <section className={styles.GlobalTopbar} style={globalTopBarThemeStyles}>
-      <div className={styles.InstanceSearch}>
-        <GlobalSearch />
-      </div>
-      <div className={styles.InstanceTabs}>
-        <GlobalTabs />
-        <GlobalInstance />
-        <GlobalNotifications />
-        <GlobalAccount />
-      </div>
-    </section>
+    <ThemeProvider theme={theme}>
+      <Stack
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="flex-end"
+        sx={{
+          backgroundColor: "grey.100",
+          height: "40px",
+        }}
+      >
+        <Box
+          sx={{
+            width: 288,
+            minWidth: 288,
+          }}
+        >
+          <ThemeProvider theme={legacyTheme}>
+            <GlobalSearch />
+          </ThemeProvider>
+        </Box>
+        <Box
+          sx={{
+            flexGrow: 1,
+          }}
+        >
+          <GlobalTabs />
+        </Box>
+        <Box display="flex" flexBasis={60}>
+          <GlobalNotifications />
+        </Box>
+      </Stack>
+    </ThemeProvider>
   );
 }

@@ -1,15 +1,14 @@
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useLocation, Link as Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PinIcon from "@mui/icons-material/PushPin";
 import OutlinedPinIcon from "@mui/icons-material/PushPinOutlined";
-import { SxProps } from "@mui/system";
 
 import MuiLink from "@mui/material/Link";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import SvgIcon from "@mui/material/SvgIcon";
+import Stack from "@mui/material/Stack";
 
 import {
   pinTab,
@@ -25,140 +24,57 @@ import {
   useGetBinsQuery,
 } from "../../../services/mediaManager";
 
-/*
-  we need a descending z-index to make the drop shadow render correctly
-*/
-const zIndex = 25;
-
-type BaseTab = {
+export type TopBarTab = {
   tab: Tab;
   tabWidth: number;
-  variant: "outline" | "fill";
-  onClick: () => void;
-  sx?: SxProps;
-  linkProps?: SxProps;
+  isDarkMode?: boolean;
+  isActive?: boolean;
+  isPinned?: boolean;
+  tabIndex?: number;
 };
-const BaseTab: FC<BaseTab> = ({
+export const TopBarTab: FC<TopBarTab> = ({
   tab,
   tabWidth,
-  variant,
-  onClick,
-  sx,
-  linkProps,
+  isDarkMode = false,
+  isActive = false,
+  isPinned = false,
+  tabIndex,
 }) => {
-  const Pin = variant === "outline" ? OutlinedPinIcon : PinIcon;
-
-  return (
-    <Box
-      component="li"
-      data-cy="ActiveTab"
-      sx={{
-        overflow: "hidden",
-        width: `${tabWidth}px`,
-        display: "grid",
-        gridTemplateColumns: "16px 1fr 16px",
-        gap: "4px",
-        backgroundColor: "grey.800",
-        borderRadius: "12px 12px 0px 0px",
-        borderWidth: "2px 2px 0px 0px",
-        borderColor: "grey.700",
-        borderStyle: "solid",
-        boxSizing: "border-box",
-        padding: "0 12px 0 12px",
-        alignItems: "center",
-        filter: "drop-shadow(0px 4px 4px #000000)",
-        "&hover": {
-          border: "none",
-        },
-        ...sx,
-      }}
-    >
-      <Box
-        component="span"
-        color="grey.400"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "16px",
-          height: "auto",
-        }}
-      >
-        {tab.icon && (
-          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
-        )}
-      </Box>
-      <MuiLink
-        component={Link}
-        to={tab.pathname + tab.search}
-        variant="caption"
-        sx={{
-          color: "white",
-          textDecoration: "none",
-          flex: "1",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          ...linkProps,
-        }}
-      >
-        {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
-      </MuiLink>
-      <Box
-        component="span"
-        onClick={onClick}
-        sx={{
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Pin
-          fontSize="small"
-          sx={{
-            width: "16px",
-            height: "16px",
-            transform: "rotate(45deg)",
-            color: "grey.400",
-          }}
-        />
-      </Box>
-    </Box>
-  );
-};
-
-export type InactiveTabGroup = {
-  tabs: Tab[];
-  tabWidth: number;
-};
-
-export const InactiveTabGroup: FC<InactiveTabGroup> = ({ tabs, tabWidth }) => {
-  return (
-    <>
-      {tabs.map((tab, i) => (
-        <InactiveTab
-          tab={tab}
-          key={tab.pathname + tab.search}
-          tabWidth={tabWidth}
-          sx={{ zIndex: zIndex - i - 1 }}
-        />
-      ))}
-    </>
-  );
-};
-
-export type InactiveTab = {
-  tab: Tab;
-  tabWidth: number;
-  sx?: SxProps;
-};
-
-export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
   const dispatch = useDispatch();
-  const location = useLocation();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
+
+  const [styles, setStyles] = useState({
+    backgroundColor: "grey.100",
+    fontColor: "text.secondary",
+    iconColor: "action.active",
+  });
+
+  useEffect(() => {
+    if (isActive) {
+      if (isDarkMode) {
+        setStyles({
+          backgroundColor: "#1e1e1e",
+          fontColor: "common.white",
+          iconColor: "grey.500",
+        });
+      } else {
+        setStyles({
+          backgroundColor: "common.white",
+          fontColor: "text.primary",
+          iconColor: "action.active",
+        });
+      }
+    } else {
+      // Revert to default style once unselected as active
+      setStyles({
+        backgroundColor: "grey.100",
+        fontColor: "text.secondary",
+        iconColor: "action.active",
+      });
+    }
+  }, [isDarkMode, isActive]);
+
   // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: binGroups } = useGetAllBinGroupsQuery(
@@ -175,31 +91,117 @@ export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
       },
     };
   }, [binGroups]);
-  if (tabLocationEquality(location, tab)) return null;
+
+  const Pin = isPinned ? PinIcon : OutlinedPinIcon;
+
+  const handlePinClick = () => {
+    // force unpin because we don't want to show the modal on the active tab
+    if (isPinned) {
+      dispatch(unpinTab(tab, isActive, queryData));
+    } else {
+      dispatch(pinTab(tab, queryData));
+    }
+  };
+
   return (
-    <BaseTab
-      variant="fill"
-      tab={tab}
-      tabWidth={tabWidth}
-      onClick={() => dispatch(unpinTab(tab, false, queryData))}
+    <Box
+      component="div"
+      className="tab-item"
+      data-cy={isPinned ? `PinnedTab-${tabIndex}` : "UnpinnedTab"}
+      data-active={isActive}
+      width={`${tabWidth}px`}
+      py={0.5}
+      height={34}
+      bgcolor={styles.backgroundColor}
+      flex="1 0 0"
+      borderRadius="8px 8px 0px 0px"
       sx={{
         "&:hover": {
-          backgroundColor: "grey.700",
+          backgroundColor: isActive ? styles.backgroundColor : "grey.50",
         },
-        ...sx,
       }}
-    />
+    >
+      <Stack
+        component="div"
+        direction="row"
+        height={24}
+        alignItems="center"
+        justifyContent="space-between"
+        borderLeft={1}
+        borderColor={isActive ? "transparent" : "grey.300"}
+        sx={{
+          "&:hover": {
+            borderColor: "transparent",
+          },
+        }}
+      >
+        <Box
+          display="flex"
+          flex="1 0 0"
+          component="div"
+          whiteSpace="nowrap"
+          overflow="hidden"
+          textOverflow="ellipsis"
+          pl={1.5}
+        >
+          <Box
+            display="inline-block"
+            mr={1.25}
+            color={styles.iconColor}
+            fontSize={16}
+          >
+            {tab.icon && <SvgIcon component={tab.icon} fontSize="inherit" />}
+          </Box>
+          <MuiLink
+            component={Link}
+            to={tab.pathname + tab.search}
+            // @ts-expect-error missing body3 module augmentation
+            variant="body3"
+            color={styles.fontColor}
+            fontWeight={600}
+            underline="none"
+            flex="1 0 0"
+            noWrap
+          >
+            {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
+          </MuiLink>
+        </Box>
+        <Box
+          component="div"
+          onClick={handlePinClick}
+          width={24}
+          height={24}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          pr={1}
+          pl={0.5}
+          color="action.active"
+          sx={{
+            cursor: "pointer",
+          }}
+        >
+          <Pin
+            fontSize="small"
+            sx={{
+              width: "16px",
+              height: "16px",
+              transform: "rotate(45deg)",
+              color: styles.iconColor,
+            }}
+          />
+        </Box>
+      </Stack>
+    </Box>
   );
 };
 
-export type ActiveTab = {
+export type UnpinnedTopBarTab = {
   tabWidth: number;
 };
-export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
-  const dispatch = useDispatch();
+export const UnpinnedTopBarTab: FC<UnpinnedTopBarTab> = ({ tabWidth }) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const pinnedTabs = useSelector((state: AppState) => state.ui.pinnedTabs);
   const state = useSelector((state: AppState) => state);
   const location = useLocation();
   // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
@@ -219,31 +221,15 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
     };
   }, [binGroups]);
 
-  const activeTab = createTab(state, parsePath(location), queryData);
+  const tab = createTab(state, parsePath(location), queryData);
 
-  const isPinned =
-    pinnedTabs.findIndex((t: Tab) => tabLocationEquality(t, activeTab)) >= 0;
   return (
-    <BaseTab
-      variant={isPinned ? "fill" : "outline"}
+    <TopBarTab
+      isActive
+      isPinned={false}
       tabWidth={tabWidth}
-      tab={activeTab}
-      onClick={() => {
-        // force unpin because we don't want to show the modal on the active tab
-        if (isPinned) {
-          dispatch(unpinTab(activeTab, true, queryData));
-        } else {
-          dispatch(pinTab(activeTab, queryData));
-        }
-      }}
-      sx={{
-        backgroundColor: "white",
-        border: "none",
-        zIndex,
-      }}
-      linkProps={{
-        color: "grey.800",
-      }}
+      tab={tab}
+      isDarkMode={tab.app === "Code"}
     />
   );
 };
