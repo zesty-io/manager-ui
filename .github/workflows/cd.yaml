@@ -46,7 +46,9 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Deploy to Dev
-        run: gcloud app deploy app.yaml --quiet --project zesty-dev
+        run:
+          - gcloud app deploy app.yaml --quiet --project zesty-dev
+          - gcloud app services set-traffic manager-ui --splits ga=0.99,beta=0.01 --split-by cookie --project zesty-dev
       - name: Post Successful Dev Deploy Notification To Slack
         uses: rtCamp/action-slack-notify@v2
         env:
@@ -124,7 +126,9 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Deploy to Staging
-        run: gcloud app deploy app.yaml --quiet --project zesty-stage
+        run:
+          - gcloud app deploy app.yaml --quiet --project zesty-stage
+          - gcloud app services set-traffic manager-ui --splits ga=0.99,beta=0.01 --split-by cookie --project zesty-stage
       - name: Post Successful Stage Deploy Notification To Slack
         uses: rtCamp/action-slack-notify@v2
         env:
