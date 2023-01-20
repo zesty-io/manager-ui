@@ -10,6 +10,13 @@ import moment from "moment-timezone";
 // This date is used determine if the AI feature is enabled
 const enabledDate = "2023-01-13";
 
+const paragraphFormat = (text: string) => {
+  return `<p>${text
+    .split(/\n/)
+    .filter((s) => s)
+    .join("</p><p>")}</p>`;
+};
+
 export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
   const instanceCreatedAt = useSelector(
     (state: AppState) => state.instance.createdAt
@@ -25,11 +32,29 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
     setAnchorEl(null);
   };
 
-  const handleGenerate = (generatedText: string) => {
-    props.onChange(
-      { target: { value: `${props.value}${generatedText}` } },
-      props.name
-    );
+  const handleApprove = (generatedText: string) => {
+    if (
+      props.datatype === "article_writer" ||
+      props.datatype === "markdown" ||
+      props.datatype === "wysiwyg_advanced" ||
+      props.datatype === "wysiwyg_basic"
+    ) {
+      props.onChange(
+        `${props.value || ""}${
+          props.datatype === "markdown"
+            ? generatedText
+            : paragraphFormat(generatedText)
+        }`,
+        props.name,
+        props.datatype,
+        true
+      );
+    } else {
+      props.onChange(
+        { target: { value: `${props.value}${generatedText}` } },
+        props.name
+      );
+    }
   };
 
   if (moment(instanceCreatedAt).isSameOrAfter(moment(enabledDate))) {
@@ -74,7 +99,7 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
             }}
           >
             <AIGenerator
-              onApprove={handleGenerate}
+              onApprove={handleApprove}
               onClose={handleClose}
               aiType={props.aiType}
               label={props.label}
