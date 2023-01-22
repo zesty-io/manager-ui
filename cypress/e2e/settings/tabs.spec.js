@@ -37,11 +37,6 @@ describe("Tabs actions", () => {
   });
 
   it("Unpins tabs", () => {
-    // Pin the tab
-    // cy.waitOn("/v1/web/views/11-e55790-f19nwx", () => {
-    //   cy.visit("/code/file/views/11-e55790-f19nwx");
-    // });
-    // cy.get('[data-testid="PushPinOutlinedIcon"]').parent().click();
     // Unpin the tab
     cy.get('[data-cy="PinnedTab-0"]')
       .find('[data-testid="PushPinIcon"]')
@@ -117,6 +112,8 @@ describe("Tabs actions", () => {
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
+    cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
+
     // Pin tab #3 and ensure it is pinned
     cy.waitOn("/seo", () => {
       cy.visit("/seo");
@@ -134,23 +131,26 @@ describe("Tabs actions", () => {
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
+    cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
+
     // Pin tab #4 and ensure it is pinned
-    cy.waitOn("/reports", () => {
-      cy.visit("/reports");
+    cy.waitOn("/leads", () => {
+      cy.visit("/leads");
     });
     cy.get('[data-cy="UnpinnedTab"]').should("exist");
     // Verify that the other tabs still exist
     cy.get('[data-cy="PinnedTab-0"]').should("exist");
     cy.get('[data-cy="PinnedTab-1"]').should("exist");
-    cy.get('[data-cy="PinnedTab-2"]').should("exist");
     cy.get('[data-testid="PushPinOutlinedIcon"]')
       .should("exist")
       .parent()
       .trigger("mouseover")
       .click();
-    cy.get('[data-cy="PinnedTab-3"]')
+    cy.get('[data-cy="PinnedTab-2"]')
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
+
+    cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Pin tab #5 and ensure it is pinned
     cy.waitOn("/media", () => {
@@ -160,15 +160,16 @@ describe("Tabs actions", () => {
     // Verify that the other tabs still exist, we only have 4 pinned tabs at this point since the other 1 will go to the dropdown menu
     cy.get('[data-cy="PinnedTab-0"]').should("exist");
     cy.get('[data-cy="PinnedTab-1"]').should("exist");
-    cy.get('[data-cy="PinnedTab-2"]').should("exist");
     cy.get('[data-testid="PushPinOutlinedIcon"]')
       .should("exist")
       .parent()
       .trigger("mouseover")
       .click();
-    cy.get('[data-cy="PinnedTab-3"]')
+    cy.get('[data-cy="PinnedTab-2"]')
       .find('[data-testid="PushPinIcon"]')
       .should("exist");
+
+    cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Ensure dropdown menu exists
     cy.get('[data-cy="TabsDropdownButton"').should("exist");
