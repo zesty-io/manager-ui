@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   Box,
   Button,
@@ -19,6 +19,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { AddFieldDivider } from "./AddFieldDivider";
 import { FieldsListRight } from "./FieldsListRight";
 import { NoSearchResults } from "./NoSearchResults";
+import { ContentModelField } from "../../../../../shell/services/types";
 
 type Params = {
   id: string;
@@ -44,27 +45,38 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const showSpinner = isFieldsLoading;
   const model = models?.find((model) => model.ZUID === id);
   const searchRef = useRef<HTMLDivElement>();
+  const [reorderQueue, setReorderQueue] = useState([]);
+  const [localFields, setLocalFields] = useState<ContentModelField[] | null>(
+    null
+  );
 
-  useMemo(() => {
-    setDraggedIndex(null);
-    setHoveredIndex(null);
+  useEffect(() => {
+    if (fields && localFields?.length !== fields.length) {
+      setLocalFields([...fields]);
+    }
   }, [fields]);
 
   const sortedFields = useMemo(() => {
     if (draggedIndex === null || hoveredIndex === null) {
-      return fields;
+      return localFields;
     } else {
-      const newFields = [...fields];
+      const newFields = [...localFields];
       const draggedField = newFields[draggedIndex];
       newFields.splice(draggedIndex, 1);
       newFields.splice(hoveredIndex, 0, draggedField);
       return newFields;
     }
-  }, [isFieldsFetching, isFieldsLoading, draggedIndex, hoveredIndex]);
+  }, [
+    isFieldsFetching,
+    isFieldsLoading,
+    draggedIndex,
+    hoveredIndex,
+    localFields,
+  ]);
 
   const filteredFields = useMemo(() => {
     if (search) {
-      return sortedFields.filter(
+      return sortedFields?.filter(
         (field) =>
           field.label.toLowerCase().includes(search.toLowerCase()) ||
           field.name.toLowerCase().includes(search.toLowerCase())
@@ -75,13 +87,24 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   }, [search, sortedFields]);
 
   const handleReorder = () => {
-    bulkUpdateContentModelField({
-      modelZUID: id,
-      fields: filteredFields.map((field, index) => ({
-        ...field,
-        sort: index,
-      })),
-    });
+    const newLocalFields = [...localFields];
+    const draggedField = newLocalFields[draggedIndex];
+    newLocalFields.splice(draggedIndex, 1);
+    newLocalFields.splice(hoveredIndex, 0, draggedField);
+
+    setDraggedIndex(null);
+    setHoveredIndex(null);
+    setLocalFields(newLocalFields);
+    setReorderQueue([
+      ...reorderQueue,
+      {
+        modelZUID: id,
+        fields: filteredFields.map((field, index) => ({
+          ...field,
+          sort: index,
+        })),
+      },
+    ]);
   };
 
   const handleSearchAgain = () => {
@@ -89,6 +112,14 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
 
     searchRef.current.focus();
   };
+
+  useEffect(() => {
+    if (reorderQueue.length && !isBulkFieldsUpdating) {
+      bulkUpdateContentModelField(reorderQueue[0]).then(() => {
+        setReorderQueue(reorderQueue.slice(1));
+      });
+    }
+  }, [reorderQueue, isBulkFieldsUpdating]);
 
   if (showSpinner) {
     return (
@@ -129,7 +160,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           inputRef={searchRef}
         />
 
-        {!Boolean(filteredFields.length) && search && (
+        {!Boolean(filteredFields?.length) && search && (
           <NoSearchResults
             searchTerm={search}
             onSearchAgain={handleSearchAgain}
@@ -139,12 +170,12 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           />
         )}
 
-        {!Boolean(filteredFields.length) && !search && (
+        {!Boolean(filteredFields?.length) && !search && (
           // TODO: Replace with the no fields state component when figma provided
           <Typography>No fields</Typography>
         )}
 
-        {Boolean(filteredFields.length) && (
+        {Boolean(filteredFields?.length) && (
           <Box sx={{ overflowY: "scroll" }}>
             {filteredFields?.map((field, index) => {
               return (
