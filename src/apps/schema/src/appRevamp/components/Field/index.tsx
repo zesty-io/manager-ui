@@ -234,12 +234,6 @@ export const Field = ({
             horizontal: "right",
           }}
         >
-          <MenuItem>
-            <ListItemIcon>
-              <ContentCopyRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>Duplicate Field</ListItemText>
-          </MenuItem>
           <MenuItem
             onClick={() => history.push(`${location.pathname}/${field.ZUID}`)}
           >

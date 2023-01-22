@@ -178,7 +178,6 @@ const fields_config: { [key: string]: FieldData[] } = {
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, quas.",
     },
   ],
-  // TODO: Zosh to provide correct Group Header Text
   dateandtime: [
     {
       type: "date",
@@ -209,7 +208,6 @@ const fields_config: { [key: string]: FieldData[] } = {
       proTip: "If you want to only have a date then use the date field.",
     },
   ],
-  // TODO: Zosh to provide correct Group Header Text
   options: [
     {
       type: "yes_no",
