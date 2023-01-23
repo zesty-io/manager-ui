@@ -110,7 +110,6 @@ interface Props {
   onModalClose: () => void;
   onBackClick?: () => void;
   fields: ContentModelField[];
-  onFieldCreationSuccesssful: () => void;
   fieldData?: ContentModelField;
 }
 export const FieldForm = ({
@@ -119,11 +118,12 @@ export const FieldForm = ({
   onModalClose,
   onBackClick,
   fields,
-  onFieldCreationSuccesssful,
   fieldData,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [isAddAnotherFieldClicked, setIsAddAnotherFieldClicked] =
+    useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [formData, setFormData] = useState<FormData>({});
   const params = useParams<Params>();
@@ -172,7 +172,13 @@ export const FieldForm = ({
 
   useEffect(() => {
     if (isFieldCreated || isFieldUpdated) {
-      onFieldCreationSuccesssful();
+      if (isAddAnotherFieldClicked) {
+        // When field is successfully created, re-route the user back to the field selection screen
+        setIsAddAnotherFieldClicked(false);
+        onBackClick();
+      } else {
+        onModalClose();
+      }
     }
   }, [isFieldCreated, isFieldUpdated]);
 
@@ -285,6 +291,11 @@ export const FieldForm = ({
     }
   };
 
+  const handleAddAnotherField = () => {
+    setIsAddAnotherFieldClicked(true);
+    handleSubmitForm();
+  };
+
   const headerText = stringStartsWithVowel(name)
     ? `Add an ${name} Field`
     : `Add a ${name} Field`;
@@ -365,21 +376,27 @@ export const FieldForm = ({
           py: 2,
         }}
       >
-        {/* TODO: Add functionality for button once complete flow is provided */}
-        <Button variant="outlined" color="inherit">
+        <Button
+          variant="outlined"
+          color="inherit"
+          onClick={isUpdateField ? onModalClose : onBackClick}
+        >
           Cancel
         </Button>
-        {/* TODO: Add functionality for button once complete flow is provided */}
         <Box>
-          <Button
-            variant="outlined"
-            startIcon={<AddRoundedIcon />}
-            sx={{
-              mr: 2,
-            }}
-          >
-            Add another field
-          </Button>
+          {!isUpdateField && (
+            <LoadingButton
+              variant="outlined"
+              startIcon={<AddRoundedIcon />}
+              sx={{
+                mr: 2,
+              }}
+              loading={isCreatingField}
+              onClick={handleAddAnotherField}
+            >
+              Add another field
+            </LoadingButton>
+          )}
           <LoadingButton
             loading={isCreatingField || isUpdatingField}
             onClick={handleSubmitForm}

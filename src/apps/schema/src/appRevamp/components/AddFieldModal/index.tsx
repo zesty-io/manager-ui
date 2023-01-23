@@ -66,7 +66,6 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
           name={selectedField?.fieldName}
           onModalClose={() => onModalClose(false)}
           onBackClick={() => setViewMode("fields_list")}
-          onFieldCreationSuccesssful={() => onModalClose(false)}
         />
       )}
       {viewMode === "update_field" && (
@@ -75,7 +74,6 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
           type={fieldData?.datatype}
           name={fieldData?.label}
           onModalClose={() => onModalClose(false)}
-          onFieldCreationSuccesssful={() => onModalClose(false)}
           fieldData={fieldData}
         />
       )}
