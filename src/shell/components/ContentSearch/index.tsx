@@ -124,7 +124,7 @@ const ContentSearch: FC = () => {
             {...params}
             ref={textfieldRef}
             fullWidth
-            type="text"
+            type="search"
             variant="outlined"
             placeholder={`Search Instance ${shortcutHelpText}`}
             sx={{
@@ -134,6 +134,14 @@ const ContentSearch: FC = () => {
               if (e.key === "Enter") {
                 history.push(`/search?q=${value}`);
               }
+            }}
+            inputProps={{
+              ...params.inputProps,
+              sx: {
+                "::-webkit-search-cancel-button": {
+                  display: "none",
+                },
+              },
             }}
             InputProps={{
               ...params.InputProps,
