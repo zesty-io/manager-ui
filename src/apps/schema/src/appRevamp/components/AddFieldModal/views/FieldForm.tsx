@@ -112,6 +112,7 @@ interface Props {
   fields: ContentModelField[];
   onFieldCreationSuccesssful: () => void;
   fieldData?: ContentModelField;
+  sortIndex?: number | null;
 }
 export const FieldForm = ({
   type,
@@ -121,6 +122,7 @@ export const FieldForm = ({
   fields,
   onFieldCreationSuccesssful,
   fieldData,
+  sortIndex,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -223,6 +225,7 @@ export const FieldForm = ({
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
     const hasErrors = Object.values(errors).some((error) => error.length);
+    const sort = sortIndex === null ? fields?.length : sortIndex;
 
     if (hasErrors) {
       return;
@@ -241,7 +244,7 @@ export const FieldForm = ({
       settings: {
         list: formData.list as boolean,
       },
-      sort: isUpdateField ? fieldData.sort : fields?.length, // Just use the length since sort starts at 0
+      sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
 
     if (isUpdateField) {

@@ -14,8 +14,9 @@ export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
   onModalClose: Dispatch<SetStateAction<boolean>>;
   mode: ViewMode;
+  sortIndex?: number | null;
 }
-export const AddFieldModal = ({ onModalClose, mode }: Props) => {
+export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   const [viewMode, setViewMode] = useState<ViewMode>(mode);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
@@ -67,6 +68,7 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
           onModalClose={() => onModalClose(false)}
           onBackClick={() => setViewMode("fields_list")}
           onFieldCreationSuccesssful={() => onModalClose(false)}
+          sortIndex={sortIndex}
         />
       )}
       {viewMode === "update_field" && (

@@ -11,21 +11,25 @@ type Params = {
 };
 export const Model = () => {
   const [isAddFieldModalOpen, setAddFieldModalOpen] = useState(false);
+  const [sortIndex, setSortIndex] = useState<number | null>(null);
   const history = useHistory();
   const params = useParams<Params>();
   const { id } = params;
 
+  const handleNewFieldModalClick = (sortIndex: number | null) => {
+    setAddFieldModalOpen(true);
+    setSortIndex(sortIndex);
+  };
+
   return (
     <Box flex="1" display="flex" height="100%" flexDirection="column">
-      <ModelHeader onNewFieldModalClick={() => setAddFieldModalOpen(true)} />
+      <ModelHeader onNewFieldModalClick={handleNewFieldModalClick} />
       <Switch>
         <Route
           exact
           path="/schema/:id/fields"
           render={() => (
-            <FieldList
-              onNewFieldModalClick={() => setAddFieldModalOpen(true)}
-            />
+            <FieldList onNewFieldModalClick={handleNewFieldModalClick} />
           )}
         />
         <Route
@@ -46,7 +50,11 @@ export const Model = () => {
         <Redirect to="/schema/:id/fields" />
       </Switch>
       {isAddFieldModalOpen && (
-        <AddFieldModal mode="fields_list" onModalClose={setAddFieldModalOpen} />
+        <AddFieldModal
+          mode="fields_list"
+          onModalClose={setAddFieldModalOpen}
+          sortIndex={sortIndex}
+        />
       )}
     </Box>
   );

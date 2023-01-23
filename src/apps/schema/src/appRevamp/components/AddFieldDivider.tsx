@@ -4,10 +4,15 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 interface Props {
   indexToInsert: number;
   disabled: boolean;
+  onDividerClick: () => void;
 }
 
 // TODO: On component click the new field dialog should open and upon completion the rest of the fields should be re-ordered to reflect the new field that was inserted.
-export const AddFieldDivider = ({ indexToInsert, disabled }: Props) => {
+export const AddFieldDivider = ({
+  indexToInsert,
+  disabled,
+  onDividerClick,
+}: Props) => {
   const styles = !disabled
     ? {
         cursor: "pointer",
@@ -21,7 +26,13 @@ export const AddFieldDivider = ({ indexToInsert, disabled }: Props) => {
     : {};
 
   return (
-    <Box py="3px" display="flex" alignItems={"center"} sx={styles}>
+    <Box
+      py="3px"
+      display="flex"
+      alignItems={"center"}
+      sx={styles}
+      onClick={onDividerClick}
+    >
       <IconButton
         sx={{
           visibility: "hidden",
