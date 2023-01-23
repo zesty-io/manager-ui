@@ -13,13 +13,18 @@ import SchemaRoundedIcon from "@mui/icons-material/SchemaRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { useHistory } from "react-router";
 import { useParams } from "../../../../../../shell/hooks/useParams";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Sidebar = () => {
   const { data: models } = useGetContentModelsQuery();
   const history = useHistory();
   const [params, setParams] = useParams();
   const [search, setSearch] = useState(params.get("term") || "");
+
+  useEffect(() => {
+    setSearch(params.get("term") || "");
+  }, [params.get("term")]);
+
   return (
     <Box
       width={240}

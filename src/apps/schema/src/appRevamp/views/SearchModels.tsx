@@ -33,14 +33,6 @@ export const SearchModels = () => {
     })?.length;
   }, [search, models]);
 
-  const handleExit = () => {
-    if (history.length > 2) {
-      history.goBack();
-    } else {
-      history.push("/schema");
-    }
-  };
-
   return (
     <Box width="100%" display="flex" flexDirection="column">
       <Box
@@ -53,7 +45,7 @@ export const SearchModels = () => {
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
         }}
       >
-        <IconButton size="small" onClick={handleExit}>
+        <IconButton size="small" onClick={() => history.push("/schema")}>
           <CloseRoundedIcon fontSize="small" color="action" />
         </IconButton>
         <Typography variant="h6" fontWeight="600">
