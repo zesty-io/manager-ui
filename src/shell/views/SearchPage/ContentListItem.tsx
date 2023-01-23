@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { Link } from "react-router-dom";
 import {
   useGetAuditsQuery,
   useGetContentModelQuery,
@@ -80,8 +81,8 @@ export const ContentListItem: FC<ContentListItem> = ({
   // Search Result List Item
   return (
     <Box
-      component="a"
-      href={url}
+      component={Link}
+      to={url}
       style={style}
       sx={{
         boxSizing: "border-box",
