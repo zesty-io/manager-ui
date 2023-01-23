@@ -1,9 +1,11 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import { ModelsTable } from "../components/ModelsTable";
 import { useMemo } from "react";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { useGetContentModelsQuery } from "../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../shell/services/types";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { useHistory } from "react-router";
 
 const modelNameMap = {
   templateset: "Multi Page",
@@ -14,6 +16,7 @@ const modelNameMap = {
 export const SearchModels = () => {
   const [params, setParams] = useParams();
   const { data: models } = useGetContentModelsQuery();
+  const history = useHistory();
 
   const search = params.get("term") || "";
 
@@ -29,18 +32,31 @@ export const SearchModels = () => {
       );
     })?.length;
   }, [search, models]);
+
+  const handleExit = () => {
+    if (history.length > 2) {
+      history.goBack();
+    } else {
+      history.push("/schema");
+    }
+  };
+
   return (
     <Box width="100%" display="flex" flexDirection="column">
       <Box
         display="flex"
-        justifyContent="space-between"
+        alignItems="center"
+        gap={1.5}
         px={3}
         py={2}
         sx={{
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
         }}
       >
-        <Typography variant="h4" fontWeight="600">
+        <IconButton size="small" onClick={handleExit}>
+          <CloseRoundedIcon fontSize="small" color="action" />
+        </IconButton>
+        <Typography variant="h6" fontWeight="600">
           {filteredModelsLength} Search Results for "{search}"
         </Typography>
       </Box>
