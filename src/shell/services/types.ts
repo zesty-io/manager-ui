@@ -169,3 +169,21 @@ export interface ContentModelField {
   updatedAt: string;
   [key: string]: ContentModelFieldValue;
 }
+
+export interface WebView {
+  ZUID: string;
+  status: "live" | "dev";
+  contentModelZUID: string;
+  contentModelType: string;
+  code: string;
+  type: string;
+  fileName: string;
+  customZNode: number;
+  template: number;
+  lastEditedID?: number;
+  module: number;
+  plugin: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
