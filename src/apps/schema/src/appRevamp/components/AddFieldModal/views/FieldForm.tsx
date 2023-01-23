@@ -13,14 +13,14 @@ import {
   CircularProgress,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { snakeCase, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
-import { stringStartsWithVowel } from "../../utils";
+import { stringStartsWithVowel, convertLabelValue } from "../../utils";
 import { InputField, FieldFormInput } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
@@ -81,15 +81,15 @@ const formConfig: { [key: string]: InputField[] } = {
   images: [],
   internal_link: [],
   link: [],
-  markdown: [],
+  markdown: [...commonFields],
   number: [],
   one_to_many: [],
   one_to_one: [],
   sort: [],
   text: [...commonFields],
-  textarea: [],
+  textarea: [...commonFields],
   uuid: [],
-  wysiwyg_basic: [],
+  wysiwyg_basic: [...commonFields],
   yes_no: [],
 };
 
@@ -171,7 +171,6 @@ export const FieldForm = ({
   }, [type, fieldData]);
 
   useEffect(() => {
-    // TODO: Field creation flow is not yet completed, closing modal on success for now
     if (isFieldCreated || isFieldUpdated) {
       if (isAddAnotherFieldClicked) {
         // When field is successfully created, re-route the user back to the field selection screen
@@ -182,6 +181,50 @@ export const FieldForm = ({
       }
     }
   }, [isFieldCreated, isFieldUpdated]);
+
+  useEffect(() => {
+    if (!Object.keys(formData).length) {
+      return;
+    }
+
+    const currFieldNames = fields.map((field) => field.name);
+    let newErrorsObj: Errors = {};
+
+    Object.keys(formData).map((inputName) => {
+      if (inputName in errors) {
+        // Special validation for "name"
+        if (inputName === "name") {
+          // Validate if "name" has a value
+          if (isEmpty(formData.name)) {
+            newErrorsObj.name = "This field is required";
+          } else {
+            if (isUpdateField) {
+              // Validate if "name" already exists during field update, but here it is ok to re-use its current name
+              newErrorsObj.name =
+                currFieldNames.includes(formData.name as string) &&
+                formData.name !== fieldData.name
+                  ? "Field name already exists"
+                  : "";
+            } else {
+              // Validate if "name" already exists during create new field
+              newErrorsObj.name = currFieldNames.includes(
+                formData.name as string
+              )
+                ? "Field name already exists"
+                : "";
+            }
+          }
+        } else {
+          // All other input validation
+          newErrorsObj[inputName] = isEmpty(formData[inputName])
+            ? "This field is required"
+            : "";
+        }
+      }
+    });
+
+    setErrors(newErrorsObj);
+  }, [formData]);
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
@@ -196,7 +239,7 @@ export const FieldForm = ({
       "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
     > = {
       contentModelZUID: id,
-      name: snakeCase(formData.name as string),
+      name: formData.name as string,
       label: formData.label as string,
       description: formData.description as string,
       datatype: type,
@@ -224,38 +267,26 @@ export const FieldForm = ({
   };
 
   const handleFieldDataChange = ({
-    name,
+    inputName,
     value,
   }: {
-    name: string;
+    inputName: string;
     value: string | boolean;
   }) => {
+    const isAutoPopulateName = inputName === "label" && !isUpdateField;
+
+    // Form data update
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [inputName]:
+        inputName === "name" ? convertLabelValue(value as string) : value,
     }));
 
-    const currFieldNames = fields.map((field) => field.name);
-    let errorMsg = value ? "" : "This field is required";
-
-    if (value && name === "name") {
-      if (isUpdateField) {
-        // Re-using its original name is fine when updating a field
-        errorMsg =
-          currFieldNames.includes(value as string) && value !== fieldData.name
-            ? "Field name already exists"
-            : "";
-      } else {
-        errorMsg = currFieldNames.includes(value as string)
-          ? "Field name already exists"
-          : "";
-      }
-    }
-
-    if (name in errors) {
-      setErrors((prevData) => ({
+    // Auto populate "name" when "label" field changes
+    if (isAutoPopulateName) {
+      setFormData((prevData) => ({
         ...prevData,
-        [name]: errorMsg,
+        name: convertLabelValue(value as string),
       }));
     }
   };
