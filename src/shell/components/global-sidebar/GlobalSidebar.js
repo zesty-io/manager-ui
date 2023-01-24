@@ -128,7 +128,7 @@ export default connect((state) => {
           className={styles.GlobalSidebar}
           style={globalSideBarThemeStyles}
         >
-          <Box sx={{ px: 2.5, pb: 0, pt: 2.5 }}>
+          <Box sx={{ px: 2.5, py: "16px" }}>
             {props.openNav ? (
               <Box
                 component="img"
@@ -192,6 +192,8 @@ export default connect((state) => {
           {/* <GlobalCustomApps openNav={props.ui.openNav} /> */}
           {moment().diff(moment(instanceCreationDate), "days") <= 15 &&
             props.ui.openNav && <OnboardingCallSection />}
+
+          {/* Bottom bar */}
           <Box
             sx={{
               position: "absolute",
