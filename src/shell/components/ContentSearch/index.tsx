@@ -144,6 +144,7 @@ const ContentSearch: FC = () => {
                 "::-webkit-search-cancel-button": {
                   display: "none",
                 },
+                padding: "unset!important",
               },
             }}
             InputProps={{
@@ -166,6 +167,7 @@ const ContentSearch: FC = () => {
                 borderWidth: "0px 1px 1px 0px",
                 borderStyle: "solid",
                 borderColor: "border",
+                boxSizing: "border-box",
                 padding: "6px 8px!important",
                 gap: "4px",
                 width: "100%",
