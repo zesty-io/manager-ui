@@ -1,7 +1,9 @@
 import TextField from "@mui/material/TextField";
 import { FC, useState, useRef } from "react";
-import SearchIcon from "@mui/icons-material/Search";
+import SearchIcon from "@mui/icons-material/SearchRounded";
 import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import { HTMLAttributes } from "react";
 import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
@@ -35,6 +37,7 @@ const ContentSearch: FC = () => {
     <Autocomplete
       value={value}
       fullWidth
+      open={true} // TODO remove; for testing only
       id="global-search-autocomplete"
       freeSolo
       selectOnFocus
@@ -145,11 +148,26 @@ const ContentSearch: FC = () => {
             }}
             InputProps={{
               ...params.InputProps,
-              startAdornment: <SearchIcon fontSize="small" />,
+              startAdornment: (
+                <Stack
+                  direction="column"
+                  sx={{
+                    width: "28px",
+                    height: "28px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <SearchIcon fontSize="small" color="action" />
+                </Stack>
+              ),
               sx: {
                 borderRadius: 1,
-                padding: "6px 8px",
-                gap: "10px",
+                borderWidth: "0px 1px 1px 0px",
+                borderStyle: "solid",
+                borderColor: "border",
+                padding: "6px 8px!important",
+                gap: "4px",
                 width: "100%",
                 backgroundColor: (theme) => theme.palette.background.paper,
               },
@@ -173,11 +191,11 @@ const Suggestion: FC<SuggestionProps> = ({ text, icon, ...props }) => {
     <ListItem
       {...props}
       sx={{
-        padding: "4px 16px 4px 16px",
+        padding: "4px 16px 4px 16px!important",
         minHeight: "36px",
         "&.Mui-focused": {
           borderLeft: (theme) => "4px solid " + theme.palette.primary.main,
-          padding: "4px 16px 4px 12px",
+          padding: "4px 16px 4px 12px!important",
         },
       }}
     >
@@ -186,7 +204,7 @@ const Suggestion: FC<SuggestionProps> = ({ text, icon, ...props }) => {
       </ListItemIcon>
       <ListItemText
         primary={text}
-        primaryTypographyProps={{ variant: "body2" }}
+        primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
       />
     </ListItem>
   );
