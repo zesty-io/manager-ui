@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useParams } from "react-router";
 import { Dialog } from "@mui/material";
 
@@ -12,7 +12,7 @@ type Params = {
 };
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
-  onModalClose: Dispatch<SetStateAction<boolean>>;
+  onModalClose: () => void;
   mode: ViewMode;
   sortIndex?: number | null;
   onBulkUpdateDone?: () => void;
@@ -44,7 +44,7 @@ export const AddFieldModal = ({
   return (
     <Dialog
       open
-      onClose={() => onModalClose(false)}
+      onClose={onModalClose}
       fullScreen
       sx={{
         "& .MuiDialog-container": {
@@ -62,7 +62,7 @@ export const AddFieldModal = ({
     >
       {viewMode === "fields_list" && (
         <FieldSelection
-          onModalClose={() => onModalClose(false)}
+          onModalClose={onModalClose}
           onFieldClick={handleFieldClick}
         />
       )}
@@ -71,7 +71,7 @@ export const AddFieldModal = ({
           fields={fields}
           type={selectedField?.fieldType}
           name={selectedField?.fieldName}
-          onModalClose={() => onModalClose(false)}
+          onModalClose={onModalClose}
           onBackClick={() => setViewMode("fields_list")}
           sortIndex={sortIndex}
           onBulkUpdateDone={onBulkUpdateDone}
@@ -82,7 +82,7 @@ export const AddFieldModal = ({
           fields={fields}
           type={fieldData?.datatype}
           name={fieldData?.label}
-          onModalClose={() => onModalClose(false)}
+          onModalClose={onModalClose}
           fieldData={fieldData}
         />
       )}

@@ -26,7 +26,6 @@ import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
   useBulkUpdateContentModelFieldMutation,
-  useGetContentModelFieldsQuery,
 } from "../../../../../../../shell/services/instance";
 import {
   ContentModelField,

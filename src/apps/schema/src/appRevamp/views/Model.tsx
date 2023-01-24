@@ -21,6 +21,11 @@ export const Model = () => {
     setSortIndex(sortIndex);
   };
 
+  const handleModalClosed = () => {
+    setAddFieldModalOpen(false);
+    setSortIndex(null);
+  };
+
   return (
     <Box flex="1" display="flex" height="100%" flexDirection="column">
       <ModelHeader onNewFieldModalClick={handleNewFieldModalClick} />
@@ -55,7 +60,7 @@ export const Model = () => {
       {isAddFieldModalOpen && (
         <AddFieldModal
           mode="fields_list"
-          onModalClose={setAddFieldModalOpen}
+          onModalClose={handleModalClosed}
           sortIndex={sortIndex}
           onBulkUpdateDone={() => setSortIndex(null)}
         />
