@@ -114,6 +114,7 @@ interface Props {
   fieldData?: ContentModelField;
   sortIndex?: number | null;
   onBulkUpdateDone?: () => void;
+  onCreateAnotherField?: () => void;
 }
 export const FieldForm = ({
   type,
@@ -124,6 +125,7 @@ export const FieldForm = ({
   fieldData,
   sortIndex,
   onBulkUpdateDone,
+  onCreateAnotherField,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -141,10 +143,8 @@ export const FieldForm = ({
     updateContentModelField,
     { isLoading: isUpdatingField, isSuccess: isFieldUpdated },
   ] = useUpdateContentModelFieldMutation();
-  const [
-    bulkUpdateContentModelField,
-    { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
-  ] = useBulkUpdateContentModelFieldMutation();
+  const [bulkUpdateContentModelField, { isSuccess: isBulkUpdated }] =
+    useBulkUpdateContentModelFieldMutation();
   const isUpdateField = !isEmpty(fieldData);
 
   useEffect(() => {
@@ -181,14 +181,18 @@ export const FieldForm = ({
 
   useEffect(() => {
     if (isBulkUpdated) {
-      onModalClose();
-      onBulkUpdateDone();
+      if (isAddAnotherFieldClicked) {
+        onCreateAnotherField();
+      } else {
+        onModalClose();
+        onBulkUpdateDone();
+      }
     }
   }, [isBulkUpdated]);
 
   useEffect(() => {
+    // In-between field creation flow (bulk update field sort after field creation)
     if (isFieldCreated && sortIndex !== null) {
-      // Bulk update field sort
       const fieldsToUpdate = fields.slice(sortIndex).map((field) => ({
         ...field,
         sort: field.sort + 1,
@@ -197,11 +201,10 @@ export const FieldForm = ({
       bulkUpdateContentModelField({ modelZUID: id, fields: fieldsToUpdate });
     }
 
+    // Regular field creation flow
     if ((isFieldCreated || isFieldUpdated) && sortIndex === null) {
       if (isAddAnotherFieldClicked) {
-        // When field is successfully created, re-route the user back to the field selection screen
-        setIsAddAnotherFieldClicked(false);
-        onBackClick();
+        onCreateAnotherField();
       } else {
         onModalClose();
       }

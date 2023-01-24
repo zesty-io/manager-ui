@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Box } from "@mui/material";
 import { Redirect, Route, Switch, useParams, useHistory } from "react-router";
-import { useGetContentModelsQuery } from "../../../../../shell/services/instance";
 import { FieldList } from "../components/FieldList";
 import { ModelHeader } from "../components/ModelHeader";
 import { AddFieldModal } from "../components/AddFieldModal";

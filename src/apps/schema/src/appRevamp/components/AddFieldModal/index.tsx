@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router";
 import { Dialog } from "@mui/material";
 
@@ -30,7 +30,13 @@ export const AddFieldModal = ({
   });
   const params = useParams<Params>();
   const { id, fieldId } = params;
+  const [localSortIndex, setLocalSortIndex] = useState<number | null>(null);
   const { data: fields } = useGetContentModelFieldsQuery(id);
+
+  useEffect(() => {
+    // Local copy is incremented when user clicks "add another field"
+    setLocalSortIndex(sortIndex);
+  }, [sortIndex]);
 
   const fieldData = useMemo(() => {
     return fields?.find((field) => field.ZUID === fieldId);
@@ -39,6 +45,14 @@ export const AddFieldModal = ({
   const handleFieldClick = (fieldType: string, fieldName: string) => {
     setViewMode("new_field");
     setSelectedField({ fieldType, fieldName });
+  };
+
+  const handleCreateAnotherField = () => {
+    setViewMode("fields_list");
+
+    if (localSortIndex !== null) {
+      setLocalSortIndex((prevData) => prevData + 1);
+    }
   };
 
   return (
@@ -73,8 +87,9 @@ export const AddFieldModal = ({
           name={selectedField?.fieldName}
           onModalClose={onModalClose}
           onBackClick={() => setViewMode("fields_list")}
-          sortIndex={sortIndex}
+          sortIndex={localSortIndex}
           onBulkUpdateDone={onBulkUpdateDone}
+          onCreateAnotherField={handleCreateAnotherField}
         />
       )}
       {viewMode === "update_field" && (
