@@ -82,6 +82,12 @@ export default memo(function GlobalMenu() {
                 height: "36px",
                 borderRadius: "4px",
                 backgroundColor: slug === product ? "grey.800" : "transparent",
+                "&:hover": {
+                  backgroundColor: "grey.900",
+                  svg: {
+                    color: "primary.main",
+                  },
+                },
               }}
             >
               <MenuItemIcon product={product} />
