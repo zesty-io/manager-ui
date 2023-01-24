@@ -17,7 +17,7 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import { useAiGenerationMutation } from "../../services/cloudFunctions";
 import { useGetLangsMappingQuery } from "../../services/instance";
-// import { Brain } from "@zesty-io/material";
+import { Brain } from "@zesty-io/material";
 import { useDispatch } from "react-redux";
 import { notify } from "../../store/notifications";
 
@@ -89,10 +89,10 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
       >
         <Box position="relative">
           <CircularProgress />
-          {/* <Brain
+          <Brain
             color="primary"
             sx={{ position: "absolute", top: "8px", left: "8px" }}
-          /> */}
+          />
         </Box>
         <Typography variant="h4" fontWeight={600} sx={{ mt: 3 }}>
           Generating Content
@@ -123,7 +123,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
         }}
       >
         <Box display="flex" gap={1}>
-          {/* <Brain color="primary" /> */}
+          <Brain color="primary" />
           <Typography variant="h6" fontWeight={600}>
             {data ? "Your Content is Generated!" : "Generate Content"}
           </Typography>

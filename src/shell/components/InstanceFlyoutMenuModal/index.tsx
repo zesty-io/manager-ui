@@ -192,6 +192,9 @@ const InstanceFlyoutMenuModal = ({
           height: "392px",
         },
       }}
+      sx={{
+        boxShadow: 8,
+      }}
       open={true}
       fullWidth
       maxWidth={"xs"}
@@ -392,17 +395,17 @@ const InstanceFlyoutMenuModal = ({
                 }}
               >
                 <img
+                  src={youtubeIcon}
+                  onClick={() =>
+                    handleNavigation("https://www.youtube.com/c/Zestyio/videos")
+                  }
+                />
+                <img
                   src={slackIcon}
                   onClick={() =>
                     handleNavigation(
                       "https://join.slack.com/t/zestyiodevs/shared_invite/zt-1jv3ct6k4-uuDM5ZNLy3NgK2FCzK~xuw"
                     )
-                  }
-                />
-                <img
-                  src={youtubeIcon}
-                  onClick={() =>
-                    handleNavigation("https://www.youtube.com/c/Zestyio/videos")
                   }
                 />
               </Box>
