@@ -42,8 +42,9 @@ export default memo(function GlobalMenu() {
     return (
       <ListItemIcon sx={{ minWidth: "36px" }}>
         <SpecificIcon
-          fontSize="small"
           sx={{
+            width: "24px",
+            height: "24px",
             color: slug === product ? "primary.main" : "grey.500",
           }}
         />
@@ -77,7 +78,7 @@ export default memo(function GlobalMenu() {
             <ListItem
               sx={{
                 px: "10px",
-                mb: "10px",
+                mb: "4px",
                 height: "36px",
                 borderRadius: "4px",
                 backgroundColor: slug === product ? "grey.800" : "transparent",
