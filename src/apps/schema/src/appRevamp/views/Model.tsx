@@ -29,7 +29,10 @@ export const Model = () => {
           exact
           path="/schema/:id/fields"
           render={() => (
-            <FieldList onNewFieldModalClick={handleNewFieldModalClick} />
+            <FieldList
+              onNewFieldModalClick={handleNewFieldModalClick}
+              isDeferFieldFetch={Boolean(sortIndex !== null)}
+            />
           )}
         />
         <Route
@@ -54,6 +57,7 @@ export const Model = () => {
           mode="fields_list"
           onModalClose={setAddFieldModalOpen}
           sortIndex={sortIndex}
+          onBulkUpdateDone={() => setSortIndex(null)}
         />
       )}
     </Box>

@@ -27,8 +27,12 @@ type Params = {
 
 interface Props {
   onNewFieldModalClick: (sortIndex: number | null) => void;
+  isDeferFieldFetch?: boolean;
 }
-export const FieldList = ({ onNewFieldModalClick }: Props) => {
+export const FieldList = ({
+  onNewFieldModalClick,
+  isDeferFieldFetch,
+}: Props) => {
   const params = useParams<Params>();
   const { id } = params;
   const [search, setSearch] = useState("");
@@ -37,7 +41,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
     data: fields,
     isLoading: isFieldsLoading,
     isFetching: isFieldsFetching,
-  } = useGetContentModelFieldsQuery(id);
+  } = useGetContentModelFieldsQuery(id, { skip: isDeferFieldFetch });
   const [bulkUpdateContentModelField, { isLoading: isBulkFieldsUpdating }] =
     useBulkUpdateContentModelFieldMutation();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -51,8 +55,8 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   );
 
   useEffect(() => {
-    if (fields?.length) {
-      setLocalFields(fields);
+    if (fields && localFields?.length !== fields.length) {
+      setLocalFields([...fields]);
     }
   }, [fields]);
 

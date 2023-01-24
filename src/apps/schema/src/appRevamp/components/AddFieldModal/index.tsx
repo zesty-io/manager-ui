@@ -15,8 +15,14 @@ interface Props {
   onModalClose: Dispatch<SetStateAction<boolean>>;
   mode: ViewMode;
   sortIndex?: number | null;
+  onBulkUpdateDone?: () => void;
 }
-export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
+export const AddFieldModal = ({
+  onModalClose,
+  mode,
+  sortIndex,
+  onBulkUpdateDone,
+}: Props) => {
   const [viewMode, setViewMode] = useState<ViewMode>(mode);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
@@ -24,11 +30,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   });
   const params = useParams<Params>();
   const { id, fieldId } = params;
-  const {
-    data: fields,
-    isLoading: isFieldsLoading,
-    isSuccess: isFieldsLoaded,
-  } = useGetContentModelFieldsQuery(id);
+  const { data: fields } = useGetContentModelFieldsQuery(id);
 
   const fieldData = useMemo(() => {
     return fields?.find((field) => field.ZUID === fieldId);
@@ -72,7 +74,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
           onModalClose={() => onModalClose(false)}
           onBackClick={() => setViewMode("fields_list")}
           sortIndex={sortIndex}
-          isFieldsLoaded={isFieldsLoaded && !isFieldsLoading}
+          onBulkUpdateDone={onBulkUpdateDone}
         />
       )}
       {viewMode === "update_field" && (

@@ -114,7 +114,7 @@ interface Props {
   fields: ContentModelField[];
   fieldData?: ContentModelField;
   sortIndex?: number | null;
-  isFieldsLoaded?: boolean;
+  onBulkUpdateDone?: () => void;
 }
 export const FieldForm = ({
   type,
@@ -124,7 +124,7 @@ export const FieldForm = ({
   fields,
   fieldData,
   sortIndex,
-  isFieldsLoaded,
+  onBulkUpdateDone,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -181,16 +181,15 @@ export const FieldForm = ({
   }, [type, fieldData]);
 
   useEffect(() => {
-    if (isBulkUpdated && isFieldsLoaded) {
-      // TODO: Only close once fields have been reloaded with proper sorting
+    if (isBulkUpdated) {
       onModalClose();
+      onBulkUpdateDone();
     }
   }, [isBulkUpdated]);
 
   useEffect(() => {
     if (isFieldCreated && sortIndex !== null) {
       // Bulk update field sort
-      console.log(fields, sortIndex);
       const fieldsToUpdate = fields.slice(sortIndex).map((field) => ({
         ...field,
         sort: field.sort + 1,
@@ -199,7 +198,7 @@ export const FieldForm = ({
       bulkUpdateContentModelField({ modelZUID: id, fields: fieldsToUpdate });
     }
 
-    if (isFieldCreated || (isFieldUpdated && sortIndex === null)) {
+    if ((isFieldCreated || isFieldUpdated) && sortIndex === null) {
       if (isAddAnotherFieldClicked) {
         // When field is successfully created, re-route the user back to the field selection screen
         setIsAddAnotherFieldClicked(false);
