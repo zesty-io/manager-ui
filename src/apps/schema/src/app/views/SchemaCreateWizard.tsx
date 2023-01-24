@@ -36,13 +36,13 @@ const templates = [
     mainName: "module_blog",
     icon: <NewspaperRoundedIcon color="action" />,
   },
-  {
-    title: "E Commerce",
-    description: "A schema consisting of models for products, and categories.",
-    repository: "https://github.com/zesty-io/module-bootstrap-5.2-products",
-    icon: <ShoppingCartIcon color="action" />,
-    mainName: "",
-  },
+  // {
+  //   title: "E Commerce",
+  //   description: "A schema consisting of models for products, and categories.",
+  //   repository: "https://github.com/zesty-io/module-bootstrap-5.2-products",
+  //   icon: <ShoppingCartIcon color="action" />,
+  //   mainName: "",
+  // },
   // {
   //   title: "Documentation",
   //   description:
@@ -54,7 +54,7 @@ const templates = [
       "A simple landing page with fields for a hero, feature, and footer section.",
     repository: "https://github.com/zesty-io/module-bootstrap-5.2-landing-page",
     icon: <WebRoundedIcon color="action" />,
-    mainName: "",
+    mainName: "module_modern_business",
   },
 ];
 
@@ -121,7 +121,7 @@ export const SchemaCreateWizard = () => {
                     }`,
                   borderRadius: "4px",
                   p: 2,
-                  maxWidth: "188px",
+                  maxWidth: "282px",
                   alignItems: "flex-start",
                   flexDirection: "column",
                   svg: {
