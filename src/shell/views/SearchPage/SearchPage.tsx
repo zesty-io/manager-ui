@@ -5,19 +5,24 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
+import moment from "moment-timezone";
 
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
 import { ContentList } from "./ContentList";
 import { BackButton } from "./BackButton";
-
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q") || "";
   const { data: results, isLoading } = useSearchContentQuery(
-    { query },
+    { query, order: "created", dir: "desc" },
     { skip: !query }
   );
+  const sortedResults = results ? [...results] : [];
+  sortedResults?.sort((a, b) => {
+    return moment(b.meta.updatedAt).diff(moment(a.meta.updatedAt));
+  });
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -36,6 +41,7 @@ export const SearchPage: FC = () => {
             padding: "8px 24px",
             gap: "10px",
             height: "52px",
+            boxSizing: "border-box",
             border: `1px solid ${theme.palette.grey[100]}`,
             backgroundColor: "background.paper",
           }}
@@ -59,7 +65,7 @@ export const SearchPage: FC = () => {
                 height: "100%",
               }}
             >
-              <ContentList results={results} loading={isLoading} />
+              <ContentList results={sortedResults} loading={isLoading} />
             </Box>
           ))}
       </Box>
