@@ -108,6 +108,8 @@ export default connect((state) => {
     return data;
   };
 
+  console.log("user", user);
+
   useEffect(() => {
     const tag = Object.values(props?.headTags).find((tag) =>
       tag?.attributes.find(
@@ -243,10 +245,10 @@ export default connect((state) => {
                 />
                 <Avatar
                   style={{
-                    marginLeft: props.openNav ? "-8px" : "0px",
+                    marginLeft: props.openNav ? "-12px" : "0px",
                   }}
                   alt={`${user.firstName} ${user.lastName} Avatar`}
-                  src={`https://www.gravatar.com/avatar/${user.faviconURL}?d=mm&s=40`}
+                  src={`https://www.gravatar.com/avatar/${faviconURL}?d=mm&s=40`}
                 />
               </AvatarGroup>
               <ArrowDropDownIcon
