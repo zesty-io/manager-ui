@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { rest } from "lodash";
+import { Sentry } from "./sentry";
 // import { store } from "shell/store";
 // import { endSession } from "shell/store/auth";
 
@@ -98,7 +99,7 @@ export function request(url, opts = {}) {
         );
         throw err;
       } else {
-        throw err;
+        Sentry.captureException(err, { fingerprint: ["network_error"] });
       }
     });
 }
