@@ -37,7 +37,6 @@ const ContentSearch: FC = () => {
     <Autocomplete
       value={value}
       fullWidth
-      open={true} // TODO remove; for testing only
       id="global-search-autocomplete"
       freeSolo
       selectOnFocus
@@ -132,6 +131,11 @@ const ContentSearch: FC = () => {
             placeholder={`Search Instance ${shortcutHelpText}`}
             sx={{
               height: "40px",
+              "& .Mui-focused": {
+                width: "500px",
+                zIndex: 40,
+                position: "relative",
+              },
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
