@@ -119,7 +119,7 @@ export default connect((state) => {
           position="right"
           offset="0px"
           width="450px"
-          height="calc(100vh - 54px)"
+          height="calc(100vh - 40px)"
           open={drawerOpen}
         >
           <DrawerContent className={styles.DrawerContent}>
