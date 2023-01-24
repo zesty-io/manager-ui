@@ -209,7 +209,7 @@ export default connect((state) => {
               borderTopStyle: "solid",
               alignItems: "center",
               flexDirection: props.openNav ? "row" : "column-reverse",
-              py: 1,
+              py: "10px",
             }}
           >
             <Box

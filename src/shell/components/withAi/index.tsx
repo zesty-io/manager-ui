@@ -1,5 +1,5 @@
 import { Popover, IconButton } from "@mui/material";
-import { Brain, theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { ComponentType, useState } from "react";
 import { AIGenerator } from "./AIGenerator";
@@ -84,7 +84,7 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
                 onClick={handleClick}
                 size="small"
               >
-                <Brain fontSize="small" />
+                {/* <Brain fontSize="small" /> */}
               </IconButton>
             </ThemeProvider>
           }
