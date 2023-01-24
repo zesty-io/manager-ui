@@ -7,7 +7,6 @@ interface Props {
   onDividerClick: () => void;
 }
 
-// TODO: On component click the new field dialog should open and upon completion the rest of the fields should be re-ordered to reflect the new field that was inserted.
 export const AddFieldDivider = ({
   indexToInsert,
   disabled,
