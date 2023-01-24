@@ -71,7 +71,6 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
           name={selectedField?.fieldName}
           onModalClose={() => onModalClose(false)}
           onBackClick={() => setViewMode("fields_list")}
-          onFieldCreationSuccesssful={() => onModalClose(false)}
           sortIndex={sortIndex}
           isFieldsLoaded={isFieldsLoaded && !isFieldsLoading}
         />
@@ -82,7 +81,6 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
           type={fieldData?.datatype}
           name={fieldData?.label}
           onModalClose={() => onModalClose(false)}
-          onFieldCreationSuccesssful={() => onModalClose(false)}
           fieldData={fieldData}
         />
       )}

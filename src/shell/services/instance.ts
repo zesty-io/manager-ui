@@ -7,6 +7,7 @@ import {
   ContentModel,
   ContentModelField,
   Publishing,
+  WebView,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -229,6 +230,10 @@ export const instanceApi = createApi({
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
     }),
+    getWebViews: builder.query<WebView[], void>({
+      query: () => `/web/views`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -248,4 +253,5 @@ export const {
   useUpdateContentModelMutation,
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
+  useGetWebViewsQuery,
 } = instanceApi;

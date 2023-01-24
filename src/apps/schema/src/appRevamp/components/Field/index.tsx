@@ -7,7 +7,6 @@ import {
   Button,
   Tooltip,
   Menu,
-  MenuList,
   MenuItem,
   ListItemIcon,
   ListItemText,
@@ -16,7 +15,6 @@ import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import CheckIcon from "@mui/icons-material/Check";
-import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
@@ -69,6 +67,7 @@ export const Field = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
   const [isFieldNameCopied, setIsFieldNameCopied] = useState(false);
+  const [isZuidCopied, setIsZuidCopied] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isMenuOpen = Boolean(anchorEl);
   const location = useLocation();
@@ -81,10 +80,14 @@ export const Field = ({
       timeoutId = setTimeout(() => setIsFieldNameCopied(false), 3000);
     }
 
+    if (isZuidCopied) {
+      timeoutId = setTimeout(() => setIsZuidCopied(false), 3000);
+    }
+
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [isFieldNameCopied]);
+  }, [isFieldNameCopied, isZuidCopied]);
 
   const handleDragStart = (e: React.DragEvent) => {
     // TODO: Test on other browsers
@@ -119,6 +122,8 @@ export const Field = ({
 
     try {
       await navigator.clipboard.writeText(field?.ZUID);
+
+      setIsZuidCopied(true);
     } catch (error) {
       console.error("Failed to copy ZUID", error);
     }
@@ -242,11 +247,11 @@ export const Field = ({
             </ListItemIcon>
             <ListItemText>Edit Field</ListItemText>
           </MenuItem>
-          <MenuItem>
+          <MenuItem onClick={handleCopyZuid}>
             <ListItemIcon>
-              <WidgetsRoundedIcon />
+              {isZuidCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
             </ListItemIcon>
-            <ListItemText>Copy ZUID</ListItemText>
+            <ListItemText>{isZuidCopied ? "Copied" : "Copy ZUID"}</ListItemText>
           </MenuItem>
           <MenuItem>
             <ListItemIcon>

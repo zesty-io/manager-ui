@@ -3,6 +3,8 @@ import { theme } from "@zesty-io/material";
 import { Sidebar } from "./components/Sidebar";
 import { Route, Switch } from "react-router";
 import { Model } from "./views/Model";
+import { AllModels } from "./views/AllModels";
+import { SearchModels } from "./views/SearchModels";
 
 export const SchemaApp = () => {
   return (
@@ -27,7 +29,8 @@ export const SchemaApp = () => {
       >
         <Sidebar />
         <Switch>
-          <Route exact path="/schema" render={() => <div>All Models</div>} />
+          <Route exact path="/schema" render={() => <AllModels />} />
+          <Route path="/schema/search" render={() => <SearchModels />} />
           <Route path="/schema/:id" render={() => <Model />} />
         </Switch>
       </Box>
