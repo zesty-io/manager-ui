@@ -51,8 +51,8 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   );
 
   useEffect(() => {
-    if (fields && localFields?.length !== fields.length) {
-      setLocalFields([...fields]);
+    if (fields?.length) {
+      setLocalFields(fields);
     }
   }, [fields]);
 

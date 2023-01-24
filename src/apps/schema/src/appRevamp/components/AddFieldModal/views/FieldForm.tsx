@@ -25,6 +25,8 @@ import { InputField, FieldFormInput } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
+  useBulkUpdateContentModelFieldMutation,
+  useGetContentModelFieldsQuery,
 } from "../../../../../../../shell/services/instance";
 import {
   ContentModelField,
@@ -113,6 +115,7 @@ interface Props {
   onFieldCreationSuccesssful: () => void;
   fieldData?: ContentModelField;
   sortIndex?: number | null;
+  isFieldsLoaded?: boolean;
 }
 export const FieldForm = ({
   type,
@@ -123,6 +126,7 @@ export const FieldForm = ({
   onFieldCreationSuccesssful,
   fieldData,
   sortIndex,
+  isFieldsLoaded,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -138,6 +142,10 @@ export const FieldForm = ({
     updateContentModelField,
     { isLoading: isUpdatingField, isSuccess: isFieldUpdated },
   ] = useUpdateContentModelFieldMutation();
+  const [
+    bulkUpdateContentModelField,
+    { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
+  ] = useBulkUpdateContentModelFieldMutation();
   const isUpdateField = !isEmpty(fieldData);
 
   useEffect(() => {
@@ -173,7 +181,25 @@ export const FieldForm = ({
   }, [type, fieldData]);
 
   useEffect(() => {
-    if (isFieldCreated || isFieldUpdated) {
+    if (isBulkUpdated && isFieldsLoaded) {
+      // TODO: Only close once fields have been reloaded with proper sorting
+      onModalClose();
+    }
+  }, [isBulkUpdated]);
+
+  useEffect(() => {
+    if (isFieldCreated && sortIndex !== null) {
+      // Bulk update field sort
+      console.log(fields, sortIndex);
+      const fieldsToUpdate = fields.slice(sortIndex).map((field) => ({
+        ...field,
+        sort: field.sort + 1,
+      }));
+
+      bulkUpdateContentModelField({ modelZUID: id, fields: fieldsToUpdate });
+    }
+
+    if (isFieldCreated || (isFieldUpdated && sortIndex === null)) {
       onFieldCreationSuccesssful();
     }
   }, [isFieldCreated, isFieldUpdated]);

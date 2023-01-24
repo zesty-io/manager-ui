@@ -24,7 +24,11 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   });
   const params = useParams<Params>();
   const { id, fieldId } = params;
-  const { data: fields } = useGetContentModelFieldsQuery(id);
+  const {
+    data: fields,
+    isLoading: isFieldsLoading,
+    isSuccess: isFieldsLoaded,
+  } = useGetContentModelFieldsQuery(id);
 
   const fieldData = useMemo(() => {
     return fields?.find((field) => field.ZUID === fieldId);
@@ -69,6 +73,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
           onBackClick={() => setViewMode("fields_list")}
           onFieldCreationSuccesssful={() => onModalClose(false)}
           sortIndex={sortIndex}
+          isFieldsLoaded={isFieldsLoaded && !isFieldsLoading}
         />
       )}
       {viewMode === "update_field" && (
