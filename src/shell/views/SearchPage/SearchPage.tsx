@@ -20,7 +20,13 @@ export const SearchPage: FC = () => {
   );
   return (
     <ThemeProvider theme={theme}>
-      <>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "background.paper",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -56,7 +62,7 @@ export const SearchPage: FC = () => {
               <ContentList results={results} loading={isLoading} />
             </Box>
           ))}
-      </>
+      </Box>
     </ThemeProvider>
   );
 };
