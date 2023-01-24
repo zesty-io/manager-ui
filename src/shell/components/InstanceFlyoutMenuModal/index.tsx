@@ -107,8 +107,8 @@ const InstanceFlyoutMenuModal = ({
     };
 
     return (
-      <Box sx={{ width: "48px", py: 2 }}>
-        <Box sx={{ height: "325px" }}>
+      <Box sx={{ width: "48px", height: "392px", pt: 2 }}>
+        <Box sx={{ height: "330px" }}>
           {favoriteInstances.length > 0 ? (
             <>
               {favoriteInstances
@@ -174,7 +174,7 @@ const InstanceFlyoutMenuModal = ({
           }}
           onClick={() => setShowInstancesListMenu(true)}
         >
-          <ManageSearchIcon sx={{ mx: "auto" }} />
+          <ManageSearchIcon fontSize="small" sx={{ mx: "auto" }} />
         </IconButton>
       </Box>
     );
@@ -190,6 +190,7 @@ const InstanceFlyoutMenuModal = ({
           overflow: "hidden",
           width: "450px",
           height: "392px",
+          borderRadius: "8px",
         },
       }}
       sx={{
@@ -230,8 +231,8 @@ const InstanceFlyoutMenuModal = ({
                 borderLeftWidth: "1px",
               }}
             >
-              <Box sx={{ width: "200px", py: 1 }}>
-                <ListItem sx={{ mt: 1 }}>
+              <Box sx={{ width: "200px", py: "12px" }}>
+                <ListItem>
                   <Typography variant="body2" sx={{ fontWeight: 700 }}>
                     {instanceName}
                   </Typography>
@@ -283,6 +284,7 @@ const InstanceFlyoutMenuModal = ({
                   <Button
                     variant="outlined"
                     color="inherit"
+                    size="small"
                     onClick={() => refreshCache()}
                     startIcon={
                       <>
@@ -303,6 +305,7 @@ const InstanceFlyoutMenuModal = ({
                   <Button
                     variant="outlined"
                     color="inherit"
+                    size="small"
                     onClick={() => handleCopyInstanceZUID()}
                     startIcon={
                       <>
