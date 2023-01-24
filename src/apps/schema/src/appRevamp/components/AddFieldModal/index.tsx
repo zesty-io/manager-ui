@@ -92,6 +92,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
           name={fieldData?.label}
           onModalClose={onModalClose}
           fieldData={fieldData}
+          sortIndex={null}
         />
       )}
     </Dialog>

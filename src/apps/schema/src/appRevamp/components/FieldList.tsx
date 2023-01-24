@@ -8,6 +8,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useParams } from "react-router";
+import { isEqual } from "lodash";
+
 import {
   useBulkUpdateContentModelFieldMutation,
   useGetContentModelFieldsQuery,
@@ -51,7 +53,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   );
 
   useEffect(() => {
-    if (fields && localFields?.length !== fields.length) {
+    if (fields?.length && !isEqual(localFields, fields)) {
       setLocalFields([...fields]);
     }
   }, [fields]);
