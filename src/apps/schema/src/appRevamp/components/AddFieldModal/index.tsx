@@ -15,14 +15,8 @@ interface Props {
   onModalClose: () => void;
   mode: ViewMode;
   sortIndex?: number | null;
-  onBulkUpdateDone?: () => void;
 }
-export const AddFieldModal = ({
-  onModalClose,
-  mode,
-  sortIndex,
-  onBulkUpdateDone,
-}: Props) => {
+export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   const [viewMode, setViewMode] = useState<ViewMode>(mode);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
@@ -88,7 +82,6 @@ export const AddFieldModal = ({
           onModalClose={onModalClose}
           onBackClick={() => setViewMode("fields_list")}
           sortIndex={localSortIndex}
-          onBulkUpdateDone={onBulkUpdateDone}
           onCreateAnotherField={handleCreateAnotherField}
         />
       )}

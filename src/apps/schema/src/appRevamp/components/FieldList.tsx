@@ -27,12 +27,8 @@ type Params = {
 
 interface Props {
   onNewFieldModalClick: (sortIndex: number | null) => void;
-  isDeferFieldFetch?: boolean;
 }
-export const FieldList = ({
-  onNewFieldModalClick,
-  isDeferFieldFetch,
-}: Props) => {
+export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const params = useParams<Params>();
   const { id } = params;
   const [search, setSearch] = useState("");
@@ -41,7 +37,7 @@ export const FieldList = ({
     data: fields,
     isLoading: isFieldsLoading,
     isFetching: isFieldsFetching,
-  } = useGetContentModelFieldsQuery(id, { skip: isDeferFieldFetch });
+  } = useGetContentModelFieldsQuery(id);
   const [bulkUpdateContentModelField, { isLoading: isBulkFieldsUpdating }] =
     useBulkUpdateContentModelFieldMutation();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);

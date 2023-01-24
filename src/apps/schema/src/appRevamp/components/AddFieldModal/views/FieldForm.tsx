@@ -113,7 +113,6 @@ interface Props {
   fields: ContentModelField[];
   fieldData?: ContentModelField;
   sortIndex?: number | null;
-  onBulkUpdateDone?: () => void;
   onCreateAnotherField?: () => void;
 }
 export const FieldForm = ({
@@ -124,7 +123,6 @@ export const FieldForm = ({
   fields,
   fieldData,
   sortIndex,
-  onBulkUpdateDone,
   onCreateAnotherField,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
@@ -143,8 +141,10 @@ export const FieldForm = ({
     updateContentModelField,
     { isLoading: isUpdatingField, isSuccess: isFieldUpdated },
   ] = useUpdateContentModelFieldMutation();
-  const [bulkUpdateContentModelField, { isSuccess: isBulkUpdated }] =
-    useBulkUpdateContentModelFieldMutation();
+  const [
+    bulkUpdateContentModelField,
+    { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
+  ] = useBulkUpdateContentModelFieldMutation();
   const isUpdateField = !isEmpty(fieldData);
 
   useEffect(() => {
@@ -185,7 +185,6 @@ export const FieldForm = ({
         onCreateAnotherField();
       } else {
         onModalClose();
-        onBulkUpdateDone();
       }
     }
   }, [isBulkUpdated]);
@@ -193,10 +192,12 @@ export const FieldForm = ({
   useEffect(() => {
     // In-between field creation flow (bulk update field sort after field creation)
     if (isFieldCreated && sortIndex !== null) {
-      const fieldsToUpdate = fields.slice(sortIndex).map((field) => ({
-        ...field,
-        sort: field.sort + 1,
-      }));
+      const fieldsToUpdate: ContentModelField[] = fields
+        .slice(sortIndex)
+        .map((field) => ({
+          ...field,
+          sort: field.sort + 1,
+        }));
 
       bulkUpdateContentModelField({ modelZUID: id, fields: fieldsToUpdate });
     }
@@ -292,7 +293,14 @@ export const FieldForm = ({
         body: updateBody,
       });
     } else {
-      createContentModelField({ modelZUID: id, body });
+      // We want to skip field cache invalidation when creating an in-between field
+      // We'll let the bulk update rtk query do the invalidation after this call
+      // Ensures FieldList gets the field data with proper sorting from bulk update rtk query already
+      createContentModelField({
+        modelZUID: id,
+        body,
+        skipInvalidation: sortIndex !== null,
+      });
     }
   };
 
@@ -421,14 +429,14 @@ export const FieldForm = ({
               sx={{
                 mr: 2,
               }}
-              loading={isCreatingField}
+              loading={isCreatingField || isBulkUpdating}
               onClick={handleAddAnotherField}
             >
               Add another field
             </LoadingButton>
           )}
           <LoadingButton
-            loading={isCreatingField || isUpdatingField}
+            loading={isCreatingField || isUpdatingField || isBulkUpdating}
             onClick={handleSubmitForm}
             variant="contained"
           >
