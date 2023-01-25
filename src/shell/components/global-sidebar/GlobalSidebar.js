@@ -108,8 +108,6 @@ export default connect((state) => {
     return data;
   };
 
-  console.log("user", user);
-
   useEffect(() => {
     const tag = Object.values(props?.headTags).find((tag) =>
       tag?.attributes.find(
@@ -130,7 +128,7 @@ export default connect((state) => {
           className={styles.GlobalSidebar}
           style={globalSideBarThemeStyles}
         >
-          <Box sx={{ px: 2.5, py: "16px" }}>
+          <Box sx={{ px: 2.5, py: 2 }}>
             {props.openNav ? (
               <Box
                 component="img"
