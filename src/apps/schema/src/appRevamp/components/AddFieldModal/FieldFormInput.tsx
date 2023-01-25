@@ -1,15 +1,11 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import {
   Box,
   Typography,
-  TextField,
   FormControlLabel,
   Checkbox,
-  OutlinedInput,
   InputBase,
 } from "@mui/material";
-import CheckBoxOutlineBlankOutlinedIcon from "@mui/icons-material/CheckBoxOutlineBlankOutlined";
-import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 
 import { FormValue } from "./views/FieldForm";
 
