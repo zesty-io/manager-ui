@@ -34,7 +34,7 @@ export default memo(function GlobalMenu() {
     seo: RecommendIcon,
     settings: SettingsIcon,
     release: RocketLaunchIcon,
-    marketplace: ExtensionIcon,
+    apps: ExtensionIcon,
   };
 
   const MenuItemIcon = ({ product }) => {
@@ -42,7 +42,6 @@ export default memo(function GlobalMenu() {
     return (
       <ListItemIcon sx={{ minWidth: "36px" }}>
         <SpecificIcon
-          fontSize="small"
           sx={{
             color: slug === product ? "primary.main" : "grey.500",
           }}
@@ -77,10 +76,16 @@ export default memo(function GlobalMenu() {
             <ListItem
               sx={{
                 px: "10px",
-                mb: "10px",
+                mb: "4px",
                 height: "36px",
                 borderRadius: "4px",
                 backgroundColor: slug === product ? "grey.800" : "transparent",
+                "&:hover": {
+                  backgroundColor: "grey.900",
+                  svg: {
+                    color: "primary.main",
+                  },
+                },
               }}
             >
               <MenuItemIcon product={product} />

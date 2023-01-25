@@ -25,7 +25,7 @@ export const Sidebar = () => {
   useEffect(() => {
     dispatch(fetchInstalledApps());
     if (installedApps.length) {
-      history.push(`/marketplace/app/${installedApps[0]?.ZUID}`);
+      history.push(`/apps/${installedApps[0]?.ZUID}`);
     }
   }, []);
 
@@ -49,7 +49,7 @@ export const Sidebar = () => {
           pb: 1,
         }}
       >
-        <Typography variant="h4">Marketplace</Typography>
+        <Typography variant="h4">Apps</Typography>
         <Button
           variant="contained"
           startIcon={<SearchIcon fontSize="small" />}
@@ -62,15 +62,15 @@ export const Sidebar = () => {
             // @ts-ignore
             variant="body3"
           >
-            Browse Marketplace
+            Browse Apps
           </Typography>
         </Button>
       </Box>
       {installedApps.map((app: any) => {
         return (
           <MenuItem
-            onClick={() => history.push(`/marketplace/app/${app.ZUID}`)}
-            selected={location.pathname === `/marketplace/app/${app.ZUID}`}
+            onClick={() => history.push(`/apps/${app.ZUID}`)}
+            selected={location.pathname === `/apps/${app.ZUID}`}
             sx={{
               mt: 1,
               borderRadius: "4px",
