@@ -104,11 +104,11 @@ export default memo(function Shell() {
                         component={SettingsApp}
                       />
                     );
-                  case "marketplace":
+                  case "apps":
                     return (
                       <Route
                         key={product}
-                        path="/marketplace*"
+                        path="/apps*"
                         component={MarketplaceApp}
                       />
                     );

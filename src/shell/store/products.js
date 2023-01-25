@@ -30,7 +30,7 @@ export function fetchProducts() {
           "seo",
           "reports",
           // "release",
-          "marketplace",
+          "apps",
           "settings",
         ];
         break;
@@ -45,7 +45,7 @@ export function fetchProducts() {
           "seo",
           "reports",
           // "release",
-          "marketplace",
+          "apps",
           "settings",
         ];
         break;
@@ -56,7 +56,7 @@ export function fetchProducts() {
           "media",
           "leads",
           "reports",
-          "marketplace",
+          "apps",
           // "release"
         ];
         break;
@@ -68,11 +68,11 @@ export function fetchProducts() {
           "leads",
           "seo",
           "reports",
-          "marketplace",
+          "apps",
         ];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
-        data = ["launchpad", "content", "media", "marketplace"];
+        data = ["launchpad", "content", "media", "apps"];
         break;
       case "31-71cfc74-m3d14":
         data = ["media"];
@@ -91,7 +91,7 @@ export function fetchProducts() {
         "leads",
         "seo",
         "reports",
-        "marketplace",
+        "apps",
         // "release",
         "settings",
       ];

@@ -145,7 +145,7 @@ const ICON_CONFIG: { [index: string]: SvgIconComponent } = Object.freeze({
   app: PowerRounded,
   reports: BarChartRounded,
   search: SearchRounded,
-  marketplace: ExtensionRounded,
+  apps: ExtensionRounded,
 });
 
 // Thunk helper functions
@@ -198,7 +198,7 @@ export function createTab(
     leads: "Leads",
     settings: "Settings",
     search: "Search",
-    marketplace: "Marketplace",
+    apps: "Apps",
   };
 
   if (parts[0] === "app") {

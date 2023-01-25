@@ -34,7 +34,7 @@ export default memo(function GlobalMenu() {
     seo: RecommendIcon,
     settings: SettingsIcon,
     release: RocketLaunchIcon,
-    marketplace: ExtensionIcon,
+    apps: ExtensionIcon,
   };
 
   const MenuItemIcon = ({ product }) => {
