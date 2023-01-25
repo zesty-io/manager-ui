@@ -166,6 +166,7 @@ export const instanceApi = createApi({
           ContentModelField,
           "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
         >;
+        skipInvalidation?: boolean;
       }
     >({
       query: ({ modelZUID, body }) => ({
@@ -173,9 +174,11 @@ export const instanceApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "ContentModelFields", id: arg.modelZUID },
-      ],
+      invalidatesTags: (result, error, arg) => {
+        if (!arg.skipInvalidation) {
+          return [{ type: "ContentModelFields", id: arg.modelZUID }];
+        }
+      },
     }),
     updateContentModelField: builder.mutation<
       any,

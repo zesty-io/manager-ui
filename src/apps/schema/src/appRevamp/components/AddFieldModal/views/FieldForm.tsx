@@ -25,6 +25,7 @@ import { InputField, FieldFormInput } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
+  useBulkUpdateContentModelFieldMutation,
 } from "../../../../../../../shell/services/instance";
 import {
   ContentModelField,
@@ -111,6 +112,8 @@ interface Props {
   onBackClick?: () => void;
   fields: ContentModelField[];
   fieldData?: ContentModelField;
+  sortIndex?: number | null;
+  onCreateAnotherField?: () => void;
 }
 export const FieldForm = ({
   type,
@@ -119,6 +122,8 @@ export const FieldForm = ({
   onBackClick,
   fields,
   fieldData,
+  sortIndex,
+  onCreateAnotherField,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -136,6 +141,10 @@ export const FieldForm = ({
     updateContentModelField,
     { isLoading: isUpdatingField, isSuccess: isFieldUpdated },
   ] = useUpdateContentModelFieldMutation();
+  const [
+    bulkUpdateContentModelField,
+    { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
+  ] = useBulkUpdateContentModelFieldMutation();
   const isUpdateField = !isEmpty(fieldData);
 
   useEffect(() => {
@@ -171,11 +180,32 @@ export const FieldForm = ({
   }, [type, fieldData]);
 
   useEffect(() => {
-    if (isFieldCreated || isFieldUpdated) {
+    if (isBulkUpdated) {
       if (isAddAnotherFieldClicked) {
-        // When field is successfully created, re-route the user back to the field selection screen
-        setIsAddAnotherFieldClicked(false);
-        onBackClick();
+        onCreateAnotherField();
+      } else {
+        onModalClose();
+      }
+    }
+  }, [isBulkUpdated]);
+
+  useEffect(() => {
+    // In-between field creation flow (bulk update field sort after field creation)
+    if (isFieldCreated && sortIndex !== null) {
+      const fieldsToUpdate: ContentModelField[] = fields
+        .slice(sortIndex)
+        .map((field) => ({
+          ...field,
+          sort: field.sort + 1,
+        }));
+
+      bulkUpdateContentModelField({ modelZUID: id, fields: fieldsToUpdate });
+    }
+
+    // Regular field creation flow
+    if ((isFieldCreated || isFieldUpdated) && sortIndex === null) {
+      if (isAddAnotherFieldClicked) {
+        onCreateAnotherField();
       } else {
         onModalClose();
       }
@@ -229,6 +259,7 @@ export const FieldForm = ({
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
     const hasErrors = Object.values(errors).some((error) => error.length);
+    const sort = sortIndex === null ? fields?.length : sortIndex;
 
     if (hasErrors) {
       return;
@@ -247,7 +278,7 @@ export const FieldForm = ({
       settings: {
         list: formData.list as boolean,
       },
-      sort: isUpdateField ? fieldData.sort : fields?.length, // Just use the length since sort starts at 0
+      sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
 
     if (isUpdateField) {
@@ -262,7 +293,14 @@ export const FieldForm = ({
         body: updateBody,
       });
     } else {
-      createContentModelField({ modelZUID: id, body });
+      // We want to skip field cache invalidation when creating an in-between field
+      // We'll let the bulk update rtk query do the invalidation after this call
+      // Ensures FieldList gets the field data with proper sorting from bulk update rtk query already
+      createContentModelField({
+        modelZUID: id,
+        body,
+        skipInvalidation: sortIndex !== null,
+      });
     }
   };
 
@@ -391,14 +429,14 @@ export const FieldForm = ({
               sx={{
                 mr: 2,
               }}
-              loading={isCreatingField}
+              loading={isCreatingField || isBulkUpdating}
               onClick={handleAddAnotherField}
             >
               Add another field
             </LoadingButton>
           )}
           <LoadingButton
-            loading={isCreatingField || isUpdatingField}
+            loading={isCreatingField || isUpdatingField || isBulkUpdating}
             onClick={handleSubmitForm}
             variant="contained"
           >

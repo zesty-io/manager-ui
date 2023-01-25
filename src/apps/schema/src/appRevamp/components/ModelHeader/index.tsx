@@ -24,7 +24,7 @@ const modelTypeName = {
 };
 
 interface Props {
-  onNewFieldModalClick: () => void;
+  onNewFieldModalClick: (sortIndex: number | null) => void;
 }
 export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const params = useParams<Params>();
@@ -72,7 +72,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 size="small"
                 variant="contained"
                 startIcon={<AddRoundedIcon />}
-                onClick={onNewFieldModalClick}
+                onClick={() => onNewFieldModalClick(null)}
                 disabled={!isFieldsLoaded}
               >
                 Add Field
