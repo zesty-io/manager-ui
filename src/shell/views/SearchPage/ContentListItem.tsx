@@ -118,7 +118,10 @@ export const ContentListItem: FC<ContentListItem> = ({
         {loading ? (
           <Skeleton variant="circular" width={20} height={20} />
         ) : (
-          <PencilIcon fontSize="small" />
+          <PencilIcon
+            sx={{ width: "16px", height: "16px", color: "action.active" }}
+            fontSize="small"
+          />
         )}
         {/* Text Container */}
         <Stack
