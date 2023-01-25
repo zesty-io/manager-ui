@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router";
 import { Dialog } from "@mui/material";
 
@@ -12,10 +12,11 @@ type Params = {
 };
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
-  onModalClose: Dispatch<SetStateAction<boolean>>;
+  onModalClose: () => void;
   mode: ViewMode;
+  sortIndex?: number | null;
 }
-export const AddFieldModal = ({ onModalClose, mode }: Props) => {
+export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
   const [viewMode, setViewMode] = useState<ViewMode>(mode);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",
@@ -23,7 +24,13 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
   });
   const params = useParams<Params>();
   const { id, fieldId } = params;
+  const [localSortIndex, setLocalSortIndex] = useState<number | null>(null);
   const { data: fields } = useGetContentModelFieldsQuery(id);
+
+  useEffect(() => {
+    // Local copy is incremented when user clicks "add another field"
+    setLocalSortIndex(sortIndex);
+  }, [sortIndex]);
 
   const fieldData = useMemo(() => {
     return fields?.find((field) => field.ZUID === fieldId);
@@ -34,10 +41,18 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
     setSelectedField({ fieldType, fieldName });
   };
 
+  const handleCreateAnotherField = () => {
+    setViewMode("fields_list");
+
+    if (localSortIndex !== null) {
+      setLocalSortIndex((prevData) => prevData + 1);
+    }
+  };
+
   return (
     <Dialog
       open
-      onClose={() => onModalClose(false)}
+      onClose={onModalClose}
       fullScreen
       sx={{
         "& .MuiDialog-container": {
@@ -55,7 +70,7 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
     >
       {viewMode === "fields_list" && (
         <FieldSelection
-          onModalClose={() => onModalClose(false)}
+          onModalClose={onModalClose}
           onFieldClick={handleFieldClick}
         />
       )}
@@ -64,8 +79,10 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
           fields={fields}
           type={selectedField?.fieldType}
           name={selectedField?.fieldName}
-          onModalClose={() => onModalClose(false)}
+          onModalClose={onModalClose}
           onBackClick={() => setViewMode("fields_list")}
+          sortIndex={localSortIndex}
+          onCreateAnotherField={handleCreateAnotherField}
         />
       )}
       {viewMode === "update_field" && (
@@ -73,8 +90,9 @@ export const AddFieldModal = ({ onModalClose, mode }: Props) => {
           fields={fields}
           type={fieldData?.datatype}
           name={fieldData?.label}
-          onModalClose={() => onModalClose(false)}
+          onModalClose={onModalClose}
           fieldData={fieldData}
+          sortIndex={null}
         />
       )}
     </Dialog>

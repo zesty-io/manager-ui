@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Box } from "@mui/material";
 import { Redirect, Route, Switch, useParams, useHistory } from "react-router";
-import { useGetContentModelsQuery } from "../../../../../shell/services/instance";
 import { FieldList } from "../components/FieldList";
 import { ModelHeader } from "../components/ModelHeader";
 import { AddFieldModal } from "../components/AddFieldModal";
@@ -11,21 +10,30 @@ type Params = {
 };
 export const Model = () => {
   const [isAddFieldModalOpen, setAddFieldModalOpen] = useState(false);
+  const [sortIndex, setSortIndex] = useState<number | null>(null);
   const history = useHistory();
   const params = useParams<Params>();
   const { id } = params;
 
+  const handleNewFieldModalClick = (sortIndex: number | null) => {
+    setAddFieldModalOpen(true);
+    setSortIndex(sortIndex);
+  };
+
+  const handleModalClosed = () => {
+    setAddFieldModalOpen(false);
+    setSortIndex(null);
+  };
+
   return (
     <Box flex="1" display="flex" height="100%" flexDirection="column">
-      <ModelHeader onNewFieldModalClick={() => setAddFieldModalOpen(true)} />
+      <ModelHeader onNewFieldModalClick={handleNewFieldModalClick} />
       <Switch>
         <Route
           exact
           path="/schema/:id/fields"
           render={() => (
-            <FieldList
-              onNewFieldModalClick={() => setAddFieldModalOpen(true)}
-            />
+            <FieldList onNewFieldModalClick={handleNewFieldModalClick} />
           )}
         />
         <Route
@@ -46,7 +54,11 @@ export const Model = () => {
         <Redirect to="/schema/:id/fields" />
       </Switch>
       {isAddFieldModalOpen && (
-        <AddFieldModal mode="fields_list" onModalClose={setAddFieldModalOpen} />
+        <AddFieldModal
+          mode="fields_list"
+          onModalClose={handleModalClosed}
+          sortIndex={sortIndex}
+        />
       )}
     </Box>
   );

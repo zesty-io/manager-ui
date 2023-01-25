@@ -8,6 +8,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useParams } from "react-router";
+import { isEqual } from "lodash";
+
 import {
   useBulkUpdateContentModelFieldMutation,
   useGetContentModelFieldsQuery,
@@ -26,7 +28,7 @@ type Params = {
 };
 
 interface Props {
-  onNewFieldModalClick: () => void;
+  onNewFieldModalClick: (sortIndex: number | null) => void;
 }
 export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const params = useParams<Params>();
@@ -51,7 +53,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   );
 
   useEffect(() => {
-    if (fields && localFields?.length !== fields.length) {
+    if (fields?.length && !isEqual(localFields, fields)) {
       setLocalFields([...fields]);
     }
   }, [fields]);
@@ -184,6 +186,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                     <AddFieldDivider
                       indexToInsert={index}
                       disabled={!!search}
+                      onDividerClick={() => onNewFieldModalClick(index)}
                     />
                   )}
                   <Box sx={{ pl: 3 }}>
@@ -209,7 +212,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 variant="outlined"
                 startIcon={<AddRoundedIcon />}
                 fullWidth
-                onClick={onNewFieldModalClick}
+                onClick={() => onNewFieldModalClick(null)}
               >
                 Add Another Field to {model?.label}
               </Button>
