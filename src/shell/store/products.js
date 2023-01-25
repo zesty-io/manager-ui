@@ -23,30 +23,30 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
-          "media",
           "schema",
+          "media",
           "code",
           "leads",
           "seo",
           "reports",
           // "release",
-          "settings",
           "marketplace",
+          "settings",
         ];
         break;
       case "31-71cfc74-d3v3l0p3r":
         data = [
           "launchpad",
           "content",
-          "media",
           "schema",
+          "media",
           "code",
           "leads",
           "seo",
           "reports",
           // "release",
-          "settings",
           "marketplace",
+          "settings",
         ];
         break;
       case "31-71cfc74-p0bl1shr":
@@ -85,8 +85,8 @@ export function fetchProducts() {
       data = [
         "launchpad",
         "content",
-        "media",
         "schema",
+        "media",
         "code",
         "leads",
         "seo",
