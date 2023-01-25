@@ -158,11 +158,14 @@ export default connect((state) => {
               borderStyle: "solid",
               borderWidth: "1px",
               backgroundColor: "grey.900",
-              float: "right",
-              mr: -1.5,
-              zIndex: 50,
+
               width: "24px",
               height: "24px",
+
+              position: "absolute",
+              top: "32px",
+              right: "-12px",
+              zIndex: 50,
 
               "&:hover": {
                 backgroundColor: "primary.main",
