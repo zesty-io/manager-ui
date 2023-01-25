@@ -8,6 +8,8 @@ import {
   OutlinedInput,
   InputBase,
 } from "@mui/material";
+import CheckBoxOutlineBlankOutlinedIcon from "@mui/icons-material/CheckBoxOutlineBlankOutlined";
+import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 
 import { FormValue } from "./views/FieldForm";
 
@@ -44,9 +46,22 @@ export const FieldFormInput = ({
       {fieldConfig.type === "input" && (
         <>
           <Box mb={0.5}>
-            <Typography variant="body2">{fieldConfig.label}</Typography>
+            <Typography component="span" variant="body2">
+              {fieldConfig.label}
+            </Typography>
+            {fieldConfig.label?.toLowerCase().includes("description") && (
+              <Typography
+                component="span"
+                variant="body2"
+                color="text.secondary"
+              >
+                {" "}
+                (optional)
+              </Typography>
+            )}
             {fieldConfig.subLabel && (
               <Typography
+                component="p"
                 // @ts-expect-error body3 module augmentation required
                 variant="body3"
                 color="text.secondary"
@@ -105,6 +120,9 @@ export const FieldFormInput = ({
                 });
               }}
               checked={Boolean(prefillData)}
+              sx={{
+                color: "grey.200",
+              }}
             />
           }
           label={

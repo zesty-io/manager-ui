@@ -50,7 +50,7 @@ const commonFields: InputField[] = [
   {
     name: "description",
     type: "input",
-    label: "Description (optional)",
+    label: "Description",
     subLabel: "Appears below the label to help content-writers and API users",
     required: false,
     fullWidth: true,
@@ -80,7 +80,7 @@ const formConfig: { [key: string]: InputField[] } = {
   dropdown: [],
   images: [],
   internal_link: [],
-  link: [],
+  link: [...commonFields],
   markdown: [...commonFields],
   number: [],
   one_to_many: [],
