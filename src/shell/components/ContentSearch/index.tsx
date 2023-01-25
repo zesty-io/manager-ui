@@ -2,8 +2,8 @@ import TextField from "@mui/material/TextField";
 import { FC, useState, useRef } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import Autocomplete from "@mui/material/Autocomplete";
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
+import InputAdornment from "@mui/material/InputAdornment";
 import { HTMLAttributes } from "react";
 import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
@@ -50,6 +50,7 @@ const ContentSearch: FC = () => {
         borderWidth: "0px 1px 1px 0px",
         borderStyle: "solid",
         borderColor: "grey.100",
+        boxSizing: "border-box",
         "& .MuiFormControl-root": {
           gap: "10px",
         },
@@ -121,12 +122,13 @@ const ContentSearch: FC = () => {
         }
       }}
       renderInput={(params: any) => {
+        console.log(params.InputProps);
         return (
           <TextField
             {...params}
             ref={textfieldRef}
             fullWidth
-            type="search"
+            data-cy="global-search-textfield"
             variant="outlined"
             placeholder={`Search Instance ${shortcutHelpText}`}
             sx={{
@@ -142,38 +144,22 @@ const ContentSearch: FC = () => {
                 history.push(`/search?q=${value}`);
               }
             }}
-            inputProps={{
-              ...params.inputProps,
-              sx: {
-                "::-webkit-search-cancel-button": {
-                  display: "none",
-                },
-                padding: "unset!important",
-              },
-            }}
             InputProps={{
               ...params.InputProps,
               startAdornment: (
-                <Stack
-                  direction="column"
-                  sx={{
-                    width: "28px",
-                    height: "28px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
+                <InputAdornment position="start">
                   <SearchIcon fontSize="small" color="action" />
-                </Stack>
+                </InputAdornment>
               ),
               sx: {
-                borderRadius: 1,
+                "&.MuiAutocomplete-inputRoot": {
+                  py: "2px",
+                },
+                borderRadius: "4px",
                 borderWidth: "0px 1px 1px 0px",
                 borderStyle: "solid",
                 borderColor: "border",
                 boxSizing: "border-box",
-                padding: "6px 8px!important",
-                gap: "4px",
                 width: "100%",
                 backgroundColor: (theme) => theme.palette.background.paper,
               },
@@ -197,11 +183,13 @@ const Suggestion: FC<SuggestionProps> = ({ text, icon, ...props }) => {
     <ListItem
       {...props}
       sx={{
-        padding: "4px 16px 4px 16px!important",
+        "&.MuiAutocomplete-option": {
+          padding: "4px 16px 4px 16px",
+        },
         minHeight: "36px",
         "&.Mui-focused": {
           borderLeft: (theme) => "4px solid " + theme.palette.primary.main,
-          padding: "4px 16px 4px 12px!important",
+          padding: "4px 16px 4px 12px",
         },
       }}
     >

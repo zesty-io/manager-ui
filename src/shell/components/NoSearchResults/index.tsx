@@ -61,7 +61,6 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
               onClick={() => history.goBack()}
               disabled={history.action === "POP"}
               color="inherit"
-              size="medium"
               variant="contained"
             >
               Go Back
@@ -77,7 +76,6 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
                 setParams(null, "q");
               }}
               color="primary"
-              size="medium"
               startIcon={<Search />}
             >
               Search Again
