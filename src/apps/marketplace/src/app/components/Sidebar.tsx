@@ -5,7 +5,6 @@ import {
   ListItemText,
   Box,
   Typography,
-  Divider,
   Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";

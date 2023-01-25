@@ -16,7 +16,6 @@ import {
   Typography,
 } from "@mui/material";
 import GlobalMenu from "shell/components/global-menu";
-import GlobalCustomApps from "shell/components/global-custom-apps";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import Favicon from "../favicon";
 import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
@@ -192,7 +191,6 @@ export default connect((state) => {
             )}
           </IconButton>
           <GlobalMenu openNav={props.ui.openNav} />
-          {/* <GlobalCustomApps openNav={props.ui.openNav} /> */}
           {moment().diff(moment(instanceCreationDate), "days") <= 15 &&
             props.ui.openNav && <OnboardingCallSection />}
 
