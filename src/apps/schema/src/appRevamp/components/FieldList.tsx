@@ -22,6 +22,7 @@ import { AddFieldDivider } from "./AddFieldDivider";
 import { FieldsListRight } from "./FieldsListRight";
 import { NoSearchResults } from "./NoSearchResults";
 import { ContentModelField } from "../../../../../shell/services/types";
+import { FieldEmptyState } from "./FieldEmptyState";
 
 type Params = {
   id: string;
@@ -173,8 +174,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         )}
 
         {!Boolean(filteredFields?.length) && !search && (
-          // TODO: Replace with the no fields state component when figma provided
-          <Typography>No fields</Typography>
+          <FieldEmptyState onAddField={() => onNewFieldModalClick(null)} />
         )}
 
         {Boolean(filteredFields?.length) && (
