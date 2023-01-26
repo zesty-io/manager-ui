@@ -39,7 +39,7 @@ interface Props {
   onClose?: () => void;
 }
 
-const InstanceFlyoutMenuModal = ({
+export default function InstanceFlyoutMenuModal({
   instanceFaviconUrl,
   instanceName,
   instanceZUID,
@@ -50,7 +50,7 @@ const InstanceFlyoutMenuModal = ({
   userFullname,
   onSetShowFaviconModal,
   onClose,
-}: Props) => {
+}: Props) {
   const [
     refreshCache,
     {
@@ -108,8 +108,8 @@ const InstanceFlyoutMenuModal = ({
     };
 
     return (
-      <Box sx={{ width: "48px", height: "392px", pt: 2 }}>
-        <Box sx={{ height: "330px" }}>
+      <Box sx={{ width: "48px" }}>
+        <Box sx={{ pt: 2 }}>
           {favoriteInstances.length > 0 ? (
             <>
               {favoriteInstances
@@ -168,7 +168,7 @@ const InstanceFlyoutMenuModal = ({
             </Box>
           )}
         </Box>
-        <IconButton
+        {/* <IconButton
           sx={{
             mx: "auto",
             width: "100%",
@@ -176,7 +176,7 @@ const InstanceFlyoutMenuModal = ({
           onClick={() => setShowInstancesListMenu(true)}
         >
           <ManageSearchIcon fontSize="small" sx={{ mx: "auto" }} />
-        </IconButton>
+        </IconButton> */}
       </Box>
     );
   };
@@ -286,7 +286,7 @@ const InstanceFlyoutMenuModal = ({
                     variant="outlined"
                     color="inherit"
                     size="small"
-                    onClick={() => refreshCache()}
+                    onClick={refreshCache}
                     startIcon={
                       <>
                         {isLoadingRefreshCache ? (
@@ -307,7 +307,7 @@ const InstanceFlyoutMenuModal = ({
                     variant="outlined"
                     color="inherit"
                     size="small"
-                    onClick={() => handleCopyInstanceZUID()}
+                    onClick={handleCopyInstanceZUID}
                     startIcon={
                       <>
                         {isCopiedZuid ? (
@@ -326,7 +326,6 @@ const InstanceFlyoutMenuModal = ({
               <Box
                 sx={{
                   width: "200px",
-                  height: "100%",
                   borderLeftColor: "grey.100",
                   borderLeftStyle: "solid",
                   borderLeftWidth: "1px",
@@ -398,29 +397,21 @@ const InstanceFlyoutMenuModal = ({
                 </Typography>
               </Link>
 
-              <Box
-                display="flex"
-                gap={2}
-                sx={{
-                  img: {
-                    cursor: "pointer",
-                  },
-                }}
-              >
-                <img
-                  src={youtubeIcon}
-                  onClick={() =>
-                    handleNavigation("https://www.youtube.com/c/Zestyio/videos")
-                  }
-                />
-                <img
-                  src={slackIcon}
-                  onClick={() =>
-                    handleNavigation(
-                      "https://join.slack.com/t/zestyiodevs/shared_invite/zt-1jv3ct6k4-uuDM5ZNLy3NgK2FCzK~xuw"
-                    )
-                  }
-                />
+              <Box display="flex" gap={2}>
+                <Link
+                  target="_blank"
+                  title="Subscribe to Zesty Youtube Channel"
+                  href="https://www.youtube.com/c/Zestyio/videos"
+                >
+                  <img src={youtubeIcon} />
+                </Link>
+                <Link
+                  target="_blank"
+                  title="Join Zesty Slack Community"
+                  href="https://chat.zesty.io/"
+                >
+                  <img src={slackIcon} />
+                </Link>
               </Box>
             </Box>
           </Box>
@@ -428,6 +419,4 @@ const InstanceFlyoutMenuModal = ({
       )}
     </Dialog>
   );
-};
-
-export default InstanceFlyoutMenuModal;
+}
