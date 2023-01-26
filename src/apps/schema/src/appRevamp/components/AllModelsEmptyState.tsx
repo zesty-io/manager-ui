@@ -27,7 +27,9 @@ export const AllModelsEmptyState = () => {
           width: "378px",
         }}
       >
-        <Typography variant="h4">Let's start by creating models</Typography>
+        <Typography variant="h4" fontWeight={600}>
+          Let's start by creating models
+        </Typography>
         <Typography variant="body2" color="text.secondary" mt={1}>
           Models define the structure of a content item such as a home page or
           an article similar to the examples of models you seen on the right.
