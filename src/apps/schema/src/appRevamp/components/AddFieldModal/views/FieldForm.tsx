@@ -20,7 +20,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
-import { stringStartsWithVowel, convertLabelValue } from "../../utils";
+import {
+  stringStartsWithVowel,
+  convertLabelValue,
+  getErrorMessage,
+} from "../../utils";
 import { InputField, FieldFormInput } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
@@ -40,6 +44,7 @@ const commonFields: InputField[] = [
     label: "Label",
     required: true,
     fullWidth: true,
+    maxLength: 200,
   },
   {
     name: "name",
@@ -47,6 +52,7 @@ const commonFields: InputField[] = [
     label: "API / Parsley Code Reference",
     required: true,
     fullWidth: true,
+    maxLength: 50,
   },
   {
     name: "description",
@@ -146,6 +152,7 @@ export const FieldForm = ({
     { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
   ] = useBulkUpdateContentModelFieldMutation();
   const isUpdateField = !isEmpty(fieldData);
+  const isInbetweenField = sortIndex !== null;
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -191,7 +198,7 @@ export const FieldForm = ({
 
   useEffect(() => {
     // In-between field creation flow (bulk update field sort after field creation)
-    if (isFieldCreated && sortIndex !== null) {
+    if (isFieldCreated && isInbetweenField) {
       const fieldsToUpdate: ContentModelField[] = fields
         .slice(sortIndex)
         .map((field) => ({
@@ -203,7 +210,7 @@ export const FieldForm = ({
     }
 
     // Regular field creation flow
-    if ((isFieldCreated || isFieldUpdated) && sortIndex === null) {
+    if ((isFieldCreated || isFieldUpdated) && !isInbetweenField) {
       if (isAddAnotherFieldClicked) {
         onCreateAnotherField();
       } else {
@@ -222,33 +229,28 @@ export const FieldForm = ({
 
     Object.keys(formData).map((inputName) => {
       if (inputName in errors) {
+        const { maxLength } = formConfig[type].find(
+          (field) => field.name === inputName
+        );
+
         // Special validation for "name"
         if (inputName === "name") {
-          // Validate if "name" has a value
-          if (isEmpty(formData.name)) {
-            newErrorsObj.name = "This field is required";
-          } else {
-            if (isUpdateField) {
-              // Validate if "name" already exists during field update, but here it is ok to re-use its current name
-              newErrorsObj.name =
-                currFieldNames.includes(formData.name as string) &&
-                formData.name !== fieldData.name
-                  ? "Field name already exists"
-                  : "";
-            } else {
-              // Validate if "name" already exists during create new field
-              newErrorsObj.name = currFieldNames.includes(
-                formData.name as string
-              )
-                ? "Field name already exists"
-                : "";
-            }
+          newErrorsObj.name = getErrorMessage({
+            value: formData.name as string,
+            fieldNames: currFieldNames,
+            maxLength,
+          });
+
+          // When updating a field, user can choose to just leave the reference name the same
+          if (isUpdateField && formData.name === fieldData.name) {
+            newErrorsObj.name = "";
           }
         } else {
           // All other input validation
-          newErrorsObj[inputName] = isEmpty(formData[inputName])
-            ? "This field is required"
-            : "";
+          newErrorsObj[inputName] = getErrorMessage({
+            value: formData[inputName] as string,
+            maxLength,
+          });
         }
       }
     });
@@ -259,7 +261,7 @@ export const FieldForm = ({
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
     const hasErrors = Object.values(errors).some((error) => error.length);
-    const sort = sortIndex === null ? fields?.length : sortIndex;
+    const sort = isInbetweenField ? sortIndex : fields?.length;
 
     if (hasErrors) {
       return;
@@ -299,7 +301,7 @@ export const FieldForm = ({
       createContentModelField({
         modelZUID: id,
         body,
-        skipInvalidation: sortIndex !== null,
+        skipInvalidation: isInbetweenField,
       });
     }
   };
