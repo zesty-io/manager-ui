@@ -286,7 +286,7 @@ export default function InstanceFlyoutMenuModal({
                     variant="outlined"
                     color="inherit"
                     size="small"
-                    onClick={refreshCache}
+                    onClick={() => refreshCache()}
                     startIcon={
                       <>
                         {isLoadingRefreshCache ? (
