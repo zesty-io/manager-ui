@@ -247,7 +247,7 @@ export default connect((state) => {
                     marginLeft: props.openNav ? "-12px" : "0px",
                   }}
                   alt={`${user.firstName} ${user.lastName} Avatar`}
-                  src={`https://www.gravatar.com/avatar/${faviconURL}?d=mm&s=40`}
+                  src={`https://www.gravatar.com/avatar/${user.emailHash}?d=mm&s=40`}
                 />
               </AvatarGroup>
               <ArrowDropDownIcon
@@ -303,7 +303,7 @@ export default connect((state) => {
                 instanceFaviconUrl={faviconURL}
                 instanceName={props.instance?.name}
                 instanceZUID={props.instance?.ZUID}
-                userFaviconUrl={faviconURL}
+                userFaviconUrl={user.emailHash}
                 userFullname={`${user.firstName} ${user.lastName}`}
                 favoriteInstances={getFavoriteInstances()}
                 showDocsMenu={showDocsMenu}
