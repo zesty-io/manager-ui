@@ -20,6 +20,7 @@ export interface InputField {
   subLabel?: string;
   fullWidth?: boolean;
   multiline?: boolean;
+  maxLength?: number;
 }
 interface Props {
   fieldConfig: InputField;

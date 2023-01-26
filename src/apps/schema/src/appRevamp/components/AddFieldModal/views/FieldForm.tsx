@@ -40,6 +40,7 @@ const commonFields: InputField[] = [
     label: "Label",
     required: true,
     fullWidth: true,
+    maxLength: 200,
   },
   {
     name: "name",
@@ -47,6 +48,7 @@ const commonFields: InputField[] = [
     label: "API / Parsley Code Reference",
     required: true,
     fullWidth: true,
+    maxLength: 50,
   },
   {
     name: "description",
@@ -146,6 +148,7 @@ export const FieldForm = ({
     { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
   ] = useBulkUpdateContentModelFieldMutation();
   const isUpdateField = !isEmpty(fieldData);
+  const isInbetweenField = sortIndex !== null;
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -191,7 +194,7 @@ export const FieldForm = ({
 
   useEffect(() => {
     // In-between field creation flow (bulk update field sort after field creation)
-    if (isFieldCreated && sortIndex !== null) {
+    if (isFieldCreated && isInbetweenField) {
       const fieldsToUpdate: ContentModelField[] = fields
         .slice(sortIndex)
         .map((field) => ({
@@ -203,7 +206,7 @@ export const FieldForm = ({
     }
 
     // Regular field creation flow
-    if ((isFieldCreated || isFieldUpdated) && sortIndex === null) {
+    if ((isFieldCreated || isFieldUpdated) && !isInbetweenField) {
       if (isAddAnotherFieldClicked) {
         onCreateAnotherField();
       } else {
@@ -259,7 +262,7 @@ export const FieldForm = ({
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
     const hasErrors = Object.values(errors).some((error) => error.length);
-    const sort = sortIndex === null ? fields?.length : sortIndex;
+    const sort = isInbetweenField ? sortIndex : fields?.length;
 
     if (hasErrors) {
       return;
@@ -299,7 +302,7 @@ export const FieldForm = ({
       createContentModelField({
         modelZUID: id,
         body,
-        skipInvalidation: sortIndex !== null,
+        skipInvalidation: isInbetweenField,
       });
     }
   };
