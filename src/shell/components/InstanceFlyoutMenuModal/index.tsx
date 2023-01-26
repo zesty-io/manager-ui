@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import {
+  Link,
   Dialog,
-  DialogContent,
   Avatar,
   Box,
   Typography,
@@ -13,10 +13,10 @@ import {
   IconButton,
   CircularProgress,
 } from "@mui/material";
+
 import { useRefreshCacheMutation } from "../../services/cloudFunctions";
 import slackIcon from "../../../../public/images/slackIcon.svg";
 import youtubeIcon from "../../../../public/images/youtubeIcon.svg";
-import discordIcon from "../../../../public/images/discordIcon.svg";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -25,6 +25,7 @@ import DomainsMenu from "./DomainsMenu";
 import DocsMenu from "./DocsMenu";
 import { AppState } from "../../../shell/store/types";
 import InstancesListMenu from "./InstancesListMenu";
+
 interface Props {
   instanceFaviconUrl?: string;
   instanceName?: string;
@@ -384,10 +385,19 @@ const InstanceFlyoutMenuModal = ({
                 backgroundColor: "grey.100",
               }}
             >
-              {/* @ts-ignore */}
-              <Typography variant="body3" color="text.secondary">
-                CONNECT WITH ZESTY
-              </Typography>
+              <Link
+                underline="none"
+                color="secondary"
+                target="_blank"
+                title="Connect with Zesty"
+                href="https://www.zesty.io/meet/"
+              >
+                {/* @ts-ignore */}
+                <Typography variant="body3" color="text.secondary">
+                  CONNECT WITH ZESTY
+                </Typography>
+              </Link>
+
               <Box
                 display="flex"
                 gap={2}
