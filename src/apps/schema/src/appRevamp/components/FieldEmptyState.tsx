@@ -53,7 +53,15 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
           {/* @ts-ignore */}
           <Typography variant="body3">Need help?</Typography>
           <List sx={{ listStyleType: "disc", ml: 2, pt: 0 }}>
-            <ListItem sx={{ display: "list-item", p: 0 }}>
+            <ListItem
+              sx={{ display: "list-item", p: 0, cursor: "pointer" }}
+              onClick={() =>
+                window.open(
+                  "https://zesty.org/services/manager-ui/schema#content-fields-types",
+                  "_blank"
+                )
+              }
+            >
               <ListItemText
                 primaryTypographyProps={{
                   // @ts-ignore
@@ -64,13 +72,19 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
                 Read our guide on Field Types in Schema
               </ListItemText>
             </ListItem>
-            <ListItem sx={{ display: "list-item", p: 0 }}>
+            <ListItem sx={{ display: "list-item", p: 0, cursor: "pointer" }}>
               <ListItemText
                 primaryTypographyProps={{
                   // @ts-ignore
                   variant: "body3",
                   color: "info.dark",
                 }}
+                onClick={() =>
+                  window.open(
+                    "https://zesty.org/quick-start-guide/creating-a-content-model",
+                    "_blank"
+                  )
+                }
               >
                 Learn Best Practices for creating models
               </ListItemText>
