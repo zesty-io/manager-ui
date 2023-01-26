@@ -229,25 +229,28 @@ export const FieldForm = ({
 
     Object.keys(formData).map((inputName) => {
       if (inputName in errors) {
+        const { maxLength } = formConfig[type].find(
+          (field) => field.name === inputName
+        );
+
         // Special validation for "name"
         if (inputName === "name") {
-          if (isUpdateField) {
-            // When updating a field, user can choose to just leave the reference name the same
-            newErrorsObj.name =
-              formData.name !== fieldData.name
-                ? getErrorMessage(formData.name as string, currFieldNames)
-                : "";
-          } else {
-            newErrorsObj.name = getErrorMessage(
-              formData.name as string,
-              currFieldNames
-            );
+          newErrorsObj.name = getErrorMessage({
+            value: formData.name as string,
+            fieldNames: currFieldNames,
+            maxLength,
+          });
+
+          // When updating a field, user can choose to just leave the reference name the same
+          if (isUpdateField && formData.name === fieldData.name) {
+            newErrorsObj.name = "";
           }
         } else {
           // All other input validation
-          newErrorsObj[inputName] = getErrorMessage(
-            formData[inputName] as string
-          );
+          newErrorsObj[inputName] = getErrorMessage({
+            value: formData[inputName] as string,
+            maxLength,
+          });
         }
       }
     });
