@@ -408,7 +408,7 @@ export default function InstanceFlyoutMenuModal({
                 <Link
                   target="_blank"
                   title="Join Zesty Slack Community"
-                  href="https://chat.zesty.io/"
+                  href="https://www.zesty.io/chat/"
                 >
                   <img src={slackIcon} />
                 </Link>
