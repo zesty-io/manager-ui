@@ -20,7 +20,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
-import { stringStartsWithVowel, convertLabelValue } from "../../utils";
+import {
+  stringStartsWithVowel,
+  convertLabelValue,
+  getErrorMessage,
+} from "../../utils";
 import { InputField, FieldFormInput } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
@@ -227,31 +231,23 @@ export const FieldForm = ({
       if (inputName in errors) {
         // Special validation for "name"
         if (inputName === "name") {
-          // Validate if "name" has a value
-          if (isEmpty(formData.name)) {
-            newErrorsObj.name = "This field is required";
-          } else {
-            if (isUpdateField) {
-              // Validate if "name" already exists during field update, but here it is ok to re-use its current name
-              newErrorsObj.name =
-                currFieldNames.includes(formData.name as string) &&
-                formData.name !== fieldData.name
-                  ? "Field name already exists"
-                  : "";
-            } else {
-              // Validate if "name" already exists during create new field
-              newErrorsObj.name = currFieldNames.includes(
-                formData.name as string
-              )
-                ? "Field name already exists"
+          if (isUpdateField) {
+            // When updating a field, user can choose to just leave the reference name the same
+            newErrorsObj.name =
+              formData.name !== fieldData.name
+                ? getErrorMessage(formData.name as string, currFieldNames)
                 : "";
-            }
+          } else {
+            newErrorsObj.name = getErrorMessage(
+              formData.name as string,
+              currFieldNames
+            );
           }
         } else {
           // All other input validation
-          newErrorsObj[inputName] = isEmpty(formData[inputName])
-            ? "This field is required"
-            : "";
+          newErrorsObj[inputName] = getErrorMessage(
+            formData[inputName] as string
+          );
         }
       }
     });
