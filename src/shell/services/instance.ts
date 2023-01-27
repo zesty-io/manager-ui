@@ -12,7 +12,7 @@ export const instanceApi = createApi({
     baseUrl: `${__CONFIG__.API_INSTANCE_PROTOCOL}${instanceZUID}${__CONFIG__.API_INSTANCE}`,
     prepareHeaders,
   }),
-  tagTypes: ["ItemPublishing"],
+  tagTypes: ["ItemPublishing", "ContentModels"],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
       Publishing[],
@@ -103,6 +103,18 @@ export const instanceApi = createApi({
       query: () => `env/langs/all`,
       transformResponse: getResponseData,
     }),
+    createContentModelFromTemplate: builder.mutation<
+      any,
+      { instance_zuid: string; repository: string; parent_zuid: string }
+    >({
+      query: (body) => ({
+        // @ts-ignore
+        url: `${CONFIG.SERVICE_INSTANCE_INSTALLER}/install/model`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["ContentModels"],
+    }),
   }),
 });
 
@@ -118,4 +130,5 @@ export const {
   useGetContentModelItemsQuery,
   useGetContentItemPublishingsQuery,
   useGetLangsMappingQuery,
+  useCreateContentModelFromTemplateMutation,
 } = instanceApi;
