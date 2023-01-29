@@ -11,6 +11,7 @@ import {
   Tab,
   Button,
   CircularProgress,
+  Grid,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
@@ -45,6 +46,7 @@ const commonFields: InputField[] = [
     required: true,
     fullWidth: true,
     maxLength: 200,
+    gridSize: 12,
   },
   {
     name: "name",
@@ -53,6 +55,7 @@ const commonFields: InputField[] = [
     required: true,
     fullWidth: true,
     maxLength: 50,
+    gridSize: 12,
   },
   {
     name: "description",
@@ -62,6 +65,7 @@ const commonFields: InputField[] = [
     required: false,
     fullWidth: true,
     multiline: true,
+    gridSize: 12,
   },
   {
     name: "required",
@@ -69,6 +73,7 @@ const commonFields: InputField[] = [
     label: "Required field",
     subLabel: "Ensures an item cannot be created if field is empty",
     required: false,
+    gridSize: 12,
   },
   {
     name: "list",
@@ -76,6 +81,7 @@ const commonFields: InputField[] = [
     label: "Add as column in table listing",
     subLabel: "Shows field as a column in the table in the content view",
     required: false,
+    gridSize: 12,
   },
 ];
 const formConfig: { [key: string]: InputField[] } = {
@@ -91,7 +97,7 @@ const formConfig: { [key: string]: InputField[] } = {
   markdown: [...commonFields],
   number: [],
   one_to_many: [],
-  one_to_one: [],
+  one_to_one: [...commonFields],
   sort: [],
   text: [...commonFields],
   textarea: [...commonFields],
@@ -390,7 +396,7 @@ export const FieldForm = ({
         }}
       >
         {activeTab === "details" && (
-          <>
+          <Grid container rowSpacing={2.5}>
             {formConfig[type]?.map((fieldConfig, index) => {
               return (
                 <FieldFormInput
@@ -402,7 +408,7 @@ export const FieldForm = ({
                 />
               );
             })}
-          </>
+          </Grid>
         )}
 
         {activeTab === "rules" && <Typography>Coming soon...</Typography>}

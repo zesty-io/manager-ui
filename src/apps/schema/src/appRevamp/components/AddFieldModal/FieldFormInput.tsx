@@ -7,6 +7,7 @@ import {
   Checkbox,
   OutlinedInput,
   InputBase,
+  Grid,
 } from "@mui/material";
 
 import { FormValue } from "./views/FieldForm";
@@ -17,6 +18,7 @@ export interface InputField {
   type: FieldType;
   label: string;
   required: boolean;
+  gridSize: number;
   subLabel?: string;
   fullWidth?: boolean;
   multiline?: boolean;
@@ -41,7 +43,7 @@ export const FieldFormInput = ({
   prefillData,
 }: Props) => {
   return (
-    <Box mb={2.5}>
+    <Grid item xs={fieldConfig.gridSize}>
       {fieldConfig.type === "input" && (
         <>
           <Box mb={0.5}>
@@ -124,6 +126,6 @@ export const FieldFormInput = ({
           }
         />
       )}
-    </Box>
+    </Grid>
   );
 };
