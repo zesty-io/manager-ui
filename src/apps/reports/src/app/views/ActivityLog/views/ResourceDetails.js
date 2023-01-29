@@ -163,6 +163,7 @@ export const ResourceDetails = () => {
             startIcon={<OpenInNewIcon />}
             variant="outlined"
             size="small"
+            disabled={!actionsByZuid[0] || !actionsByZuid[0]?.meta}
             onClick={() => {
               if (actionsByZuid[0]?.resourceType === "code") {
                 history.push(
