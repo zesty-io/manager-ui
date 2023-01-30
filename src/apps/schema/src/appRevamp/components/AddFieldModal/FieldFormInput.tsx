@@ -1,11 +1,9 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import {
   Box,
   Typography,
-  TextField,
   FormControlLabel,
   Checkbox,
-  OutlinedInput,
   InputBase,
 } from "@mui/material";
 
@@ -45,9 +43,22 @@ export const FieldFormInput = ({
       {fieldConfig.type === "input" && (
         <>
           <Box mb={0.5}>
-            <Typography variant="body2">{fieldConfig.label}</Typography>
+            <Typography component="span" variant="body2">
+              {fieldConfig.label}
+            </Typography>
+            {fieldConfig.label?.toLowerCase().includes("description") && (
+              <Typography
+                component="span"
+                variant="body2"
+                color="text.secondary"
+              >
+                {" "}
+                (optional)
+              </Typography>
+            )}
             {fieldConfig.subLabel && (
               <Typography
+                component="p"
                 // @ts-expect-error body3 module augmentation required
                 variant="body3"
                 color="text.secondary"
@@ -106,6 +117,9 @@ export const FieldFormInput = ({
                 });
               }}
               checked={Boolean(prefillData)}
+              sx={{
+                color: "grey.200",
+              }}
             />
           }
           label={
