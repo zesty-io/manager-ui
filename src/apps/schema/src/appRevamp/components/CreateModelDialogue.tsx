@@ -111,9 +111,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
 
   useEffect(() => {
     if (error) {
-      // @ts-ignore
       dispatch(
         notify({
+          // @ts-ignore
           message: error?.data?.error || "Failed to create model",
           kind: "warn",
         })
