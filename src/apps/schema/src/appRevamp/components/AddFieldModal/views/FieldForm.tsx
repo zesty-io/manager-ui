@@ -325,12 +325,12 @@ export const FieldForm = ({
     };
 
     if (type === "one_to_one") {
-      if (formData.relatedFieldZUID) {
-        body["relatedFieldZUID"] = formData.relatedFieldZUID;
-      }
-
       if (formData.relatedModelZUID) {
         body["relatedModelZUID"] = formData.relatedModelZUID;
+      }
+
+      if (formData.relatedFieldZUID) {
+        body["relatedFieldZUID"] = formData.relatedFieldZUID;
       }
     }
 
@@ -378,6 +378,14 @@ export const FieldForm = ({
       setFormData((prevData) => ({
         ...prevData,
         name: convertLabelValue(value as string),
+      }));
+    }
+
+    // Reset relatedFieldZUID when model zuid changes
+    if (inputName === "relatedModelZUID") {
+      setFormData((prevData) => ({
+        ...prevData,
+        relatedFieldZUID: "",
       }));
     }
   };

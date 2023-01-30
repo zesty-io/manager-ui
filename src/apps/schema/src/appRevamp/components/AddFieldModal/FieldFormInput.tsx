@@ -152,9 +152,14 @@ export const FieldFormInput = ({
             {fieldConfig.label}
           </Typography>
           <Select
-            value={selectValue}
+            value={prefillData || ""}
             displayEmpty
-            onChange={handleOnSelectValueChanged}
+            onChange={(e: SelectChangeEvent) => {
+              onDataChange({
+                inputName: fieldConfig.name,
+                value: e.target.value,
+              });
+            }}
           >
             <MenuItem disabled value="">
               {fieldConfig.placeholder}
