@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -27,7 +28,9 @@ import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBullete
 import { FileTable } from "@zesty-io/material";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import { useState } from "react";
+import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
+import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 
 type Params = {
   id: string;
@@ -89,19 +92,19 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               >
                 <MenuItem>
                   <ListItemIcon>
-                    <DeleteRoundedIcon fontSize="small" />
+                    <DriveFileRenameOutlineRoundedIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText>Rename Model</ListItemText>
                 </MenuItem>
                 <MenuItem>
                   <ListItemIcon>
-                    <DeleteRoundedIcon fontSize="small" />
+                    <ContentCopyRoundedIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText>Duplicate Model</ListItemText>
                 </MenuItem>
                 <MenuItem>
                   <ListItemIcon>
-                    <DeleteRoundedIcon fontSize="small" />
+                    <WidgetsRoundedIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText>Copy ZUID</ListItemText>
                 </MenuItem>

@@ -116,7 +116,10 @@ export const instanceApi = createApi({
       keepUnusedDataFor: 0.0001,
       providesTags: ["ContentModels"],
     }),
-    createContentModel: builder.mutation<ContentModel, Partial<ContentModel>>({
+    createContentModel: builder.mutation<
+      { data: ContentModel },
+      Partial<ContentModel>
+    >({
       query: (body) => ({
         url: `content/models`,
         method: "POST",

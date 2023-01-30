@@ -18,7 +18,6 @@ import {
   Autocomplete,
   Backdrop,
   CircularProgress,
-  FormControlLabel,
   Checkbox,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
@@ -34,6 +33,8 @@ import {
 import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
+import { LoadingButton } from "@mui/lab";
+import { useHistory } from "react-router";
 
 interface Props {
   onClose: () => void;
@@ -70,6 +71,7 @@ const modelTypes = [
 export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   const [type, setType] = useState(modelType);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [model, updateModel] = useReducer(
     (prev: any, next: any) => {
       const newModel = { ...prev, ...next };
@@ -102,11 +104,12 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   );
 
   const { data: models } = useGetContentModelsQuery();
-  const [createModel, { isLoading, isSuccess, error }] =
+  const [createModel, { isLoading, isSuccess, error, data }] =
     useCreateContentModelMutation();
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && data) {
+      history.push(`/schema/${data.data.ZUID}`);
       onClose();
     }
   }, [isSuccess]);
@@ -330,9 +333,10 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             <Button variant="outlined" color="inherit" onClick={onClose}>
               Cancel
             </Button>
-            <Button
+            <LoadingButton
               variant="contained"
               disabled={!model.name || !model.label}
+              loading={!!isLoading}
               onClick={() =>
                 createModel({
                   ...model,
@@ -340,26 +344,12 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               }
             >
               Create Model
-            </Button>
+            </LoadingButton>
           </DialogActions>
         </>
       );
     }
   };
-
-  if (isLoading) {
-    return (
-      <Backdrop
-        open
-        sx={{ flexDirection: "column", zIndex: (theme) => theme.zIndex.modal }}
-      >
-        <CircularProgress />
-        <Typography sx={{ mt: 2 }} variant="h4" color="common.white">
-          Creating Model
-        </Typography>
-      </Backdrop>
-    );
-  }
 
   return (
     <Dialog open onClose={onClose} PaperProps={{ sx: { minWidth: "640px" } }}>
