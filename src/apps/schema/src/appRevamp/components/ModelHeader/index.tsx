@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Tabs, Tab } from "@mui/material";
+import { Box, Typography, Button, Tabs, Tab, IconButton } from "@mui/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import {
   useGetContentModelsQuery,
@@ -11,7 +11,11 @@ import moment from "moment";
 import SplitscreenRoundedIcon from "@mui/icons-material/SplitscreenRounded";
 import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
-import { useSelector } from "react-redux";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
+import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
+import { FileTable } from "@zesty-io/material";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import { useState } from "react";
 
 type Params = {
   id: string;
@@ -23,6 +27,13 @@ const modelTypeName = {
   dataset: "Headless Data Item",
 };
 
+const modelIconMap = {
+  templateset: (
+    <FormatListBulletedRoundedIcon fontSize="small" color="action" />
+  ),
+  dataset: <FileTable fontSize="small" color="action" />,
+  pageset: <DescriptionRoundedIcon fontSize="small" color="action" />,
+};
 interface Props {
   onNewFieldModalClick: (sortIndex: number | null) => void;
 }
@@ -34,6 +45,8 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const location = useLocation();
   const history = useHistory();
   const { isSuccess: isFieldsLoaded } = useGetContentModelFieldsQuery(id);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
   const model = models?.find((model) => model.ZUID === id);
   const view = views?.find((view) => view?.contentModelZUID === model?.ZUID);
@@ -45,9 +58,19 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
       >
         <Box sx={{ px: 3, pt: 2 }}>
           <Box display="flex" justifyContent="space-between">
-            <Typography variant="h4" fontWeight={600}>
-              {model?.label}
-            </Typography>
+            <Box display="flex" alignItems="center" gap={0.5}>
+              {modelIconMap[model?.type as keyof typeof modelIconMap]}
+              <Typography variant="h4" fontWeight={600}>
+                {model?.label}
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={(event) => setAnchorEl(event.currentTarget)}
+                sx={{ height: "fit-content" }}
+              >
+                <ArrowDropDownRoundedIcon fontSize="small" />
+              </IconButton>
+            </Box>
             <Box display="flex" gap={2}>
               <Button
                 size="small"

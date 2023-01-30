@@ -18,6 +18,8 @@ import {
   Autocomplete,
   Backdrop,
   CircularProgress,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -236,8 +238,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     Create {modelTypes.find((x) => x.key === model.type).name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Creates a code template and individual pages with unique
-                    URLs
+                    {modelTypes.find((x) => x.key === model.type).description}
                   </Typography>
                 </Box>
               </Box>
@@ -300,6 +301,28 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   multiline
                   rows={4}
                 />
+              </Box>
+              <Box display="flex" gap={1}>
+                <Checkbox
+                  sx={{ width: "24px", height: "24px" }}
+                  defaultChecked
+                  onChange={(event) =>
+                    updateModel({ listed: event.target.checked })
+                  }
+                />
+                <Box>
+                  <Typography variant="body2">List this model</Typography>
+                  {/* @ts-expect-error need to import module augmentations */}
+                  <Typography
+                    component="p"
+                    variant="body3"
+                    color="text.secondary"
+                    fontWeight={600}
+                  >
+                    Listed models have their content items available to
+                    programmatic navigation calls.
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </DialogContent>
