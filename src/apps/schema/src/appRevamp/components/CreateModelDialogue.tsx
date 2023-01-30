@@ -312,9 +312,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 />
                 <Box>
                   <Typography variant="body2">List this model</Typography>
-                  {/* @ts-expect-error need to import module augmentations */}
                   <Typography
                     component="p"
+                    // @ts-expect-error need to import module augmentations
                     variant="body3"
                     color="text.secondary"
                     fontWeight={600}

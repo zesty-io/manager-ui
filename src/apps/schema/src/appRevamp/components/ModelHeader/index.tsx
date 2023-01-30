@@ -1,4 +1,15 @@
-import { Box, Typography, Button, Tabs, Tab, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Tabs,
+  Tab,
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import {
   useGetContentModelsQuery,
@@ -15,6 +26,7 @@ import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import { FileTable } from "@zesty-io/material";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { useState } from "react";
 
 type Params = {
@@ -70,6 +82,36 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               >
                 <ArrowDropDownRoundedIcon fontSize="small" />
               </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={() => setAnchorEl(null)}
+              >
+                <MenuItem>
+                  <ListItemIcon>
+                    <DeleteRoundedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Rename Model</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemIcon>
+                    <DeleteRoundedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Duplicate Model</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemIcon>
+                    <DeleteRoundedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Copy ZUID</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemIcon>
+                    <DeleteRoundedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Delete Model</ListItemText>
+                </MenuItem>
+              </Menu>
             </Box>
             <Box display="flex" gap={2}>
               <Button
