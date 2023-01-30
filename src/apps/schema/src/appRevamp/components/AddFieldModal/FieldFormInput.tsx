@@ -47,18 +47,6 @@ export const FieldFormInput = ({
   prefillData,
   dropdownOptions,
 }: Props) => {
-  const [selectValue, setSelectValue] = useState("");
-
-  const handleOnSelectValueChanged = (e: SelectChangeEvent) => {
-    setSelectValue(e.target?.value);
-
-    // Forward value to parent
-    onDataChange({
-      inputName: fieldConfig.name,
-      value: e.target?.value,
-    });
-  };
-
   return (
     <Grid item xs={fieldConfig.gridSize}>
       {fieldConfig.type === "input" && (
