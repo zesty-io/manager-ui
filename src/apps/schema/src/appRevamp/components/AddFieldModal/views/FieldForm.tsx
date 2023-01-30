@@ -98,7 +98,25 @@ const formConfig: { [key: string]: InputField[] } = {
   link: [],
   markdown: [...commonFields],
   number: [],
-  one_to_many: [],
+  one_to_many: [
+    {
+      name: "relatedModelZUID",
+      type: "dropdown",
+      label: "Reference Model",
+      required: false,
+      gridSize: 6,
+      placeholder: "Select a model",
+    },
+    {
+      name: "relatedFieldZUID",
+      type: "dropdown",
+      label: "Field to Display",
+      required: false,
+      gridSize: 6,
+      placeholder: "Select a field",
+    },
+    ...commonFields,
+  ],
   one_to_one: [
     {
       name: "relatedModelZUID",
@@ -324,7 +342,7 @@ export const FieldForm = ({
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
 
-    if (type === "one_to_one") {
+    if (type === "one_to_one" || type === "one_to_many") {
       if (formData.relatedModelZUID) {
         body["relatedModelZUID"] = formData.relatedModelZUID;
       }
