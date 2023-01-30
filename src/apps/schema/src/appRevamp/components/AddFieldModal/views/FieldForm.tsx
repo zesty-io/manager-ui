@@ -31,6 +31,8 @@ import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
   useBulkUpdateContentModelFieldMutation,
+  useGetContentModelsQuery,
+  useGetContentModelFieldsQuery,
 } from "../../../../../../../shell/services/instance";
 import {
   ContentModelField,
@@ -97,7 +99,25 @@ const formConfig: { [key: string]: InputField[] } = {
   markdown: [...commonFields],
   number: [],
   one_to_many: [],
-  one_to_one: [...commonFields],
+  one_to_one: [
+    {
+      name: "relatedModelZUID",
+      type: "dropdown",
+      label: "Reference Model",
+      required: false,
+      gridSize: 6,
+      placeholder: "Select a model",
+    },
+    {
+      name: "relatedFieldZUID",
+      type: "dropdown",
+      label: "Field to Display",
+      required: false,
+      gridSize: 6,
+      placeholder: "Select a field",
+    },
+    ...commonFields,
+  ],
   sort: [],
   text: [...commonFields],
   textarea: [...commonFields],
@@ -157,8 +177,22 @@ export const FieldForm = ({
     bulkUpdateContentModelField,
     { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
   ] = useBulkUpdateContentModelFieldMutation();
+  const { data: models, isLoading: isLoadingModels } =
+    useGetContentModelsQuery();
+  const { data: modelFields } = useGetContentModelFieldsQuery(
+    formData.relatedModelZUID as string,
+    { skip: !formData.relatedModelZUID }
+  );
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
+  const modelsOptions: [string, string][] = models?.map((model) => [
+    model.ZUID,
+    model.label,
+  ]);
+  const fieldsOptions: [string, string][] = modelFields?.map((field) => [
+    field.ZUID,
+    field.label,
+  ]);
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -273,7 +307,8 @@ export const FieldForm = ({
       return;
     }
 
-    const body: Omit<
+    // Common field values
+    let body: Omit<
       ContentModelField,
       "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
     > = {
@@ -288,6 +323,16 @@ export const FieldForm = ({
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
+
+    if (type === "one_to_one") {
+      if (formData.relatedFieldZUID) {
+        body["relatedFieldZUID"] = formData.relatedFieldZUID;
+      }
+
+      if (formData.relatedModelZUID) {
+        body["relatedModelZUID"] = formData.relatedModelZUID;
+      }
+    }
 
     if (isUpdateField) {
       const updateBody: ContentModelField = {
@@ -396,8 +441,18 @@ export const FieldForm = ({
         }}
       >
         {activeTab === "details" && (
-          <Grid container rowSpacing={2.5}>
+          <Grid container rowSpacing={2.5} columnSpacing={2.5}>
             {formConfig[type]?.map((fieldConfig, index) => {
+              let dropdownOptions: [string, string][];
+
+              if (fieldConfig.name === "relatedModelZUID") {
+                dropdownOptions = modelsOptions;
+              }
+
+              if (fieldConfig.name === "relatedFieldZUID") {
+                dropdownOptions = fieldsOptions;
+              }
+
               return (
                 <FieldFormInput
                   key={index}
@@ -405,6 +460,7 @@ export const FieldForm = ({
                   onDataChange={handleFieldDataChange}
                   errorMsg={isSubmitClicked && errors[fieldConfig.name]}
                   prefillData={formData[fieldConfig.name]}
+                  dropdownOptions={dropdownOptions}
                 />
               );
             })}
