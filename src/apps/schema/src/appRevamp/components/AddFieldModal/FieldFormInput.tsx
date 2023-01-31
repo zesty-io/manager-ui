@@ -45,6 +45,7 @@ interface Props {
   }) => void;
   prefillData?: FormValue;
   dropdownOptions?: DropdownOptions[];
+  disabled?: boolean;
 }
 export const FieldFormInput = ({
   fieldConfig,
@@ -52,6 +53,7 @@ export const FieldFormInput = ({
   onDataChange,
   prefillData,
   dropdownOptions,
+  disabled,
 }: Props) => {
   return (
     <Grid item xs={fieldConfig.gridSize}>
@@ -188,6 +190,7 @@ export const FieldFormInput = ({
           </Typography>
           <Autocomplete
             size="small"
+            disabled={disabled}
             value={
               dropdownOptions.find((option) => option.value === prefillData) ||
               null

@@ -194,22 +194,26 @@ export const FieldForm = ({
     bulkUpdateContentModelField,
     { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
   ] = useBulkUpdateContentModelFieldMutation();
-  const { data: models, isLoading: isLoadingModels } =
+  const { data: allModels, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
-  const { data: modelFields } = useGetContentModelFieldsQuery(
-    formData.relatedModelZUID as string,
-    { skip: !formData.relatedModelZUID }
-  );
+  const {
+    data: selectedModelFields,
+    isFetching: isFetchingSelectedModelFields,
+  } = useGetContentModelFieldsQuery(formData.relatedModelZUID as string, {
+    skip: !formData.relatedModelZUID,
+  });
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
-  const modelsOptions: DropdownOptions[] = models?.map((model) => ({
+  const modelsOptions: DropdownOptions[] = allModels?.map((model) => ({
     label: model.label,
     value: model.ZUID,
   }));
-  const fieldsOptions: DropdownOptions[] = modelFields?.map((field) => ({
-    label: field.label,
-    value: field.ZUID,
-  }));
+  const fieldsOptions: DropdownOptions[] = selectedModelFields?.map(
+    (field) => ({
+      label: field.label,
+      value: field.ZUID,
+    })
+  );
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -464,13 +468,16 @@ export const FieldForm = ({
           <Grid container spacing={2.5}>
             {formConfig[type]?.map((fieldConfig, index) => {
               let dropdownOptions: DropdownOptions[];
+              let disabled = false;
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
+                disabled = isLoadingModels;
               }
 
               if (fieldConfig.name === "relatedFieldZUID") {
                 dropdownOptions = fieldsOptions;
+                disabled = isFetchingSelectedModelFields;
               }
 
               return (
@@ -481,6 +488,7 @@ export const FieldForm = ({
                   errorMsg={isSubmitClicked && errors[fieldConfig.name]}
                   prefillData={formData[fieldConfig.name]}
                   dropdownOptions={dropdownOptions || []}
+                  disabled={disabled}
                 />
               );
             })}
