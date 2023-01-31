@@ -76,19 +76,10 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     (prev: any, next: any) => {
       const newModel = { ...prev, ...next };
 
-      newModel.label = newModel.label.substring(0, 100);
-      newModel.description = newModel.description.substring(0, 500);
-
       if (prev.label !== newModel.label) {
-        newModel.name = newModel.label
-          .substring(0, 100)
-          .toLowerCase()
-          .replaceAll(" ", "_");
+        newModel.name = newModel.label.toLowerCase().replaceAll(" ", "_");
       } else {
-        newModel.name = newModel.name
-          .substring(0, 100)
-          .toLowerCase()
-          .replaceAll(" ", "_");
+        newModel.name = newModel.name.toLowerCase().replaceAll(" ", "_");
       }
 
       return newModel;
@@ -255,6 +246,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               <Box>
                 <InputLabel>Display Name</InputLabel>
                 <TextField
+                  inputProps={{
+                    maxLength: 100,
+                  }}
                   placeholder="e.g. Home Page, About Page, Contact Page, etc."
                   value={model.label}
                   onChange={(event) =>
@@ -266,6 +260,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               <Box>
                 <InputLabel>Reference ID</InputLabel>
                 <TextField
+                  inputProps={{
+                    maxLength: 100,
+                  }}
                   placeholder="Auto-Generated from Display Name"
                   value={model.name}
                   onChange={(event) =>
@@ -295,6 +292,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               <Box>
                 <InputLabel>Description</InputLabel>
                 <TextField
+                  inputProps={{
+                    maxLength: 500,
+                  }}
                   value={model.description}
                   placeholder="What is this model going to be used for"
                   onChange={(event) =>
