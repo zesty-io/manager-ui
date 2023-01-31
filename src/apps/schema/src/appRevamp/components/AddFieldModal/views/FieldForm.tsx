@@ -25,7 +25,7 @@ import {
   convertLabelValue,
   getErrorMessage,
 } from "../../utils";
-import { InputField, FieldFormInput } from "../FieldFormInput";
+import { InputField, FieldFormInput, DropdownOptions } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
@@ -100,7 +100,7 @@ const formConfig: { [key: string]: InputField[] } = {
   one_to_many: [
     {
       name: "relatedModelZUID",
-      type: "dropdown",
+      type: "autocomplete",
       label: "Reference Model",
       required: false,
       gridSize: 6,
@@ -108,7 +108,7 @@ const formConfig: { [key: string]: InputField[] } = {
     },
     {
       name: "relatedFieldZUID",
-      type: "dropdown",
+      type: "autocomplete",
       label: "Field to Display",
       required: false,
       gridSize: 6,
@@ -119,7 +119,7 @@ const formConfig: { [key: string]: InputField[] } = {
   one_to_one: [
     {
       name: "relatedModelZUID",
-      type: "dropdown",
+      type: "autocomplete",
       label: "Reference Model",
       required: false,
       gridSize: 6,
@@ -127,7 +127,7 @@ const formConfig: { [key: string]: InputField[] } = {
     },
     {
       name: "relatedFieldZUID",
-      type: "dropdown",
+      type: "autocomplete",
       label: "Field to Display",
       required: false,
       gridSize: 6,
@@ -202,14 +202,14 @@ export const FieldForm = ({
   );
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
-  const modelsOptions: [string, string][] = models?.map((model) => [
-    model.ZUID,
-    model.label,
-  ]);
-  const fieldsOptions: [string, string][] = modelFields?.map((field) => [
-    field.ZUID,
-    field.label,
-  ]);
+  const modelsOptions: DropdownOptions[] = models?.map((model) => ({
+    label: model.label,
+    value: model.ZUID,
+  }));
+  const fieldsOptions: DropdownOptions[] = modelFields?.map((field) => ({
+    label: field.label,
+    value: field.ZUID,
+  }));
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -342,13 +342,8 @@ export const FieldForm = ({
     };
 
     if (type === "one_to_one" || type === "one_to_many") {
-      if (formData.relatedModelZUID) {
-        body["relatedModelZUID"] = formData.relatedModelZUID;
-      }
-
-      if (formData.relatedFieldZUID) {
-        body["relatedFieldZUID"] = formData.relatedFieldZUID;
-      }
+      body["relatedModelZUID"] = formData.relatedModelZUID || null;
+      body["relatedFieldZUID"] = formData.relatedFieldZUID || null;
     }
 
     if (isUpdateField) {
@@ -466,9 +461,9 @@ export const FieldForm = ({
         }}
       >
         {activeTab === "details" && (
-          <Grid container rowSpacing={2.5} columnSpacing={2.5}>
+          <Grid container spacing={2.5}>
             {formConfig[type]?.map((fieldConfig, index) => {
-              let dropdownOptions: [string, string][];
+              let dropdownOptions: DropdownOptions[];
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
@@ -485,7 +480,7 @@ export const FieldForm = ({
                   onDataChange={handleFieldDataChange}
                   errorMsg={isSubmitClicked && errors[fieldConfig.name]}
                   prefillData={formData[fieldConfig.name]}
-                  dropdownOptions={dropdownOptions}
+                  dropdownOptions={dropdownOptions || []}
                 />
               );
             })}

@@ -9,12 +9,14 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 
 import { FormValue } from "./views/FieldForm";
 
-type FieldType = "input" | "checkbox" | "dropdown";
+type FieldType = "input" | "checkbox" | "dropdown" | "autocomplete";
 export interface InputField {
   name: string;
   type: FieldType;
@@ -27,6 +29,10 @@ export interface InputField {
   maxLength?: number;
   placeholder?: string;
 }
+export interface DropdownOptions {
+  label: string;
+  value: string;
+}
 interface Props {
   fieldConfig: InputField;
   errorMsg?: string;
@@ -38,7 +44,7 @@ interface Props {
     value: FormValue;
   }) => void;
   prefillData?: FormValue;
-  dropdownOptions?: [string, string][];
+  dropdownOptions?: DropdownOptions[];
 }
 export const FieldFormInput = ({
   fieldConfig,
@@ -166,13 +172,50 @@ export const FieldFormInput = ({
             <MenuItem disabled value="">
               {fieldConfig.placeholder}
             </MenuItem>
-            {dropdownOptions?.map(([value, name]) => (
+            {dropdownOptions?.map(({ label, value }) => (
               <MenuItem key={value} value={value}>
-                {name}
+                {label}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
+      )}
+
+      {fieldConfig.type === "autocomplete" && (
+        <>
+          <Typography variant="body2" mb={0.5}>
+            {fieldConfig.label}
+          </Typography>
+          <Autocomplete
+            size="small"
+            value={
+              dropdownOptions.find((option) => option.value === prefillData) ||
+              null
+            }
+            options={dropdownOptions}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={fieldConfig.placeholder}
+                hiddenLabel
+              />
+            )}
+            isOptionEqualToValue={(option, value) =>
+              option.value === value.value
+            }
+            onChange={(_, newValue: DropdownOptions) => {
+              onDataChange({
+                inputName: fieldConfig.name,
+                value: newValue?.value || "",
+              });
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                height: "40px",
+              },
+            }}
+          />
+        </>
       )}
     </Grid>
   );
