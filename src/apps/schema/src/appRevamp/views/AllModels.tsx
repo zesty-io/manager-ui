@@ -53,7 +53,7 @@ export const AllModels = () => {
         </Box>
       </Box>
       <Box height="100%" px={3} py={2}>
-        <ModelsTable search={search} />
+        <ModelsTable search={search} onEmptySearch={() => setSearch("")} />
       </Box>
     </Box>
   );

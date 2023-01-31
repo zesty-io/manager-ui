@@ -17,6 +17,7 @@ import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import moment from "moment-timezone";
 import { useMemo, useState } from "react";
 import { useHistory } from "react-router";
+import { NoSearchResults } from "../NoSearchResults";
 
 const modelIconMap = {
   templateset: (
@@ -52,9 +53,10 @@ const ContentItemsCell = ({ ZUID }: any) => {
 
 interface Props {
   search?: string;
+  onEmptySearch?: () => void;
 }
 
-export const ModelsTable = ({ search }: Props) => {
+export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   const history = useHistory();
   // Used to initialize the table sorted by name
   const [sortModel, setSortModel] = useState<GridSortModel>([
@@ -137,7 +139,7 @@ export const ModelsTable = ({ search }: Props) => {
   ];
 
   return (
-    <Box height="100%">
+    <Box height={filteredModels?.length ? "100%" : "8%"}>
       <DataGridPro
         // @ts-expect-error - missing types for headerAlign and align on DataGridPro
         columns={columns}
@@ -159,7 +161,18 @@ export const ModelsTable = ({ search }: Props) => {
             cursor: "pointer",
           },
         }}
+        components={{
+          NoRowsOverlay: () => <Box></Box>,
+        }}
       />
+      {!filteredModels?.length && (
+        <Box sx={{ mt: 10 }}>
+          <NoSearchResults
+            searchTerm={search}
+            onSearchAgain={() => onEmptySearch()}
+          />
+        </Box>
+      )}
     </Box>
   );
 };
