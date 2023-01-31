@@ -104,20 +104,18 @@ const ContentSearch: FC = () => {
                 {
                   name: "offset",
                   options: {
-                    offset: [-1, -1],
+                    offset: [-1, 0],
                   },
                 },
-                /*
-              {
-                name: "width",
-                enabled: true,
-                phase: "beforeWrite",
-                requires: ["computeStyles"],
-                fn: ({ state }) => {
-                  state.styles.popper.width = "500px";
+                {
+                  name: "width",
+                  enabled: true,
+                  phase: "beforeWrite",
+                  requires: ["computeStyles"],
+                  fn: ({ state }) => {
+                    state.styles.popper.width = "502px";
+                  },
                 },
-              }
-              */
               ]}
               style={{
                 // default z-index is 1300, we want it to be BELOW the side nav close button
@@ -247,15 +245,16 @@ const ContentSearch: FC = () => {
                   "&.MuiAutocomplete-inputRoot": {
                     py: "2px",
                   },
-                  "&.Mui-focused.MuiAutocomplete-inputRoot": {
-                    py: "2px",
-                  },
 
                   borderRadius: "4px 4px 0px 0px",
-                  borderWidth: "0px 1px 1px 0px",
+                  /*
+                  borderWidth: "0px 0px 1px 0px",
                   borderStyle: "solid",
-                  borderColor: "border",
                   //borderColor: "#FF0000",
+                  */
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderWidth: "1px",
+                  },
                   boxSizing: "border-box",
                   width: "100%",
                   backgroundColor: (theme) => theme.palette.background.paper,
