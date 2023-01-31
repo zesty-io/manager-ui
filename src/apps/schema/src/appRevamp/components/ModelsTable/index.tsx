@@ -139,7 +139,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   ];
 
   return (
-    <Box height={filteredModels?.length ? "100%" : "8%"}>
+    <Box height={filteredModels?.length ? "100%" : "55px"}>
       <DataGridPro
         // @ts-expect-error - missing types for headerAlign and align on DataGridPro
         columns={columns}
@@ -160,9 +160,6 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           ".MuiDataGrid-row": {
             cursor: "pointer",
           },
-        }}
-        components={{
-          NoRowsOverlay: () => <Box></Box>,
         }}
       />
       {!filteredModels?.length && (

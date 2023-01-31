@@ -1,20 +1,11 @@
-import {
-  Box,
-  TextField,
-  Typography,
-  IconButton,
-  Button,
-  InputAdornment,
-} from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import { ModelsTable } from "../components/ModelsTable";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { useGetContentModelsQuery } from "../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../shell/services/types";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useHistory } from "react-router";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 const modelNameMap = {
   templateset: "Multi Page",
@@ -27,11 +18,7 @@ export const SearchModels = () => {
   const { data: models } = useGetContentModelsQuery();
   const history = useHistory();
 
-  const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    setSearch(params.get("term"));
-  }, [params.get("term")]);
+  const search = params.get("term") || "";
 
   const filteredModelsLength = useMemo(() => {
     return models?.filter((model: ContentModel) => {
@@ -50,44 +37,26 @@ export const SearchModels = () => {
     <Box width="100%" display="flex" flexDirection="column">
       <Box
         display="flex"
-        justifyContent="space-between"
+        alignItems="center"
+        gap={1.5}
         px={3}
         py={2}
         sx={{
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
         }}
       >
-        <Typography variant="h4" fontWeight="600">
-          All Models
+        <IconButton size="small" onClick={() => history.push("/schema")}>
+          <CloseRoundedIcon fontSize="small" color="action" />
+        </IconButton>
+        <Typography variant="h6" fontWeight="600">
+          {filteredModelsLength} Search Results for "{search}"
         </Typography>
-        <Box display="flex" gap={2}>
-          <TextField
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            size="small"
-            sx={{
-              backgroundColor: "grey.50",
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchRoundedIcon fontSize="small" color="action" />
-                </InputAdornment>
-              ),
-            }}
-            placeholder="Search Models"
-          />
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<AddRoundedIcon />}
-          >
-            Create Model
-          </Button>
-        </Box>
       </Box>
       <Box height="100%" px={3} py={2}>
-        <ModelsTable search={search} onEmptySearch={() => setSearch("")} />
+        <ModelsTable
+          search={search}
+          onEmptySearch={() => history.push("/schema")}
+        />
       </Box>
     </Box>
   );
