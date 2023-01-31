@@ -234,10 +234,17 @@ const ContentSearch: FC = () => {
                   history.push(`/search?q=${value}`);
                 }
               }}
+              inputProps={{
+                ...params.inputProps,
+                style: {
+                  ...params.inputProps.style,
+                  paddingLeft: "4px",
+                },
+              }}
               InputProps={{
                 ...params.InputProps,
                 startAdornment: (
-                  <InputAdornment position="start">
+                  <InputAdornment position="start" sx={{ marginRight: 0 }}>
                     <SearchIcon fontSize="small" color="action" />
                   </InputAdornment>
                 ),
