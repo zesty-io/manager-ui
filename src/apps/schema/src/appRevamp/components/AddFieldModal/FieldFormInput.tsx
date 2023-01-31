@@ -1,26 +1,37 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import {
   Box,
   Typography,
-  TextField,
   FormControlLabel,
   Checkbox,
-  OutlinedInput,
   InputBase,
+  Grid,
+  FormControl,
+  Select,
+  MenuItem,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material/Select";
 
 import { FormValue } from "./views/FieldForm";
 
-type FieldType = "input" | "checkbox" | "dropdown";
+type FieldType = "input" | "checkbox" | "dropdown" | "autocomplete";
 export interface InputField {
   name: string;
   type: FieldType;
   label: string;
   required: boolean;
+  gridSize: number;
   subLabel?: string;
   fullWidth?: boolean;
   multiline?: boolean;
   maxLength?: number;
+  placeholder?: string;
+}
+export interface DropdownOptions {
+  label: string;
+  value: string;
 }
 interface Props {
   fieldConfig: InputField;
@@ -33,21 +44,38 @@ interface Props {
     value: FormValue;
   }) => void;
   prefillData?: FormValue;
+  dropdownOptions?: DropdownOptions[];
+  disabled?: boolean;
 }
 export const FieldFormInput = ({
   fieldConfig,
   errorMsg,
   onDataChange,
   prefillData,
+  dropdownOptions,
+  disabled,
 }: Props) => {
   return (
-    <Box mb={2.5}>
+    <Grid item xs={fieldConfig.gridSize}>
       {fieldConfig.type === "input" && (
         <>
           <Box mb={0.5}>
-            <Typography variant="body2">{fieldConfig.label}</Typography>
+            <Typography component="span" variant="body2">
+              {fieldConfig.label}
+            </Typography>
+            {fieldConfig.label?.toLowerCase().includes("description") && (
+              <Typography
+                component="span"
+                variant="body2"
+                color="text.secondary"
+              >
+                {" "}
+                (optional)
+              </Typography>
+            )}
             {fieldConfig.subLabel && (
               <Typography
+                component="p"
                 // @ts-expect-error body3 module augmentation required
                 variant="body3"
                 color="text.secondary"
@@ -59,7 +87,7 @@ export const FieldFormInput = ({
           <InputBase
             sx={{
               border: "1px solid",
-              borderColor: errorMsg ? "red.500" : "grey.200",
+              borderColor: errorMsg ? "red.500" : "grey.100",
               borderRadius: 2,
               py: 1.25,
               px: 1.5,
@@ -106,6 +134,9 @@ export const FieldFormInput = ({
                 });
               }}
               checked={Boolean(prefillData)}
+              sx={{
+                color: "grey.200",
+              }}
             />
           }
           label={
@@ -124,6 +155,71 @@ export const FieldFormInput = ({
           }
         />
       )}
-    </Box>
+
+      {fieldConfig.type === "dropdown" && (
+        <FormControl fullWidth size="small">
+          <Typography variant="body2" mb={0.5}>
+            {fieldConfig.label}
+          </Typography>
+          <Select
+            value={prefillData || ""}
+            displayEmpty
+            onChange={(e: SelectChangeEvent) => {
+              onDataChange({
+                inputName: fieldConfig.name,
+                value: e.target.value,
+              });
+            }}
+          >
+            <MenuItem disabled value="">
+              {fieldConfig.placeholder}
+            </MenuItem>
+            {dropdownOptions?.map(({ label, value }) => (
+              <MenuItem key={value} value={value}>
+                {label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
+
+      {fieldConfig.type === "autocomplete" && (
+        <>
+          <Typography variant="body2" mb={0.5}>
+            {fieldConfig.label}
+          </Typography>
+          <Autocomplete
+            size="small"
+            disabled={disabled}
+            value={
+              dropdownOptions.find((option) => option.value === prefillData) ||
+              null
+            }
+            options={dropdownOptions}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={fieldConfig.placeholder}
+                hiddenLabel
+              />
+            )}
+            isOptionEqualToValue={(option, value) =>
+              option.value === value.value
+            }
+            onChange={(_, newValue: DropdownOptions) => {
+              onDataChange({
+                inputName: fieldConfig.name,
+                value: newValue?.value || "",
+              });
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                height: "40px",
+              },
+            }}
+          />
+        </>
+      )}
+    </Grid>
   );
 };
