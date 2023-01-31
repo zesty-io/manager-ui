@@ -105,6 +105,10 @@ export const ContentListItem: FC<ContentListItem> = ({
         "&:hover a": {
           visibility: "visible",
         },
+        // first child
+        "&:first-of-type": {
+          borderRadius: "8px 8px 0 0",
+        },
       }}
     >
       <Stack
