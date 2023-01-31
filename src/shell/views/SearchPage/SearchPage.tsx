@@ -7,6 +7,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import moment from "moment-timezone";
 
+import { getDateFilterFn, getDateFilter } from "../../../utility/dateUtils";
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
 import { ContentList } from "./ContentList";
@@ -17,6 +18,7 @@ type SortOrder = "AtoZ" | "ZtoA" | "dateadded" | "datemodified";
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q") || "";
+  const dateRangeFilter = getDateFilter(params);
   const sort: SortOrder = (params.get("sort") as SortOrder) || "datemodified";
   const { data: unsortedResults, isLoading } = useSearchContentQuery(
     { query, order: "created", dir: "desc" },
@@ -31,7 +33,11 @@ export const SearchPage: FC = () => {
 
   const sortedResults = useMemo(() => {
     if (unsortedResults) {
-      const results = [...unsortedResults];
+      const results = dateRangeFilter
+        ? unsortedResults.filter((item) =>
+            getDateFilterFn(dateRangeFilter)(item.meta?.createdAt)
+          )
+        : [...unsortedResults];
       switch (sort) {
         case "AtoZ":
           return results.sort((a, b) => {
@@ -52,7 +58,7 @@ export const SearchPage: FC = () => {
           });
       }
     } else return [];
-  }, [unsortedResults, sort]);
+  }, [unsortedResults, sort, dateRangeFilter]);
 
   return (
     <ThemeProvider theme={theme}>
