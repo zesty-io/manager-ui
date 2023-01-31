@@ -2,7 +2,6 @@ import TextField from "@mui/material/TextField";
 import { FC, useState, useRef } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import Autocomplete from "@mui/material/Autocomplete";
-import Stack from "@mui/material/Stack";
 import InputAdornment from "@mui/material/InputAdornment";
 import { HTMLAttributes } from "react";
 import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
@@ -35,19 +34,9 @@ const ContentSearch: FC = () => {
     textfieldRef.current?.querySelector("input").focus();
   });
   const languages = useSelector((state: any) => state.languages);
-  //const [open, setOpen] = useState(false);
-  const [open, setOpen] = [true, (...args: any) => {}]; // TODO fix this, it's a hack
-  console.log({ open });
+  const [open, setOpen] = useState(false);
 
   return (
-    /*
-    <Drawer
-      open={open}
-      onClose={() => { }}
-      onClick={() => { }}
-
-    >
-    */
     <Collapse
       in={open}
       collapsedSize="288px"
@@ -60,14 +49,6 @@ const ContentSearch: FC = () => {
         "& .MuiCollapse-entered": {
           width: "500px",
         },
-        /*
-        "& .MuiCollapse-wrapper": {
-          width: "100%",
-        },
-        "& .MuiCollapse-wrapperInner": {
-          width: "100%",
-        },
-        */
       }}
     >
       <Autocomplete
@@ -75,11 +56,9 @@ const ContentSearch: FC = () => {
         open={open}
         onOpen={() => {
           setOpen(true);
-          console.log("onOpen");
         }}
         onClose={() => {
           setOpen(false);
-          console.log("onClose");
         }}
         PaperComponent={(props) => {
           return (
@@ -213,7 +192,6 @@ const ContentSearch: FC = () => {
           }
         }}
         renderInput={(params: any) => {
-          console.log(params.InputProps);
           return (
             <TextField
               {...params}
@@ -226,7 +204,6 @@ const ContentSearch: FC = () => {
                 height: "40px",
                 "& .Mui-focused": {
                   width: "500px",
-                  //position: "relative",
                 },
               }}
               onKeyDown={(e) => {
@@ -254,11 +231,6 @@ const ContentSearch: FC = () => {
                   },
 
                   borderRadius: "4px 4px 0px 0px",
-                  /*
-                  borderWidth: "0px 0px 1px 0px",
-                  borderStyle: "solid",
-                  //borderColor: "#FF0000",
-                  */
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderWidth: "1px",
                   },
