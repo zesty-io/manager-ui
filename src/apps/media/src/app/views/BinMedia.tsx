@@ -19,11 +19,10 @@ import Controls from "../components/Controls";
 import { State } from "../../../../../shell/store/media-revamp";
 import { NoResultsState } from "../components/NoResultsState";
 import {
-  fileExtension,
-  getExtensions,
   getDateFilterFn,
   getDateFilter,
-} from "../utils/fileUtils";
+} from "../../../../../utility/dateUtils";
+import { fileExtension, getExtensions } from "../utils/fileUtils";
 import { Filetype } from "../../../../../shell/store/media-revamp";
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 

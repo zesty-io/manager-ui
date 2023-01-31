@@ -28,7 +28,6 @@ import {
   fileExtension,
   fileTypeToColor,
   getExtensions,
-  getDateFilterFn,
 } from "../utils/fileUtils";
 import { AppState } from "../../../../../shell/store/types";
 import {
