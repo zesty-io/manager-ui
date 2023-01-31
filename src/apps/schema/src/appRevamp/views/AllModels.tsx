@@ -13,6 +13,7 @@ import { useState, useEffect, useRef } from "react";
 export const AllModels = () => {
   const [search, setSearch] = useState("");
   const [focusSearch, setFocusSearch] = useState(false);
+  const searchRef = useRef(null);
 
   return (
     <Box width="100%" display="flex" flexDirection="column">
@@ -33,8 +34,7 @@ export const AllModels = () => {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             size="small"
-            inputRef={(input: any) => focusSearch && input?.focus()}
-            onBlur={() => setFocusSearch(false)}
+            inputRef={searchRef}
             sx={{
               backgroundColor: "grey.50",
               "& .Mui-focused": {
@@ -64,7 +64,7 @@ export const AllModels = () => {
       <Box height="100%" px={3} py={2}>
         <ModelsTable
           search={search}
-          onEmptySearch={() => setFocusSearch(true)}
+          onEmptySearch={() => searchRef?.current?.focus()}
         />
       </Box>
     </Box>
