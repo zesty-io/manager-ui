@@ -328,6 +328,7 @@ const COMMON_FIELDS: InputField[] = [
     fullWidth: true,
     maxLength: 200,
     gridSize: 12,
+    tooltip: "The display name of the field seen in Schema.",
   },
   {
     name: "name",
@@ -337,6 +338,7 @@ const COMMON_FIELDS: InputField[] = [
     fullWidth: true,
     maxLength: 50,
     gridSize: 12,
+    tooltip: "This will appear in the API Responses",
   },
   {
     name: "description",
@@ -347,6 +349,7 @@ const COMMON_FIELDS: InputField[] = [
     fullWidth: true,
     multiline: true,
     gridSize: 12,
+    tooltip: "Perfect for giving instructions to content writers.",
   },
   {
     name: "required",

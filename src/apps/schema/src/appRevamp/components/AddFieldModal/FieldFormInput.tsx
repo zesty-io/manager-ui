@@ -11,8 +11,10 @@ import {
   MenuItem,
   Autocomplete,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 import { FormValue } from "./views/FieldForm";
 
@@ -28,6 +30,7 @@ export interface InputField {
   multiline?: boolean;
   maxLength?: number;
   placeholder?: string;
+  tooltip?: string;
 }
 export interface DropdownOptions {
   label: string;
@@ -72,6 +75,14 @@ export const FieldFormInput = ({
                 {" "}
                 (optional)
               </Typography>
+            )}
+            {fieldConfig.tooltip && (
+              <Tooltip placement="top" title={fieldConfig.tooltip}>
+                <InfoRoundedIcon
+                  sx={{ ml: 1, width: "10px", height: "10px" }}
+                  color="action"
+                />
+              </Tooltip>
             )}
             {fieldConfig.subLabel && (
               <Typography
