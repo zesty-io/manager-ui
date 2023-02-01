@@ -44,7 +44,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
 
   return (
     <>
-      <DialogTitle px={3} py={2.5}>
+      <DialogTitle>
         <Box display="flex" justifyContent="space-between" pb={2}>
           Select a Field Type
           <IconButton size="small" onClick={onModalClose}>
@@ -69,8 +69,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
       <DialogContent
         dividers
         sx={{
-          px: 3,
-          py: 1.5,
+          p: 2.5,
           "&.MuiDialogContent-dividers": {
             borderColor: "border",
           },

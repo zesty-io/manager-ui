@@ -428,7 +428,7 @@ export const FieldForm = ({
     <>
       <DialogTitle
         sx={{
-          padding: 3,
+          padding: 2.5,
           paddingBottom: 0,
         }}
       >
@@ -507,8 +507,7 @@ export const FieldForm = ({
       <DialogContent
         dividers
         sx={{
-          px: 3,
-          py: 3,
+          p: 2.5,
         }}
       >
         {activeTab === "details" && (
@@ -560,8 +559,7 @@ export const FieldForm = ({
       {isUpdateField ? (
         <DialogActions
           sx={{
-            px: 3,
-            py: 2,
+            p: 2.5,
           }}
         >
           <Button
