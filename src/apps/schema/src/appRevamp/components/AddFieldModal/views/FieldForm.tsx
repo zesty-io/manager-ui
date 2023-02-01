@@ -21,6 +21,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import RuleRoundedIcon from "@mui/icons-material/RuleRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import {
@@ -523,24 +524,46 @@ export const FieldForm = ({
 
         {activeTab === "rules" && <Typography>Coming soon...</Typography>}
       </DialogContent>
-      <DialogActions
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          px: 3,
-          py: 2,
-        }}
-      >
-        <Button
-          variant="outlined"
-          color="inherit"
-          onClick={isUpdateField ? onModalClose : onBackClick}
+      {isUpdateField ? (
+        <DialogActions
+          sx={{
+            px: 3,
+            py: 2,
+          }}
         >
-          Cancel
-        </Button>
-        <Box>
-          {!isUpdateField && (
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={onModalClose}
+            sx={{
+              mr: 1,
+            }}
+          >
+            Cancel
+          </Button>
+          <LoadingButton
+            loading={isUpdatingField}
+            onClick={handleSubmitForm}
+            variant="contained"
+            startIcon={<SaveRoundedIcon />}
+          >
+            Save
+          </LoadingButton>
+        </DialogActions>
+      ) : (
+        <DialogActions
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            px: 3,
+            py: 2,
+          }}
+        >
+          <Button variant="outlined" color="inherit" onClick={onBackClick}>
+            Cancel
+          </Button>
+          <Box>
             <LoadingButton
               variant="outlined"
               startIcon={<AddRoundedIcon />}
@@ -552,16 +575,16 @@ export const FieldForm = ({
             >
               Add another field
             </LoadingButton>
-          )}
-          <LoadingButton
-            loading={isCreatingField || isUpdatingField || isBulkUpdating}
-            onClick={handleSubmitForm}
-            variant="contained"
-          >
-            Done
-          </LoadingButton>
-        </Box>
-      </DialogActions>
+            <LoadingButton
+              loading={isCreatingField || isBulkUpdating}
+              onClick={handleSubmitForm}
+              variant="contained"
+            >
+              Done
+            </LoadingButton>
+          </Box>
+        </DialogActions>
+      )}
     </>
   );
 };
