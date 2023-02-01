@@ -5,8 +5,8 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CircularProgress from "@mui/material/CircularProgress";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import {
   Modal,
@@ -89,29 +89,24 @@ export default memo(function PendingEditsModal(props) {
             >
               Cancel (ESC)
             </Button>
-            <Button
+            <LoadingButton
               variant="contained"
               color="error"
-              disabled={loading}
               onClick={() => handler("delete")}
-              startIcon={
-                loading ? <CircularProgress size="20px" /> : <DeleteIcon />
-              }
+              loading={loading}
+              startIcon={<DeleteIcon />}
             >
               Discard
-            </Button>
-
-            <Button
+            </LoadingButton>
+            <LoadingButton
               variant="contained"
               color="success"
-              disabled={loading}
+              loading={loading}
               onClick={() => handler("save")}
-              startIcon={
-                loading ? <CircularProgress size="20px" /> : <SaveIcon />
-              }
+              startIcon={<SaveIcon />}
             >
               Save
-            </Button>
+            </LoadingButton>
           </Stack>
         </ModalFooter>
       </Modal>

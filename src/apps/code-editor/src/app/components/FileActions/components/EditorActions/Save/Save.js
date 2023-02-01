@@ -2,9 +2,8 @@ import { useState } from "react";
 
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
-import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
-import CircularProgress from "@mui/material/CircularProgress";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { saveFile } from "../../../../../../store/files";
 
@@ -28,16 +27,16 @@ export function Save(props) {
   const metaShortcut = useMetaKey("s", onSave);
 
   return (
-    <Button
+    <LoadingButton
       variant="contained"
       color="success"
       onClick={onSave}
-      disabled={saving}
-      startIcon={saving ? <CircularProgress size="20px" /> : <SaveIcon />}
+      startIcon={<SaveIcon />}
       sx={{ mx: 0.5 }}
+      loading={saving}
     >
       Save&nbsp;
       <span className={styles.HideSmall}>{metaShortcut}</span>
-    </Button>
+    </LoadingButton>
   );
 }

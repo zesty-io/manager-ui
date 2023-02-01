@@ -5,8 +5,8 @@ import { Dialog, IconButton, Button } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import CircularProgress from "@mui/material/CircularProgress";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -297,17 +297,16 @@ export default connect((state) => {
           >
             Cancel (ESC)
           </Button>
-          <Button
+          <LoadingButton
             variant="contained"
             color="success"
             data-cy="faviconSave"
             onClick={handleSave}
-            startIcon={
-              loading ? <CircularProgress size="20px" /> : <SaveIcon />
-            }
+            loading={loading}
+            startIcon={<SaveIcon />}
           >
             Save Favicon
-          </Button>
+          </LoadingButton>
         </ModalFooter>
       </Modal>
     </div>

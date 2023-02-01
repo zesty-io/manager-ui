@@ -1,8 +1,7 @@
 import { memo, useState } from "react";
 
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
+import LoadingButton from "@mui/lab/LoadingButton";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -52,17 +51,16 @@ export const Unpublish = memo(function Unpublish(props) {
           </Typography>
         </AccordionDetails>
         <AccordionActions>
-          <Button
+          <LoadingButton
             variant="contained"
             id="UnpublishItemButton"
             onClick={handleUnpublish}
-            disabled={loading || !isPublished}
-            startIcon={
-              loading ? <CircularProgress size="20px" /> : <LinkOffIcon />
-            }
+            disabled={!isPublished}
+            loading={loading}
+            startIcon={<LinkOffIcon />}
           >
             Unpublish
-          </Button>
+          </LoadingButton>
         </AccordionActions>
       </Accordion>
     </Box>

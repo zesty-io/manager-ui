@@ -1,8 +1,7 @@
 import { memo, useState } from "react";
 
-import Button from "@mui/material/Button";
 import UploadIcon from "@mui/icons-material/Upload";
-import CircularProgress from "@mui/material/CircularProgress";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { publishFile, fetchFiles } from "../../../../../../store/files";
 
@@ -12,10 +11,9 @@ export const Publish = memo(function Publish(props) {
   const [publishing, setPublishing] = useState(false);
 
   return (
-    <Button
+    <LoadingButton
       variant="contained"
       color="secondary"
-      disabled={publishing}
       onClick={() => {
         setPublishing(true);
         props
@@ -28,10 +26,11 @@ export const Publish = memo(function Publish(props) {
             props.dispatch(fetchFiles("scripts"));
           });
       }}
-      startIcon={publishing ? <CircularProgress size="20px" /> : <UploadIcon />}
+      loading={publishing}
+      startIcon={<UploadIcon />}
     >
       Publish
       <span className={styles.HideSmall}>&nbsp;Version {props.version}</span>
-    </Button>
+    </LoadingButton>
   );
 });

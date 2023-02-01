@@ -2,9 +2,9 @@ import { memo, useState } from "react";
 import { useHistory } from "react-router";
 
 import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { Notice } from "@zesty-io/core/Notice";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
@@ -50,10 +50,9 @@ export const Delete = memo(function Delete(props) {
           </Notice>
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
-          <Button
+          <LoadingButton
             variant="contained"
             color="error"
-            disabled={deleting}
             onClick={() => {
               setDeleting(true);
               props
@@ -69,16 +68,11 @@ export const Delete = memo(function Delete(props) {
                   setDeleting(false);
                 });
             }}
-            startIcon={
-              deleting ? (
-                <CircularProgress CircularProgress size="20px" />
-              ) : (
-                <DeleteIcon />
-              )
-            }
+            loading={deleting}
+            startIcon={<DeleteIcon />}
           >
             Delete File
-          </Button>
+          </LoadingButton>
 
           <Button
             variant="contained"
