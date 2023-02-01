@@ -116,7 +116,10 @@ export const instanceApi = createApi({
       keepUnusedDataFor: 0.0001,
       providesTags: ["ContentModels"],
     }),
-    createContentModel: builder.mutation<any, Omit<ContentModel, "ZUID">>({
+    createContentModel: builder.mutation<
+      { data: ContentModel },
+      Partial<ContentModel>
+    >({
       query: (body) => ({
         url: `content/models`,
         method: "POST",
@@ -256,5 +259,6 @@ export const {
   useUpdateContentModelMutation,
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
+  useCreateContentModelMutation,
   useGetWebViewsQuery,
 } = instanceApi;

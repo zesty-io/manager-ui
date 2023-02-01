@@ -27,7 +27,8 @@ export const Sidebar = () => {
 
   return (
     <Box
-      width={240}
+      minWidth={240}
+      maxWidth={240}
       height="100%"
       display="flex"
       flexDirection="column"
@@ -110,17 +111,20 @@ export const Sidebar = () => {
       >
         <ModelList
           title="single page"
+          type="templateset"
           models={models?.filter((model) => model.type === "templateset") || []}
         />
         <Box sx={{ mt: 1 }}>
           <ModelList
             title="multi page"
+            type="pageset"
             models={models?.filter((model) => model.type === "pageset") || []}
           />
         </Box>
         <Box sx={{ mt: 1 }}>
           <ModelList
             title="headless dataset"
+            type="dataset"
             models={models?.filter((model) => model.type === "dataset") || []}
           />
         </Box>

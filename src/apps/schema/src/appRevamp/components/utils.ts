@@ -11,7 +11,7 @@ export const stringStartsWithVowel = (string: string): boolean => {
 export const convertLabelValue = (string: string): string => {
   if (!string) return;
 
-  return replace(string, /\W/g, "_");
+  return replace(string, /\W/g, "_").toLowerCase();
 };
 
 type getErrorMessageProps = {

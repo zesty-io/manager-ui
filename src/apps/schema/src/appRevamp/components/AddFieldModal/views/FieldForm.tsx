@@ -10,7 +10,7 @@ import {
   Tabs,
   Tab,
   Button,
-  CircularProgress,
+  Grid,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
@@ -25,11 +25,13 @@ import {
   convertLabelValue,
   getErrorMessage,
 } from "../../utils";
-import { InputField, FieldFormInput } from "../FieldFormInput";
+import { InputField, FieldFormInput, DropdownOptions } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
   useBulkUpdateContentModelFieldMutation,
+  useGetContentModelsQuery,
+  useGetContentModelFieldsQuery,
 } from "../../../../../../../shell/services/instance";
 import {
   ContentModelField,
@@ -45,6 +47,7 @@ const commonFields: InputField[] = [
     required: true,
     fullWidth: true,
     maxLength: 200,
+    gridSize: 12,
   },
   {
     name: "name",
@@ -53,15 +56,17 @@ const commonFields: InputField[] = [
     required: true,
     fullWidth: true,
     maxLength: 50,
+    gridSize: 12,
   },
   {
     name: "description",
     type: "input",
-    label: "Description (optional)",
+    label: "Description",
     subLabel: "Appears below the label to help content-writers and API users",
     required: false,
     fullWidth: true,
     multiline: true,
+    gridSize: 12,
   },
   {
     name: "required",
@@ -69,6 +74,7 @@ const commonFields: InputField[] = [
     label: "Required field",
     subLabel: "Ensures an item cannot be created if field is empty",
     required: false,
+    gridSize: 12,
   },
   {
     name: "list",
@@ -76,22 +82,59 @@ const commonFields: InputField[] = [
     label: "Add as column in table listing",
     subLabel: "Shows field as a column in the table in the content view",
     required: false,
+    gridSize: 12,
   },
 ];
 const formConfig: { [key: string]: InputField[] } = {
   article_writer: [],
   color: [],
   currency: [],
-  date: [],
-  datetime: [],
+  date: [...commonFields],
+  datetime: [...commonFields],
   dropdown: [],
   images: [],
   internal_link: [],
-  link: [],
+  link: [...commonFields],
   markdown: [...commonFields],
-  number: [],
-  one_to_many: [],
-  one_to_one: [],
+  number: [...commonFields],
+  one_to_many: [
+    {
+      name: "relatedModelZUID",
+      type: "autocomplete",
+      label: "Reference Model",
+      required: false,
+      gridSize: 6,
+      placeholder: "Select a model",
+    },
+    {
+      name: "relatedFieldZUID",
+      type: "autocomplete",
+      label: "Field to Display",
+      required: false,
+      gridSize: 6,
+      placeholder: "Select a field",
+    },
+    ...commonFields,
+  ],
+  one_to_one: [
+    {
+      name: "relatedModelZUID",
+      type: "autocomplete",
+      label: "Reference Model",
+      required: false,
+      gridSize: 6,
+      placeholder: "Select a model",
+    },
+    {
+      name: "relatedFieldZUID",
+      type: "autocomplete",
+      label: "Field to Display",
+      required: false,
+      gridSize: 6,
+      placeholder: "Select a field",
+    },
+    ...commonFields,
+  ],
   sort: [],
   text: [...commonFields],
   textarea: [...commonFields],
@@ -151,8 +194,26 @@ export const FieldForm = ({
     bulkUpdateContentModelField,
     { isLoading: isBulkUpdating, isSuccess: isBulkUpdated },
   ] = useBulkUpdateContentModelFieldMutation();
+  const { data: allModels, isLoading: isLoadingModels } =
+    useGetContentModelsQuery();
+  const {
+    data: selectedModelFields,
+    isFetching: isFetchingSelectedModelFields,
+  } = useGetContentModelFieldsQuery(formData.relatedModelZUID as string, {
+    skip: !formData.relatedModelZUID,
+  });
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
+  const modelsOptions: DropdownOptions[] = allModels?.map((model) => ({
+    label: model.label,
+    value: model.ZUID,
+  }));
+  const fieldsOptions: DropdownOptions[] = selectedModelFields?.map(
+    (field) => ({
+      label: field.label,
+      value: field.ZUID,
+    })
+  );
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -267,7 +328,8 @@ export const FieldForm = ({
       return;
     }
 
-    const body: Omit<
+    // Common field values
+    let body: Omit<
       ContentModelField,
       "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
     > = {
@@ -282,6 +344,11 @@ export const FieldForm = ({
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
+
+    if (type === "one_to_one" || type === "one_to_many") {
+      body["relatedModelZUID"] = formData.relatedModelZUID || null;
+      body["relatedFieldZUID"] = formData.relatedFieldZUID || null;
+    }
 
     if (isUpdateField) {
       const updateBody: ContentModelField = {
@@ -327,6 +394,14 @@ export const FieldForm = ({
       setFormData((prevData) => ({
         ...prevData,
         name: convertLabelValue(value as string),
+      }));
+    }
+
+    // Reset relatedFieldZUID when model zuid changes
+    if (inputName === "relatedModelZUID") {
+      setFormData((prevData) => ({
+        ...prevData,
+        relatedFieldZUID: "",
       }));
     }
   };
@@ -390,8 +465,21 @@ export const FieldForm = ({
         }}
       >
         {activeTab === "details" && (
-          <>
+          <Grid container spacing={2.5}>
             {formConfig[type]?.map((fieldConfig, index) => {
+              let dropdownOptions: DropdownOptions[];
+              let disabled = false;
+
+              if (fieldConfig.name === "relatedModelZUID") {
+                dropdownOptions = modelsOptions;
+                disabled = isLoadingModels;
+              }
+
+              if (fieldConfig.name === "relatedFieldZUID") {
+                dropdownOptions = fieldsOptions;
+                disabled = isFetchingSelectedModelFields;
+              }
+
               return (
                 <FieldFormInput
                   key={index}
@@ -399,10 +487,12 @@ export const FieldForm = ({
                   onDataChange={handleFieldDataChange}
                   errorMsg={isSubmitClicked && errors[fieldConfig.name]}
                   prefillData={formData[fieldConfig.name]}
+                  dropdownOptions={dropdownOptions || []}
+                  disabled={disabled}
                 />
               );
             })}
-          </>
+          </Grid>
         )}
 
         {activeTab === "rules" && <Typography>Coming soon...</Typography>}

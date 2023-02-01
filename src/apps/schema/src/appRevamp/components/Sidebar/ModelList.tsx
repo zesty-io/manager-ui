@@ -17,9 +17,11 @@ import { FileTable } from "@zesty-io/material";
 import { useHistory, useLocation } from "react-router";
 import { useMemo, useState } from "react";
 import { useLocalStorage } from "react-use";
+import { CreateModelDialogue } from "../CreateModelDialogue";
 
 interface Props {
   title: string;
+  type: string;
   models: ContentModel[];
 }
 
@@ -29,7 +31,7 @@ const listIconMap = {
   pageset: <DescriptionRoundedIcon fontSize="small" />,
 };
 
-export const ModelList = ({ title, models }: Props) => {
+export const ModelList = ({ title, models, type }: Props) => {
   const history = useHistory();
   const location = useLocation();
 
@@ -37,6 +39,7 @@ export const ModelList = ({ title, models }: Props) => {
     `zesty:navSchema-${title}:sort`,
     "asc"
   );
+  const [showCreateModelDialogue, setShowCreateModelDialogue] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleSortMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -58,81 +61,92 @@ export const ModelList = ({ title, models }: Props) => {
   }, [sort, models]);
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between">
-        <Box display="flex" gap={0.25} alignItems="center">
-          <Typography
-            variant="overline"
-            color="text.secondary"
-            sx={{ textTransform: "uppercase" }}
+    <>
+      <Box>
+        <Box display="flex" justifyContent="space-between">
+          <Box display="flex" gap={0.25} alignItems="center">
+            <Typography
+              variant="overline"
+              color="text.secondary"
+              sx={{ textTransform: "uppercase" }}
+            >
+              {title}
+            </Typography>
+            <IconButton size="small" onClick={handleSortMenuClick}>
+              <ArrowDropDownIcon fontSize="small" />
+            </IconButton>
+          </Box>
+          <IconButton
+            size="small"
+            onClick={() => setShowCreateModelDialogue(true)}
           >
-            {title}
-          </Typography>
-          <IconButton size="small" onClick={handleSortMenuClick}>
-            <ArrowDropDownIcon fontSize="small" />
+            <AddIcon fontSize="small" />
           </IconButton>
         </Box>
-        <IconButton size="small">
-          <AddIcon fontSize="small" />
-        </IconButton>
-      </Box>
-      {sortedModels?.map((model) => {
-        const selected = location.pathname.includes(model.ZUID);
-        return (
-          <ListItemButton
-            key={model.ZUID}
-            sx={{ py: "6px", px: "12px", borderRadius: "4px" }}
-            selected={selected}
-            onClick={() => history.push(`/schema/${model.ZUID}`)}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: "unset",
-                mr: 1.5,
-                color: selected && "primary.main",
-              }}
+        {sortedModels?.map((model) => {
+          const selected = location.pathname.includes(model.ZUID);
+          return (
+            <ListItemButton
+              key={model.ZUID}
+              sx={{ py: "6px", px: "12px", borderRadius: "4px" }}
+              selected={selected}
+              onClick={() => history.push(`/schema/${model.ZUID}`)}
             >
-              {listIconMap[model.type as keyof typeof listIconMap]}
-            </ListItemIcon>
-            <ListItemText
-              sx={{ m: 0 }}
-              primary={model.label}
-              primaryTypographyProps={{
-                fontWeight: 500,
-                variant: "caption",
-                color: selected ? "primary.dark" : "text.secondary",
-                sx: { wordBreak: "break-word" },
-              }}
-            />
-          </ListItemButton>
-        );
-      })}
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            setSort("asc");
-          }}
-        >
-          Name (A to Z)
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            setSort("desc");
-          }}
-        >
-          Name (Z to A)
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            setSort("");
-          }}
-        >
-          Last Created
-        </MenuItem>
-      </Menu>
-    </Box>
+              <ListItemIcon
+                sx={{
+                  minWidth: "unset",
+                  mr: 1.5,
+                  color: selected && "primary.main",
+                }}
+              >
+                {listIconMap[model.type as keyof typeof listIconMap]}
+              </ListItemIcon>
+              <ListItemText
+                sx={{ m: 0 }}
+                primary={model.label}
+                primaryTypographyProps={{
+                  fontWeight: 500,
+                  variant: "caption",
+                  color: selected ? "primary.dark" : "text.secondary",
+                  sx: { wordBreak: "break-word" },
+                }}
+              />
+            </ListItemButton>
+          );
+        })}
+        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              setSort("asc");
+            }}
+          >
+            Name (A to Z)
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              setSort("desc");
+            }}
+          >
+            Name (Z to A)
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              setSort("");
+            }}
+          >
+            Last Created
+          </MenuItem>
+        </Menu>
+      </Box>
+      {showCreateModelDialogue && (
+        <CreateModelDialogue
+          modelType={type}
+          onClose={() => setShowCreateModelDialogue(false)}
+        />
+      )}
+    </>
   );
 };

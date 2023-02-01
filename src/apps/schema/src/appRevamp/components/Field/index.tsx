@@ -223,7 +223,7 @@ export const Field = ({
             {isFieldNameCopied ? "Copied" : field.name}
           </Typography>
         </Button>
-        <IconButton onClick={handleMenuClick}>
+        <IconButton onClick={handleMenuClick} size="small">
           <MoreHorizRoundedIcon />
         </IconButton>
         <Menu
