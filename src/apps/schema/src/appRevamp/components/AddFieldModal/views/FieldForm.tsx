@@ -400,7 +400,7 @@ export const FieldForm = ({
         }}
       >
         {activeTab === "details" && (
-          <Grid container spacing={2.5}>
+          <Grid container spacing={2.5} maxWidth="480px">
             {FORM_CONFIG[type]?.map((fieldConfig, index) => {
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
