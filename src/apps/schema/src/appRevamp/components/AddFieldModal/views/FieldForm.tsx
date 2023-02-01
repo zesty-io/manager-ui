@@ -18,6 +18,9 @@ import { isEmpty } from "lodash";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import RuleRoundedIcon from "@mui/icons-material/RuleRounded";
+import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import {
@@ -452,9 +455,32 @@ export const FieldForm = ({
         <Tabs
           value={activeTab}
           onChange={(_, value: ActiveTab) => setActiveTab(value)}
+          sx={{
+            ".Mui-selected": {
+              svg: {
+                color: "primary.main",
+              },
+            },
+          }}
         >
-          <Tab value="details" label="Details" />
-          <Tab value="rules" label="Rules" />
+          <Tab
+            value="details"
+            label="Details"
+            icon={<InfoRoundedIcon color="action" />}
+            iconPosition="start"
+          />
+          <Tab
+            value="rules"
+            label="Rules"
+            icon={<RuleRoundedIcon color="action" />}
+            iconPosition="start"
+          />
+          <Tab
+            value="learn"
+            label="Learn"
+            icon={<MenuBookRoundedIcon color="action" />}
+            iconPosition="start"
+          />
         </Tabs>
       </DialogTitle>
       <DialogContent
