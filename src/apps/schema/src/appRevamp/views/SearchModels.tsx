@@ -55,7 +55,12 @@ export const SearchModels = () => {
       <Box height="100%" px={3} py={2}>
         <ModelsTable
           search={search}
-          onEmptySearch={() => history.push("/schema")}
+          onEmptySearch={() => {
+            // @ts-ignore
+            const parent = document
+              .querySelector('[data-cy="SchemaSidebarSearch"]')
+              ?.focus();
+          }}
         />
       </Box>
     </Box>

@@ -46,6 +46,14 @@ export const Sidebar = () => {
           sx={{
             backgroundColor: "grey.50",
             mt: 1.5,
+            "& .Mui-focused": {
+              borderWidth: "1px",
+              borderStyle: "solid",
+              borderColor: "primary.main",
+            },
+          }}
+          inputProps={{
+            "data-cy": "SchemaSidebarSearch",
           }}
           InputProps={{
             startAdornment: (
