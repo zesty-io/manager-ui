@@ -272,6 +272,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
   ],
 };
 
+// TODO: Move to 1 file with the field list config
 interface FieldCreateUpdateData {
   subHeaderText: string;
   learnTab: FieldListData;

@@ -43,6 +43,7 @@ import {
   ContentModelFieldValue,
 } from "../../../../../../../shell/services/types";
 import { fields_create_update_config, TYPE_TEXT } from "../../configs";
+import { ComingSoon } from "../ComingSoon";
 
 const commonFields: InputField[] = [
   {
@@ -538,7 +539,7 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && <Typography>Coming soon...</Typography>}
+        {activeTab === "rules" && <ComingSoon />}
       </DialogContent>
       {isUpdateField ? (
         <DialogActions
