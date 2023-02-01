@@ -56,9 +56,10 @@ export const SearchModels = () => {
         <ModelsTable
           search={search}
           onEmptySearch={() => {
-            // @ts-ignore
-            const parent = document
-              .querySelector('[data-cy="SchemaSidebarSearch"]')
+            document
+              .querySelector<HTMLInputElement>(
+                '[data-cy="SchemaSidebarSearch"]'
+              )
               ?.focus();
           }}
         />
