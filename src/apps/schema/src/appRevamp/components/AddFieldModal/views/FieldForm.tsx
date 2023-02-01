@@ -22,6 +22,7 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import RuleRoundedIcon from "@mui/icons-material/RuleRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import {
@@ -536,6 +537,18 @@ export const FieldForm = ({
                 />
               );
             })}
+            // TODO: Add functionality once deactivate flow is provided
+            {isUpdateField && (
+              <Grid item xs={12}>
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<PauseCircleOutlineRoundedIcon />}
+                >
+                  Deactivate Field
+                </Button>
+              </Grid>
+            )}
           </Grid>
         )}
 
