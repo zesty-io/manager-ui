@@ -13,7 +13,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       name: "Single Line Text",
       shortDescription: "Titles, names, and headings",
       description:
-        "This field is best for short text content that doesn't need special formatting or have links or media.",
+        'The "Single Line Text" Field is best for short text content that doesn\'t need special formatting or have links or media.',
       commonUses: [
         "Article Titles",
         "Author Names",
@@ -29,7 +29,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       name: "Multi Line Text",
       shortDescription: "Descriptions, summaries, and blurbs",
       description:
-        "This field is best for long text content that doesn't need special formatting or have links or media.",
+        "The Multi Line Text field is best for long text content that doesn't need special formatting or have links or media.",
       commonUses: [
         "Sub Headings",
         "Article Summaries",
@@ -101,8 +101,8 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       description:
         "This field is perfect for connecting your model to another model. For example, linking a blog to a category or an author.",
       commonUses: [
-        "To connect your Article to a single Author or Category",
-        "To connect your Author to a single Service",
+        "To link an Article to a single Author or Category",
+        "To link an Employee to a single service",
       ],
       proTip:
         "It's great to use this field when you find yourself or your team repeatedly typing in the same set of inputs such as author names. For example, it makes sense to create a model of Authors and connect to it since you will else have to else repeatedly type it in for each article.",
@@ -114,8 +114,8 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       description:
         "This field allows you to connect your model to another model and connect to multiple items instead of one.",
       commonUses: [
-        "To connect your Article to a Multiple Authors, Tags, or Categories",
-        "To connect your Author to a Multiple Services",
+        "To link an Article to Multiple Authors, Tags, or Categories",
+        "To link an Author to Multiple Services",
       ],
       proTip:
         "It's great to use this field when you find yourself or your team repeatedly typing in the same set of inputs such as author names. For example, it makes sense to create a model of Authors and connect to it since you will else have to else repeatedly type it in for each article.",
@@ -127,6 +127,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       description:
         "This field is great to store URLs to pages on external websites. These links can be displayed and clicked on by users.",
       commonUses: [
+        "Link to affiliate sites (e.g. Amazon)",
         "Link to Social Media Pages on Facebook, Instagram, etc.",
         "Link to 3rd party services like Eventbrite for events or Doordash for Orders",
       ],
@@ -136,10 +137,11 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       type: "internal_link",
       name: "Internal Link",
       shortDescription: "Link to an internal content item",
-      //TODO: Details pending c/o Zosh
-      description: "Lorem ipsum sit",
-      commonUses: ["test", "test"],
-      proTip: "Lorem ipsum sit dolor",
+      description:
+        "Internal Link fields allow for the selection of an internal instance item from any schema. This can be useful for providing authors the ability to relate an item across an instance.",
+      commonUses: ["Link to Internal Products", "Link to Internal Articles"],
+      proTip:
+        "You can use External URL fields if you want to link to external websites. ",
     },
   ],
   numeric: [
@@ -147,20 +149,28 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       type: "number",
       name: "Integer",
       shortDescription: "Whole numbers",
-      description:
-        "This field is for when you want the input to be a whole number (aka a number with no decimals).",
-      commonUses: ["Quantity of Products in Inventory", "Rankings", "Ratings"],
-      proTip: "If you want your numbers with decimals use a float field.",
+      description: "This field is for when you want the input to be a number.",
+      commonUses: [
+        "Quantity of Products in Inventory",
+        "Rankings",
+        "Ratings",
+        "Weight",
+        "Height",
+      ],
+      proTip: "Number fields can hold both whole numbers and decimals.",
     },
     {
       type: "currency",
       name: "Currency",
       shortDescription: "Perfect for product prices",
-      // TODO: Details pending c/o Zosh
-      description: "Lorem ipsum dolor sit amet.",
-      commonUses: ["test", "test"],
+      description:
+        "This field is for when you want to store a cost, price, or account balance.",
+      commonUses: [
+        "Cost Price of a Product or Service",
+        "Selling Price of a Product or Service",
+      ],
       proTip:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, quas.",
+        "Use currency fields instead of number fields if you want to store prices.",
     },
   ],
   dateandtime: [
@@ -169,7 +179,8 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       name: "Date",
       shortDescription: "Perfect for Birthdays, release dates, events, etc.",
       description: `This field is for when you want the input to be a past, present, or future date. You can customize whether a user can enter a day, month, or year or all 3.
-        \n\nZesty automatically tracks dates and times for date created, date published, and date modified so no additional fields need to be created for these.`,
+
+      Zesty automatically tracks dates and times for date created, date published, and date modified so no additional fields need to be created for these.`,
       commonUses: [
         "Birthdates",
         "Anniversaries",
@@ -183,8 +194,9 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       type: "datetime",
       name: "Date & Time",
       shortDescription: "Track dates along with specific times",
-      description: `This field is for when you want the input to be a data and time. You can customize whether a user can enter a time, day, month, or year or all 4.
-        \n\nZesty automatically tracks dates and times for date created, date published, and date modified so no additional fields need to be created for these.`,
+      description: `This field is for when you want the input to be a data and time. You can customize whether a user can enter a time, day, month, or year or all 4. 
+
+      Zesty automatically tracks dates and times for date created, date published, and date modified so no additional fields need to be created for these.`,
       commonUses: [
         "Event Start Times & End Times",
         "Shipment Time",
@@ -251,22 +263,212 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
     {
       type: "uuid",
       name: "UUID",
-      // TODO: Details pending c/o Zosh
-      shortDescription: "Lorem ipsum",
-      description: "Lorem",
-      commonUses: ["test", "test"],
-      proTip: "Lorem ipsum",
+      shortDescription: "Set unique ids to each content item",
+      description:
+        "The UUID field creates a unique alpha numeric string when an item is created. This is a helpful feature for analytics tracking, inventory management, user management, etc.",
+      commonUses: ["Product ID", "Inventory ID", "Employee ID"],
+      proTip: "UUID are always unique and are non editable.",
     },
   ],
 };
 
 interface FieldCreateUpdateData {
   subHeaderText: string;
-  description: string;
-  commonUses: string[];
-  proTip: string;
+  learnTab: {
+    description: string;
+    commonUses: string[];
+    proTip: string;
+  };
 }
-const fields_create_update_config: { [key: string]: FieldCreateUpdateData[] } =
-  {};
+const fields_create_update_config: { [key: string]: FieldCreateUpdateData } = {
+  color: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  currency: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  date: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  datetime: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  dropdown: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  images: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  internal_link: {
+    subHeaderText: "Use this field to link to an internal content item",
+    learnTab: {
+      description:
+        "Internal Link fields allow for the selection of an internal instance item from any schema. This can be useful for providing authors the ability to relate an item across an instance.",
+      commonUses: ["Link to Internal Products", "Link to Internal Articles"],
+      proTip:
+        "You can use External URL fields if you want to link to external websites.",
+    },
+  },
+  link: {
+    subHeaderText: "Use this field to link to an external website",
+    learnTab: {
+      description:
+        "This field is great to store URLs to pages on external websites. These links can be displayed and clicked on by users.",
+      commonUses: [
+        "Link to affiliate sites (e.g. Amazon)",
+        "Link to Social Media Pages on Facebook, Instagram, etc.",
+        "Link to 3rd party services like Eventbrite for events or Doordash for Orders",
+      ],
+      proTip: "You can also add links in rich text fields.",
+    },
+  },
+  markdown: {
+    subHeaderText: "Light weight markup to format text",
+    learnTab: {
+      description:
+        "This field provides a contributor a Github Flavored Markdown editor syntax for styling and structuring content.",
+      commonUses: [
+        "Blog Posts",
+        "Articles",
+        "Guides",
+        "Lists",
+        "Event Descriptions",
+      ],
+      proTip:
+        "This field works great when you want to contributors to apply any styling and structure to text.",
+    },
+  },
+  number: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  one_to_many: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  one_to_one: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  sort: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  text: {
+    subHeaderText: "Used for Titles, names, and headings",
+    learnTab: {
+      description:
+        "The “Single Line Text” Field is best for short text content that doesn't need special formatting or have links or media.",
+      commonUses: [
+        "Article Titles",
+        "Author Names",
+        "Event Names",
+        "Category Labels",
+        "Headings",
+      ],
+      proTip:
+        "This field works great when you want to ensure that contributors cannot apply any styling to text.",
+    },
+  },
+  textarea: {
+    subHeaderText: "Used for descriptions, summaries, and blurbs",
+    learnTab: {
+      description:
+        "The Multi Line Text field is best for long text content that doesn’t need special formatting or have links or media.",
+      commonUses: [
+        "Sub Headings",
+        "Article Summaries",
+        "Product Descriptions",
+        "Category Descriptions",
+        "Author Bios",
+      ],
+      proTip:
+        "This field works great when you want to ensure that contributors cannot apply any styling to text.",
+    },
+  },
+  uuid: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+  wysiwyg_basic: {
+    subHeaderText: "Long text content with links & images such as blogs",
+    learnTab: {
+      description:
+        "This field is best for long text content that has multiple headings, paragraphs, and in-line media such as videos, images, or links. You can also apply advanced text formatting such as bold, italics, and underline.",
+      commonUses: [
+        "Blog Posts",
+        "Articles",
+        "Guides",
+        "Lists",
+        "Event Descriptions",
+      ],
+      proTip:
+        "This field works great when you want to contributors to apply any styling and structure to text.",
+    },
+  },
+  yes_no: {
+    subHeaderText: "",
+    learnTab: {
+      description: "",
+      commonUses: [],
+      proTip: "",
+    },
+  },
+};
 
-export { FieldListData, fields_list_config };
+export {
+  FieldListData,
+  fields_list_config,
+  FieldCreateUpdateData,
+  fields_create_update_config,
+};
