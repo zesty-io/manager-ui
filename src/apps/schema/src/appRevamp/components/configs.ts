@@ -5,6 +5,7 @@ interface FieldListData {
   description: string;
   commonUses: string[];
   proTip: string;
+  subHeaderText: string;
 }
 const fields_list_config: { [key: string]: FieldListData[] } = {
   text: [
@@ -23,6 +24,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "This field works great when you want to ensure that contributors cannot apply any styling to text.",
+      subHeaderText: "Used for Titles, names, and headings",
     },
     {
       type: "textarea",
@@ -39,6 +41,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "This field works great when you want to ensure that contributors cannot apply any styling to text.",
+      subHeaderText: "Used for descriptions, summaries, and blurbs",
     },
     {
       type: "wysiwyg_basic",
@@ -55,6 +58,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "This field works great when you want to contributors to apply any styling and structure to text.",
+      subHeaderText: "Long text content with links & images such as blogs",
     },
     {
       type: "markdown",
@@ -71,6 +75,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "This field works great when you want to contributors to apply any styling and structure to text.",
+      subHeaderText: "Light weight markup to format text",
     },
   ],
   media: [
@@ -91,6 +96,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
         "Powerpoint Presentations",
       ],
       proTip: "You can also add media in-line in rich text fields.",
+      subHeaderText: "Use for images, videos, PDFs, and other files",
     },
   ],
   relationship: [
@@ -106,6 +112,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "It's great to use this field when you find yourself or your team repeatedly typing in the same set of inputs such as author names. For example, it makes sense to create a model of Authors and connect to it since you will else have to else repeatedly type it in for each article.",
+      subHeaderText: "Use this field to link to one content item of a model",
     },
     {
       type: "one_to_many",
@@ -119,6 +126,8 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "It's great to use this field when you find yourself or your team repeatedly typing in the same set of inputs such as author names. For example, it makes sense to create a model of Authors and connect to it since you will else have to else repeatedly type it in for each article.",
+      subHeaderText:
+        "Use this field to link to multiple content items of a model",
     },
     {
       type: "link",
@@ -132,6 +141,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
         "Link to 3rd party services like Eventbrite for events or Doordash for Orders",
       ],
       proTip: "You can also add links in rich text fields.",
+      subHeaderText: "Use this field to link to an external website",
     },
     {
       type: "internal_link",
@@ -141,7 +151,8 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
         "Internal Link fields allow for the selection of an internal instance item from any schema. This can be useful for providing authors the ability to relate an item across an instance.",
       commonUses: ["Link to Internal Products", "Link to Internal Articles"],
       proTip:
-        "You can use External URL fields if you want to link to external websites. ",
+        "You can use External URL fields if you want to link to external websites.",
+      subHeaderText: "Use this field to link to an internal content item",
     },
   ],
   numeric: [
@@ -158,6 +169,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
         "Height",
       ],
       proTip: "Number fields can hold both whole numbers and decimals.",
+      subHeaderText: "Used for quantity, age, ratings, etc.",
     },
     {
       type: "currency",
@@ -171,6 +183,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "Use currency fields instead of number fields if you want to store prices.",
+      subHeaderText: "Used for storing costs, prices, and balances",
     },
   ],
   dateandtime: [
@@ -189,6 +202,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "If you want to add a time to your date then use the date time field.",
+      subHeaderText: "Use for birthdays, release dates, events, etc.",
     },
     {
       type: "datetime",
@@ -203,6 +217,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
         "Deadlines",
       ],
       proTip: "If you want to only have a date then use the date field.",
+      subHeaderText: "Use to track dates along with specific times",
     },
   ],
   options: [
@@ -220,6 +235,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "Use boolean fields to filter out items you want to show in a collection of items.",
+      subHeaderText: "Used to set true or false values",
     },
     {
       type: "dropdown",
@@ -235,6 +251,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "The values you add to a dropdown field will only be available to the model the field is added into. If you need values that reusable and accessible in multiple models, create a separate model for it and then a single or multi item relationship field to it.",
+      subHeaderText: "Used to allow a user to select from a list of values",
     },
     {
       type: "color",
@@ -250,6 +267,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       ],
       proTip:
         "Color pickers can be used to call out items in a unique way and allow a user to easily differentiate between items.",
+      subHeaderText: "Used for Background colors, font colors, and more",
     },
     {
       type: "sort",
@@ -259,6 +277,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
       description: "Lorem ipsum dolor sit amet consectetur adipisicing.",
       commonUses: ["test", "test"],
       proTip: "Lorem, ipsum.",
+      subHeaderText: "Use to add order to content items",
     },
     {
       type: "uuid",
@@ -268,101 +287,9 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
         "The UUID field creates a unique alpha numeric string when an item is created. This is a helpful feature for analytics tracking, inventory management, user management, etc.",
       commonUses: ["Product ID", "Inventory ID", "Employee ID"],
       proTip: "UUID are always unique and are non editable.",
+      subHeaderText: "Use to set unique ids to each content item",
     },
   ],
-};
-
-// TODO: Move to 1 file with the field list config
-interface FieldCreateUpdateData {
-  subHeaderText: string;
-  learnTab: FieldListData;
-}
-const fields_create_update_config: { [key: string]: FieldCreateUpdateData } = {
-  color: {
-    subHeaderText: "Used for Background colors, font colors, and more",
-    learnTab: fields_list_config.options.find((val) => val.type === "color"),
-  },
-  currency: {
-    subHeaderText: "Used for storing costs, prices, and balances",
-    learnTab: fields_list_config.options.find((val) => val.type === "currency"),
-  },
-  date: {
-    subHeaderText: "Use for birthdays, release dates, events, etc.",
-    learnTab: fields_list_config.dateandtime.find((val) => val.type === "date"),
-  },
-  datetime: {
-    subHeaderText: "Use to track dates along with specific times",
-    learnTab: fields_list_config.dateandtime.find(
-      (val) => val.type === "datetime"
-    ),
-  },
-  dropdown: {
-    subHeaderText: "Used to allow a user to select from a list of values",
-    learnTab: fields_list_config.options.find((val) => val.type === "dropdown"),
-  },
-  images: {
-    subHeaderText: "Use for images, videos, PDFs, and other files",
-    learnTab: fields_list_config.media.find((val) => val.type === "images"),
-  },
-  internal_link: {
-    subHeaderText: "Use this field to link to an internal content item",
-    learnTab: fields_list_config.relationship.find(
-      (val) => val.type === "internal_link"
-    ),
-  },
-  link: {
-    subHeaderText: "Use this field to link to an external website",
-    learnTab: fields_list_config.relationship.find(
-      (val) => val.type === "link"
-    ),
-  },
-  markdown: {
-    subHeaderText: "Light weight markup to format text",
-    learnTab: fields_list_config.text.find((val) => val.type === "markdown"),
-  },
-  number: {
-    subHeaderText: "Used for quantity, age, ratings, etc.",
-    learnTab: fields_list_config.numeric.find((val) => val.type === "number"),
-  },
-  one_to_many: {
-    subHeaderText:
-      "Use this field to link to multiple content items of a model",
-    learnTab: fields_list_config.relationship.find(
-      (val) => val.type === "one_to_many"
-    ),
-  },
-  one_to_one: {
-    subHeaderText: "Use this field to link to one content item of a model",
-    learnTab: fields_list_config.relationship.find(
-      (val) => val.type === "one_to_one"
-    ),
-  },
-  sort: {
-    subHeaderText: "Use to add order to content items",
-    learnTab: fields_list_config.options.find((val) => val.type === "sort"),
-  },
-  text: {
-    subHeaderText: "Used for Titles, names, and headings",
-    learnTab: fields_list_config.text.find((val) => val.type === "text"),
-  },
-  textarea: {
-    subHeaderText: "Used for descriptions, summaries, and blurbs",
-    learnTab: fields_list_config.text.find((val) => val.type === "textarea"),
-  },
-  uuid: {
-    subHeaderText: "Use to set unique ids to each content item",
-    learnTab: fields_list_config.options.find((val) => val.type === "uuid"),
-  },
-  wysiwyg_basic: {
-    subHeaderText: "Long text content with links & images such as blogs",
-    learnTab: fields_list_config.text.find(
-      (val) => val.type === "wysiwyg_basic"
-    ),
-  },
-  yes_no: {
-    subHeaderText: "Used to set true or false values",
-    learnTab: fields_list_config.options.find((val) => val.type === "yes_no"),
-  },
 };
 
 const TYPE_TEXT: { [key: string]: string } = {
@@ -390,10 +317,4 @@ const TYPE_TEXT: { [key: string]: string } = {
   yes_no: "Boolean",
 };
 
-export {
-  FieldListData,
-  fields_list_config,
-  FieldCreateUpdateData,
-  fields_create_update_config,
-  TYPE_TEXT,
-};
+export { FieldListData, fields_list_config, TYPE_TEXT };
