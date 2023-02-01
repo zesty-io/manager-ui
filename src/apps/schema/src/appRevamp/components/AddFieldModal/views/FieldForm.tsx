@@ -39,114 +39,9 @@ import {
   FieldSettings,
   ContentModelFieldValue,
 } from "../../../../../../../shell/services/types";
-import { FIELD_COPY_CONFIG, TYPE_TEXT } from "../../configs";
+import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
-
-// TODO: Move to configs file
-const commonFields: InputField[] = [
-  {
-    name: "label",
-    type: "input",
-    label: "Label",
-    required: true,
-    fullWidth: true,
-    maxLength: 200,
-    gridSize: 12,
-  },
-  {
-    name: "name",
-    type: "input",
-    label: "API / Parsley Code Reference",
-    required: true,
-    fullWidth: true,
-    maxLength: 50,
-    gridSize: 12,
-  },
-  {
-    name: "description",
-    type: "input",
-    label: "Description",
-    subLabel: "Appears below the label to help content-writers and API users",
-    required: false,
-    fullWidth: true,
-    multiline: true,
-    gridSize: 12,
-  },
-  {
-    name: "required",
-    type: "checkbox",
-    label: "Required field",
-    subLabel: "Ensures an item cannot be created if field is empty",
-    required: false,
-    gridSize: 12,
-  },
-  {
-    name: "list",
-    type: "checkbox",
-    label: "Add as column in table listing",
-    subLabel: "Shows field as a column in the table in the content view",
-    required: false,
-    gridSize: 12,
-  },
-];
-const formConfig: { [key: string]: InputField[] } = {
-  article_writer: [],
-  color: [],
-  currency: [],
-  date: [...commonFields],
-  datetime: [...commonFields],
-  dropdown: [],
-  images: [],
-  internal_link: [],
-  link: [...commonFields],
-  markdown: [...commonFields],
-  number: [...commonFields],
-  one_to_many: [
-    {
-      name: "relatedModelZUID",
-      type: "autocomplete",
-      label: "Reference Model",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a model",
-    },
-    {
-      name: "relatedFieldZUID",
-      type: "autocomplete",
-      label: "Field to Display",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a field",
-    },
-    ...commonFields,
-  ],
-  one_to_one: [
-    {
-      name: "relatedModelZUID",
-      type: "autocomplete",
-      label: "Reference Model",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a model",
-    },
-    {
-      name: "relatedFieldZUID",
-      type: "autocomplete",
-      label: "Field to Display",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a field",
-    },
-    ...commonFields,
-  ],
-  sort: [],
-  text: [...commonFields],
-  textarea: [...commonFields],
-  uuid: [],
-  wysiwyg_basic: [...commonFields],
-  yes_no: [],
-};
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -224,7 +119,7 @@ export const FieldForm = ({
     let formFields: { [key: string]: FormValue } = {};
     let errors: { [key: string]: string } = {};
 
-    formConfig[type]?.forEach((field) => {
+    FORM_CONFIG[type]?.forEach((field) => {
       if (isUpdateField) {
         if (field.name === "list") {
           formFields[field.name] = fieldData.settings[field.name];
@@ -295,7 +190,7 @@ export const FieldForm = ({
 
     Object.keys(formData).map((inputName) => {
       if (inputName in errors) {
-        const { maxLength } = formConfig[type].find(
+        const { maxLength } = FORM_CONFIG[type].find(
           (field) => field.name === inputName
         );
 
@@ -506,7 +401,7 @@ export const FieldForm = ({
       >
         {activeTab === "details" && (
           <Grid container spacing={2.5}>
-            {formConfig[type]?.map((fieldConfig, index) => {
+            {FORM_CONFIG[type]?.map((fieldConfig, index) => {
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
 
