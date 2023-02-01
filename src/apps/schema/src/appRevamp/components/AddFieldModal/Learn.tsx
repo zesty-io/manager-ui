@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 
-import { TYPE_TEXT, fields_list_config, FieldListData } from "../configs";
-import { stringStartsWithVowel } from "../utils";
+import { TYPE_TEXT, FIELD_COPY_CONFIG, FieldListData } from "../configs";
+import { stringStartsWithVowel, getCategory } from "../utils";
 
 interface Props {
   type: string;
@@ -15,55 +15,15 @@ export const Learn = ({ type }: Props) => {
     description: "",
     commonUses: [],
     proTip: "",
+    subHeaderText: "",
   });
 
   useEffect(() => {
     if (type) {
-      let category = "";
-
-      switch (type) {
-        case "text":
-        case "textarea":
-        case "wysiwyg_basic":
-        case "markdown":
-          category = "text";
-          break;
-
-        case "images":
-          category = "media";
-          break;
-
-        case "one_to_one":
-        case "one_to_many":
-        case "link":
-        case "internal_link":
-          category = "relationship";
-          break;
-
-        case "number":
-        case "currency":
-          category = "numeric";
-          break;
-
-        case "date":
-        case "datetime":
-          category = "dateandtime";
-          break;
-
-        case "yes_no":
-        case "dropdown":
-        case "color":
-        case "sort":
-          category = "options";
-          break;
-
-        default:
-          category = "";
-          break;
-      }
+      const category = getCategory(type);
 
       if (category) {
-        const match = fields_list_config[category]?.find(
+        const match = FIELD_COPY_CONFIG[category]?.find(
           (items) => items.type === type
         );
 

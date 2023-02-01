@@ -25,11 +25,7 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
-import {
-  stringStartsWithVowel,
-  convertLabelValue,
-  getErrorMessage,
-} from "../../utils";
+import { getCategory, convertLabelValue, getErrorMessage } from "../../utils";
 import { InputField, FieldFormInput, DropdownOptions } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
@@ -43,7 +39,7 @@ import {
   FieldSettings,
   ContentModelFieldValue,
 } from "../../../../../../../shell/services/types";
-import { fields_create_update_config, TYPE_TEXT } from "../../configs";
+import { FIELD_COPY_CONFIG, TYPE_TEXT } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
 
@@ -420,10 +416,6 @@ export const FieldForm = ({
     handleSubmitForm();
   };
 
-  const headerText = stringStartsWithVowel(name)
-    ? `Add an ${name} Field`
-    : `Add a ${name} Field`;
-
   return (
     <>
       <DialogTitle
@@ -465,7 +457,9 @@ export const FieldForm = ({
               >
                 {isUpdateField
                   ? `${TYPE_TEXT[type]} Field`
-                  : fields_create_update_config[type]?.subHeaderText}
+                  : FIELD_COPY_CONFIG[getCategory(type)]?.find(
+                      (item) => item.type === type
+                    )?.subHeaderText}
               </Typography>
             </Box>
           </Box>

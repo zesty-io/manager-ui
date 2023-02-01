@@ -7,7 +7,7 @@ interface FieldListData {
   proTip: string;
   subHeaderText: string;
 }
-const fields_list_config: { [key: string]: FieldListData[] } = {
+const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
   text: [
     {
       type: "text",
@@ -317,4 +317,4 @@ const TYPE_TEXT: { [key: string]: string } = {
   yes_no: "Boolean",
 };
 
-export { FieldListData, fields_list_config, TYPE_TEXT };
+export { FieldListData, FIELD_COPY_CONFIG, TYPE_TEXT };

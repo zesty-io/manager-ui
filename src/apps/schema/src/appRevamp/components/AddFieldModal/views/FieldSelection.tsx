@@ -12,21 +12,21 @@ import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { FieldItem } from "../FieldItem";
-import { FieldListData, fields_list_config } from "../../configs";
+import { FieldListData, FIELD_COPY_CONFIG } from "../../configs";
 
 interface Props {
   onFieldClick: (fieldType: string, fieldName: string) => void;
   onModalClose: () => void;
 }
 export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
-  const [fieldTypes, setFieldTypes] = useState(fields_list_config);
+  const [fieldTypes, setFieldTypes] = useState(FIELD_COPY_CONFIG);
 
   const handleFilterFields = (e: React.ChangeEvent<HTMLInputElement>) => {
     const userInput = e.target.value.toLowerCase();
     let filteredFields: { [key: string]: FieldListData[] } = {};
 
-    Object.keys(fields_list_config).forEach((category) => {
-      const matchedFields = fields_list_config[category].filter((field) => {
+    Object.keys(FIELD_COPY_CONFIG).forEach((category) => {
+      const matchedFields = FIELD_COPY_CONFIG[category].filter((field) => {
         const name = field.name.toLowerCase();
 
         if (name.includes(userInput)) {
