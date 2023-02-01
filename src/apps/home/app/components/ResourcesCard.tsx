@@ -305,10 +305,6 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
                 handleNavigation("https://www.youtube.com/c/Zestyio/videos")
               }
             />
-            <img
-              src={discordIcon}
-              onClick={() => handleNavigation("https://discord.gg/uqDqeX8RXE")}
-            />
             <NewspaperRoundedIcon
               sx={{ cursor: "pointer" }}
               color="primary"
