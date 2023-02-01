@@ -12,7 +12,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { FieldItem } from "../FieldItem";
-import { FieldListData, fields_list_config } from "../configs";
+import { FieldListData, fields_list_config } from "../../configs";
 
 interface Props {
   onFieldClick: (fieldType: string, fieldName: string) => void;

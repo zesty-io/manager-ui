@@ -96,7 +96,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
   relationship: [
     {
       type: "one_to_one",
-      name: "Single Item Relationship",
+      name: "One to One Relationship",
       shortDescription: "Link to one content item of a model",
       description:
         "This field is perfect for connecting your model to another model. For example, linking a blog to a category or an author.",
@@ -109,7 +109,7 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
     },
     {
       type: "one_to_many",
-      name: "Multi Item Relationship",
+      name: "One to Many Relationship",
       shortDescription: "Link to multiple content items of a model",
       description:
         "This field allows you to connect your model to another model and connect to multiple items instead of one.",
@@ -274,196 +274,119 @@ const fields_list_config: { [key: string]: FieldListData[] } = {
 
 interface FieldCreateUpdateData {
   subHeaderText: string;
-  learnTab: {
-    description: string;
-    commonUses: string[];
-    proTip: string;
-  };
+  learnTab: FieldListData;
 }
 const fields_create_update_config: { [key: string]: FieldCreateUpdateData } = {
   color: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Used for Background colors, font colors, and more",
+    learnTab: fields_list_config.options.find((val) => val.type === "color"),
   },
   currency: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Used for storing costs, prices, and balances",
+    learnTab: fields_list_config.options.find((val) => val.type === "currency"),
   },
   date: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Use for birthdays, release dates, events, etc.",
+    learnTab: fields_list_config.dateandtime.find((val) => val.type === "date"),
   },
   datetime: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Use to track dates along with specific times",
+    learnTab: fields_list_config.dateandtime.find(
+      (val) => val.type === "datetime"
+    ),
   },
   dropdown: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Used to allow a user to select from a list of values",
+    learnTab: fields_list_config.options.find((val) => val.type === "dropdown"),
   },
   images: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Use for images, videos, PDFs, and other files",
+    learnTab: fields_list_config.media.find((val) => val.type === "images"),
   },
   internal_link: {
     subHeaderText: "Use this field to link to an internal content item",
-    learnTab: {
-      description:
-        "Internal Link fields allow for the selection of an internal instance item from any schema. This can be useful for providing authors the ability to relate an item across an instance.",
-      commonUses: ["Link to Internal Products", "Link to Internal Articles"],
-      proTip:
-        "You can use External URL fields if you want to link to external websites.",
-    },
+    learnTab: fields_list_config.relationship.find(
+      (val) => val.type === "internal_link"
+    ),
   },
   link: {
     subHeaderText: "Use this field to link to an external website",
-    learnTab: {
-      description:
-        "This field is great to store URLs to pages on external websites. These links can be displayed and clicked on by users.",
-      commonUses: [
-        "Link to affiliate sites (e.g. Amazon)",
-        "Link to Social Media Pages on Facebook, Instagram, etc.",
-        "Link to 3rd party services like Eventbrite for events or Doordash for Orders",
-      ],
-      proTip: "You can also add links in rich text fields.",
-    },
+    learnTab: fields_list_config.relationship.find(
+      (val) => val.type === "link"
+    ),
   },
   markdown: {
     subHeaderText: "Light weight markup to format text",
-    learnTab: {
-      description:
-        "This field provides a contributor a Github Flavored Markdown editor syntax for styling and structuring content.",
-      commonUses: [
-        "Blog Posts",
-        "Articles",
-        "Guides",
-        "Lists",
-        "Event Descriptions",
-      ],
-      proTip:
-        "This field works great when you want to contributors to apply any styling and structure to text.",
-    },
+    learnTab: fields_list_config.text.find((val) => val.type === "markdown"),
   },
   number: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Used for quantity, age, ratings, etc.",
+    learnTab: fields_list_config.numeric.find((val) => val.type === "number"),
   },
   one_to_many: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText:
+      "Use this field to link to multiple content items of a model",
+    learnTab: fields_list_config.relationship.find(
+      (val) => val.type === "one_to_many"
+    ),
   },
   one_to_one: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Use this field to link to one content item of a model",
+    learnTab: fields_list_config.relationship.find(
+      (val) => val.type === "one_to_one"
+    ),
   },
   sort: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Use to add order to content items",
+    learnTab: fields_list_config.options.find((val) => val.type === "sort"),
   },
   text: {
     subHeaderText: "Used for Titles, names, and headings",
-    learnTab: {
-      description:
-        "The “Single Line Text” Field is best for short text content that doesn't need special formatting or have links or media.",
-      commonUses: [
-        "Article Titles",
-        "Author Names",
-        "Event Names",
-        "Category Labels",
-        "Headings",
-      ],
-      proTip:
-        "This field works great when you want to ensure that contributors cannot apply any styling to text.",
-    },
+    learnTab: fields_list_config.text.find((val) => val.type === "text"),
   },
   textarea: {
     subHeaderText: "Used for descriptions, summaries, and blurbs",
-    learnTab: {
-      description:
-        "The Multi Line Text field is best for long text content that doesn’t need special formatting or have links or media.",
-      commonUses: [
-        "Sub Headings",
-        "Article Summaries",
-        "Product Descriptions",
-        "Category Descriptions",
-        "Author Bios",
-      ],
-      proTip:
-        "This field works great when you want to ensure that contributors cannot apply any styling to text.",
-    },
+    learnTab: fields_list_config.text.find((val) => val.type === "textarea"),
   },
   uuid: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Use to set unique ids to each content item",
+    learnTab: fields_list_config.options.find((val) => val.type === "uuid"),
   },
   wysiwyg_basic: {
     subHeaderText: "Long text content with links & images such as blogs",
-    learnTab: {
-      description:
-        "This field is best for long text content that has multiple headings, paragraphs, and in-line media such as videos, images, or links. You can also apply advanced text formatting such as bold, italics, and underline.",
-      commonUses: [
-        "Blog Posts",
-        "Articles",
-        "Guides",
-        "Lists",
-        "Event Descriptions",
-      ],
-      proTip:
-        "This field works great when you want to contributors to apply any styling and structure to text.",
-    },
+    learnTab: fields_list_config.text.find(
+      (val) => val.type === "wysiwyg_basic"
+    ),
   },
   yes_no: {
-    subHeaderText: "",
-    learnTab: {
-      description: "",
-      commonUses: [],
-      proTip: "",
-    },
+    subHeaderText: "Used to set true or false values",
+    learnTab: fields_list_config.options.find((val) => val.type === "yes_no"),
   },
+};
+
+const TYPE_TEXT: { [key: string]: string } = {
+  article_writer: "Article Writer",
+  color: "Color",
+  currency: "Currency",
+  date: "Date",
+  datetime: "Date and Time",
+  dropdown: "Dropdown",
+  files: "Files",
+  font_awesome: "Font Awesome",
+  images: "Media",
+  internal_link: "Internal Link",
+  link: "External URL",
+  markdown: "Markdown",
+  number: "Number",
+  one_to_many: "One to Many",
+  one_to_one: "One to One",
+  sort: "Sort Order",
+  text: "Single Line Text",
+  textarea: "Multi Line Text",
+  uuid: "UUID",
+  wysiwyg_advanced: "WYSYWYG (Advanced)",
+  wysiwyg_basic: "WYSIWYG",
+  yes_no: "Boolean",
 };
 
 export {
@@ -471,4 +394,5 @@ export {
   fields_list_config,
   FieldCreateUpdateData,
   fields_create_update_config,
+  TYPE_TEXT,
 };

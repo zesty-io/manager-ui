@@ -42,6 +42,7 @@ import {
   FieldSettings,
   ContentModelFieldValue,
 } from "../../../../../../../shell/services/types";
+import { fields_create_update_config, TYPE_TEXT } from "../../configs";
 
 const commonFields: InputField[] = [
   {
@@ -447,7 +448,22 @@ export const FieldForm = ({
                 fontSize="16px"
               />
             </Box>
-            {isUpdateField ? fieldData.label : headerText}
+            <Box display="flex" flexDirection="column">
+              <Typography variant="h5" fontWeight={600}>
+                {isUpdateField
+                  ? `Edit ${fieldData.label}`
+                  : `Add ${name} Field`}
+              </Typography>
+              <Typography
+                // @ts-expect-error body3 additional variant is not on Typography augmentation
+                variant="body3"
+                color="text.secondary"
+              >
+                {isUpdateField
+                  ? `${TYPE_TEXT[type]} Field`
+                  : fields_create_update_config[type]?.subHeaderText}
+              </Typography>
+            </Box>
           </Box>
           <IconButton size="small" onClick={onModalClose}>
             <CloseIcon />
