@@ -45,7 +45,9 @@ import {
 } from "../../../../../../../shell/services/types";
 import { fields_create_update_config, TYPE_TEXT } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
+import { Learn } from "../Learn";
 
+// TODO: Move to configs file
 const commonFields: InputField[] = [
   {
     name: "label",
@@ -150,7 +152,7 @@ const formConfig: { [key: string]: InputField[] } = {
   yes_no: [],
 };
 
-type ActiveTab = "details" | "rules";
+type ActiveTab = "details" | "rules" | "learn";
 type Params = {
   id: string;
 };
@@ -537,7 +539,7 @@ export const FieldForm = ({
                 />
               );
             })}
-            // TODO: Add functionality once deactivate flow is provided
+            {/* TODO: Add functionality once deactivate flow is provided */}
             {isUpdateField && (
               <Grid item xs={12}>
                 <Button
@@ -553,6 +555,7 @@ export const FieldForm = ({
         )}
 
         {activeTab === "rules" && <ComingSoon />}
+        {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
       {isUpdateField ? (
         <DialogActions

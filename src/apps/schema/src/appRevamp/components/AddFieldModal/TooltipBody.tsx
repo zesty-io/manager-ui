@@ -63,6 +63,7 @@ export const TooltipBody = ({
           // @ts-expect-error missing body3 module augmentation
           variant="body3"
           color="text.secondary"
+          whiteSpace="pre-line"
         >
           {description}
         </Typography>
