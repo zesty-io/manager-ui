@@ -13,6 +13,7 @@ export default memo(function Editor({
   item,
   model,
   onSave,
+  modelZUID,
   itemZUID,
 }) {
   const dispatch = useDispatch();
@@ -152,10 +153,8 @@ export default memo(function Editor({
           <h1 className={styles.Display}>No fields have been added</h1>
           <h2 className={styles.SubHead}>
             Use the{" "}
-            <AppLink to={`/schema/${model?.ZUID || ""}`}>
-              Schema Builder
-            </AppLink>{" "}
-            to define your items content
+            <AppLink to={`/schema/${modelZUID}`}>Schema Builder</AppLink> to
+            define your items content
           </h2>
         </div>
       )}

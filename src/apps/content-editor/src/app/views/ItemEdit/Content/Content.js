@@ -45,6 +45,7 @@ export default function Content(props) {
             // active={this.state.makeActive}
             // scrolled={() => this.setState({ makeActive: "" })}
             model={props.model}
+            modelZUID={props.modelZUID}
             itemZUID={props.itemZUID}
             item={props.item}
             fields={props.fields}
