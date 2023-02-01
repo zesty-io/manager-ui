@@ -142,6 +142,7 @@ export default connect((state) => {
               onClick={saveFields}
               disabled={dirtyFields.length === 0}
               loading={saving}
+              loadingPosition="start"
               startIcon={<SaveIcon />}
               sx={{ alignSelf: "flex-end" }}
             >

@@ -31,6 +31,7 @@ export function Save(props) {
       variant="contained"
       color="success"
       onClick={onSave}
+      loadingPosition="start"
       startIcon={<SaveIcon />}
       sx={{ mx: 0.5 }}
       loading={saving}

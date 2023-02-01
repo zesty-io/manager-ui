@@ -223,6 +223,7 @@ export const DifferActions = memo(function DifferActions(props) {
         <>
           <LoadingButton
             variant="contained"
+            loadingPosition="start"
             onClick={resolveSync}
             disabled={saving}
             sx={{ ml: 1 }}

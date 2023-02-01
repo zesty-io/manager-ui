@@ -157,6 +157,7 @@ function Footer(props) {
             });
         }}
         loading={loading}
+        loadingPosition="start"
         startIcon={<SaveIcon />}
         sx={{ alignSelf: "flex-start" }}
       >

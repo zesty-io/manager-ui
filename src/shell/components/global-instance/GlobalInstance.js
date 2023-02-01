@@ -134,6 +134,7 @@ export default function GlobalInstance(props) {
                   });
               }}
               loading={purge}
+              loadingPosition="start"
               startIcon={<ErrorOutlineIcon />}
             >
               Refresh Instance Cache

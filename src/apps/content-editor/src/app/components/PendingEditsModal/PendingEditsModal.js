@@ -94,6 +94,7 @@ export default memo(function PendingEditsModal(props) {
               color="error"
               onClick={() => handler("delete")}
               loading={loading}
+              loadingPosition="start"
               startIcon={<DeleteIcon />}
             >
               Discard
@@ -102,6 +103,7 @@ export default memo(function PendingEditsModal(props) {
               variant="contained"
               color="success"
               loading={loading}
+              loadingPosition="start"
               onClick={() => handler("save")}
               startIcon={<SaveIcon />}
             >

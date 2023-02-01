@@ -67,6 +67,7 @@ export const Sync = memo(function Sync(props) {
               color="success"
               onClick={handleSync}
               loading={loading}
+              loadingPosition="start"
               startIcon={<CheckCircleIcon />}
             >
               Sync File

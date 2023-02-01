@@ -69,6 +69,7 @@ export const Delete = memo(function Delete(props) {
                 });
             }}
             loading={deleting}
+            loadingPosition="start"
             startIcon={<DeleteIcon />}
           >
             Delete File

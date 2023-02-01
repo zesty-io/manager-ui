@@ -188,6 +188,7 @@ export const CreateFile = memo(function CreateFile(props) {
                 onClick={handleCreateFile}
                 disabled={type === "" || type === "0"}
                 loading={loading}
+                loadingPosition="start"
                 startIcon={<CheckCircleIcon />}
               >
                 Create File

@@ -57,6 +57,7 @@ export const Unpublish = memo(function Unpublish(props) {
             onClick={handleUnpublish}
             disabled={!isPublished}
             loading={loading}
+            loadingPosition="start"
             startIcon={<LinkOffIcon />}
           >
             Unpublish

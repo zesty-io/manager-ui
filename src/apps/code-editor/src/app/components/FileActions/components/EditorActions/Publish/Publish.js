@@ -27,6 +27,7 @@ export const Publish = memo(function Publish(props) {
           });
       }}
       loading={publishing}
+      loadingPosition="start"
       startIcon={<UploadIcon />}
     >
       Publish

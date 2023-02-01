@@ -171,6 +171,7 @@ export function ItemVersioning(props) {
         onClick={props.onSave}
         id="SaveItemButton"
         loading={props.saving}
+        loadingPosition="start"
         startIcon={<SaveIcon fontSize="small" />}
       >
         <span className={styles.SaveVersion}>

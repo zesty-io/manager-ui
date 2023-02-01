@@ -301,6 +301,7 @@ export default connect((state) => {
             variant="contained"
             color="success"
             data-cy="faviconSave"
+            loadingPosition="start"
             onClick={handleSave}
             loading={loading}
             startIcon={<SaveIcon />}
