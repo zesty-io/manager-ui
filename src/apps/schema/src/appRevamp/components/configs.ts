@@ -375,7 +375,7 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
   date: [...COMMON_FIELDS],
   datetime: [...COMMON_FIELDS],
   dropdown: [],
-  images: [],
+  images: [...COMMON_FIELDS],
   internal_link: [],
   link: [...COMMON_FIELDS],
   markdown: [...COMMON_FIELDS],
