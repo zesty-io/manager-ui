@@ -442,7 +442,11 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && <ComingSoon />}
+        {activeTab === "rules" && type !== "images" ? (
+          <ComingSoon />
+        ) : (
+          <MediaRules />
+        )}
         {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
       {isUpdateField ? (
