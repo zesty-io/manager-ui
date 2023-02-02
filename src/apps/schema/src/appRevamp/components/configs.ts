@@ -377,7 +377,7 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
   dropdown: [
     ...COMMON_FIELDS.slice(0, 3),
     {
-      name: "list",
+      name: "options",
       type: "dropdown_options",
       label: "Dropdown Options",
       required: true,

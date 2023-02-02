@@ -146,7 +146,12 @@ export interface FieldSettings {
   tooltip?: string;
 }
 
-export type ContentModelFieldValue = string | number | boolean | FieldSettings;
+export type ContentModelFieldValue =
+  | string
+  | number
+  | boolean
+  | FieldSettings
+  | FieldSettingsOptions[];
 
 export interface ContentModelField {
   ZUID: string;

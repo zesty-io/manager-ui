@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -72,6 +72,13 @@ export const FieldFormInput = ({
 }: FieldFormInputProps) => {
   /** Used to add options for dropdown and boolean fields */
   const [options, setOptions] = useState<FieldSettingsOptions[]>([{ "": "" }]);
+
+  useEffect(() => {
+    onDataChange({
+      inputName: fieldConfig.name,
+      value: options,
+    });
+  }, [options]);
 
   const handleOptionValueChanged = (
     newKeyValueData: { [key: string]: string },
@@ -296,6 +303,7 @@ export const FieldFormInput = ({
               <KeyValueInput
                 optionKey={key}
                 optionValue={value}
+                showDeleteButton={options.length > 1}
                 onOptionChange={(newKeyValueData) =>
                   handleOptionValueChanged(newKeyValueData, index)
                 }
@@ -319,12 +327,14 @@ export const FieldFormInput = ({
 interface KeyValueInputProps {
   optionKey: string;
   optionValue: string;
+  showDeleteButton: boolean;
   onOptionChange: (newKeyValueData: { [key: string]: string }) => void;
   onDeleteOption: () => void;
 }
 const KeyValueInput = ({
   optionKey,
   optionValue,
+  showDeleteButton,
   onOptionChange,
   onDeleteOption,
 }: KeyValueInputProps) => {
@@ -384,9 +394,11 @@ const KeyValueInput = ({
           }}
         />
       </Box>
-      <IconButton size="small" onClick={onDeleteOption}>
-        <DeleteRoundedIcon />
-      </IconButton>
+      {showDeleteButton && (
+        <IconButton size="small" onClick={onDeleteOption}>
+          <DeleteRoundedIcon />
+        </IconButton>
+      )}
     </Box>
   );
 };
