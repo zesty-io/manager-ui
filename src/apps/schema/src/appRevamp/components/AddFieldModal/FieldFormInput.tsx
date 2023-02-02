@@ -106,6 +106,7 @@ export const FieldFormInput = ({
     setOptions([...localOptionsCopy]);
   };
 
+  //TODO: Update inputbase to textfield
   return (
     <Grid item xs={fieldConfig.gridSize}>
       {fieldConfig.type === "input" && (
@@ -323,6 +324,7 @@ export const FieldFormInput = ({
   );
 };
 
+// TODO: Only show error message on specific input
 interface KeyValueInputProps {
   optionKey: string;
   optionValue: string;
