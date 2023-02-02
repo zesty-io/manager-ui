@@ -36,6 +36,8 @@ const ContentSearch: FC = () => {
   });
   const languages = useSelector((state: any) => state.languages);
   const [open, setOpen] = useState(false);
+  //const open = true
+  //const setOpen = (...args: any) => { }
 
   const theme = useTheme();
   return (
@@ -231,6 +233,33 @@ const ContentSearch: FC = () => {
                   "&.MuiAutocomplete-inputRoot": {
                     py: "2px",
                   },
+                  "&.MuiAutocomplete-inputRoot.MuiFocused": {
+                    py: "100px",
+                  },
+                  "&.MuiFocused .MuiAutocomplete-inputRoot": {
+                    py: "100px",
+                  },
+                  "&.MuiAutocomplete-root .MuiOutlinedInput-root": {
+                    padding: "100px",
+                  },
+                  "&.MuiAutocomplete-root > .MuiOutlinedInput-root": {
+                    padding: "100px",
+                  },
+                  "&.MuiAutocomplete-inputRoot .MuiOutlinedInputBase-root .MuiOutlinedInput-root .MuiFocused":
+                    {
+                      py: "100px",
+                    },
+                  "&.MuiAutocomplete-inputRoot .MuiOutlinedInput-root .MuiOutlinedInput-root .MuiOutlinedInput-root .MuiFocused":
+                    {
+                      py: "100px",
+                    },
+                  "&.MuiAutocomplete-inputRoot .MuiOutlinedInput-root": {
+                    py: "100px",
+                  },
+                  "&.Mui-focused .MuiAutocomplete-inputRoot .MuiOutlinedInput-root":
+                    {
+                      py: "100px",
+                    },
 
                   borderRadius: "4px 4px 0px 0px",
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
