@@ -10,7 +10,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { DialogContent, DialogTitle, DialogProps } from "@mui/material";
 import { useSelector } from "react-redux";
-import { AppState } from "../../../../../shell/store/types";
+import { AppState } from "../../store/types";
 
 type DateFilterModal = {
   open: boolean;

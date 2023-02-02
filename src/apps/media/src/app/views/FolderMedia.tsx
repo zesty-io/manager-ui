@@ -24,11 +24,10 @@ import {
   Filetype,
 } from "../../../../../shell/store/media-revamp";
 import {
-  fileExtension,
-  getExtensions,
   getDateFilterFn,
   getDateFilter,
-} from "../utils/fileUtils";
+} from "../../../../../utility/dateUtils";
+import { fileExtension, getExtensions } from "../utils/fileUtils";
 import { State } from "../../../../../shell/store/media-revamp";
 
 type Params = { id: string };

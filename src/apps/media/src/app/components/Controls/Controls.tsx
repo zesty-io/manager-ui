@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Box } from "@mui/material";
 import { Sort } from "./Sort";
 import { FiletypeFilter } from "./FiletypeFilter";
-import { DateRangeFilter } from "./DateFilter";
+import { DateRangeFilter } from "../../../../../../shell/components/DateRangeFilter/DateFilter";
 import { ToggleViews } from "./ToggleViews";
 
 export type ControlsProps = {

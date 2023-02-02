@@ -15,11 +15,10 @@ import { File } from "../../../../../shell/services/types";
 import { State } from "../../../../../shell/store/media-revamp";
 import Controls from "../components/Controls";
 import {
-  fileExtension,
-  getExtensions,
   getDateFilterFn,
   getDateFilter,
-} from "../utils/fileUtils";
+} from "../../../../../utility/dateUtils";
+import { fileExtension, getExtensions } from "../utils/fileUtils";
 import {
   MediaSortOrder,
   DateRange,
