@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -12,13 +12,24 @@ import {
   Autocomplete,
   TextField,
   Tooltip,
+  Button,
+  IconButton,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import { cloneDeep } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
+import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 
-type FieldType = "input" | "checkbox" | "dropdown" | "autocomplete";
+type FieldType =
+  | "input"
+  | "checkbox"
+  | "dropdown"
+  | "autocomplete"
+  | "dropdown_options";
 export interface InputField {
   name: string;
   type: FieldType;
@@ -36,7 +47,7 @@ export interface DropdownOptions {
   label: string;
   value: string;
 }
-interface Props {
+interface FieldFormInputProps {
   fieldConfig: InputField;
   errorMsg?: string;
   onDataChange: ({
@@ -57,13 +68,33 @@ export const FieldFormInput = ({
   prefillData,
   dropdownOptions,
   disabled,
-}: Props) => {
+}: FieldFormInputProps) => {
+  /** Used to add options for dropdown and boolean fields */
+  const [options, setOptions] = useState<FieldSettingsOptions[]>([
+    { test_key: "data here" },
+  ]);
+
+  const handleOptionValueChanged = (
+    newKeyValueData: { [key: string]: string },
+    index: number
+  ) => {
+    const localOptionsCopy = cloneDeep(options);
+
+    localOptionsCopy.splice(index, 1, newKeyValueData);
+
+    setOptions([...localOptionsCopy]);
+  };
+
+  const handleAddNewOption = () => {
+    setOptions((prevData) => [...prevData, { "": "" }]);
+  };
+
   return (
     <Grid item xs={fieldConfig.gridSize}>
       {fieldConfig.type === "input" && (
         <>
           <Box mb={0.5}>
-            <Typography component="span" variant="body2">
+            <Typography component="span" variant="body2" fontWeight={600}>
               {fieldConfig.label}
             </Typography>
             {fieldConfig.label?.toLowerCase().includes("description") && (
@@ -152,7 +183,9 @@ export const FieldFormInput = ({
           }
           label={
             <>
-              <Typography variant="body2">{fieldConfig.label}</Typography>
+              <Typography variant="body2" fontWeight={600}>
+                {fieldConfig.label}
+              </Typography>
               {fieldConfig.subLabel && (
                 <Typography
                   // @ts-expect-error body3 module augmentation required
@@ -169,7 +202,7 @@ export const FieldFormInput = ({
 
       {fieldConfig.type === "dropdown" && (
         <FormControl fullWidth size="small">
-          <Typography variant="body2" mb={0.5}>
+          <Typography variant="body2" mb={0.5} fontWeight={600}>
             {fieldConfig.label}
           </Typography>
           <Select
@@ -196,7 +229,7 @@ export const FieldFormInput = ({
 
       {fieldConfig.type === "autocomplete" && (
         <>
-          <Typography variant="body2" mb={0.5}>
+          <Typography variant="body2" mb={0.5} fontWeight={600}>
             {fieldConfig.label}
           </Typography>
           <Autocomplete
@@ -231,6 +264,110 @@ export const FieldFormInput = ({
           />
         </>
       )}
+
+      {fieldConfig.type === "dropdown_options" && (
+        <>
+          <Typography variant="body2" mb={2} fontWeight={600}>
+            {fieldConfig.label}
+          </Typography>
+          {options.map((option, index) => {
+            let key,
+              value = "";
+
+            Object.entries(option).forEach(([k, v]) => {
+              key = k;
+              value = v;
+            });
+
+            return (
+              <KeyValueInput
+                optionKey={key}
+                optionValue={value}
+                onEntryChange={(newKeyValueData) =>
+                  handleOptionValueChanged(newKeyValueData, index)
+                }
+              />
+            );
+          })}
+          <Button
+            variant="outlined"
+            startIcon={<AddRoundedIcon />}
+            sx={{
+              mt: 2,
+            }}
+            onClick={handleAddNewOption}
+          >
+            Add Option
+          </Button>
+        </>
+      )}
     </Grid>
+  );
+};
+
+interface KeyValueInputProps {
+  optionKey: string;
+  optionValue: string;
+  onEntryChange: (newKeyValueData: { [key: string]: string }) => void;
+}
+const KeyValueInput = ({
+  optionKey,
+  optionValue,
+  onEntryChange,
+}: KeyValueInputProps) => {
+  const style = {
+    border: "1px solid",
+    borderColor: "grey.100",
+    borderRadius: 2,
+    py: 1.25,
+    px: 1.5,
+    boxSizing: "border-box",
+  };
+  const inputProps = {
+    sx: {
+      p: 0,
+    },
+  };
+
+  const handleDataChanged = (type: string, value: string) => {
+    if (type === "key") {
+      onEntryChange({ [value]: optionValue });
+    }
+
+    if (type === "value") {
+      onEntryChange({ [optionKey]: value });
+    }
+  };
+
+  return (
+    <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box display="flex" gap={2}>
+        <InputBase
+          sx={style}
+          inputProps={inputProps}
+          name="value"
+          required
+          placeholder="Enter Label"
+          value={optionValue}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            handleDataChanged("value", e.target?.value);
+          }}
+        />
+        <InputBase
+          sx={style}
+          inputProps={inputProps}
+          name="key"
+          required
+          placeholder="Enter Value"
+          value={optionKey}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            handleDataChanged("key", e.target?.value);
+          }}
+        />
+      </Box>
+      <IconButton size="small">
+        <DeleteRoundedIcon />
+      </IconButton>
+    </Box>
   );
 };

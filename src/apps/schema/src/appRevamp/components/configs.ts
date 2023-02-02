@@ -374,7 +374,17 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
   currency: [],
   date: [...COMMON_FIELDS],
   datetime: [...COMMON_FIELDS],
-  dropdown: [],
+  dropdown: [
+    ...COMMON_FIELDS.slice(0, 3),
+    {
+      name: "list",
+      type: "dropdown_options",
+      label: "Dropdown Options",
+      required: true,
+      gridSize: 12,
+    },
+    ...COMMON_FIELDS.slice(3),
+  ],
   images: [],
   internal_link: [],
   link: [...COMMON_FIELDS],

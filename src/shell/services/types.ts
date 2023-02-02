@@ -135,8 +135,7 @@ export interface ContentItem {
 }
 
 export interface FieldSettingsOptions {
-  0: "No";
-  1: "Yes";
+  [key: string]: string;
 }
 
 export interface FieldSettings {
