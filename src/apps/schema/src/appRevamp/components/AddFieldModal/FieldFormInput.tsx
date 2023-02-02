@@ -306,9 +306,6 @@ export const FieldFormInput = ({
           <Button
             variant="outlined"
             startIcon={<AddRoundedIcon />}
-            sx={{
-              mt: 2,
-            }}
             onClick={handleAddNewOption}
           >
             Add Option
@@ -357,7 +354,12 @@ const KeyValueInput = ({
   };
 
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="center">
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
+      mb={2}
+    >
       <Box display="flex" gap={2}>
         <InputBase
           sx={style}
