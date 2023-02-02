@@ -36,8 +36,6 @@ const ContentSearch: FC = () => {
   });
   const languages = useSelector((state: any) => state.languages);
   const [open, setOpen] = useState(false);
-  //const open = true
-  //const setOpen = (...args: any) => { }
 
   const theme = useTheme();
   return (
@@ -73,7 +71,6 @@ const ContentSearch: FC = () => {
                 borderStyle: "solid",
                 borderWidth: "0px 1px 1px 1px",
                 borderColor: "border",
-                //borderColor: "#FF0000",
                 borderRadius: "0px 0px 4px 4px",
               }}
             />
@@ -117,13 +114,7 @@ const ContentSearch: FC = () => {
         filterOptions={(x) => x}
         sx={{
           height: "40px",
-          //width: "288px",
           width: open ? "500px" : "288px",
-          //width: "500px",
-          //width: "100%",
-          //borderWidth: "0px 1px 1px 0px",
-          //borderStyle: "solid",
-          //borderColor: "grey.100",
           "& .MuiOutlinedInput-root": {
             py: "2px",
           },
