@@ -124,6 +124,9 @@ const ContentSearch: FC = () => {
           //borderWidth: "0px 1px 1px 0px",
           //borderStyle: "solid",
           //borderColor: "grey.100",
+          "& .MuiOutlinedInput-root": {
+            py: "2px",
+          },
           boxSizing: "border-box",
           "& .MuiFormControl-root": {
             gap: "10px",
@@ -232,34 +235,8 @@ const ContentSearch: FC = () => {
                 sx: {
                   "&.MuiAutocomplete-inputRoot": {
                     py: "2px",
+                    height: "40px",
                   },
-                  "&.MuiAutocomplete-inputRoot.MuiFocused": {
-                    py: "100px",
-                  },
-                  "&.MuiFocused .MuiAutocomplete-inputRoot": {
-                    py: "100px",
-                  },
-                  "&.MuiAutocomplete-root .MuiOutlinedInput-root": {
-                    padding: "100px",
-                  },
-                  "&.MuiAutocomplete-root > .MuiOutlinedInput-root": {
-                    padding: "100px",
-                  },
-                  "&.MuiAutocomplete-inputRoot .MuiOutlinedInputBase-root .MuiOutlinedInput-root .MuiFocused":
-                    {
-                      py: "100px",
-                    },
-                  "&.MuiAutocomplete-inputRoot .MuiOutlinedInput-root .MuiOutlinedInput-root .MuiOutlinedInput-root .MuiFocused":
-                    {
-                      py: "100px",
-                    },
-                  "&.MuiAutocomplete-inputRoot .MuiOutlinedInput-root": {
-                    py: "100px",
-                  },
-                  "&.Mui-focused .MuiAutocomplete-inputRoot .MuiOutlinedInput-root":
-                    {
-                      py: "100px",
-                    },
 
                   borderRadius: "4px 4px 0px 0px",
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
