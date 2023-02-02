@@ -38,6 +38,7 @@ import {
   ContentModelField,
   FieldSettings,
   ContentModelFieldValue,
+  FieldSettingsOptions,
 } from "../../../../../../../shell/services/types";
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
@@ -127,18 +128,22 @@ export const FieldForm = ({
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
 
-        // Pre-fill error messages based on content
-        if (field.required) {
-          errors[field.name] = isEmpty(fieldData[field.name])
-            ? "This field is required"
-            : "";
+        // Add the field name to the errors object if the field requires any validation
+        if (field.validate?.length) {
+          errors[field.name] = "";
         }
       } else {
-        formFields[field.name] = field.type === "checkbox" ? false : "";
+        if (field.type === "checkbox") {
+          formFields[field.name] = false;
+        } else if (field.type === "options") {
+          formFields[field.name] = [{ "": "" }];
+        } else {
+          formFields[field.name] = "";
+        }
 
-        // Pre-fill required fields error msgs
-        if (field.required) {
-          errors[field.name] = "This field is required";
+        // Add the field name to the errors object if the field requires any validation
+        if (field.validate?.length) {
+          errors[field.name] = "";
         }
       }
     });
@@ -190,7 +195,7 @@ export const FieldForm = ({
 
     Object.keys(formData).map((inputName) => {
       if (inputName in errors) {
-        const { maxLength } = FORM_CONFIG[type].find(
+        const { maxLength, label, validate } = FORM_CONFIG[type].find(
           (field) => field.name === inputName
         );
 
@@ -200,17 +205,27 @@ export const FieldForm = ({
             value: formData.name as string,
             fieldNames: currFieldNames,
             maxLength,
+            label,
+            validate,
           });
 
           // When updating a field, user can choose to just leave the reference name the same
           if (isUpdateField && formData.name === fieldData.name) {
             newErrorsObj.name = "";
           }
+        } else if (inputName === "options") {
+          newErrorsObj.options = getErrorMessage({
+            value: formData.options as FieldSettingsOptions[],
+            maxLength,
+            validate,
+          });
         } else {
           // All other input validation
           newErrorsObj[inputName] = getErrorMessage({
             value: formData[inputName] as string,
             maxLength,
+            label,
+            validate,
           });
         }
       }

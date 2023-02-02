@@ -1,4 +1,6 @@
 import { replace, isEmpty } from "lodash";
+import { FieldSettingsOptions } from "../../../../../shell/services/types";
+import { Validation } from "./AddFieldModal/FieldFormInput";
 
 export const stringStartsWithVowel = (string: string): boolean => {
   if (!string) return;
@@ -15,28 +17,77 @@ export const convertLabelValue = (string: string): string => {
 };
 
 type getErrorMessageProps = {
-  value: string;
+  value: string | FieldSettingsOptions[];
   maxLength?: number;
   fieldNames?: string[];
+  label?: string;
+  validate?: Validation[];
 };
 export const getErrorMessage = ({
   value,
   maxLength = 0,
   fieldNames,
+  label = "",
+  validate = [],
 }: getErrorMessageProps): string => {
-  if (isEmpty(value)) {
-    return "This field is required";
-  }
+  if (Array.isArray(value)) {
+    // Flatten the array to an array of strings to easily check if there's empty fields, duplicates and character length
+    const allValues = value.reduce(
+      (acc: string[], curr: FieldSettingsOptions) => {
+        let key,
+          value = "";
 
-  if (fieldNames?.length && fieldNames.includes(value)) {
-    return "Field name already exists";
-  }
+        Object.entries(curr).forEach(([k, v]) => {
+          key = k;
+          value = v;
+        });
 
-  if (maxLength && value.length > maxLength) {
-    return `Value must not exceed ${maxLength} characters`;
-  }
+        return [...acc, key, value];
+      },
+      []
+    );
 
-  return "";
+    // Collect all keys, since these need to be unique
+    const allKeys = value.reduce(
+      (acc: string[], curr: FieldSettingsOptions) => {
+        return [...acc, ...Object.keys(curr)];
+      },
+      []
+    );
+
+    // if (allValues.some(value => isEmpty(value))) {
+    //   return "This field is required";
+    // }
+
+    console.log(new Set(allKeys).size, allKeys.length);
+
+    if (
+      validate.includes("unique") &&
+      new Set(allKeys).size !== allKeys.length
+    ) {
+      return "An option with this value already exists";
+    }
+
+    return "";
+  } else {
+    if (validate.includes("required") && isEmpty(value)) {
+      return `${label} is required`;
+    }
+
+    if (
+      validate.includes("unique") &&
+      fieldNames?.length &&
+      fieldNames.includes(value as string)
+    ) {
+      return "A field with this API/Parsley Reference already exists";
+    }
+
+    if (validate.includes("length") && maxLength && value.length > maxLength) {
+      return `Shorten to less than ${maxLength} characters`;
+    }
+
+    return "";
+  }
 };
 
 export const getCategory = (type: string) => {

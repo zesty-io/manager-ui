@@ -329,6 +329,7 @@ const COMMON_FIELDS: InputField[] = [
     maxLength: 200,
     gridSize: 12,
     tooltip: "The display name of the field seen in Schema.",
+    validate: ["required", "length"],
   },
   {
     name: "name",
@@ -339,6 +340,7 @@ const COMMON_FIELDS: InputField[] = [
     maxLength: 50,
     gridSize: 12,
     tooltip: "This will appear in the API Responses",
+    validate: ["length", "required", "unique"],
   },
   {
     name: "description",
@@ -378,10 +380,12 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
     ...COMMON_FIELDS.slice(0, 3),
     {
       name: "options",
-      type: "dropdown_options",
+      type: "options",
       label: "Dropdown Options",
-      required: true,
+      required: false,
       gridSize: 12,
+      maxLength: 150,
+      validate: ["length", "unique"],
     },
     ...COMMON_FIELDS.slice(3),
   ],

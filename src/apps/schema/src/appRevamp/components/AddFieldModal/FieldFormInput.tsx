@@ -25,12 +25,8 @@ import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { convertLabelValue } from "../utils";
 
-type FieldType =
-  | "input"
-  | "checkbox"
-  | "dropdown"
-  | "autocomplete"
-  | "dropdown_options";
+export type Validation = "length" | "required" | "unique";
+type FieldType = "input" | "checkbox" | "dropdown" | "autocomplete" | "options";
 export interface InputField {
   name: string;
   type: FieldType;
@@ -43,6 +39,7 @@ export interface InputField {
   maxLength?: number;
   placeholder?: string;
   tooltip?: string;
+  validate?: Validation[];
 }
 export interface DropdownOptions {
   label: string;
@@ -285,7 +282,7 @@ export const FieldFormInput = ({
         </>
       )}
 
-      {fieldConfig.type === "dropdown_options" && (
+      {fieldConfig.type === "options" && (
         <>
           <Typography variant="body2" mb={2} fontWeight={600}>
             {fieldConfig.label}
@@ -301,9 +298,11 @@ export const FieldFormInput = ({
 
             return (
               <KeyValueInput
+                key={index}
                 optionKey={key}
                 optionValue={value}
                 showDeleteButton={options.length > 1}
+                errorMsg={errorMsg}
                 onOptionChange={(newKeyValueData) =>
                   handleOptionValueChanged(newKeyValueData, index)
                 }
@@ -328,6 +327,7 @@ interface KeyValueInputProps {
   optionKey: string;
   optionValue: string;
   showDeleteButton: boolean;
+  errorMsg?: string;
   onOptionChange: (newKeyValueData: { [key: string]: string }) => void;
   onDeleteOption: () => void;
 }
@@ -335,12 +335,13 @@ const KeyValueInput = ({
   optionKey,
   optionValue,
   showDeleteButton,
+  errorMsg,
   onOptionChange,
   onDeleteOption,
 }: KeyValueInputProps) => {
   const style = {
     border: "1px solid",
-    borderColor: "grey.100",
+    borderColor: Boolean(errorMsg) ? "red.500" : "grey.100",
     borderRadius: 2,
     py: 1.25,
     px: 1.5,
@@ -354,7 +355,7 @@ const KeyValueInput = ({
 
   const handleDataChanged = (type: string, value: string) => {
     if (type === "key") {
-      onOptionChange({ [convertLabelValue(value)]: optionValue });
+      onOptionChange({ [convertLabelValue(value) || ""]: optionValue });
     }
 
     if (type === "value") {
@@ -371,28 +372,42 @@ const KeyValueInput = ({
       mb={2}
     >
       <Box display="flex" gap={2}>
-        <InputBase
-          sx={style}
-          inputProps={inputProps}
-          name="value"
-          required
-          placeholder="Enter Label"
-          value={optionValue}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            handleDataChanged("value", e.target?.value);
-          }}
-        />
-        <InputBase
-          sx={style}
-          inputProps={inputProps}
-          name="key"
-          required
-          placeholder="Enter Value"
-          value={optionKey}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            handleDataChanged("key", e.target?.value);
-          }}
-        />
+        <Box>
+          <InputBase
+            sx={style}
+            inputProps={inputProps}
+            name="value"
+            required
+            placeholder="Enter Label"
+            value={optionValue}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              handleDataChanged("value", e.target?.value);
+            }}
+          />
+          {errorMsg && (
+            <Typography mt={0.5} variant="body2" color="error.dark">
+              {errorMsg}
+            </Typography>
+          )}
+        </Box>
+        <Box>
+          <InputBase
+            sx={style}
+            inputProps={inputProps}
+            name="key"
+            required
+            placeholder="Enter Value"
+            value={optionKey}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              handleDataChanged("key", e.target?.value);
+            }}
+          />
+          {errorMsg && (
+            <Typography mt={0.5} variant="body2" color="error.dark">
+              {errorMsg}
+            </Typography>
+          )}
+        </Box>
       </Box>
       {showDeleteButton && (
         <IconButton size="small" onClick={onDeleteOption}>
