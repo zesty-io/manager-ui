@@ -77,15 +77,29 @@ export const FieldFormInput = ({
     newKeyValueData: { [key: string]: string },
     index: number
   ) => {
+    if (!options[index]) {
+      return;
+    }
+
     const localOptionsCopy = cloneDeep(options);
 
     localOptionsCopy.splice(index, 1, newKeyValueData);
-
     setOptions([...localOptionsCopy]);
   };
 
   const handleAddNewOption = () => {
     setOptions((prevData) => [...prevData, { "": "" }]);
+  };
+
+  const handleDeleteOption = (index: number) => {
+    if (!options[index]) {
+      return;
+    }
+
+    const localOptionsCopy = cloneDeep(options);
+
+    localOptionsCopy.splice(index, 1);
+    setOptions([...localOptionsCopy]);
   };
 
   return (
@@ -282,9 +296,10 @@ export const FieldFormInput = ({
               <KeyValueInput
                 optionKey={key}
                 optionValue={value}
-                onEntryChange={(newKeyValueData) =>
+                onOptionChange={(newKeyValueData) =>
                   handleOptionValueChanged(newKeyValueData, index)
                 }
+                onDeleteOption={() => handleDeleteOption(index)}
               />
             );
           })}
@@ -307,12 +322,14 @@ export const FieldFormInput = ({
 interface KeyValueInputProps {
   optionKey: string;
   optionValue: string;
-  onEntryChange: (newKeyValueData: { [key: string]: string }) => void;
+  onOptionChange: (newKeyValueData: { [key: string]: string }) => void;
+  onDeleteOption: () => void;
 }
 const KeyValueInput = ({
   optionKey,
   optionValue,
-  onEntryChange,
+  onOptionChange,
+  onDeleteOption,
 }: KeyValueInputProps) => {
   const style = {
     border: "1px solid",
@@ -330,12 +347,12 @@ const KeyValueInput = ({
 
   const handleDataChanged = (type: string, value: string) => {
     if (type === "key") {
-      onEntryChange({ [convertLabelValue(value)]: optionValue });
+      onOptionChange({ [convertLabelValue(value)]: optionValue });
     }
 
     if (type === "value") {
       // When the value is changed, automatically change the key as well
-      onEntryChange({ [convertLabelValue(value) || ""]: value });
+      onOptionChange({ [convertLabelValue(value) || ""]: value });
     }
   };
 
@@ -365,7 +382,7 @@ const KeyValueInput = ({
           }}
         />
       </Box>
-      <IconButton size="small">
+      <IconButton size="small" onClick={onDeleteOption}>
         <DeleteRoundedIcon />
       </IconButton>
     </Box>
