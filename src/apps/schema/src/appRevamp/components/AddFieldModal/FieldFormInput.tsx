@@ -23,6 +23,7 @@ import { cloneDeep } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
+import { convertLabelValue } from "../utils";
 
 type FieldType =
   | "input"
@@ -70,9 +71,7 @@ export const FieldFormInput = ({
   disabled,
 }: FieldFormInputProps) => {
   /** Used to add options for dropdown and boolean fields */
-  const [options, setOptions] = useState<FieldSettingsOptions[]>([
-    { test_key: "data here" },
-  ]);
+  const [options, setOptions] = useState<FieldSettingsOptions[]>([{ "": "" }]);
 
   const handleOptionValueChanged = (
     newKeyValueData: { [key: string]: string },
@@ -331,11 +330,12 @@ const KeyValueInput = ({
 
   const handleDataChanged = (type: string, value: string) => {
     if (type === "key") {
-      onEntryChange({ [value]: optionValue });
+      onEntryChange({ [convertLabelValue(value)]: optionValue });
     }
 
     if (type === "value") {
-      onEntryChange({ [optionKey]: value });
+      // When the value is changed, automatically change the key as well
+      onEntryChange({ [convertLabelValue(value) || ""]: value });
     }
   };
 
