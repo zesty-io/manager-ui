@@ -1,4 +1,4 @@
-import { replace, isEmpty } from "lodash";
+import { replace, isEmpty, toPairs } from "lodash";
 import { FieldSettingsOptions } from "../../../../../shell/services/types";
 import { Validation } from "./AddFieldModal/FieldFormInput";
 
@@ -29,20 +29,15 @@ export const getErrorMessage = ({
   fieldNames,
   label = "",
   validate = [],
-}: getErrorMessageProps): string => {
+}: getErrorMessageProps): string | [string, string][] => {
   if (Array.isArray(value)) {
-    // Flatten the array to an array of strings to easily check if there's empty fields, duplicates and character length
+    let errors: [string, string][] = [];
+
     const allValues = value.reduce(
-      (acc: string[], curr: FieldSettingsOptions) => {
-        let key,
-          value = "";
+      (acc: [string, string][], curr: FieldSettingsOptions, index) => {
+        errors[index] = ["", ""];
 
-        Object.entries(curr).forEach(([k, v]) => {
-          key = k;
-          value = v;
-        });
-
-        return [...acc, key, value];
+        return [...acc, ...toPairs(curr)];
       },
       []
     );
@@ -55,20 +50,32 @@ export const getErrorMessage = ({
       []
     );
 
-    // if (allValues.some(value => isEmpty(value))) {
-    //   return "This field is required";
-    // }
+    // Validate key uniqueness
+    if (validate.includes("unique")) {
+      let seenKeys: string[] = [];
 
-    console.log(new Set(allKeys).size, allKeys.length);
-
-    if (
-      validate.includes("unique") &&
-      new Set(allKeys).size !== allKeys.length
-    ) {
-      return "An option with this value already exists";
+      allKeys.forEach((key, index) => {
+        if (!seenKeys.includes(key)) {
+          seenKeys.push(key);
+        } else {
+          errors[index][1] = "An option with this value already exists";
+        }
+      });
     }
 
-    return "";
+    // Validate char length
+    if (validate.includes("length")) {
+      allValues.forEach((value, outerIndex) => {
+        value.forEach((v, innerIndex) => {
+          errors[outerIndex][innerIndex] =
+            v.length > maxLength
+              ? `Shorten to less than ${maxLength} characters`
+              : "";
+        });
+      });
+    }
+
+    return errors;
   } else {
     if (validate.includes("required") && isEmpty(value)) {
       return `${label} is required`;

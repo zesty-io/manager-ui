@@ -53,7 +53,7 @@ interface FormData {
   [key: string]: FormValue;
 }
 interface Errors {
-  [key: string]: string;
+  [key: string]: string | [string, string][];
 }
 interface Props {
   type: string;
