@@ -50,19 +50,6 @@ export const getErrorMessage = ({
       []
     );
 
-    // Validate key uniqueness
-    if (validate.includes("unique")) {
-      let seenKeys: string[] = [];
-
-      allKeys.forEach((key, index) => {
-        if (!seenKeys.includes(key)) {
-          seenKeys.push(key);
-        } else {
-          errors[index][1] = "An option with this value already exists";
-        }
-      });
-    }
-
     // Validate char length
     if (validate.includes("length")) {
       allValues.forEach((value, outerIndex) => {
@@ -72,6 +59,19 @@ export const getErrorMessage = ({
               ? `Shorten to less than ${maxLength} characters`
               : "";
         });
+      });
+    }
+
+    // Validate key uniqueness
+    if (validate.includes("unique")) {
+      let seenKeys: string[] = [];
+
+      allKeys.forEach((key, index) => {
+        if (!seenKeys.includes(key)) {
+          seenKeys.push(key);
+        } else {
+          errors[index][0] = "An option with this value already exists";
+        }
       });
     }
 

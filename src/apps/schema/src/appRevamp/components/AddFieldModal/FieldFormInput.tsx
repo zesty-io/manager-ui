@@ -47,7 +47,7 @@ export interface DropdownOptions {
 }
 interface FieldFormInputProps {
   fieldConfig: InputField;
-  errorMsg?: string;
+  errorMsg?: string | [string, string][];
   onDataChange: ({
     inputName,
     value,
@@ -285,7 +285,7 @@ export const FieldFormInput = ({
                 key={index}
                 optionKey={key}
                 optionValue={value}
-                errorMsg={errorMsg}
+                errorMsg={errorMsg[index] as [string, string]}
                 onOptionChange={(newKeyValueData) =>
                   handleOptionValueChanged(newKeyValueData, index)
                 }
@@ -310,7 +310,7 @@ export const FieldFormInput = ({
 interface KeyValueInputProps {
   optionKey: string;
   optionValue: string;
-  errorMsg?: string;
+  errorMsg?: [string, string];
   onOptionChange: (newKeyValueData: { [key: string]: string }) => void;
   onDeleteOption: () => void;
 }
@@ -332,6 +332,8 @@ const KeyValueInput = ({
     }
   };
 
+  const [valueErrorMsg, labelErrorMsg] = errorMsg || [];
+
   return (
     <Box
       display="flex"
@@ -349,8 +351,8 @@ const KeyValueInput = ({
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("value", e.target?.value);
           }}
-          helperText={errorMsg}
-          error={Boolean(errorMsg)}
+          helperText={labelErrorMsg}
+          error={Boolean(labelErrorMsg)}
         />
         <TextField
           name="key"
@@ -361,8 +363,8 @@ const KeyValueInput = ({
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("key", e.target?.value);
           }}
-          helperText={errorMsg}
-          error={Boolean(errorMsg)}
+          helperText={valueErrorMsg}
+          error={Boolean(valueErrorMsg)}
         />
       </Box>
       <IconButton size="small" onClick={onDeleteOption}>
