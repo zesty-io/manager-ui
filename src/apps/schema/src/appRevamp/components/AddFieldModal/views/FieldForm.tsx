@@ -49,6 +49,7 @@ type Params = {
   id: string;
 };
 export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
+
 interface FormData {
   [key: string]: FormValue;
 }
@@ -307,6 +308,22 @@ export const FieldForm = ({
     }
   };
 
+  const handleMediaSettingsChange = ({
+    inputName,
+    value,
+  }: {
+    inputName: string;
+    value: string | boolean;
+  }) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      settings: {
+        ...prevData["settings"],
+        [inputName]: value,
+      },
+    }));
+  };
+
   const handleAddAnotherField = () => {
     setIsAddAnotherFieldClicked(true);
     handleSubmitForm();
@@ -446,7 +463,13 @@ export const FieldForm = ({
         {activeTab === "rules" && type !== "images" ? (
           <ComingSoon />
         ) : (
-          activeTab === "rules" && type === "images" && <MediaRules />
+          activeTab === "rules" &&
+          type === "images" && (
+            <MediaRules
+              fieldConfig={FORM_CONFIG["images"]}
+              onDataChange={handleMediaSettingsChange}
+            />
+          )
         )}
         {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
