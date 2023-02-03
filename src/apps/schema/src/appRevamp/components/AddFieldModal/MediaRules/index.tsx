@@ -13,6 +13,7 @@ import { FormValue } from "../views/FieldForm";
 
 import { VirtualizedAutocomplete } from "@zesty-io/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { faRuler } from "@fortawesome/free-solid-svg-icons";
 
 interface Props {
   fieldConfig: any;
@@ -39,6 +40,46 @@ export const MediaRules = ({
   setLockFolder,
   groups,
 }: Props) => {
+  const handleUpdateCheckbox = ({ rule, checked }: any) => {
+    if (!checked) {
+      onDataChange({
+        inputName: rule.name,
+        value: "",
+      });
+      if (rule.name === "limit") {
+        setItemLimit((prevData: any) => ({
+          ...prevData,
+          isChecked: Boolean(checked),
+        }));
+      } else if (rule.name === "group_id") {
+        setLockFolder((prevData: any) => ({
+          ...prevData,
+          isChecked: Boolean(checked),
+        }));
+      }
+    } else {
+      if (rule.name === "limit") {
+        onDataChange({
+          inputName: rule.name,
+          value: itemLimit.value || itemLimit.prevValue,
+        });
+        setItemLimit((prevData: any) => ({
+          ...prevData,
+          isChecked: Boolean(checked),
+        }));
+      } else if (rule.name === "group_id") {
+        onDataChange({
+          inputName: rule.name,
+          value: lockFolder.value || lockFolder.prevValue,
+        });
+        setLockFolder((prevData: any) => ({
+          ...prevData,
+          isChecked: Boolean(checked),
+        }));
+      }
+    }
+  };
+
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <Box
@@ -58,24 +99,9 @@ export const MediaRules = ({
                   sx={{
                     color: "grey.200",
                   }}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    rule.name === "limit"
-                      ? setItemLimit((prevData: any) => ({
-                          ...prevData,
-                          isChecked: e.target.checked,
-                        }))
-                      : rule.name === "group_id" &&
-                        setLockFolder((prevData: any) => ({
-                          ...prevData,
-                          isChecked: e.target.checked,
-                        }));
-                    if (!e.target.checked) {
-                      onDataChange({
-                        inputName: rule.name,
-                        value: "",
-                      });
-                    }
-                  }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleUpdateCheckbox({ rule, checked: e.target.checked })
+                  }
                   checked={
                     rule.name === "limit"
                       ? Boolean(itemLimit.isChecked)
@@ -123,6 +149,7 @@ export const MediaRules = ({
                       setItemLimit((prevData: any) => ({
                         ...prevData,
                         value: e.target.value,
+                        prevValue: e.target.value,
                       }));
                       onDataChange({
                         inputName: rule.name,
@@ -140,11 +167,11 @@ export const MediaRules = ({
                   <>
                     <Typography variant="body2">{lockFolder.label}</Typography>
                     <VirtualizedAutocomplete
-                      value={lockFolder.value}
                       onChange={(_, option) => {
                         setLockFolder((prevData: any) => ({
                           ...prevData,
                           value: option,
+                          prevValue: option,
                         }));
                         onDataChange({
                           inputName: rule.name,

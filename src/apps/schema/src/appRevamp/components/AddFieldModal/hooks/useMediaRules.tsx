@@ -38,11 +38,13 @@ export const useMediaRules = () => {
     label: "Media Item Limit",
     isChecked: false,
     value: "1",
+    prevValue: "1",
   });
   const [lockFolder, setLockFolder] = useState({
     label: "Select Folder",
     isChecked: false,
     value: groups[0],
+    prevValue: groups[0],
   });
 
   return {
