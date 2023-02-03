@@ -48,7 +48,9 @@ export const SearchPage: FC = () => {
             gap: "10px",
             height: "52px",
             boxSizing: "border-box",
-            border: `1px solid ${theme.palette.grey[100]}`,
+            borderColor: "grey.100",
+            borderStyle: "solid",
+            borderWidth: "0px 1px 1px 1px",
             backgroundColor: "background.paper",
           }}
         >
