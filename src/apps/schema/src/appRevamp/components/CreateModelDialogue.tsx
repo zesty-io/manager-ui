@@ -16,16 +16,11 @@ import {
   InputLabel,
   TextField,
   Autocomplete,
-  Backdrop,
-  CircularProgress,
   Checkbox,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
-import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-import ListRoundedIcon from "@mui/icons-material/ListRounded";
-import { FileTable } from "@zesty-io/material";
 import {
   useCreateContentModelMutation,
   useGetContentModelsQuery,
@@ -71,7 +66,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [model, updateModel] = useReducer(
-    (prev: any, next: any) => {
+    (prev: Partial<ContentModel>, next: any) => {
       const newModel = { ...prev, ...next };
 
       if (prev.label !== newModel.label) {

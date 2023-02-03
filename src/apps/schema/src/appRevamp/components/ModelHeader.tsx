@@ -31,6 +31,7 @@ import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import { RenameModelDialogue } from "./RenameModelDialogue";
 import { modelIconMap, modelNameMap } from "../utils";
+import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
 
 type Params = {
   id: string;
@@ -98,7 +99,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                   </ListItemIcon>
                   <ListItemText>Rename Model</ListItemText>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setShowDialogue("duplicate");
+                    setAnchorEl(null);
+                  }}
+                >
                   <ListItemIcon>
                     <ContentCopyRoundedIcon fontSize="small" />
                   </ListItemIcon>
@@ -189,6 +195,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
       </Box>
       {showDialogue === "rename" && (
         <RenameModelDialogue
+          model={model}
+          onClose={() => setShowDialogue(null)}
+        />
+      )}
+      {showDialogue === "duplicate" && (
+        <DuplicateModelDialogue
           model={model}
           onClose={() => setShowDialogue(null)}
         />
