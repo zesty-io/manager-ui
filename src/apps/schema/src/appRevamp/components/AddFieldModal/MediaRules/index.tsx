@@ -69,6 +69,12 @@ export const MediaRules = ({
                           ...prevData,
                           isChecked: e.target.checked,
                         }));
+                    if (!e.target.checked) {
+                      onDataChange({
+                        inputName: rule.name,
+                        value: "",
+                      });
+                    }
                   }}
                   checked={
                     rule.name === "limit"
