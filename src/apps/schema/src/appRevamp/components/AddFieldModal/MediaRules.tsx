@@ -24,14 +24,9 @@ interface Props {
     inputName: string;
     value: FormValue;
   }) => void;
-  prefillData?: FormValue;
 }
 
-export const MediaRules = ({
-  fieldConfig,
-  onDataChange,
-  prefillData,
-}: Props) => {
+export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const { data: bins, isFetching: isBinsFetching } =
@@ -39,6 +34,7 @@ export const MediaRules = ({
       instanceId,
       ecoId,
     });
+  const [groups, setGroups] = useState([]);
 
   const { data: binGroups, isFetching: isBinGroupsFetching } =
     mediaManagerApi.useGetAllBinGroupsQuery(
@@ -49,8 +45,15 @@ export const MediaRules = ({
     );
 
   useEffect(() => {
-    const res = binGroups.find((group) => group) || null;
-    console.log("res", res);
+    setGroups(
+      binGroups[0].map((group: any) => {
+        return {
+          value: group?.id,
+          inputLabel: group?.name,
+          component: group?.name,
+        };
+      })
+    );
   }, [binGroups]);
 
   const [rulesFields, setRulesFields] = useState([
@@ -88,75 +91,91 @@ export const MediaRules = ({
         gap="20px"
       >
         {rulesFields.map((rule: any, key: number) => (
-          <FormControlLabel
-            sx={{
-              alignItems: "flex-start",
-            }}
-            control={
-              <Checkbox
-                sx={{
-                  color: "grey.200",
-                }}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  let updatedRulesField = [...rulesFields];
-                  updatedRulesField[key].isChecked = e.target.checked;
-                  setRulesFields(updatedRulesField);
-                }}
-                checked={Boolean(rule.isChecked)}
-              />
-            }
-            label={
-              <Box>
-                <Typography variant="body2">{rule.label}</Typography>
-                <Typography
-                  // @ts-expect-error body3 module augmentation required
-                  variant="body3"
-                  color="text.secondary"
-                >
-                  {rule.subLabel}
-                </Typography>
+          <>
+            <FormControlLabel
+              sx={{
+                alignItems: "flex-start",
+              }}
+              control={
+                <Checkbox
+                  sx={{
+                    color: "grey.200",
+                  }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    let updatedRulesField = [...rulesFields];
+                    updatedRulesField[key].isChecked = e.target.checked;
+                    setRulesFields(updatedRulesField);
+                  }}
+                  checked={Boolean(rule.isChecked)}
+                />
+              }
+              label={
+                <Box>
+                  <Typography variant="body2">{rule.label}</Typography>
+                  <Typography
+                    // @ts-expect-error body3 module augmentation required
+                    variant="body3"
+                    color="text.secondary"
+                  >
+                    {rule.subLabel}
+                  </Typography>
+                </Box>
+              }
+            />
 
-                {rule.inputLabel === "Media Item Limit" && rule.isChecked ? (
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="body2">
-                      Media Item Limit
-                      <Tooltip
-                        placement="top"
-                        title="Set the maximum number of files a user can upload"
-                      >
-                        <InfoRoundedIcon
-                          sx={{ ml: 1, width: "10px", height: "10px" }}
-                          color="action"
-                        />
-                      </Tooltip>
-                    </Typography>
-                    <TextField
-                      size="small"
-                      variant="outlined"
-                      type="number"
-                      value={rule.inputValue}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            {/* FIELDS */}
+            <Box sx={{ ml: 4 }}>
+              {rule.inputLabel === "Media Item Limit" && rule.isChecked ? (
+                <>
+                  <Typography variant="body2">
+                    Media Item Limit
+                    <Tooltip
+                      placement="top"
+                      title="Set the maximum number of files a user can upload"
+                    >
+                      <InfoRoundedIcon
+                        sx={{ ml: 1, width: "10px", height: "10px" }}
+                        color="action"
+                      />
+                    </Tooltip>
+                  </Typography>
+                  <TextField
+                    size="small"
+                    variant="outlined"
+                    type="number"
+                    value={rule.inputValue}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      onDataChange({
+                        inputName: rule.name,
+                        value: e.target.value,
+                      });
+                    }}
+                    sx={{
+                      mt: 1,
+                    }}
+                  />
+                </>
+              ) : (
+                rule.inputLabel === "Select Folder" &&
+                rule.isChecked && (
+                  <>
+                    <Typography variant="body2">Select Folder</Typography>
+                    <VirtualizedAutocomplete
+                      value={groups[0]}
+                      onChange={(_, option) => {
                         onDataChange({
                           inputName: rule.name,
-                          value: e.target.value,
+                          value: option.value,
                         });
                       }}
-                      sx={{
-                        mt: 1,
-                      }}
+                      placeholder="Select media folder..."
+                      options={groups}
                     />
-                  </Box>
-                ) : (
-                  rule.inputLabel === "Select Folder" &&
-                  rule.isChecked && (
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="body2">Select Folder</Typography>
-                    </Box>
-                  )
-                )}
-              </Box>
-            }
-          />
+                  </>
+                )
+              )}
+            </Box>
+          </>
         ))}
       </Box>
     </Box>

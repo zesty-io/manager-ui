@@ -49,7 +49,6 @@ type Params = {
   id: string;
 };
 export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
-
 interface FormData {
   [key: string]: FormValue;
 }
@@ -306,22 +305,16 @@ export const FieldForm = ({
         relatedFieldZUID: "",
       }));
     }
-  };
 
-  const handleMediaSettingsChange = ({
-    inputName,
-    value,
-  }: {
-    inputName: string;
-    value: string | boolean;
-  }) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      settings: {
-        ...prevData["settings"],
-        [inputName]: value,
-      },
-    }));
+    if (inputName === "limit" || inputName === "group_id") {
+      setFormData((prevData: any) => ({
+        ...prevData,
+        settings: {
+          ...prevData["settings"],
+          [inputName]: value,
+        },
+      }));
+    }
   };
 
   const handleAddAnotherField = () => {
@@ -467,7 +460,7 @@ export const FieldForm = ({
           type === "images" && (
             <MediaRules
               fieldConfig={FORM_CONFIG["images"]}
-              onDataChange={handleMediaSettingsChange}
+              onDataChange={handleFieldDataChange}
             />
           )
         )}
