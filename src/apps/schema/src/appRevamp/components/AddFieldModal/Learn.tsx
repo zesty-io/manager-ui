@@ -8,31 +8,8 @@ interface Props {
   type: string;
 }
 export const Learn = ({ type }: Props) => {
-  const [data, setData] = useState<FieldListData>({
-    type: "",
-    name: "",
-    shortDescription: "",
-    description: "",
-    commonUses: [],
-    proTip: "",
-    subHeaderText: "",
-  });
-
-  useEffect(() => {
-    if (type) {
-      const category = getCategory(type);
-
-      if (category) {
-        const match = FIELD_COPY_CONFIG[category]?.find(
-          (items) => items.type === type
-        );
-
-        if (Object.keys(match).length) {
-          setData(match);
-        }
-      }
-    }
-  }, [type]);
+  const category = getCategory(type);
+  const data = FIELD_COPY_CONFIG[category]?.find((item) => item.type === type);
 
   return (
     <Box>
@@ -47,7 +24,7 @@ export const Learn = ({ type }: Props) => {
           color="text.secondary"
           whiteSpace="pre-line"
         >
-          {data.description}
+          {data?.description}
         </Typography>
       </Box>
       <Box my={2.5}>
@@ -55,7 +32,7 @@ export const Learn = ({ type }: Props) => {
           Common Uses
         </Typography>
         <Box component="ul" pl={3}>
-          {data.commonUses.map((string, index) => (
+          {data?.commonUses.map((string, index) => (
             <Typography
               key={index}
               component="li"
@@ -72,7 +49,7 @@ export const Learn = ({ type }: Props) => {
           Pro Tip
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          {data.proTip}
+          {data?.proTip}
         </Typography>
       </Box>
     </Box>
