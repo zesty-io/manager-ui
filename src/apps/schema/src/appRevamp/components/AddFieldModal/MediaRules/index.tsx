@@ -9,14 +9,18 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { FormValue } from "./views/FieldForm";
+import { FormValue } from "../views/FieldForm";
 
 import { VirtualizedAutocomplete } from "@zesty-io/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 
 interface Props {
   fieldConfig: any;
+  itemLimit: any;
+  lockFolder: any;
+  setItemLimit: any;
+  setLockFolder: any;
+  groups: any;
   onDataChange: ({
     inputName,
     value,
@@ -26,63 +30,15 @@ interface Props {
   }) => void;
 }
 
-export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
-  const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const instanceId = useSelector((state: any) => state.instance.ID);
-  const { data: bins, isFetching: isBinsFetching } =
-    mediaManagerApi.useGetBinsQuery({
-      instanceId,
-      ecoId,
-    });
-  const [groups, setGroups] = useState([]);
-  const [currentFolderValue, setCurrentFolderValue] = useState("");
-
-  const { data: binGroups, isFetching: isBinGroupsFetching } =
-    mediaManagerApi.useGetAllBinGroupsQuery(
-      bins?.map((bin) => bin.id),
-      {
-        skip: !bins?.length,
-      }
-    );
-
-  useEffect(() => {
-    setGroups(
-      binGroups[0].map((group: any) => {
-        return {
-          value: group?.id,
-          inputLabel: group?.name,
-          component: group?.name,
-        };
-      })
-    );
-  }, [binGroups]);
-
-  const [rulesFields, setRulesFields] = useState([
-    {
-      name: "limit",
-      inputValue: "1",
-      isChecked: false,
-      type: "checkbox",
-      label: "Allow multiple files to be selected",
-      inputLabel: "Media Item Limit",
-      subLabel:
-        "Ensures multiple files can be uploaded instead of default of just 1 file",
-      required: false,
-      gridSize: 12,
-    },
-    {
-      name: "group_id",
-      inputValue: "",
-      type: "checkbox",
-      isChecked: false,
-      label: "Lock to a folder",
-      inputLabel: "Select Folder",
-      subLabel: "Ensures files can only be selected from a specific folder",
-      required: false,
-      gridSize: 12,
-    },
-  ]);
-
+export const MediaRules = ({
+  fieldConfig,
+  onDataChange,
+  itemLimit,
+  lockFolder,
+  setItemLimit,
+  setLockFolder,
+  groups,
+}: Props) => {
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <Box
@@ -91,7 +47,7 @@ export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
         justifyContent="flex-start"
         gap="20px"
       >
-        {rulesFields.map((rule: any, key: number) => (
+        {fieldConfig.map((rule: any, key: number) => (
           <>
             <FormControlLabel
               sx={{
@@ -103,11 +59,23 @@ export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
                     color: "grey.200",
                   }}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    let updatedRulesField = [...rulesFields];
-                    updatedRulesField[key].isChecked = e.target.checked;
-                    setRulesFields(updatedRulesField);
+                    rule.name === "limit"
+                      ? setItemLimit((prevData: any) => ({
+                          ...prevData,
+                          isChecked: e.target.checked,
+                        }))
+                      : rule.name === "group_id" &&
+                        setLockFolder((prevData: any) => ({
+                          ...prevData,
+                          isChecked: e.target.checked,
+                        }));
                   }}
-                  checked={Boolean(rule.isChecked)}
+                  checked={
+                    rule.name === "limit"
+                      ? Boolean(itemLimit.isChecked)
+                      : rule.name === "group_id" &&
+                        Boolean(lockFolder.isChecked)
+                  }
                 />
               }
               label={
@@ -126,10 +94,10 @@ export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
 
             {/* FIELDS */}
             <Box sx={{ ml: 4 }}>
-              {rule.inputLabel === "Media Item Limit" && rule.isChecked ? (
+              {rule.name === "limit" && itemLimit.isChecked ? (
                 <>
                   <Typography variant="body2">
-                    Media Item Limit
+                    {itemLimit.label}
                     <Tooltip
                       placement="top"
                       title="Set the maximum number of files a user can upload"
@@ -144,10 +112,12 @@ export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
                     size="small"
                     variant="outlined"
                     type="number"
-                    value={rule.inputValue}
+                    value={itemLimit.value}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      let updatedRulesField = [...rulesFields];
-                      updatedRulesField[key].inputValue = e.target.value;
+                      setItemLimit((prevData: any) => ({
+                        ...prevData,
+                        value: e.target.value,
+                      }));
                       onDataChange({
                         inputName: rule.name,
                         value: e.target.value,
@@ -159,14 +129,17 @@ export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
                   />
                 </>
               ) : (
-                rule.inputLabel === "Select Folder" &&
-                rule.isChecked && (
+                rule.name === "group_id" &&
+                lockFolder.isChecked && (
                   <>
-                    <Typography variant="body2">Select Folder</Typography>
+                    <Typography variant="body2">{lockFolder.label}</Typography>
                     <VirtualizedAutocomplete
+                      value={lockFolder.value}
                       onChange={(_, option) => {
-                        console.log("option.value", option.value);
-                        setCurrentFolderValue(option.value);
+                        setLockFolder((prevData: any) => ({
+                          ...prevData,
+                          value: option,
+                        }));
                         onDataChange({
                           inputName: rule.name,
                           value: option.value,

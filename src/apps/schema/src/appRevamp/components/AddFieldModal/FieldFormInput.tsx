@@ -31,6 +31,7 @@ export interface InputField {
   maxLength?: number;
   placeholder?: string;
   tooltip?: string;
+  tab?: string;
 }
 export interface DropdownOptions {
   label: string;

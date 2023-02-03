@@ -40,9 +40,10 @@ import {
   ContentModelFieldValue,
 } from "../../../../../../../shell/services/types";
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
-import { MediaRules } from "../MediaRules";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
+import { useMediaRules } from "../hooks/useMediaRules";
+import { MediaRules } from "../MediaRules";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -79,6 +80,9 @@ export const FieldForm = ({
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [isAddAnotherFieldClicked, setIsAddAnotherFieldClicked] =
     useState(false);
+
+  const { itemLimit, lockFolder, setItemLimit, setLockFolder, groups } =
+    useMediaRules();
   const [errors, setErrors] = useState<Errors>({});
   const [formData, setFormData] = useState<FormData>({});
   const params = useParams<Params>();
@@ -157,6 +161,10 @@ export const FieldForm = ({
       }
     }
   }, [isBulkUpdated]);
+
+  useEffect(() => {
+    console.log("formData", formData);
+  }, [formData]);
 
   useEffect(() => {
     // In-between field creation flow (bulk update field sort after field creation)
@@ -242,6 +250,8 @@ export const FieldForm = ({
       required: formData.required as boolean,
       settings: {
         list: formData.list as boolean,
+        limit: formData.limit as number,
+        group_id: formData.group_id as string,
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
@@ -303,16 +313,6 @@ export const FieldForm = ({
       setFormData((prevData) => ({
         ...prevData,
         relatedFieldZUID: "",
-      }));
-    }
-
-    if (inputName === "limit" || inputName === "group_id") {
-      setFormData((prevData: any) => ({
-        ...prevData,
-        settings: {
-          ...prevData["settings"],
-          [inputName]: value,
-        },
       }));
     }
   };
@@ -459,8 +459,15 @@ export const FieldForm = ({
           activeTab === "rules" &&
           type === "images" && (
             <MediaRules
-              fieldConfig={FORM_CONFIG["images"]}
+              fieldConfig={FORM_CONFIG["images"].filter(
+                (data) => data.tab === "rules"
+              )}
               onDataChange={handleFieldDataChange}
+              itemLimit={itemLimit}
+              lockFolder={lockFolder}
+              setItemLimit={setItemLimit}
+              setLockFolder={setLockFolder}
+              groups={groups}
             />
           )
         )}
