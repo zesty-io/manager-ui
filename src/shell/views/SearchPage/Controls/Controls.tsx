@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { Box } from "@mui/material";
 import { Sort } from "./Sort";
+import { DateRangeFilter } from "../../../components/DateRangeFilter/DateFilter";
 
 export type ControlsProps = {
   showFilters?: boolean;
@@ -24,7 +25,7 @@ export const Controls: FC<ControlsProps> = ({ showFilters = true }) => {
           {showFilters && (
             <>
               <Sort />
-              <Sort />
+              <DateRangeFilter />
             </>
           )}
         </Box>
