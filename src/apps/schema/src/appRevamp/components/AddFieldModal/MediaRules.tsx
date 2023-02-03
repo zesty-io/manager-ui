@@ -35,6 +35,7 @@ export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
       ecoId,
     });
   const [groups, setGroups] = useState([]);
+  const [currentFolderValue, setCurrentFolderValue] = useState("");
 
   const { data: binGroups, isFetching: isBinGroupsFetching } =
     mediaManagerApi.useGetAllBinGroupsQuery(
@@ -145,6 +146,8 @@ export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
                     type="number"
                     value={rule.inputValue}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      let updatedRulesField = [...rulesFields];
+                      updatedRulesField[key].inputValue = e.target.value;
                       onDataChange({
                         inputName: rule.name,
                         value: e.target.value,
@@ -161,8 +164,9 @@ export const MediaRules = ({ fieldConfig, onDataChange }: Props) => {
                   <>
                     <Typography variant="body2">Select Folder</Typography>
                     <VirtualizedAutocomplete
-                      value={groups[0]}
                       onChange={(_, option) => {
+                        console.log("option.value", option.value);
+                        setCurrentFolderValue(option.value);
                         onDataChange({
                           inputName: rule.name,
                           value: option.value,
