@@ -108,7 +108,7 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
               fullWidth
               helperText={
                 newModel.name !== model.name &&
-                "Changing this Reference ID it will break existing Parsley references and custom JSON end points. This will affect production."
+                "The Reference Name is used in custom code files and endpoints. Updating this value takes immediate effect in production. Please check with your developer before making changes."
               }
               sx={{
                 "& .MuiFormHelperText-root": {
