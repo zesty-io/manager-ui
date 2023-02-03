@@ -123,7 +123,17 @@ export const FieldForm = ({
     FORM_CONFIG[type]?.forEach((field) => {
       if (isUpdateField) {
         if (field.name === "list") {
-          formFields[field.name] = fieldData.settings[field.name];
+          formFields.list = fieldData.settings.list;
+        } else if (field.name === "options") {
+          // Convert the options object to an Array of objects for easier rendering
+          const options = Object.entries(fieldData.settings.options).map(
+            ([key, value]) => {
+              return {
+                [key]: value,
+              };
+            }
+          );
+          formFields.options = options;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -268,7 +278,15 @@ export const FieldForm = ({
     }
 
     if (type === "dropdown") {
-      body.settings.options = formData.options as FieldSettingsOptions[];
+      const options = formData.options as FieldSettingsOptions[];
+      const optionsObject = options.reduce(
+        (acc: FieldSettingsOptions, curr: FieldSettingsOptions) => {
+          return { ...acc, ...curr };
+        },
+        {}
+      );
+
+      body.settings.options = optionsObject;
     }
 
     if (isUpdateField) {

@@ -80,6 +80,12 @@ export const FieldFormInput = ({
   const [options, setOptions] = useState<FieldSettingsOptions[]>([{ "": "" }]);
 
   useEffect(() => {
+    if (prefillData && Array.isArray(prefillData)) {
+      setOptions(prefillData);
+    }
+  }, [prefillData]);
+
+  useEffect(() => {
     onDataChange({
       inputName: fieldConfig.name,
       value: options,
