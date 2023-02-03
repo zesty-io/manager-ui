@@ -139,7 +139,7 @@ export interface FieldSettingsOptions {
 }
 
 export interface FieldSettings {
-  options?: FieldSettingsOptions;
+  options?: FieldSettingsOptions[];
   group_id?: string;
   limit?: number;
   list: boolean;
@@ -171,7 +171,7 @@ export interface ContentModelField {
   relatedFieldZUID?: any;
   createdAt: string;
   updatedAt: string;
-  [key: string]: ContentModelFieldValue;
+  // [key: string]: ContentModelFieldValue;
 }
 
 export interface WebView {

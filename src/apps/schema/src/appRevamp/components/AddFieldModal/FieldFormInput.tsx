@@ -26,9 +26,18 @@ import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { convertLabelValue } from "../utils";
 
 export type Validation = "length" | "required" | "unique";
+export type FieldNames =
+  | "name"
+  | "label"
+  | "description"
+  | "required"
+  | "list"
+  | "options"
+  | "relatedModelZUID"
+  | "relatedFieldZUID";
 type FieldType = "input" | "checkbox" | "dropdown" | "autocomplete" | "options";
 export interface InputField {
-  name: string;
+  name: FieldNames;
   type: FieldType;
   label: string;
   required: boolean;

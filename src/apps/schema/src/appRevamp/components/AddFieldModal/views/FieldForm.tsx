@@ -26,7 +26,7 @@ import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlin
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { getCategory, convertLabelValue, getErrorMessage } from "../../utils";
-import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
+import { FieldFormInput, DropdownOptions, FieldNames } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
@@ -236,7 +236,9 @@ export const FieldForm = ({
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
-    const hasErrors = Object.values(errors).some((error) => error.length);
+    const hasErrors = Object.values(errors)
+      .flat(2)
+      .some((error) => error.length);
     const sort = isInbetweenField ? sortIndex : fields?.length;
 
     if (hasErrors) {
@@ -261,8 +263,12 @@ export const FieldForm = ({
     };
 
     if (type === "one_to_one" || type === "one_to_many") {
-      body["relatedModelZUID"] = formData.relatedModelZUID || null;
-      body["relatedFieldZUID"] = formData.relatedFieldZUID || null;
+      body.relatedModelZUID = formData.relatedModelZUID || null;
+      body.relatedFieldZUID = formData.relatedFieldZUID || null;
+    }
+
+    if (type === "dropdown") {
+      body.settings.options = formData.options as FieldSettingsOptions[];
     }
 
     if (isUpdateField) {
