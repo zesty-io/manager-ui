@@ -52,11 +52,11 @@ export const getErrorMessage = ({
 
     // Validate char length
     if (validate.includes("length")) {
-      allValues.forEach((value, outerIndex) => {
-        value.forEach((v, innerIndex) => {
+      allValues.forEach((outerValue, outerIndex) => {
+        outerValue.forEach((innerValue, innerIndex) => {
           errors[outerIndex][innerIndex] =
-            v.length > maxLength
-              ? `Shorten to less than ${maxLength} characters`
+            innerValue.length > maxLength
+              ? `Shorten to less than ${maxLength} characters (${innerValue.length}/${maxLength})`
               : "";
         });
       });
@@ -90,7 +90,7 @@ export const getErrorMessage = ({
     }
 
     if (validate.includes("length") && maxLength && value.length > maxLength) {
-      return `Shorten to less than ${maxLength} characters`;
+      return `Shorten to less than ${maxLength} characters (${value.length}/${maxLength})`;
     }
 
     return "";
