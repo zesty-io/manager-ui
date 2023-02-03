@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 
 import { FieldIcon } from "../Field/FieldIcon";
-import { stringStartsWithVowel } from "../utils";
+import { stringStartsWithVowel } from "../../utils";
 
 interface Props {
   fieldName: string;
