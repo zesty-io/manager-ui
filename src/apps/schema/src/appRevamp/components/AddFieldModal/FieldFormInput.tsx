@@ -18,7 +18,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
@@ -75,21 +75,10 @@ export const FieldFormInput = ({
   dropdownOptions,
   disabled,
 }: FieldFormInputProps) => {
-  /** Used to add options for dropdown and boolean fields */
-  const [options, setOptions] = useState<FieldSettingsOptions[]>([{ "": "" }]);
-
-  useEffect(() => {
-    if (prefillData && Array.isArray(prefillData)) {
-      setOptions(prefillData);
-    }
-  }, [prefillData]);
-
-  useEffect(() => {
-    onDataChange({
-      inputName: fieldConfig.name,
-      value: options,
-    });
-  }, [options]);
+  const options =
+    fieldConfig.type === "options" && prefillData
+      ? (prefillData as FieldSettingsOptions[])
+      : [];
 
   const handleOptionValueChanged = (
     newKeyValueData: { [key: string]: string },
@@ -102,11 +91,17 @@ export const FieldFormInput = ({
     const localOptionsCopy = cloneDeep(options);
 
     localOptionsCopy.splice(index, 1, newKeyValueData);
-    setOptions([...localOptionsCopy]);
+    onDataChange({
+      inputName: fieldConfig.name,
+      value: [...localOptionsCopy],
+    });
   };
 
   const handleAddNewOption = () => {
-    setOptions((prevData) => [...prevData, { "": "" }]);
+    onDataChange({
+      inputName: fieldConfig.name,
+      value: [...options, { "": "" }],
+    });
   };
 
   const handleDeleteOption = (index: number) => {
@@ -117,7 +112,10 @@ export const FieldFormInput = ({
     const localOptionsCopy = cloneDeep(options);
 
     localOptionsCopy.splice(index, 1);
-    setOptions([...localOptionsCopy]);
+    onDataChange({
+      inputName: fieldConfig.name,
+      value: [...localOptionsCopy],
+    });
   };
 
   return (
@@ -283,7 +281,7 @@ export const FieldFormInput = ({
           <Typography variant="body2" mb={2} fontWeight={600}>
             {fieldConfig.label}
           </Typography>
-          {options.map((option, index) => {
+          {options?.map((option, index) => {
             let key,
               value = "";
 
