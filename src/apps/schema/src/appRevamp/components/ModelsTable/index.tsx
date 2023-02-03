@@ -162,7 +162,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           },
         }}
       />
-      {!filteredModels?.length && (
+      {!filteredModels?.length && !isFetching && (
         <Box sx={{ mt: 10 }}>
           <NoSearchResults
             searchTerm={search}
