@@ -144,21 +144,7 @@ export const FieldFormInput = ({
               </Typography>
             )}
           </Box>
-          <InputBase
-            sx={{
-              border: "1px solid",
-              borderColor: errorMsg ? "red.500" : "grey.100",
-              borderRadius: 2,
-              py: 1.25,
-              px: 1.5,
-              boxSizing: "border-box",
-            }}
-            inputProps={{
-              sx: {
-                p: 0,
-              },
-            }}
-            className="field-form-input"
+          <TextField
             name={fieldConfig.name}
             required={fieldConfig.required}
             fullWidth={fieldConfig.fullWidth}
@@ -171,12 +157,9 @@ export const FieldFormInput = ({
               });
             }}
             value={prefillData}
+            error={Boolean(errorMsg)}
+            helperText={errorMsg}
           />
-          {errorMsg && (
-            <Typography mt={0.5} variant="body2" color="error.dark">
-              {errorMsg}
-            </Typography>
-          )}
         </>
       )}
 
@@ -302,7 +285,6 @@ export const FieldFormInput = ({
                 key={index}
                 optionKey={key}
                 optionValue={value}
-                showDeleteButton={options.length > 1}
                 errorMsg={errorMsg}
                 onOptionChange={(newKeyValueData) =>
                   handleOptionValueChanged(newKeyValueData, index)
@@ -328,7 +310,6 @@ export const FieldFormInput = ({
 interface KeyValueInputProps {
   optionKey: string;
   optionValue: string;
-  showDeleteButton: boolean;
   errorMsg?: string;
   onOptionChange: (newKeyValueData: { [key: string]: string }) => void;
   onDeleteOption: () => void;
@@ -336,7 +317,6 @@ interface KeyValueInputProps {
 const KeyValueInput = ({
   optionKey,
   optionValue,
-  showDeleteButton,
   errorMsg,
   onOptionChange,
   onDeleteOption,
@@ -375,9 +355,7 @@ const KeyValueInput = ({
     >
       <Box display="flex" gap={2}>
         <Box>
-          <InputBase
-            sx={style}
-            inputProps={inputProps}
+          <TextField
             name="value"
             required
             placeholder="Enter Label"
@@ -385,17 +363,12 @@ const KeyValueInput = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               handleDataChanged("value", e.target?.value);
             }}
+            helperText={errorMsg}
+            error={Boolean(errorMsg)}
           />
-          {errorMsg && (
-            <Typography mt={0.5} variant="body2" color="error.dark">
-              {errorMsg}
-            </Typography>
-          )}
         </Box>
         <Box>
-          <InputBase
-            sx={style}
-            inputProps={inputProps}
+          <TextField
             name="key"
             required
             placeholder="Enter Value"
@@ -403,19 +376,14 @@ const KeyValueInput = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               handleDataChanged("key", e.target?.value);
             }}
+            helperText={errorMsg}
+            error={Boolean(errorMsg)}
           />
-          {errorMsg && (
-            <Typography mt={0.5} variant="body2" color="error.dark">
-              {errorMsg}
-            </Typography>
-          )}
         </Box>
       </Box>
-      {showDeleteButton && (
-        <IconButton size="small" onClick={onDeleteOption}>
-          <DeleteRoundedIcon />
-        </IconButton>
-      )}
+      <IconButton size="small" onClick={onDeleteOption}>
+        <DeleteRoundedIcon />
+      </IconButton>
     </Box>
   );
 };
