@@ -31,6 +31,7 @@ import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
+import { RenameModelDialogue } from "../RenameModelDialogue";
 
 type Params = {
   id: string;
@@ -66,6 +67,10 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const model = models?.find((model) => model.ZUID === id);
   const view = views?.find((view) => view?.contentModelZUID === model?.ZUID);
 
+  const [showDialogue, setShowDialogue] = useState<
+    "rename" | "duplicate" | "delete" | null
+  >(null);
+
   return (
     <>
       <Box
@@ -90,7 +95,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 open={open}
                 onClose={() => setAnchorEl(null)}
               >
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setShowDialogue("rename");
+                    setAnchorEl(null);
+                  }}
+                >
                   <ListItemIcon>
                     <DriveFileRenameOutlineRoundedIcon fontSize="small" />
                   </ListItemIcon>
@@ -185,6 +195,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
           </Tabs>
         </Box>
       </Box>
+      {showDialogue === "rename" && (
+        <RenameModelDialogue
+          model={model}
+          onClose={() => setShowDialogue(null)}
+        />
+      )}
     </>
   );
 };
