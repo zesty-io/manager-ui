@@ -4,7 +4,6 @@ import {
   Typography,
   FormControlLabel,
   Checkbox,
-  InputBase,
   Grid,
   FormControl,
   Select,

@@ -26,7 +26,7 @@ import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlin
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { getCategory, convertLabelValue, getErrorMessage } from "../../utils";
-import { FieldFormInput, DropdownOptions, FieldNames } from "../FieldFormInput";
+import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
