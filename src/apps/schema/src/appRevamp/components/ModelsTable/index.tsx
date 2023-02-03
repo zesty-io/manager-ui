@@ -1,37 +1,21 @@
-import { Box, Typography, Skeleton } from "@mui/material";
+import { Box, Typography, Skeleton, SvgIcon } from "@mui/material";
 import {
   DataGridPro,
   GridRenderCellParams,
   GridSortModel,
   GridValueFormatterParams,
 } from "@mui/x-data-grid-pro";
-import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelItemsQuery,
   useGetContentModelsQuery,
 } from "../../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../../shell/services/types";
-import { FileTable } from "@zesty-io/material";
-import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import moment from "moment-timezone";
 import { useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { NoSearchResults } from "../NoSearchResults";
-
-const modelIconMap = {
-  templateset: (
-    <FormatListBulletedRoundedIcon fontSize="small" color="action" />
-  ),
-  dataset: <FileTable fontSize="small" color="action" />,
-  pageset: <DescriptionRoundedIcon fontSize="small" color="action" />,
-};
-
-const modelNameMap = {
-  templateset: "Multi Page",
-  dataset: "Headless Dataset",
-  pageset: "Single Page",
-};
+import { modelIconMap, modelNameMap } from "../../utils";
 
 const FieldsCell = ({ ZUID }: any) => {
   const { data, isLoading } = useGetContentModelFieldsQuery(ZUID);
@@ -95,7 +79,11 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       flex: 1,
       renderCell: ({ row }: GridRenderCellParams) => (
         <Box display="flex" gap={2} width="100%">
-          {modelIconMap[row.type as keyof typeof modelIconMap]}
+          <SvgIcon
+            fontSize="small"
+            color="action"
+            component={modelIconMap[row.type as keyof typeof modelIconMap]}
+          />
           <Typography variant="body2" noWrap>
             {row.label}
           </Typography>

@@ -35,6 +35,7 @@ import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 import { useHistory } from "react-router";
+import { modelIconMap } from "../utils";
 
 interface Props {
   onClose: () => void;
@@ -47,7 +48,6 @@ const modelTypes = [
     description:
       "Creates individual pages with unique URLs and a code template",
     examples: "e.g. Home Page, About Page, Contact Page, Landing Page, etc.",
-    icon: DescriptionRoundedIcon,
     key: "templateset",
   },
   {
@@ -55,7 +55,6 @@ const modelTypes = [
     description:
       "Creates a collection of pages with unique URLs and a code template",
     examples: "e.g. Articles, Authors, Products, Team Members, etc.",
-    icon: ListRoundedIcon,
     key: "pageset",
   },
   {
@@ -63,7 +62,6 @@ const modelTypes = [
     description:
       "Creates a collection of entries with no URLs and no code templates",
     examples: "e.g. Categories, Articles, Slides, FAQS, Brands, etc.",
-    icon: FileTable,
     key: "dataset",
   },
 ];
@@ -170,7 +168,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   <ListItemIcon>
                     <SvgIcon
                       sx={{ fontSize: "32px" }}
-                      component={modelType.icon}
+                      component={
+                        modelIconMap[modelType.key as keyof typeof modelIconMap]
+                      }
                     />
                   </ListItemIcon>
                   <ListItemText
@@ -225,7 +225,12 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 <SvgIcon
                   sx={{ fontSize: "32px" }}
                   color="action"
-                  component={modelTypes.find((x) => x.key === model.type).icon}
+                  component={
+                    modelIconMap[
+                      modelTypes.find((x) => x.key === model.type)
+                        .key as keyof typeof modelIconMap
+                    ]
+                  }
                 />
                 <Box>
                   <Typography variant="h5" fontWeight={600} sx={{ mb: 1 }}>
