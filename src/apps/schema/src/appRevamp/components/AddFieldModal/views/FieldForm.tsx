@@ -40,6 +40,7 @@ import {
   ContentModelFieldValue,
 } from "../../../../../../../shell/services/types";
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
+import { MediaRules } from "../MediaRules";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
 
@@ -445,7 +446,7 @@ export const FieldForm = ({
         {activeTab === "rules" && type !== "images" ? (
           <ComingSoon />
         ) : (
-          <MediaRules />
+          activeTab === "rules" && type === "images" && <MediaRules />
         )}
         {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
