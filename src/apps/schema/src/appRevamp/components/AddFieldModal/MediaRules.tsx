@@ -68,7 +68,10 @@ export const MediaRules = () => {
                   <Box sx={{ mt: 2 }}>
                     <Typography variant="body2">
                       Media Item Limit
-                      <Tooltip placement="top" title="">
+                      <Tooltip
+                        placement="top"
+                        title="Set the maximum number of files a user can upload"
+                      >
                         <InfoRoundedIcon
                           sx={{ ml: 1, width: "10px", height: "10px" }}
                           color="action"
