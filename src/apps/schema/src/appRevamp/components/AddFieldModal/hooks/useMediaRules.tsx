@@ -1,7 +1,26 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { mediaManagerApi } from "../../../../../../../shell/services/mediaManager";
+import { Group } from "../../../../../../../shell/services/types";
 import { FormValue } from "../views/FieldForm";
+
+export interface ItemLimit {
+  label: string;
+  isChecked: boolean;
+  value: string;
+}
+
+export interface LockFolder {
+  label: string;
+  isChecked: boolean;
+  value: any;
+}
+
+export interface CustomGroup {
+  value: string;
+  inputLabel: string;
+  component: string;
+}
 
 export const useMediaRules = () => {
   // Media rules
@@ -35,7 +54,7 @@ export const useMediaRules = () => {
 
   useEffect(() => {
     setGroups(
-      binGroups[0]?.map((group: any) => {
+      binGroups[0]?.map((group: Group) => {
         return {
           value: group?.id,
           inputLabel: group?.name,
@@ -46,7 +65,7 @@ export const useMediaRules = () => {
   }, [binGroups]);
 
   useEffect(() => {
-    setLockFolder((prevData: any) => ({
+    setLockFolder((prevData: LockFolder) => ({
       ...prevData,
       value: groups[0],
     }));

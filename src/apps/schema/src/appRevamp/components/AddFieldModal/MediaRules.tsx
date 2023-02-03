@@ -8,20 +8,21 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import { FormValue } from "./views/FieldForm";
+import { ItemLimit, LockFolder, CustomGroup } from "./hooks/useMediaRules";
 
 import { VirtualizedAutocomplete } from "@zesty-io/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { faRuler } from "@fortawesome/free-solid-svg-icons";
-
+import { InputField } from "./FieldFormInput";
 interface Props {
-  fieldConfig: any;
-  itemLimit: any;
-  lockFolder: any;
-  setItemLimit: any;
-  setLockFolder: any;
-  groups: any;
+  fieldConfig: InputField[];
+  itemLimit: ItemLimit;
+  lockFolder: LockFolder;
+  setItemLimit: Dispatch<any>;
+  setLockFolder: Dispatch<any>;
+  groups: CustomGroup[];
   onDataChange: ({
     inputName,
     value,
@@ -29,6 +30,11 @@ interface Props {
     inputName: string;
     value: FormValue;
   }) => void;
+}
+
+interface HandleCheckbox {
+  rule: InputField;
+  checked: Boolean;
 }
 
 export const MediaRules = ({
@@ -40,19 +46,20 @@ export const MediaRules = ({
   setLockFolder,
   groups,
 }: Props) => {
-  const handleUpdateCheckbox = ({ rule, checked }: any) => {
+  console.log("fieldConfig", fieldConfig);
+  const handleUpdateCheckbox = ({ rule, checked }: HandleCheckbox) => {
     if (!checked) {
       onDataChange({
         inputName: rule.name,
         value: "",
       });
       if (rule.name === "limit") {
-        setItemLimit((prevData: any) => ({
+        setItemLimit((prevData: ItemLimit) => ({
           ...prevData,
           isChecked: Boolean(checked),
         }));
       } else if (rule.name === "group_id") {
-        setLockFolder((prevData: any) => ({
+        setLockFolder((prevData: LockFolder) => ({
           ...prevData,
           isChecked: Boolean(checked),
         }));
@@ -63,7 +70,7 @@ export const MediaRules = ({
           inputName: rule.name,
           value: itemLimit.value,
         });
-        setItemLimit((prevData: any) => ({
+        setItemLimit((prevData: ItemLimit) => ({
           ...prevData,
           isChecked: Boolean(checked),
         }));
@@ -72,7 +79,7 @@ export const MediaRules = ({
           inputName: rule.name,
           value: lockFolder.value.value,
         });
-        setLockFolder((prevData: any) => ({
+        setLockFolder((prevData: LockFolder) => ({
           ...prevData,
           isChecked: Boolean(checked),
         }));
@@ -88,7 +95,7 @@ export const MediaRules = ({
         justifyContent="flex-start"
         gap="20px"
       >
-        {fieldConfig.map((rule: any, key: number) => (
+        {fieldConfig.map((rule: InputField, key: number) => (
           <>
             <FormControlLabel
               sx={{
@@ -146,7 +153,7 @@ export const MediaRules = ({
                     type="number"
                     value={itemLimit.value}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setItemLimit((prevData: any) => ({
+                      setItemLimit((prevData: ItemLimit) => ({
                         ...prevData,
                         value: e.target.value,
                       }));
@@ -168,7 +175,7 @@ export const MediaRules = ({
                     <VirtualizedAutocomplete
                       value={lockFolder.value}
                       onChange={(_, option) => {
-                        setLockFolder((prevData: any) => ({
+                        setLockFolder((prevData: LockFolder) => ({
                           ...prevData,
                           value: option,
                         }));
