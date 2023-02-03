@@ -9,13 +9,13 @@ import {
   useGetContentModelFieldsQuery,
   useGetContentModelItemsQuery,
   useGetContentModelsQuery,
-} from "../../../../../../shell/services/instance";
-import { ContentModel } from "../../../../../../shell/services/types";
+} from "../../../../../shell/services/instance";
+import { ContentModel } from "../../../../../shell/services/types";
 import moment from "moment-timezone";
 import { useMemo, useState } from "react";
 import { useHistory } from "react-router";
-import { NoSearchResults } from "../NoSearchResults";
-import { modelIconMap, modelNameMap } from "../../utils";
+import { NoSearchResults } from "./NoSearchResults";
+import { modelIconMap, modelNameMap } from "../utils";
 
 const FieldsCell = ({ ZUID }: any) => {
   const { data, isLoading } = useGetContentModelFieldsQuery(ZUID);

@@ -17,7 +17,7 @@ import {
   useGetContentModelsQuery,
   useGetContentModelFieldsQuery,
   useGetWebViewsQuery,
-} from "../../../../../../shell/services/instance";
+} from "../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import PostAddRoundedIcon from "@mui/icons-material/PostAddRounded";
 import moment from "moment";
@@ -29,8 +29,8 @@ import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
-import { RenameModelDialogue } from "../RenameModelDialogue";
-import { modelIconMap, modelNameMap } from "../../utils";
+import { RenameModelDialogue } from "./RenameModelDialogue";
+import { modelIconMap, modelNameMap } from "../utils";
 
 type Params = {
   id: string;
