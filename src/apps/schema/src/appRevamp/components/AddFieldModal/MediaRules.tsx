@@ -46,7 +46,6 @@ export const MediaRules = ({
   setLockFolder,
   groups,
 }: Props) => {
-  console.log("fieldConfig", fieldConfig);
   const handleUpdateCheckbox = ({ rule, checked }: HandleCheckbox) => {
     if (!checked) {
       onDataChange({
