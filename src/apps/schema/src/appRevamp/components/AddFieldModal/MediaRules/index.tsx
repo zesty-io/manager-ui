@@ -61,7 +61,7 @@ export const MediaRules = ({
       if (rule.name === "limit") {
         onDataChange({
           inputName: rule.name,
-          value: itemLimit.value || itemLimit.prevValue,
+          value: itemLimit.value,
         });
         setItemLimit((prevData: any) => ({
           ...prevData,
@@ -70,7 +70,7 @@ export const MediaRules = ({
       } else if (rule.name === "group_id") {
         onDataChange({
           inputName: rule.name,
-          value: lockFolder.value || lockFolder.prevValue,
+          value: lockFolder.value.value,
         });
         setLockFolder((prevData: any) => ({
           ...prevData,
@@ -149,7 +149,6 @@ export const MediaRules = ({
                       setItemLimit((prevData: any) => ({
                         ...prevData,
                         value: e.target.value,
-                        prevValue: e.target.value,
                       }));
                       onDataChange({
                         inputName: rule.name,
@@ -167,11 +166,11 @@ export const MediaRules = ({
                   <>
                     <Typography variant="body2">{lockFolder.label}</Typography>
                     <VirtualizedAutocomplete
+                      value={lockFolder.value}
                       onChange={(_, option) => {
                         setLockFolder((prevData: any) => ({
                           ...prevData,
                           value: option,
-                          prevValue: option,
                         }));
                         onDataChange({
                           inputName: rule.name,

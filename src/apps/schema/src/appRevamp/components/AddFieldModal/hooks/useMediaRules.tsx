@@ -4,6 +4,18 @@ import { mediaManagerApi } from "../../../../../../../shell/services/mediaManage
 import { FormValue } from "../views/FieldForm";
 
 export const useMediaRules = () => {
+  // Media rules
+  const [itemLimit, setItemLimit] = useState({
+    label: "Media Item Limit",
+    isChecked: false,
+    value: "1",
+  });
+  const [lockFolder, setLockFolder] = useState({
+    label: "Select Folder",
+    isChecked: false,
+    value: {},
+  });
+
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const { data: bins, isFetching: isBinsFetching } =
@@ -33,19 +45,12 @@ export const useMediaRules = () => {
     );
   }, [binGroups]);
 
-  // Media rules
-  const [itemLimit, setItemLimit] = useState({
-    label: "Media Item Limit",
-    isChecked: false,
-    value: "1",
-    prevValue: "1",
-  });
-  const [lockFolder, setLockFolder] = useState({
-    label: "Select Folder",
-    isChecked: false,
-    value: groups[0],
-    prevValue: groups[0],
-  });
+  useEffect(() => {
+    setLockFolder((prevData: any) => ({
+      ...prevData,
+      value: groups[0],
+    }));
+  }, [groups]);
 
   return {
     itemLimit,
