@@ -35,7 +35,7 @@ export const useMediaRules = () => {
 
   useEffect(() => {
     setGroups(
-      binGroups[0].map((group: any) => {
+      binGroups[0]?.map((group: any) => {
         return {
           value: group?.id,
           inputLabel: group?.name,

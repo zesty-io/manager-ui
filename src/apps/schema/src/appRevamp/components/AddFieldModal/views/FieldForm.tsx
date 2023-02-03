@@ -163,10 +163,6 @@ export const FieldForm = ({
   }, [isBulkUpdated]);
 
   useEffect(() => {
-    console.log("formData", formData);
-  }, [formData]);
-
-  useEffect(() => {
     // In-between field creation flow (bulk update field sort after field creation)
     if (isFieldCreated && isInbetweenField) {
       const fieldsToUpdate: ContentModelField[] = fields

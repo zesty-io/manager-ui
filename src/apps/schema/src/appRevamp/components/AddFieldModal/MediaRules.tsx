@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { FormValue } from "../views/FieldForm";
+import { FormValue } from "./views/FieldForm";
 
 import { VirtualizedAutocomplete } from "@zesty-io/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
