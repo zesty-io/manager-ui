@@ -321,20 +321,6 @@ const KeyValueInput = ({
   onOptionChange,
   onDeleteOption,
 }: KeyValueInputProps) => {
-  const style = {
-    border: "1px solid",
-    borderColor: Boolean(errorMsg) ? "red.500" : "grey.100",
-    borderRadius: 2,
-    py: 1.25,
-    px: 1.5,
-    boxSizing: "border-box",
-  };
-  const inputProps = {
-    sx: {
-      p: 0,
-    },
-  };
-
   const handleDataChanged = (type: string, value: string) => {
     if (type === "key") {
       onOptionChange({ [convertLabelValue(value) || ""]: optionValue });
@@ -353,33 +339,31 @@ const KeyValueInput = ({
       alignItems="center"
       mb={2}
     >
-      <Box display="flex" gap={2}>
-        <Box>
-          <TextField
-            name="value"
-            required
-            placeholder="Enter Label"
-            value={optionValue}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              handleDataChanged("value", e.target?.value);
-            }}
-            helperText={errorMsg}
-            error={Boolean(errorMsg)}
-          />
-        </Box>
-        <Box>
-          <TextField
-            name="key"
-            required
-            placeholder="Enter Value"
-            value={optionKey}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              handleDataChanged("key", e.target?.value);
-            }}
-            helperText={errorMsg}
-            error={Boolean(errorMsg)}
-          />
-        </Box>
+      <Box display="flex" gap={2} width="480px">
+        <TextField
+          name="value"
+          required
+          fullWidth
+          placeholder="Enter Label"
+          value={optionValue}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            handleDataChanged("value", e.target?.value);
+          }}
+          helperText={errorMsg}
+          error={Boolean(errorMsg)}
+        />
+        <TextField
+          name="key"
+          required
+          fullWidth
+          placeholder="Enter Value"
+          value={optionKey}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            handleDataChanged("key", e.target?.value);
+          }}
+          helperText={errorMsg}
+          error={Boolean(errorMsg)}
+        />
       </Box>
       <IconButton size="small" onClick={onDeleteOption}>
         <DeleteRoundedIcon />
