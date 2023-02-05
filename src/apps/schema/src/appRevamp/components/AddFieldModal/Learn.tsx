@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 
 import { TYPE_TEXT, FIELD_COPY_CONFIG, FieldListData } from "../configs";
-import { stringStartsWithVowel, getCategory } from "../utils";
+import { stringStartsWithVowel, getCategory } from "../../utils";
 
 interface Props {
   type: string;
