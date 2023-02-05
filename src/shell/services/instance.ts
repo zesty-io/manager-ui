@@ -154,7 +154,8 @@ export const instanceApi = createApi({
       invalidatesTags: ["ContentModels"],
     }),
     getContentModelFields: builder.query<ContentModelField[], string>({
-      query: (modelZUID) => `content/models/${modelZUID}/fields`,
+      query: (modelZUID) =>
+        `content/models/${modelZUID}/fields?showDeleted=true`,
       transformResponse: (res: { data: ContentModelField[] }) =>
         res.data.sort((a, b) => a.sort - b.sort),
       providesTags: (result, error, modelZUID) => [
@@ -193,6 +194,32 @@ export const instanceApi = createApi({
         method: "PUT",
         body,
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModelFields", id: arg.modelZUID },
+      ],
+    }),
+    bulkCreateContentModelField: builder.mutation<
+      any,
+      { modelZUID: string; fields: Omit<ContentModelField, "ZUID">[] }
+    >({
+      async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
+        try {
+          const requests = args.fields.map((field) => ({
+            url: `content/models/${args.modelZUID}/fields`,
+            method: "POST",
+            body: field,
+          }));
+          const responses = await batchApiRequests(requests, fetchWithBQ);
+          return {
+            data: {
+              success: responses.success,
+              error: responses.error,
+            },
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
       invalidatesTags: (result, error, arg) => [
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
@@ -261,4 +288,5 @@ export const {
   useUpdateContentModelFieldMutation,
   useCreateContentModelMutation,
   useGetWebViewsQuery,
+  useBulkCreateContentModelFieldMutation,
 } = instanceApi;

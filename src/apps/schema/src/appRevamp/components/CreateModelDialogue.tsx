@@ -16,16 +16,11 @@ import {
   InputLabel,
   TextField,
   Autocomplete,
-  Backdrop,
-  CircularProgress,
   Checkbox,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
-import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-import ListRoundedIcon from "@mui/icons-material/ListRounded";
-import { FileTable } from "@zesty-io/material";
 import {
   useCreateContentModelMutation,
   useGetContentModelsQuery,
@@ -35,6 +30,7 @@ import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 import { useHistory } from "react-router";
+import { modelIconMap } from "../utils";
 
 interface Props {
   onClose: () => void;
@@ -47,7 +43,6 @@ const modelTypes = [
     description:
       "Creates individual pages with unique URLs and a code template",
     examples: "e.g. Home Page, About Page, Contact Page, Landing Page, etc.",
-    icon: DescriptionRoundedIcon,
     key: "templateset",
   },
   {
@@ -55,7 +50,6 @@ const modelTypes = [
     description:
       "Creates a collection of pages with unique URLs and a code template",
     examples: "e.g. Articles, Authors, Products, Team Members, etc.",
-    icon: ListRoundedIcon,
     key: "pageset",
   },
   {
@@ -63,7 +57,6 @@ const modelTypes = [
     description:
       "Creates a collection of entries with no URLs and no code templates",
     examples: "e.g. Categories, Articles, Slides, FAQS, Brands, etc.",
-    icon: FileTable,
     key: "dataset",
   },
 ];
@@ -73,7 +66,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [model, updateModel] = useReducer(
-    (prev: any, next: any) => {
+    (prev: Partial<ContentModel>, next: any) => {
       const newModel = { ...prev, ...next };
 
       if (prev.label !== newModel.label) {
@@ -170,7 +163,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   <ListItemIcon>
                     <SvgIcon
                       sx={{ fontSize: "32px" }}
-                      component={modelType.icon}
+                      component={
+                        modelIconMap[modelType.key as keyof typeof modelIconMap]
+                      }
                     />
                   </ListItemIcon>
                   <ListItemText
@@ -225,7 +220,12 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 <SvgIcon
                   sx={{ fontSize: "32px" }}
                   color="action"
-                  component={modelTypes.find((x) => x.key === model.type).icon}
+                  component={
+                    modelIconMap[
+                      modelTypes.find((x) => x.key === model.type)
+                        .key as keyof typeof modelIconMap
+                    ]
+                  }
                 />
                 <Box>
                   <Typography variant="h5" fontWeight={600} sx={{ mb: 1 }}>
