@@ -22,7 +22,7 @@ import { cloneDeep, isEqual } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
-import { convertLabelValue } from "../utils";
+import { convertLabelValue } from "../../utils";
 
 export type Validation = "length" | "required" | "unique";
 export type FieldNames =

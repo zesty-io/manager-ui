@@ -171,6 +171,7 @@ export interface ContentModelField {
   relatedFieldZUID?: any;
   createdAt: string;
   updatedAt: string;
+  deletedAt: string;
 }
 
 export interface WebView {
