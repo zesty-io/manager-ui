@@ -261,7 +261,7 @@ export const FieldForm = ({
     // Common field values
     let body: Omit<
       ContentModelField,
-      "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
+      "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt" | "deletedAt"
     > = {
       contentModelZUID: id,
       name: formData.name as string,
