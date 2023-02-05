@@ -373,7 +373,7 @@ const COMMON_FIELDS: InputField[] = [
 const FORM_CONFIG: { [key: string]: InputField[] } = {
   article_writer: [],
   color: [...COMMON_FIELDS],
-  currency: [],
+  currency: [...COMMON_FIELDS],
   date: [...COMMON_FIELDS],
   datetime: [...COMMON_FIELDS],
   dropdown: [
@@ -435,7 +435,7 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
   sort: [...COMMON_FIELDS],
   text: [...COMMON_FIELDS],
   textarea: [...COMMON_FIELDS],
-  uuid: [],
+  uuid: [...COMMON_FIELDS],
   wysiwyg_basic: [...COMMON_FIELDS],
   yes_no: [],
 };
