@@ -6,12 +6,7 @@ import { useGetContentModelsQuery } from "../../../../../shell/services/instance
 import { ContentModel } from "../../../../../shell/services/types";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useHistory } from "react-router";
-
-const modelNameMap = {
-  templateset: "Multi Page",
-  dataset: "Headless Dataset",
-  pageset: "Single Page",
-};
+import { modelNameMap } from "../utils";
 
 export const SearchModels = () => {
   const [params, setParams] = useParams();
