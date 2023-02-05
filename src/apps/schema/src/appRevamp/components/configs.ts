@@ -372,7 +372,7 @@ const COMMON_FIELDS: InputField[] = [
 ];
 const FORM_CONFIG: { [key: string]: InputField[] } = {
   article_writer: [],
-  color: [],
+  color: [...COMMON_FIELDS],
   currency: [],
   date: [...COMMON_FIELDS],
   datetime: [...COMMON_FIELDS],
@@ -390,7 +390,7 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
     ...COMMON_FIELDS.slice(3),
   ],
   images: [],
-  internal_link: [],
+  internal_link: [...COMMON_FIELDS],
   link: [...COMMON_FIELDS],
   markdown: [...COMMON_FIELDS],
   number: [...COMMON_FIELDS],
@@ -432,7 +432,7 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
     },
     ...COMMON_FIELDS,
   ],
-  sort: [],
+  sort: [...COMMON_FIELDS],
   text: [...COMMON_FIELDS],
   textarea: [...COMMON_FIELDS],
   uuid: [],
