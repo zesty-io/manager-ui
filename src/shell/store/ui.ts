@@ -43,7 +43,6 @@ export type UIState = {
   pinnedTabs: Tab[];
   openNav: boolean;
   contentNav: boolean;
-  contentNavHover: boolean;
   contentActions: boolean;
   contentActionsHover: boolean;
   duoMode: boolean;
@@ -58,7 +57,6 @@ export const ui = createSlice({
     pinnedTabs: [],
     openNav: true,
     contentNav: true,
-    contentNavHover: false,
     contentActions: true,
     contentActionsHover: false,
     duoMode: false,
@@ -107,9 +105,6 @@ export const ui = createSlice({
     },
     setDuoMode(state: UIState, action: { payload: boolean }) {
       state.duoMode = action.payload;
-    },
-    setContentNavHover(state: UIState, action: { payload: boolean }) {
-      state.contentNavHover = action.payload;
     },
     setCodeEditorPosition(
       state: UIState,
