@@ -20,31 +20,7 @@ import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
 
 import { FieldIcon } from "./FieldIcon";
-
-const typeText: { [key: string]: string } = {
-  article_writer: "Article Writer",
-  color: "Color",
-  currency: "Currency",
-  date: "Date",
-  datetime: "Date and Time",
-  dropdown: "Dropdown",
-  files: "Files",
-  font_awesome: "Font Awesome",
-  images: "Media",
-  internal_link: "Internal Link",
-  link: "External URL",
-  markdown: "Markdown",
-  number: "Number",
-  one_to_many: "One to Many",
-  one_to_one: "One to One",
-  sort: "Sort",
-  text: "Single Line Text",
-  textarea: "Multi Line Text",
-  uuid: "UUID",
-  wysiwyg_advanced: "WYSYWYG (Advanced)",
-  wysiwyg_basic: "WYSIWYG",
-  yes_no: "Toggle",
-};
+import { TYPE_TEXT } from "../configs";
 
 interface Props {
   field: ContentModelField;
@@ -203,7 +179,7 @@ export const Field = ({
           variant="body3"
           color="text.secondary"
         >
-          {typeText[field.datatype]}
+          {TYPE_TEXT[field.datatype]}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center" maxWidth="180px">
