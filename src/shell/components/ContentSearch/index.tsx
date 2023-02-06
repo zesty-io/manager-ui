@@ -15,6 +15,7 @@ import { notify } from "../../store/notifications";
 import Paper from "@mui/material/Paper";
 import Popper from "@mui/material/Popper";
 import Collapse from "@mui/material/Collapse";
+import { useTheme } from "@mui/material/styles";
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
@@ -36,13 +37,14 @@ const ContentSearch: FC = () => {
   const languages = useSelector((state: any) => state.languages);
   const [open, setOpen] = useState(false);
 
+  const theme = useTheme();
   return (
     <Collapse
       in={open}
       collapsedSize="288px"
       orientation="horizontal"
       sx={{
-        zIndex: 40,
+        zIndex: (theme) => theme.zIndex.drawer - 1,
         height: "40px",
         position: "relative",
         width: "500px",
@@ -69,7 +71,6 @@ const ContentSearch: FC = () => {
                 borderStyle: "solid",
                 borderWidth: "0px 1px 1px 1px",
                 borderColor: "border",
-                //borderColor: "#FF0000",
                 borderRadius: "0px 0px 4px 4px",
               }}
             />
@@ -97,9 +98,9 @@ const ContentSearch: FC = () => {
                 },
               ]}
               style={{
-                // default z-index is 1300, we want it to be BELOW the side nav close button
-                zIndex: 40,
                 ...props.style,
+                // default z-index is too high, we want it to be BELOW the side nav close button
+                zIndex: theme.zIndex.drawer - 1,
               }}
             />
           );
@@ -113,13 +114,10 @@ const ContentSearch: FC = () => {
         filterOptions={(x) => x}
         sx={{
           height: "40px",
-          //width: "288px",
           width: open ? "500px" : "288px",
-          //width: "500px",
-          //width: "100%",
-          //borderWidth: "0px 1px 1px 0px",
-          //borderStyle: "solid",
-          //borderColor: "grey.100",
+          "& .MuiOutlinedInput-root": {
+            py: "2px",
+          },
           boxSizing: "border-box",
           "& .MuiFormControl-root": {
             gap: "10px",
@@ -228,6 +226,7 @@ const ContentSearch: FC = () => {
                 sx: {
                   "&.MuiAutocomplete-inputRoot": {
                     py: "2px",
+                    height: "40px",
                   },
 
                   borderRadius: "4px 4px 0px 0px",

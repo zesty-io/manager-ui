@@ -164,7 +164,7 @@ export default connect((state) => {
               position: "absolute",
               top: "32px",
               right: "-12px",
-              zIndex: 50,
+              zIndex: (theme) => theme.zIndex.drawer,
 
               "&:hover": {
                 backgroundColor: "primary.main",
