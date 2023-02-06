@@ -22,6 +22,7 @@
     overflow: hidden;
     box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
     z-index: 1;
+    background-color: @appBkgColor;
 
     .ContentWrap {
       display: flex;
@@ -36,25 +37,6 @@
 
     @media only screen and (min-width: 2000px) {
       grid-template-columns: 15vw auto;
-    }
-  }
-
-  &.ContentGridHover {
-    .Content {
-      position: absolute;
-      top: 0;
-      right: 0;
-      height: 100vh;
-
-      &.GlobalOpen {
-        // 100vw - GlobalSidebar - contentNavUNCollapsed
-        width: calc(100vw - 145px - 60px);
-      }
-
-      &.GlobalClosed {
-        // 100vw - GlobalSidebar - contentNavCollapsed
-        width: calc(100vw - 60px - 60px);
-      }
     }
   }
 }

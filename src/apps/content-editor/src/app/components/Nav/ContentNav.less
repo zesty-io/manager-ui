@@ -6,6 +6,8 @@
   height: calc(100vh - 54px);
   display: flex;
   flex-direction: column;
+  width: 100%;
+  z-index: 1;
 
   //Hide Scrollbar
   scrollbar-width: none; /*  FireFox */
@@ -28,18 +30,16 @@
       display: none;
     }
   }
-
   &.ContentNavHover {
-    box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
+    transition: width 0s 500ms, z-index 0s 500ms, box-shadow 0s 500ms;
+    &:hover {
+      box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
+      z-index: 10;
+      width: 20vw;
 
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 10;
-    width: 20vw;
-
-    @media screen and (max-width: 1680px) {
-      width: 25vw;
+      @media screen and (max-width: 1680px) {
+        width: 25vw;
+      }
     }
   }
   &.ContentNavOpen {

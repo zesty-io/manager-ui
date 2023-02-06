@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 import cx from "classnames";
 import { ContentNavToggle } from "./components/ContentNavToggle";
 
-import { actions as uiActions } from "../../../../../../shell/store/ui";
-
 import { Select, MenuItem, Button } from "@mui/material";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import HomeIcon from "@mui/icons-material/Home";
@@ -44,27 +42,6 @@ export function ContentNav(props) {
     props.nav.nav.sort(bySort)
   );
 
-  const [mouseEnterTimer, setMouseEnterTimer] = useState(null);
-  const [mouseLeaveTimer, setMouseLeaveTimer] = useState(null);
-
-  const handleMouseEnter = () => {
-    const enterTimer = setTimeout(() => {
-      dispatch(uiActions.setContentNavHover(true));
-    }, 500);
-
-    setMouseEnterTimer(enterTimer);
-  };
-
-  const handleMouseLeave = () => {
-    const leaveTimer = setTimeout(() => {
-      dispatch(uiActions.setContentNavHover(false));
-    }, 500);
-    setMouseLeaveTimer(leaveTimer);
-
-    clearTimeout(mouseEnterTimer);
-    clearTimeout(mouseLeaveTimer);
-  };
-
   useEffect(() => {
     setFilteredItems(props.nav.nav.sort(byLabel));
   }, [props.nav]);
@@ -100,12 +77,9 @@ export function ContentNav(props) {
 
   return (
     <div
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       className={cx(
         styles.NavContainer,
-        ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : "",
-        ui.contentNav ? styles.ContentNavOpen : ""
+        ui.contentNav ? styles.ContentNavOpen : styles.ContentNavHover
       )}
     >
       <div className={styles.Actions}>

@@ -31,11 +31,7 @@ export function ContentNavToggle() {
         },
       }}
     >
-      {ui.contentNav || ui.contentNavHover ? (
-        <ChevronLeftIcon />
-      ) : (
-        <ChevronRightIcon />
-      )}
+      {ui.contentNav ? <ChevronLeftIcon /> : <ChevronRightIcon />}
     </Button>
   );
 }

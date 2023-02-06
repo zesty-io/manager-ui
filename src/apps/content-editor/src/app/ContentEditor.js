@@ -63,10 +63,7 @@ export default function ContentEditor() {
           <section
             className={cx(
               styles.ContentEditor,
-              ui.contentNav ? styles.ContentGridOpen : "",
-              ui.contentNavHover && !ui.contentNav
-                ? styles.ContentGridHover
-                : ""
+              ui.contentNav ? styles.ContentGridOpen : ""
             )}
           >
             <ContentNav
