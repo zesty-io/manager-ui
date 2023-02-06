@@ -275,10 +275,15 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       type: "sort",
       name: "Sort Order",
       shortDescription: "Add order to content items",
-      // TODO: Details pending c/o Zosh
-      description: "Lorem ipsum dolor sit amet consectetur adipisicing.",
-      commonUses: ["test", "test"],
-      proTip: "Lorem, ipsum.",
+      description:
+        "There may be times when you want to sort data, not by name or date, but by a user-defined custom order. In such a scenario, you can add a sort order field which allows you to specify the order number of each content item.",
+      commonUses: [
+        "Set the order of featured products",
+        "Set the order of categories",
+        "Set the order of videos of a course",
+      ],
+      proTip:
+        "You can change the default sort number with the plus and minus buttons in the content item view, as well as in the table view.",
       subHeaderText: "Use to add order to content items",
     },
     {
