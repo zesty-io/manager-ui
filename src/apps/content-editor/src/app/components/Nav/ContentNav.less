@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  z-index: 1;
+  z-index: 0;
 
   //Hide Scrollbar
   scrollbar-width: none; /*  FireFox */
@@ -31,7 +31,7 @@
     }
   }
   &.ContentNavHover {
-    transition: width 0s 500ms, z-index 0s 500ms, box-shadow 0s 500ms;
+    transition: 0s 500ms;
     &:hover {
       box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
       z-index: 10;
