@@ -18,7 +18,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import { cloneDeep, isEqual } from "lodash";
+import { cloneDeep } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
