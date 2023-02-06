@@ -53,6 +53,7 @@ interface Props {
   setDraggedIndex: (index: number) => void;
   setHoveredIndex: (index: number) => void;
   disableDrag: boolean;
+  isDeactivated?: boolean;
 }
 
 export const Field = ({
@@ -62,6 +63,7 @@ export const Field = ({
   setDraggedIndex,
   setHoveredIndex,
   disableDrag,
+  isDeactivated,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);

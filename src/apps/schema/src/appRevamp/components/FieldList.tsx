@@ -52,10 +52,14 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const [localFields, setLocalFields] = useState<ContentModelField[] | null>(
     null
   );
+  const [deactivatedFields, setDeactivatedFields] = useState<
+    ContentModelField[] | null
+  >(null);
 
   useEffect(() => {
     if (fields?.length && !isEqual(localFields, fields)) {
-      setLocalFields([...fields]);
+      setLocalFields([...fields.filter((field) => !field?.deletedAt)]);
+      setDeactivatedFields([...fields.filter((field) => field?.deletedAt)]);
     }
   }, [fields]);
 
@@ -217,6 +221,28 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 Add Another Field to {model?.label}
               </Button>
             </Box>
+            <Box pl={3} pb={1.5}>
+              <Typography variant="h6">Deactivated Fields</Typography>
+              <Typography variant="body2" color="text.secondary">
+                These fields can be re-activated at any time if you'd like to
+                bring them back to the content model.
+              </Typography>
+            </Box>
+            {deactivatedFields?.map((field, index) => {
+              return (
+                <Box sx={{ pl: 3 }} key={field.ZUID}>
+                  <Field
+                    index={index}
+                    field={field}
+                    setDraggedIndex={setDraggedIndex}
+                    setHoveredIndex={setHoveredIndex}
+                    onReorder={handleReorder}
+                    disableDrag
+                    isDeactivated
+                  />
+                </Box>
+              );
+            })}
           </Box>
         )}
       </Box>
