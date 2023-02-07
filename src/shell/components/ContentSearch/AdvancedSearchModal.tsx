@@ -18,6 +18,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { useHistory } from "react-router";
 import { Menu, MenuItem, Select } from "@mui/material";
 import { PresetDateRange } from "../../store/media-revamp";
+import { accountsApi } from "../../services/accounts";
 
 type ModalProps = {
   open: boolean;
@@ -31,12 +32,16 @@ export const AdvancedSearchDialog: FC<ModalProps> = ({
 }) => {
   const [query, setQuery] = useState<string>("");
   const [dateRange, setDateRange] = useState<PresetDateRange["value"] | "">("");
+  const [userZuid, setUserZuid] = useState<string>("");
   const history = useHistory();
+
+  const { data: users, isLoading: usersLoading } =
+    accountsApi.useGetUsersQuery();
+
   const clearAll = () => {
     setQuery("");
   };
   const search = () => {
-    console.log("searching");
     onClose();
     // filter params
     const params = new URLSearchParams({
@@ -44,6 +49,9 @@ export const AdvancedSearchDialog: FC<ModalProps> = ({
     });
     if (dateRange !== "") {
       params.set("dateFilter", dateRange.replace(/\s/g, ""));
+    }
+    if (userZuid !== "") {
+      params.set("user", userZuid);
     }
     history.push("/search?" + params.toString());
   };
@@ -70,13 +78,29 @@ export const AdvancedSearchDialog: FC<ModalProps> = ({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
+          <Typography fontWeight="bold">Created or Modified By</Typography>
+          <Select
+            fullWidth
+            variant="outlined"
+            value={userZuid}
+            onChange={(evt) => {
+              setUserZuid(evt.target.value);
+            }}
+            placeholder="Select"
+            MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
+          >
+            {users?.map((user) => (
+              <MenuItem value={user.ZUID}>
+                {user.firstName} {user.lastName}
+              </MenuItem>
+            ))}
+          </Select>
           <Typography fontWeight="bold">Date</Typography>
           <Select
             fullWidth
             variant="outlined"
             value={dateRange}
             onChange={(evt) => {
-              console.log(evt);
               setDateRange(evt.target.value as PresetDateRange["value"]);
             }}
             placeholder="Select"
