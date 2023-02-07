@@ -16,6 +16,8 @@ import { FieldTypeText } from "@zesty-io/material";
 import { theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { useHistory } from "react-router";
+import { Menu, MenuItem, Select } from "@mui/material";
+import { PresetDateRange } from "../../store/media-revamp";
 
 type ModalProps = {
   open: boolean;
@@ -28,6 +30,7 @@ export const AdvancedSearchDialog: FC<ModalProps> = ({
   children,
 }) => {
   const [query, setQuery] = useState<string>("");
+  const [dateRange, setDateRange] = useState<PresetDateRange["value"] | "">("");
   const history = useHistory();
   const clearAll = () => {
     setQuery("");
@@ -35,10 +38,14 @@ export const AdvancedSearchDialog: FC<ModalProps> = ({
   const search = () => {
     console.log("searching");
     onClose();
-    const p = new URLSearchParams({
-      q: query,
+    // filter params
+    const params = new URLSearchParams({
+      q: query.trim(),
     });
-    history.push("/search?" + p.toString());
+    if (dateRange !== "") {
+      params.set("dateFilter", dateRange.replace(/\s/g, ""));
+    }
+    history.push("/search?" + params.toString());
   };
 
   return (
@@ -56,7 +63,6 @@ export const AdvancedSearchDialog: FC<ModalProps> = ({
         </DialogTitle>
         <DialogContent>
           <Typography fontWeight="bold">Keywords*</Typography>
-
           <TextField
             variant="outlined"
             fullWidth
@@ -64,6 +70,24 @@ export const AdvancedSearchDialog: FC<ModalProps> = ({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
+          <Typography fontWeight="bold">Date</Typography>
+          <Select
+            fullWidth
+            variant="outlined"
+            value={dateRange}
+            onChange={(evt) => {
+              console.log(evt);
+              setDateRange(evt.target.value as PresetDateRange["value"]);
+            }}
+            placeholder="Select"
+          >
+            <MenuItem value="today">Today</MenuItem>
+            <MenuItem value="yesterday">Yesterday</MenuItem>
+            <MenuItem value="last 7 days">Last 7 Days</MenuItem>
+            <MenuItem value="last 30 days">Last 30 Days</MenuItem>
+            <MenuItem value="last 3 months">Last 3 Months</MenuItem>
+            <MenuItem value="last 12 months">Last 12 Months</MenuItem>
+          </Select>
         </DialogContent>
         <DialogActions
           sx={{
