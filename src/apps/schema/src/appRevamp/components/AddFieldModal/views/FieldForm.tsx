@@ -46,6 +46,8 @@ import {
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
+import { useSelector } from "react-redux";
+import { mediaManagerApi } from "../../../../../../../shell/services/mediaManager";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -107,6 +109,22 @@ export const FieldForm = ({
   } = useGetContentModelFieldsQuery(formData.relatedModelZUID as string, {
     skip: !formData.relatedModelZUID,
   });
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const { data: bins, isFetching: isBinsFetching } =
+    mediaManagerApi.useGetBinsQuery({
+      instanceId,
+      ecoId,
+    });
+
+  const { data: binGroups, isFetching: isBinGroupsFetching } =
+    mediaManagerApi.useGetAllBinGroupsQuery(
+      bins?.map((bin: any) => bin.id),
+      {
+        skip: !bins?.length,
+      }
+    );
+
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
   const modelsOptions: DropdownOptions[] = allModels?.map((model) => ({
@@ -119,6 +137,10 @@ export const FieldForm = ({
       value: field.ZUID,
     })
   );
+  const mediaFoldersOptions: DropdownOptions[] = binGroups[0]?.map((field) => ({
+    label: field.name,
+    value: field.id,
+  }));
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -469,11 +491,17 @@ export const FieldForm = ({
                 disabled = isFetchingSelectedModelFields;
               }
 
+              if (fieldConfig.name === "group_id") {
+                dropdownOptions = mediaFoldersOptions;
+                disabled = isBinGroupsFetching;
+              }
+
               return (
                 <FieldFormInput
                   key={index}
                   fieldConfig={fieldConfig}
                   formData={formData}
+                  initialMediaFolderValue={mediaFoldersOptions[0].value}
                   onDataChange={handleFieldDataChange}
                   errorMsg={isSubmitClicked && errors[fieldConfig.name]}
                   prefillData={formData[fieldConfig.name]}

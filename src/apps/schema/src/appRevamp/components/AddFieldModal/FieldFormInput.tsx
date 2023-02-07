@@ -69,6 +69,7 @@ export interface DropdownOptions {
 interface FieldFormInputProps {
   fieldConfig: InputField;
   errorMsg?: string | [string, string][];
+  lockFolder?: LockFolder;
   onDataChange: ({
     inputName,
     value,
@@ -77,6 +78,7 @@ interface FieldFormInputProps {
     value: FormValue;
   }) => void;
   prefillData?: FormValue;
+  initialMediaFolderValue?: string;
   formData?: any;
   dropdownOptions?: DropdownOptions[];
   disabled?: boolean;
@@ -85,14 +87,13 @@ export const FieldFormInput = ({
   fieldConfig,
   errorMsg,
   formData,
+  lockFolder,
   onDataChange,
+  initialMediaFolderValue,
   prefillData,
   dropdownOptions,
   disabled,
 }: FieldFormInputProps) => {
-  const { itemLimit, lockFolder, setItemLimit, setLockFolder, groups } =
-    useMediaRules();
-
   const options =
     fieldConfig.type === "options" && prefillData
       ? (prefillData as FieldSettingsOptions[])
@@ -134,6 +135,21 @@ export const FieldFormInput = ({
       inputName: fieldConfig.name,
       value: [...localOptionsCopy],
     });
+  };
+
+  const showAutocompleteField = () => {
+    if (
+      fieldConfig.type === "autocomplete" &&
+      fieldConfig.name === "group_id" &&
+      formData["lockToFolder"]
+    ) {
+      return true;
+    } else if (
+      fieldConfig.type === "autocomplete" &&
+      fieldConfig.name !== "group_id"
+    ) {
+      return true;
+    }
   };
 
   return (
@@ -209,7 +225,7 @@ export const FieldFormInput = ({
                     inputName: "group_id",
                     value:
                       !formData.group_id && e.target.checked
-                        ? lockFolder.value?.id
+                        ? initialMediaFolderValue
                         : "",
                   });
                 }
@@ -301,29 +317,8 @@ export const FieldFormInput = ({
         </Box>
       )}
 
-      {fieldConfig.type === "virtualizedAutocomplete" &&
-        formData["lockToFolder"] && (
-          <Box ml={4}>
-            <Typography variant="body2">{fieldConfig.label}</Typography>
-            <VirtualizedAutocomplete
-              value={groups.find((option) => option?.id === prefillData) || ""}
-              onChange={(_, option) => {
-                setLockFolder((prevData: LockFolder) => ({
-                  ...prevData,
-                  value: option,
-                }));
-                onDataChange({
-                  inputName: fieldConfig.name,
-                  value: option.id,
-                });
-              }}
-              options={groups}
-            />
-          </Box>
-        )}
-
-      {fieldConfig.type === "autocomplete" && (
-        <>
+      {showAutocompleteField() && (
+        <Box sx={{ ml: fieldConfig.name === "group_id" ? 4 : 0 }}>
           <Typography variant="body2" mb={0.5} fontWeight={600}>
             {fieldConfig.label}
           </Typography>
@@ -357,7 +352,7 @@ export const FieldFormInput = ({
               },
             }}
           />
-        </>
+        </Box>
       )}
 
       {fieldConfig.type === "options" && (

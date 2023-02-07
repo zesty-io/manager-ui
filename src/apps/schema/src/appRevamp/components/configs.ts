@@ -423,7 +423,7 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
     },
     {
       name: "group_id",
-      type: "virtualizedAutocomplete",
+      type: "autocomplete",
       label: "Select Folder",
       subLabel: "",
       required: false,
