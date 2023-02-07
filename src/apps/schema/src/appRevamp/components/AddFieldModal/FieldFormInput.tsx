@@ -224,8 +224,8 @@ export const FieldFormInput = ({
       )}
 
       {fieldConfig.type === "number" && formData["allowMultipleFiles"] && (
-        <>
-          <Typography variant="body2" ml={4}>
+        <Box ml={4}>
+          <Typography variant="body2">
             {fieldConfig.label}
             <Tooltip
               placement="top"
@@ -242,7 +242,7 @@ export const FieldFormInput = ({
             variant="outlined"
             type="number"
             value={prefillData || "1"}
-            sx={{ ml: 4, mt: 1 }}
+            sx={{ mt: 1 }}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               onDataChange({
                 inputName: fieldConfig.name,
@@ -250,20 +250,15 @@ export const FieldFormInput = ({
               });
             }}
           />
-        </>
+        </Box>
       )}
 
       {fieldConfig.type === "virtualizedAutocomplete" &&
         formData["lockToFolder"] && (
-          <>
-            <Typography variant="body2" ml={4}>
-              {fieldConfig.label}
-            </Typography>
+          <Box ml={4}>
+            <Typography variant="body2">{fieldConfig.label}</Typography>
             <VirtualizedAutocomplete
               value={lockFolder.value}
-              sx={{
-                ml: 4,
-              }}
               onChange={(_, option) => {
                 setLockFolder((prevData: LockFolder) => ({
                   ...prevData,
@@ -274,10 +269,9 @@ export const FieldFormInput = ({
                   value: option.id,
                 });
               }}
-              placeholder="Select media folder..."
               options={groups}
             />
-          </>
+          </Box>
         )}
 
       {fieldConfig.type === "autocomplete" && (
