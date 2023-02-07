@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useLocation, useHistory, useParams } from "react-router";
+import { useDispatch } from "react-redux";
 import {
   Box,
   IconButton,
@@ -27,6 +28,7 @@ import {
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../shell/services/instance";
 import { TYPE_TEXT } from "../configs";
+import { notify } from "../../../../../../shell/store/notifications";
 
 type Params = {
   id: string;
@@ -61,6 +63,7 @@ export const Field = ({
   const history = useHistory();
   const params = useParams<Params>();
   const { id: modelZUID } = params;
+  const dispatch = useDispatch();
 
   const [
     deleteContentModelField,
@@ -89,6 +92,25 @@ export const Field = ({
 
   useEffect(() => {
     setAnchorEl(null);
+
+    if (isFieldDeleted || isFieldUndeleted) {
+      let message = "";
+
+      if (isFieldDeleted) {
+        message = `\"${field?.label}\" field is de-activated`;
+      }
+
+      if (isFieldUndeleted) {
+        message = `\"${field?.label}\" field is re-activated`;
+      }
+
+      dispatch(
+        notify({
+          message,
+          kind: "success",
+        })
+      );
+    }
   }, [isFieldDeleted, isFieldUndeleted]);
 
   const handleDragStart = (e: React.DragEvent) => {
