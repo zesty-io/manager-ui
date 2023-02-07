@@ -330,6 +330,13 @@ export const FieldFormInput = ({
               null
             }
             options={dropdownOptions}
+            renderOption={(props: any, option: DropdownOptions) => {
+              return (
+                <Box {...props} key={option.value}>
+                  {option.label}
+                </Box>
+              );
+            }}
             renderInput={(params) => (
               <TextField
                 {...params}
