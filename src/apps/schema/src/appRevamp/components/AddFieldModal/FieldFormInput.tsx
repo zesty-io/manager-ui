@@ -258,7 +258,7 @@ export const FieldFormInput = ({
           <Box ml={4}>
             <Typography variant="body2">{fieldConfig.label}</Typography>
             <VirtualizedAutocomplete
-              value={lockFolder.value}
+              value={groups.find((option) => option?.id === prefillData) || ""}
               onChange={(_, option) => {
                 setLockFolder((prevData: LockFolder) => ({
                   ...prevData,

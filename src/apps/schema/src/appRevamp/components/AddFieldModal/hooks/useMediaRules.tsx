@@ -23,7 +23,6 @@ export interface CustomGroup {
 }
 
 export const useMediaRules = () => {
-  // Media rules
   const [itemLimit, setItemLimit] = useState({
     label: "Media Item Limit",
     isChecked: false,
@@ -56,16 +55,19 @@ export const useMediaRules = () => {
       }
     );
 
+  // set initial value
   useEffect(() => {
-    setGroups(
-      binGroups[0]?.map((group: Group) => {
-        return {
-          id: group?.id,
-          inputLabel: group?.name,
-          component: group?.name,
-        };
-      })
-    );
+    if (binGroups?.length) {
+      setGroups(
+        binGroups[0]?.map((group: Group) => {
+          return {
+            id: group?.id,
+            inputLabel: group?.name,
+            component: group?.name,
+          };
+        }) || []
+      );
+    }
   }, [binGroups]);
 
   useEffect(() => {

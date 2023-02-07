@@ -124,6 +124,14 @@ export const FieldForm = ({
       if (isUpdateField) {
         if (field.name === "list") {
           formFields[field.name] = fieldData.settings[field.name];
+        } else if (field.name === "limit") {
+          formFields[field.name] = fieldData.settings[field.name];
+          formFields["allowMultipleFiles"] = Boolean(
+            fieldData.settings[field.name]
+          );
+        } else if (field.name === "group_id") {
+          formFields[field.name] = fieldData.settings[field.name];
+          formFields["lockToFolder"] = Boolean(fieldData.settings[field.name]);
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
