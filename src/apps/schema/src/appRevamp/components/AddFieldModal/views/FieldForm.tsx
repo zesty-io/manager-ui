@@ -42,6 +42,7 @@ import {
   FieldSettings,
   ContentModelFieldValue,
   FieldSettingsOptions,
+  Bin,
 } from "../../../../../../../shell/services/types";
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
@@ -120,7 +121,7 @@ export const FieldForm = ({
 
   const { data: binGroups, isFetching: isBinGroupsFetching } =
     mediaManagerApi.useGetAllBinGroupsQuery(
-      bins?.map((bin: any) => bin.id),
+      bins?.map((bin: Bin) => bin.id),
       {
         skip: !bins?.length,
       }
