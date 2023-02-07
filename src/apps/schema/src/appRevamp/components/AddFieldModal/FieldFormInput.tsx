@@ -24,7 +24,6 @@ import { cloneDeep } from "lodash";
 import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { convertLabelValue } from "../../utils";
-import { LockFolder, useMediaRules } from "./hooks/useMediaRules";
 
 export type Validation = "length" | "required" | "unique";
 export type FieldNames =
@@ -69,7 +68,6 @@ export interface DropdownOptions {
 interface FieldFormInputProps {
   fieldConfig: InputField;
   errorMsg?: string | [string, string][];
-  lockFolder?: LockFolder;
   onDataChange: ({
     inputName,
     value,
@@ -87,7 +85,6 @@ export const FieldFormInput = ({
   fieldConfig,
   errorMsg,
   formData,
-  lockFolder,
   onDataChange,
   initialMediaFolderValue,
   prefillData,

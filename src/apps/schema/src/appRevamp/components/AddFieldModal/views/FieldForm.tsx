@@ -48,6 +48,7 @@ import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
 import { useSelector } from "react-redux";
 import { mediaManagerApi } from "../../../../../../../shell/services/mediaManager";
+import { AppState } from "../../../../../../../shell/store/types";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -109,7 +110,7 @@ export const FieldForm = ({
   } = useGetContentModelFieldsQuery(formData.relatedModelZUID as string, {
     skip: !formData.relatedModelZUID,
   });
-  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const { data: bins, isFetching: isBinsFetching } =
     mediaManagerApi.useGetBinsQuery({
