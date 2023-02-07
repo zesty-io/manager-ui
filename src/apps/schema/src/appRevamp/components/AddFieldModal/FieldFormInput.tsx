@@ -288,6 +288,7 @@ export const FieldFormInput = ({
             size="small"
             variant="outlined"
             type="number"
+            inputProps={{ min: 1 }}
             value={prefillData || "1"}
             sx={{ mt: 1 }}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
