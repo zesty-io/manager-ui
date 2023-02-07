@@ -18,6 +18,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
+import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 
 import { FieldIcon } from "./FieldIcon";
 
@@ -147,8 +148,16 @@ export const Field = ({
     setAnchorEl(e.currentTarget);
   };
 
-  const style = {
-    opacity: isDragging ? 0.01 : 1,
+  const getStyle = () => {
+    if (isDragging) {
+      return { opacity: 0.01 };
+    }
+
+    if (isDeactivated) {
+      return { opacity: 0.7 };
+    }
+
+    return { opacity: 1 };
   };
 
   return (
@@ -159,7 +168,7 @@ export const Field = ({
       borderRadius={1}
       ref={ref}
       sx={{
-        ...style,
+        ...getStyle(),
         "&:hover": {
           backgroundColor: "action.hover",
         },
@@ -257,9 +266,15 @@ export const Field = ({
           </MenuItem>
           <MenuItem>
             <ListItemIcon>
-              <HighlightOffRoundedIcon />
+              {isDeactivated ? (
+                <PlayCircleOutlineRoundedIcon />
+              ) : (
+                <HighlightOffRoundedIcon />
+              )}
             </ListItemIcon>
-            <ListItemText>De-activate Field</ListItemText>
+            <ListItemText>
+              {isDeactivated ? "Re-activate Field" : "De-activate Field"}
+            </ListItemText>
           </MenuItem>
         </Menu>
       </Box>
