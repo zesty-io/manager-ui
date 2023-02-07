@@ -449,24 +449,7 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && type !== "images" ? (
-          <ComingSoon />
-        ) : (
-          activeTab === "rules" &&
-          type === "images" && (
-            <MediaRules
-              fieldConfig={FORM_CONFIG["images"].filter(
-                (data) => data.tab === "rules"
-              )}
-              onDataChange={handleFieldDataChange}
-              itemLimit={itemLimit}
-              lockFolder={lockFolder}
-              setItemLimit={setItemLimit}
-              setLockFolder={setLockFolder}
-              groups={groups}
-            />
-          )
-        )}
+        {activeTab === "rules" && <ComingSoon />}
         {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
       {isUpdateField ? (
