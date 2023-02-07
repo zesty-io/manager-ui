@@ -250,6 +250,7 @@ export const Field = ({
           }}
         >
           <MenuItem
+            disabled={isDeactivated}
             onClick={() => history.push(`${location.pathname}/${field.ZUID}`)}
           >
             <ListItemIcon>
