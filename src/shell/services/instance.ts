@@ -267,6 +267,18 @@ export const instanceApi = createApi({
       query: () => `/web/views`,
       transformResponse: getResponseData,
     }),
+    undeleteContentModelField: builder.mutation<
+      any,
+      { modelZUID: string; fieldZUID: string }
+    >({
+      query: ({ modelZUID, fieldZUID }) => ({
+        url: `content/models/${modelZUID}/fields/${fieldZUID}?action=undelete`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModelFields", id: arg.modelZUID },
+      ],
+    }),
   }),
 });
 
@@ -289,4 +301,6 @@ export const {
   useCreateContentModelMutation,
   useGetWebViewsQuery,
   useBulkCreateContentModelFieldMutation,
+  useDeleteContentModelFieldMutation,
+  useUndeleteContentModelFieldMutation,
 } = instanceApi;
