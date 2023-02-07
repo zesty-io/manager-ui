@@ -7,29 +7,22 @@ import {
   ListItemIcon,
   Menu,
   MenuItem,
+  SvgIcon,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import AddIcon from "@mui/icons-material/Add";
-import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import { ContentModel } from "../../../../../../shell/services/types";
-import { FileTable } from "@zesty-io/material";
 import { useHistory, useLocation } from "react-router";
 import { useMemo, useState } from "react";
 import { useLocalStorage } from "react-use";
 import { CreateModelDialogue } from "../CreateModelDialogue";
+import { modelIconMap } from "../../utils";
 
 interface Props {
   title: string;
   type: string;
   models: ContentModel[];
 }
-
-const listIconMap = {
-  templateset: <FormatListBulletedRoundedIcon fontSize="small" />,
-  dataset: <FileTable fontSize="small" />,
-  pageset: <DescriptionRoundedIcon fontSize="small" />,
-};
 
 export const ModelList = ({ title, models, type }: Props) => {
   const history = useHistory();
@@ -99,7 +92,10 @@ export const ModelList = ({ title, models, type }: Props) => {
                   color: selected && "primary.main",
                 }}
               >
-                {listIconMap[model.type as keyof typeof listIconMap]}
+                <SvgIcon
+                  fontSize="small"
+                  component={modelIconMap[model.type]}
+                />
               </ListItemIcon>
               <ListItemText
                 sx={{ m: 0 }}

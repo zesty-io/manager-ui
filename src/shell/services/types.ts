@@ -135,8 +135,7 @@ export interface ContentItem {
 }
 
 export interface FieldSettingsOptions {
-  0: "No";
-  1: "Yes";
+  [key: string]: string;
 }
 
 export interface FieldSettings {
@@ -147,7 +146,12 @@ export interface FieldSettings {
   tooltip?: string;
 }
 
-export type ContentModelFieldValue = string | number | boolean | FieldSettings;
+export type ContentModelFieldValue =
+  | string
+  | number
+  | boolean
+  | FieldSettings
+  | FieldSettingsOptions[];
 
 export interface ContentModelField {
   ZUID: string;
@@ -165,9 +169,11 @@ export interface ContentModelField {
   settings: FieldSettings;
   relatedModelZUID?: any;
   relatedFieldZUID?: any;
+  allowMultipleFiles?: boolean;
+  lockToFolder?: boolean;
   createdAt: string;
   updatedAt: string;
-  [key: string]: ContentModelFieldValue;
+  deletedAt: string;
 }
 
 export interface WebView {

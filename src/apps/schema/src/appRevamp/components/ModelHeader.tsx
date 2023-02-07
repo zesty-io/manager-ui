@@ -10,13 +10,14 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  SvgIcon,
 } from "@mui/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import {
   useGetContentModelsQuery,
   useGetContentModelFieldsQuery,
   useGetWebViewsQuery,
-} from "../../../../../../shell/services/instance";
+} from "../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import PostAddRoundedIcon from "@mui/icons-material/PostAddRounded";
 import moment from "moment";
@@ -24,31 +25,18 @@ import SplitscreenRoundedIcon from "@mui/icons-material/SplitscreenRounded";
 import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
-import { FileTable } from "@zesty-io/material";
-import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
+import { RenameModelDialogue } from "./RenameModelDialogue";
+import { modelIconMap, modelNameMap } from "../utils";
+import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
 
 type Params = {
   id: string;
 };
 
-const modelTypeName = {
-  templateset: "Single Page Item",
-  pageset: "Multi Page Item",
-  dataset: "Headless Data Item",
-};
-
-const modelIconMap = {
-  templateset: (
-    <FormatListBulletedRoundedIcon fontSize="small" color="action" />
-  ),
-  dataset: <FileTable fontSize="small" color="action" />,
-  pageset: <DescriptionRoundedIcon fontSize="small" color="action" />,
-};
 interface Props {
   onNewFieldModalClick: (sortIndex: number | null) => void;
 }
@@ -66,6 +54,10 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const model = models?.find((model) => model.ZUID === id);
   const view = views?.find((view) => view?.contentModelZUID === model?.ZUID);
 
+  const [showDialogue, setShowDialogue] = useState<
+    "rename" | "duplicate" | "delete" | null
+  >(null);
+
   return (
     <>
       <Box
@@ -74,7 +66,13 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
         <Box sx={{ px: 3, pt: 2 }}>
           <Box display="flex" justifyContent="space-between">
             <Box display="flex" alignItems="center" gap={0.5}>
-              {modelIconMap[model?.type as keyof typeof modelIconMap]}
+              <SvgIcon
+                fontSize="small"
+                color="action"
+                component={
+                  modelIconMap[model?.type as keyof typeof modelIconMap]
+                }
+              />
               <Typography variant="h4" fontWeight={600}>
                 {model?.label}
               </Typography>
@@ -90,13 +88,23 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 open={open}
                 onClose={() => setAnchorEl(null)}
               >
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setShowDialogue("rename");
+                    setAnchorEl(null);
+                  }}
+                >
                   <ListItemIcon>
                     <DriveFileRenameOutlineRoundedIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText>Rename Model</ListItemText>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setShowDialogue("duplicate");
+                    setAnchorEl(null);
+                  }}
+                >
                   <ListItemIcon>
                     <ContentCopyRoundedIcon fontSize="small" />
                   </ListItemIcon>
@@ -149,7 +157,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
           </Box>
           <Box mt={1.5}>
             <Typography variant="caption" color="textSecondary">{`${
-              modelTypeName[model?.type as keyof typeof modelTypeName]
+              modelNameMap[model?.type]
             } •  ZUID: ${model?.ZUID} •  Last Updated: ${moment(
               model?.updatedAt
             ).format("Do MMMM YYYY [at] h:mm A")}`}</Typography>
@@ -185,6 +193,18 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
           </Tabs>
         </Box>
       </Box>
+      {showDialogue === "rename" && (
+        <RenameModelDialogue
+          model={model}
+          onClose={() => setShowDialogue(null)}
+        />
+      )}
+      {showDialogue === "duplicate" && (
+        <DuplicateModelDialogue
+          model={model}
+          onClose={() => setShowDialogue(null)}
+        />
+      )}
     </>
   );
 };
