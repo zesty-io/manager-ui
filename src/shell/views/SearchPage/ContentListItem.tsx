@@ -92,7 +92,9 @@ export const ContentListItem: FC<ContentListItem> = ({
         padding: 2,
         gap: 2,
         backgroundColor: "background.paper",
-        border: (theme) => `1px solid ${theme.palette.grey[100]}`,
+        borderColor: "grey.100",
+        borderWidth: "0px 1px 1px 1px",
+        borderStyle: "solid",
         height: 9,
         color: "inherit",
         textDecoration: "none",
@@ -104,6 +106,10 @@ export const ContentListItem: FC<ContentListItem> = ({
         },
         "&:hover a": {
           visibility: "visible",
+        },
+        "&:first-of-type": {
+          borderRadius: "8px 8px 0 0",
+          borderWidth: "1px",
         },
       }}
     >
