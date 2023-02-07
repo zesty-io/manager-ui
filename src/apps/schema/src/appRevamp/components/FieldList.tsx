@@ -177,11 +177,13 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           />
         )}
 
-        {!Boolean(filteredFields?.length) && !search && (
-          <FieldEmptyState onAddField={() => onNewFieldModalClick(null)} />
-        )}
+        {!Boolean(filteredFields?.length) &&
+          !Boolean(deactivatedFields?.length) &&
+          !search && (
+            <FieldEmptyState onAddField={() => onNewFieldModalClick(null)} />
+          )}
 
-        {Boolean(filteredFields?.length) && (
+        {Boolean(filteredFields?.length) ? (
           <Box sx={{ overflowY: "scroll" }}>
             {filteredFields?.map((field, index) => {
               return (
@@ -221,6 +223,17 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 Add Another Field to {model?.label}
               </Button>
             </Box>
+          </Box>
+        ) : (
+          <Box pl={3}>
+            <Typography variant="body2" color="text.secondary">
+              There are no active fields in this model.
+            </Typography>
+          </Box>
+        )}
+
+        {Boolean(deactivatedFields?.length) && (
+          <Box sx={{ overflowY: "scroll" }}>
             <Box pl={3} pb={1.5}>
               <Typography variant="h6">Deactivated Fields</Typography>
               <Typography variant="body2" color="text.secondary">
