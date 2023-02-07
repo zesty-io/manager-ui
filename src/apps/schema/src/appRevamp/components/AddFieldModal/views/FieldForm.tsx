@@ -34,7 +34,6 @@ import {
   useGetContentModelsQuery,
   useGetContentModelFieldsQuery,
 } from "../../../../../../../shell/services/instance";
-import { useMediaRules } from "../hooks/useMediaRules";
 import {
   ContentModelField,
   FieldSettings,
@@ -79,8 +78,6 @@ export const FieldForm = ({
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [isAddAnotherFieldClicked, setIsAddAnotherFieldClicked] =
     useState(false);
-  const { itemLimit, lockFolder, setItemLimit, setLockFolder, groups } =
-    useMediaRules();
 
   const [errors, setErrors] = useState<Errors>({});
   const [formData, setFormData] = useState<FormData>({});

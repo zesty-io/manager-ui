@@ -32,7 +32,11 @@ export const useMediaRules = () => {
   const [lockFolder, setLockFolder] = useState({
     label: "Select Folder",
     isChecked: false,
-    value: {},
+    value: {
+      id: "",
+      inputLabel: "",
+      component: "",
+    },
   });
 
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -56,7 +60,7 @@ export const useMediaRules = () => {
     setGroups(
       binGroups[0]?.map((group: Group) => {
         return {
-          value: group?.id,
+          id: group?.id,
           inputLabel: group?.name,
           component: group?.name,
         };

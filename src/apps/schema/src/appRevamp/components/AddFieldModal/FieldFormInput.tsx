@@ -159,6 +159,14 @@ export const FieldFormInput = ({
                     inputName: "limit",
                     value: !formData.limit && e.target.checked ? "1" : "",
                   });
+                } else if (fieldConfig.name === "lockToFolder") {
+                  onDataChange({
+                    inputName: "group_id",
+                    value:
+                      !formData.group_id && e.target.checked
+                        ? lockFolder.value?.id
+                        : "",
+                  });
                 }
                 onDataChange({
                   inputName: fieldConfig.name,
@@ -263,7 +271,7 @@ export const FieldFormInput = ({
                 }));
                 onDataChange({
                   inputName: fieldConfig.name,
-                  value: option.value,
+                  value: option.id,
                 });
               }}
               placeholder="Select media folder..."
