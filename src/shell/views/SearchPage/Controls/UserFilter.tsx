@@ -4,6 +4,10 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { AppState } from "../../../store/types";
 import { useParams } from "../../../hooks/useParams";
 import { useSearchContentQuery } from "../../../services/instance";
+import Avatar from "@mui/material/Avatar";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import { accountsApi } from "../../../services/accounts";
+import { MD5 } from "../../../../utility/md5";
 
 export const UserFilter: FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -18,6 +22,8 @@ export const UserFilter: FC = () => {
     { skip: !query }
   );
 
+  const { data: allUsers } = accountsApi.useGetUsersQuery();
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -30,8 +36,11 @@ export const UserFilter: FC = () => {
     .map((result) => result.web.createdByUserZUID)
     .filter((zuid) => zuid);
 
-  const uniqueUserZuids = [...new Set(userZuids)];
-  console.log(uniqueUserZuids);
+  const uniqueUserZuids = new Set(userZuids);
+  const users = allUsers
+    ? allUsers.filter((user) => uniqueUserZuids.has(user.ZUID))
+    : [];
+  console.log(users);
 
   return (
     <>
@@ -48,8 +57,18 @@ export const UserFilter: FC = () => {
         People
       </Button>
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        {uniqueUserZuids.map((userZuid) => (
-          <MenuItem onClick={() => handleChange(userZuid)}>{userZuid}</MenuItem>
+        {users.map((user) => (
+          <MenuItem onClick={() => handleChange(user.ZUID)}>
+            <ListItemAvatar>
+              <Avatar
+                alt={`${user.firstName} ${user.lastName} Avatar`}
+                src={`https://www.gravatar.com/avatar/${MD5(
+                  user.email
+                )}?d=mm&s=40`}
+              />
+            </ListItemAvatar>
+            {user.firstName} {user.lastName}
+          </MenuItem>
         ))}
       </Menu>
     </>

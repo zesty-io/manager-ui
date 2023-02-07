@@ -116,6 +116,13 @@ export interface Meta {
 export interface Data {
   [key: string]: number | string | null | undefined;
 }
+export interface User {
+  ZUID: string;
+  ID: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
 
 type UnorderedQuery = {
   limit?: number;
