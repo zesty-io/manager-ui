@@ -1,6 +1,8 @@
 import TextField from "@mui/material/TextField";
 import { FC, useState, useRef } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
+import TuneIcon from "@mui/icons-material/TuneRounded";
+import IconButton from "@mui/material/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import InputAdornment from "@mui/material/InputAdornment";
 import { HTMLAttributes } from "react";
@@ -16,6 +18,7 @@ import Paper from "@mui/material/Paper";
 import Popper from "@mui/material/Popper";
 import Collapse from "@mui/material/Collapse";
 import { useTheme } from "@mui/material/styles";
+import { AdvancedSearchDialog } from "./AdvancedSearchModal";
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
@@ -36,6 +39,7 @@ const ContentSearch: FC = () => {
   });
   const languages = useSelector((state: any) => state.languages);
   const [open, setOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(true);
 
   const theme = useTheme();
   return (
@@ -223,6 +227,21 @@ const ContentSearch: FC = () => {
                     <SearchIcon fontSize="small" color="action" />
                   </InputAdornment>
                 ),
+                endAdornment: (
+                  <InputAdornment position="end" sx={{ marginLeft: 0 }}>
+                    <IconButton
+                      sx={{ marginLeft: 0 }}
+                      onClick={(evt) => {
+                        // if the event propogates, the input will be activated and the search icon will dissapear
+                        evt.stopPropagation();
+                        console.log("tune icon clicked");
+                        setModalOpen(true);
+                      }}
+                    >
+                      <TuneIcon fontSize="small" color="action" />
+                    </IconButton>
+                  </InputAdornment>
+                ),
                 sx: {
                   "&.MuiAutocomplete-inputRoot": {
                     py: "2px",
@@ -241,6 +260,10 @@ const ContentSearch: FC = () => {
             />
           );
         }}
+      />
+      <AdvancedSearchDialog
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
       />
     </Collapse>
   );
