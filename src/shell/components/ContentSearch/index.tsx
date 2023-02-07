@@ -39,7 +39,7 @@ const ContentSearch: FC = () => {
   });
   const languages = useSelector((state: any) => state.languages);
   const [open, setOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const theme = useTheme();
   return (
