@@ -167,6 +167,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           inputRef={searchRef}
         />
 
+        {/* No search results */}
         {!Boolean(filteredFields?.length) && search && (
           <NoSearchResults
             searchTerm={search}
@@ -177,6 +178,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           />
         )}
 
+        {/* No active or inactive fields in model */}
         {!Boolean(filteredFields?.length) &&
           !Boolean(deactivatedFields?.length) &&
           !search && (
@@ -184,6 +186,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           )}
 
         {Boolean(filteredFields?.length) ? (
+          /** Active fields are present */
           <Box sx={{ overflowY: "scroll" }}>
             {filteredFields?.map((field, index) => {
               return (
@@ -225,6 +228,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             </Box>
           </Box>
         ) : (
+          /** No active fields */
           <Box pl={3}>
             <Typography variant="body2" color="text.secondary">
               There are no active fields in this model.
@@ -232,6 +236,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           </Box>
         )}
 
+        {/* Inactive fields */}
         {Boolean(deactivatedFields?.length) && (
           <Box sx={{ overflowY: "scroll" }}>
             <Box pl={3} pb={1.5}>
