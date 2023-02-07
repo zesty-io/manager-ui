@@ -168,7 +168,7 @@ export const instanceApi = createApi({
         modelZUID: string;
         body: Omit<
           ContentModelField,
-          "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
+          "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt" | "deletedAt"
         >;
         skipInvalidation?: boolean;
       }

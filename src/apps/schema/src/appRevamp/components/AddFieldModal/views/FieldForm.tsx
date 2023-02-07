@@ -41,6 +41,7 @@ import {
   ContentModelField,
   FieldSettings,
   ContentModelFieldValue,
+  FieldSettingsOptions,
 } from "../../../../../../../shell/services/types";
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
@@ -55,7 +56,7 @@ interface FormData {
   [key: string]: FormValue;
 }
 interface Errors {
-  [key: string]: string;
+  [key: string]: string | [string, string][];
 }
 interface Props {
   type: string;
@@ -125,23 +126,37 @@ export const FieldForm = ({
     FORM_CONFIG[type]?.forEach((field) => {
       if (isUpdateField) {
         if (field.name === "list") {
-          formFields[field.name] = fieldData.settings[field.name];
+          formFields.list = fieldData.settings.list;
+        } else if (field.name === "options") {
+          // Convert the options object to an Array of objects for easier rendering
+          const options = Object.entries(fieldData.settings.options).map(
+            ([key, value]) => {
+              return {
+                [key]: value,
+              };
+            }
+          );
+          formFields.options = options;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
 
-        // Pre-fill error messages based on content
-        if (field.required) {
-          errors[field.name] = isEmpty(fieldData[field.name])
-            ? "This field is required"
-            : "";
+        // Add the field name to the errors object if the field requires any validation
+        if (field.validate?.length) {
+          errors[field.name] = "";
         }
       } else {
-        formFields[field.name] = field.type === "checkbox" ? false : "";
+        if (field.type === "checkbox") {
+          formFields[field.name] = false;
+        } else if (field.type === "options") {
+          formFields[field.name] = [{ "": "" }];
+        } else {
+          formFields[field.name] = "";
+        }
 
-        // Pre-fill required fields error msgs
-        if (field.required) {
-          errors[field.name] = "This field is required";
+        // Add the field name to the errors object if the field requires any validation
+        if (field.validate?.length) {
+          errors[field.name] = "";
         }
       }
     });
@@ -193,7 +208,7 @@ export const FieldForm = ({
 
     Object.keys(formData).map((inputName) => {
       if (inputName in errors) {
-        const { maxLength } = FORM_CONFIG[type].find(
+        const { maxLength, label, validate } = FORM_CONFIG[type].find(
           (field) => field.name === inputName
         );
 
@@ -203,17 +218,27 @@ export const FieldForm = ({
             value: formData.name as string,
             fieldNames: currFieldNames,
             maxLength,
+            label,
+            validate,
           });
 
           // When updating a field, user can choose to just leave the reference name the same
           if (isUpdateField && formData.name === fieldData.name) {
             newErrorsObj.name = "";
           }
+        } else if (inputName === "options") {
+          newErrorsObj.options = getErrorMessage({
+            value: formData.options as FieldSettingsOptions[],
+            maxLength,
+            validate,
+          });
         } else {
           // All other input validation
           newErrorsObj[inputName] = getErrorMessage({
             value: formData[inputName] as string,
             maxLength,
+            label,
+            validate,
           });
         }
       }
@@ -224,7 +249,9 @@ export const FieldForm = ({
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
-    const hasErrors = Object.values(errors).some((error) => error.length);
+    const hasErrors = Object.values(errors)
+      .flat(2)
+      .some((error) => error.length);
     const sort = isInbetweenField ? sortIndex : fields?.length;
 
     if (hasErrors) {
@@ -234,7 +261,7 @@ export const FieldForm = ({
     // Common field values
     let body: Omit<
       ContentModelField,
-      "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
+      "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt" | "deletedAt"
     > = {
       contentModelZUID: id,
       name: formData.name as string,
@@ -249,8 +276,20 @@ export const FieldForm = ({
     };
 
     if (type === "one_to_one" || type === "one_to_many") {
-      body["relatedModelZUID"] = formData.relatedModelZUID || null;
-      body["relatedFieldZUID"] = formData.relatedFieldZUID || null;
+      body.relatedModelZUID = formData.relatedModelZUID || null;
+      body.relatedFieldZUID = formData.relatedFieldZUID || null;
+    }
+
+    if (type === "dropdown") {
+      const options = formData.options as FieldSettingsOptions[];
+      const optionsObject = options.reduce(
+        (acc: FieldSettingsOptions, curr: FieldSettingsOptions) => {
+          return { ...acc, ...curr };
+        },
+        {}
+      );
+
+      body.settings.options = optionsObject;
     }
 
     if (isUpdateField) {

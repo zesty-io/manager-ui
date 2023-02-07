@@ -275,10 +275,15 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       type: "sort",
       name: "Sort Order",
       shortDescription: "Add order to content items",
-      // TODO: Details pending c/o Zosh
-      description: "Lorem ipsum dolor sit amet consectetur adipisicing.",
-      commonUses: ["test", "test"],
-      proTip: "Lorem, ipsum.",
+      description:
+        "There may be times when you want to sort data, not by name or date, but by a user-defined custom order. In such a scenario, you can add a sort order field which allows you to specify the order number of each content item.",
+      commonUses: [
+        "Set the order of featured products",
+        "Set the order of categories",
+        "Set the order of videos of a course",
+      ],
+      proTip:
+        "You can change the default sort number with the plus and minus buttons in the content item view, as well as in the table view.",
       subHeaderText: "Use to add order to content items",
     },
     {
@@ -329,6 +334,7 @@ const COMMON_FIELDS: InputField[] = [
     maxLength: 200,
     gridSize: 12,
     tooltip: "The display name of the field seen in Schema.",
+    validate: ["required", "length"],
   },
   {
     name: "name",
@@ -339,6 +345,7 @@ const COMMON_FIELDS: InputField[] = [
     maxLength: 50,
     gridSize: 12,
     tooltip: "This will appear in the API Responses",
+    validate: ["length", "required", "unique"],
   },
   {
     name: "description",
@@ -370,13 +377,25 @@ const COMMON_FIELDS: InputField[] = [
 ];
 const FORM_CONFIG: { [key: string]: InputField[] } = {
   article_writer: [],
-  color: [],
-  currency: [],
+  color: [...COMMON_FIELDS],
+  currency: [...COMMON_FIELDS],
   date: [...COMMON_FIELDS],
   datetime: [...COMMON_FIELDS],
-  dropdown: [],
+  dropdown: [
+    ...COMMON_FIELDS.slice(0, 3),
+    {
+      name: "options",
+      type: "options",
+      label: "Dropdown Options",
+      required: false,
+      gridSize: 12,
+      maxLength: 150,
+      validate: ["length", "unique"],
+    },
+    ...COMMON_FIELDS.slice(3),
+  ],
   images: [],
-  internal_link: [],
+  internal_link: [...COMMON_FIELDS],
   link: [...COMMON_FIELDS],
   markdown: [...COMMON_FIELDS],
   number: [...COMMON_FIELDS],
@@ -418,10 +437,10 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
     },
     ...COMMON_FIELDS,
   ],
-  sort: [],
+  sort: [...COMMON_FIELDS],
   text: [...COMMON_FIELDS],
   textarea: [...COMMON_FIELDS],
-  uuid: [],
+  uuid: [...COMMON_FIELDS],
   wysiwyg_basic: [...COMMON_FIELDS],
   yes_no: [],
 };

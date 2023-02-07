@@ -31,7 +31,7 @@ export const TooltipBody = ({
   return (
     <Paper
       sx={{
-        maxWidth: "420px",
+        width: "420px",
       }}
     >
       <ListItem
