@@ -34,6 +34,7 @@ import {
   useGetContentModelsQuery,
   useGetContentModelFieldsQuery,
 } from "../../../../../../../shell/services/instance";
+import { useMediaRules } from "../hooks/useMediaRules";
 import {
   ContentModelField,
   FieldSettings,
@@ -42,15 +43,13 @@ import {
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
-import { useMediaRules } from "../hooks/useMediaRules";
-import { MediaRules } from "../MediaRules";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
   id: string;
 };
 export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
-interface FormData {
+export interface FormData {
   [key: string]: FormValue;
 }
 interface Errors {
@@ -80,9 +79,9 @@ export const FieldForm = ({
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [isAddAnotherFieldClicked, setIsAddAnotherFieldClicked] =
     useState(false);
-
   const { itemLimit, lockFolder, setItemLimit, setLockFolder, groups } =
     useMediaRules();
+
   const [errors, setErrors] = useState<Errors>({});
   const [formData, setFormData] = useState<FormData>({});
   const params = useParams<Params>();
@@ -426,6 +425,7 @@ export const FieldForm = ({
                 <FieldFormInput
                   key={index}
                   fieldConfig={fieldConfig}
+                  formData={formData}
                   onDataChange={handleFieldDataChange}
                   errorMsg={isSubmitClicked && errors[fieldConfig.name]}
                   prefillData={formData[fieldConfig.name]}
