@@ -17,13 +17,19 @@ import { isEmpty } from "lodash";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import RuleRoundedIcon from "@mui/icons-material/RuleRounded";
+import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
+
 import { FieldIcon } from "../../Field/FieldIcon";
+import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
 import {
-  stringStartsWithVowel,
+  getCategory,
   convertLabelValue,
   getErrorMessage,
 } from "../../../utils";
-import { InputField, FieldFormInput, DropdownOptions } from "../FieldFormInput";
 import {
   useCreateContentModelFieldMutation,
   useUpdateContentModelFieldMutation,
@@ -35,113 +41,13 @@ import {
   ContentModelField,
   FieldSettings,
   ContentModelFieldValue,
+  FieldSettingsOptions,
 } from "../../../../../../../shell/services/types";
+import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
+import { ComingSoon } from "../ComingSoon";
+import { Learn } from "../Learn";
 
-const commonFields: InputField[] = [
-  {
-    name: "label",
-    type: "input",
-    label: "Label",
-    required: true,
-    fullWidth: true,
-    maxLength: 200,
-    gridSize: 12,
-  },
-  {
-    name: "name",
-    type: "input",
-    label: "API / Parsley Code Reference",
-    required: true,
-    fullWidth: true,
-    maxLength: 50,
-    gridSize: 12,
-  },
-  {
-    name: "description",
-    type: "input",
-    label: "Description",
-    subLabel: "Appears below the label to help content-writers and API users",
-    required: false,
-    fullWidth: true,
-    multiline: true,
-    gridSize: 12,
-  },
-  {
-    name: "required",
-    type: "checkbox",
-    label: "Required field",
-    subLabel: "Ensures an item cannot be created if field is empty",
-    required: false,
-    gridSize: 12,
-  },
-  {
-    name: "list",
-    type: "checkbox",
-    label: "Add as column in table listing",
-    subLabel: "Shows field as a column in the table in the content view",
-    required: false,
-    gridSize: 12,
-  },
-];
-const formConfig: { [key: string]: InputField[] } = {
-  article_writer: [],
-  color: [],
-  currency: [],
-  date: [...commonFields],
-  datetime: [...commonFields],
-  dropdown: [],
-  images: [],
-  internal_link: [],
-  link: [...commonFields],
-  markdown: [...commonFields],
-  number: [...commonFields],
-  one_to_many: [
-    {
-      name: "relatedModelZUID",
-      type: "autocomplete",
-      label: "Reference Model",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a model",
-    },
-    {
-      name: "relatedFieldZUID",
-      type: "autocomplete",
-      label: "Field to Display",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a field",
-    },
-    ...commonFields,
-  ],
-  one_to_one: [
-    {
-      name: "relatedModelZUID",
-      type: "autocomplete",
-      label: "Reference Model",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a model",
-    },
-    {
-      name: "relatedFieldZUID",
-      type: "autocomplete",
-      label: "Field to Display",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a field",
-    },
-    ...commonFields,
-  ],
-  sort: [],
-  text: [...commonFields],
-  textarea: [...commonFields],
-  uuid: [],
-  wysiwyg_basic: [...commonFields],
-  yes_no: [],
-};
-
-type ActiveTab = "details" | "rules";
+type ActiveTab = "details" | "rules" | "learn";
 type Params = {
   id: string;
 };
@@ -150,7 +56,7 @@ interface FormData {
   [key: string]: FormValue;
 }
 interface Errors {
-  [key: string]: string;
+  [key: string]: string | [string, string][];
 }
 interface Props {
   type: string;
@@ -217,26 +123,40 @@ export const FieldForm = ({
     let formFields: { [key: string]: FormValue } = {};
     let errors: { [key: string]: string } = {};
 
-    formConfig[type]?.forEach((field) => {
+    FORM_CONFIG[type]?.forEach((field) => {
       if (isUpdateField) {
         if (field.name === "list") {
-          formFields[field.name] = fieldData.settings[field.name];
+          formFields.list = fieldData.settings.list;
+        } else if (field.name === "options") {
+          // Convert the options object to an Array of objects for easier rendering
+          const options = Object.entries(fieldData.settings.options).map(
+            ([key, value]) => {
+              return {
+                [key]: value,
+              };
+            }
+          );
+          formFields.options = options;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
 
-        // Pre-fill error messages based on content
-        if (field.required) {
-          errors[field.name] = isEmpty(fieldData[field.name])
-            ? "This field is required"
-            : "";
+        // Add the field name to the errors object if the field requires any validation
+        if (field.validate?.length) {
+          errors[field.name] = "";
         }
       } else {
-        formFields[field.name] = field.type === "checkbox" ? false : "";
+        if (field.type === "checkbox") {
+          formFields[field.name] = false;
+        } else if (field.type === "options") {
+          formFields[field.name] = [{ "": "" }];
+        } else {
+          formFields[field.name] = "";
+        }
 
-        // Pre-fill required fields error msgs
-        if (field.required) {
-          errors[field.name] = "This field is required";
+        // Add the field name to the errors object if the field requires any validation
+        if (field.validate?.length) {
+          errors[field.name] = "";
         }
       }
     });
@@ -288,7 +208,7 @@ export const FieldForm = ({
 
     Object.keys(formData).map((inputName) => {
       if (inputName in errors) {
-        const { maxLength } = formConfig[type].find(
+        const { maxLength, label, validate } = FORM_CONFIG[type].find(
           (field) => field.name === inputName
         );
 
@@ -298,17 +218,27 @@ export const FieldForm = ({
             value: formData.name as string,
             fieldNames: currFieldNames,
             maxLength,
+            label,
+            validate,
           });
 
           // When updating a field, user can choose to just leave the reference name the same
           if (isUpdateField && formData.name === fieldData.name) {
             newErrorsObj.name = "";
           }
+        } else if (inputName === "options") {
+          newErrorsObj.options = getErrorMessage({
+            value: formData.options as FieldSettingsOptions[],
+            maxLength,
+            validate,
+          });
         } else {
           // All other input validation
           newErrorsObj[inputName] = getErrorMessage({
             value: formData[inputName] as string,
             maxLength,
+            label,
+            validate,
           });
         }
       }
@@ -319,7 +249,9 @@ export const FieldForm = ({
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
-    const hasErrors = Object.values(errors).some((error) => error.length);
+    const hasErrors = Object.values(errors)
+      .flat(2)
+      .some((error) => error.length);
     const sort = isInbetweenField ? sortIndex : fields?.length;
 
     if (hasErrors) {
@@ -329,7 +261,7 @@ export const FieldForm = ({
     // Common field values
     let body: Omit<
       ContentModelField,
-      "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt"
+      "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt" | "deletedAt"
     > = {
       contentModelZUID: id,
       name: formData.name as string,
@@ -344,8 +276,20 @@ export const FieldForm = ({
     };
 
     if (type === "one_to_one" || type === "one_to_many") {
-      body["relatedModelZUID"] = formData.relatedModelZUID || null;
-      body["relatedFieldZUID"] = formData.relatedFieldZUID || null;
+      body.relatedModelZUID = formData.relatedModelZUID || null;
+      body.relatedFieldZUID = formData.relatedFieldZUID || null;
+    }
+
+    if (type === "dropdown") {
+      const options = formData.options as FieldSettingsOptions[];
+      const optionsObject = options.reduce(
+        (acc: FieldSettingsOptions, curr: FieldSettingsOptions) => {
+          return { ...acc, ...curr };
+        },
+        {}
+      );
+
+      body.settings.options = optionsObject;
     }
 
     if (isUpdateField) {
@@ -409,15 +353,11 @@ export const FieldForm = ({
     handleSubmitForm();
   };
 
-  const headerText = stringStartsWithVowel(name)
-    ? `Add an ${name} Field`
-    : `Add a ${name} Field`;
-
   return (
     <>
       <DialogTitle
         sx={{
-          padding: 3,
+          padding: 2.5,
           paddingBottom: 0,
         }}
       >
@@ -441,7 +381,24 @@ export const FieldForm = ({
                 fontSize="16px"
               />
             </Box>
-            {isUpdateField ? fieldData.label : headerText}
+            <Box display="flex" flexDirection="column">
+              <Typography variant="h5" fontWeight={600}>
+                {isUpdateField
+                  ? `Edit ${fieldData.label}`
+                  : `Add ${name} Field`}
+              </Typography>
+              <Typography
+                // @ts-expect-error body3 additional variant is not on Typography augmentation
+                variant="body3"
+                color="text.secondary"
+              >
+                {isUpdateField
+                  ? `${TYPE_TEXT[type]} Field`
+                  : FIELD_COPY_CONFIG[getCategory(type)]?.find(
+                      (item) => item.type === type
+                    )?.subHeaderText}
+              </Typography>
+            </Box>
           </Box>
           <IconButton size="small" onClick={onModalClose}>
             <CloseIcon />
@@ -450,21 +407,43 @@ export const FieldForm = ({
         <Tabs
           value={activeTab}
           onChange={(_, value: ActiveTab) => setActiveTab(value)}
+          sx={{
+            ".Mui-selected": {
+              svg: {
+                color: "primary.main",
+              },
+            },
+          }}
         >
-          <Tab value="details" label="Details" />
-          <Tab value="rules" label="Rules" />
+          <Tab
+            value="details"
+            label="Details"
+            icon={<InfoRoundedIcon color="action" />}
+            iconPosition="start"
+          />
+          <Tab
+            value="rules"
+            label="Rules"
+            icon={<RuleRoundedIcon color="action" />}
+            iconPosition="start"
+          />
+          <Tab
+            value="learn"
+            label="Learn"
+            icon={<MenuBookRoundedIcon color="action" />}
+            iconPosition="start"
+          />
         </Tabs>
       </DialogTitle>
       <DialogContent
         dividers
         sx={{
-          px: 3,
-          py: 3,
+          p: 2.5,
         }}
       >
         {activeTab === "details" && (
-          <Grid container spacing={2.5}>
-            {formConfig[type]?.map((fieldConfig, index) => {
+          <Grid container spacing={2.5} maxWidth="480px">
+            {FORM_CONFIG[type]?.map((fieldConfig, index) => {
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
 
@@ -490,29 +469,63 @@ export const FieldForm = ({
                 />
               );
             })}
+            {/* TODO: Add functionality once deactivate flow is provided */}
+            {isUpdateField && (
+              <Grid item xs={12}>
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<PauseCircleOutlineRoundedIcon />}
+                >
+                  Deactivate Field
+                </Button>
+              </Grid>
+            )}
           </Grid>
         )}
 
-        {activeTab === "rules" && <Typography>Coming soon...</Typography>}
+        {activeTab === "rules" && <ComingSoon />}
+        {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
-      <DialogActions
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          px: 3,
-          py: 2,
-        }}
-      >
-        <Button
-          variant="outlined"
-          color="inherit"
-          onClick={isUpdateField ? onModalClose : onBackClick}
+      {isUpdateField ? (
+        <DialogActions
+          sx={{
+            p: 2.5,
+          }}
         >
-          Cancel
-        </Button>
-        <Box>
-          {!isUpdateField && (
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={onModalClose}
+            sx={{
+              mr: 1,
+            }}
+          >
+            Cancel
+          </Button>
+          <LoadingButton
+            loading={isUpdatingField}
+            onClick={handleSubmitForm}
+            variant="contained"
+            startIcon={<SaveRoundedIcon />}
+          >
+            Save
+          </LoadingButton>
+        </DialogActions>
+      ) : (
+        <DialogActions
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            px: 3,
+            py: 2,
+          }}
+        >
+          <Button variant="outlined" color="inherit" onClick={onBackClick}>
+            Cancel
+          </Button>
+          <Box>
             <LoadingButton
               variant="outlined"
               startIcon={<AddRoundedIcon />}
@@ -524,16 +537,16 @@ export const FieldForm = ({
             >
               Add another field
             </LoadingButton>
-          )}
-          <LoadingButton
-            loading={isCreatingField || isUpdatingField || isBulkUpdating}
-            onClick={handleSubmitForm}
-            variant="contained"
-          >
-            Done
-          </LoadingButton>
-        </Box>
-      </DialogActions>
+            <LoadingButton
+              loading={isCreatingField || isBulkUpdating}
+              onClick={handleSubmitForm}
+              variant="contained"
+            >
+              Done
+            </LoadingButton>
+          </Box>
+        </DialogActions>
+      )}
     </>
   );
 };

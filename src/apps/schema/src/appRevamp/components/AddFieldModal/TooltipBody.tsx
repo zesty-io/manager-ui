@@ -31,7 +31,7 @@ export const TooltipBody = ({
   return (
     <Paper
       sx={{
-        maxWidth: "420px",
+        width: "420px",
       }}
     >
       <ListItem
@@ -63,6 +63,7 @@ export const TooltipBody = ({
           // @ts-expect-error missing body3 module augmentation
           variant="body3"
           color="text.secondary"
+          whiteSpace="pre-line"
         >
           {description}
         </Typography>

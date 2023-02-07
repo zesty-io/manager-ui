@@ -216,6 +216,9 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 sx={{
                   justifyContent: "flex-start",
                   my: 1,
+                  px: 4.5,
+                  borderRadius: "8px",
+                  fontWeight: 700,
                 }}
                 size="large"
                 variant="outlined"

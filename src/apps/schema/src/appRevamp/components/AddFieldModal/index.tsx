@@ -61,7 +61,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       }}
       PaperProps={{
         sx: {
-          maxWidth: "900px",
+          maxWidth: viewMode === "fields_list" ? "900px" : "640px",
           my: "20px",
           borderRadius: 2,
           maxHeight: "1000px",
