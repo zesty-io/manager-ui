@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useLocation, useHistory } from "react-router";
+import { useLocation, useHistory, useParams } from "react-router";
 import {
   Box,
   IconButton,
@@ -11,7 +11,6 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import CheckIcon from "@mui/icons-material/Check";
@@ -21,6 +20,11 @@ import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 
 import { FieldIcon } from "./FieldIcon";
+import { ContentModelField } from "../../../../../../shell/services/types";
+import {
+  useDeleteContentModelFieldMutation,
+  useUndeleteContentModelFieldMutation,
+} from "../../../../../../shell/services/instance";
 
 const typeText: { [key: string]: string } = {
   article_writer: "Article Writer",
@@ -47,6 +51,9 @@ const typeText: { [key: string]: string } = {
   yes_no: "Toggle",
 };
 
+type Params = {
+  id: string;
+};
 interface Props {
   field: ContentModelField;
   index: number;
@@ -75,6 +82,12 @@ export const Field = ({
   const isMenuOpen = Boolean(anchorEl);
   const location = useLocation();
   const history = useHistory();
+  const params = useParams<Params>();
+  const { id: modelZUID } = params;
+
+  const [deleteContentModelField, {}] = useDeleteContentModelFieldMutation();
+  const [undeleteContentModelField, {}] =
+    useUndeleteContentModelFieldMutation();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -264,7 +277,18 @@ export const Field = ({
             </ListItemIcon>
             <ListItemText>{isZuidCopied ? "Copied" : "Copy ZUID"}</ListItemText>
           </MenuItem>
-          <MenuItem>
+          <MenuItem
+            onClick={() => {
+              if (isDeactivated) {
+                undeleteContentModelField({
+                  modelZUID,
+                  fieldZUID: field?.ZUID,
+                });
+              } else {
+                deleteContentModelField({ modelZUID, fieldZUID: field?.ZUID });
+              }
+            }}
+          >
             <ListItemIcon>
               {isDeactivated ? (
                 <PlayCircleOutlineRoundedIcon />

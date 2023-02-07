@@ -267,7 +267,7 @@ export const instanceApi = createApi({
       query: () => `/web/views`,
       transformResponse: getResponseData,
     }),
-    reactivateContentModelField: builder.mutation<
+    undeleteContentModelField: builder.mutation<
       any,
       { modelZUID: string; fieldZUID: string }
     >({
@@ -301,5 +301,6 @@ export const {
   useCreateContentModelMutation,
   useGetWebViewsQuery,
   useBulkCreateContentModelFieldMutation,
-  useReactivateContentModelFieldMutation,
+  useDeleteContentModelFieldMutation,
+  useUndeleteContentModelFieldMutation,
 } = instanceApi;
