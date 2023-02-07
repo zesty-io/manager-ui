@@ -10,6 +10,7 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  CircularProgress,
 } from "@mui/material";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
@@ -61,9 +62,14 @@ export const Field = ({
   const params = useParams<Params>();
   const { id: modelZUID } = params;
 
-  const [deleteContentModelField, {}] = useDeleteContentModelFieldMutation();
-  const [undeleteContentModelField, {}] =
-    useUndeleteContentModelFieldMutation();
+  const [
+    deleteContentModelField,
+    { isLoading: isDeletingField, isSuccess: isFieldDeleted },
+  ] = useDeleteContentModelFieldMutation();
+  const [
+    undeleteContentModelField,
+    { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
+  ] = useUndeleteContentModelFieldMutation();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -80,6 +86,10 @@ export const Field = ({
       clearTimeout(timeoutId);
     };
   }, [isFieldNameCopied, isZuidCopied]);
+
+  useEffect(() => {
+    setAnchorEl(null);
+  }, [isFieldDeleted, isFieldUndeleted]);
 
   const handleDragStart = (e: React.DragEvent) => {
     // TODO: Test on other browsers
@@ -253,29 +263,46 @@ export const Field = ({
             </ListItemIcon>
             <ListItemText>{isZuidCopied ? "Copied" : "Copy ZUID"}</ListItemText>
           </MenuItem>
-          <MenuItem
-            onClick={() => {
-              if (isDeactivated) {
-                undeleteContentModelField({
-                  modelZUID,
-                  fieldZUID: field?.ZUID,
-                });
-              } else {
-                deleteContentModelField({ modelZUID, fieldZUID: field?.ZUID });
-              }
-            }}
-          >
-            <ListItemIcon>
-              {isDeactivated ? (
-                <PlayCircleOutlineRoundedIcon />
-              ) : (
-                <HighlightOffRoundedIcon />
+          {isDeletingField || isUndeletingField ? (
+            <MenuItem>
+              <ListItemIcon>
+                <CircularProgress size={24} color="inherit" />
+              </ListItemIcon>
+              {isDeletingField && (
+                <ListItemText>De-activating Field</ListItemText>
               )}
-            </ListItemIcon>
-            <ListItemText>
-              {isDeactivated ? "Re-activate Field" : "De-activate Field"}
-            </ListItemText>
-          </MenuItem>
+              {isUndeletingField && (
+                <ListItemText>Re-activating Field</ListItemText>
+              )}
+            </MenuItem>
+          ) : (
+            <MenuItem
+              onClick={() => {
+                if (isDeactivated) {
+                  undeleteContentModelField({
+                    modelZUID,
+                    fieldZUID: field?.ZUID,
+                  });
+                } else {
+                  deleteContentModelField({
+                    modelZUID,
+                    fieldZUID: field?.ZUID,
+                  });
+                }
+              }}
+            >
+              <ListItemIcon>
+                {isDeactivated ? (
+                  <PlayCircleOutlineRoundedIcon />
+                ) : (
+                  <HighlightOffRoundedIcon />
+                )}
+              </ListItemIcon>
+              <ListItemText>
+                {isDeactivated ? "Re-activate Field" : "De-activate Field"}
+              </ListItemText>
+            </MenuItem>
+          )}
         </Menu>
       </Box>
     </Box>
