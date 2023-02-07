@@ -178,7 +178,8 @@ export const FieldForm = ({
   useEffect(() => {
     // In-between field creation flow (bulk update field sort after field creation)
     if (isFieldCreated && isInbetweenField) {
-      const fieldsToUpdate: ContentModelField[] = fields
+      const activeFields = fields.filter((field) => !field?.deletedAt);
+      const fieldsToUpdate: ContentModelField[] = activeFields
         .slice(sortIndex)
         .map((field) => ({
           ...field,
