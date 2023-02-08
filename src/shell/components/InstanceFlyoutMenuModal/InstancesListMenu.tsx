@@ -48,8 +48,9 @@ const InstancesListMenu = ({
     () =>
       instances?.filter((instance: any) => {
         return (
-          instance.name &&
-          instance.name.toLowerCase().includes(searchInstance.toLowerCase())
+          instance?.name
+            ?.toLowerCase()
+            .includes(searchInstance.toLowerCase()) || ""
         );
       }),
     [searchInstance]
