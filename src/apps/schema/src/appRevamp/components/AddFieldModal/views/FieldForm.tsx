@@ -283,7 +283,7 @@ export const FieldForm = ({
       body.relatedFieldZUID = formData.relatedFieldZUID || null;
     }
 
-    if (type === "dropdown") {
+    if (type === "dropdown" || type === "yes_no") {
       const options = formData.options as FieldSettingsOptions[];
       const optionsObject = options.reduce(
         (acc: FieldSettingsOptions, curr: FieldSettingsOptions) => {

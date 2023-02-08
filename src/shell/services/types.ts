@@ -135,7 +135,7 @@ export interface ContentItem {
 }
 
 export interface FieldSettingsOptions {
-  [key: string]: string;
+  [key: string | number]: string;
 }
 
 export interface FieldSettings {

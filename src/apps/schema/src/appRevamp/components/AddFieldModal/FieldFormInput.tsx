@@ -354,8 +354,12 @@ const KeyValueInput = ({
     }
 
     if (type === "value") {
-      // When the value is changed, automatically change the key as well
-      onOptionChange({ [convertLabelValue(value) || ""]: value });
+      if (disabledFields.includes("key")) {
+        onOptionChange({ [optionKey]: value });
+      } else {
+        // When the value is changed, automatically change the key as well
+        onOptionChange({ [convertLabelValue(value) || ""]: value });
+      }
     }
   };
 
