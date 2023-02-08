@@ -47,9 +47,10 @@ const InstancesListMenu = ({
   const filteredInstances = useMemo(
     () =>
       instances?.filter((instance: any) => {
-        return instance.name
-          .toLowerCase()
-          .includes(searchInstance.toLowerCase());
+        return (
+          instance.name &&
+          instance.name.toLowerCase().includes(searchInstance.toLowerCase())
+        );
       }),
     [searchInstance]
   );
