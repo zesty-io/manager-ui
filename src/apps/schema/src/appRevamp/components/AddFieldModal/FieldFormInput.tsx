@@ -34,7 +34,13 @@ export type FieldNames =
   | "options"
   | "relatedModelZUID"
   | "relatedFieldZUID";
-type FieldType = "input" | "checkbox" | "dropdown" | "autocomplete" | "options";
+type FieldType =
+  | "input"
+  | "checkbox"
+  | "dropdown"
+  | "autocomplete"
+  | "options"
+  | "toggle_options";
 export interface InputField {
   name: FieldNames;
   type: FieldType;
@@ -76,7 +82,8 @@ export const FieldFormInput = ({
   disabled,
 }: FieldFormInputProps) => {
   const options =
-    fieldConfig.type === "options" && prefillData
+    fieldConfig.type === "options" ||
+    (fieldConfig.type === "toggle_options" && prefillData)
       ? (prefillData as FieldSettingsOptions[])
       : [];
 
@@ -276,7 +283,8 @@ export const FieldFormInput = ({
         </>
       )}
 
-      {fieldConfig.type === "options" && (
+      {(fieldConfig.type === "options" ||
+        fieldConfig.type === "toggle_options") && (
         <>
           <Typography variant="body2" mb={2} fontWeight={600}>
             {fieldConfig.label}
@@ -300,16 +308,22 @@ export const FieldFormInput = ({
                   handleOptionValueChanged(newKeyValueData, index)
                 }
                 onDeleteOption={() => handleDeleteOption(index)}
+                isDeletable={fieldConfig.type === "options"}
+                disabledFields={
+                  fieldConfig.type === "toggle_options" ? ["key"] : []
+                }
               />
             );
           })}
-          <Button
-            variant="outlined"
-            startIcon={<AddRoundedIcon />}
-            onClick={handleAddNewOption}
-          >
-            Add Option
-          </Button>
+          {fieldConfig.type === "options" && (
+            <Button
+              variant="outlined"
+              startIcon={<AddRoundedIcon />}
+              onClick={handleAddNewOption}
+            >
+              Add Option
+            </Button>
+          )}
         </>
       )}
     </Grid>
@@ -322,6 +336,8 @@ interface KeyValueInputProps {
   errorMsg?: [string, string];
   onOptionChange: (newKeyValueData: { [key: string]: string }) => void;
   onDeleteOption: () => void;
+  isDeletable: boolean;
+  disabledFields?: string[];
 }
 const KeyValueInput = ({
   optionKey,
@@ -329,6 +345,8 @@ const KeyValueInput = ({
   errorMsg,
   onOptionChange,
   onDeleteOption,
+  isDeletable,
+  disabledFields,
 }: KeyValueInputProps) => {
   const handleDataChanged = (type: string, value: string) => {
     if (type === "key") {
@@ -336,8 +354,12 @@ const KeyValueInput = ({
     }
 
     if (type === "value") {
-      // When the value is changed, automatically change the key as well
-      onOptionChange({ [convertLabelValue(value) || ""]: value });
+      if (disabledFields.includes("key")) {
+        onOptionChange({ [optionKey]: value });
+      } else {
+        // When the value is changed, automatically change the key as well
+        onOptionChange({ [convertLabelValue(value) || ""]: value });
+      }
     }
   };
 
@@ -362,6 +384,7 @@ const KeyValueInput = ({
           }}
           helperText={labelErrorMsg}
           error={Boolean(labelErrorMsg)}
+          disabled={disabledFields.includes("value")}
         />
         <TextField
           name="key"
@@ -374,11 +397,14 @@ const KeyValueInput = ({
           }}
           helperText={valueErrorMsg}
           error={Boolean(valueErrorMsg)}
+          disabled={disabledFields.includes("key")}
         />
       </Box>
-      <IconButton size="small" onClick={onDeleteOption}>
-        <DeleteRoundedIcon />
-      </IconButton>
+      {isDeletable && (
+        <IconButton size="small" onClick={onDeleteOption}>
+          <DeleteRoundedIcon />
+        </IconButton>
+      )}
     </Box>
   );
 };
