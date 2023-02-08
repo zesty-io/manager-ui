@@ -1,8 +1,6 @@
 import { memo, useEffect } from "react";
 import { connect } from "react-redux";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
-
 import Login from "shell/components/login";
 
 import { notify } from "shell/store/notifications";
@@ -68,15 +66,6 @@ export default connect((state) => {
         window.removeEventListener("online", handleOnline);
       };
     });
-    return (
-      <WithLoader
-        condition={!props.auth.checking}
-        message="Checking your account permissions"
-        width="100vw"
-        height="100vh"
-      >
-        {props.auth.valid ? props.children : <Login />}
-      </WithLoader>
-    );
+    return <>{props.auth.valid ? props.children : <Login />}</>;
   })
 );
