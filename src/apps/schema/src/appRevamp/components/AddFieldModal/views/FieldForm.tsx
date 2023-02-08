@@ -150,6 +150,8 @@ export const FieldForm = ({
           formFields[field.name] = false;
         } else if (field.type === "options") {
           formFields[field.name] = [{ "": "" }];
+        } else if (field.type === "toggle_options") {
+          formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
         } else {
           formFields[field.name] = "";
         }
