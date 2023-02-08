@@ -342,7 +342,7 @@ export default connect((state) => {
       {fields.map((field) => (
         <div key={field.ZUID} className={styles.variableContainer}>
           <div className={styles.variable}>{renderField(field)}</div>
-          <div className={styles.reference}>@{field.referenceName}</div>
+          <div className={styles.reference}>@/${field.referenceName}</div>
         </div>
       ))}
       <Button
