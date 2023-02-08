@@ -50,7 +50,7 @@ const InstancesListMenu = ({
         return (
           instance?.name
             ?.toLowerCase()
-            .includes(searchInstance.toLowerCase()) || ""
+            ?.includes(searchInstance.toLowerCase()) || ""
         );
       }),
     [searchInstance]
