@@ -169,8 +169,6 @@ export interface ContentModelField {
   settings: FieldSettings;
   relatedModelZUID?: any;
   relatedFieldZUID?: any;
-  allowMultipleFiles?: boolean;
-  lockToFolder?: boolean;
   createdAt: string;
   updatedAt: string;
   deletedAt: string;
