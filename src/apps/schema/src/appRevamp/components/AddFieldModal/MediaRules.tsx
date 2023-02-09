@@ -75,15 +75,15 @@ export const MediaRules = ({
           isChecked: Boolean(checked),
         }));
       } else if (rule.name === "group_id") {
-        console.log("ONCHECK", lockFolder);
-        onDataChange({
-          inputName: rule.name,
-          value: lockFolder.option.value,
-        });
         setLockFolder((prevData: LockFolder) => ({
           ...prevData,
+          option: groups[0],
           isChecked: Boolean(checked),
         }));
+        onDataChange({
+          inputName: rule.name,
+          value: groups[0].value,
+        });
       }
     }
   };
@@ -177,14 +177,17 @@ export const MediaRules = ({
                     <Autocomplete
                       value={lockFolder.option}
                       options={groups}
+                      isOptionEqualToValue={(option, value) =>
+                        option.value === value.value
+                      }
                       onChange={(_, option) => {
                         setLockFolder((prevData: LockFolder) => ({
                           ...prevData,
-                          option: option,
+                          option,
                         }));
                         onDataChange({
                           inputName: rule.name,
-                          value: option.value,
+                          value: option?.value || "",
                         });
                       }}
                       renderOption={(props: any, option: any) => {

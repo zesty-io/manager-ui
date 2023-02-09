@@ -60,6 +60,17 @@ export const useMediaRules = () => {
     value: field.id,
   }));
 
+  // set initial value
+  // useEffect(() => {
+  //   console.log("lockFolder.option", lockFolder.option)
+  //   if(!lockFolder.option?.value) {
+  //     setLockFolder((prevData: LockFolder) => ({
+  //       ...prevData,
+  //       option: mediaFoldersOptions[0]
+  //     }));
+  //   }
+  // }, [mediaFoldersOptions.length]);
+
   return {
     itemLimit,
     lockFolder,

@@ -153,9 +153,10 @@ export const FieldForm = ({
           if (mediaFoldersOptions.length) {
             setLockFolder((prevData: LockFolder) => ({
               ...prevData,
-              option: mediaFoldersOptions.find(
-                (option: any) => option.value === fieldData.settings.group_id
-              ),
+              option:
+                mediaFoldersOptions.find(
+                  (option: any) => option.value === fieldData.settings.group_id
+                ) || lockFolder.option,
               isChecked: Boolean(fieldData.settings.group_id),
             }));
           }
@@ -186,13 +187,6 @@ export const FieldForm = ({
           formFields[field.name] = "";
         }
 
-        // add initial media rules form values
-        if (mediaFoldersOptions.length) {
-          setLockFolder((prevData: LockFolder) => ({
-            ...prevData,
-            option: mediaFoldersOptions[0],
-          }));
-        }
         formFields["group_id"] = "";
         formFields["limit"] = "";
 
