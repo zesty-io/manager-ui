@@ -148,6 +148,7 @@ export const getCategory = (type: string) => {
     case "dropdown":
     case "color":
     case "sort":
+    case "uuid":
       category = "options";
       break;
 
