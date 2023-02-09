@@ -21,10 +21,9 @@ import {
 import { fileExtension, getExtensions } from "../utils/fileUtils";
 import {
   MediaSortOrder,
-  DateRange,
   Filetype,
 } from "../../../../../shell/store/media-revamp";
-
+import { DateRange } from "../../../../../shell/store/types";
 interface Props {
   lockedToGroupId?: string;
   addImagesCallback?: (selectedFiles: File[]) => void;

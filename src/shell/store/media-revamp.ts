@@ -87,27 +87,6 @@ export type Filetype =
   | "FLV"
   | "MPEG";
 
-export type DateRange = PresetDateRange | SingleDateRange | CustomDateRange;
-export type PresetDateRange = {
-  type: "preset";
-  value:
-    | "today"
-    | "yesterday"
-    | "last 7 days"
-    | "last 30 days"
-    | "last 3 months"
-    | "last 12 months";
-};
-
-export type SingleDateRange = {
-  type: "on" | "before" | "after";
-  value: string;
-};
-export type CustomDateRange = {
-  type: "range";
-  value: [string, string];
-};
-
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;
@@ -117,7 +96,6 @@ export type State = {
   limitSelected: number | null;
   sortOrder: MediaSortOrder;
   filetypeFilter: Filetype | null;
-  dateRangeFilter: DateRange | null;
   currentMediaView: string;
 };
 const initialState: State = {
@@ -129,7 +107,6 @@ const initialState: State = {
   limitSelected: null,
   sortOrder: "createdDesc",
   filetypeFilter: null,
-  dateRangeFilter: null,
   currentMediaView: "grid",
 };
 

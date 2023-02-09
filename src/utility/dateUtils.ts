@@ -1,4 +1,4 @@
-import { DateRange } from "../shell/store/media-revamp";
+import { DateRange } from "../shell/store/types";
 
 import moment from "moment-timezone";
 export function getDateFilterFn(dateRangeFilter: DateRange) {
