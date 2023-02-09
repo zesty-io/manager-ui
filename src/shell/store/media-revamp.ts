@@ -117,7 +117,6 @@ export type State = {
   limitSelected: number | null;
   sortOrder: MediaSortOrder;
   filetypeFilter: Filetype | null;
-  dateRangeFilter: DateRange | null;
   currentMediaView: string;
 };
 const initialState: State = {
@@ -129,7 +128,6 @@ const initialState: State = {
   limitSelected: null,
   sortOrder: "createdDesc",
   filetypeFilter: null,
-  dateRangeFilter: null,
   currentMediaView: "grid",
 };
 

@@ -1,5 +1,4 @@
 import { FC, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -12,7 +11,6 @@ import CloseRounded from "@mui/icons-material/CloseRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import Divider from "@mui/material/Divider";
 
-import { AppState } from "../../store/types";
 import { DateRange } from "../../store/media-revamp";
 import { getDateFilter } from "../../../utility/dateUtils";
 import moment from "moment-timezone";
@@ -21,7 +19,6 @@ import { useParams } from "../../hooks/useParams";
 
 type Modal = "on" | "before" | "after" | null;
 export const DateRangeFilter: FC = () => {
-  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [modal, setModal] = useState<Modal>(null);
@@ -139,6 +136,7 @@ export const DateRangeFilter: FC = () => {
       <DateFilterModal
         open={Boolean(modal)}
         type={modal}
+        activeFilter={activeFilter}
         onClose={() => {
           setModal(null);
           handleClose();

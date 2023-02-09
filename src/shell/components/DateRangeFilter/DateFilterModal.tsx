@@ -9,14 +9,14 @@ import { CalendarPicker } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { DialogContent, DialogTitle, DialogProps } from "@mui/material";
-import { useSelector } from "react-redux";
-import { AppState } from "../../store/types";
+import { DateRange } from "../../store/media-revamp";
 
 type DateFilterModal = {
   open: boolean;
   type: "on" | "before" | "after";
   onClose: () => void;
   setDateCallback: (date: Date) => void;
+  activeFilter: DateRange;
 };
 
 export const DateFilterModal: FC<DateFilterModal> = ({
@@ -24,10 +24,8 @@ export const DateFilterModal: FC<DateFilterModal> = ({
   onClose,
   type,
   setDateCallback,
+  activeFilter,
 }) => {
-  const activeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.dateRangeFilter
-  );
   const highlightedDate = useMemo(() => {
     if (activeFilter && activeFilter.type === type) {
       return new Date(activeFilter.value);
