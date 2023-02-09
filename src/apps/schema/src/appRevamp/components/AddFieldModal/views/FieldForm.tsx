@@ -235,10 +235,6 @@ export const FieldForm = ({
   }, [isFieldCreated, isFieldUpdated]);
 
   useEffect(() => {
-    console.log("formData", formData);
-  }, [formData]);
-
-  useEffect(() => {
     if (!Object.keys(formData).length) {
       return;
     }
