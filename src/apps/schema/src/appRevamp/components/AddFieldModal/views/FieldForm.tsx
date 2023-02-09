@@ -25,7 +25,7 @@ import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlin
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
-import { useMediaRules } from "../hooks/useMediaRules";
+import { useMediaRules, LockFolder } from "../hooks/useMediaRules";
 import { MediaRules } from "../MediaRules";
 import {
   getCategory,
@@ -88,8 +88,13 @@ export const FieldForm = ({
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [isAddAnotherFieldClicked, setIsAddAnotherFieldClicked] =
     useState(false);
-  const { itemLimit, lockFolder, setItemLimit, setLockFolder, groups } =
-    useMediaRules();
+  const {
+    itemLimit,
+    lockFolder,
+    setItemLimit,
+    setLockFolder,
+    mediaFoldersOptions,
+  } = useMediaRules();
 
   const [errors, setErrors] = useState<Errors>({});
   const [formData, setFormData] = useState<FormData>({});
@@ -115,21 +120,6 @@ export const FieldForm = ({
   } = useGetContentModelFieldsQuery(formData.relatedModelZUID as string, {
     skip: !formData.relatedModelZUID,
   });
-  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
-  const instanceId = useSelector((state: any) => state.instance.ID);
-  const { data: bins, isFetching: isBinsFetching } =
-    mediaManagerApi.useGetBinsQuery({
-      instanceId,
-      ecoId,
-    });
-
-  const { data: binGroups, isFetching: isBinGroupsFetching } =
-    mediaManagerApi.useGetAllBinGroupsQuery(
-      bins?.map((bin: Bin) => bin.id),
-      {
-        skip: !bins?.length,
-      }
-    );
 
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
@@ -143,10 +133,6 @@ export const FieldForm = ({
       value: field.ZUID,
     })
   );
-  const mediaFoldersOptions: DropdownOptions[] = binGroups[0]?.map((field) => ({
-    label: field.name,
-    value: field.id,
-  }));
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -158,13 +144,21 @@ export const FieldForm = ({
           formFields.list = fieldData.settings.list;
         } else if (field.name === "limit") {
           formFields[field.name] = fieldData.settings[field.name];
-          formFields["allowMultipleFiles"] = Boolean(
-            fieldData.settings[field.name]
-          );
+          setItemLimit((prevData: any) => ({
+            ...prevData,
+            isChecked: Boolean(fieldData.settings.limit),
+          }));
         } else if (field.name === "group_id") {
           formFields[field.name] = fieldData.settings[field.name];
-          formFields["lockToFolder"] = Boolean(fieldData.settings[field.name]);
-          formFields.list = fieldData.settings.list;
+          if (mediaFoldersOptions.length) {
+            setLockFolder((prevData: LockFolder) => ({
+              ...prevData,
+              option: mediaFoldersOptions.find(
+                (option: any) => option.value === fieldData.settings.group_id
+              ),
+              isChecked: Boolean(fieldData.settings.group_id),
+            }));
+          }
         } else if (field.name === "options") {
           // Convert the options object to an Array of objects for easier rendering
           const options = Object.entries(fieldData.settings.options).map(
@@ -191,6 +185,16 @@ export const FieldForm = ({
         } else {
           formFields[field.name] = "";
         }
+
+        // add initial media rules form values
+        if (mediaFoldersOptions.length) {
+          setLockFolder((prevData: LockFolder) => ({
+            ...prevData,
+            option: mediaFoldersOptions[0],
+          }));
+        }
+        formFields["group_id"] = "";
+        formFields["limit"] = "";
 
         // Add the field name to the errors object if the field requires any validation
         if (field.validate?.length) {
@@ -235,6 +239,10 @@ export const FieldForm = ({
       }
     }
   }, [isFieldCreated, isFieldUpdated]);
+
+  useEffect(() => {
+    console.log("formData", formData);
+  }, [formData]);
 
   useEffect(() => {
     if (!Object.keys(formData).length) {
@@ -497,17 +505,10 @@ export const FieldForm = ({
                 disabled = isFetchingSelectedModelFields;
               }
 
-              if (fieldConfig.name === "group_id") {
-                dropdownOptions = mediaFoldersOptions;
-                disabled = isBinGroupsFetching;
-              }
-
               return (
                 <FieldFormInput
                   key={index}
                   fieldConfig={fieldConfig}
-                  formData={formData}
-                  initialMediaFolderValue={mediaFoldersOptions[0].value}
                   onDataChange={handleFieldDataChange}
                   errorMsg={isSubmitClicked && errors[fieldConfig.name]}
                   prefillData={formData[fieldConfig.name]}
@@ -545,7 +546,7 @@ export const FieldForm = ({
               lockFolder={lockFolder}
               setItemLimit={setItemLimit}
               setLockFolder={setLockFolder}
-              groups={groups}
+              groups={mediaFoldersOptions}
             />
           )
         )}

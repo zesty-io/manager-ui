@@ -18,7 +18,6 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import { VirtualizedAutocomplete } from "@zesty-io/material";
 import { cloneDeep } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
@@ -35,18 +34,15 @@ export type FieldNames =
   | "options"
   | "relatedModelZUID"
   | "relatedFieldZUID"
-  | "limit"
-  | "allowMultipleFiles"
-  | "lockToFolder"
-  | "group_id";
+  | "group_id"
+  | "limit";
 type FieldType =
   | "input"
   | "checkbox"
   | "dropdown"
   | "autocomplete"
   | "options"
-  | "number"
-  | "virtualizedAutocomplete";
+  | "toggle_options";
 export interface InputField {
   name: FieldNames;
   type: FieldType;
@@ -77,23 +73,20 @@ interface FieldFormInputProps {
     value: FormValue;
   }) => void;
   prefillData?: FormValue;
-  initialMediaFolderValue?: string;
-  formData?: any;
   dropdownOptions?: DropdownOptions[];
   disabled?: boolean;
 }
 export const FieldFormInput = ({
   fieldConfig,
   errorMsg,
-  formData,
   onDataChange,
-  initialMediaFolderValue,
   prefillData,
   dropdownOptions,
   disabled,
 }: FieldFormInputProps) => {
   const options =
-    fieldConfig.type === "options" && prefillData
+    fieldConfig.type === "options" ||
+    (fieldConfig.type === "toggle_options" && prefillData)
       ? (prefillData as FieldSettingsOptions[])
       : [];
 
@@ -133,21 +126,6 @@ export const FieldFormInput = ({
       inputName: fieldConfig.name,
       value: [...localOptionsCopy],
     });
-  };
-
-  const showAutocompleteField = () => {
-    if (
-      fieldConfig.type === "autocomplete" &&
-      fieldConfig.name === "group_id" &&
-      formData["lockToFolder"]
-    ) {
-      return true;
-    } else if (
-      fieldConfig.type === "autocomplete" &&
-      fieldConfig.name !== "group_id"
-    ) {
-      return true;
-    }
   };
 
   return (
@@ -206,27 +184,13 @@ export const FieldFormInput = ({
         </>
       )}
 
-      {fieldConfig.type === "checkbox" && (
+      {fieldConfig.type === "checkbox" && fieldConfig.tab !== "rules" && (
         <FormControlLabel
           control={
             <Checkbox
               name={fieldConfig.name}
               required={fieldConfig.required}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                if (fieldConfig.name === "allowMultipleFiles") {
-                  onDataChange({
-                    inputName: "limit",
-                    value: !formData.limit && e.target.checked ? "1" : "",
-                  });
-                } else if (fieldConfig.name === "lockToFolder") {
-                  onDataChange({
-                    inputName: "group_id",
-                    value:
-                      !formData.group_id && e.target.checked
-                        ? initialMediaFolderValue
-                        : "",
-                  });
-                }
                 onDataChange({
                   inputName: fieldConfig.name,
                   value: e.target.checked,
@@ -284,39 +248,8 @@ export const FieldFormInput = ({
         </FormControl>
       )}
 
-      {fieldConfig.type === "number" && formData["allowMultipleFiles"] && (
-        <Box ml={4}>
-          <Typography variant="body2">
-            {fieldConfig.label}
-            <Tooltip
-              placement="top"
-              title="Set the maximum number of files a user can upload"
-            >
-              <InfoRoundedIcon
-                sx={{ ml: 1, width: "10px", height: "10px" }}
-                color="action"
-              />
-            </Tooltip>
-          </Typography>
-          <TextField
-            size="small"
-            variant="outlined"
-            type="number"
-            inputProps={{ min: 1 }}
-            value={prefillData || "1"}
-            sx={{ mt: 1 }}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              onDataChange({
-                inputName: fieldConfig.name,
-                value: e.target.value,
-              });
-            }}
-          />
-        </Box>
-      )}
-
-      {showAutocompleteField() && (
-        <Box sx={{ ml: fieldConfig.name === "group_id" ? 4 : 0 }}>
+      {fieldConfig.type === "autocomplete" && (
+        <>
           <Typography variant="body2" mb={0.5} fontWeight={600}>
             {fieldConfig.label}
           </Typography>
@@ -328,13 +261,6 @@ export const FieldFormInput = ({
               null
             }
             options={dropdownOptions}
-            renderOption={(props: any, option: DropdownOptions) => {
-              return (
-                <Box {...props} key={option.value}>
-                  {option.label}
-                </Box>
-              );
-            }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -357,10 +283,11 @@ export const FieldFormInput = ({
               },
             }}
           />
-        </Box>
+        </>
       )}
 
-      {fieldConfig.type === "options" && (
+      {(fieldConfig.type === "options" ||
+        fieldConfig.type === "toggle_options") && (
         <>
           <Typography variant="body2" mb={2} fontWeight={600}>
             {fieldConfig.label}
@@ -384,16 +311,22 @@ export const FieldFormInput = ({
                   handleOptionValueChanged(newKeyValueData, index)
                 }
                 onDeleteOption={() => handleDeleteOption(index)}
+                isDeletable={fieldConfig.type === "options"}
+                disabledFields={
+                  fieldConfig.type === "toggle_options" ? ["key"] : []
+                }
               />
             );
           })}
-          <Button
-            variant="outlined"
-            startIcon={<AddRoundedIcon />}
-            onClick={handleAddNewOption}
-          >
-            Add Option
-          </Button>
+          {fieldConfig.type === "options" && (
+            <Button
+              variant="outlined"
+              startIcon={<AddRoundedIcon />}
+              onClick={handleAddNewOption}
+            >
+              Add Option
+            </Button>
+          )}
         </>
       )}
     </Grid>
@@ -406,6 +339,8 @@ interface KeyValueInputProps {
   errorMsg?: [string, string];
   onOptionChange: (newKeyValueData: { [key: string]: string }) => void;
   onDeleteOption: () => void;
+  isDeletable: boolean;
+  disabledFields?: string[];
 }
 const KeyValueInput = ({
   optionKey,
@@ -413,6 +348,8 @@ const KeyValueInput = ({
   errorMsg,
   onOptionChange,
   onDeleteOption,
+  isDeletable,
+  disabledFields,
 }: KeyValueInputProps) => {
   const handleDataChanged = (type: string, value: string) => {
     if (type === "key") {
@@ -420,8 +357,12 @@ const KeyValueInput = ({
     }
 
     if (type === "value") {
-      // When the value is changed, automatically change the key as well
-      onOptionChange({ [convertLabelValue(value) || ""]: value });
+      if (disabledFields.includes("key")) {
+        onOptionChange({ [optionKey]: value });
+      } else {
+        // When the value is changed, automatically change the key as well
+        onOptionChange({ [convertLabelValue(value) || ""]: value });
+      }
     }
   };
 
@@ -446,6 +387,7 @@ const KeyValueInput = ({
           }}
           helperText={labelErrorMsg}
           error={Boolean(labelErrorMsg)}
+          disabled={disabledFields.includes("value")}
         />
         <TextField
           name="key"
@@ -458,11 +400,14 @@ const KeyValueInput = ({
           }}
           helperText={valueErrorMsg}
           error={Boolean(valueErrorMsg)}
+          disabled={disabledFields.includes("key")}
         />
       </Box>
-      <IconButton size="small" onClick={onDeleteOption}>
-        <DeleteRoundedIcon />
-      </IconButton>
+      {isDeletable && (
+        <IconButton size="small" onClick={onDeleteOption}>
+          <DeleteRoundedIcon />
+        </IconButton>
+      )}
     </Box>
   );
 };

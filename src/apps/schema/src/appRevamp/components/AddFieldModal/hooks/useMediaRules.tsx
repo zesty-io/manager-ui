@@ -4,17 +4,18 @@ import { mediaManagerApi } from "../../../../../../../shell/services/mediaManage
 import { Bin, Group } from "../../../../../../../shell/services/types";
 import { AppState } from "../../../../../../../shell/store/types";
 import { FormValue } from "../views/FieldForm";
+import { DropdownOptions } from "../FieldFormInput";
 
 export interface ItemLimit {
-  label: string;
+  title: string;
   isChecked: boolean;
   value: string;
 }
 
 export interface LockFolder {
-  label: string;
+  title: string;
   isChecked: boolean;
-  value: any;
+  option: any;
 }
 
 export interface CustomGroup {
@@ -24,15 +25,15 @@ export interface CustomGroup {
 
 export const useMediaRules = () => {
   const [itemLimit, setItemLimit] = useState({
-    label: "Media Item Limit",
+    title: "Media Item Limit",
     isChecked: false,
     value: "1",
   });
   const [lockFolder, setLockFolder] = useState({
-    label: "Select Folder",
+    title: "Select Folder",
     isChecked: false,
-    value: {
-      id: "",
+    option: {
+      value: "",
       label: "",
     },
   });
@@ -54,26 +55,10 @@ export const useMediaRules = () => {
       }
     );
 
-  // set initial value
-  useEffect(() => {
-    if (binGroups?.length) {
-      setGroups(
-        binGroups[0]?.map((group: Group) => {
-          return {
-            id: group?.id,
-            label: group?.name,
-          };
-        }) || []
-      );
-    }
-  }, [binGroups]);
-
-  useEffect(() => {
-    setLockFolder((prevData: LockFolder) => ({
-      ...prevData,
-      value: groups[0],
-    }));
-  }, [groups]);
+  const mediaFoldersOptions: DropdownOptions[] = binGroups[0]?.map((field) => ({
+    label: field.name,
+    value: field.id,
+  }));
 
   return {
     itemLimit,
@@ -81,5 +66,6 @@ export const useMediaRules = () => {
     setItemLimit,
     setLockFolder,
     groups,
+    mediaFoldersOptions,
   };
 };

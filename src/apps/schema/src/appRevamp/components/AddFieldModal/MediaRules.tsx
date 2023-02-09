@@ -75,9 +75,10 @@ export const MediaRules = ({
           isChecked: Boolean(checked),
         }));
       } else if (rule.name === "group_id") {
+        console.log("ONCHECK", lockFolder);
         onDataChange({
           inputName: rule.name,
-          value: lockFolder.value.id,
+          value: lockFolder.option.value,
         });
         setLockFolder((prevData: LockFolder) => ({
           ...prevData,
@@ -136,7 +137,7 @@ export const MediaRules = ({
               {rule.name === "limit" && itemLimit.isChecked ? (
                 <>
                   <Typography variant="body2">
-                    {itemLimit.label}
+                    {itemLimit.title}
                     <Tooltip
                       placement="top"
                       title="Set the maximum number of files a user can upload"
@@ -172,24 +173,23 @@ export const MediaRules = ({
                 rule.name === "group_id" &&
                 lockFolder.isChecked && (
                   <>
-                    <Typography variant="body2">{lockFolder.label}</Typography>
+                    <Typography variant="body2">{lockFolder.title}</Typography>
                     <Autocomplete
-                      value={lockFolder.value}
+                      value={lockFolder.option}
                       options={groups}
                       onChange={(_, option) => {
-                        console.log("option", option);
                         setLockFolder((prevData: LockFolder) => ({
                           ...prevData,
-                          value: option,
+                          option: option,
                         }));
                         onDataChange({
                           inputName: rule.name,
-                          value: option.id,
+                          value: option.value,
                         });
                       }}
                       renderOption={(props: any, option: any) => {
                         return (
-                          <Box {...props} key={option.id}>
+                          <Box {...props} key={option.value}>
                             {option.label}
                           </Box>
                         );
