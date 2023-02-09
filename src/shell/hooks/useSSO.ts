@@ -1,28 +1,24 @@
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
-type Service = "github" | "google" | "azure" | string;
+type Service = "github" | "google" | "azure";
 
-const tabs = <any>[];
+let tabWindow: Window;
 export const useSSO = () => {
-  const [token, setToken] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState("");
   const receiveMessage = (event: MessageEvent<any>) => {
     if (
       // @ts-ignore
       event.origin === CONFIG.SERVICE_AUTH &&
-      event.data.source === "zesty" &&
-      event.data.status === 200
+      event.data.source === "zesty"
     ) {
-      // @ts-ignore
-      const token = Cookies.get(CONFIG.COOKIE_NAME);
-      setToken(token);
+      if (event.data.status === "200") {
+        setIsAuthenticated(true);
+      } else {
+        setError(event.data.error_message);
+      }
+      tabWindow.close();
     }
-  };
-
-  const closeOpenedTabs = () => {
-    tabs.forEach((tab: any) => {
-      tab.close();
-    });
   };
 
   useEffect(() => {
@@ -32,19 +28,13 @@ export const useSSO = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (token) {
-      closeOpenedTabs();
-    }
-  }, [token]);
-
   const initiate = (service: Service) => {
-    let tab = window.open(
+    tabWindow?.close();
+    tabWindow = window.open(
       // @ts-ignore
       `${CONFIG.SERVICE_AUTH}/${service}/login`
     );
-    tabs.push(tab);
   };
 
-  return [initiate];
+  return [initiate, isAuthenticated, error];
 };
