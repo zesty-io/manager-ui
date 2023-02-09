@@ -25,12 +25,6 @@ export const SearchPage: FC = () => {
     { query, order: "created", dir: "desc" },
     { skip: !query }
   );
-  /*
-  const sortedResults = results ? [...results] : [];
-  sortedResults?.sort((a, b) => {
-    return moment(b.meta.updatedAt).diff(moment(a.meta.updatedAt));
-  });
-  */
 
   const dateFilteredResults = useMemo(() => {
     if (unsortedResults) {
