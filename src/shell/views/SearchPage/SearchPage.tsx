@@ -48,12 +48,15 @@ export const SearchPage: FC = () => {
 
   const userFilteredResults = useMemo(() => {
     if (dateFilteredResults) {
-      const userFilteredResults = userZuid
-        ? dateFilteredResults.filter(
-            (item) => item.web?.createdByUserZUID === userZuid
-          )
-        : dateFilteredResults;
-      return userFilteredResults;
+      if (userZuid)
+        return dateFilteredResults.filter(
+          (item) => item.web?.createdByUserZUID === userZuid
+        );
+      else {
+        return dateFilteredResults;
+      }
+    } else {
+      return [];
     }
   }, [dateFilteredResults, userZuid]);
 
