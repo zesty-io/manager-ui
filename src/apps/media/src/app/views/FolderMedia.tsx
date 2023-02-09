@@ -20,9 +20,9 @@ import Controls from "../components/Controls";
 import { NoResultsState } from "../components/NoResultsState";
 import {
   MediaSortOrder,
-  DateRange,
   Filetype,
 } from "../../../../../shell/store/media-revamp";
+import { DateRange } from "../../../../../shell/store/types";
 import {
   getDateFilterFn,
   getDateFilter,

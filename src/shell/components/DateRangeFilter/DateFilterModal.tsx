@@ -8,8 +8,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { CalendarPicker } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
-import { DialogContent, DialogTitle, DialogProps } from "@mui/material";
-import { DateRange } from "../../store/media-revamp";
+import { DialogContent, DialogTitle } from "@mui/material";
+import { DateRange } from "../../store/types";
 
 type DateFilterModal = {
   open: boolean;

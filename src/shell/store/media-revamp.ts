@@ -87,27 +87,6 @@ export type Filetype =
   | "FLV"
   | "MPEG";
 
-export type DateRange = PresetDateRange | SingleDateRange | CustomDateRange;
-export type PresetDateRange = {
-  type: "preset";
-  value:
-    | "today"
-    | "yesterday"
-    | "last 7 days"
-    | "last 30 days"
-    | "last 3 months"
-    | "last 12 months";
-};
-
-export type SingleDateRange = {
-  type: "on" | "before" | "after";
-  value: string;
-};
-export type CustomDateRange = {
-  type: "range";
-  value: [string, string];
-};
-
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;

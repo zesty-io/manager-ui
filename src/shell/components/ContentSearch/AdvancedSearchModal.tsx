@@ -10,7 +10,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useHistory } from "react-router";
 import { MenuItem, Select } from "@mui/material";
-import { PresetDateRange } from "../../store/media-revamp";
+import { PresetDateRange } from "../../store/types";
 import { accountsApi } from "../../services/accounts";
 
 type ModalProps = {

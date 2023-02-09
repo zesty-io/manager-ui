@@ -11,7 +11,7 @@ import CloseRounded from "@mui/icons-material/CloseRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import Divider from "@mui/material/Divider";
 
-import { DateRange } from "../../store/media-revamp";
+import { DateRange } from "../../store/types";
 import { getDateFilter } from "../../../utility/dateUtils";
 import moment from "moment-timezone";
 import { DateFilterModal } from "./DateFilterModal";
