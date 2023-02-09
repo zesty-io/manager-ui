@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { mediaManagerApi } from "../../../../../../../shell/services/mediaManager";
-import { Group } from "../../../../../../../shell/services/types";
+import { Bin, Group } from "../../../../../../../shell/services/types";
+import { AppState } from "../../../../../../../shell/store/types";
 import { FormValue } from "../views/FieldForm";
 
 export interface ItemLimit {
@@ -18,8 +19,7 @@ export interface LockFolder {
 
 export interface CustomGroup {
   value: string;
-  inputLabel: string;
-  component: string;
+  label: string;
 }
 
 export const useMediaRules = () => {
@@ -33,12 +33,11 @@ export const useMediaRules = () => {
     isChecked: false,
     value: {
       id: "",
-      inputLabel: "",
-      component: "",
+      label: "",
     },
   });
 
-  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const { data: bins, isFetching: isBinsFetching } =
     mediaManagerApi.useGetBinsQuery({
@@ -49,7 +48,7 @@ export const useMediaRules = () => {
   const [groups, setGroups] = useState([]);
   const { data: binGroups, isFetching: isBinGroupsFetching } =
     mediaManagerApi.useGetAllBinGroupsQuery(
-      bins?.map((bin: any) => bin.id),
+      bins?.map((bin: Bin) => bin.id),
       {
         skip: !bins?.length,
       }
@@ -62,8 +61,7 @@ export const useMediaRules = () => {
         binGroups[0]?.map((group: Group) => {
           return {
             id: group?.id,
-            inputLabel: group?.name,
-            component: group?.name,
+            label: group?.name,
           };
         }) || []
       );

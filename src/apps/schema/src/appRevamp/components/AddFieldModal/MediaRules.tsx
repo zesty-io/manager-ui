@@ -5,6 +5,7 @@ import {
   Typography,
   TextField,
   FormLabel,
+  Autocomplete,
   Tooltip,
 } from "@mui/material";
 import { useSelector } from "react-redux";
@@ -12,7 +13,6 @@ import { Dispatch, useEffect, useState } from "react";
 import { FormValue } from "./views/FieldForm";
 import { ItemLimit, LockFolder, CustomGroup } from "./hooks/useMediaRules";
 
-import { VirtualizedAutocomplete } from "@zesty-io/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { faRuler } from "@fortawesome/free-solid-svg-icons";
 import { InputField } from "./FieldFormInput";
@@ -77,7 +77,7 @@ export const MediaRules = ({
       } else if (rule.name === "group_id") {
         onDataChange({
           inputName: rule.name,
-          value: lockFolder.value.value,
+          value: lockFolder.value.id,
         });
         setLockFolder((prevData: LockFolder) => ({
           ...prevData,
@@ -173,20 +173,30 @@ export const MediaRules = ({
                 lockFolder.isChecked && (
                   <>
                     <Typography variant="body2">{lockFolder.label}</Typography>
-                    <VirtualizedAutocomplete
+                    <Autocomplete
                       value={lockFolder.value}
+                      options={groups}
                       onChange={(_, option) => {
+                        console.log("option", option);
                         setLockFolder((prevData: LockFolder) => ({
                           ...prevData,
                           value: option,
                         }));
                         onDataChange({
                           inputName: rule.name,
-                          value: option.value,
+                          value: option.id,
                         });
                       }}
-                      placeholder="Select media folder..."
-                      options={groups}
+                      renderOption={(props: any, option: any) => {
+                        return (
+                          <Box {...props} key={option.id}>
+                            {option.label}
+                          </Box>
+                        );
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} hiddenLabel />
+                      )}
                     />
                   </>
                 )
