@@ -2,11 +2,17 @@ import { useEffect, useState } from "react";
 
 type Service = "github" | "google" | "azure";
 
+interface Message {
+  source: "zesty";
+  status: string;
+  error_message: string;
+}
+
 let tabWindow: Window;
 export const useSSO = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState("");
-  const receiveMessage = (event: MessageEvent<any>) => {
+  const receiveMessage = (event: MessageEvent<Message>) => {
     if (
       // @ts-ignore
       event.origin === CONFIG.SERVICE_AUTH &&
