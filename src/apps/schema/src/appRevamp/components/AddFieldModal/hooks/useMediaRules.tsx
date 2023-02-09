@@ -46,7 +46,6 @@ export const useMediaRules = () => {
       ecoId,
     });
 
-  const [groups, setGroups] = useState([]);
   const { data: binGroups, isFetching: isBinGroupsFetching } =
     mediaManagerApi.useGetAllBinGroupsQuery(
       bins?.map((bin: Bin) => bin.id),
@@ -54,18 +53,23 @@ export const useMediaRules = () => {
         skip: !bins?.length,
       }
     );
+  const [mediaFoldersOptions, setMediaFoldersOptions] = useState([]);
 
-  const mediaFoldersOptions: DropdownOptions[] = binGroups[0]?.map((field) => ({
-    label: field.name,
-    value: field.id,
-  }));
+  useEffect(() => {
+    if (binGroups?.length) {
+      const res = binGroups[0]?.map((field) => ({
+        label: field.name,
+        value: field.id,
+      }));
+      setMediaFoldersOptions(res);
+    }
+  }, [binGroups]);
 
   return {
     itemLimit,
     lockFolder,
     setItemLimit,
     setLockFolder,
-    groups,
     mediaFoldersOptions,
   };
 };

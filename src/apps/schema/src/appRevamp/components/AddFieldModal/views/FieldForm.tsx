@@ -199,7 +199,7 @@ export const FieldForm = ({
 
     setFormData(formFields);
     setErrors(errors);
-  }, [type, fieldData]);
+  }, [type, fieldData, mediaFoldersOptions.length]);
 
   useEffect(() => {
     if (isBulkUpdated) {
