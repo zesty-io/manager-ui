@@ -397,8 +397,9 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
   images: [
     ...COMMON_FIELDS,
     {
-      name: "allowMultipleFiles",
+      name: "limit",
       type: "checkbox",
+      tab: "rules",
       label: "Allow multiple files to be selected",
       subLabel:
         "Ensures multiple files can be uploaded instead of default of just 1 file",
@@ -406,26 +407,11 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
       gridSize: 12,
     },
     {
-      name: "limit",
-      type: "number",
-      label: "Media Item Limit",
-      subLabel: "Set the maximum number of files a user can upload",
-      required: false,
-      gridSize: 12,
-    },
-    {
-      name: "lockToFolder",
+      name: "group_id",
       type: "checkbox",
+      tab: "rules",
       label: "Lock to a folder",
       subLabel: "Ensures files can only be selected from a specific folder",
-      required: false,
-      gridSize: 12,
-    },
-    {
-      name: "group_id",
-      type: "autocomplete",
-      label: "Select Folder",
-      subLabel: "",
       required: false,
       gridSize: 12,
     },

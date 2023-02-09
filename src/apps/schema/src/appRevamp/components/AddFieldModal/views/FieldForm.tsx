@@ -25,6 +25,8 @@ import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlin
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
+import { useMediaRules } from "../hooks/useMediaRules";
+import { MediaRules } from "../MediaRules";
 import {
   getCategory,
   convertLabelValue,
@@ -86,6 +88,8 @@ export const FieldForm = ({
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [isAddAnotherFieldClicked, setIsAddAnotherFieldClicked] =
     useState(false);
+  const { itemLimit, lockFolder, setItemLimit, setLockFolder, groups } =
+    useMediaRules();
 
   const [errors, setErrors] = useState<Errors>({});
   const [formData, setFormData] = useState<FormData>({});
@@ -527,7 +531,24 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && <ComingSoon />}
+        {activeTab === "rules" && type !== "images" ? (
+          <ComingSoon />
+        ) : (
+          activeTab === "rules" &&
+          type === "images" && (
+            <MediaRules
+              fieldConfig={FORM_CONFIG["images"].filter(
+                (data) => data.tab === "rules"
+              )}
+              onDataChange={handleFieldDataChange}
+              itemLimit={itemLimit}
+              lockFolder={lockFolder}
+              setItemLimit={setItemLimit}
+              setLockFolder={setLockFolder}
+              groups={groups}
+            />
+          )
+        )}
         {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
       {isUpdateField ? (

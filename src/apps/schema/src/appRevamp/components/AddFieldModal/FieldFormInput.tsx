@@ -60,6 +60,7 @@ export interface InputField {
   placeholder?: string;
   tooltip?: string;
   validate?: Validation[];
+  tab?: string;
 }
 export interface DropdownOptions {
   label: string;
