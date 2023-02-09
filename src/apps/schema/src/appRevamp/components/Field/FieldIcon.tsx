@@ -28,11 +28,6 @@ type Icons = {
   };
 };
 const icons: Icons = {
-  article_writer: {
-    icon: EditNote as SvgIconComponent,
-    backgroundColor: "green.50",
-    borderColor: "green.500",
-  },
   color: {
     icon: ColorLensRounded,
     backgroundColor: "purple.50",
