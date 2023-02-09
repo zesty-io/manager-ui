@@ -34,14 +34,16 @@ export const SearchPage: FC = () => {
 
   const dateFilteredResults = useMemo(() => {
     if (unsortedResults) {
-      const dateFilteredResults = dateRangeFilter
-        ? unsortedResults.filter((item) =>
-            getDateFilterFn(dateRangeFilter)(item.meta?.createdAt)
-          )
-        : // need to clone because unsortedResults is read-only and .sort() mutates
-          [...unsortedResults];
-      return dateFilteredResults;
-    } else return [];
+      if (dateRangeFilter) {
+        const filterFn = getDateFilterFn(dateRangeFilter);
+        return unsortedResults.filter((item) => filterFn(item.meta?.createdAt));
+      } else {
+        // need to clone because unsortedResults is read-only and .sort() mutates
+        return [...unsortedResults];
+      }
+    } else {
+      return [];
+    }
   }, [unsortedResults, dateRangeFilter]);
 
   const userFilteredResults = useMemo(() => {
