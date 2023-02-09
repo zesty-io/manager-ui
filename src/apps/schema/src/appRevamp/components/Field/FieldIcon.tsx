@@ -1,5 +1,4 @@
 import { SvgIconComponent } from "@mui/icons-material";
-import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
 import TitleRounded from "@mui/icons-material/TitleRounded";
 import SubjectRounded from "@mui/icons-material/SubjectRounded";
 import NewspaperRounded from "@mui/icons-material/NewspaperRounded";
