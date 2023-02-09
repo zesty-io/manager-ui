@@ -24,8 +24,9 @@ export const AdvancedSearchDialog: FC<ModalProps> = ({ open, onClose }) => {
   const [userZuid, setUserZuid] = useState<string>("");
   const history = useHistory();
 
-  const { data: users, isLoading: usersLoading } =
-    accountsApi.useGetUsersQuery();
+  const { data: users } = accountsApi.useGetUsersQuery(undefined, {
+    skip: !open,
+  });
 
   const clearAll = () => {
     setQuery("");
@@ -79,11 +80,15 @@ export const AdvancedSearchDialog: FC<ModalProps> = ({ open, onClose }) => {
           placeholder="Select"
           MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
         >
-          {users?.map((user) => (
-            <MenuItem value={user.ZUID}>
-              {user.firstName} {user.lastName}
-            </MenuItem>
-          ))}
+          {users ? (
+            users.map((user) => (
+              <MenuItem value={user.ZUID}>
+                {user.firstName} {user.lastName}
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem value="">Loading...</MenuItem>
+          )}
         </Select>
         <Typography fontWeight="bold">Date</Typography>
         <Select
