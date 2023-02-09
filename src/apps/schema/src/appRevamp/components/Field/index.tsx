@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useLocation, useHistory } from "react-router";
+import { useLocation, useHistory, useParams } from "react-router";
+import { useDispatch } from "react-redux";
 import {
   Box,
   IconButton,
@@ -10,18 +11,28 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  CircularProgress,
 } from "@mui/material";
-import { ContentModelField } from "../../../../../../shell/services/types";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
+import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 
 import { FieldIcon } from "./FieldIcon";
+import { ContentModelField } from "../../../../../../shell/services/types";
+import {
+  useDeleteContentModelFieldMutation,
+  useUndeleteContentModelFieldMutation,
+} from "../../../../../../shell/services/instance";
 import { TYPE_TEXT } from "../configs";
+import { notify } from "../../../../../../shell/store/notifications";
 
+type Params = {
+  id: string;
+};
 interface Props {
   field: ContentModelField;
   index: number;
@@ -29,6 +40,7 @@ interface Props {
   setDraggedIndex: (index: number) => void;
   setHoveredIndex: (index: number) => void;
   disableDrag: boolean;
+  isDeactivated?: boolean;
 }
 
 export const Field = ({
@@ -38,6 +50,7 @@ export const Field = ({
   setDraggedIndex,
   setHoveredIndex,
   disableDrag,
+  isDeactivated,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -48,6 +61,18 @@ export const Field = ({
   const isMenuOpen = Boolean(anchorEl);
   const location = useLocation();
   const history = useHistory();
+  const params = useParams<Params>();
+  const { id: modelZUID } = params;
+  const dispatch = useDispatch();
+
+  const [
+    deleteContentModelField,
+    { isLoading: isDeletingField, isSuccess: isFieldDeleted },
+  ] = useDeleteContentModelFieldMutation();
+  const [
+    undeleteContentModelField,
+    { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
+  ] = useUndeleteContentModelFieldMutation();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -64,6 +89,29 @@ export const Field = ({
       clearTimeout(timeoutId);
     };
   }, [isFieldNameCopied, isZuidCopied]);
+
+  useEffect(() => {
+    setAnchorEl(null);
+
+    if (isFieldDeleted || isFieldUndeleted) {
+      let message = "";
+
+      if (isFieldDeleted) {
+        message = `\"${field?.label}\" field is de-activated`;
+      }
+
+      if (isFieldUndeleted) {
+        message = `\"${field?.label}\" field is re-activated`;
+      }
+
+      dispatch(
+        notify({
+          message,
+          kind: "success",
+        })
+      );
+    }
+  }, [isFieldDeleted, isFieldUndeleted]);
 
   const handleDragStart = (e: React.DragEvent) => {
     // TODO: Test on other browsers
@@ -121,8 +169,16 @@ export const Field = ({
     setAnchorEl(e.currentTarget);
   };
 
-  const style = {
-    opacity: isDragging ? 0.01 : 1,
+  const getStyle = () => {
+    if (isDragging) {
+      return { opacity: 0.01 };
+    }
+
+    if (isDeactivated) {
+      return { opacity: 0.7 };
+    }
+
+    return { opacity: 1 };
   };
 
   return (
@@ -133,7 +189,7 @@ export const Field = ({
       borderRadius={1}
       ref={ref}
       sx={{
-        ...style,
+        ...getStyle(),
         "&:hover": {
           backgroundColor: "action.hover",
         },
@@ -216,6 +272,7 @@ export const Field = ({
           }}
         >
           <MenuItem
+            disabled={isDeactivated}
             onClick={() => history.push(`${location.pathname}/${field.ZUID}`)}
           >
             <ListItemIcon>
@@ -229,12 +286,46 @@ export const Field = ({
             </ListItemIcon>
             <ListItemText>{isZuidCopied ? "Copied" : "Copy ZUID"}</ListItemText>
           </MenuItem>
-          <MenuItem>
-            <ListItemIcon>
-              <HighlightOffRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>De-activate Field</ListItemText>
-          </MenuItem>
+          {isDeletingField || isUndeletingField ? (
+            <MenuItem>
+              <ListItemIcon>
+                <CircularProgress size={24} color="inherit" />
+              </ListItemIcon>
+              {isDeletingField && (
+                <ListItemText>De-activating Field</ListItemText>
+              )}
+              {isUndeletingField && (
+                <ListItemText>Re-activating Field</ListItemText>
+              )}
+            </MenuItem>
+          ) : (
+            <MenuItem
+              onClick={() => {
+                if (isDeactivated) {
+                  undeleteContentModelField({
+                    modelZUID,
+                    fieldZUID: field?.ZUID,
+                  });
+                } else {
+                  deleteContentModelField({
+                    modelZUID,
+                    fieldZUID: field?.ZUID,
+                  });
+                }
+              }}
+            >
+              <ListItemIcon>
+                {isDeactivated ? (
+                  <PlayCircleOutlineRoundedIcon />
+                ) : (
+                  <HighlightOffRoundedIcon />
+                )}
+              </ListItemIcon>
+              <ListItemText>
+                {isDeactivated ? "Re-activate Field" : "De-activate Field"}
+              </ListItemText>
+            </MenuItem>
+          )}
         </Menu>
       </Box>
     </Box>

@@ -463,7 +463,19 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
   textarea: [...COMMON_FIELDS],
   uuid: [...COMMON_FIELDS],
   wysiwyg_basic: [...COMMON_FIELDS],
-  yes_no: [],
+  yes_no: [
+    ...COMMON_FIELDS.slice(0, 3),
+    {
+      name: "options",
+      type: "toggle_options",
+      label: "Boolean Options",
+      required: false,
+      gridSize: 12,
+      maxLength: 150,
+      validate: ["length"],
+    },
+    ...COMMON_FIELDS.slice(3),
+  ],
 };
 
 export { FieldListData, FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG };

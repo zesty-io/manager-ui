@@ -15,12 +15,14 @@ import {
   SvgIcon,
   InputLabel,
   TextField,
+  Tooltip,
   Autocomplete,
   Checkbox,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import {
   useCreateContentModelMutation,
   useGetContentModelsQuery,
@@ -244,7 +246,18 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
           <DialogContent sx={{ p: 3 }} dividers>
             <Box display="flex" flexDirection="column" gap={2.5}>
               <Box>
-                <InputLabel>Display Name</InputLabel>
+                <InputLabel>
+                  Display Name
+                  <Tooltip
+                    placement="top"
+                    title="Name that is shown to content editors"
+                  >
+                    <InfoRoundedIcon
+                      sx={{ ml: 1, width: "10px", height: "10px" }}
+                      color="action"
+                    />
+                  </Tooltip>
+                </InputLabel>
                 <TextField
                   inputProps={{
                     maxLength: 100,
@@ -258,7 +271,18 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 />
               </Box>
               <Box>
-                <InputLabel>Reference ID</InputLabel>
+                <InputLabel>
+                  Reference ID
+                  <Tooltip
+                    placement="top"
+                    title="ID used for accessing this model through our API or Parsley"
+                  >
+                    <InfoRoundedIcon
+                      sx={{ ml: 1, width: "10px", height: "10px" }}
+                      color="action"
+                    />
+                  </Tooltip>
+                </InputLabel>
                 <TextField
                   inputProps={{
                     maxLength: 100,
@@ -272,7 +296,18 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 />
               </Box>
               <Box>
-                <InputLabel>Select Model Parent</InputLabel>
+                <InputLabel>
+                  Select Model Parent
+                  <Tooltip
+                    placement="top"
+                    title="Selecting a parent affects default routing and content navigation in the UI"
+                  >
+                    <InfoRoundedIcon
+                      sx={{ ml: 1, width: "10px", height: "10px" }}
+                      color="action"
+                    />
+                  </Tooltip>
+                </InputLabel>
                 <Autocomplete
                   fullWidth
                   renderInput={(params) => (
@@ -290,7 +325,18 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 />
               </Box>
               <Box>
-                <InputLabel>Description</InputLabel>
+                <InputLabel>
+                  Description
+                  <Tooltip
+                    placement="top"
+                    title="Displays the purpose of the model to help content writers"
+                  >
+                    <InfoRoundedIcon
+                      sx={{ ml: 1, width: "10px", height: "10px" }}
+                      color="action"
+                    />
+                  </Tooltip>
+                </InputLabel>
                 <TextField
                   inputProps={{
                     maxLength: 500,

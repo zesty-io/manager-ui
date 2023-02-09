@@ -183,6 +183,8 @@ export const FieldForm = ({
           formFields[field.name] = false;
         } else if (field.type === "options") {
           formFields[field.name] = [{ "": "" }];
+        } else if (field.type === "toggle_options") {
+          formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
         } else {
           formFields[field.name] = "";
         }
@@ -214,7 +216,8 @@ export const FieldForm = ({
   useEffect(() => {
     // In-between field creation flow (bulk update field sort after field creation)
     if (isFieldCreated && isInbetweenField) {
-      const fieldsToUpdate: ContentModelField[] = fields
+      const activeFields = fields.filter((field) => !field?.deletedAt);
+      const fieldsToUpdate: ContentModelField[] = activeFields
         .slice(sortIndex)
         .map((field) => ({
           ...field,
@@ -318,7 +321,7 @@ export const FieldForm = ({
       body.relatedFieldZUID = formData.relatedFieldZUID || null;
     }
 
-    if (type === "dropdown") {
+    if (type === "dropdown" || type === "yes_no") {
       const options = formData.options as FieldSettingsOptions[];
       const optionsObject = options.reduce(
         (acc: FieldSettingsOptions, curr: FieldSettingsOptions) => {
