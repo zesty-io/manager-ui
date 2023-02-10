@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
+import { useDispatch } from "react-redux";
 import {
   Typography,
   DialogContent,
@@ -46,6 +47,7 @@ import {
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
+import { notify } from "../../../../../../../shell/store/notifications";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -88,11 +90,19 @@ export const FieldForm = ({
   const { id } = params;
   const [
     createContentModelField,
-    { isLoading: isCreatingField, isSuccess: isFieldCreated },
+    {
+      isLoading: isCreatingField,
+      isSuccess: isFieldCreated,
+      error: fieldCreationError,
+    },
   ] = useCreateContentModelFieldMutation();
   const [
     updateContentModelField,
-    { isLoading: isUpdatingField, isSuccess: isFieldUpdated },
+    {
+      isLoading: isUpdatingField,
+      isSuccess: isFieldUpdated,
+      error: fieldUpdateError,
+    },
   ] = useUpdateContentModelFieldMutation();
   const [
     bulkUpdateContentModelField,
@@ -118,6 +128,7 @@ export const FieldForm = ({
       value: field.ZUID,
     })
   );
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -249,6 +260,31 @@ export const FieldForm = ({
 
     setErrors(newErrorsObj);
   }, [formData]);
+
+  useEffect(() => {
+    if (fieldCreationError || fieldUpdateError) {
+      let errorMsg = "";
+
+      if (fieldCreationError) {
+        // @ts-ignore
+        errorMsg =
+          fieldCreationError?.data?.error || "Failed to create the field";
+      }
+
+      if (fieldUpdateError) {
+        // @ts-ignore
+        errorMsg =
+          fieldCreationError?.data?.error || "Failed to update the field";
+      }
+
+      dispatch(
+        notify({
+          message: errorMsg,
+          kind: "error",
+        })
+      );
+    }
+  }, [fieldCreationError, fieldUpdateError]);
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
