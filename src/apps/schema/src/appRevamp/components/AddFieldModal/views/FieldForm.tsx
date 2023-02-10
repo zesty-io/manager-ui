@@ -23,6 +23,7 @@ import RuleRoundedIcon from "@mui/icons-material/RuleRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
+import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
@@ -37,6 +38,8 @@ import {
   useBulkUpdateContentModelFieldMutation,
   useGetContentModelsQuery,
   useGetContentModelFieldsQuery,
+  useDeleteContentModelFieldMutation,
+  useUndeleteContentModelFieldMutation,
 } from "../../../../../../../shell/services/instance";
 import {
   ContentModelField,
@@ -128,6 +131,14 @@ export const FieldForm = ({
       value: field.ZUID,
     })
   );
+  const [
+    deleteContentModelField,
+    { isLoading: isDeletingField, isSuccess: isFieldDeleted },
+  ] = useDeleteContentModelFieldMutation();
+  const [
+    undeleteContentModelField,
+    { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
+  ] = useUndeleteContentModelFieldMutation();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -281,6 +292,28 @@ export const FieldForm = ({
       );
     }
   }, [fieldCreationError, fieldUpdateError]);
+
+  useEffect(() => {
+    if (isFieldDeleted) {
+      dispatch(
+        notify({
+          message: `\"${fieldData?.label}\" field is de-activated`,
+          kind: "success",
+        })
+      );
+    }
+  }, [isFieldDeleted]);
+
+  useEffect(() => {
+    if (isFieldUndeleted) {
+      dispatch(
+        notify({
+          message: `\"${fieldData?.label}\" field is re-activated`,
+          kind: "success",
+        })
+      );
+    }
+  }, [isFieldUndeleted]);
 
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
@@ -510,16 +543,37 @@ export const FieldForm = ({
                 />
               );
             })}
-            {/* TODO: Add functionality once deactivate flow is provided */}
             {isUpdateField && (
               <Grid item xs={12}>
-                <Button
-                  variant="outlined"
-                  color="inherit"
-                  startIcon={<PauseCircleOutlineRoundedIcon />}
+                <LoadingButton
+                  variant={fieldData?.deletedAt ? "contained" : "outlined"}
+                  color={fieldData?.deletedAt ? "primary" : "inherit"}
+                  startIcon={
+                    fieldData?.deletedAt ? (
+                      <PlayCircleOutlineRoundedIcon />
+                    ) : (
+                      <PauseCircleOutlineRoundedIcon />
+                    )
+                  }
+                  onClick={() => {
+                    if (fieldData?.deletedAt) {
+                      undeleteContentModelField({
+                        modelZUID: id,
+                        fieldZUID: fieldData?.ZUID,
+                      });
+                    } else {
+                      deleteContentModelField({
+                        modelZUID: id,
+                        fieldZUID: fieldData?.ZUID,
+                      });
+                    }
+                  }}
+                  loading={isDeletingField || isUndeletingField}
                 >
-                  Deactivate Field
-                </Button>
+                  {fieldData?.deletedAt
+                    ? "Re-activate Field"
+                    : "De-activate Field"}
+                </LoadingButton>
               </Grid>
             )}
           </Grid>
