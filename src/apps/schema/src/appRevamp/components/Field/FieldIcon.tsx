@@ -1,5 +1,4 @@
 import { SvgIconComponent } from "@mui/icons-material";
-import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
 import TitleRounded from "@mui/icons-material/TitleRounded";
 import SubjectRounded from "@mui/icons-material/SubjectRounded";
 import NewspaperRounded from "@mui/icons-material/NewspaperRounded";
@@ -16,7 +15,7 @@ import ToggleOnRounded from "@mui/icons-material/ToggleOnRounded";
 import KeyboardArrowDownRounded from "@mui/icons-material/KeyboardArrowDownRounded";
 import ColorLensRounded from "@mui/icons-material/ColorLensRounded";
 import FormatListNumberedRounded from "@mui/icons-material/FormatListNumberedRounded";
-import { Markdown, OneToOne, EditNote } from "@zesty-io/material";
+import { Markdown, OneToOne } from "@zesty-io/material";
 import { Box } from "@mui/system";
 import { SvgIcon } from "@mui/material";
 
@@ -28,11 +27,6 @@ type Icons = {
   };
 };
 const icons: Icons = {
-  article_writer: {
-    icon: EditNote as SvgIconComponent,
-    backgroundColor: "green.50",
-    borderColor: "green.500",
-  },
   color: {
     icon: ColorLensRounded,
     backgroundColor: "purple.50",
