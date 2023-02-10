@@ -266,15 +266,11 @@ export const FieldForm = ({
       let errorMsg = "";
 
       if (fieldCreationError) {
-        // @ts-ignore
-        errorMsg =
-          fieldCreationError?.data?.error || "Failed to create the field";
+        errorMsg = "Failed to create the field";
       }
 
       if (fieldUpdateError) {
-        // @ts-ignore
-        errorMsg =
-          fieldCreationError?.data?.error || "Failed to update the field";
+        errorMsg = "Failed to update the field";
       }
 
       dispatch(
