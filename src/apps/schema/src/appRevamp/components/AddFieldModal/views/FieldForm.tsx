@@ -290,6 +290,12 @@ export const FieldForm = ({
     const sort = isInbetweenField ? sortIndex : fields?.length;
 
     if (hasErrors) {
+      // Switch the active tab to details to show the user the errors if
+      // they're not on the details tab and they clicked the submit button
+      if (activeTab !== "details") {
+        setActiveTab("details");
+      }
+
       return;
     }
 
