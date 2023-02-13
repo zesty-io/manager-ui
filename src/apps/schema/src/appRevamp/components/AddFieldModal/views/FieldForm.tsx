@@ -157,9 +157,14 @@ export const FieldForm = ({
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
     let errors: { [key: string]: string } = {};
+
+    if (!FORM_CONFIG[type]) {
+      return;
+    }
+
     const flattenedFormConfig = [
-      ...FORM_CONFIG[type].details,
-      ...FORM_CONFIG[type].rules,
+      ...FORM_CONFIG[type]?.details,
+      ...FORM_CONFIG[type]?.rules,
     ];
 
     flattenedFormConfig?.forEach((field) => {
@@ -540,7 +545,7 @@ export const FieldForm = ({
       >
         {activeTab === "details" && (
           <Grid container spacing={2.5} maxWidth="480px">
-            {FORM_CONFIG[type].details?.map((fieldConfig, index) => {
+            {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
 

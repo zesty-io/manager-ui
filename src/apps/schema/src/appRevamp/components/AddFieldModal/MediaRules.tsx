@@ -46,11 +46,10 @@ export const MediaRules = ({
         justifyContent="flex-start"
         gap="20px"
       >
-        {fieldConfig.map((rule: InputField, key: number) => {
+        {fieldConfig?.map((rule: InputField, key: number) => {
           return (
-            <>
+            <Box key={key}>
               <FormControlLabel
-                key={key}
                 sx={{
                   alignItems: "flex-start",
                 }}
@@ -101,11 +100,11 @@ export const MediaRules = ({
                     onDataChange={onDataChange}
                     fieldConfig={rule}
                     prefillData={fieldData[rule.name]}
-                    dropdownOptions={groups}
+                    dropdownOptions={groups || []}
                   />
                 </Box>
               )}
-            </>
+            </Box>
           );
         })}
       </Box>
