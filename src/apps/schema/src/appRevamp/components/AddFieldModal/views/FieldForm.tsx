@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
+import { useDispatch } from "react-redux";
 import {
   Typography,
   DialogContent,
@@ -22,6 +23,7 @@ import RuleRoundedIcon from "@mui/icons-material/RuleRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
+import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
@@ -38,6 +40,8 @@ import {
   useBulkUpdateContentModelFieldMutation,
   useGetContentModelsQuery,
   useGetContentModelFieldsQuery,
+  useDeleteContentModelFieldMutation,
+  useUndeleteContentModelFieldMutation,
 } from "../../../../../../../shell/services/instance";
 import {
   ContentModelField,
@@ -49,9 +53,7 @@ import {
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
-import { useSelector } from "react-redux";
-import { mediaManagerApi } from "../../../../../../../shell/services/mediaManager";
-import { AppState } from "../../../../../../../shell/store/types";
+import { notify } from "../../../../../../../shell/store/notifications";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -102,11 +104,19 @@ export const FieldForm = ({
   const { id } = params;
   const [
     createContentModelField,
-    { isLoading: isCreatingField, isSuccess: isFieldCreated },
+    {
+      isLoading: isCreatingField,
+      isSuccess: isFieldCreated,
+      error: fieldCreationError,
+    },
   ] = useCreateContentModelFieldMutation();
   const [
     updateContentModelField,
-    { isLoading: isUpdatingField, isSuccess: isFieldUpdated },
+    {
+      isLoading: isUpdatingField,
+      isSuccess: isFieldUpdated,
+      error: fieldUpdateError,
+    },
   ] = useUpdateContentModelFieldMutation();
   const [
     bulkUpdateContentModelField,
@@ -133,6 +143,15 @@ export const FieldForm = ({
       value: field.ZUID,
     })
   );
+  const [
+    deleteContentModelField,
+    { isLoading: isDeletingField, isSuccess: isFieldDeleted },
+  ] = useDeleteContentModelFieldMutation();
+  const [
+    undeleteContentModelField,
+    { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
+  ] = useUndeleteContentModelFieldMutation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
@@ -286,6 +305,49 @@ export const FieldForm = ({
     setErrors(newErrorsObj);
   }, [formData]);
 
+  useEffect(() => {
+    if (fieldCreationError || fieldUpdateError) {
+      let errorMsg = "";
+
+      if (fieldCreationError) {
+        errorMsg = "Failed to create the field";
+      }
+
+      if (fieldUpdateError) {
+        errorMsg = "Failed to update the field";
+      }
+
+      dispatch(
+        notify({
+          message: errorMsg,
+          kind: "error",
+        })
+      );
+    }
+  }, [fieldCreationError, fieldUpdateError]);
+
+  useEffect(() => {
+    if (isFieldDeleted) {
+      dispatch(
+        notify({
+          message: `\"${fieldData?.label}\" field is de-activated`,
+          kind: "success",
+        })
+      );
+    }
+  }, [isFieldDeleted]);
+
+  useEffect(() => {
+    if (isFieldUndeleted) {
+      dispatch(
+        notify({
+          message: `\"${fieldData?.label}\" field is re-activated`,
+          kind: "success",
+        })
+      );
+    }
+  }, [isFieldUndeleted]);
+
   const handleSubmitForm = () => {
     setIsSubmitClicked(true);
     const hasErrors = Object.values(errors)
@@ -294,6 +356,12 @@ export const FieldForm = ({
     const sort = isInbetweenField ? sortIndex : fields?.length;
 
     if (hasErrors) {
+      // Switch the active tab to details to show the user the errors if
+      // they're not on the details tab and they clicked the submit button
+      if (activeTab !== "details") {
+        setActiveTab("details");
+      }
+
       return;
     }
 
@@ -510,16 +578,37 @@ export const FieldForm = ({
                 />
               );
             })}
-            {/* TODO: Add functionality once deactivate flow is provided */}
             {isUpdateField && (
               <Grid item xs={12}>
-                <Button
-                  variant="outlined"
-                  color="inherit"
-                  startIcon={<PauseCircleOutlineRoundedIcon />}
+                <LoadingButton
+                  variant={fieldData?.deletedAt ? "contained" : "outlined"}
+                  color={fieldData?.deletedAt ? "primary" : "inherit"}
+                  startIcon={
+                    fieldData?.deletedAt ? (
+                      <PlayCircleOutlineRoundedIcon />
+                    ) : (
+                      <PauseCircleOutlineRoundedIcon />
+                    )
+                  }
+                  onClick={() => {
+                    if (fieldData?.deletedAt) {
+                      undeleteContentModelField({
+                        modelZUID: id,
+                        fieldZUID: fieldData?.ZUID,
+                      });
+                    } else {
+                      deleteContentModelField({
+                        modelZUID: id,
+                        fieldZUID: fieldData?.ZUID,
+                      });
+                    }
+                  }}
+                  loading={isDeletingField || isUndeletingField}
                 >
-                  Deactivate Field
-                </Button>
+                  {fieldData?.deletedAt
+                    ? "Re-activate Field"
+                    : "De-activate Field"}
+                </LoadingButton>
               </Grid>
             )}
           </Grid>

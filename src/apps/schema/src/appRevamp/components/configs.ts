@@ -307,7 +307,7 @@ const TYPE_TEXT: { [key: string]: string } = {
   datetime: "Date and Time",
   dropdown: "Dropdown",
   files: "Files",
-  font_awesome: "Font Awesome",
+  fontawesome: "Font Awesome",
   images: "Media",
   internal_link: "Internal Link",
   link: "External URL",
@@ -376,7 +376,7 @@ const COMMON_FIELDS: InputField[] = [
   },
 ];
 const FORM_CONFIG: { [key: string]: InputField[] } = {
-  article_writer: [],
+  article_writer: [...COMMON_FIELDS],
   color: [...COMMON_FIELDS],
   currency: [...COMMON_FIELDS],
   date: [...COMMON_FIELDS],
@@ -394,6 +394,8 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
     },
     ...COMMON_FIELDS.slice(3),
   ],
+  files: [...COMMON_FIELDS],
+  fontawesome: [...COMMON_FIELDS],
   images: [
     ...COMMON_FIELDS,
     {
@@ -462,6 +464,7 @@ const FORM_CONFIG: { [key: string]: InputField[] } = {
   text: [...COMMON_FIELDS],
   textarea: [...COMMON_FIELDS],
   uuid: [...COMMON_FIELDS],
+  wysiwyg_advanced: [...COMMON_FIELDS],
   wysiwyg_basic: [...COMMON_FIELDS],
   yes_no: [
     ...COMMON_FIELDS.slice(0, 3),
