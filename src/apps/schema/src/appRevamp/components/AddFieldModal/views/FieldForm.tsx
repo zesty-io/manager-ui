@@ -27,7 +27,7 @@ import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineR
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
-import { useMediaRules, LockFolder } from "../hooks/useMediaRules";
+import { useMediaRules } from "../hooks/useMediaRules";
 import { MediaRules } from "../MediaRules";
 import {
   getCategory,
@@ -48,7 +48,6 @@ import {
   FieldSettings,
   ContentModelFieldValue,
   FieldSettingsOptions,
-  Bin,
 } from "../../../../../../../shell/services/types";
 import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
@@ -90,13 +89,7 @@ export const FieldForm = ({
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [isAddAnotherFieldClicked, setIsAddAnotherFieldClicked] =
     useState(false);
-  const {
-    itemLimit,
-    lockFolder,
-    setItemLimit,
-    setLockFolder,
-    mediaFoldersOptions,
-  } = useMediaRules();
+  const { mediaFoldersOptions } = useMediaRules();
 
   const [errors, setErrors] = useState<Errors>({});
   const [formData, setFormData] = useState<FormData>({});
