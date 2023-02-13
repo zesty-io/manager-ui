@@ -166,6 +166,8 @@ export const Field = ({
   };
 
   const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
     setAnchorEl(e.currentTarget);
   };
 
@@ -192,6 +194,7 @@ export const Field = ({
         ...getStyle(),
         "&:hover": {
           backgroundColor: "action.hover",
+          cursor: "pointer",
         },
       }}
       draggable={isDraggable}
@@ -207,6 +210,7 @@ export const Field = ({
       pr={1}
       pl={0.5}
       gap={1}
+      onClick={() => console.log("field body clicked")}
     >
       <Box
         display="grid"
@@ -221,6 +225,7 @@ export const Field = ({
           onMouseEnter={() => setIsDraggable(true)}
           onMouseLeave={() => setIsDraggable(false)}
           sx={{ cursor: "grab" }}
+          onClick={(e) => e.stopPropagation()}
         >
           <DragIndicatorRoundedIcon />
         </IconButton>
@@ -260,6 +265,7 @@ export const Field = ({
         </IconButton>
         <Menu
           open={isMenuOpen}
+          onBackdropClick={(e) => e.stopPropagation()}
           onClose={() => setAnchorEl(null)}
           anchorEl={anchorEl}
           anchorOrigin={{
@@ -273,7 +279,11 @@ export const Field = ({
         >
           <MenuItem
             disabled={isDeactivated}
-            onClick={() => history.push(`${location.pathname}/${field.ZUID}`)}
+            onClick={(e) => {
+              e.stopPropagation();
+
+              history.push(`${location.pathname}/${field.ZUID}`);
+            }}
           >
             <ListItemIcon>
               <DriveFileRenameOutlineRoundedIcon />
@@ -300,7 +310,9 @@ export const Field = ({
             </MenuItem>
           ) : (
             <MenuItem
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
+
                 if (isDeactivated) {
                   undeleteContentModelField({
                     modelZUID,
