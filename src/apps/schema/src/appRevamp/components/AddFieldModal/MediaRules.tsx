@@ -95,7 +95,7 @@ export const MediaRules = ({
               />
 
               {Boolean(fieldData[rule.name]) && (
-                <Box ml={4}>
+                <Box ml={4} mt={2.5}>
                   <FieldFormInput
                     onDataChange={onDataChange}
                     fieldConfig={rule}
