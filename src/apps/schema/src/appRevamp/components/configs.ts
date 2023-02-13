@@ -434,6 +434,7 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
         required: false,
         gridSize: 12,
         inputType: "number",
+        tooltip: "Set the minimum media file limit to 1. It cannot go lower.",
       },
       {
         name: "group_id",
