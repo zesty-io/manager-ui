@@ -56,7 +56,6 @@ export interface InputField {
   placeholder?: string;
   tooltip?: string;
   validate?: Validation[];
-  tab?: string;
 }
 export interface DropdownOptions {
   label: string;
@@ -184,7 +183,7 @@ export const FieldFormInput = ({
         </>
       )}
 
-      {fieldConfig.type === "checkbox" && fieldConfig.tab !== "rules" && (
+      {fieldConfig.type === "checkbox" && (
         <FormControlLabel
           control={
             <Checkbox

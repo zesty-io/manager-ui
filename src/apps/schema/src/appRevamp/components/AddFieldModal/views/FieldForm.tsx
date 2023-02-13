@@ -157,7 +157,7 @@ export const FieldForm = ({
     let formFields: { [key: string]: FormValue } = {};
     let errors: { [key: string]: string } = {};
 
-    FORM_CONFIG[type]?.forEach((field) => {
+    FORM_CONFIG[type].details?.forEach((field) => {
       if (isUpdateField) {
         if (field.name === "list") {
           formFields.list = fieldData.settings.list;
@@ -266,7 +266,7 @@ export const FieldForm = ({
 
     Object.keys(formData).map((inputName) => {
       if (inputName in errors) {
-        const { maxLength, label, validate } = FORM_CONFIG[type].find(
+        const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
           (field) => field.name === inputName
         );
 
@@ -552,7 +552,7 @@ export const FieldForm = ({
       >
         {activeTab === "details" && (
           <Grid container spacing={2.5} maxWidth="480px">
-            {FORM_CONFIG[type]?.map((fieldConfig, index) => {
+            {FORM_CONFIG[type].details?.map((fieldConfig, index) => {
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
 
@@ -620,9 +620,7 @@ export const FieldForm = ({
           activeTab === "rules" &&
           type === "images" && (
             <MediaRules
-              fieldConfig={FORM_CONFIG["images"].filter(
-                (data) => data.tab === "rules"
-              )}
+              fieldConfig={FORM_CONFIG["images"].rules}
               onDataChange={handleFieldDataChange}
               itemLimit={itemLimit}
               lockFolder={lockFolder}
