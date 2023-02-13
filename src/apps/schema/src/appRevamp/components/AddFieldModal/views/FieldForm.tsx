@@ -153,32 +153,23 @@ export const FieldForm = ({
   ] = useUndeleteContentModelFieldMutation();
   const dispatch = useDispatch();
 
+  /** Initiate field type form */
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
     let errors: { [key: string]: string } = {};
+    const flattenedFormConfig = [
+      ...FORM_CONFIG[type].details,
+      ...FORM_CONFIG[type].rules,
+    ];
 
-    FORM_CONFIG[type].details?.forEach((field) => {
+    flattenedFormConfig?.forEach((field) => {
       if (isUpdateField) {
         if (field.name === "list") {
           formFields.list = fieldData.settings.list;
         } else if (field.name === "limit") {
           formFields[field.name] = fieldData.settings[field.name];
-          setItemLimit((prevData: any) => ({
-            ...prevData,
-            isChecked: Boolean(fieldData.settings.limit),
-          }));
         } else if (field.name === "group_id") {
           formFields[field.name] = fieldData.settings[field.name];
-          if (mediaFoldersOptions.length) {
-            setLockFolder((prevData: LockFolder) => ({
-              ...prevData,
-              option:
-                mediaFoldersOptions.find(
-                  (option: any) => option.value === fieldData.settings.group_id
-                ) || lockFolder.option,
-              isChecked: Boolean(fieldData.settings.group_id),
-            }));
-          }
         } else if (field.name === "options") {
           // Convert the options object to an Array of objects for easier rendering
           const options = Object.entries(fieldData.settings.options).map(
@@ -207,9 +198,6 @@ export const FieldForm = ({
         } else {
           formFields[field.name] = "";
         }
-
-        formFields["group_id"] = "";
-        formFields["limit"] = "";
 
         // Add the field name to the errors object if the field requires any validation
         if (field.validate?.length) {
@@ -614,22 +602,20 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && type !== "images" ? (
-          <ComingSoon />
-        ) : (
-          activeTab === "rules" &&
-          type === "images" && (
-            <MediaRules
-              fieldConfig={FORM_CONFIG["images"].rules}
-              onDataChange={handleFieldDataChange}
-              itemLimit={itemLimit}
-              lockFolder={lockFolder}
-              setItemLimit={setItemLimit}
-              setLockFolder={setLockFolder}
-              groups={mediaFoldersOptions}
-            />
-          )
+        {activeTab === "rules" && type !== "images" && <ComingSoon />}
+
+        {activeTab === "rules" && type === "images" && (
+          <MediaRules
+            fieldConfig={FORM_CONFIG["images"].rules}
+            onDataChange={handleFieldDataChange}
+            groups={mediaFoldersOptions}
+            fieldData={{
+              limit: formData["limit"],
+              group_id: formData["group_id"],
+            }}
+          />
         )}
+
         {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
       {isUpdateField ? (

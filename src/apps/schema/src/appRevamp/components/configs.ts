@@ -429,18 +429,17 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
     rules: [
       {
         name: "limit",
-        type: "checkbox",
-        label: "Allow multiple files to be selected",
-        subLabel:
-          "Ensures multiple files can be uploaded instead of default of just 1 file",
+        type: "input",
+        label: "Media Item Limit",
         required: false,
         gridSize: 12,
+        inputType: "number",
       },
       {
         name: "group_id",
-        type: "checkbox",
+        type: "autocomplete",
         label: "Lock to a folder",
-        subLabel: "Ensures files can only be selected from a specific folder",
+        subLabel: "Select Folder",
         required: false,
         gridSize: 12,
       },

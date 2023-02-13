@@ -43,6 +43,7 @@ type FieldType =
   | "autocomplete"
   | "options"
   | "toggle_options";
+type InputType = "text" | "number";
 export interface InputField {
   name: FieldNames;
   type: FieldType;
@@ -56,6 +57,7 @@ export interface InputField {
   placeholder?: string;
   tooltip?: string;
   validate?: Validation[];
+  inputType?: InputType;
 }
 export interface DropdownOptions {
   label: string;
@@ -179,6 +181,10 @@ export const FieldFormInput = ({
             value={prefillData}
             error={Boolean(errorMsg)}
             helperText={errorMsg}
+            type={fieldConfig.inputType || "text"}
+            inputProps={{
+              min: 1,
+            }}
           />
         </>
       )}
