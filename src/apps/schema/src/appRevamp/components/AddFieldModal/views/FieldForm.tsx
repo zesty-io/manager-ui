@@ -27,6 +27,8 @@ import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineR
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
+import { useMediaRules } from "../hooks/useMediaRules";
+import { MediaRules } from "../MediaRules";
 import {
   getCategory,
   convertLabelValue,
@@ -57,7 +59,7 @@ type Params = {
   id: string;
 };
 export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
-interface FormData {
+export interface FormData {
   [key: string]: FormValue;
 }
 interface Errors {
@@ -87,6 +89,8 @@ export const FieldForm = ({
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [isAddAnotherFieldClicked, setIsAddAnotherFieldClicked] =
     useState(false);
+  const { mediaFoldersOptions } = useMediaRules();
+
   const [errors, setErrors] = useState<Errors>({});
   const [formData, setFormData] = useState<FormData>({});
   const params = useParams<Params>();
@@ -119,6 +123,7 @@ export const FieldForm = ({
   } = useGetContentModelFieldsQuery(formData.relatedModelZUID as string, {
     skip: !formData.relatedModelZUID,
   });
+
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
   const modelsOptions: DropdownOptions[] = allModels?.map((model) => ({
@@ -141,14 +146,28 @@ export const FieldForm = ({
   ] = useUndeleteContentModelFieldMutation();
   const dispatch = useDispatch();
 
+  /** Initiate field type form */
   useEffect(() => {
     let formFields: { [key: string]: FormValue } = {};
     let errors: { [key: string]: string } = {};
 
-    FORM_CONFIG[type]?.forEach((field) => {
+    if (!FORM_CONFIG[type]) {
+      return;
+    }
+
+    const flattenedFormConfig = [
+      ...FORM_CONFIG[type]?.details,
+      ...FORM_CONFIG[type]?.rules,
+    ];
+
+    flattenedFormConfig?.forEach((field) => {
       if (isUpdateField) {
         if (field.name === "list") {
           formFields.list = fieldData.settings.list;
+        } else if (field.name === "limit") {
+          formFields[field.name] = fieldData.settings[field.name];
+        } else if (field.name === "group_id") {
+          formFields[field.name] = fieldData.settings[field.name];
         } else if (field.name === "options") {
           // Convert the options object to an Array of objects for easier rendering
           const options = Object.entries(fieldData.settings.options).map(
@@ -187,7 +206,7 @@ export const FieldForm = ({
 
     setFormData(formFields);
     setErrors(errors);
-  }, [type, fieldData]);
+  }, [type, fieldData, mediaFoldersOptions.length]);
 
   useEffect(() => {
     if (isBulkUpdated) {
@@ -233,7 +252,7 @@ export const FieldForm = ({
 
     Object.keys(formData).map((inputName) => {
       if (inputName in errors) {
-        const { maxLength, label, validate } = FORM_CONFIG[type].find(
+        const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
           (field) => field.name === inputName
         );
 
@@ -345,6 +364,8 @@ export const FieldForm = ({
       required: formData.required as boolean,
       settings: {
         list: formData.list as boolean,
+        limit: formData.limit as number,
+        group_id: formData.group_id as string,
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
@@ -517,7 +538,7 @@ export const FieldForm = ({
       >
         {activeTab === "details" && (
           <Grid container spacing={2.5} maxWidth="480px">
-            {FORM_CONFIG[type]?.map((fieldConfig, index) => {
+            {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
 
@@ -579,7 +600,20 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && <ComingSoon />}
+        {activeTab === "rules" && type !== "images" && <ComingSoon />}
+
+        {activeTab === "rules" && type === "images" && (
+          <MediaRules
+            fieldConfig={FORM_CONFIG["images"].rules}
+            onDataChange={handleFieldDataChange}
+            groups={mediaFoldersOptions}
+            fieldData={{
+              limit: formData["limit"],
+              group_id: formData["group_id"],
+            }}
+          />
+        )}
+
         {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
       {isUpdateField ? (
