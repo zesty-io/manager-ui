@@ -210,7 +210,7 @@ export const Field = ({
       pr={1}
       pl={0.5}
       gap={1}
-      onClick={() => console.log("field body clicked")}
+      onClick={() => history.push(`${location.pathname}/${field.ZUID}`)}
     >
       <Box
         display="grid"
@@ -278,7 +278,6 @@ export const Field = ({
           }}
         >
           <MenuItem
-            disabled={isDeactivated}
             onClick={(e) => {
               e.stopPropagation();
 
