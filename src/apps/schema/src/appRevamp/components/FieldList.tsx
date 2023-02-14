@@ -6,6 +6,8 @@ import {
   InputAdornment,
   CircularProgress,
   Typography,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { useParams } from "react-router";
 import { isEqual } from "lodash";
@@ -55,6 +57,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const [deactivatedFields, setDeactivatedFields] = useState<
     ContentModelField[] | null
   >(null);
+  const [isSystemFieldsVisible, setIsSystemFieldsVisible] = useState(false);
 
   useEffect(() => {
     if (fields?.length && !isEqual(localFields, fields)) {
@@ -151,21 +154,42 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         flex={1}
         sx={{ pr: 3, pt: 2, overflowY: "scroll" }}
       >
-        <TextField
-          size="small"
-          placeholder="Search Fields"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          sx={{ width: "360px", px: 3 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          inputRef={searchRef}
-        />
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <TextField
+            size="small"
+            placeholder="Search Fields"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            sx={{ width: "360px", px: 3 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            inputRef={searchRef}
+          />
+          <FormControlLabel
+            label={
+              <Typography variant="body2" color="text.secondary">
+                Show system fields
+              </Typography>
+            }
+            control={
+              <Switch
+                checked={isSystemFieldsVisible}
+                size="small"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setIsSystemFieldsVisible(e.target.checked)
+                }
+              />
+            }
+            sx={{
+              mr: 0,
+            }}
+          />
+        </Box>
 
         {/* No search results */}
         {!Boolean(filteredFields?.length) && search && (
