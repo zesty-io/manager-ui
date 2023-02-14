@@ -8,6 +8,8 @@ import {
   Typography,
   Switch,
   FormControlLabel,
+  Link,
+  Divider,
 } from "@mui/material";
 import { useParams } from "react-router";
 import { isEqual } from "lodash";
@@ -150,11 +152,15 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         display="flex"
         flexDirection="column"
         height="100%"
-        gap={2}
         flex={1}
         sx={{ pr: 3, pt: 2, overflowY: "scroll" }}
       >
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box
+          mb={2}
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+        >
           <TextField
             size="small"
             placeholder="Search Fields"
@@ -191,28 +197,70 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           />
         </Box>
 
-        {/* No search results */}
-        {!Boolean(filteredFields?.length) && search && (
-          <NoSearchResults
-            searchTerm={search}
-            onSearchAgain={handleSearchAgain}
-            sx={{
-              p: 3,
-            }}
-          />
-        )}
-
-        {/* No active or inactive fields in model */}
-        {!Boolean(filteredFields?.length) &&
-          !Boolean(deactivatedFields?.length) &&
-          !search && (
-            <FieldEmptyState onAddField={() => onNewFieldModalClick(null)} />
+        <Box sx={{ overflowY: "scroll" }}>
+          {/* SYSTEM FIELDS */}
+          {isSystemFieldsVisible && !search && (
+            <Box
+              ml={3}
+              pb={2}
+              mb={1.5}
+              borderBottom="1px solid"
+              borderColor="grey.200"
+            >
+              <Typography variant="h6" mb={1}>
+                System Fields
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Each content item (child) of a model in Zesty comes included
+                with non-editable system fields that represent the state of the
+                content such as when it was created, updated, and the version.
+                The value of these fields can be under the{" "}
+                <strong>meta key</strong> in the{" "}
+                <Link
+                  href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Instances API end point
+                </Link>
+                .
+              </Typography>
+            </Box>
           )}
 
-        <Box sx={{ overflowY: "scroll" }}>
-          {/* Active fields are present */}
+          {/* NO SEARCH RESULTS */}
+          {!Boolean(filteredFields?.length) && search && (
+            <NoSearchResults
+              searchTerm={search}
+              onSearchAgain={handleSearchAgain}
+              sx={{
+                p: 3,
+              }}
+            />
+          )}
+
+          {/* NO ACTIVE OR INACTIVE FIELDS */}
+          {!Boolean(filteredFields?.length) &&
+            !Boolean(deactivatedFields?.length) &&
+            !search && (
+              <FieldEmptyState onAddField={() => onNewFieldModalClick(null)} />
+            )}
+
+          {/* ACTIVE FIELDS ARE PRESENT */}
           {Boolean(filteredFields?.length) && (
             <>
+              {isSystemFieldsVisible && (
+                <Box pl={3} pb={2}>
+                  <Typography variant="h6" mb={1}>
+                    User Fields
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    These are editable fields that have been added in by a user
+                    of this instance. The value of these fields can be under the
+                    data key in the Instances API end point.
+                  </Typography>
+                </Box>
+              )}
               {filteredFields?.map((field, index) => {
                 return (
                   <Box key={field.ZUID}>
@@ -257,7 +305,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             </>
           )}
 
-          {/* No active fields BUT there are Deactivated fields and not searching */}
+          {/* NO ACTIVE FIELDS BUT HAS INACTIVE FIELDS */}
           {!Boolean(filteredFields?.length) &&
             Boolean(deactivatedFields?.length) &&
             !search && (
@@ -268,11 +316,13 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               </Box>
             )}
 
-          {/* Inactive fields are present and not searching */}
+          {/* INACTIVE FIELDS ARE PRESENT */}
           {Boolean(deactivatedFields?.length) && !search && (
             <Box mb={2}>
               <Box pl={3} pb={1.5}>
-                <Typography variant="h6">Deactivated Fields</Typography>
+                <Typography variant="h6" mb={1}>
+                  Deactivated Fields
+                </Typography>
                 <Typography variant="body2" color="text.secondary">
                   These fields can be re-activated at any time if you'd like to
                   bring them back to the content model.
