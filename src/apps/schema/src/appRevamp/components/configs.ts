@@ -9,6 +9,10 @@ interface FieldListData {
   proTip: string;
   subHeaderText: string;
 }
+interface FormConfig {
+  details: InputField[];
+  rules: InputField[];
+}
 const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
   text: [
     {
@@ -375,89 +379,173 @@ const COMMON_FIELDS: InputField[] = [
     gridSize: 12,
   },
 ];
-const FORM_CONFIG: { [key: string]: InputField[] } = {
-  article_writer: [...COMMON_FIELDS],
-  color: [...COMMON_FIELDS],
-  currency: [...COMMON_FIELDS],
-  date: [...COMMON_FIELDS],
-  datetime: [...COMMON_FIELDS],
-  dropdown: [
-    ...COMMON_FIELDS.slice(0, 3),
-    {
-      name: "options",
-      type: "options",
-      label: "Dropdown Options",
-      required: false,
-      gridSize: 12,
-      maxLength: 150,
-      validate: ["length", "unique"],
-    },
-    ...COMMON_FIELDS.slice(3),
-  ],
-  files: [...COMMON_FIELDS],
-  fontawesome: [...COMMON_FIELDS],
-  images: [...COMMON_FIELDS],
-  internal_link: [...COMMON_FIELDS],
-  link: [...COMMON_FIELDS],
-  markdown: [...COMMON_FIELDS],
-  number: [...COMMON_FIELDS],
-  one_to_many: [
-    {
-      name: "relatedModelZUID",
-      type: "autocomplete",
-      label: "Reference Model",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a model",
-    },
-    {
-      name: "relatedFieldZUID",
-      type: "autocomplete",
-      label: "Field to Display",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a field",
-    },
-    ...COMMON_FIELDS,
-  ],
-  one_to_one: [
-    {
-      name: "relatedModelZUID",
-      type: "autocomplete",
-      label: "Reference Model",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a model",
-    },
-    {
-      name: "relatedFieldZUID",
-      type: "autocomplete",
-      label: "Field to Display",
-      required: false,
-      gridSize: 6,
-      placeholder: "Select a field",
-    },
-    ...COMMON_FIELDS,
-  ],
-  sort: [...COMMON_FIELDS],
-  text: [...COMMON_FIELDS],
-  textarea: [...COMMON_FIELDS],
-  uuid: [...COMMON_FIELDS],
-  wysiwyg_advanced: [...COMMON_FIELDS],
-  wysiwyg_basic: [...COMMON_FIELDS],
-  yes_no: [
-    ...COMMON_FIELDS.slice(0, 3),
-    {
-      name: "options",
-      type: "toggle_options",
-      label: "Boolean Options",
-      required: false,
-      gridSize: 12,
-      maxLength: 150,
-      validate: ["length"],
-    },
-    ...COMMON_FIELDS.slice(3),
-  ],
+const FORM_CONFIG: { [key: string]: FormConfig } = {
+  article_writer: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  color: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  currency: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  date: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  datetime: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  dropdown: {
+    details: [
+      ...COMMON_FIELDS.slice(0, 3),
+      {
+        name: "options",
+        type: "options",
+        label: "Dropdown Options",
+        required: false,
+        gridSize: 12,
+        maxLength: 150,
+        validate: ["length", "unique"],
+      },
+      ...COMMON_FIELDS.slice(3),
+    ],
+    rules: [],
+  },
+  files: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  fontawesome: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  images: {
+    details: [...COMMON_FIELDS],
+    rules: [
+      {
+        name: "limit",
+        type: "input",
+        label: "Media Item Limit",
+        required: false,
+        gridSize: 12,
+        inputType: "number",
+        tooltip: "Set the minimum media file limit to 1. It cannot go lower.",
+      },
+      {
+        name: "group_id",
+        type: "autocomplete",
+        label: "Lock to a folder",
+        subLabel: "Select Folder",
+        required: false,
+        gridSize: 12,
+      },
+    ],
+  },
+  internal_link: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  link: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  markdown: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  number: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  one_to_many: {
+    details: [
+      {
+        name: "relatedModelZUID",
+        type: "autocomplete",
+        label: "Reference Model",
+        required: false,
+        gridSize: 6,
+        placeholder: "Select a model",
+      },
+      {
+        name: "relatedFieldZUID",
+        type: "autocomplete",
+        label: "Field to Display",
+        required: false,
+        gridSize: 6,
+        placeholder: "Select a field",
+      },
+      ...COMMON_FIELDS,
+    ],
+    rules: [],
+  },
+  one_to_one: {
+    details: [
+      {
+        name: "relatedModelZUID",
+        type: "autocomplete",
+        label: "Reference Model",
+        required: false,
+        gridSize: 6,
+        placeholder: "Select a model",
+      },
+      {
+        name: "relatedFieldZUID",
+        type: "autocomplete",
+        label: "Field to Display",
+        required: false,
+        gridSize: 6,
+        placeholder: "Select a field",
+      },
+      ...COMMON_FIELDS,
+    ],
+    rules: [],
+  },
+  sort: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  text: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  textarea: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  uuid: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  wysiwyg_advanced: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  wysiwyg_basic: {
+    details: [...COMMON_FIELDS],
+    rules: [],
+  },
+  yes_no: {
+    details: [
+      ...COMMON_FIELDS.slice(0, 3),
+      {
+        name: "options",
+        type: "toggle_options",
+        label: "Boolean Options",
+        required: false,
+        gridSize: 12,
+        maxLength: 150,
+        validate: ["length"],
+      },
+      ...COMMON_FIELDS.slice(3),
+    ],
+    rules: [],
+  },
 };
 
 export { FieldListData, FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG };
