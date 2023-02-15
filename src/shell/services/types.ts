@@ -133,3 +133,25 @@ export interface ContentItem {
   data: Data;
   publishAt?: any;
 }
+
+export interface AuditMeta {
+  uri: string;
+  url: string;
+  message: string;
+}
+
+export interface Audit {
+  ZUID: string;
+  resourceType: "content" | "schema" | "code";
+  affectedZUID: string;
+  actionByUserZUID: string;
+  entityZUID: string;
+  action: number;
+  meta: AuditMeta;
+  happenedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
