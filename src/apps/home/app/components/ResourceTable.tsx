@@ -122,7 +122,6 @@ export const ResourceTable = ({ dateRange }: Props) => {
   const history = useHistory();
 
   const handleRowClick = (row: Audit) => {
-    console.log("row", row);
     history.push(resolveUrlFromAudit(row));
   };
 
