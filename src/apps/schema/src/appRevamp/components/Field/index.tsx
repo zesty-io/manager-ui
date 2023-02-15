@@ -155,7 +155,7 @@ export const Field = ({
 
       setIsZuidCopied(true);
     } catch (error) {
-      console.error("Failed to copy ZUID", error);
+      console.error("Failed to copy field ZUID", error);
     }
   };
 
@@ -167,7 +167,7 @@ export const Field = ({
 
       setIsFieldNameCopied(true);
     } catch (error) {
-      console.error("Failed to copy ZUID", error);
+      console.error("Failed to copy field name", error);
     }
   };
 
