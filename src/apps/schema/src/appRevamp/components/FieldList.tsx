@@ -27,6 +27,7 @@ import { FieldsListRight } from "./FieldsListRight";
 import { NoSearchResults } from "./NoSearchResults";
 import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
+import { SYSTEM_FIELDS, SystemField } from "./configs";
 
 type Params = {
   id: string;
@@ -225,6 +226,16 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 </Link>
                 .
               </Typography>
+              {SYSTEM_FIELDS.map((field, index) => (
+                <Field
+                  key={index}
+                  field={field}
+                  index={index}
+                  disableDrag
+                  withDragIcon={false}
+                  withMenu={false}
+                />
+              ))}
             </Box>
           )}
 
@@ -279,6 +290,8 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                         setHoveredIndex={setHoveredIndex}
                         onReorder={handleReorder}
                         disableDrag={!!search}
+                        withDragIcon
+                        withMenu
                       />
                     </Box>
                   </Box>
@@ -339,6 +352,8 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                       onReorder={handleReorder}
                       disableDrag
                       isDeactivated
+                      withDragIcon
+                      withMenu
                     />
                   </Box>
                 );

@@ -27,20 +27,22 @@ import {
   useDeleteContentModelFieldMutation,
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../shell/services/instance";
-import { TYPE_TEXT } from "../configs";
+import { TYPE_TEXT, SystemField } from "../configs";
 import { notify } from "../../../../../../shell/store/notifications";
 
 type Params = {
   id: string;
 };
 interface Props {
-  field: ContentModelField;
+  field: ContentModelField | SystemField;
   index: number;
-  onReorder: () => void;
-  setDraggedIndex: (index: number) => void;
-  setHoveredIndex: (index: number) => void;
+  onReorder?: () => void;
+  setDraggedIndex?: (index: number) => void;
+  setHoveredIndex?: (index: number) => void;
   disableDrag: boolean;
   isDeactivated?: boolean;
+  withDragIcon: boolean;
+  withMenu: boolean;
 }
 
 export const Field = ({
@@ -51,6 +53,8 @@ export const Field = ({
   setHoveredIndex,
   disableDrag,
   isDeactivated,
+  withDragIcon,
+  withMenu,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -145,7 +149,9 @@ export const Field = ({
     e.stopPropagation();
 
     try {
-      await navigator.clipboard.writeText(field?.ZUID);
+      const { ZUID } = field as ContentModelField;
+
+      await navigator.clipboard.writeText(ZUID);
 
       setIsZuidCopied(true);
     } catch (error) {
@@ -213,17 +219,19 @@ export const Field = ({
         gridTemplateColumns="28px 24px minmax(auto, min-content) 90px"
         alignItems="center"
       >
-        <IconButton
-          className="drag-handle"
-          size="small"
-          disableRipple
-          disabled={disableDrag}
-          onMouseEnter={() => setIsDraggable(true)}
-          onMouseLeave={() => setIsDraggable(false)}
-          sx={{ cursor: "grab" }}
-        >
-          <DragIndicatorRoundedIcon />
-        </IconButton>
+        {withDragIcon && (
+          <IconButton
+            className="drag-handle"
+            size="small"
+            disableRipple
+            disabled={disableDrag}
+            onMouseEnter={() => setIsDraggable(true)}
+            onMouseLeave={() => setIsDraggable(false)}
+            sx={{ cursor: "grab" }}
+          >
+            <DragIndicatorRoundedIcon />
+          </IconButton>
+        )}
         <FieldIcon type={field.datatype} />
         <Tooltip title={field.label} enterDelay={3000}>
           <Typography px={1.5} variant="body2" fontWeight="700" noWrap>
@@ -255,78 +263,90 @@ export const Field = ({
             {isFieldNameCopied ? "Copied" : field.name}
           </Typography>
         </Button>
-        <IconButton onClick={handleMenuClick} size="small">
-          <MoreHorizRoundedIcon />
-        </IconButton>
-        <Menu
-          open={isMenuOpen}
-          onClose={() => setAnchorEl(null)}
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-        >
-          <MenuItem
-            disabled={isDeactivated}
-            onClick={() => history.push(`${location.pathname}/${field.ZUID}`)}
-          >
-            <ListItemIcon>
-              <DriveFileRenameOutlineRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>Edit Field</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={handleCopyZuid}>
-            <ListItemIcon>
-              {isZuidCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
-            </ListItemIcon>
-            <ListItemText>{isZuidCopied ? "Copied" : "Copy ZUID"}</ListItemText>
-          </MenuItem>
-          {isDeletingField || isUndeletingField ? (
-            <MenuItem>
-              <ListItemIcon>
-                <CircularProgress size={24} color="inherit" />
-              </ListItemIcon>
-              {isDeletingField && (
-                <ListItemText>De-activating Field</ListItemText>
-              )}
-              {isUndeletingField && (
-                <ListItemText>Re-activating Field</ListItemText>
-              )}
-            </MenuItem>
-          ) : (
-            <MenuItem
-              onClick={() => {
-                if (isDeactivated) {
-                  undeleteContentModelField({
-                    modelZUID,
-                    fieldZUID: field?.ZUID,
-                  });
-                } else {
-                  deleteContentModelField({
-                    modelZUID,
-                    fieldZUID: field?.ZUID,
-                  });
-                }
+        {withMenu && (
+          <>
+            <IconButton onClick={handleMenuClick} size="small">
+              <MoreHorizRoundedIcon />
+            </IconButton>
+            <Menu
+              open={isMenuOpen}
+              onClose={() => setAnchorEl(null)}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
               }}
             >
-              <ListItemIcon>
-                {isDeactivated ? (
-                  <PlayCircleOutlineRoundedIcon />
-                ) : (
-                  <HighlightOffRoundedIcon />
-                )}
-              </ListItemIcon>
-              <ListItemText>
-                {isDeactivated ? "Re-activate Field" : "De-activate Field"}
-              </ListItemText>
-            </MenuItem>
-          )}
-        </Menu>
+              <MenuItem
+                disabled={isDeactivated}
+                onClick={() => {
+                  const { ZUID } = field as ContentModelField;
+
+                  history.push(`${location.pathname}/${ZUID}`);
+                }}
+              >
+                <ListItemIcon>
+                  <DriveFileRenameOutlineRoundedIcon />
+                </ListItemIcon>
+                <ListItemText>Edit Field</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={handleCopyZuid}>
+                <ListItemIcon>
+                  {isZuidCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
+                </ListItemIcon>
+                <ListItemText>
+                  {isZuidCopied ? "Copied" : "Copy ZUID"}
+                </ListItemText>
+              </MenuItem>
+              {isDeletingField || isUndeletingField ? (
+                <MenuItem>
+                  <ListItemIcon>
+                    <CircularProgress size={24} color="inherit" />
+                  </ListItemIcon>
+                  {isDeletingField && (
+                    <ListItemText>De-activating Field</ListItemText>
+                  )}
+                  {isUndeletingField && (
+                    <ListItemText>Re-activating Field</ListItemText>
+                  )}
+                </MenuItem>
+              ) : (
+                <MenuItem
+                  onClick={() => {
+                    const { ZUID } = field as ContentModelField;
+
+                    if (isDeactivated) {
+                      undeleteContentModelField({
+                        modelZUID,
+                        fieldZUID: ZUID,
+                      });
+                    } else {
+                      deleteContentModelField({
+                        modelZUID,
+                        fieldZUID: ZUID,
+                      });
+                    }
+                  }}
+                >
+                  <ListItemIcon>
+                    {isDeactivated ? (
+                      <PlayCircleOutlineRoundedIcon />
+                    ) : (
+                      <HighlightOffRoundedIcon />
+                    )}
+                  </ListItemIcon>
+                  <ListItemText>
+                    {isDeactivated ? "Re-activate Field" : "De-activate Field"}
+                  </ListItemText>
+                </MenuItem>
+              )}
+            </Menu>
+          </>
+        )}
       </Box>
     </Box>
   );
