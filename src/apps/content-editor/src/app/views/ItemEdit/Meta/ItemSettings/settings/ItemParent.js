@@ -133,7 +133,7 @@ export const ItemParent = connect((state) => {
                 props.dispatch(
                   notify({
                     kind: "warn",
-                    message: `API failed to return response ${res.status}`,
+                    message: `API failed to return response when searching for ${parentZUID}`,
                   })
                 );
               }

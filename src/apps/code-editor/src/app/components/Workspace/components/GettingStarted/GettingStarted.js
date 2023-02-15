@@ -64,19 +64,6 @@ export function GettingStarted(props) {
               .
             </p>
           </div>
-          <div className={styles.Topic}>
-            <h2 className={styles.subheadline}>
-              Using the Atom IDE With Zesty.io
-            </h2>
-            <iframe
-              height="480px"
-              width="100%"
-              src="https://www.youtube-nocookie.com/embed/s98dR1M2u8E?rel=0"
-              frameBorder="0"
-              allow="encrypted-media;"
-              allowFullScreen
-            ></iframe>
-          </div>
         </div>
 
         <div className={styles.Column}>

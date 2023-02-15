@@ -13,6 +13,9 @@ import { InputIcon } from "@zesty-io/core/InputIcon";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemRoute.less";
+import { withCursorPosition } from "../../../../../../../../../shell/components/withCursorPosition";
+const TextFieldWithCursorPosition = withCursorPosition(TextField);
+
 export const ItemRoute = connect((state) => {
   return {
     content: state.content,
@@ -150,7 +153,7 @@ export const ItemRoute = connect((state) => {
             </h1>
           ) : (
             <Fragment>
-              <TextField
+              <TextFieldWithCursorPosition
                 type="text"
                 name="pathPart"
                 value={pathPart}

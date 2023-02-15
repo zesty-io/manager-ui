@@ -81,6 +81,10 @@ export function headTags(state = [], action) {
 // Transform attributes into an array structure.
 // Also helpful for maintaining order
 function transformAttributes(attrs) {
+  if (!Object.keys(attrs).length) {
+    return {};
+  }
+
   return Object.keys(attrs).map((key) => {
     return {
       key: key,
@@ -163,7 +167,7 @@ export const createHeadTag = (tag) => {
       body: tag,
     }).then((res) => {
       if (!res.data.error) {
-        res.data.attributes = transformAttributes(res.data.attributes);
+        res.data.attributes = transformAttributes(res.data?.attributes);
         dispatch({
           type: "ADD_HEADTAG",
           tag: res.data,

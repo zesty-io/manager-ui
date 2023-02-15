@@ -1,12 +1,12 @@
 import { memo, useEffect } from "react";
 import { connect } from "react-redux";
-
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import Login from "shell/components/login";
-
 import { notify } from "shell/store/notifications";
 import { verify } from "shell/store/auth";
+import { Staging } from "../Staging";
+import { CircularProgress } from "@mui/material";
 
 export default connect((state) => {
   return {
@@ -69,14 +69,15 @@ export default connect((state) => {
       };
     });
     return (
-      <WithLoader
-        condition={!props.auth.checking}
-        message="Checking your account permissions"
-        width="100vw"
-        height="100vh"
-      >
-        {props.auth.valid ? props.children : <Login />}
-      </WithLoader>
+      <>
+        {props.auth.valid ? (
+          props.children
+        ) : (
+          <Staging>
+            {props.auth.checking ? <CircularProgress /> : <Login />}
+          </Staging>
+        )}
+      </>
     );
   })
 );
