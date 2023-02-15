@@ -187,6 +187,14 @@ export const Field = ({
     return { opacity: 1 };
   };
 
+  const getGridTemplate = () => {
+    if (withDragIcon) {
+      return "28px 24px minmax(auto, min-content) 90px";
+    } else {
+      return "24px minmax(auto, min-content) 90px";
+    }
+  };
+
   return (
     <Box
       minHeight="40px"
@@ -211,12 +219,12 @@ export const Field = ({
       alignItems="center"
       justifyContent="space-between"
       pr={1}
-      pl={0.5}
+      pl={withDragIcon ? 0.5 : 1}
       gap={1}
     >
       <Box
         display="grid"
-        gridTemplateColumns="28px 24px minmax(auto, min-content) 90px"
+        gridTemplateColumns={getGridTemplate()}
         alignItems="center"
       >
         {withDragIcon && (

@@ -226,16 +226,18 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 </Link>
                 .
               </Typography>
-              {SYSTEM_FIELDS.map((field, index) => (
-                <Field
-                  key={index}
-                  field={field}
-                  index={index}
-                  disableDrag
-                  withDragIcon={false}
-                  withMenu={false}
-                />
-              ))}
+              <Box display="flex" flexDirection="column" gap={1} mt={2}>
+                {SYSTEM_FIELDS.map((field, index) => (
+                  <Field
+                    key={index}
+                    field={field}
+                    index={index}
+                    disableDrag
+                    withDragIcon={false}
+                    withMenu={false}
+                  />
+                ))}
+              </Box>
             </Box>
           )}
 
