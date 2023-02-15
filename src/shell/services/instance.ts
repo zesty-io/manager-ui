@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
-import { ContentItem, ContentModel, Publishing } from "./types";
+import { Audit, ContentItem, ContentModel, Publishing } from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const instanceApi = createApi({
@@ -38,7 +38,7 @@ export const instanceApi = createApi({
         { type: "ItemPublishing", id: id.itemZUID },
       ],
     }),
-    getAudits: builder.query({
+    getAudits: builder.query<Audit[], any>({
       query: (options) => {
         const params = new URLSearchParams(options as any).toString();
         return `env/audits?${params}&limit=100000`;
