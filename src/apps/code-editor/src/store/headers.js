@@ -18,11 +18,19 @@ export function fetchHeaders() {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/web/headers`,
       handler: (res) => {
-        dispatch({
-          type: "FETCH_HEADERS_SUCCESS",
-          payload: res.data,
-        });
-
+        if (res.status === 200) {
+          dispatch({
+            type: "FETCH_HEADERS_SUCCESS",
+            payload: res.data,
+          });
+        } else {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to load headers. ${res.status}`,
+            })
+          );
+        }
         return res;
       },
     });
