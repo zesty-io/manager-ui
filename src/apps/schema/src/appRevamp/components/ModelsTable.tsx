@@ -16,6 +16,7 @@ import { useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { NoSearchResults } from "./NoSearchResults";
 import { modelIconMap, modelNameMap } from "../utils";
+import { Filters } from "./Filters";
 
 const FieldsCell = ({ ZUID }: any) => {
   const { data, isLoading } = useGetContentModelFieldsQuery(ZUID);
@@ -128,6 +129,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
 
   return (
     <Box height={filteredModels?.length ? "100%" : "55px"}>
+      <Filters />
       <DataGridPro
         // @ts-expect-error - missing types for headerAlign and align on DataGridPro
         columns={columns}
