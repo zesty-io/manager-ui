@@ -32,6 +32,7 @@ import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import { RenameModelDialogue } from "./RenameModelDialogue";
 import { modelIconMap, modelNameMap } from "../utils";
 import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
+import { DeleteModelDialogue } from "./DeleteModelDialogue";
 
 type Params = {
   id: string;
@@ -116,7 +117,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                   </ListItemIcon>
                   <ListItemText>Copy ZUID</ListItemText>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setShowDialogue("delete");
+                    setAnchorEl(null);
+                  }}
+                >
                   <ListItemIcon>
                     <DeleteRoundedIcon fontSize="small" />
                   </ListItemIcon>
@@ -201,6 +207,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
       )}
       {showDialogue === "duplicate" && (
         <DuplicateModelDialogue
+          model={model}
+          onClose={() => setShowDialogue(null)}
+        />
+      )}
+      {showDialogue === "delete" && (
+        <DeleteModelDialogue
           model={model}
           onClose={() => setShowDialogue(null)}
         />
