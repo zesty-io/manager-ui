@@ -182,7 +182,9 @@ export const Field = ({
 
     const { ZUID } = field as ContentModelField;
 
-    history.push(`${location.pathname}/${ZUID}`);
+    if (ZUID) {
+      history.push(`${location.pathname}/${ZUID}`);
+    }
   };
 
   const getStyle = () => {
@@ -333,7 +335,9 @@ export const Field = ({
                 </MenuItem>
               ) : (
                 <MenuItem
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
+
                     const { ZUID } = field as ContentModelField;
 
                     if (isDeactivated) {
