@@ -74,9 +74,13 @@ export default connect((state, props) => {
         </div>
 
         {props.tags.length ? (
-          props.tags.map((tag, index) => {
-            return <HeadTag key={index} tag={tag} dispatch={props.dispatch} />;
-          })
+          props.tags
+            .sort((a, b) => (a.sort > b.sort ? 1 : -1))
+            .map((tag, index) => {
+              return (
+                <HeadTag key={index} tag={tag} dispatch={props.dispatch} />
+              );
+            })
         ) : (
           <h3 className={cx(styles.headline, styles.NoTags)}>
             No head tags have been created for this item.

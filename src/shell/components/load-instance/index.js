@@ -22,6 +22,8 @@ import { fetchSettings } from "shell/store/settings";
 import { loadOpenNav } from "../../store/ui";
 
 import styles from "./LoadInstance.less";
+import { Staging } from "../Staging";
+import { CircularProgress } from "@mui/material";
 
 export default connect((state) => {
   return {
@@ -125,21 +127,20 @@ export default connect((state) => {
             </Link>
           </div>
         ) : (
-          <WithLoader
-            condition={
-              props.products &&
-              props.instance.ID &&
-              props.instance.domains &&
-              props.user.ID &&
-              props.languages.length &&
-              props.files.length
-            }
-            message="Loading Instance"
-            width="100vw"
-            height="100vh"
-          >
-            {props.children}
-          </WithLoader>
+          <>
+            {props.products &&
+            props.instance.ID &&
+            props.instance.domains &&
+            props.user.ID &&
+            props.languages.length &&
+            props.files.length ? (
+              props.children
+            ) : (
+              <Staging>
+                <CircularProgress />
+              </Staging>
+            )}
+          </>
         )}
       </>
     );

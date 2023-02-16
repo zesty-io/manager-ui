@@ -11,6 +11,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import BackupIcon from "@mui/icons-material/Backup";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
@@ -162,23 +163,21 @@ export function ItemVersioning(props) {
         </Stack>
       )}
 
-      <Button
+      <LoadingButton
         variant="contained"
         color="success"
         title="Save Version"
-        disabled={props.saving || !props.item.dirty}
+        disabled={!props.item.dirty}
         onClick={props.onSave}
         id="SaveItemButton"
+        loading={props.saving}
+        loadingPosition="start"
+        startIcon={<SaveIcon fontSize="small" />}
       >
-        {props.saving ? (
-          <CircularProgress size="20px" />
-        ) : (
-          <SaveIcon fontSize="small" />
-        )}
         <span className={styles.SaveVersion}>
           &nbsp;Save Version {metaShortcut}
         </span>
-      </Button>
+      </LoadingButton>
     </Stack>
   );
 }

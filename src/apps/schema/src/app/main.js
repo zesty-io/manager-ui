@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Switch, Route, useRouteMatch } from "react-router-dom";
+import { Switch, Route, useRouteMatch, Redirect } from "react-router-dom";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { SchemaNav } from "./components/Nav";
@@ -13,6 +13,7 @@ import { fetchSettings } from "shell/store/settings";
 import { notify } from "shell/store/notifications";
 
 import styles from "./main.less";
+import { SchemaCreateWizard } from "./views/SchemaCreateWizard";
 export default function SchemaBuilder() {
   const match = useRouteMatch("/schema/start");
   const showNav = match && match.isExact;
@@ -45,7 +46,7 @@ export default function SchemaBuilder() {
       width="100vw"
       height="100vh"
     >
-      <Route path="/schema/start" component={GettingStarted} />
+      <Route path="/schema/start" component={SchemaCreateWizard} />
       <section className={styles.SchemaBuilder}>
         {!showNav ? <SchemaNav nav={navSchema} /> : ""}
         <div className={styles.SchemaMain}>

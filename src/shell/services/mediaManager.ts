@@ -8,6 +8,10 @@ import { generateThumbnail, getResponseData, prepareHeaders } from "./util";
 import { Bin, File, Group, GroupData } from "./types";
 import { QueryReturnValue } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 import { uniqBy } from "lodash";
+import {
+  batchApiRequests,
+  BatchResponses,
+} from "../../utility/batchApiRequests";
 
 // Define a service using a base URL and expected endpoints
 export const mediaManagerApi = createApi({
@@ -186,6 +190,45 @@ export const mediaManagerApi = createApi({
         { type: "GroupData", id: arg?.previousGroupId },
       ],
     }),
+    updateFiles: builder.mutation<
+      BatchResponses,
+      {
+        id: string;
+        previousGroupId?: string;
+        body: {
+          group_id?: string;
+          filename?: string;
+          title?: string;
+        };
+      }[]
+    >({
+      async queryFn(files, _queryApi, _extraOptions, fetchWithBQ) {
+        try {
+          const requests = files.map((file) => ({
+            url: `/file/${file.id}`,
+            method: "PATCH",
+            body: file.body,
+          }));
+          const responses = await batchApiRequests(requests, fetchWithBQ);
+          return {
+            data: {
+              success: responses.success,
+              error: responses.error,
+            },
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+      // @ts-expect-error - TS is not supported for mapped tags
+      invalidatesTags: (result, error, arg) => [
+        ...arg.map((file) => ({ type: "File", id: file.id })),
+        ...arg.map((file) => ({ type: "GroupData", id: file.body.group_id })),
+        "BinFiles",
+        "Search",
+        ...arg.map((file) => ({ type: "GroupData", id: file.previousGroupId })),
+      ],
+    }),
     updateFileAltText: builder.mutation<
       File,
       {
@@ -224,6 +267,40 @@ export const mediaManagerApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "GroupData", id: arg.body?.group_id },
+        "BinFiles",
+        "Search",
+      ],
+    }),
+    deleteFiles: builder.mutation<
+      BatchResponses,
+      {
+        id: string;
+        body: {
+          group_id?: string;
+        };
+      }[]
+    >({
+      async queryFn(files, _queryApi, _extraOptions, fetchWithBQ) {
+        try {
+          const requests = files.map((file) => ({
+            url: `/file/${file.id}`,
+            method: "DELETE",
+            body: file.body,
+          }));
+          const responses = await batchApiRequests(requests, fetchWithBQ);
+          return {
+            data: {
+              success: responses.success,
+              error: responses.error,
+            },
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+      // @ts-expect-error - TS is not supported for mapped tags
+      invalidatesTags: (result, error, arg) => [
+        ...arg.map((file) => ({ type: "GroupData", id: file.body.group_id })),
         "BinFiles",
         "Search",
       ],
@@ -313,4 +390,6 @@ export const {
   useDeleteFileMutation,
   useDeleteGroupMutation,
   useSearchBinFilesQuery,
+  useUpdateFilesMutation,
+  useDeleteFilesMutation,
 } = mediaManagerApi;
