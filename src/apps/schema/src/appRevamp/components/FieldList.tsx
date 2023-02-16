@@ -198,7 +198,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           />
         </Box>
 
-        <Box sx={{ overflowY: "scroll" }}>
+        <Box sx={{ overflowY: "scroll", height: "100%" }}>
           {/* SYSTEM FIELDS */}
           {isSystemFieldsVisible && !search && (
             <Box

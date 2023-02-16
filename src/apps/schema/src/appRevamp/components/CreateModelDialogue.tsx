@@ -33,6 +33,7 @@ import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 import { useHistory } from "react-router";
 import { modelIconMap } from "../utils";
+import { withCursorPosition } from "../../../../../shell/components/withCursorPosition";
 
 interface Props {
   onClose: () => void;
@@ -62,6 +63,8 @@ const modelTypes = [
     key: "dataset",
   },
 ];
+
+const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
 export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   const [type, setType] = useState(modelType);
@@ -283,13 +286,13 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     />
                   </Tooltip>
                 </InputLabel>
-                <TextField
+                <TextFieldWithCursorPosition
                   inputProps={{
                     maxLength: 100,
                   }}
                   placeholder="Auto-Generated from Display Name"
                   value={model.name}
-                  onChange={(event) =>
+                  onChange={(event: any) =>
                     updateModel({ name: event.target.value })
                   }
                   fullWidth

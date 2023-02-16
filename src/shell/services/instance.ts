@@ -322,4 +322,5 @@ export const {
   useUndeleteContentModelFieldMutation,
   useGetLangsMappingQuery,
   useCreateContentModelFromTemplateMutation,
+  useDeleteContentModelMutation,
 } = instanceApi;

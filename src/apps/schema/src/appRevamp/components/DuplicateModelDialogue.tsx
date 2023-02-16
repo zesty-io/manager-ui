@@ -13,7 +13,9 @@ import {
   TextField,
   Autocomplete,
   Checkbox,
+  Alert,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {
@@ -154,6 +156,10 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       </DialogTitle>
       <DialogContent sx={{ p: 3 }} dividers>
         <Box display="flex" flexDirection="column" gap={2.5}>
+          <Alert severity="info">
+            You&apos;re about to duplicate the Articles model with all of
+            it&apos;s existing fields. No content items will be duplicated.
+          </Alert>
           <Box>
             <InputLabel>Display Name</InputLabel>
             <TextField
