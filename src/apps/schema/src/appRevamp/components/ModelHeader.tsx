@@ -33,6 +33,7 @@ import { RenameModelDialogue } from "./RenameModelDialogue";
 import { modelIconMap, modelNameMap } from "../utils";
 import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
 import { DeleteModelDialogue } from "./DeleteModelDialogue";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 
 type Params = {
   id: string;
@@ -46,6 +47,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const { id } = params;
   const { data: models } = useGetContentModelsQuery();
   const { data: views } = useGetWebViewsQuery();
+  const [isCopied, setIsCopied] = useState(false);
   const location = useLocation();
   const history = useHistory();
   const { isSuccess: isFieldsLoaded } = useGetContentModelFieldsQuery(id);
@@ -58,6 +60,20 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const [showDialogue, setShowDialogue] = useState<
     "rename" | "duplicate" | "delete" | null
   >(null);
+
+  const handleCopyZUID = (data: string) => {
+    navigator?.clipboard
+      ?.writeText(data)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 1500);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   return (
     <>
@@ -111,9 +127,13 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                   </ListItemIcon>
                   <ListItemText>Duplicate Model</ListItemText>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem onClick={() => handleCopyZUID(model.ZUID)}>
                   <ListItemIcon>
-                    <WidgetsRoundedIcon fontSize="small" />
+                    {isCopied ? (
+                      <CheckRoundedIcon fontSize="small" />
+                    ) : (
+                      <WidgetsRoundedIcon fontSize="small" />
+                    )}
                   </ListItemIcon>
                   <ListItemText>Copy ZUID</ListItemText>
                 </MenuItem>
