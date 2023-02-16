@@ -1,6 +1,6 @@
 import { Box, FormControlLabel, Checkbox, Typography } from "@mui/material";
 import { FormValue } from "./views/FieldForm";
-import { CustomGroup } from "./hooks/useMediaRules";
+import { CustomGroup } from "../hooks/useMediaRules";
 
 import { InputField } from "./FieldFormInput";
 import { FieldFormInput, FieldNames } from "./FieldFormInput";
