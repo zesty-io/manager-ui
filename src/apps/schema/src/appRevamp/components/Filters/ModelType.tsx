@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import {
   Button,
   Menu,
@@ -14,15 +14,19 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 import { modelIconMap, modelNameMap } from "../../utils";
 import { ModelType as ModelSet } from "../../../../../../shell/services/types";
+import { FiltersProps } from "./index";
 
 const MODEL_TYPE_FILTERS: ModelSet[] = ["templateset", "pageset", "dataset"];
 
-export const ModelType = () => {
+export const ModelType: FC<FiltersProps> = ({
+  activeFilters,
+  setActiveFilters,
+}) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
   );
-  const [activeFilter, setActiveFilter] = useState<ModelSet | "">("");
   const isFilterMenuOpen = Boolean(menuAnchorEl);
+  const activeModelTypeFilter: ModelSet | "" = activeFilters?.modelType;
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
@@ -30,11 +34,13 @@ export const ModelType = () => {
 
   const handleFilterSelect = (filter: ModelSet) => {
     setMenuAnchorEl(null);
-    setActiveFilter(filter);
+    setActiveFilters({
+      modelType: filter,
+    });
   };
 
   const getFilterButton = () => {
-    if (activeFilter) {
+    if (activeModelTypeFilter) {
       return (
         <ButtonGroup variant="contained">
           <Button
@@ -42,9 +48,12 @@ export const ModelType = () => {
             startIcon={<CheckIcon sx={{ width: "20px", height: "20px" }} />}
             onClick={handleOpenMenuClick}
           >
-            {modelNameMap[activeFilter]}
+            {modelNameMap[activeModelTypeFilter]}
           </Button>
-          <Button size="small" onClick={() => setActiveFilter("")}>
+          <Button
+            size="small"
+            onClick={() => setActiveFilters({ modelType: "" })}
+          >
             <CloseRoundedIcon fontSize="small" />
           </Button>
         </ButtonGroup>

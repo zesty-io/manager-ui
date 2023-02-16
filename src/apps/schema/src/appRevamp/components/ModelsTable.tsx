@@ -10,9 +10,9 @@ import {
   useGetContentModelItemsQuery,
   useGetContentModelsQuery,
 } from "../../../../../shell/services/instance";
-import { ContentModel } from "../../../../../shell/services/types";
+import { ContentModel, ModelType } from "../../../../../shell/services/types";
 import moment from "moment-timezone";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useReducer } from "react";
 import { useHistory } from "react-router";
 import { NoSearchResults } from "./NoSearchResults";
 import { modelIconMap, modelNameMap } from "../utils";
@@ -36,6 +36,11 @@ const ContentItemsCell = ({ ZUID }: any) => {
   return <Typography variant="body2">{data?.length}</Typography>;
 };
 
+export type ModelFilter = {
+  modelType: ModelType | "";
+  people: string;
+  lastUpdated: string;
+};
 interface Props {
   search?: string;
   onEmptySearch?: () => void;
@@ -67,6 +72,16 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       );
     });
   }, [search, models]);
+
+  const [activeFilters, setActiveFilters] = useReducer(
+    (currentFilters: ModelFilter, newFilter: Partial<ModelFilter>) => {
+      return {
+        ...currentFilters,
+        ...newFilter,
+      };
+    },
+    { modelType: "", people: "", lastUpdated: "" }
+  );
 
   const handleRowClick = (row: ContentModel) => {
     history.push(`/schema/${row.ZUID}`);
@@ -129,7 +144,10 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
 
   return (
     <Box height={filteredModels?.length ? "100%" : "55px"}>
-      <Filters onFilterApplied={() => {}} />
+      <Filters
+        activeFilters={activeFilters}
+        setActiveFilters={setActiveFilters}
+      />
       <DataGridPro
         // @ts-expect-error - missing types for headerAlign and align on DataGridPro
         columns={columns}
