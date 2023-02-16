@@ -6,8 +6,11 @@ import {
   ListItemIcon,
   ListItemText,
   SvgIcon,
+  ButtonGroup,
 } from "@mui/material";
 import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 import { modelIconMap, modelNameMap } from "../../utils";
 import { ModelType as ModelSet } from "../../../../../../shell/services/types";
@@ -21,22 +24,49 @@ export const ModelType = () => {
   const [activeFilter, setActiveFilter] = useState<ModelSet | "">("");
   const isFilterMenuOpen = Boolean(menuAnchorEl);
 
+  const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setMenuAnchorEl(e.currentTarget);
+  };
+
   const handleFilterSelect = (filter: ModelSet) => {
     setMenuAnchorEl(null);
     setActiveFilter(filter);
   };
 
+  const getFilterButton = () => {
+    if (activeFilter) {
+      return (
+        <ButtonGroup variant="contained">
+          <Button
+            size="small"
+            startIcon={<CheckIcon sx={{ width: "20px", height: "20px" }} />}
+            onClick={handleOpenMenuClick}
+          >
+            {modelNameMap[activeFilter]}
+          </Button>
+          <Button size="small" onClick={() => setActiveFilter("")}>
+            <CloseRoundedIcon fontSize="small" />
+          </Button>
+        </ButtonGroup>
+      );
+    } else {
+      return (
+        <Button
+          variant="outlined"
+          size="small"
+          color="inherit"
+          endIcon={<ArrowDropDownOutlinedIcon />}
+          onClick={handleOpenMenuClick}
+        >
+          Model Type
+        </Button>
+      );
+    }
+  };
+
   return (
     <>
-      <Button
-        variant="outlined"
-        size="small"
-        color="inherit"
-        endIcon={<ArrowDropDownOutlinedIcon />}
-        onClick={(e) => setMenuAnchorEl(e.currentTarget)}
-      >
-        Model Type
-      </Button>
+      {getFilterButton()}
       <Menu
         open={isFilterMenuOpen}
         anchorEl={menuAnchorEl}
