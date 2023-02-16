@@ -16,6 +16,7 @@ import { useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { NoSearchResults } from "./NoSearchResults";
 import { modelIconMap, modelNameMap } from "../utils";
+import { AllModelsEmptyState } from "./AllModelsEmptyState";
 
 const FieldsCell = ({ ZUID }: any) => {
   const { data, isLoading } = useGetContentModelFieldsQuery(ZUID);
@@ -125,6 +126,10 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       ),
     },
   ];
+
+  if (!models?.length && !isFetching) {
+    return <AllModelsEmptyState />;
+  }
 
   return (
     <Box height={filteredModels?.length ? "100%" : "55px"}>

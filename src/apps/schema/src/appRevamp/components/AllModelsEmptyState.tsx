@@ -21,12 +21,9 @@ export const AllModelsEmptyState = () => {
       flexDirection="row"
       justifyContent="space-between"
       alignItems="center"
+      gap={7}
     >
-      <Box
-        sx={{
-          width: "378px",
-        }}
-      >
+      <Box>
         <Typography variant="h4" fontWeight={600}>
           Let's start by creating models
         </Typography>

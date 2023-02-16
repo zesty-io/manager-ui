@@ -154,7 +154,7 @@ export const FieldsListRight = ({ model }: Props) => {
       </InputLabel>
       <TextField
         value={description}
-        onChange={(event) => setDescription(event.target.value || null)}
+        onChange={(event) => setDescription(event.target.value)}
         fullWidth
         multiline
         minRows={4}
