@@ -23,6 +23,9 @@ import { cloneDeep } from "lodash";
 import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { convertLabelValue } from "../../utils";
+import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
+
+const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
 export type Validation = "length" | "required" | "unique";
 export type FieldNames =
@@ -129,6 +132,9 @@ export const FieldFormInput = ({
     });
   };
 
+  const InputTextField =
+    fieldConfig.name === "name" ? TextFieldWithCursorPosition : TextField;
+
   return (
     <Grid item xs={fieldConfig.gridSize}>
       {fieldConfig.type === "input" && (
@@ -166,7 +172,7 @@ export const FieldFormInput = ({
               </Typography>
             )}
           </Box>
-          <TextField
+          <InputTextField
             name={fieldConfig.name}
             required={fieldConfig.required}
             fullWidth={fieldConfig.fullWidth}
@@ -394,7 +400,7 @@ const KeyValueInput = ({
           error={Boolean(labelErrorMsg)}
           disabled={disabledFields.includes("value")}
         />
-        <TextField
+        <TextFieldWithCursorPosition
           name="key"
           required
           fullWidth
