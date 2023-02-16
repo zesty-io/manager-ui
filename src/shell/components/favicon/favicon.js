@@ -5,8 +5,8 @@ import { Dialog, IconButton, Button } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import CircularProgress from "@mui/material/CircularProgress";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -40,6 +40,7 @@ import {
 import { notify } from "shell/store/notifications";
 
 import styles from "./favicon.less";
+import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
 
 export default connect((state) => {
   return {
@@ -258,6 +259,7 @@ export default connect((state) => {
                   isSelectDialog={true}
                   showHeaderActions={false}
                   addImagesCallback={(images) => {
+                    if (!isImage(images[0])) return;
                     imageModal.callback(images);
                     setImageModal();
                   }}
@@ -295,17 +297,17 @@ export default connect((state) => {
           >
             Cancel (ESC)
           </Button>
-          <Button
+          <LoadingButton
             variant="contained"
             color="success"
             data-cy="faviconSave"
+            loadingPosition="start"
             onClick={handleSave}
-            startIcon={
-              loading ? <CircularProgress size="20px" /> : <SaveIcon />
-            }
+            loading={loading}
+            startIcon={<SaveIcon />}
           >
             Save Favicon
-          </Button>
+          </LoadingButton>
         </ModalFooter>
       </Modal>
     </div>

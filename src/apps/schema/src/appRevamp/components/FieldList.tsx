@@ -6,6 +6,10 @@ import {
   InputAdornment,
   CircularProgress,
   Typography,
+  Switch,
+  FormControlLabel,
+  Link,
+  Divider,
 } from "@mui/material";
 import { useParams } from "react-router";
 import { isEqual } from "lodash";
@@ -23,6 +27,7 @@ import { FieldsListRight } from "./FieldsListRight";
 import { NoSearchResults } from "./NoSearchResults";
 import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
+import { SYSTEM_FIELDS, SystemField } from "./configs";
 
 type Params = {
   id: string;
@@ -55,6 +60,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const [deactivatedFields, setDeactivatedFields] = useState<
     ContentModelField[] | null
   >(null);
+  const [isSystemFieldsVisible, setIsSystemFieldsVisible] = useState(false);
 
   useEffect(() => {
     if (fields?.length && !isEqual(localFields, fields)) {
@@ -147,48 +153,127 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         display="flex"
         flexDirection="column"
         height="100%"
-        gap={2}
         flex={1}
         sx={{ pr: 3, pt: 2, overflowY: "scroll" }}
       >
-        <TextField
-          size="small"
-          placeholder="Search Fields"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          sx={{ width: "360px", px: 3 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          inputRef={searchRef}
-        />
-
-        {/* No search results */}
-        {!Boolean(filteredFields?.length) && search && (
-          <NoSearchResults
-            searchTerm={search}
-            onSearchAgain={handleSearchAgain}
+        <Box
+          mb={2}
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <TextField
+            size="small"
+            placeholder="Search Fields"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            sx={{ width: "360px", px: 3 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            inputRef={searchRef}
+          />
+          <FormControlLabel
+            label={
+              <Typography variant="body2" color="text.secondary">
+                Show system fields
+              </Typography>
+            }
+            control={
+              <Switch
+                checked={isSystemFieldsVisible}
+                size="small"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setIsSystemFieldsVisible(e.target.checked)
+                }
+              />
+            }
             sx={{
-              p: 3,
+              mr: 0,
             }}
           />
-        )}
-
-        {/* No active or inactive fields in model */}
-        {!Boolean(filteredFields?.length) &&
-          !Boolean(deactivatedFields?.length) &&
-          !search && (
-            <FieldEmptyState onAddField={() => onNewFieldModalClick(null)} />
-          )}
+        </Box>
 
         <Box sx={{ overflowY: "scroll" }}>
-          {/* Active fields are present */}
+          {/* SYSTEM FIELDS */}
+          {isSystemFieldsVisible && !search && (
+            <Box
+              ml={3}
+              pb={2}
+              mb={1.5}
+              borderBottom="1px solid"
+              borderColor="grey.200"
+            >
+              <Typography variant="h6" mb={1}>
+                System Fields
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Each content item (child) of a model in Zesty comes included
+                with non-editable system fields that represent the state of the
+                content such as when it was created, updated, and the version.
+                The value of these fields can be under the{" "}
+                <strong>meta key</strong> in the{" "}
+                <Link
+                  href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Instances API end point
+                </Link>
+                .
+              </Typography>
+              <Box display="flex" flexDirection="column" gap={1} mt={2}>
+                {SYSTEM_FIELDS.map((field, index) => (
+                  <Field
+                    key={index}
+                    field={field}
+                    index={index}
+                    disableDrag
+                    withDragIcon={false}
+                    withMenu={false}
+                  />
+                ))}
+              </Box>
+            </Box>
+          )}
+
+          {/* NO SEARCH RESULTS */}
+          {!Boolean(filteredFields?.length) && search && (
+            <NoSearchResults
+              searchTerm={search}
+              onSearchAgain={handleSearchAgain}
+              sx={{
+                p: 3,
+              }}
+            />
+          )}
+
+          {/* NO ACTIVE OR INACTIVE FIELDS */}
+          {!Boolean(filteredFields?.length) &&
+            !Boolean(deactivatedFields?.length) &&
+            !search && (
+              <FieldEmptyState onAddField={() => onNewFieldModalClick(null)} />
+            )}
+
+          {/* ACTIVE FIELDS ARE PRESENT */}
           {Boolean(filteredFields?.length) && (
             <>
+              {isSystemFieldsVisible && (
+                <Box pl={3} pb={2}>
+                  <Typography variant="h6" mb={1}>
+                    User Fields
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    These are editable fields that have been added in by a user
+                    of this instance. The value of these fields can be under the
+                    data key in the Instances API end point.
+                  </Typography>
+                </Box>
+              )}
               {filteredFields?.map((field, index) => {
                 return (
                   <Box key={field.ZUID}>
@@ -207,6 +292,8 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                         setHoveredIndex={setHoveredIndex}
                         onReorder={handleReorder}
                         disableDrag={!!search}
+                        withDragIcon
+                        withMenu
                       />
                     </Box>
                   </Box>
@@ -233,7 +320,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             </>
           )}
 
-          {/* No active fields BUT there are Deactivated fields and not searching */}
+          {/* NO ACTIVE FIELDS BUT HAS INACTIVE FIELDS */}
           {!Boolean(filteredFields?.length) &&
             Boolean(deactivatedFields?.length) &&
             !search && (
@@ -244,11 +331,13 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               </Box>
             )}
 
-          {/* Inactive fields are present and not searching */}
+          {/* INACTIVE FIELDS ARE PRESENT */}
           {Boolean(deactivatedFields?.length) && !search && (
             <Box mb={2}>
               <Box pl={3} pb={1.5}>
-                <Typography variant="h6">Deactivated Fields</Typography>
+                <Typography variant="h6" mb={1}>
+                  Deactivated Fields
+                </Typography>
                 <Typography variant="body2" color="text.secondary">
                   These fields can be re-activated at any time if you'd like to
                   bring them back to the content model.
@@ -265,6 +354,8 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                       onReorder={handleReorder}
                       disableDrag
                       isDeactivated
+                      withDragIcon
+                      withMenu
                     />
                   </Box>
                 );

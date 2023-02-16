@@ -6,7 +6,7 @@ import { useHistory } from "react-router";
 import { Select, Button, MenuItem } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
-import CircularProgress from "@mui/material/CircularProgress";
+import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,6 +21,7 @@ import {
 } from "../../../../../store/files";
 
 import styles from "./DifferActions.less";
+
 export const DifferActions = memo(function DifferActions(props) {
   const [saving, setSaving] = useState(false);
   const [versions, setVersions] = useState([]);
@@ -220,15 +221,16 @@ export const DifferActions = memo(function DifferActions(props) {
         </>
       ) : (
         <>
-          <Button
+          <LoadingButton
             variant="contained"
+            loadingPosition="start"
             onClick={resolveSync}
             disabled={saving}
             sx={{ ml: 1 }}
+            startIcon={<SaveIcon />}
           >
-            {saving ? <CircularProgress size="20px" /> : <SaveIcon />}
             Save Version {selectedVersion}
-          </Button>
+          </LoadingButton>
         </>
       )}
     </div>
