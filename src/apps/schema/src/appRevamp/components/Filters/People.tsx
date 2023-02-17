@@ -21,17 +21,30 @@ export const People: FC<FiltersProps> = ({
   );
   const isFilterMenuOpen = Boolean(menuAnchorEl);
   const { data: users } = useGetUsersQuery();
+  const activeUserFilter = users?.find(
+    (user) => user.ZUID === activeFilters?.people
+  );
+  const buttonText = activeUserFilter
+    ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
+    : "People";
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
   };
 
+  const handleFilterSelect = (userZUID: string) => {
+    setMenuAnchorEl(null);
+    setActiveFilters({
+      people: userZUID,
+    });
+  };
+
   return (
     <FilterButton
-      isFilterActive={false}
-      buttonText="People"
+      isFilterActive={Boolean(activeUserFilter)}
+      buttonText={buttonText}
       onOpenMenu={handleOpenMenuClick}
-      onRemoveFilter={() => {}}
+      onRemoveFilter={() => setActiveFilters({ people: "" })}
     >
       <Menu
         open={isFilterMenuOpen}
@@ -45,7 +58,10 @@ export const People: FC<FiltersProps> = ({
       >
         {users?.map((user) => {
           return (
-            <MenuItem key={user?.ZUID}>
+            <MenuItem
+              key={user?.ZUID}
+              onClick={() => handleFilterSelect(user?.ZUID)}
+            >
               <ListItemAvatar>
                 <Avatar
                   src={`https://www.gravatar.com/avatar/${MD5(
