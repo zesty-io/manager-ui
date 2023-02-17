@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { mediaManagerApi } from "../../../../../../../shell/services/mediaManager";
-import { Bin } from "../../../../../../../shell/services/types";
-import { AppState } from "../../../../../../../shell/store/types";
+import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
+import { Bin } from "../../../../../../shell/services/types";
+import { AppState } from "../../../../../../shell/store/types";
 
 export interface CustomGroup {
   value: string;

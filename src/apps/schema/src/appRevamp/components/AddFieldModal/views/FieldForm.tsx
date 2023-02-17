@@ -27,7 +27,7 @@ import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineR
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
-import { useMediaRules } from "../hooks/useMediaRules";
+import { useMediaRules } from "../../hooks/useMediaRules";
 import { MediaRules } from "../MediaRules";
 import {
   getCategory,

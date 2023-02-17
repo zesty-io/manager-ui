@@ -10,12 +10,13 @@ import {
   useGetContentModelItemsQuery,
   useGetContentModelsQuery,
 } from "../../../../../shell/services/instance";
-import { ContentModel } from "../../../../../shell/services/types";
+import { ContentModel, ModelType } from "../../../../../shell/services/types";
 import moment from "moment-timezone";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useReducer } from "react";
 import { useHistory } from "react-router";
 import { NoSearchResults } from "./NoSearchResults";
 import { modelIconMap, modelNameMap } from "../utils";
+import { Filters } from "./Filters";
 import { AllModelsEmptyState } from "./AllModelsEmptyState";
 
 const FieldsCell = ({ ZUID }: any) => {
@@ -36,6 +37,11 @@ const ContentItemsCell = ({ ZUID }: any) => {
   return <Typography variant="body2">{data?.length}</Typography>;
 };
 
+export type ModelFilter = {
+  modelType: ModelType | "";
+  people: string;
+  lastUpdated: string;
+};
 interface Props {
   search?: string;
   onEmptySearch?: () => void;
@@ -52,11 +58,41 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   ]);
   const { data: models, isFetching } = useGetContentModelsQuery();
 
+  const [activeFilters, setActiveFilters] = useReducer(
+    (currentFilters: ModelFilter, newFilter: Partial<ModelFilter>) => {
+      return {
+        ...currentFilters,
+        ...newFilter,
+      };
+    },
+    { modelType: "", people: "", lastUpdated: "" }
+  );
+
   const filteredModels = useMemo(() => {
-    if (!search) {
-      return models;
+    let localModels = models;
+
+    if (Object.values(activeFilters).some((filter) => filter !== "")) {
+      localModels = models?.filter((model: ContentModel) => {
+        // TODO: Logic for lastUpdated probably needs to be updated
+        return (
+          (activeFilters.modelType === ""
+            ? true
+            : model.type === activeFilters.modelType) &&
+          (activeFilters.people === ""
+            ? true
+            : model.createdByUserZUID === activeFilters.people) &&
+          (activeFilters.lastUpdated === ""
+            ? true
+            : model.updatedAt === activeFilters.lastUpdated)
+        );
+      });
     }
-    return models?.filter((model: ContentModel) => {
+
+    if (!search) {
+      return localModels;
+    }
+
+    return localModels?.filter((model: ContentModel) => {
       return (
         model.label.toLowerCase().includes(search.toLowerCase()) ||
         model.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -66,7 +102,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
         model.ZUID.toLowerCase().includes(search.toLowerCase())
       );
     });
-  }, [search, models]);
+  }, [search, models, activeFilters]);
 
   const handleRowClick = (row: ContentModel) => {
     history.push(`/schema/${row.ZUID}`);
@@ -132,7 +168,15 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   }
 
   return (
-    <Box height={filteredModels?.length ? "100%" : "55px"}>
+    <Box
+      height={filteredModels?.length ? "100%" : "55px"}
+      display="flex"
+      flexDirection="column"
+    >
+      <Filters
+        activeFilters={activeFilters}
+        setActiveFilters={setActiveFilters}
+      />
       <DataGridPro
         // @ts-expect-error - missing types for headerAlign and align on DataGridPro
         columns={columns}

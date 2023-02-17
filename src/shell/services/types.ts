@@ -61,6 +61,8 @@ export interface File {
   thumbnail: string;
 }
 
+export type ModelType = "pageset" | "templateset" | "dataset";
+
 export interface ContentModel {
   ZUID: string;
   masterZUID: string;
@@ -70,7 +72,7 @@ export interface ContentModel {
   metaTitle?: any;
   metaDescription?: any;
   metaKeywords?: any;
-  type: "pageset" | "templateset" | "dataset";
+  type: ModelType;
   name: string;
   sort: number;
   listed: boolean;
