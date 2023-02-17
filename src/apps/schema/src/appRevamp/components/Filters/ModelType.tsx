@@ -15,7 +15,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { modelIconMap, modelNameMap } from "../../utils";
 import { ModelType as ModelSet } from "../../../../../../shell/services/types";
 import { FiltersProps } from "./index";
-import { FilterBase } from "./FilterBase";
+import { FilterButton } from "./FilterButton";
 
 const MODEL_TYPE_FILTERS: ModelSet[] = ["templateset", "pageset", "dataset"];
 
@@ -43,7 +43,7 @@ export const ModelType: FC<FiltersProps> = ({
 
   return (
     <>
-      <FilterBase
+      <FilterButton
         isFilterActive={Boolean(activeModelTypeFilter)}
         buttonText={
           modelNameMap[activeModelTypeFilter as ModelSet] || "Model Type"
@@ -65,7 +65,7 @@ export const ModelType: FC<FiltersProps> = ({
             </MenuItem>
           ))}
         </Menu>
-      </FilterBase>
+      </FilterButton>
     </>
   );
 };

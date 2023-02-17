@@ -4,14 +4,14 @@ import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined
 import CheckIcon from "@mui/icons-material/Check";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
-interface FilterBase {
+interface FilterButton {
   isFilterActive: boolean;
   buttonText: string;
   onOpenMenu: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onRemoveFilter: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children?: React.ReactNode;
 }
-export const FilterBase: FC<FilterBase> = ({
+export const FilterButton: FC<FilterButton> = ({
   isFilterActive,
   buttonText,
   onOpenMenu,
