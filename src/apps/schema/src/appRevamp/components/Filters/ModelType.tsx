@@ -1,16 +1,11 @@
 import { FC, useState } from "react";
 import {
-  Button,
   Menu,
   MenuItem,
   ListItemIcon,
   ListItemText,
   SvgIcon,
-  ButtonGroup,
 } from "@mui/material";
-import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 import { modelIconMap, modelNameMap } from "../../utils";
 import { ModelType as ModelSet } from "../../../../../../shell/services/types";
