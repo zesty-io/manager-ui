@@ -215,3 +215,10 @@ export interface Audit {
   lastName: string;
   email: string;
 }
+
+export interface User {
+  ZUID: string;
+  ID: number;
+  firstName: string;
+  lastName: string;
+}
