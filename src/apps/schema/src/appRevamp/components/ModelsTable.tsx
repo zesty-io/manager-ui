@@ -73,8 +73,18 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
 
     if (Object.values(activeFilters).some((filter) => filter !== "")) {
       localModels = models?.filter((model: ContentModel) => {
-        // TODO: Add other filters
-        return model.type === activeFilters.modelType;
+        // TODO: Logic for lastUpdated probably needs to be updated
+        return (
+          (activeFilters.modelType === ""
+            ? true
+            : model.type === activeFilters.modelType) &&
+          (activeFilters.people === ""
+            ? true
+            : model.createdByUserZUID === activeFilters.people) &&
+          (activeFilters.lastUpdated === ""
+            ? true
+            : model.updatedAt === activeFilters.lastUpdated)
+        );
       });
     }
 
