@@ -15,7 +15,6 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { FilterButton } from "./FilterButton";
 import { useGetUsersQuery } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
-// import { FiltersProps } from "./index";
 
 interface UserFilter {
   user: string;
