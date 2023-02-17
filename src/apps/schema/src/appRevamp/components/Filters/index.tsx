@@ -3,8 +3,8 @@ import { Box } from "@mui/material";
 
 import { LastUpdated } from "./LastUpdated";
 import { ModelType } from "./ModelType";
-import { People } from "./People";
 import { ModelFilter } from "../ModelsTable";
+import { UserFilter } from "../../../../../../shell/components/Filters";
 
 export interface FiltersProps {
   setActiveFilters: Dispatch<Partial<ModelFilter>>;
@@ -20,10 +20,7 @@ export const Filters: FC<FiltersProps> = ({
         setActiveFilters={setActiveFilters}
         activeFilters={activeFilters}
       />
-      <People
-        setActiveFilters={setActiveFilters}
-        activeFilters={activeFilters}
-      />
+      <UserFilter value={activeFilters} onChange={setActiveFilters} />
       <LastUpdated />
     </Box>
   );

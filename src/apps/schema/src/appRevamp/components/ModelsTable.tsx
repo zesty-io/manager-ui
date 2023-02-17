@@ -39,7 +39,7 @@ const ContentItemsCell = ({ ZUID }: any) => {
 
 export type ModelFilter = {
   modelType: ModelType | "";
-  people: string;
+  user: string;
   lastUpdated: string;
 };
 interface Props {
@@ -65,7 +65,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
         ...newFilter,
       };
     },
-    { modelType: "", people: "", lastUpdated: "" }
+    { modelType: "", user: "", lastUpdated: "" }
   );
 
   const filteredModels = useMemo(() => {
@@ -78,9 +78,9 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           (activeFilters.modelType === ""
             ? true
             : model.type === activeFilters.modelType) &&
-          (activeFilters.people === ""
+          (activeFilters.user === ""
             ? true
-            : model.createdByUserZUID === activeFilters.people) &&
+            : model.createdByUserZUID === activeFilters.user) &&
           (activeFilters.lastUpdated === ""
             ? true
             : model.updatedAt === activeFilters.lastUpdated)
@@ -214,7 +214,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           <NoResults
             type="filter"
             onButtonClick={() =>
-              setActiveFilters({ modelType: "", people: "", lastUpdated: "" })
+              setActiveFilters({ modelType: "", user: "", lastUpdated: "" })
             }
           />
         </Box>

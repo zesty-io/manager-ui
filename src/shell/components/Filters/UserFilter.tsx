@@ -1,4 +1,4 @@
-import { FC, useState, useMemo } from "react";
+import { Dispatch, FC, useState, useMemo } from "react";
 import {
   Menu,
   MenuItem,
@@ -13,14 +13,18 @@ import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 import { FilterButton } from "./FilterButton";
-import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
-import { MD5 } from "../../../../../../utility/md5";
-import { FiltersProps } from "./index";
+import { useGetUsersQuery } from "../../services/accounts";
+import { MD5 } from "../../../utility/md5";
+// import { FiltersProps } from "./index";
 
-export const People: FC<FiltersProps> = ({
-  activeFilters,
-  setActiveFilters,
-}) => {
+interface UserFilter {
+  user: string;
+}
+interface UserFilterProps {
+  value: UserFilter;
+  onChange: Dispatch<UserFilter>;
+}
+export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
   const [filter, setFilter] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
@@ -41,9 +45,7 @@ export const People: FC<FiltersProps> = ({
     );
   }, [filter, users]);
 
-  const activeUserFilter = users?.find(
-    (user) => user?.ZUID === activeFilters?.people
-  );
+  const activeUserFilter = users?.find((user) => user?.ZUID === value?.user);
   const buttonText = activeUserFilter
     ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
     : "People";
@@ -54,8 +56,8 @@ export const People: FC<FiltersProps> = ({
 
   const handleFilterSelect = (userZUID: string) => {
     setMenuAnchorEl(null);
-    setActiveFilters({
-      people: userZUID,
+    onChange({
+      user: userZUID,
     });
   };
 
@@ -64,7 +66,7 @@ export const People: FC<FiltersProps> = ({
       isFilterActive={Boolean(activeUserFilter)}
       buttonText={buttonText}
       onOpenMenu={handleOpenMenuClick}
-      onRemoveFilter={() => setActiveFilters({ people: "" })}
+      onRemoveFilter={() => onChange({ user: "" })}
     >
       <Menu
         open={isFilterMenuOpen}

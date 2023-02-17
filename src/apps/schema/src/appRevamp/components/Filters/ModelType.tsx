@@ -10,7 +10,7 @@ import {
 import { modelIconMap, modelNameMap } from "../../utils";
 import { ModelType as ModelSet } from "../../../../../../shell/services/types";
 import { FiltersProps } from "./index";
-import { FilterButton } from "./FilterButton";
+import { FilterButton } from "../../../../../../shell/components/Filters";
 
 const MODEL_TYPE_FILTERS: ModelSet[] = ["templateset", "pageset", "dataset"];
 
