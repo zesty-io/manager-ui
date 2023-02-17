@@ -58,22 +58,6 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   ]);
   const { data: models, isFetching } = useGetContentModelsQuery();
 
-  const filteredModels = useMemo(() => {
-    if (!search) {
-      return models;
-    }
-    return models?.filter((model: ContentModel) => {
-      return (
-        model.label.toLowerCase().includes(search.toLowerCase()) ||
-        model.name.toLowerCase().includes(search.toLowerCase()) ||
-        modelNameMap[model.type as keyof typeof modelNameMap]
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        model.ZUID.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-  }, [search, models]);
-
   const [activeFilters, setActiveFilters] = useReducer(
     (currentFilters: ModelFilter, newFilter: Partial<ModelFilter>) => {
       return {
@@ -83,6 +67,32 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
     },
     { modelType: "", people: "", lastUpdated: "" }
   );
+
+  const filteredModels = useMemo(() => {
+    let localModels = models;
+
+    if (Object.values(activeFilters).some((filter) => filter !== "")) {
+      localModels = models?.filter((model: ContentModel) => {
+        // TODO: Add other filters
+        return model.type === activeFilters.modelType;
+      });
+    }
+
+    if (!search) {
+      return localModels;
+    }
+
+    return localModels?.filter((model: ContentModel) => {
+      return (
+        model.label.toLowerCase().includes(search.toLowerCase()) ||
+        model.name.toLowerCase().includes(search.toLowerCase()) ||
+        modelNameMap[model.type as keyof typeof modelNameMap]
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        model.ZUID.toLowerCase().includes(search.toLowerCase())
+      );
+    });
+  }, [search, models, activeFilters]);
 
   const handleRowClick = (row: ContentModel) => {
     history.push(`/schema/${row.ZUID}`);

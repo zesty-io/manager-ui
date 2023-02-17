@@ -18,6 +18,7 @@ import { FiltersProps } from "./index";
 
 const MODEL_TYPE_FILTERS: ModelSet[] = ["templateset", "pageset", "dataset"];
 
+// TODO: Make a base component that can be re-used for all filters
 export const ModelType: FC<FiltersProps> = ({
   activeFilters,
   setActiveFilters,
