@@ -168,7 +168,11 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   }
 
   return (
-    <Box height={filteredModels?.length ? "100%" : "55px"}>
+    <Box
+      height={filteredModels?.length ? "100%" : "55px"}
+      display="flex"
+      flexDirection="column"
+    >
       <Filters
         activeFilters={activeFilters}
         setActiveFilters={setActiveFilters}
