@@ -14,15 +14,12 @@ import { FilterButton } from "../../../../../../shell/components/Filters";
 
 const MODEL_TYPE_FILTERS: ModelSet[] = ["templateset", "pageset", "dataset"];
 
-export const ModelType: FC<FiltersProps> = ({
-  activeFilters,
-  setActiveFilters,
-}) => {
+export const ModelType: FC<FiltersProps> = ({ value, onChange }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
   );
   const isFilterMenuOpen = Boolean(menuAnchorEl);
-  const activeModelTypeFilter: ModelSet | "" = activeFilters?.modelType;
+  const activeModelTypeFilter: ModelSet | "" = value?.modelType;
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
@@ -30,7 +27,7 @@ export const ModelType: FC<FiltersProps> = ({
 
   const handleFilterSelect = (filter: ModelSet) => {
     setMenuAnchorEl(null);
-    setActiveFilters({
+    onChange({
       modelType: filter,
     });
   };
@@ -43,7 +40,7 @@ export const ModelType: FC<FiltersProps> = ({
           modelNameMap[activeModelTypeFilter as ModelSet] || "Model Type"
         }
         onOpenMenu={handleOpenMenuClick}
-        onRemoveFilter={() => setActiveFilters({ modelType: "" })}
+        onRemoveFilter={() => onChange({ modelType: "" })}
       >
         <Menu
           open={isFilterMenuOpen}
