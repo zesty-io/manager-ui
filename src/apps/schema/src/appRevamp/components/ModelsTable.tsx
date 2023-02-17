@@ -14,7 +14,7 @@ import { ContentModel, ModelType } from "../../../../../shell/services/types";
 import moment from "moment-timezone";
 import { useMemo, useState, useReducer } from "react";
 import { useHistory } from "react-router";
-import { NoSearchResults } from "./NoSearchResults";
+import { NoResults } from "./NoResults";
 import { modelIconMap, modelNameMap } from "../utils";
 import { Filters } from "./Filters";
 import { AllModelsEmptyState } from "./AllModelsEmptyState";
@@ -199,11 +199,23 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           },
         }}
       />
-      {!filteredModels?.length && !isFetching && (
+      {!filteredModels?.length && !isFetching && search && (
         <Box sx={{ mt: 10 }}>
-          <NoSearchResults
+          <NoResults
+            type="search"
             searchTerm={search}
-            onSearchAgain={() => onEmptySearch()}
+            onButtonClick={() => onEmptySearch()}
+          />
+        </Box>
+      )}
+
+      {!filteredModels?.length && !isFetching && !search && (
+        <Box sx={{ mt: 10 }}>
+          <NoResults
+            type="filter"
+            onButtonClick={() =>
+              setActiveFilters({ modelType: "", people: "", lastUpdated: "" })
+            }
           />
         </Box>
       )}
