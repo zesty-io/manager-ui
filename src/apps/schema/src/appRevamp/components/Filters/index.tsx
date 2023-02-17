@@ -20,7 +20,10 @@ export const Filters: FC<FiltersProps> = ({
         setActiveFilters={setActiveFilters}
         activeFilters={activeFilters}
       />
-      <People />
+      <People
+        setActiveFilters={setActiveFilters}
+        activeFilters={activeFilters}
+      />
       <LastUpdated />
     </Box>
   );
