@@ -18,7 +18,10 @@ import { NoResults } from "./NoResults";
 import { modelIconMap, modelNameMap } from "../utils";
 import { Filters } from "./Filters";
 import { AllModelsEmptyState } from "./AllModelsEmptyState";
-import { DateFilterValue } from "../../../../../shell/components/Filters/DateFilter";
+import {
+  DateFilterValue,
+  getDateFilterFn,
+} from "../../../../../shell/components/Filters/DateFilter";
 
 const FieldsCell = ({ ZUID }: any) => {
   const { data, isLoading } = useGetContentModelFieldsQuery(ZUID);
@@ -71,21 +74,25 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
 
   const filteredModels = useMemo(() => {
     let localModels = models;
-    // TODO: Add logic to convert last update value
+
     if (Object.values(activeFilters).some((filter) => filter !== "")) {
       localModels = models?.filter((model: ContentModel) => {
-        // TODO: Logic for lastUpdated probably needs to be updated
+        let dateFilterFn = (date: string) => true;
+
+        const { type, value } = activeFilters.lastUpdated;
+
+        if (type && value) {
+          dateFilterFn = getDateFilterFn({ type, value });
+        }
+
         return (
           (activeFilters.modelType === ""
             ? true
             : model.type === activeFilters.modelType) &&
           (activeFilters.user === ""
             ? true
-            : model.createdByUserZUID === activeFilters.user)
-          // &&
-          // (activeFilters.lastUpdated === ""
-          //   ? true
-          //   : model.updatedAt === activeFilters.lastUpdated)
+            : model.createdByUserZUID === activeFilters.user) &&
+          dateFilterFn(model.updatedAt)
         );
       });
     }
