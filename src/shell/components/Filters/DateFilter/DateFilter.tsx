@@ -61,12 +61,11 @@ interface FilterSelectParam {
 }
 interface DateFilterProps {
   value: DateFilterValue;
-  onChange: Dispatch<{ lastUpdated: DateFilterValue }>;
+  onChange: (filter: DateFilterValue) => void;
 }
 export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
-  const [calendarModalType, setCalendarModalType] = useState<
-    "on" | "before" | "after" | ""
-  >("");
+  const [calendarModalType, setCalendarModalType] =
+    useState<DateFilterModalType>("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
   );
@@ -102,13 +101,9 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
     }
 
     onChange({
-      lastUpdated: {
-        type,
-        value:
-          typeof value === "object"
-            ? moment(value).format("YYYY-MM-DD")
-            : value,
-      },
+      type,
+      value:
+        typeof value === "object" ? moment(value).format("YYYY-MM-DD") : value,
     });
   };
 
@@ -125,10 +120,8 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
         onOpenMenu={handleOpenMenuClick}
         onRemoveFilter={() => {
           onChange({
-            lastUpdated: {
-              type: "",
-              value: "",
-            },
+            type: "",
+            value: "",
           });
         }}
       >

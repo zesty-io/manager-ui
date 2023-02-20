@@ -16,12 +16,9 @@ import { FilterButton } from "./FilterButton";
 import { useGetUsersQuery } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
 
-interface UserFilter {
-  user: string;
-}
 interface UserFilterProps {
   value: string;
-  onChange: Dispatch<UserFilter>;
+  onChange: (filter: string) => void;
 }
 export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
   const [filter, setFilter] = useState("");
@@ -55,9 +52,7 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
 
   const handleFilterSelect = (userZUID: string) => {
     setMenuAnchorEl(null);
-    onChange({
-      user: userZUID,
-    });
+    onChange(userZUID);
   };
 
   return (
@@ -65,7 +60,7 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
       isFilterActive={Boolean(activeUserFilter)}
       buttonText={buttonText}
       onOpenMenu={handleOpenMenuClick}
-      onRemoveFilter={() => onChange({ user: "" })}
+      onRemoveFilter={() => onChange("")}
     >
       <Menu
         open={isFilterMenuOpen}
