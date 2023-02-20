@@ -14,7 +14,7 @@ import { ContentModel, ModelType } from "../../../../../shell/services/types";
 import moment from "moment-timezone";
 import { useMemo, useState, useReducer } from "react";
 import { useHistory } from "react-router";
-import { NoSearchResults } from "./NoSearchResults";
+import { NoResults } from "./NoResults";
 import { modelIconMap, modelNameMap } from "../utils";
 import { Filters } from "./Filters";
 import { AllModelsEmptyState } from "./AllModelsEmptyState";
@@ -39,7 +39,7 @@ const ContentItemsCell = ({ ZUID }: any) => {
 
 export type ModelFilter = {
   modelType: ModelType | "";
-  people: string;
+  user: string;
   lastUpdated: string;
 };
 interface Props {
@@ -65,7 +65,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
         ...newFilter,
       };
     },
-    { modelType: "", people: "", lastUpdated: "" }
+    { modelType: "", user: "", lastUpdated: "" }
   );
 
   const filteredModels = useMemo(() => {
@@ -78,9 +78,9 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           (activeFilters.modelType === ""
             ? true
             : model.type === activeFilters.modelType) &&
-          (activeFilters.people === ""
+          (activeFilters.user === ""
             ? true
-            : model.createdByUserZUID === activeFilters.people) &&
+            : model.createdByUserZUID === activeFilters.user) &&
           (activeFilters.lastUpdated === ""
             ? true
             : model.updatedAt === activeFilters.lastUpdated)
@@ -173,10 +173,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       display="flex"
       flexDirection="column"
     >
-      <Filters
-        activeFilters={activeFilters}
-        setActiveFilters={setActiveFilters}
-      />
+      <Filters activeFilters={activeFilters} onChange={setActiveFilters} />
       <DataGridPro
         // @ts-expect-error - missing types for headerAlign and align on DataGridPro
         columns={columns}
@@ -199,11 +196,23 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           },
         }}
       />
-      {!filteredModels?.length && !isFetching && (
+      {!filteredModels?.length && !isFetching && search && (
         <Box sx={{ mt: 10 }}>
-          <NoSearchResults
+          <NoResults
+            type="search"
             searchTerm={search}
-            onSearchAgain={() => onEmptySearch()}
+            onButtonClick={() => onEmptySearch()}
+          />
+        </Box>
+      )}
+
+      {!filteredModels?.length && !isFetching && !search && (
+        <Box sx={{ mt: 10 }}>
+          <NoResults
+            type="filter"
+            onButtonClick={() =>
+              setActiveFilters({ modelType: "", user: "", lastUpdated: "" })
+            }
           />
         </Box>
       )}

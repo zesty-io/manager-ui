@@ -1,4 +1,4 @@
-import { FilterButton } from "./FilterButton";
+import { FilterButton } from "../../../../../../shell/components/Filters";
 
 // TODO: Add functionality
 export const LastUpdated = () => {

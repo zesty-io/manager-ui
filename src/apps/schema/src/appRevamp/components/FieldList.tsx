@@ -24,7 +24,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import { AddFieldDivider } from "./AddFieldDivider";
 import { FieldsListRight } from "./FieldsListRight";
-import { NoSearchResults } from "./NoSearchResults";
+import { NoResults } from "./NoResults";
 import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
 import { SYSTEM_FIELDS, SystemField } from "./configs";
@@ -243,9 +243,10 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
 
           {/* NO SEARCH RESULTS */}
           {!Boolean(filteredFields?.length) && search && (
-            <NoSearchResults
+            <NoResults
+              type="search"
               searchTerm={search}
-              onSearchAgain={handleSearchAgain}
+              onButtonClick={handleSearchAgain}
               sx={{
                 p: 3,
               }}
