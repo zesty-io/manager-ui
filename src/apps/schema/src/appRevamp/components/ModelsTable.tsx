@@ -18,6 +18,7 @@ import { NoResults } from "./NoResults";
 import { modelIconMap, modelNameMap } from "../utils";
 import { Filters } from "./Filters";
 import { AllModelsEmptyState } from "./AllModelsEmptyState";
+import { DateFilterValue } from "../../../../../shell/components/Filters/DateFilter";
 
 const FieldsCell = ({ ZUID }: any) => {
   const { data, isLoading } = useGetContentModelFieldsQuery(ZUID);
@@ -40,7 +41,7 @@ const ContentItemsCell = ({ ZUID }: any) => {
 export type ModelFilter = {
   modelType: ModelType | "";
   user: string;
-  lastUpdated: string;
+  lastUpdated: DateFilterValue;
 };
 interface Props {
   search?: string;
@@ -65,12 +66,12 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
         ...newFilter,
       };
     },
-    { modelType: "", user: "", lastUpdated: "" }
+    { modelType: "", user: "", lastUpdated: { type: "", value: "" } }
   );
 
   const filteredModels = useMemo(() => {
     let localModels = models;
-
+    // TODO: Add logic to convert last update value
     if (Object.values(activeFilters).some((filter) => filter !== "")) {
       localModels = models?.filter((model: ContentModel) => {
         // TODO: Logic for lastUpdated probably needs to be updated
@@ -80,10 +81,11 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
             : model.type === activeFilters.modelType) &&
           (activeFilters.user === ""
             ? true
-            : model.createdByUserZUID === activeFilters.user) &&
-          (activeFilters.lastUpdated === ""
-            ? true
-            : model.updatedAt === activeFilters.lastUpdated)
+            : model.createdByUserZUID === activeFilters.user)
+          // &&
+          // (activeFilters.lastUpdated === ""
+          //   ? true
+          //   : model.updatedAt === activeFilters.lastUpdated)
         );
       });
     }
@@ -211,7 +213,11 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           <NoResults
             type="filter"
             onButtonClick={() =>
-              setActiveFilters({ modelType: "", user: "", lastUpdated: "" })
+              setActiveFilters({
+                modelType: "",
+                user: "",
+                lastUpdated: { type: "", value: "" },
+              })
             }
           />
         </Box>
