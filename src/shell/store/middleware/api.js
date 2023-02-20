@@ -3,25 +3,30 @@ import { request } from "utility/request";
 import { fetchItems } from "shell/store/content";
 import { fetchFields } from "shell/store/fields";
 
-const inflight = [];
+// Map of URI to inflight request promise
+const inflight = {};
 export const fetchResource =
   (store) =>
   (next) =>
   (action = {}) => {
     if (action.type === "FETCH_RESOURCE") {
-      // Track inflight API requests
-      if (inflight.indexOf(action.uri) === -1) {
-        inflight.push(action.uri);
-        return request(action.uri)
+      // Track inflight API requests, keep a reference to the promise so we can
+      // return a reference to the same promise to any number of duplicate
+      // requests
+      if (!(action.uri in inflight)) {
+        const promise = request(action.uri)
           .then(action.handler)
           .then((res) => {
-            inflight.splice(inflight.indexOf(action.uri), 1);
-
+            // on resolve, remove promise from inflight map
+            // the consumers will still have a reference to the resolved promise
+            delete inflight[action.uri];
             // continue response through promise chain
             return res;
           })
           .catch((err) => {
-            inflight.splice(inflight.indexOf(action.uri), 1);
+            // on reject, remove promise from inflight map
+            // the consumers will still have a reference to the rejected promise
+            delete inflight[action.uri];
             if (action.error) {
               action.error(err);
             } else {
@@ -30,9 +35,15 @@ export const fetchResource =
               throw err;
             }
           });
+        // keep a reference to the promise so it can be returned to any
+        // potential duplicate requests
+        inflight[action.uri] = promise;
+        return promise;
       } else {
         console.log("duplicate request: ", action.uri);
-        return Promise.resolve();
+        // return the a reference to the promise representing the first
+        // request to any duplicate requests
+        return inflight[action.uri];
       }
     } else {
       return next(action);

@@ -1,12 +1,10 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-
-import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { FieldTypeText } from "@zesty-io/material";
 
@@ -111,21 +109,19 @@ function Footer(props) {
 
   return (
     <Box>
-      <Button
+      <LoadingButton
         variant="outlined"
         onClick={duplicate}
-        disabled={loading}
-        startIcon={
-          loading ? <CircularProgress size="20px" /> : <FileCopyIcon />
-        }
+        loading={loading}
+        startIcon={<FileCopyIcon />}
         sx={{ mr: 2 }}
       >
         Duplicate Model
-      </Button>
-      <Button
+      </LoadingButton>
+      <LoadingButton
         variant="contained"
         color="success"
-        disabled={!props.model.dirty || loading}
+        disabled={!props.model.dirty}
         onClick={() => {
           setLoading(true);
           props
@@ -160,11 +156,13 @@ function Footer(props) {
               setLoading(false);
             });
         }}
-        startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
+        loading={loading}
+        loadingPosition="start"
+        startIcon={<SaveIcon />}
         sx={{ alignSelf: "flex-start" }}
       >
         Save Model
-      </Button>
+      </LoadingButton>
     </Box>
   );
 }

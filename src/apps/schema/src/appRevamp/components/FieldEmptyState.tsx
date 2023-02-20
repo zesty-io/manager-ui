@@ -23,15 +23,11 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
       height="100%"
       display="flex"
       flexDirection="row"
-      justifyContent="space-between"
       alignItems="center"
       px={3}
+      gap={7}
     >
-      <Box
-        sx={{
-          width: "378px",
-        }}
-      >
+      <Box>
         <Typography variant="h4" fontWeight={600}>
           Add Fields
         </Typography>

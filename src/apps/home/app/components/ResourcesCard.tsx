@@ -305,10 +305,6 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
                 handleNavigation("https://www.youtube.com/c/Zestyio/videos")
               }
             />
-            <img
-              src={discordIcon}
-              onClick={() => handleNavigation("https://discord.gg/uqDqeX8RXE")}
-            />
             <NewspaperRoundedIcon
               sx={{ cursor: "pointer" }}
               color="primary"
@@ -324,7 +320,7 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
         <iframe
           width="364"
           height="800"
-          src="https://www.zesty.io/meet/"
+          src="https://zesty.zohobookings.com/portal-embed#/customer/3973976000000039370"
         ></iframe>
       </Dialog>
       {showInviteModal && (

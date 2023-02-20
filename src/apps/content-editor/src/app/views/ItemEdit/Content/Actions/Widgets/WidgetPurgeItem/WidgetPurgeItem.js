@@ -1,9 +1,7 @@
 import { memo, useState } from "react";
 
-import Button from "@mui/material/Button";
-
 import SyncIcon from "@mui/icons-material/Sync";
-import CircularProgress from "@mui/material/CircularProgress";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -31,49 +29,40 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
         </p>
       </CardContent>
       <CardActions>
-        {loading ? (
-          <Button
-            variant="contained"
-            disabled={loading}
-            startIcon={<CircularProgress size="20px" />}
-          >
-            Refreshing Cached Item
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            id="RefreshCache"
-            onClick={() => {
-              setLoading(true);
+        <LoadingButton
+          variant="contained"
+          id="RefreshCache"
+          onClick={() => {
+            setLoading(true);
 
-              return request(
-                `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.itemZUID}&instance=${props.instanceZUID}`
-              )
-                .then(() => {
-                  setLoading(false);
-                  props.dispatch(
-                    notify({
-                      message: "The item has been purged from the CDN cache",
-                      kind: "save",
-                    })
-                  );
-                })
-                .catch(() => {
-                  setLoading(false);
-                  props.dispatch(
-                    notify({
-                      message:
-                        "There was an issue trying to purge the CDN cache",
-                      kind: "warn",
-                    })
-                  );
-                });
-            }}
-            startIcon={<SyncIcon />}
-          >
-            Refresh Cached Item
-          </Button>
-        )}
+            return request(
+              `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.itemZUID}&instance=${props.instanceZUID}`
+            )
+              .then(() => {
+                setLoading(false);
+                props.dispatch(
+                  notify({
+                    message: "The item has been purged from the CDN cache",
+                    kind: "save",
+                  })
+                );
+              })
+              .catch(() => {
+                setLoading(false);
+                props.dispatch(
+                  notify({
+                    message: "There was an issue trying to purge the CDN cache",
+                    kind: "warn",
+                  })
+                );
+              });
+          }}
+          loading={loading}
+          loadingPosition="start"
+          startIcon={<SyncIcon />}
+        >
+          {loading ? "Refreshing Cached Item" : "Refresh Cached Item"}
+        </LoadingButton>
       </CardActions>
     </Card>
   );

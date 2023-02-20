@@ -1,4 +1,5 @@
 import { InputField } from "./AddFieldModal/FieldFormInput";
+import { ContentModelField } from "../../../../../shell/services/types";
 
 interface FieldListData {
   type: string;
@@ -13,6 +14,7 @@ interface FormConfig {
   details: InputField[];
   rules: InputField[];
 }
+type SystemField = Pick<ContentModelField, "label" | "datatype" | "name">;
 const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
   text: [
     {
@@ -548,4 +550,44 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
   },
 };
 
-export { FieldListData, FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG };
+const SYSTEM_FIELDS: SystemField[] = [
+  {
+    label: "Item ZUID",
+    datatype: "uuid",
+    name: "ZUID",
+  },
+  {
+    label: "Created At",
+    datatype: "datetime",
+    name: "createdAt",
+  },
+  {
+    label: "Updated At",
+    datatype: "datetime",
+    name: "updatedAt",
+  },
+  {
+    label: "Version",
+    datatype: "number",
+    name: "version",
+  },
+  {
+    label: "Master ZUID",
+    datatype: "uuid",
+    name: "masterZUID",
+  },
+  {
+    label: "Model ZUID",
+    datatype: "uuid",
+    name: "contentModelZUID",
+  },
+];
+
+export {
+  FieldListData,
+  FIELD_COPY_CONFIG,
+  TYPE_TEXT,
+  FORM_CONFIG,
+  SYSTEM_FIELDS,
+  SystemField,
+};

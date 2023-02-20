@@ -3,11 +3,9 @@ import cx from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { usePermission } from "shell/hooks/use-permissions";
 
-import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import CircularProgress from "@mui/material/CircularProgress";
-
+import LoadingButton from "@mui/lab/LoadingButton";
 import { CopyButton } from "@zesty-io/material";
 
 import { request } from "utility/request";
@@ -114,10 +112,9 @@ export default function GlobalInstance(props) {
 
         {canPurge && (
           <div>
-            <Button
+            <LoadingButton
               variant="contained"
               className={styles.Button}
-              disabled={purge}
               onClick={() => {
                 setPurge(true);
                 return request(
@@ -136,12 +133,12 @@ export default function GlobalInstance(props) {
                     setPurge(false);
                   });
               }}
-              startIcon={
-                purge ? <CircularProgress size="20px" /> : <ErrorOutlineIcon />
-              }
+              loading={purge}
+              loadingPosition="start"
+              startIcon={<ErrorOutlineIcon />}
             >
               Refresh Instance Cache
-            </Button>
+            </LoadingButton>
           </div>
         )}
         <ul className={styles.Domains}>

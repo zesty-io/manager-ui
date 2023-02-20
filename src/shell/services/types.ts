@@ -61,6 +61,8 @@ export interface File {
   thumbnail: string;
 }
 
+export type ModelType = "pageset" | "templateset" | "dataset";
+
 export interface ContentModel {
   ZUID: string;
   masterZUID: string;
@@ -70,7 +72,7 @@ export interface ContentModel {
   metaTitle?: any;
   metaDescription?: any;
   metaKeywords?: any;
-  type: "pageset" | "templateset" | "dataset";
+  type: ModelType;
   name: string;
   sort: number;
   listed: boolean;
@@ -190,4 +192,34 @@ export interface WebView {
   version: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AuditMeta {
+  uri: string;
+  url: string;
+  message: string;
+}
+
+export interface Audit {
+  ZUID: string;
+  resourceType: "content" | "schema" | "code";
+  affectedZUID: string;
+  actionByUserZUID: string;
+  entityZUID: string;
+  action: number;
+  meta: AuditMeta;
+  happenedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface User {
+  ZUID: string;
+  ID: number;
+  firstName: string;
+  lastName: string;
+  email: string;
 }

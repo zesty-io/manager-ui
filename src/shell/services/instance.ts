@@ -3,6 +3,7 @@ import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
 import {
+  Audit,
   ContentItem,
   ContentModel,
   ContentModelField,
@@ -51,7 +52,7 @@ export const instanceApi = createApi({
         { type: "ItemPublishing", id: id.itemZUID },
       ],
     }),
-    getAudits: builder.query({
+    getAudits: builder.query<Audit[], any>({
       query: (options) => {
         const params = new URLSearchParams(options as any).toString();
         return `env/audits?${params}&limit=100000`;
@@ -122,6 +123,22 @@ export const instanceApi = createApi({
     >({
       query: (body) => ({
         url: `content/models`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["ContentModels"],
+    }),
+    getLangsMapping: builder.query<any, void>({
+      query: () => `env/langs/all`,
+      transformResponse: getResponseData,
+    }),
+    createContentModelFromTemplate: builder.mutation<
+      any,
+      { instance_zuid: string; repository: string; parent_zuid: string }
+    >({
+      query: (body) => ({
+        // @ts-ignore
+        url: `${CONFIG.SERVICE_INSTANCE_INSTALLER}/install/model`,
         method: "POST",
         body,
       }),
@@ -303,4 +320,7 @@ export const {
   useBulkCreateContentModelFieldMutation,
   useDeleteContentModelFieldMutation,
   useUndeleteContentModelFieldMutation,
+  useGetLangsMappingQuery,
+  useCreateContentModelFromTemplateMutation,
+  useDeleteContentModelMutation,
 } = instanceApi;

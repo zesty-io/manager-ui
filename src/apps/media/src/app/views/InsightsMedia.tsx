@@ -1,10 +1,17 @@
 import { FC, useState, useMemo } from "react";
-import { Box, Typography, Card } from "@mui/material";
-import { useSelector } from "react-redux";
 import {
-  useGetUsageQuery,
-  useGetRequestsQuery,
-} from "../../../../../shell/services/metrics";
+  Box,
+  Typography,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+} from "@mui/material";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import CheckIcon from "@mui/icons-material/Check";
+import { useSelector } from "react-redux";
+import { alpha } from "@mui/material/styles";
+import { useGetUsageQuery } from "../../../../../shell/services/metrics";
 
 import { MetricCard } from "../../../../../shell/components/MetricsCard";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
@@ -26,13 +33,22 @@ const iconStyles = {
 
 const date = new Date();
 
+const dateRanges = [7, 14, 30, 90];
+
 export const InsightsMedia: FC = () => {
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const instanceCreatedAtDate = useSelector(
     (state: any) => state.instance.createdAt
   );
-  const is2MonthsOld = moment(date).diff(instanceCreatedAtDate, "months") >= 2;
+  const [dateRange, setDateRange] = useState(30);
+  const hasPriorData =
+    moment(date).diff(instanceCreatedAtDate, "days") >= dateRange * 2;
+  const startDate = moment(date).subtract(dateRange, "days");
+  const endDate = moment(date);
+  const priorStartDate = moment(date).subtract(dateRange * 2, "days");
+  const priorEndDate = moment(date).subtract(dateRange, "days");
+
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
     ecoId,
@@ -41,15 +57,16 @@ export const InsightsMedia: FC = () => {
     bins?.map((bin) => bin.id),
     { skip: !bins?.length }
   );
+
   const { data: priorUsage, isFetching: isPriorUsageFetching } =
-    useGetUsageQuery([
-      moment(date).subtract(2, "months").format(),
-      moment(date).subtract(1, "months").format(),
-    ]);
+    useGetUsageQuery([priorStartDate.format(), priorEndDate.format()]);
   const { data: usage, isFetching: isUsageFetching } = useGetUsageQuery([
-    moment(date).subtract(1, "months").format(),
-    moment(date).format(),
+    startDate.format(),
+    endDate.format(),
   ]);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const getDelta = (prior: number, current: number) =>
     (current - prior) / ((current + prior) / 2);
@@ -58,6 +75,10 @@ export const InsightsMedia: FC = () => {
 
   const totalMediaThroughput = usage?.MediaConsumption.TotalGBs;
   const totalMediaRequests = usage?.MediaConsumption.TotalRequests;
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <Box
@@ -69,10 +90,48 @@ export const InsightsMedia: FC = () => {
         height: "100%",
       }}
     >
-      <Box sx={{ height: "64px", py: 2, px: 3 }}>
+      <Box sx={{ pt: 2, px: 3 }}>
         <Typography variant="h4" fontWeight={600}>
           Insights
         </Typography>
+        <Button
+          endIcon={<ArrowDropDownIcon />}
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+          variant="outlined"
+          size="small"
+          color="inherit"
+          sx={{
+            mt: 2,
+          }}
+        >
+          Last {dateRange} Days
+        </Button>
+        <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
+          {dateRanges.map((dateRangeItem) => (
+            <MenuItem
+              onClick={() => {
+                setDateRange(dateRangeItem);
+                handleClose();
+              }}
+              sx={{
+                ...(dateRangeItem === dateRange && {
+                  backgroundColor: (theme) =>
+                    alpha(
+                      theme.palette.primary.main,
+                      theme.palette.action.hoverOpacity
+                    ),
+                }),
+              }}
+            >
+              <ListItemIcon
+                sx={{ visibility: dateRangeItem !== dateRange && "hidden" }}
+              >
+                <CheckIcon color="primary" />
+              </ListItemIcon>
+              Last {dateRangeItem} days
+            </MenuItem>
+          ))}
+        </Menu>
       </Box>
       <Box sx={{ display: "flex", gap: 2, py: 2, px: 3 }}>
         <MetricCard
@@ -95,14 +154,14 @@ export const InsightsMedia: FC = () => {
             </Box>
           }
           delta={
-            is2MonthsOld
+            hasPriorData
               ? getDelta(
                   priorUsage?.MediaConsumption?.TotalRequests,
                   usage?.MediaConsumption?.TotalRequests
                 )
               : null
           }
-          deltaLabel={"from last 30 days"}
+          deltaLabel={`from last ${dateRange} days`}
           loading={usageFetching}
         />
         <MetricCard
@@ -123,14 +182,14 @@ export const InsightsMedia: FC = () => {
             </Box>
           }
           delta={
-            is2MonthsOld
+            hasPriorData
               ? getDelta(
                   priorUsage?.MediaConsumption?.TotalGBs,
                   usage?.MediaConsumption?.TotalGBs
                 )
               : null
           }
-          deltaLabel={"from last 30 days"}
+          deltaLabel={`from last ${dateRange} days`}
           loading={usageFetching}
         />
       </Box>

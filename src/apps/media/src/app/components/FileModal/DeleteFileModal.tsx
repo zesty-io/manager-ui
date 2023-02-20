@@ -61,7 +61,11 @@ export const DeleteFileModal: FC<Props> = ({
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button color="inherit" onClick={() => onClose()}>
+        <Button
+          color="inherit"
+          disabled={isLoadingDelete}
+          onClick={() => onClose()}
+        >
           Cancel
         </Button>
         <Button
@@ -69,6 +73,7 @@ export const DeleteFileModal: FC<Props> = ({
           color="error"
           aria-label="Delete Button"
           onClick={() => onDeleteFile()}
+          disabled={isLoadingDelete}
         >
           {isLoadingDelete ? (
             <CircularProgress size="24px" color="inherit" />
