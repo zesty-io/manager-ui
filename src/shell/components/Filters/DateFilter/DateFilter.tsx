@@ -168,6 +168,7 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
             });
           }}
           type={calendarModalType}
+          date={value?.type !== "preset" ? value?.value : ""}
         />
       )}
     </>

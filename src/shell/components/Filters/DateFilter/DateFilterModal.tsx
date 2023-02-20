@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   Box,
   Typography,
@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { CalendarPicker, LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
+import { CalendarPickerView } from "@mui/x-date-pickers";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { DateFilterModalType } from "./types";
@@ -21,12 +22,16 @@ interface DateFilterModalProps {
   onClose: () => void;
   type: DateFilterModalType;
   onDateChange: ({ type, date }: SelectedDate) => void;
+  date: string;
 }
 export const DateFilterModal: FC<DateFilterModalProps> = ({
   onDateChange,
   type,
   onClose,
+  date,
 }) => {
+  const [calendarView, setCalendarView] = useState<CalendarPickerView | "">("");
+
   return (
     <Dialog open onClose={onClose}>
       <DialogTitle>
@@ -42,14 +47,22 @@ export const DateFilterModal: FC<DateFilterModalProps> = ({
       <DialogContent sx={{ p: 0 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <CalendarPicker
-            date={new Date()}
+            date={date.length ? new Date(date) : new Date()}
             onChange={(newValue) => {
               onDateChange({
                 type,
                 date: newValue,
               });
-              onClose();
+
+              /**
+               * Prevents the calendar picker from auto closing when
+               * user changes the year
+               */
+              if (calendarView !== "year") {
+                onClose();
+              }
             }}
+            onViewChange={(view) => setCalendarView(view)}
           />
         </LocalizationProvider>
       </DialogContent>
