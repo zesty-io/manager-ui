@@ -8,13 +8,13 @@ import { UserFilter } from "../../../../../../shell/components/Filters";
 
 export interface FiltersProps {
   onChange: Dispatch<Partial<ModelFilter>>;
-  value: ModelFilter;
+  activeFilters: ModelFilter;
 }
-export const Filters: FC<FiltersProps> = ({ value, onChange }) => {
+export const Filters: FC<FiltersProps> = ({ activeFilters, onChange }) => {
   return (
     <Box display="flex" gap={1.5} mb={2}>
-      <ModelType value={value} onChange={onChange} />
-      <UserFilter value={value} onChange={onChange} />
+      <ModelType value={activeFilters.modelType} onChange={onChange} />
+      <UserFilter value={activeFilters.user} onChange={onChange} />
       <LastUpdated />
     </Box>
   );

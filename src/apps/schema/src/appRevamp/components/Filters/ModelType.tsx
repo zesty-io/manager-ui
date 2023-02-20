@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, Dispatch } from "react";
 import {
   Menu,
   MenuItem,
@@ -9,17 +9,21 @@ import {
 
 import { modelIconMap, modelNameMap } from "../../utils";
 import { ModelType as ModelSet } from "../../../../../../shell/services/types";
-import { FiltersProps } from "./index";
 import { FilterButton } from "../../../../../../shell/components/Filters";
+import { ModelFilter } from "../ModelsTable";
 
 const MODEL_TYPE_FILTERS: ModelSet[] = ["templateset", "pageset", "dataset"];
 
-export const ModelType: FC<FiltersProps> = ({ value, onChange }) => {
+interface ModelTypeProps {
+  value: ModelSet | "";
+  onChange: Dispatch<Partial<ModelFilter>>;
+}
+export const ModelType: FC<ModelTypeProps> = ({ value, onChange }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
   );
   const isFilterMenuOpen = Boolean(menuAnchorEl);
-  const activeModelTypeFilter: ModelSet | "" = value?.modelType;
+  const activeModelTypeFilter: ModelSet | "" = value;
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);

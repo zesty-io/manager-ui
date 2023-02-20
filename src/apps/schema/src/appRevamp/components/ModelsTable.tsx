@@ -173,7 +173,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       display="flex"
       flexDirection="column"
     >
-      <Filters value={activeFilters} onChange={setActiveFilters} />
+      <Filters activeFilters={activeFilters} onChange={setActiveFilters} />
       <DataGridPro
         // @ts-expect-error - missing types for headerAlign and align on DataGridPro
         columns={columns}

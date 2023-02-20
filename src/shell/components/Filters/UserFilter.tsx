@@ -20,7 +20,7 @@ interface UserFilter {
   user: string;
 }
 interface UserFilterProps {
-  value: UserFilter;
+  value: string;
   onChange: Dispatch<UserFilter>;
 }
 export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
@@ -44,7 +44,7 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
     );
   }, [filter, users]);
 
-  const activeUserFilter = users?.find((user) => user?.ZUID === value?.user);
+  const activeUserFilter = users?.find((user) => user?.ZUID === value);
   const buttonText = activeUserFilter
     ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
     : "People";
