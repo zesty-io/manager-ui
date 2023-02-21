@@ -36,6 +36,8 @@ const SELECTORS = {
   RULES_TAB: "RulesTab",
   RULES_TAB_BTN: "RulesTabBtn",
   MEDIA_RULES_TAB: "MediaRulesTab",
+  FIELDS_LIST_FILTER: "FieldListFilter",
+  FIELDS_LIST_NO_RESULTS: "NoResults",
 };
 /**
  * -[x] Open Add Field Modal via button
@@ -52,7 +54,7 @@ const SELECTORS = {
  * -[x] Navigate to fields selection
  * -[x] Filter fields in field selection
  * -[x] Add another field
- * -[] Filter fields
+ * -[x] Filter fields
  * -[] Update a field
  * -[] Deactivate a field
  * -[] Reactivate a field via dropdown menu
@@ -442,5 +444,50 @@ describe("Schema: Fields", () => {
 
     // Close the modal
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
+  });
+
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Can filter fields in fields list", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const fieldLabel = `Field to filter ${timestamp}`;
+    const fieldName = `field_to_filter_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select a field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_NUMBER).should("exist").click();
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
+    cy.get("input[name='label']")
+      .should("exist")
+      .should("have.value", fieldLabel);
+    cy.get("input[name='name']")
+      .should("exist")
+      .should("have.value", fieldName);
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    cy.getBySelector(SELECTORS.FIELDS_LIST_FILTER).as("fieldListFilter");
+
+    // Filter fields
+    cy.get("@fieldListFilter").should("exist").type("field to filter");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+
+    // Enter a random filter keyword
+    cy.get("@fieldListFilter").should("exist").type("askljfkljfklsdjf");
+
+    // Field should not exist
+    cy.getBySelector(`Field_${fieldName}`).should("not.exist");
+    cy.getBySelector(SELECTORS.FIELDS_LIST_NO_RESULTS).should("exist");
   });
 });

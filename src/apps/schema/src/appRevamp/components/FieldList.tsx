@@ -163,6 +163,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           justifyContent="space-between"
         >
           <TextField
+            data-cy="FieldListFilter"
             size="small"
             placeholder="Search Fields"
             value={search}

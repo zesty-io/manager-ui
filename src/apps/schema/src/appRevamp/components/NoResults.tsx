@@ -28,7 +28,7 @@ interface Props {
 }
 export const NoResults = ({ type, searchTerm, onButtonClick, sx }: Props) => {
   return (
-    <Box textAlign="center" sx={sx}>
+    <Box data-cy="NoResults" textAlign="center" sx={sx}>
       <img src={noSearchResults} alt="No search results" />
       <Typography pt={1.5} pb={1} variant="h4" fontWeight={600}>
         {TEXT_CONFIG[type].header.replace("{searchTerm}", searchTerm)}
