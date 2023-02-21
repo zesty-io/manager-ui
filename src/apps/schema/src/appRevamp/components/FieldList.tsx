@@ -302,6 +302,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               })}
               <Box pl={3}>
                 <Button
+                  data-cy="EndOfListAddFieldBtn"
                   sx={{
                     justifyContent: "flex-start",
                     my: 1,

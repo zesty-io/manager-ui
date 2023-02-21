@@ -30,6 +30,7 @@ export const FieldItem = ({
 }: Props) => {
   return (
     <Box
+      data-cy={`FieldItem_${fieldType}`}
       minHeight="62px"
       border="1px solid"
       borderColor="border"

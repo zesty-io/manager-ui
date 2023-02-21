@@ -47,7 +47,11 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" pb={2}>
           Select a Field Type
-          <IconButton size="small" onClick={onModalClose}>
+          <IconButton
+            size="small"
+            onClick={onModalClose}
+            data-cy="AddFieldCloseBtn"
+          >
             <CloseIcon />
           </IconButton>
         </Box>

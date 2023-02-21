@@ -173,6 +173,7 @@ export const FieldFormInput = ({
             )}
           </Box>
           <InputTextField
+            data-cy={`FieldFormInput_${fieldConfig.name}`}
             name={fieldConfig.name}
             required={fieldConfig.required}
             fullWidth={fieldConfig.fullWidth}

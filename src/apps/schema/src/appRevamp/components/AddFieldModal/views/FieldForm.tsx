@@ -667,6 +667,7 @@ export const FieldForm = ({
               Add another field
             </LoadingButton>
             <LoadingButton
+              data-cy="FieldFormAddFieldBtn"
               loading={isCreatingField || isBulkUpdating}
               onClick={handleSubmitForm}
               variant="contained"

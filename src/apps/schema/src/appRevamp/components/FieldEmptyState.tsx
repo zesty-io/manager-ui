@@ -19,6 +19,7 @@ interface Props {
 export const FieldEmptyState = ({ onAddField }: Props) => {
   return (
     <Box
+      data-cy="FieldEmptyState"
       width="100%"
       height="100%"
       display="flex"

@@ -209,6 +209,7 @@ export const Field = ({
 
   return (
     <Box
+      data-cy={`Field_${field.name}`}
       minHeight="40px"
       border="1px solid"
       borderColor="border"
