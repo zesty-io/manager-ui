@@ -667,6 +667,7 @@ export const FieldForm = ({
           </Button>
           <Box>
             <LoadingButton
+              data-cy="FieldFormAddAnotherFieldBtn"
               variant="outlined"
               startIcon={<AddRoundedIcon />}
               sx={{

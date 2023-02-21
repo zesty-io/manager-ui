@@ -5,12 +5,15 @@ const SELECTORS = {
   ADD_FIELD_MODAL: "AddFieldModal",
   ADD_FIELD_MODAL_CLOSE: "AddFieldCloseBtn",
   SAVE_FIELD_BUTTON: "FieldFormAddFieldBtn",
+  ADD_ANOTHER_FIELD_BTN: "FieldFormAddAnotherFieldBtn",
   BACK_TO_FIELD_SELECTION_BTN: "BackToFieldSelectionBtn",
   FIELD_SELECTION: "FieldSelection",
   FIELD_SELECTION_FILTER: "FieldSelectionFilter",
   FIELD_SELECTION_EMPTY: "FieldSelectionEmpty",
   FIELD_SELECT_TEXT: "FieldItem_text",
   FIELD_SELECT_DROPDOWN: "FieldItem_dropdown",
+  FIELD_SELECT_NUMBER: "FieldItem_number",
+  FIELD_SELECT_INTERNAL_LINK: "FieldItem_internal_link",
   INPUT_LABEL: "FieldFormInput_label",
   INPUT_NAME: "FieldFormInput_name",
   ERROR_MESSAGE_LABEL: "ErrorMsg_label",
@@ -36,6 +39,7 @@ const SELECTORS = {
  * -[x] Show error messages
  * -[x] Navigate to fields selection
  * -[x] Filter fields in field selection
+ * -[x] Add another field
  * -[] Update a field
  * -[] Deactivate a field
  * -[] Reactivate a field via dropdown menu
@@ -97,6 +101,58 @@ describe("Schema: Fields", () => {
 
     // Check if field exists
     cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Creates a field via add another field button", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const values = {
+      number: {
+        label: `Number ${timestamp}`,
+        name: `number_${timestamp}`,
+      },
+      internal_link: {
+        label: `Internal Link ${timestamp}`,
+        name: `internal_link_${timestamp}`,
+      },
+    };
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select number field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_NUMBER).should("exist").click();
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL)
+      .should("exist")
+      .type(values.number.label);
+
+    // Click add another field button
+    cy.getBySelector(SELECTORS.ADD_ANOTHER_FIELD_BTN).should("exist").click();
+
+    // Select internal link field
+    cy.getBySelector(SELECTORS.FIELD_SELECTION).should("exist");
+    cy.getBySelector(SELECTORS.FIELD_SELECT_INTERNAL_LINK)
+      .should("exist")
+      .click();
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL)
+      .should("exist")
+      .type(values.internal_link.label);
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Verify that fields were created
+    cy.getBySelector(`Field_${values.number.name}`);
+    cy.getBySelector(`Field_${values.internal_link.name}`);
   });
 
   it("Shows error messages during field creation", () => {
