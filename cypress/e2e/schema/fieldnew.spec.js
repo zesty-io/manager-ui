@@ -14,8 +14,12 @@ const SELECTORS = {
   FIELD_SELECT_DROPDOWN: "FieldItem_dropdown",
   FIELD_SELECT_NUMBER: "FieldItem_number",
   FIELD_SELECT_INTERNAL_LINK: "FieldItem_internal_link",
+  DROPDOWN_ADD_OPTION: "DropdownAddOption",
+  DROPDOWN_DELETE_OPTION: "DeleteOption",
   INPUT_LABEL: "FieldFormInput_label",
   INPUT_NAME: "FieldFormInput_name",
+  INPUT_OPTION_LABEL: "OptionLabel",
+  ERROR_MESSAGE_OPTION_VALUE: "OptionValueErrorMsg",
   ERROR_MESSAGE_LABEL: "ErrorMsg_label",
   ERROR_MESSAGE_NAME: "ErrorMsg_name",
   DETAILS_TAB: "DetailsTab",
@@ -32,7 +36,7 @@ const SELECTORS = {
  * -[x] Switch tabs in Add Field Modal
  * -[] Create fields
  *    -[x] Single Text
- *    -[] Dropdown
+ *    -[x] Dropdown
  *    -[] Media
  *    -[] Boolean
  *    -[] One to One
@@ -92,6 +96,50 @@ describe("Schema: Fields", () => {
     cy.get("input[name='name']")
       .should("exist")
       .should("have.value", fieldName);
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
+  it("Creates a Dropdown field", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const fieldLabel = `Dropdown ${timestamp}`;
+    const fieldName = `dropdown_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select Dropdown field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_DROPDOWN).should("exist").click();
+
+    // Input field label and duplicate dropdown options
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
+    cy.getBySelector(`${SELECTORS.INPUT_OPTION_LABEL}_0`)
+      .should("exist")
+      .type("test");
+    cy.getBySelector(SELECTORS.DROPDOWN_ADD_OPTION).should("exist").click();
+    cy.getBySelector(`${SELECTORS.INPUT_OPTION_LABEL}_1`)
+      .should("exist")
+      .type("test");
+
+    // Verify that duplicate dropdown values causes an error
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(`${SELECTORS.ERROR_MESSAGE_OPTION_VALUE}_1`).should(
+      "exist"
+    );
+
+    // Delete duplicate option
+    cy.getBySelector(`${SELECTORS.DROPDOWN_DELETE_OPTION}_1`)
+      .should("exist")
+      .click();
 
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
