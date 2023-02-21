@@ -18,26 +18,45 @@ type SortOrder = "AtoZ" | "ZtoA" | "dateadded" | "datemodified";
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q") || "";
+  const userZuid = params.get("user");
   const dateRangeFilter = getDateFilter(params);
   const sort: SortOrder = (params.get("sort") as SortOrder) || "datemodified";
   const { data: unsortedResults, isLoading } = useSearchContentQuery(
     { query, order: "created", dir: "desc" },
     { skip: !query }
   );
-  /*
-  const sortedResults = results ? [...results] : [];
-  sortedResults?.sort((a, b) => {
-    return moment(b.meta.updatedAt).diff(moment(a.meta.updatedAt));
-  });
-  */
+
+  const dateFilteredResults = useMemo(() => {
+    if (unsortedResults) {
+      if (dateRangeFilter) {
+        const filterFn = getDateFilterFn(dateRangeFilter);
+        return unsortedResults.filter((item) => filterFn(item.meta?.createdAt));
+      } else {
+        // need to clone because unsortedResults is read-only and .sort() mutates
+        return [...unsortedResults];
+      }
+    } else {
+      return [];
+    }
+  }, [unsortedResults, dateRangeFilter]);
+
+  const userFilteredResults = useMemo(() => {
+    if (dateFilteredResults) {
+      if (userZuid)
+        return dateFilteredResults.filter(
+          (item) => item.web?.createdByUserZUID === userZuid
+        );
+      else {
+        return dateFilteredResults;
+      }
+    } else {
+      return [];
+    }
+  }, [dateFilteredResults, userZuid]);
 
   const sortedResults = useMemo(() => {
-    if (unsortedResults) {
-      const results = dateRangeFilter
-        ? unsortedResults.filter((item) =>
-            getDateFilterFn(dateRangeFilter)(item.meta?.createdAt)
-          )
-        : [...unsortedResults];
+    if (userFilteredResults) {
+      const results = userFilteredResults;
       switch (sort) {
         case "AtoZ":
           return results.sort((a, b) => {
@@ -58,7 +77,7 @@ export const SearchPage: FC = () => {
           });
       }
     } else return [];
-  }, [unsortedResults, sort, dateRangeFilter]);
+  }, [unsortedResults, sort, userZuid, dateRangeFilter]);
 
   return (
     <ThemeProvider theme={theme}>

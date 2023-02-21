@@ -82,7 +82,8 @@ export const ContentListItem: FC<ContentListItem> = ({
   return (
     <Box
       component={Link}
-      to={url}
+      // we will get a console warning when the item is loading and we don't have the url yet
+      to={url || "#"}
       style={style}
       sx={{
         boxSizing: "border-box",
