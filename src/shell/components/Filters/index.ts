@@ -1,4 +1,5 @@
 import { FilterButton } from "./FilterButton";
 import { UserFilter } from "./UserFilter";
+import { DateFilter } from "./DateFilter";
 
-export { FilterButton, UserFilter };
+export { FilterButton, UserFilter, DateFilter };
