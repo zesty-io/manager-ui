@@ -7,6 +7,9 @@ const SELECTORS = {
   SAVE_FIELD_BUTTON: "FieldFormAddFieldBtn",
   FIELD_SELECT_TEXT: "FieldItem_text",
   INPUT_LABEL: "FieldFormInput_label",
+  INPUT_NAME: "FieldFormInput_name",
+  ERROR_MESSAGE_LABEL: "ErrorMsg_label",
+  ERROR_MESSAGE_NAME: "ErrorMsg_name",
   DETAILS_TAB: "DetailsTab",
   DETAILS_TAB_BTN: "DetailsTabBtn",
   LEARN_TAB: "LearnTab",
@@ -18,9 +21,10 @@ const SELECTORS = {
  * -[x] Open Add Field Modal via button
  * -[x] Open Add Field Modal via end of list button
  * -[x] Open Add Field Modal via in between field
- * -[] Switch tabs in Add Field Modal
+ * -[x] Switch tabs in Add Field Modal
  * -[] Create fields
  * -[] Show error messages
+ * -[] Navigate to fields selection
  * -[] Update a field
  * -[] Deactivate a field
  * -[] Reactivate a field via dropdown menu
@@ -58,6 +62,7 @@ describe("Schema: Fields", () => {
     const fieldLabel = `Text ${timestamp}`;
     const fieldName = `text_${timestamp}`;
 
+    // Open the add field modal
     cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
@@ -81,6 +86,25 @@ describe("Schema: Fields", () => {
 
     // Check if field exists
     cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
+  it("Shows error messages during field creation", () => {
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select Text field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_TEXT).should("exist").click();
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+
+    // Verify that error messages are shown
+    cy.getBySelector(SELECTORS.ERROR_MESSAGE_LABEL).should("exist");
+    cy.getBySelector(SELECTORS.ERROR_MESSAGE_NAME).should("exist");
+
+    // Close the modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
   });
 
   it("Opens Add Field Modal via end of list button", () => {
@@ -135,4 +159,6 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
   });
+
+  it.skip("Can navigate back to fields selection", () => {});
 });
