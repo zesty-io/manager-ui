@@ -50,6 +50,7 @@ export const ActivityDetails = () => {
       </Typography>
       <Box
         display="flex"
+        alignItems="center"
         py={2}
         sx={{
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
@@ -66,6 +67,7 @@ export const ActivityDetails = () => {
       </Box>
       <Box
         display="flex"
+        alignItems="center"
         py={2}
         sx={{
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
@@ -91,6 +93,7 @@ export const ActivityDetails = () => {
       </Box>
       <Box
         display="flex"
+        alignItems="center"
         py={2}
         sx={{
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
@@ -107,6 +110,7 @@ export const ActivityDetails = () => {
       </Box>
       <Box
         display="flex"
+        alignItems="center"
         py={2}
         sx={{
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,

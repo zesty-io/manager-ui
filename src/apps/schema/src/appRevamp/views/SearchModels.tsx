@@ -18,12 +18,12 @@ export const SearchModels = () => {
   const filteredModelsLength = useMemo(() => {
     return models?.filter((model: ContentModel) => {
       return (
-        model.label.toLowerCase().includes(search.toLowerCase()) ||
-        model.name.toLowerCase().includes(search.toLowerCase()) ||
+        model?.label?.toLowerCase().includes(search.toLowerCase()) ||
+        model?.name?.toLowerCase().includes(search.toLowerCase()) ||
         modelNameMap[model.type as keyof typeof modelNameMap]
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        model.ZUID.toLowerCase().includes(search.toLowerCase())
+          ?.toLowerCase()
+          ?.includes(search.toLowerCase()) ||
+        model.ZUID?.toLowerCase() === search.toLowerCase()
       );
     })?.length;
   }, [search, models]);

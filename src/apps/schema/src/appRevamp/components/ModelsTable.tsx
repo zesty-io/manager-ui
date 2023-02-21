@@ -94,12 +94,12 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
 
     return localModels?.filter((model: ContentModel) => {
       return (
-        model.label.toLowerCase().includes(search.toLowerCase()) ||
-        model.name.toLowerCase().includes(search.toLowerCase()) ||
+        model.label?.toLowerCase()?.includes(search.toLowerCase()) ||
+        model.name?.toLowerCase()?.includes(search.toLowerCase()) ||
         modelNameMap[model.type as keyof typeof modelNameMap]
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        model.ZUID.toLowerCase().includes(search.toLowerCase())
+          ?.toLowerCase()
+          ?.includes(search.toLowerCase()) ||
+        model.ZUID?.toLowerCase() === search.toLowerCase()
       );
     });
   }, [search, models, activeFilters]);
