@@ -15,6 +15,7 @@ const SELECTORS = {
   FIELD_SELECT_NUMBER: "FieldItem_number",
   FIELD_SELECT_INTERNAL_LINK: "FieldItem_internal_link",
   FIELD_SELECT_MEDIA: "FieldItem_images",
+  FIELD_SELECT_BOOLEAN: "FieldItem_yes_no",
   MEDIA_CHECKBOX_LIMIT: "MediaCheckbox_limit",
   MEDIA_CHECKBOX_LOCK: "MediaCheckbox_group_id",
   DROPDOWN_ADD_OPTION: "DropdownAddOption",
@@ -42,12 +43,13 @@ const SELECTORS = {
  *    -[x] Single Text
  *    -[x] Dropdown
  *    -[x] Media
- *    -[] Boolean
+ *    -[x] Boolean
  *    -[] One to One
  * -[x] Show error messages
  * -[x] Navigate to fields selection
  * -[x] Filter fields in field selection
  * -[x] Add another field
+ * -[] Filter fields
  * -[] Update a field
  * -[] Deactivate a field
  * -[] Reactivate a field via dropdown menu
@@ -178,6 +180,44 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.MEDIA_RULES_TAB).should("exist").click();
     cy.getBySelector(SELECTORS.MEDIA_CHECKBOX_LIMIT).should("exist").click();
     cy.getBySelector(SELECTORS.MEDIA_CHECKBOX_LOCK).should("exist").click();
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Creates a Boolean field", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const fieldLabel = `Boolean ${timestamp}`;
+    const fieldName = `boolean_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select Boolean field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_BOOLEAN).should("exist").click();
+
+    // Input field label and option labels
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
+    cy.getBySelector(`${SELECTORS.INPUT_OPTION_LABEL}_0`)
+      .should("exist")
+      .type("Test option 1");
+    cy.getBySelector(`${SELECTORS.INPUT_OPTION_LABEL}_1`)
+      .should("exist")
+      .type("Test option 2");
+
+    // Verify that delete option button does not exist
+    cy.getBySelector(`${SELECTORS.DROPDOWN_DELETE_OPTION}_0`).should(
+      "not.exist"
+    );
 
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
