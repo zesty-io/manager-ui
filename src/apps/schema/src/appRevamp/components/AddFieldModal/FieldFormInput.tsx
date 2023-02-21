@@ -187,7 +187,14 @@ export const FieldFormInput = ({
             }}
             value={prefillData}
             error={Boolean(errorMsg)}
-            helperText={errorMsg}
+            helperText={
+              <Typography
+                data-cy={`ErrorMsg_${fieldConfig.name}`}
+                variant="caption"
+              >
+                {errorMsg}
+              </Typography>
+            }
             type={fieldConfig.inputType || "text"}
             inputProps={{
               min: 1,

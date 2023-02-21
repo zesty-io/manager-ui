@@ -5,7 +5,12 @@ const SELECTORS = {
   ADD_FIELD_MODAL: "AddFieldModal",
   ADD_FIELD_MODAL_CLOSE: "AddFieldCloseBtn",
   SAVE_FIELD_BUTTON: "FieldFormAddFieldBtn",
+  BACK_TO_FIELD_SELECTION_BTN: "BackToFieldSelectionBtn",
+  FIELD_SELECTION: "FieldSelection",
+  FIELD_SELECTION_FILTER: "FieldSelectionFilter",
+  FIELD_SELECTION_EMPTY: "FieldSelectionEmpty",
   FIELD_SELECT_TEXT: "FieldItem_text",
+  FIELD_SELECT_DROPDOWN: "FieldItem_dropdown",
   INPUT_LABEL: "FieldFormInput_label",
   INPUT_NAME: "FieldFormInput_name",
   ERROR_MESSAGE_LABEL: "ErrorMsg_label",
@@ -23,8 +28,14 @@ const SELECTORS = {
  * -[x] Open Add Field Modal via in between field
  * -[x] Switch tabs in Add Field Modal
  * -[] Create fields
- * -[] Show error messages
- * -[] Navigate to fields selection
+ *    -[x] Single Text
+ *    -[] Dropdown
+ *    -[] Media
+ *    -[] Boolean
+ *    -[] One to One
+ * -[x] Show error messages
+ * -[x] Navigate to fields selection
+ * -[x] Filter fields in field selection
  * -[] Update a field
  * -[] Deactivate a field
  * -[] Reactivate a field via dropdown menu
@@ -160,5 +171,48 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
   });
 
-  it.skip("Can navigate back to fields selection", () => {});
+  it("Can navigate back to fields selection view", () => {
+    // Open the modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select single text field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_TEXT).should("exist").click();
+
+    // Click the back button
+    cy.getBySelector(SELECTORS.BACK_TO_FIELD_SELECTION_BTN)
+      .should("exist")
+      .click();
+
+    // Verify that field selection screen is loaded
+    cy.getBySelector(SELECTORS.FIELD_SELECTION).should("exist");
+
+    // Close the modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
+  });
+
+  it("Can filter fields in field selection view", () => {
+    // Open the modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Verify that field selection screen is loaded
+    cy.getBySelector(SELECTORS.FIELD_SELECTION).should("exist");
+
+    // Filter results
+    cy.getBySelector(SELECTORS.FIELD_SELECTION_FILTER).as("fieldFilter");
+    cy.get("@fieldFilter").should("exist").type("dropdown");
+
+    // Verify
+    cy.getBySelector(SELECTORS.FIELD_SELECT_DROPDOWN).should("exist");
+
+    // Enter random string
+    cy.get("@fieldFilter").should("exist").type("asdasdasdasd");
+
+    // Show no results
+    cy.getBySelector(SELECTORS.FIELD_SELECTION_EMPTY).should("exist");
+
+    // Close the modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
+  });
 });

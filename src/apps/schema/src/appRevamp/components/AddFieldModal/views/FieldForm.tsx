@@ -464,7 +464,11 @@ export const FieldForm = ({
         >
           <Box display="flex" alignItems="center">
             {!isUpdateField && (
-              <IconButton size="small" onClick={onBackClick}>
+              <IconButton
+                data-cy="BackToFieldSelectionBtn"
+                size="small"
+                onClick={onBackClick}
+              >
                 <ArrowBackIcon />
               </IconButton>
             )}
