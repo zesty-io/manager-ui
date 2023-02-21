@@ -495,7 +495,11 @@ export const FieldForm = ({
               </Typography>
             </Box>
           </Box>
-          <IconButton size="small" onClick={onModalClose}>
+          <IconButton
+            data-cy="AddFieldCloseBtn"
+            size="small"
+            onClick={onModalClose}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
@@ -511,18 +515,21 @@ export const FieldForm = ({
           }}
         >
           <Tab
+            data-cy="DetailsTabBtn"
             value="details"
             label="Details"
             icon={<InfoRoundedIcon color="action" />}
             iconPosition="start"
           />
           <Tab
+            data-cy="RulesTabBtn"
             value="rules"
             label="Rules"
             icon={<RuleRoundedIcon color="action" />}
             iconPosition="start"
           />
           <Tab
+            data-cy="LearnTabBtn"
             value="learn"
             label="Learn"
             icon={<MenuBookRoundedIcon color="action" />}
@@ -537,7 +544,7 @@ export const FieldForm = ({
         }}
       >
         {activeTab === "details" && (
-          <Grid container spacing={2.5} maxWidth="480px">
+          <Grid data-cy="DetailsTab" container spacing={2.5} maxWidth="480px">
             {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
               let dropdownOptions: DropdownOptions[];
               let disabled = false;

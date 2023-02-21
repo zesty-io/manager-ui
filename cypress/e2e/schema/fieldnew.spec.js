@@ -1,28 +1,33 @@
 const SELECTORS = {
   ADD_FIELD_BTN: "AddFieldBtn",
   ADD_FIELD_BTN_END_OF_LIST: "EndOfListAddFieldBtn",
+  ADD_FIELD_BTN_IN_BETWEEN: "InBetweenFieldAddFieldBtn",
   ADD_FIELD_MODAL: "AddFieldModal",
   ADD_FIELD_MODAL_CLOSE: "AddFieldCloseBtn",
   SAVE_FIELD_BUTTON: "FieldFormAddFieldBtn",
   FIELD_SELECT_TEXT: "FieldItem_text",
   INPUT_LABEL: "FieldFormInput_label",
+  DETAILS_TAB: "DetailsTab",
+  DETAILS_TAB_BTN: "DetailsTabBtn",
+  LEARN_TAB: "LearnTab",
+  LEARN_TAB_BTN: "LearnTabBtn",
+  RULES_TAB: "RulesTab",
+  RULES_TAB_BTN: "RulesTabBtn",
 };
 /**
- * - Open Add Field Modal via button
- * - Open Add Field Modal via end of list button
- * - Open Add Field Modal via in between field
- * - Switch tabs in Add Field Modal
- * - Create fields
- * - Show error messages
- * - Create end of list field
- * - Create in-between field
- * - Update a field
- * - Deactivate a field
- * - Reactivate a field via dropdown menu
- * - Reactivate a field via Edit field modal
- * - Show hide system fields
+ * -[x] Open Add Field Modal via button
+ * -[x] Open Add Field Modal via end of list button
+ * -[x] Open Add Field Modal via in between field
+ * -[] Switch tabs in Add Field Modal
+ * -[] Create fields
+ * -[] Show error messages
+ * -[] Update a field
+ * -[] Deactivate a field
+ * -[] Reactivate a field via dropdown menu
+ * -[] Reactivate a field via Edit field modal
+ * -[] Show hide system fields
  */
-describe("Schema Fields", () => {
+describe("Schema: Fields", () => {
   const timestamp = Date.now();
 
   before(() => {
@@ -46,7 +51,8 @@ describe("Schema Fields", () => {
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
   });
 
-  it("Creates a Single Line Text field", () => {
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Creates a Single Line Text field", () => {
     cy.intercept("**/fields?showDeleted=true").as("getFields");
 
     const fieldLabel = `Text ${timestamp}`;
@@ -91,5 +97,42 @@ describe("Schema Fields", () => {
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
   });
 
-  // it("Open Add Field Modal via in between field", () => {});
+  it("Opens Add Field Modal via in between field button", () => {
+    // Click in-between field button
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN_IN_BETWEEN)
+      .first()
+      .should("exist")
+      .click();
+
+    // Verify modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Close the modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+  });
+
+  it("Switches tabs in Add Field Modal", () => {
+    // Open the modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select single text field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_TEXT).should("exist").click();
+
+    // Verify that details tab is loaded
+    cy.getBySelector(SELECTORS.DETAILS_TAB).should("exist");
+
+    // Click Learn tab
+    cy.getBySelector(SELECTORS.LEARN_TAB_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.LEARN_TAB).should("exist");
+
+    // Click Rules tab
+    cy.getBySelector(SELECTORS.RULES_TAB_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.RULES_TAB).should("exist");
+
+    // Close the modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+  });
 });

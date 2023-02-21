@@ -12,7 +12,7 @@ export const Learn = ({ type }: Props) => {
   const data = FIELD_COPY_CONFIG[category]?.find((item) => item.type === type);
 
   return (
-    <Box>
+    <Box data-cy="LearnTab">
       <Box>
         <Typography variant="h5" fontWeight={600}>
           {stringStartsWithVowel(TYPE_TEXT[type])
