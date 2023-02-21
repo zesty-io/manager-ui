@@ -273,6 +273,7 @@ export const FieldFormInput = ({
             {fieldConfig.label}
           </Typography>
           <Autocomplete
+            data-cy={`Autocomplete_${fieldConfig.name}`}
             size="small"
             disabled={disabled}
             value={

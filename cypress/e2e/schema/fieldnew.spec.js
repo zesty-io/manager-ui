@@ -16,10 +16,13 @@ const SELECTORS = {
   FIELD_SELECT_INTERNAL_LINK: "FieldItem_internal_link",
   FIELD_SELECT_MEDIA: "FieldItem_images",
   FIELD_SELECT_BOOLEAN: "FieldItem_yes_no",
+  FIELD_SELECT_ONE_TO_ONE: "FieldItem_one_to_one",
   MEDIA_CHECKBOX_LIMIT: "MediaCheckbox_limit",
   MEDIA_CHECKBOX_LOCK: "MediaCheckbox_group_id",
   DROPDOWN_ADD_OPTION: "DropdownAddOption",
   DROPDOWN_DELETE_OPTION: "DeleteOption",
+  AUTOCOMPLETE_MODEL_ZUID: "Autocomplete_relatedModelZUID",
+  AUTOCOMPLETE_FIELED_ZUID: "Autocomplete_relatedFieldZUID",
   INPUT_LABEL: "FieldFormInput_label",
   INPUT_NAME: "FieldFormInput_name",
   INPUT_OPTION_LABEL: "OptionLabel",
@@ -39,12 +42,12 @@ const SELECTORS = {
  * -[x] Open Add Field Modal via end of list button
  * -[x] Open Add Field Modal via in between field
  * -[x] Switch tabs in Add Field Modal
- * -[] Create fields
+ * -[x] Create fields
  *    -[x] Single Text
  *    -[x] Dropdown
  *    -[x] Media
  *    -[x] Boolean
- *    -[] One to One
+ *    -[x] One to One
  * -[x] Show error messages
  * -[x] Navigate to fields selection
  * -[x] Filter fields in field selection
@@ -64,7 +67,9 @@ describe("Schema: Fields", () => {
       "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
       () => {
         cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
-          cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+          cy.waitOn("/v1/content/models", () => {
+            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+          });
         });
       }
     );
@@ -218,6 +223,47 @@ describe("Schema: Fields", () => {
     cy.getBySelector(`${SELECTORS.DROPDOWN_DELETE_OPTION}_0`).should(
       "not.exist"
     );
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Creates a One-to-one relationship field", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const fieldLabel = `One to One ${timestamp}`;
+    const fieldName = `one_to_one_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select one-to-one relationship field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_ONE_TO_ONE).should("exist").click();
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
+
+    // Select a related model
+    cy.getBySelector(SELECTORS.AUTOCOMPLETE_MODEL_ZUID)
+      .should("exist")
+      .type("cypress");
+    cy.get("[role=listbox] [role=option]").first().click();
+
+    cy.wait("@getFields");
+
+    // Select a related field
+    cy.getBySelector(SELECTORS.AUTOCOMPLETE_FIELED_ZUID)
+      .should("exist")
+      .type("title");
+    cy.get("[role=listbox] [role=option]").first().click();
 
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
