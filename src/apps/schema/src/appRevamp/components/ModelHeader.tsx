@@ -22,7 +22,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import PostAddRoundedIcon from "@mui/icons-material/PostAddRounded";
 import moment from "moment";
 import SplitscreenRoundedIcon from "@mui/icons-material/SplitscreenRounded";
-import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
@@ -212,7 +212,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               value="fields"
             />
             <Tab
-              icon={<RemoveRedEyeRoundedIcon color="action" />}
+              icon={<InfoRoundedIcon color="action" />}
               iconPosition="start"
               label="Info"
               value="info"

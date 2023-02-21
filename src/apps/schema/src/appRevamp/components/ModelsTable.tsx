@@ -18,6 +18,10 @@ import { NoResults } from "./NoResults";
 import { modelIconMap, modelNameMap } from "../utils";
 import { Filters } from "./Filters";
 import { AllModelsEmptyState } from "./AllModelsEmptyState";
+import {
+  DateFilterValue,
+  getDateFilterFn,
+} from "../../../../../shell/components/Filters/DateFilter";
 
 const FieldsCell = ({ ZUID }: any) => {
   const { data, isLoading } = useGetContentModelFieldsQuery(ZUID);
@@ -40,7 +44,7 @@ const ContentItemsCell = ({ ZUID }: any) => {
 export type ModelFilter = {
   modelType: ModelType | "";
   user: string;
-  lastUpdated: string;
+  lastUpdated: DateFilterValue;
 };
 interface Props {
   search?: string;
@@ -65,7 +69,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
         ...newFilter,
       };
     },
-    { modelType: "", user: "", lastUpdated: "" }
+    { modelType: "", user: "", lastUpdated: { type: "", value: "" } }
   );
 
   const filteredModels = useMemo(() => {
@@ -73,7 +77,14 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
 
     if (Object.values(activeFilters).some((filter) => filter !== "")) {
       localModels = models?.filter((model: ContentModel) => {
-        // TODO: Logic for lastUpdated probably needs to be updated
+        let dateFilterFn = (date: string) => true;
+
+        const { type, value } = activeFilters.lastUpdated;
+
+        if (type && value) {
+          dateFilterFn = getDateFilterFn({ type, value });
+        }
+
         return (
           (activeFilters.modelType === ""
             ? true
@@ -81,9 +92,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           (activeFilters.user === ""
             ? true
             : model.createdByUserZUID === activeFilters.user) &&
-          (activeFilters.lastUpdated === ""
-            ? true
-            : model.updatedAt === activeFilters.lastUpdated)
+          dateFilterFn(model.updatedAt)
         );
       });
     }
@@ -94,12 +103,12 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
 
     return localModels?.filter((model: ContentModel) => {
       return (
-        model.label.toLowerCase().includes(search.toLowerCase()) ||
-        model.name.toLowerCase().includes(search.toLowerCase()) ||
+        model.label?.toLowerCase()?.includes(search.toLowerCase()) ||
+        model.name?.toLowerCase()?.includes(search.toLowerCase()) ||
         modelNameMap[model.type as keyof typeof modelNameMap]
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        model.ZUID.toLowerCase().includes(search.toLowerCase())
+          ?.toLowerCase()
+          ?.includes(search.toLowerCase()) ||
+        model.ZUID?.toLowerCase() === search.toLowerCase()
       );
     });
   }, [search, models, activeFilters]);
@@ -211,7 +220,11 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           <NoResults
             type="filter"
             onButtonClick={() =>
-              setActiveFilters({ modelType: "", user: "", lastUpdated: "" })
+              setActiveFilters({
+                modelType: "",
+                user: "",
+                lastUpdated: { type: "", value: "" },
+              })
             }
           />
         </Box>
