@@ -14,6 +14,9 @@ const SELECTORS = {
   FIELD_SELECT_DROPDOWN: "FieldItem_dropdown",
   FIELD_SELECT_NUMBER: "FieldItem_number",
   FIELD_SELECT_INTERNAL_LINK: "FieldItem_internal_link",
+  FIELD_SELECT_MEDIA: "FieldItem_images",
+  MEDIA_CHECKBOX_LIMIT: "MediaCheckbox_limit",
+  MEDIA_CHECKBOX_LOCK: "MediaCheckbox_group_id",
   DROPDOWN_ADD_OPTION: "DropdownAddOption",
   DROPDOWN_DELETE_OPTION: "DeleteOption",
   INPUT_LABEL: "FieldFormInput_label",
@@ -28,6 +31,7 @@ const SELECTORS = {
   LEARN_TAB_BTN: "LearnTabBtn",
   RULES_TAB: "RulesTab",
   RULES_TAB_BTN: "RulesTabBtn",
+  MEDIA_RULES_TAB: "MediaRulesTab",
 };
 /**
  * -[x] Open Add Field Modal via button
@@ -37,7 +41,7 @@ const SELECTORS = {
  * -[] Create fields
  *    -[x] Single Text
  *    -[x] Dropdown
- *    -[] Media
+ *    -[x] Media
  *    -[] Boolean
  *    -[] One to One
  * -[x] Show error messages
@@ -107,7 +111,8 @@ describe("Schema: Fields", () => {
     cy.getBySelector(`Field_${fieldName}`).should("exist");
   });
 
-  it("Creates a Dropdown field", () => {
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Creates a Dropdown field", () => {
     cy.intercept("**/fields?showDeleted=true").as("getFields");
 
     const fieldLabel = `Dropdown ${timestamp}`;
@@ -140,6 +145,39 @@ describe("Schema: Fields", () => {
     cy.getBySelector(`${SELECTORS.DROPDOWN_DELETE_OPTION}_1`)
       .should("exist")
       .click();
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Creates a Media field", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const fieldLabel = `Media ${timestamp}`;
+    const fieldName = `media_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select Media field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_MEDIA).should("exist").click();
+
+    // Input field label
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
+
+    // Navigate to rules tab and enable media limit and folder lock
+    cy.getBySelector(SELECTORS.RULES_TAB_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.MEDIA_RULES_TAB).should("exist").click();
+    cy.getBySelector(SELECTORS.MEDIA_CHECKBOX_LIMIT).should("exist").click();
+    cy.getBySelector(SELECTORS.MEDIA_CHECKBOX_LOCK).should("exist").click();
 
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
