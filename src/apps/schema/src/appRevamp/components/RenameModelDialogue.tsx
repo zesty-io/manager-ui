@@ -8,6 +8,7 @@ import {
   Typography,
   InputLabel,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import { useEffect, useReducer } from "react";
 import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutline";
@@ -16,6 +17,7 @@ import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 interface Props {
   onClose: () => void;
@@ -79,13 +81,25 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
           Rename Model
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-          This will update the model name that is shown to content editors
+          This will update the model name and reference name that is shown to
+          content editors & developers
         </Typography>
       </DialogTitle>
       <DialogContent>
         <Box display="flex" flexDirection="column" gap={2.5}>
           <Box>
-            <InputLabel>Display Name</InputLabel>
+            <InputLabel>
+              Display Name
+              <Tooltip
+                placement="top"
+                title="Name that is shown to content editors"
+              >
+                <InfoRoundedIcon
+                  sx={{ ml: 1, width: "10px", height: "10px" }}
+                  color="action"
+                />
+              </Tooltip>
+            </InputLabel>
             <TextField
               inputProps={{
                 maxLength: 100,
@@ -98,7 +112,18 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
             />
           </Box>
           <Box>
-            <InputLabel>Reference Name</InputLabel>
+            <InputLabel>
+              Reference ID
+              <Tooltip
+                placement="top"
+                title="ID used for accessing this model through our API or Parsley"
+              >
+                <InfoRoundedIcon
+                  sx={{ ml: 1, width: "10px", height: "10px" }}
+                  color="action"
+                />
+              </Tooltip>
+            </InputLabel>
             <TextField
               inputProps={{
                 maxLength: 100,

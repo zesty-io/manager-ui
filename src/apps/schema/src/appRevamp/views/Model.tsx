@@ -4,6 +4,7 @@ import { Redirect, Route, Switch, useParams, useHistory } from "react-router";
 import { FieldList } from "../components/FieldList";
 import { ModelHeader } from "../components/ModelHeader";
 import { AddFieldModal } from "../components/AddFieldModal";
+import { ModelInfo } from "../components/ModelInfo";
 
 type Params = {
   id: string;
@@ -46,11 +47,7 @@ export const Model = () => {
             />
           )}
         />
-        <Route
-          exact
-          path="/schema/:id/info"
-          render={() => <div>MODEL INFO</div>}
-        />
+        <Route exact path="/schema/:id/info" component={ModelInfo} />
         <Redirect to="/schema/:id/fields" />
       </Switch>
       {isAddFieldModalOpen && (
