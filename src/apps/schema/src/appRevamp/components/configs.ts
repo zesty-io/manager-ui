@@ -354,6 +354,17 @@ const COMMON_FIELDS: InputField[] = [
     validate: ["length", "required", "unique"],
   },
   {
+    name: "tooltip",
+    type: "input",
+    label: "Tooltip",
+    required: false,
+    fullWidth: true,
+    maxLength: 250,
+    gridSize: 12,
+    tooltip: "Tool tip displayed to content editors.",
+    validate: ["length"],
+  },
+  {
     name: "description",
     type: "input",
     label: "Description",

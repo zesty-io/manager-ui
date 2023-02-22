@@ -76,6 +76,12 @@ export const ModelList = ({ title, models, type }: Props) => {
             <AddIcon fontSize="small" />
           </IconButton>
         </Box>
+        {sortedModels?.length === 0 && (
+          //@ts-expect-error need to add augmentation
+          <Typography color="text.secondary" variant="body3">
+            No {title} models present.
+          </Typography>
+        )}
         {sortedModels?.map((model) => {
           const selected = location.pathname.includes(model.ZUID);
           return (

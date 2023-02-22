@@ -4,7 +4,7 @@ import { Location } from "history";
 import idb from "../../utility/idb";
 import { AppState } from "./types";
 import { isValid as zuidIsValid } from "zuid";
-
+import { ContentModel } from "../../shell/services/types";
 import {
   faCode,
   faCog,
@@ -264,6 +264,11 @@ export function createTab(
     tab.app = appNameMap[name].name;
     if (parts[0] === "content" && parts[2] === "new" && zuidIsValid(parts[1])) {
       tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
+    }
+    if (parts[0] === "schema" && zuidIsValid(parts[1])) {
+      tab.name = queryData?.instance?.models?.find(
+        (model: ContentModel) => model.ZUID === parts[1]
+      )?.label;
     }
   }
   // resolve ZUID from store to determine display information

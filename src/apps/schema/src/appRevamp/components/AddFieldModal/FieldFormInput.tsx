@@ -38,7 +38,8 @@ export type FieldNames =
   | "relatedModelZUID"
   | "relatedFieldZUID"
   | "group_id"
-  | "limit";
+  | "limit"
+  | "tooltip";
 type FieldType =
   | "input"
   | "checkbox"
@@ -303,6 +304,21 @@ export const FieldFormInput = ({
               },
             }}
           />
+          {prefillData &&
+            !dropdownOptions.find((option) => option.value === prefillData) && (
+              <Typography
+                noWrap
+                color="error"
+                variant="caption"
+                ml={1.75}
+                mt={0.5}
+              >
+                {fieldConfig.name === "group_id" &&
+                  "The folder this was locked to has been deleted"}
+                {fieldConfig.name === "relatedModelZUID" &&
+                  "The model that this was related to has been deleted"}
+              </Typography>
+            )}
         </>
       )}
 

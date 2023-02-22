@@ -16,7 +16,7 @@ import { useParams } from "../../../../../../shell/hooks/useParams";
 import { useEffect, useState } from "react";
 
 export const Sidebar = () => {
-  const { data: models } = useGetContentModelsQuery();
+  const { data: models, isLoading } = useGetContentModelsQuery();
   const history = useHistory();
   const [params, setParams] = useParams();
   const [search, setSearch] = useState(params.get("term") || "");
@@ -97,38 +97,42 @@ export const Sidebar = () => {
           />
         </ListItemButton>
       </Box>
-      <Box
-        sx={{
-          borderStyle: "solid",
-          borderWidth: 0,
-          borderTopWidth: 1,
-          borderColor: "border",
-          px: 2,
-          py: 1,
-          overflowY: "scroll",
-          height: "100%",
-        }}
-      >
-        <ModelList
-          title="single page"
-          type="templateset"
-          models={models?.filter((model) => model.type === "templateset") || []}
-        />
-        <Box sx={{ mt: 1 }}>
+      {!isLoading && (
+        <Box
+          sx={{
+            borderStyle: "solid",
+            borderWidth: 0,
+            borderTopWidth: 1,
+            borderColor: "border",
+            px: 2,
+            py: 1,
+            overflowY: "scroll",
+            height: "100%",
+          }}
+        >
           <ModelList
-            title="multi page"
-            type="pageset"
-            models={models?.filter((model) => model.type === "pageset") || []}
+            title="single page"
+            type="templateset"
+            models={
+              models?.filter((model) => model.type === "templateset") || []
+            }
           />
+          <Box sx={{ mt: 1 }}>
+            <ModelList
+              title="multi page"
+              type="pageset"
+              models={models?.filter((model) => model.type === "pageset") || []}
+            />
+          </Box>
+          <Box sx={{ mt: 1 }}>
+            <ModelList
+              title="headless dataset"
+              type="dataset"
+              models={models?.filter((model) => model.type === "dataset") || []}
+            />
+          </Box>
         </Box>
-        <Box sx={{ mt: 1 }}>
-          <ModelList
-            title="headless dataset"
-            type="dataset"
-            models={models?.filter((model) => model.type === "dataset") || []}
-          />
-        </Box>
-      </Box>
+      )}
     </Box>
   );
 };

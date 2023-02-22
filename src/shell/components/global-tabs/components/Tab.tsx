@@ -24,6 +24,7 @@ import {
   useGetAllBinGroupsQuery,
   useGetBinsQuery,
 } from "../../../services/mediaManager";
+import { useGetContentModelsQuery } from "../../../services/instance";
 
 /*
   we need a descending z-index to make the drop shadow render correctly
@@ -167,11 +168,15 @@ export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
       skip: !bins?.length,
     }
   );
+  const { data: models } = useGetContentModelsQuery();
   const queryData = useMemo(() => {
     return {
       mediaManager: {
         bins,
         binGroups: binGroups?.flat(),
+      },
+      instance: {
+        models,
       },
     };
   }, [binGroups]);
@@ -210,11 +215,15 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
       skip: !bins?.length,
     }
   );
+  const { data: models } = useGetContentModelsQuery();
   const queryData = useMemo(() => {
     return {
       mediaManager: {
         bins,
         binGroups: binGroups?.flat(),
+      },
+      instance: {
+        models,
       },
     };
   }, [binGroups]);
