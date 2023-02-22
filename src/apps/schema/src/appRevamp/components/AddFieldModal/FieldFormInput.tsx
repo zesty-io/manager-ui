@@ -38,7 +38,8 @@ export type FieldNames =
   | "relatedModelZUID"
   | "relatedFieldZUID"
   | "group_id"
-  | "limit";
+  | "limit"
+  | "tooltip";
 type FieldType =
   | "input"
   | "checkbox"
