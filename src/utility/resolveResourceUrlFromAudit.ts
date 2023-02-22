@@ -1,16 +1,19 @@
 import { Audit } from "../shell/services/types";
 
-export const resolveUrlFromAudit = ({ resourceType, meta }: Audit): string => {
-  const primaryZUID = meta.uri.split("/")[4];
-  const secondaryZUID = meta.uri.split("/")[6];
+export const resolveUrlFromAudit = ({
+  resourceType,
+  meta,
+  affectedZUID,
+}: Audit): string => {
   switch (resourceType) {
     case "content":
-      return `/content/${primaryZUID}/${secondaryZUID}`;
+      const primaryZUID = meta.uri.split("/")[4];
+      return `/content/${primaryZUID}/${affectedZUID}`;
     case "schema":
-      return `/schema/${primaryZUID}`;
+      return `/schema/${affectedZUID}`;
     case "code":
       const codeType = meta.uri.split("/")[3];
-      return `/code/file/${codeType}/${primaryZUID}`;
+      return `/code/file/${codeType}/${affectedZUID}`;
     default:
       return "/";
   }
