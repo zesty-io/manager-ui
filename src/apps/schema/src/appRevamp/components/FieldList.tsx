@@ -186,6 +186,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             }
             control={
               <Switch
+                data-cy="ShowSystemFieldsBtn"
                 checked={isSystemFieldsVisible}
                 size="small"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -203,6 +204,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {/* SYSTEM FIELDS */}
           {isSystemFieldsVisible && !search && (
             <Box
+              data-cy="SystemFields"
               ml={3}
               pb={2}
               mb={1.5}

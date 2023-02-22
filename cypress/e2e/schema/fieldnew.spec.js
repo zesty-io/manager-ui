@@ -42,6 +42,8 @@ const SELECTORS = {
   FIELD_DROPDOWN_EDIT: "DropdownEditField",
   FIELD_DROPDOWN_DEACTIVATE_REACTIVATE: "DeactivateReactivateFieldDropdown",
   ADD_FIELD_MODAL_DEACTIVATE_REACTIVATE: "DeactivateReactivateFieldUpdateModal",
+  SHOW_SYSTEM_FIELDS_BTN: "ShowSystemFieldsBtn",
+  SYSTEM_FIELDS: "SystemFields",
 };
 /**
  * -[x] Open Add Field Modal via button
@@ -62,7 +64,7 @@ const SELECTORS = {
  * -[x] Update a field
  * -[x] Deactivate/Reactivate a field via dropdown menu
  * -[x] Deactivate a field via Edit field modal
- * -[] Show hide system fields
+ * -[x] Show hide system fields
  */
 describe("Schema: Fields", () => {
   const timestamp = Date.now();
@@ -659,5 +661,15 @@ describe("Schema: Fields", () => {
 
     // Verify field is deactivated
     cy.get(`[data-cy-status=Field_${fieldName}_inactive]`).should("exist");
+  });
+
+  it("Shows and hides system fields", () => {
+    // Show system fields
+    cy.getBySelector(SELECTORS.SHOW_SYSTEM_FIELDS_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.SYSTEM_FIELDS).should("exist");
+
+    // Hide system fields
+    cy.getBySelector(SELECTORS.SHOW_SYSTEM_FIELDS_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.SYSTEM_FIELDS).should("not.exist");
   });
 });
