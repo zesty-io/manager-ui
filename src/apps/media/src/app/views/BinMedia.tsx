@@ -192,7 +192,10 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
                     groups={binGroups?.filter((group) => group.group_id === id)}
                   />
                 ) : (
-                  <MediaList files={binFiles} />
+                  <MediaList
+                    files={binFiles}
+                    groups={binGroups?.filter((group) => group.group_id === id)}
+                  />
                 )}
               </DnDProvider>
             </>
