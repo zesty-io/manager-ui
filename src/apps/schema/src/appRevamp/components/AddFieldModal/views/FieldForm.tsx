@@ -178,6 +178,8 @@ export const FieldForm = ({
             }
           );
           formFields.options = options;
+        } else if (field.name === "tooltip") {
+          formFields["tooltip"] = fieldData.settings.tooltip || "";
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -242,6 +244,7 @@ export const FieldForm = ({
     }
   }, [isFieldCreated, isFieldUpdated]);
 
+  /** Error setting */
   useEffect(() => {
     if (!Object.keys(formData).length) {
       return;
@@ -366,6 +369,9 @@ export const FieldForm = ({
         list: formData.list as boolean,
         limit: formData.limit as number,
         group_id: formData.group_id as string,
+        ...((formData.tooltip as string)?.length && {
+          tooltip: formData.tooltip as string,
+        }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
@@ -539,6 +545,13 @@ export const FieldForm = ({
         {activeTab === "details" && (
           <Grid container spacing={2.5} maxWidth="480px">
             {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
+              // Only show tooltip field when updating a field that already has a tooltip value
+              const hideTooltipField =
+                fieldConfig.name === "tooltip" &&
+                (!isUpdateField || !fieldData.settings.tooltip?.length);
+
+              if (hideTooltipField) return;
+
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
 
