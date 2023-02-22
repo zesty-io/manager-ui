@@ -548,7 +548,7 @@ export const FieldForm = ({
               // Only show tooltip field when updating a field that already has a tooltip value
               const hideTooltipField =
                 fieldConfig.name === "tooltip" &&
-                (!isUpdateField || !(formData["tooltip"] as string)?.length);
+                (!isUpdateField || !fieldData.settings.tooltip?.length);
 
               if (hideTooltipField) return;
 
