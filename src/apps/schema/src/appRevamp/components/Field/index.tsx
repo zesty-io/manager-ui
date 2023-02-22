@@ -258,7 +258,13 @@ export const Field = ({
         )}
         <FieldIcon type={field.datatype} />
         <Tooltip title={field.label} enterDelay={3000}>
-          <Typography px={1.5} variant="body2" fontWeight="700" noWrap>
+          <Typography
+            data-cy={`FieldLabel_${field.name}`}
+            px={1.5}
+            variant="body2"
+            fontWeight="700"
+            noWrap
+          >
             {field.label}
           </Typography>
         </Tooltip>
@@ -289,7 +295,11 @@ export const Field = ({
         </Button>
         {withMenu && (
           <>
-            <IconButton onClick={handleMenuClick} size="small">
+            <IconButton
+              data-cy={`OpenFieldDropdown_${field.name}`}
+              onClick={handleMenuClick}
+              size="small"
+            >
               <MoreHorizRoundedIcon />
             </IconButton>
             <Menu
@@ -306,6 +316,7 @@ export const Field = ({
               }}
             >
               <MenuItem
+                data-cy={`DropdownEditField_${field.name}`}
                 disabled={isDeactivated}
                 onClick={handleOpenEditModalField}
               >

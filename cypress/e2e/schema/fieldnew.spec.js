@@ -38,6 +38,8 @@ const SELECTORS = {
   MEDIA_RULES_TAB: "MediaRulesTab",
   FIELDS_LIST_FILTER: "FieldListFilter",
   FIELDS_LIST_NO_RESULTS: "NoResults",
+  FIELD_MENU_BTN: "OpenFieldDropdown",
+  FIELD_DROPDOWN_EDIT: "DropdownEditField",
 };
 /**
  * -[x] Open Add Field Modal via button
@@ -489,5 +491,62 @@ describe("Schema: Fields", () => {
     // Field should not exist
     cy.getBySelector(`Field_${fieldName}`).should("not.exist");
     cy.getBySelector(SELECTORS.FIELDS_LIST_NO_RESULTS).should("exist");
+  });
+
+  it("Can update a field", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+    cy.intercept("/v1/content/models/**").as("updateField");
+
+    const origFieldLabel = `Update me ${timestamp}`;
+    const updatedFieldLabel = `Rename field ${timestamp}`;
+    const fieldName = `update_me_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select Text field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_TEXT).should("exist").click();
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL)
+      .should("exist")
+      .type(origFieldLabel);
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+
+    // Open update modal
+    cy.getBySelector(`${SELECTORS.FIELD_MENU_BTN}_${fieldName}`)
+      .should("exist")
+      .click();
+    cy.getBySelector(`${SELECTORS.FIELD_DROPDOWN_EDIT}_${fieldName}`)
+      .should("exist")
+      .click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Update field label
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").clear();
+    cy.getBySelector(SELECTORS.INPUT_LABEL)
+      .should("exist")
+      .type(updatedFieldLabel);
+
+    // Save changes
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@updateField");
+    cy.wait("@getFields");
+
+    // Verify field name
+    cy.getBySelector(`FieldLabel_${fieldName}`)
+      .should("exist")
+      .should("contain", updatedFieldLabel);
   });
 });
