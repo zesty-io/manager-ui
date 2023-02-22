@@ -26,6 +26,7 @@ export const instanceApi = createApi({
     "ContentModel",
     "ContentModelFields",
     "ContentModelField",
+    "WebViews",
   ],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
@@ -82,6 +83,8 @@ export const instanceApi = createApi({
           };
         });
       },
+      // always refresh audits to avoid invalidating the cache on every request
+      keepUnusedDataFor: 0.0001,
     }),
     getContentItem: builder.query<ContentItem, string>({
       query: (ZUID) => `search/items?q=${ZUID}&order=created&dir=DESC&limit=1`,
@@ -126,7 +129,7 @@ export const instanceApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["ContentModels"],
+      invalidatesTags: ["ContentModels", "WebViews"],
     }),
     getLangsMapping: builder.query<any, void>({
       query: () => `env/langs/all`,
@@ -283,6 +286,7 @@ export const instanceApi = createApi({
     getWebViews: builder.query<WebView[], void>({
       query: () => `/web/views`,
       transformResponse: getResponseData,
+      providesTags: ["WebViews"],
     }),
     undeleteContentModelField: builder.mutation<
       any,
