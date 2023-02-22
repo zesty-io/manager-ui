@@ -210,6 +210,11 @@ export const Field = ({
   return (
     <Box
       data-cy={`Field_${field.name}`}
+      data-cy-status={
+        Boolean((field as ContentModelField).deletedAt)
+          ? `Field_${field.name}_inactive`
+          : `Field_${field.name}_active`
+      }
       minHeight="40px"
       border="1px solid"
       borderColor="border"
@@ -347,6 +352,7 @@ export const Field = ({
                 </MenuItem>
               ) : (
                 <MenuItem
+                  data-cy={`DeactivateReactivateFieldDropdown_${field.name}`}
                   onClick={(e) => {
                     e.stopPropagation();
 

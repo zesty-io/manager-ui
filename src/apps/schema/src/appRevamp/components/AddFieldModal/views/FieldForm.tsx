@@ -591,6 +591,7 @@ export const FieldForm = ({
             {isUpdateField && (
               <Grid item xs={12}>
                 <LoadingButton
+                  data-cy="DeactivateReactivateFieldUpdateModal"
                   variant={fieldData?.deletedAt ? "contained" : "outlined"}
                   color={fieldData?.deletedAt ? "primary" : "inherit"}
                   startIcon={

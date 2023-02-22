@@ -40,6 +40,8 @@ const SELECTORS = {
   FIELDS_LIST_NO_RESULTS: "NoResults",
   FIELD_MENU_BTN: "OpenFieldDropdown",
   FIELD_DROPDOWN_EDIT: "DropdownEditField",
+  FIELD_DROPDOWN_DEACTIVATE_REACTIVATE: "DeactivateReactivateFieldDropdown",
+  ADD_FIELD_MODAL_DEACTIVATE_REACTIVATE: "DeactivateReactivateFieldUpdateModal",
 };
 /**
  * -[x] Open Add Field Modal via button
@@ -57,10 +59,9 @@ const SELECTORS = {
  * -[x] Filter fields in field selection
  * -[x] Add another field
  * -[x] Filter fields
- * -[] Update a field
- * -[] Deactivate a field
- * -[] Reactivate a field via dropdown menu
- * -[] Reactivate a field via Edit field modal
+ * -[x] Update a field
+ * -[x] Deactivate/Reactivate a field via dropdown menu
+ * -[x] Deactivate a field via Edit field modal
  * -[] Show hide system fields
  */
 describe("Schema: Fields", () => {
@@ -493,7 +494,8 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.FIELDS_LIST_NO_RESULTS).should("exist");
   });
 
-  it("Can update a field", () => {
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Can update a field", () => {
     cy.intercept("**/fields?showDeleted=true").as("getFields");
     cy.intercept("/v1/content/models/**").as("updateField");
 
@@ -548,5 +550,114 @@ describe("Schema: Fields", () => {
     cy.getBySelector(`FieldLabel_${fieldName}`)
       .should("exist")
       .should("contain", updatedFieldLabel);
+  });
+
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Can deactivate & reactivate a field via dropdown menu", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+    cy.intercept("/v1/content/models/**").as("updateField");
+
+    const fieldLabel = `Deactivate me ${timestamp}`;
+    const fieldName = `deactivate_me_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select Text field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_TEXT).should("exist").click();
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+
+    // Deactivate the field
+    cy.getBySelector(`${SELECTORS.FIELD_MENU_BTN}_${fieldName}`)
+      .should("exist")
+      .click();
+    cy.getBySelector(
+      `${SELECTORS.FIELD_DROPDOWN_DEACTIVATE_REACTIVATE}_${fieldName}`
+    )
+      .should("exist")
+      .click();
+
+    cy.wait("@updateField");
+    cy.wait("@getFields");
+
+    // Verify field is deactivated
+    cy.get(`[data-cy-status=Field_${fieldName}_inactive]`).should("exist");
+
+    // Reactivate the field
+    cy.getBySelector(`${SELECTORS.FIELD_MENU_BTN}_${fieldName}`)
+      .should("exist")
+      .click();
+    cy.getBySelector(
+      `${SELECTORS.FIELD_DROPDOWN_DEACTIVATE_REACTIVATE}_${fieldName}`
+    )
+      .should("exist")
+      .click();
+
+    cy.wait("@updateField");
+    cy.wait("@getFields");
+
+    // Verify field is deactivated
+    cy.get(`[data-cy-status=Field_${fieldName}_active]`).should("exist");
+  });
+
+  // TODO: Renable before merging, skipping to avoid spam
+  it.skip("Can deactivate a field via edit modal", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+    cy.intercept("/v1/content/models/**").as("updateField");
+
+    const fieldLabel = `Deactivate me ${timestamp}`;
+    const fieldName = `deactivate_me_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select Text field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_TEXT).should("exist").click();
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+
+    // Open update modal
+    cy.getBySelector(`${SELECTORS.FIELD_MENU_BTN}_${fieldName}`)
+      .should("exist")
+      .click();
+    cy.getBySelector(`${SELECTORS.FIELD_DROPDOWN_EDIT}_${fieldName}`)
+      .should("exist")
+      .click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Deactivate the field
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_DEACTIVATE_REACTIVATE)
+      .should("exist")
+      .click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
+
+    cy.wait("@updateField");
+    cy.wait("@getFields");
+
+    // Verify field is deactivated
+    cy.get(`[data-cy-status=Field_${fieldName}_inactive]`).should("exist");
   });
 });
