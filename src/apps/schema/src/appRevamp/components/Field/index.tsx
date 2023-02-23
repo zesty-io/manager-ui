@@ -255,10 +255,10 @@ export const Field = ({
             disabled={disableDrag}
             onMouseEnter={() => setIsDraggable(true)}
             onMouseLeave={() => setIsDraggable(false)}
-            sx={{ cursor: "grab" }}
+            sx={{ cursor: "grab", mr: 0.5 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <DragIndicatorRoundedIcon />
+            <DragIndicatorRoundedIcon sx={{ width: "20px", height: "20px" }} />
           </IconButton>
         )}
         <FieldIcon type={field.datatype} />
@@ -294,8 +294,8 @@ export const Field = ({
         </Button>
         {withMenu && (
           <>
-            <IconButton onClick={handleMenuClick} size="small">
-              <MoreHorizRoundedIcon />
+            <IconButton onClick={handleMenuClick} size="small" sx={{ ml: 1 }}>
+              <MoreHorizRoundedIcon sx={{ width: "20px", height: "20px" }} />
             </IconButton>
             <Menu
               open={isMenuOpen}
