@@ -221,7 +221,7 @@ export const Field = ({
       minHeight="40px"
       border="1px solid"
       borderColor="border"
-      borderRadius={1}
+      borderRadius="8px"
       ref={ref}
       sx={{
         ...getStyle(),
