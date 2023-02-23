@@ -56,6 +56,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
 
   const model = models?.find((model) => model.ZUID === id);
   const view = views?.find((view) => view?.contentModelZUID === model?.ZUID);
+  const canCreateModel = model?.name.toLowerCase() !== "clippings";
 
   const [showDialogue, setShowDialogue] = useState<
     "rename" | "duplicate" | "delete" | null
@@ -162,15 +163,17 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                   Edit in Code
                 </Button>
               )}
-              <Button
-                size="small"
-                variant="outlined"
-                color="inherit"
-                startIcon={<PostAddRoundedIcon color="action" />}
-                onClick={() => history.push(`/content/${model?.ZUID}/new`)}
-              >
-                Create {model?.label}
-              </Button>
+              {canCreateModel && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<PostAddRoundedIcon color="action" />}
+                  onClick={() => history.push(`/content/${model?.ZUID}/new`)}
+                >
+                  Create {model?.label}
+                </Button>
+              )}
               <Button
                 size="small"
                 variant="contained"
