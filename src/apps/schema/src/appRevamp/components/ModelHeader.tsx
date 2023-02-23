@@ -151,16 +151,17 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               </Menu>
             </Box>
             <Box display="flex" gap={2}>
-              <Button
-                size="small"
-                variant="outlined"
-                color="inherit"
-                startIcon={<CodeRoundedIcon color="action" />}
-                onClick={() => history.push(`/code/file/views/${view?.ZUID}`)}
-                disabled={!view}
-              >
-                Edit in Code
-              </Button>
+              {view && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<CodeRoundedIcon color="action" />}
+                  onClick={() => history.push(`/code/file/views/${view?.ZUID}`)}
+                >
+                  Edit in Code
+                </Button>
+              )}
               <Button
                 size="small"
                 variant="outlined"
