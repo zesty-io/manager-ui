@@ -1,7 +1,7 @@
 import { Box, ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { Sidebar } from "./components/Sidebar";
-import { Route, Switch } from "react-router";
+import { Redirect, Route, Switch } from "react-router";
 import { Model } from "./views/Model";
 import { AllModels } from "./views/AllModels";
 import { SearchModels } from "./views/SearchModels";
@@ -31,6 +31,7 @@ export const SchemaApp = () => {
         <Switch>
           <Route exact path="/schema" render={() => <AllModels />} />
           <Route path="/schema/search" render={() => <SearchModels />} />
+          <Redirect from="/schema/new" to="/schema" />
           <Route path="/schema/:id" render={() => <Model />} />
         </Switch>
       </Box>
