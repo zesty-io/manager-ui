@@ -45,13 +45,15 @@ export const Sidebar = () => {
           onChange={(event) => setSearch(event.target.value)}
           size="small"
           sx={{
-            backgroundColor: "grey.50",
             mt: 1.5,
           }}
           inputProps={{
             "data-cy": "SchemaSidebarSearch",
           }}
           InputProps={{
+            sx: {
+              backgroundColor: "grey.50",
+            },
             startAdornment: (
               <InputAdornment position="start">
                 <SearchRoundedIcon fontSize="small" color="action" />

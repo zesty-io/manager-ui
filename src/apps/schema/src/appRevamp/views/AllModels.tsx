@@ -37,10 +37,10 @@ export const AllModels = () => {
               onChange={(event) => setSearch(event.target.value)}
               size="small"
               inputRef={searchRef}
-              sx={{
-                backgroundColor: "grey.50",
-              }}
               InputProps={{
+                sx: {
+                  backgroundColor: "grey.50",
+                },
                 startAdornment: (
                   <InputAdornment position="start">
                     <SearchRoundedIcon fontSize="small" color="action" />
