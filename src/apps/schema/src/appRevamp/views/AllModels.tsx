@@ -39,11 +39,6 @@ export const AllModels = () => {
               inputRef={searchRef}
               sx={{
                 backgroundColor: "grey.50",
-                "& .Mui-focused": {
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderColor: "primary.main",
-                },
               }}
               InputProps={{
                 startAdornment: (
