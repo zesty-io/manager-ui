@@ -56,6 +56,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
 
   const model = models?.find((model) => model.ZUID === id);
   const view = views?.find((view) => view?.contentModelZUID === model?.ZUID);
+  const canCreateModel = model?.name.toLowerCase() !== "clippings";
 
   const [showDialogue, setShowDialogue] = useState<
     "rename" | "duplicate" | "delete" | null
@@ -151,25 +152,28 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               </Menu>
             </Box>
             <Box display="flex" gap={2}>
-              <Button
-                size="small"
-                variant="outlined"
-                color="inherit"
-                startIcon={<CodeRoundedIcon color="action" />}
-                onClick={() => history.push(`/code/file/views/${view?.ZUID}`)}
-                disabled={!view}
-              >
-                Edit in Code
-              </Button>
-              <Button
-                size="small"
-                variant="outlined"
-                color="inherit"
-                startIcon={<PostAddRoundedIcon color="action" />}
-                onClick={() => history.push(`/content/${model?.ZUID}/new`)}
-              >
-                Create {model?.label}
-              </Button>
+              {view && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<CodeRoundedIcon color="action" />}
+                  onClick={() => history.push(`/code/file/views/${view?.ZUID}`)}
+                >
+                  Edit in Code
+                </Button>
+              )}
+              {canCreateModel && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<PostAddRoundedIcon color="action" />}
+                  onClick={() => history.push(`/content/${model?.ZUID}/new`)}
+                >
+                  Create {model?.label}
+                </Button>
+              )}
               <Button
                 size="small"
                 variant="contained"
