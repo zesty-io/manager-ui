@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router";
 import { isEqual } from "lodash";
+import { useLocalStorage } from "react-use";
 
 import {
   useBulkUpdateContentModelFieldMutation,
@@ -60,8 +61,9 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const [deactivatedFields, setDeactivatedFields] = useState<
     ContentModelField[] | null
   >(null);
-  const [isSystemFieldsVisible, setIsSystemFieldsVisible] = useState(
-    localStorage.getItem("zesty:schemaSystemFields:open") === "true"
+  const [isSystemFieldsVisible, setIsSystemFieldsVisible] = useLocalStorage(
+    "zesty:schemaSystemFields:open",
+    "true"
   );
 
   useEffect(() => {
@@ -187,14 +189,10 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             }
             control={
               <Switch
-                checked={isSystemFieldsVisible}
+                checked={isSystemFieldsVisible === "true"}
                 size="small"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setIsSystemFieldsVisible(e.target.checked);
-                  localStorage.setItem(
-                    "zesty:schemaSystemFields:open",
-                    String(e.target.checked)
-                  );
+                  setIsSystemFieldsVisible(String(e.target.checked));
                 }}
               />
             }
@@ -206,7 +204,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
 
         <Box sx={{ overflowY: "scroll", height: "100%" }}>
           {/* SYSTEM FIELDS */}
-          {isSystemFieldsVisible && !search && (
+          {isSystemFieldsVisible === "true" && !search && (
             <Box
               ml={3}
               pb={2}
@@ -270,7 +268,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {/* ACTIVE FIELDS ARE PRESENT */}
           {Boolean(filteredFields?.length) && (
             <>
-              {isSystemFieldsVisible && (
+              {isSystemFieldsVisible === "true" && (
                 <Box pl={3} pb={2}>
                   <Typography variant="h6" mb={1}>
                     User Fields
