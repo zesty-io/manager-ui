@@ -60,7 +60,9 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const [deactivatedFields, setDeactivatedFields] = useState<
     ContentModelField[] | null
   >(null);
-  const [isSystemFieldsVisible, setIsSystemFieldsVisible] = useState(false);
+  const [isSystemFieldsVisible, setIsSystemFieldsVisible] = useState(
+    localStorage.getItem("zesty:schemaSystemFields:open") === "true"
+  );
 
   useEffect(() => {
     if (fields?.length && !isEqual(localFields, fields)) {
@@ -187,9 +189,13 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               <Switch
                 checked={isSystemFieldsVisible}
                 size="small"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setIsSystemFieldsVisible(e.target.checked)
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setIsSystemFieldsVisible(e.target.checked);
+                  localStorage.setItem(
+                    "zesty:schemaSystemFields:open",
+                    String(e.target.checked)
+                  );
+                }}
               />
             }
             sx={{
