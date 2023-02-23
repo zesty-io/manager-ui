@@ -43,6 +43,7 @@ interface Props {
   isDeactivated?: boolean;
   withDragIcon: boolean;
   withMenu: boolean;
+  withHover: boolean;
 }
 
 export const Field = ({
@@ -55,6 +56,7 @@ export const Field = ({
   isDeactivated,
   withDragIcon,
   withMenu,
+  withHover,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -207,19 +209,23 @@ export const Field = ({
     }
   };
 
+  const hoverEffect = withHover
+    ? {
+        backgroundColor: "action.hover",
+        cursor: "pointer",
+      }
+    : {};
+
   return (
     <Box
       minHeight="40px"
       border="1px solid"
       borderColor="border"
-      borderRadius={1}
+      borderRadius="8px"
       ref={ref}
       sx={{
         ...getStyle(),
-        "&:hover": {
-          backgroundColor: "action.hover",
-          cursor: "pointer",
-        },
+        "&:hover": hoverEffect,
       }}
       draggable={isDraggable}
       onDragStart={handleDragStart}
@@ -249,10 +255,10 @@ export const Field = ({
             disabled={disableDrag}
             onMouseEnter={() => setIsDraggable(true)}
             onMouseLeave={() => setIsDraggable(false)}
-            sx={{ cursor: "grab" }}
+            sx={{ cursor: "grab", mr: 0.5 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <DragIndicatorRoundedIcon />
+            <DragIndicatorRoundedIcon sx={{ width: "20px", height: "20px" }} />
           </IconButton>
         )}
         <FieldIcon type={field.datatype} />
@@ -288,8 +294,8 @@ export const Field = ({
         </Button>
         {withMenu && (
           <>
-            <IconButton onClick={handleMenuClick} size="small">
-              <MoreHorizRoundedIcon />
+            <IconButton onClick={handleMenuClick} size="small" sx={{ ml: 1 }}>
+              <MoreHorizRoundedIcon sx={{ width: "20px", height: "20px" }} />
             </IconButton>
             <Menu
               open={isMenuOpen}
