@@ -235,6 +235,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                     disableDrag
                     withDragIcon={false}
                     withMenu={false}
+                    withHover={false}
                   />
                 ))}
               </Box>
@@ -295,6 +296,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                         disableDrag={!!search}
                         withDragIcon
                         withMenu
+                        withHover
                       />
                     </Box>
                   </Box>
@@ -357,6 +359,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                       isDeactivated
                       withDragIcon
                       withMenu
+                      withHover
                     />
                   </Box>
                 );
