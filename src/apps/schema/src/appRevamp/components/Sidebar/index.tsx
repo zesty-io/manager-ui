@@ -36,7 +36,7 @@ export const Sidebar = () => {
         borderRight: (theme) => "1px solid " + theme.palette.border,
       }}
     >
-      <Box sx={{ px: 2, pt: 2, pb: 1 }}>
+      <Box sx={{ px: 1, pt: 2, pb: 1 }}>
         <Typography variant="h4" fontWeight={600}>
           Schema
         </Typography>
@@ -101,8 +101,8 @@ export const Sidebar = () => {
             borderWidth: 0,
             borderTopWidth: 1,
             borderColor: "border",
-            px: 2,
-            py: 1,
+            px: 1,
+            pt: 1,
             overflowY: "scroll",
             height: "100%",
           }}
