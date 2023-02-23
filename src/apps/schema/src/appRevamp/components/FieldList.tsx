@@ -63,7 +63,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   >(null);
   const [isSystemFieldsVisible, setIsSystemFieldsVisible] = useLocalStorage(
     "zesty:schemaSystemFields:open",
-    "true"
+    "false"
   );
 
   useEffect(() => {
