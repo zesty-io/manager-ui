@@ -27,8 +27,8 @@ export const Sidebar = () => {
 
   return (
     <Box
-      minWidth={240}
-      maxWidth={240}
+      minWidth={221}
+      maxWidth={221}
       height="100%"
       display="flex"
       flexDirection="column"
