@@ -36,6 +36,9 @@ export const AllModels = () => {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               size="small"
+              sx={{
+                height: "32px",
+              }}
               inputRef={searchRef}
               InputProps={{
                 sx: {
