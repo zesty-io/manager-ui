@@ -56,7 +56,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   // Used to initialize the table sorted by name
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: "name",
+      field: "label",
       sort: "asc",
     },
   ]);
@@ -120,7 +120,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
   const columns = [
     { field: "id", headerName: "Id", hide: true },
     {
-      field: "name",
+      field: "label",
       headerName: "Name",
       flex: 1,
       renderCell: ({ row }: GridRenderCellParams) => (
@@ -198,7 +198,18 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
         disableColumnMenu
         onRowClick={(params) => handleRowClick(params.row)}
         sortModel={sortModel}
-        onSortModelChange={(model) => setSortModel(model)}
+        onSortModelChange={(model) => {
+          if (!model.length) {
+            setSortModel([
+              {
+                ...sortModel[0],
+                sort: "asc",
+              },
+            ]);
+          } else {
+            setSortModel(model);
+          }
+        }}
         sx={{
           ".MuiDataGrid-row": {
             cursor: "pointer",
