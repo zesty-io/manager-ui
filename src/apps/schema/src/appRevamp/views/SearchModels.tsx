@@ -47,7 +47,7 @@ export const SearchModels = () => {
           {filteredModelsLength} Search Results for "{search}"
         </Typography>
       </Box>
-      <Box height="100%" px={3} py={2}>
+      <Box height="100%" px={3} pt={2}>
         <ModelsTable
           search={search}
           onEmptySearch={() => {

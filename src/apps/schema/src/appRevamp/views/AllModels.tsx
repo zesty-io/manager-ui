@@ -62,7 +62,7 @@ export const AllModels = () => {
             </Button>
           </Box>
         </Box>
-        <Box height="100%" px={3} py={2}>
+        <Box height="100%" px={3} pt={2}>
           <ModelsTable
             search={search}
             onEmptySearch={() => searchRef?.current?.focus()}
