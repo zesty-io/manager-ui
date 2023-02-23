@@ -43,6 +43,7 @@ interface Props {
   isDeactivated?: boolean;
   withDragIcon: boolean;
   withMenu: boolean;
+  withHover: boolean;
 }
 
 export const Field = ({
@@ -55,6 +56,7 @@ export const Field = ({
   isDeactivated,
   withDragIcon,
   withMenu,
+  withHover,
 }: Props) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -207,6 +209,13 @@ export const Field = ({
     }
   };
 
+  const hoverEffect = withHover
+    ? {
+        backgroundColor: "action.hover",
+        cursor: "pointer",
+      }
+    : {};
+
   return (
     <Box
       data-cy={`Field_${field.name}`}
@@ -222,10 +231,7 @@ export const Field = ({
       ref={ref}
       sx={{
         ...getStyle(),
-        "&:hover": {
-          backgroundColor: "action.hover",
-          cursor: "pointer",
-        },
+        "&:hover": hoverEffect,
       }}
       draggable={isDraggable}
       onDragStart={handleDragStart}
