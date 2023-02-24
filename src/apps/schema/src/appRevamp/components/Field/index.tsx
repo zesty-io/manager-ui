@@ -203,9 +203,9 @@ export const Field = ({
 
   const getGridTemplate = () => {
     if (withDragIcon) {
-      return "28px 24px minmax(auto, min-content) 90px";
+      return "28px 24px minmax(auto, min-content) 130px";
     } else {
-      return "24px minmax(auto, min-content) 90px";
+      return "24px minmax(auto, min-content) 130px";
     }
   };
 
@@ -288,7 +288,12 @@ export const Field = ({
           }}
           onClick={handleCopyFieldName}
         >
-          <Typography component="span" variant="caption" noWrap>
+          <Typography
+            component="span"
+            variant="caption"
+            noWrap
+            fontFamily="Roboto Mono"
+          >
             {isFieldNameCopied ? "Copied" : field.name}
           </Typography>
         </Button>
