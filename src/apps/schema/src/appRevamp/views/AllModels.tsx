@@ -36,16 +36,14 @@ export const AllModels = () => {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               size="small"
-              inputRef={searchRef}
               sx={{
-                backgroundColor: "grey.50",
-                "& .Mui-focused": {
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderColor: "primary.main",
-                },
+                height: "32px",
               }}
+              inputRef={searchRef}
               InputProps={{
+                sx: {
+                  backgroundColor: "grey.50",
+                },
                 startAdornment: (
                   <InputAdornment position="start">
                     <SearchRoundedIcon fontSize="small" color="action" />
@@ -64,7 +62,7 @@ export const AllModels = () => {
             </Button>
           </Box>
         </Box>
-        <Box height="100%" px={3} py={2}>
+        <Box height="100%" px={3} pt={2}>
           <ModelsTable
             search={search}
             onEmptySearch={() => searchRef?.current?.focus()}

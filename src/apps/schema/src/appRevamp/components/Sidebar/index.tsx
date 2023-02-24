@@ -27,8 +27,8 @@ export const Sidebar = () => {
 
   return (
     <Box
-      minWidth={240}
-      maxWidth={240}
+      minWidth={221}
+      maxWidth={221}
       height="100%"
       display="flex"
       flexDirection="column"
@@ -36,7 +36,7 @@ export const Sidebar = () => {
         borderRight: (theme) => "1px solid " + theme.palette.border,
       }}
     >
-      <Box sx={{ px: 2, pt: 2, pb: 1 }}>
+      <Box sx={{ px: 1, pt: 2, pb: 1 }}>
         <Typography variant="h4" fontWeight={600}>
           Schema
         </Typography>
@@ -45,18 +45,15 @@ export const Sidebar = () => {
           onChange={(event) => setSearch(event.target.value)}
           size="small"
           sx={{
-            backgroundColor: "grey.50",
             mt: 1.5,
-            "& .Mui-focused": {
-              borderWidth: "1px",
-              borderStyle: "solid",
-              borderColor: "primary.main",
-            },
           }}
           inputProps={{
             "data-cy": "SchemaSidebarSearch",
           }}
           InputProps={{
+            sx: {
+              backgroundColor: "grey.50",
+            },
             startAdornment: (
               <InputAdornment position="start">
                 <SearchRoundedIcon fontSize="small" color="action" />
@@ -104,8 +101,8 @@ export const Sidebar = () => {
             borderWidth: 0,
             borderTopWidth: 1,
             borderColor: "border",
-            px: 2,
-            py: 1,
+            px: 1,
+            pt: 1,
             overflowY: "scroll",
             height: "100%",
           }}

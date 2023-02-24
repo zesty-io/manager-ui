@@ -189,7 +189,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
           <Box mt={1.5}>
             <Typography variant="caption" color="textSecondary">{`${
               modelNameMap[model?.type]
-            } •  ZUID: ${model?.ZUID} •  Last Updated: ${moment(
+            } Model  •  ZUID: ${model?.ZUID}  •  Last Updated: ${moment(
               model?.updatedAt
             ).format("Do MMMM YYYY [at] h:mm A")}`}</Typography>
           </Box>

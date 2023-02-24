@@ -56,7 +56,7 @@ export const ModelList = ({ title, models, type }: Props) => {
   return (
     <>
       <Box>
-        <Box display="flex" justifyContent="space-between">
+        <Box display="flex" justifyContent="space-between" mb={1} ml={1}>
           <Box display="flex" gap={0.25} alignItems="center">
             <Typography
               variant="overline"
@@ -94,7 +94,7 @@ export const ModelList = ({ title, models, type }: Props) => {
               <ListItemIcon
                 sx={{
                   minWidth: "unset",
-                  mr: 1.5,
+                  mr: 1,
                   color: selected && "primary.main",
                 }}
               >

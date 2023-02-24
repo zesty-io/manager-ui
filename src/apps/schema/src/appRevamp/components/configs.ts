@@ -325,7 +325,7 @@ const TYPE_TEXT: { [key: string]: string } = {
   text: "Single Line Text",
   textarea: "Multi Line Text",
   uuid: "UUID",
-  wysiwyg_advanced: "WYSYWYG (Advanced)",
+  wysiwyg_advanced: "WYSIWYG (Advanced)",
   wysiwyg_basic: "WYSIWYG",
   yes_no: "Boolean",
 };

@@ -158,7 +158,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         flexDirection="column"
         height="100%"
         flex={1}
-        sx={{ pr: 3, pt: 2, overflowY: "scroll" }}
+        sx={{ pr: 3, pt: 2 }}
       >
         <Box
           mb={2}

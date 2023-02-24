@@ -44,7 +44,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
 
   return (
     <>
-      <DialogTitle>
+      <DialogTitle sx={{ px: 3, py: 2.5 }}>
         <Box display="flex" justifyContent="space-between" pb={2}>
           Select a Field Type
           <IconButton
@@ -52,7 +52,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
             onClick={onModalClose}
             data-cy="AddFieldCloseBtn"
           >
-            <CloseIcon />
+            <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
         <Box width="349px">
@@ -62,12 +62,14 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon />
+                  <SearchIcon fontSize="small" />
                 </InputAdornment>
               ),
             }}
             onChange={handleFilterFields}
             placeholder="Search field types"
+            autoFocus
+            size="small"
           />
         </Box>
       </DialogTitle>
@@ -75,7 +77,8 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         data-cy="FieldSelection"
         dividers
         sx={{
-          p: 2.5,
+          px: 3,
+          py: 1.5,
           "&.MuiDialogContent-dividers": {
             borderColor: "border",
           },
@@ -91,7 +94,12 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         )}
         {Object.keys(fieldTypes).map((fieldKey) => (
           <Box className="field-type-group" key={fieldKey}>
-            <Typography component="p" variant="overline" mb={1.5}>
+            <Typography
+              component="p"
+              variant="overline"
+              mb={1.5}
+              color="text.secondary"
+            >
               {fieldKey === "dateandtime" ? "Date & Time" : fieldKey}
             </Typography>
             <Box

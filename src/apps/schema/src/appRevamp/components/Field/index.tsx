@@ -203,9 +203,9 @@ export const Field = ({
 
   const getGridTemplate = () => {
     if (withDragIcon) {
-      return "28px 24px minmax(auto, min-content) 90px";
+      return "28px 24px minmax(auto, min-content) 130px";
     } else {
-      return "24px minmax(auto, min-content) 90px";
+      return "24px minmax(auto, min-content) 130px";
     }
   };
 
@@ -227,7 +227,7 @@ export const Field = ({
       minHeight="40px"
       border="1px solid"
       borderColor="border"
-      borderRadius={1}
+      borderRadius="8px"
       ref={ref}
       sx={{
         ...getStyle(),
@@ -261,10 +261,10 @@ export const Field = ({
             disabled={disableDrag}
             onMouseEnter={() => setIsDraggable(true)}
             onMouseLeave={() => setIsDraggable(false)}
-            sx={{ cursor: "grab" }}
+            sx={{ cursor: "grab", mr: 0.5 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <DragIndicatorRoundedIcon />
+            <DragIndicatorRoundedIcon sx={{ width: "20px", height: "20px" }} />
           </IconButton>
         )}
         <FieldIcon type={field.datatype} />
@@ -300,7 +300,12 @@ export const Field = ({
           }}
           onClick={handleCopyFieldName}
         >
-          <Typography component="span" variant="caption" noWrap>
+          <Typography
+            component="span"
+            variant="caption"
+            noWrap
+            fontFamily="Roboto Mono"
+          >
             {isFieldNameCopied ? "Copied" : field.name}
           </Typography>
         </Button>
@@ -310,8 +315,9 @@ export const Field = ({
               data-cy={`OpenFieldDropdown_${field.name}`}
               onClick={handleMenuClick}
               size="small"
+              sx={{ ml: 1 }}
             >
-              <MoreHorizRoundedIcon />
+              <MoreHorizRoundedIcon sx={{ width: "20px", height: "20px" }} />
             </IconButton>
             <Menu
               open={isMenuOpen}
