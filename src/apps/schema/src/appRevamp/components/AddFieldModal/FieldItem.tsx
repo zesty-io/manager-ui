@@ -30,7 +30,7 @@ export const FieldItem = ({
 }: Props) => {
   return (
     <Box
-      minHeight="62px"
+      height="62px"
       border="1px solid"
       borderColor="border"
       borderRadius={1}
@@ -45,9 +45,11 @@ export const FieldItem = ({
       display="flex"
       alignItems="center"
       justifyContent="space-between"
+      boxSizing="border-box"
     >
       <Tooltip
-        enterDelay={500}
+        enterDelay={1000}
+        enterNextDelay={1000}
         title={
           <TooltipBody
             fieldName={fieldName}
@@ -64,6 +66,7 @@ export const FieldItem = ({
           sx={{
             py: 1,
             px: 2,
+            height: "62px",
           }}
         >
           <ListItemIcon sx={{ minWidth: "36px" }}>

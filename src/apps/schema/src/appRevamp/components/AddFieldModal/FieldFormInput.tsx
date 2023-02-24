@@ -157,7 +157,7 @@ export const FieldFormInput = ({
             {fieldConfig.tooltip && (
               <Tooltip placement="top" title={fieldConfig.tooltip}>
                 <InfoRoundedIcon
-                  sx={{ ml: 1, width: "10px", height: "10px" }}
+                  sx={{ ml: 1, width: "12px", height: "12px" }}
                   color="action"
                 />
               </Tooltip>

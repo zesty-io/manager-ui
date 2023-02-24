@@ -470,11 +470,11 @@ export const FieldForm = ({
         >
           <Box display="flex" alignItems="center">
             {!isUpdateField && (
-              <IconButton size="small" onClick={onBackClick}>
+              <IconButton size="small" onClick={onBackClick} sx={{ mr: 1.5 }}>
                 <ArrowBackIcon />
               </IconButton>
             )}
-            <Box px={1.5}>
+            <Box pr={1.5}>
               <FieldIcon
                 type={type}
                 height="28px"
@@ -586,7 +586,9 @@ export const FieldForm = ({
                     fieldData?.deletedAt ? (
                       <PlayCircleOutlineRoundedIcon />
                     ) : (
-                      <PauseCircleOutlineRoundedIcon />
+                      <PauseCircleOutlineRoundedIcon
+                        color={isDeletingField ? "inherit" : "action"}
+                      />
                     )
                   }
                   onClick={() => {

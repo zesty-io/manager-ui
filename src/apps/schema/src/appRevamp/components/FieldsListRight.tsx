@@ -188,17 +188,18 @@ export const FieldsListRight = ({ model }: Props) => {
           lineHeight: "20px",
           listStylePosition: "inside",
         }}
+        fontSize={14}
       >
-        <Box component="li">
+        <Box component="li" pb={0.5}>
           <Link href="#">How to create models</Link>
         </Box>
-        <Box component="li">
+        <Box component="li" pb={0.5}>
           <Link href="#">Fields in Schema</Link>
         </Box>
-        <Box component="li">
+        <Box component="li" pb={0.5}>
           <Link href="#">Accessing your Model's Data</Link>
         </Box>
-        <Box component="li">
+        <Box component="li" pb={0.5}>
           <Link href="#">Zesty APIs</Link>
         </Box>
         <Box component="li">
