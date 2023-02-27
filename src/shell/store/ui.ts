@@ -467,7 +467,7 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
       item = "";
     }
 
-    const title = [app, item, "Zesty.io", instanceName, "Manager"]
+    let title = [app, item, instanceName, "Zesty.io"]
       .filter((elem) => elem)
       .join(" - ");
 
