@@ -28,9 +28,32 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
     Object.keys(FIELD_COPY_CONFIG).forEach((category) => {
       const matchedFields = FIELD_COPY_CONFIG[category].filter((field) => {
         const name = field.name.toLowerCase();
+        const mediaFileKeywords = [
+          "file",
+          "image",
+          "picture",
+          "pdf",
+          "document",
+          "spreadsheet",
+          "zip",
+          "audio",
+          "powerpoint",
+          "video",
+        ];
 
         if (name.includes(userInput)) {
           return field;
+        }
+
+        if (name === "media") {
+          const inputRegex = new RegExp(userInput, "gi");
+          const matchedMediaKeywords = mediaFileKeywords.some((keyword) =>
+            inputRegex.test(keyword)
+          );
+
+          if (matchedMediaKeywords) {
+            return field;
+          }
         }
       });
 
