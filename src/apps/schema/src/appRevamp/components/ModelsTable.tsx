@@ -162,7 +162,7 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
     {
       field: "contentItems",
       headerName: "Content Items",
-      width: 120,
+      width: 126,
       headerAlign: "right",
       align: "right",
       sortable: false,

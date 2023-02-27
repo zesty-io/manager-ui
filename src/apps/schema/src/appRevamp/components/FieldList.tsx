@@ -152,7 +152,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   }
 
   return (
-    <Box display="flex" height="100%" sx={{ overflowY: "scroll" }}>
+    <Box display="flex" height="100%" sx={{ overflowY: "auto" }}>
       <Box
         display="flex"
         flexDirection="column"
@@ -204,7 +204,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           />
         </Box>
 
-        <Box sx={{ overflowY: "scroll", height: "100%" }}>
+        <Box sx={{ overflowY: "auto", height: "100%" }}>
           {/* SYSTEM FIELDS */}
           {isSystemFieldsVisible === "true" && !search && (
             <Box
@@ -318,10 +318,16 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                     px: 4.5,
                     borderRadius: "8px",
                     fontWeight: 700,
+                    height: "40px",
+                    "& .MuiButton-startIcon": {
+                      mr: 2,
+                    },
                   }}
                   size="large"
                   variant="outlined"
-                  startIcon={<AddRoundedIcon />}
+                  startIcon={
+                    <AddRoundedIcon sx={{ width: "24px", height: "24px" }} />
+                  }
                   fullWidth
                   onClick={() => onNewFieldModalClick(null)}
                 >
@@ -344,7 +350,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
 
           {/* INACTIVE FIELDS ARE PRESENT */}
           {Boolean(deactivatedFields?.length) && !search && (
-            <Box mb={2}>
+            <Box mb={2} mt={0.5}>
               <Box pl={3} pb={1.5}>
                 <Typography variant="h6" mb={1}>
                   Deactivated Fields

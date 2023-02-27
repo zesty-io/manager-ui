@@ -17,6 +17,7 @@ export interface BatchResponses {
   If the rejectOnError flag is set, it will reject the promise if any of the requests fail
   This is useful for batch operations where you want to know if any of the requests failed
   but you don't want to stop the entire batch if one of the requests fails.
+
   Current implementation expects a RTK Query fetch resolver (fetchWithBQ) to send the requests in order to take advantage
   of its built-in features and to type match our RTK Query endpoints.
 */

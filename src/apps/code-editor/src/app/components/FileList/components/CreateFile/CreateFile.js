@@ -178,6 +178,7 @@ export const CreateFile = memo(function CreateFile(props) {
               label="File Name"
               value={name}
               onChange={(evt) => setName(evt.target.value)}
+              maxLength={100}
             />
           </ModalContent>
           <ModalFooter>
