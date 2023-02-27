@@ -106,7 +106,7 @@ export const Sidebar = () => {
             borderColor: "border",
             px: 1,
             pt: 1,
-            overflowY: "auto",
+            overflowY: "overlay",
             height: "100%",
           }}
         >
