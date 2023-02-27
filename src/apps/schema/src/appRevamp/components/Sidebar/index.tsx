@@ -108,6 +108,9 @@ export const Sidebar = () => {
             pt: 1,
             overflowY: "overlay",
             height: "100%",
+            "@supports (-moz-appearance:none)": {
+              overflowY: "auto",
+            },
           }}
         >
           <ModelList
