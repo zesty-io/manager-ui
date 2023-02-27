@@ -314,10 +314,16 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                     px: 4.5,
                     borderRadius: "8px",
                     fontWeight: 700,
+                    height: "40px",
+                    "& .MuiButton-startIcon": {
+                      mr: 2,
+                    },
                   }}
                   size="large"
                   variant="outlined"
-                  startIcon={<AddRoundedIcon />}
+                  startIcon={
+                    <AddRoundedIcon sx={{ width: "24px", height: "24px" }} />
+                  }
                   fullWidth
                   onClick={() => onNewFieldModalClick(null)}
                 >
