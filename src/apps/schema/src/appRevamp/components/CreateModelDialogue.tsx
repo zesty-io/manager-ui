@@ -214,7 +214,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     } else {
       return (
         <>
-          <DialogTitle sx={{ p: 3 }}>
+          <DialogTitle>
             <Stack
               direction="row"
               justifyContent="space-between"
@@ -246,7 +246,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               </IconButton>
             </Stack>
           </DialogTitle>
-          <DialogContent sx={{ p: 3 }} dividers>
+          <DialogContent dividers sx={{ pt: 2.5 }}>
             <Box display="flex" flexDirection="column" gap={2.5}>
               <Box>
                 <InputLabel>
@@ -378,7 +378,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               </Box>
             </Box>
           </DialogContent>
-          <DialogActions sx={{ pt: 2 }}>
+          <DialogActions sx={{ pt: 2.5 }}>
             <Button variant="outlined" color="inherit" onClick={onClose}>
               Cancel
             </Button>
@@ -401,7 +401,14 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   };
 
   return (
-    <Dialog open onClose={onClose} PaperProps={{ sx: { minWidth: "640px" } }}>
+    <Dialog
+      open
+      onClose={onClose}
+      fullScreen
+      PaperProps={{
+        sx: { maxWidth: "640px", my: "20px", maxHeight: "1000px" },
+      }}
+    >
       {getView()}
     </Dialog>
   );

@@ -461,15 +461,39 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
     const tab = createTab(state, parsedPath, queryData);
     const { app } = tab;
     let item = tab.name || tab.pathname;
+    let keyword = "";
+
+    if (search && search.includes("?term=")) {
+      keyword = search.replace("?term=", "");
+    }
 
     // Don't repeat the sub-app name
     if (app === item) {
       item = "";
     }
 
-    const title = [app, item, "Zesty.io", instanceName, "Manager"]
+    let title = [app, item, "Zesty.io", instanceName, "Manager"]
+
       .filter((elem) => elem)
       .join(" - ");
+
+    if (parsedPath.path === "/schema") {
+      title = [app, "All Models", "Zesty.io", instanceName, "Manager"]
+        .filter((elem) => elem)
+        .join(" - ");
+    }
+
+    if (keyword) {
+      title = [
+        app,
+        `Search for "${keyword}"`,
+        "Zesty.io",
+        instanceName,
+        "Manager",
+      ]
+        .filter((elem) => elem)
+        .join(" - ");
+    }
 
     document.title = title;
   };

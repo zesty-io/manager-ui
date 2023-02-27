@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useEffect, useReducer } from "react";
-import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutline";
+import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import { useUpdateContentModelMutation } from "../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
@@ -75,14 +75,14 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
             alignItems: "center",
           }}
         >
-          <DriveFileRenameOutlineRounded color="info" />
+          <DriveFileRenameOutlineRoundedIcon color="info" />
         </Box>
         <Typography variant="h5" sx={{ mt: 1.5 }}>
           Rename Model
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-          This will update the model name and reference name that is shown to
-          content editors & developers
+          This will update the model's Display Name and Reference ID that is
+          shown to content editors & developers
         </Typography>
       </DialogTitle>
       <DialogContent>

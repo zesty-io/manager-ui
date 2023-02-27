@@ -31,6 +31,7 @@ import {
   useGetAllBinGroupsQuery,
   useGetBinsQuery,
 } from "../../services/mediaManager";
+import { useGetContentModelsQuery } from "../../services/instance";
 
 const MIN_TAB_WIDTH = 250;
 const MAX_TAB_WIDTH = 300;
@@ -47,7 +48,7 @@ export default memo(function GlobalTabs() {
   const instanceZUID = useSelector((state: AppState) => state.instance.ZUID);
   const loadedTabs = useSelector((state: AppState) => state.ui.loadedTabs);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const models = useSelector((state: AppState) => state.models);
+  const { data: models } = useGetContentModelsQuery();
   const apps = useSelector((state: AppState) => state.apps.installed);
 
   const content = useSelector((state: AppState) => state.content);
@@ -69,8 +70,11 @@ export default memo(function GlobalTabs() {
         bins,
         binGroups: binGroups?.flat(),
       },
+      instance: {
+        models,
+      },
     };
-  }, [binGroups]);
+  }, [binGroups, models]);
 
   // update state if window is resized (debounced)
   useEffect(() => {
@@ -89,7 +93,7 @@ export default memo(function GlobalTabs() {
 
   useEffect(() => {
     dispatch(setDocumentTitle(location, queryData));
-  }, [location.pathname, location.search]);
+  }, [location.pathname, location.search, queryData]);
 
   // rebuild tabs if any of the store slices changes
   // slices could include tab.name updates

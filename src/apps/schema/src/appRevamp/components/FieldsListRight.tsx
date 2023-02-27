@@ -61,13 +61,13 @@ export const FieldsListRight = ({ model }: Props) => {
   return (
     <Box height="100%" width="280px" bgcolor="grey.50" padding={2}>
       <InputLabel>
-        Reference Name
+        Reference ID
         <Tooltip
           placement="top"
           title="Use this ID to retrieve anything related to this model via the API"
         >
           <InfoRoundedIcon
-            sx={{ ml: 1, width: "10px", height: "10px" }}
+            sx={{ ml: 1, width: "12px", height: "12px" }}
             color="action"
           />
         </Tooltip>
@@ -91,7 +91,7 @@ export const FieldsListRight = ({ model }: Props) => {
                 onClick={() => handleCopyClick(model?.name)}
               >
                 {isCopied === model?.name ? (
-                  <CheckIcon color="success" />
+                  <CheckIcon color="action" />
                 ) : (
                   <ContentCopyRoundedIcon color="action" />
                 )}
@@ -107,7 +107,7 @@ export const FieldsListRight = ({ model }: Props) => {
           title="Content items are always accessed relative to their model, so a model ZUID is required for each call."
         >
           <InfoRoundedIcon
-            sx={{ ml: 1, width: "10px", height: "10px" }}
+            sx={{ ml: 1, width: "12px", height: "12px" }}
             color="action"
           />
         </Tooltip>
@@ -131,7 +131,7 @@ export const FieldsListRight = ({ model }: Props) => {
                 onClick={() => handleCopyClick(model?.ZUID)}
               >
                 {isCopied === model?.ZUID ? (
-                  <CheckIcon color="success" />
+                  <CheckIcon color="action" />
                 ) : (
                   <ContentCopyRoundedIcon color="action" />
                 )}

@@ -46,6 +46,9 @@ export const Sidebar = () => {
           size="small"
           sx={{
             mt: 1.5,
+            "& .MuiOutlinedInput-notchedOutline": {
+              border: 0,
+            },
           }}
           inputProps={{
             "data-cy": "SchemaSidebarSearch",
@@ -103,7 +106,7 @@ export const Sidebar = () => {
             borderColor: "border",
             px: 1,
             pt: 1,
-            overflowY: "scroll",
+            overflowY: "overlay",
             height: "100%",
           }}
         >

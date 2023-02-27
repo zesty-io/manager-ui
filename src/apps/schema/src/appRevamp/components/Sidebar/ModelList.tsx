@@ -77,8 +77,13 @@ export const ModelList = ({ title, models, type }: Props) => {
           </IconButton>
         </Box>
         {sortedModels?.length === 0 && (
-          //@ts-expect-error need to add augmentation
-          <Typography color="text.secondary" variant="body3">
+          <Typography
+            color="text.secondary"
+            component="div"
+            //@ts-expect-error need to add augmentation
+            variant="body3"
+            sx={{ px: "8px" }}
+          >
             No {title} models present.
           </Typography>
         )}
