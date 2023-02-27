@@ -26,7 +26,7 @@ export const AddFieldDivider = ({
 
   return (
     <Box
-      py="3px"
+      py="5px"
       display="flex"
       alignItems={"center"}
       sx={styles}
