@@ -561,7 +561,7 @@ describe("Schema: Fields", () => {
     // Deactivate the field
     cy.getBySelector(`${SELECTORS.FIELD_MENU_BTN}_${fieldName}`)
       .should("exist")
-      .click();
+      .click({ scrollBehavior: "bottom" });
     cy.getBySelector(
       `${SELECTORS.FIELD_DROPDOWN_DEACTIVATE_REACTIVATE}_${fieldName}`
     )
@@ -582,7 +582,7 @@ describe("Schema: Fields", () => {
       `${SELECTORS.FIELD_DROPDOWN_DEACTIVATE_REACTIVATE}_${fieldName}`
     )
       .should("exist")
-      .click();
+      .click({ scrollBehavior: "bottom" });
 
     cy.wait("@updateField");
     cy.wait("@getFields");
