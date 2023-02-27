@@ -97,7 +97,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
           <Autocomplete
             fullWidth
             renderInput={(params) => (
-              <TextField {...params} placeholder="Select" />
+              <TextField {...params} placeholder="None" />
             )}
             value={models?.find((m) => m.ZUID === newParentZUID) || null}
             options={models || []}
@@ -120,7 +120,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
           onClick={() =>
             updateModel({
               ZUID: model.ZUID,
-              body: { parentZUID: newParentZUID },
+              body: { parentZUID: newParentZUID || "0" },
             })
           }
           loading={isLoading}
