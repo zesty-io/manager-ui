@@ -38,6 +38,9 @@ export const AllModels = () => {
               size="small"
               sx={{
                 height: "32px",
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: 0,
+                },
               }}
               inputRef={searchRef}
               InputProps={{
