@@ -126,8 +126,15 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
   }, [error]);
 
   return (
-    <Dialog open onClose={onClose} PaperProps={{ sx: { minWidth: "640px" } }}>
-      <DialogTitle sx={{ p: 3 }}>
+    <Dialog
+      open
+      onClose={onClose}
+      fullScreen
+      PaperProps={{
+        sx: { maxWidth: "640px", my: "20px", maxHeight: "1000px" },
+      }}
+    >
+      <DialogTitle>
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -142,10 +149,10 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
             />
             <Box>
               <Typography variant="h5" fontWeight={600} sx={{ mb: 1 }}>
-                Create {model.name} Model
+                Duplicate {model.name} Model
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                As {modelNameMap[model.type]}
+                As a {modelNameMap[model.type]}
               </Typography>
             </Box>
           </Box>
@@ -154,7 +161,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
           </IconButton>
         </Stack>
       </DialogTitle>
-      <DialogContent sx={{ p: 3 }} dividers>
+      <DialogContent dividers sx={{ pt: 2.5 }}>
         <Box display="flex" flexDirection="column" gap={2.5}>
           <Alert severity="info">
             You&apos;re about to duplicate the Articles model with all of
@@ -244,7 +251,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions sx={{ pt: 2 }}>
+      <DialogActions sx={{ pt: 2.5 }}>
         <Button variant="outlined" color="inherit" onClick={onClose}>
           Cancel
         </Button>
