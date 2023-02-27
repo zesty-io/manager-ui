@@ -472,18 +472,25 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
       item = "";
     }
 
-    let title = [app, item, instanceName, "Zesty.io"]
+    let title = [app, item, "Zesty.io", instanceName, "Manager"]
+
       .filter((elem) => elem)
       .join(" - ");
 
     if (parsedPath.path === "/schema") {
-      title = [app, "All Models", instanceName, "Zesty.io"]
+      title = [app, "All Models", "Zesty.io", instanceName, "Manager"]
         .filter((elem) => elem)
         .join(" - ");
     }
 
     if (keyword) {
-      title = [app, `Search for "${keyword}"`, instanceName, "Zesty.io"]
+      title = [
+        app,
+        `Search for "${keyword}"`,
+        "Zesty.io",
+        instanceName,
+        "Manager",
+      ]
         .filter((elem) => elem)
         .join(" - ");
     }
