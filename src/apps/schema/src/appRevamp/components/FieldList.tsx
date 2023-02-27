@@ -152,7 +152,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   }
 
   return (
-    <Box display="flex" height="100%" sx={{ overflowY: "scroll" }}>
+    <Box display="flex" height="100%" sx={{ overflowY: "auto" }}>
       <Box
         display="flex"
         flexDirection="column"
@@ -202,7 +202,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           />
         </Box>
 
-        <Box sx={{ overflowY: "scroll", height: "100%" }}>
+        <Box sx={{ overflowY: "auto", height: "100%" }}>
           {/* SYSTEM FIELDS */}
           {isSystemFieldsVisible === "true" && !search && (
             <Box

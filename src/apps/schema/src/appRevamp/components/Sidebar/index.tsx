@@ -103,7 +103,7 @@ export const Sidebar = () => {
             borderColor: "border",
             px: 1,
             pt: 1,
-            overflowY: "scroll",
+            overflowY: "auto",
             height: "100%",
           }}
         >
