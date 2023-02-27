@@ -14,7 +14,7 @@ export const Learn = ({ type }: Props) => {
   return (
     <Box data-cy="LearnTab">
       <Box>
-        <Typography variant="h5" fontWeight={600}>
+        <Typography variant="h5" fontWeight={600} mb={0.5}>
           {stringStartsWithVowel(TYPE_TEXT[type])
             ? `What is an ${TYPE_TEXT[type]} Field?`
             : `What is a ${TYPE_TEXT[type]} Field?`}
@@ -28,7 +28,7 @@ export const Learn = ({ type }: Props) => {
         </Typography>
       </Box>
       <Box my={2.5}>
-        <Typography variant="h6" fontWeight={600}>
+        <Typography variant="h6" fontWeight={600} mb={0.5}>
           Common Uses
         </Typography>
         <Box component="ul" pl={3}>
@@ -45,7 +45,7 @@ export const Learn = ({ type }: Props) => {
         </Box>
       </Box>
       <Box>
-        <Typography variant="h6" fontWeight={600}>
+        <Typography variant="h6" fontWeight={600} mb={0.5}>
           Pro Tip
         </Typography>
         <Typography variant="body1" color="text.secondary">
