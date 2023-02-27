@@ -345,7 +345,7 @@ const COMMON_FIELDS: InputField[] = [
   {
     name: "name",
     type: "input",
-    label: "API / Parsley Code Reference",
+    label: "API / Parsley Code ID",
     required: true,
     fullWidth: true,
     maxLength: 50,

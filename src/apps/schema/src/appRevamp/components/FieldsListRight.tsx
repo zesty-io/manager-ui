@@ -61,7 +61,7 @@ export const FieldsListRight = ({ model }: Props) => {
   return (
     <Box height="100%" width="280px" bgcolor="grey.50" padding={2}>
       <InputLabel>
-        Reference Name
+        Reference ID
         <Tooltip
           placement="top"
           title="Use this ID to retrieve anything related to this model via the API"
