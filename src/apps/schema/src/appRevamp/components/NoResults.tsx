@@ -29,6 +29,7 @@ interface Props {
 export const NoResults = ({ type, searchTerm, onButtonClick, sx }: Props) => {
   return (
     <Box
+      data-cy="NoResults"
       textAlign="center"
       sx={{
         ...sx,

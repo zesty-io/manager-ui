@@ -218,6 +218,12 @@ export const Field = ({
 
   return (
     <Box
+      data-cy={`Field_${field.name}`}
+      data-cy-status={
+        Boolean((field as ContentModelField).deletedAt)
+          ? `Field_${field.name}_inactive`
+          : `Field_${field.name}_active`
+      }
       minHeight="40px"
       border="1px solid"
       borderColor="border"
@@ -263,7 +269,13 @@ export const Field = ({
         )}
         <FieldIcon type={field.datatype} />
         <Tooltip title={field.label} enterDelay={3000}>
-          <Typography px={1.5} variant="body2" fontWeight="700" noWrap>
+          <Typography
+            data-cy={`FieldLabel_${field.name}`}
+            px={1.5}
+            variant="body2"
+            fontWeight="700"
+            noWrap
+          >
             {field.label}
           </Typography>
         </Tooltip>
@@ -299,7 +311,12 @@ export const Field = ({
         </Button>
         {withMenu && (
           <>
-            <IconButton onClick={handleMenuClick} size="small" sx={{ ml: 1 }}>
+            <IconButton
+              data-cy={`OpenFieldDropdown_${field.name}`}
+              onClick={handleMenuClick}
+              size="small"
+              sx={{ ml: 1 }}
+            >
               <MoreHorizRoundedIcon sx={{ width: "20px", height: "20px" }} />
             </IconButton>
             <Menu
@@ -316,6 +333,7 @@ export const Field = ({
               }}
             >
               <MenuItem
+                data-cy={`DropdownEditField_${field.name}`}
                 disabled={isDeactivated}
                 onClick={handleOpenEditModalField}
               >
@@ -346,6 +364,7 @@ export const Field = ({
                 </MenuItem>
               ) : (
                 <MenuItem
+                  data-cy={`DeactivateReactivateFieldDropdown_${field.name}`}
                   onClick={(e) => {
                     e.stopPropagation();
 

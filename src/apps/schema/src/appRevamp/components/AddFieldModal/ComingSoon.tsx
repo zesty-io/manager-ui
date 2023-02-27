@@ -3,6 +3,7 @@ import { Box, FormControlLabel, Checkbox, Typography } from "@mui/material";
 export const ComingSoon = () => {
   return (
     <Box
+      data-cy="RulesTab"
       display="flex"
       flexDirection="column"
       height="100%"

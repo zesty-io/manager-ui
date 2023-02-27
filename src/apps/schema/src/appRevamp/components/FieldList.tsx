@@ -167,6 +167,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           justifyContent="space-between"
         >
           <TextField
+            data-cy="FieldListFilter"
             size="small"
             placeholder="Search Fields"
             value={search}
@@ -189,6 +190,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             }
             control={
               <Switch
+                data-cy="ShowSystemFieldsBtn"
                 checked={isSystemFieldsVisible === "true"}
                 size="small"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,6 +208,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {/* SYSTEM FIELDS */}
           {isSystemFieldsVisible === "true" && !search && (
             <Box
+              data-cy="SystemFields"
               ml={3}
               pb={2}
               mb={1.5}
@@ -308,6 +311,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               })}
               <Box pl={3}>
                 <Button
+                  data-cy="EndOfListAddFieldBtn"
                   sx={{
                     justifyContent: "flex-start",
                     my: 1,

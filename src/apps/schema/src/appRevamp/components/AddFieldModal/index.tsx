@@ -51,6 +51,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
 
   return (
     <Dialog
+      data-cy="AddFieldModal"
       open
       onClose={onModalClose}
       fullScreen

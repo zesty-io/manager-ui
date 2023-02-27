@@ -70,12 +70,17 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
       <DialogTitle sx={{ px: 3, py: 2.5 }}>
         <Box display="flex" justifyContent="space-between" pb={2}>
           Select a Field Type
-          <IconButton size="small" onClick={onModalClose}>
+          <IconButton
+            size="small"
+            onClick={onModalClose}
+            data-cy="AddFieldCloseBtn"
+          >
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
         <Box width="349px">
           <TextField
+            data-cy="FieldSelectionFilter"
             fullWidth
             InputProps={{
               startAdornment: (
@@ -92,6 +97,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         </Box>
       </DialogTitle>
       <DialogContent
+        data-cy="FieldSelection"
         dividers
         sx={{
           px: 3,
@@ -105,7 +111,9 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         }}
       >
         {!Object.keys(fieldTypes).length && (
-          <Typography>No matches found.</Typography>
+          <Typography data-cy="FieldSelectionEmpty">
+            No matches found.
+          </Typography>
         )}
         {Object.keys(fieldTypes).map((fieldKey) => (
           <Box className="field-type-group" key={fieldKey}>

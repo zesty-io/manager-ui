@@ -470,7 +470,12 @@ export const FieldForm = ({
         >
           <Box display="flex" alignItems="center">
             {!isUpdateField && (
-              <IconButton size="small" onClick={onBackClick} sx={{ mr: 1.5 }}>
+              <IconButton
+                data-cy="BackToFieldSelectionBtn"
+                size="small"
+                onClick={onBackClick}
+                sx={{ mr: 1.5 }}
+              >
                 <ArrowBackIcon />
               </IconButton>
             )}
@@ -501,7 +506,11 @@ export const FieldForm = ({
               </Typography>
             </Box>
           </Box>
-          <IconButton size="small" onClick={onModalClose}>
+          <IconButton
+            data-cy="AddFieldCloseBtn"
+            size="small"
+            onClick={onModalClose}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
@@ -517,18 +526,21 @@ export const FieldForm = ({
           }}
         >
           <Tab
+            data-cy="DetailsTabBtn"
             value="details"
             label="Details"
             icon={<InfoRoundedIcon color="action" />}
             iconPosition="start"
           />
           <Tab
+            data-cy="RulesTabBtn"
             value="rules"
             label="Rules"
             icon={<RuleRoundedIcon color="action" />}
             iconPosition="start"
           />
           <Tab
+            data-cy="LearnTabBtn"
             value="learn"
             label="Learn"
             icon={<MenuBookRoundedIcon color="action" />}
@@ -543,7 +555,7 @@ export const FieldForm = ({
         }}
       >
         {activeTab === "details" && (
-          <Grid container spacing={2.5} maxWidth="480px">
+          <Grid data-cy="DetailsTab" container spacing={2.5} maxWidth="480px">
             {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
               // Only show tooltip field when updating a field that already has a tooltip value
               const hideTooltipField =
@@ -580,6 +592,7 @@ export const FieldForm = ({
             {isUpdateField && (
               <Grid item xs={12}>
                 <LoadingButton
+                  data-cy="DeactivateReactivateFieldUpdateModal"
                   variant={fieldData?.deletedAt ? "contained" : "outlined"}
                   color={fieldData?.deletedAt ? "primary" : "inherit"}
                   startIcon={
@@ -648,6 +661,7 @@ export const FieldForm = ({
             Cancel
           </Button>
           <LoadingButton
+            data-cy="FieldFormAddFieldBtn"
             loading={isUpdatingField}
             onClick={handleSubmitForm}
             variant="contained"
@@ -671,6 +685,7 @@ export const FieldForm = ({
           </Button>
           <Box>
             <LoadingButton
+              data-cy="FieldFormAddAnotherFieldBtn"
               variant="outlined"
               startIcon={<AddRoundedIcon />}
               sx={{
@@ -682,6 +697,7 @@ export const FieldForm = ({
               Add another field
             </LoadingButton>
             <LoadingButton
+              data-cy="FieldFormAddFieldBtn"
               loading={isCreatingField || isBulkUpdating}
               onClick={handleSubmitForm}
               variant="contained"

@@ -180,6 +180,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 startIcon={<AddRoundedIcon />}
                 onClick={() => onNewFieldModalClick(null)}
                 disabled={!isFieldsLoaded}
+                data-cy="AddFieldBtn"
               >
                 Add Field
               </Button>

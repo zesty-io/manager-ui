@@ -39,7 +39,12 @@ export const MediaRules = ({
   fieldData,
 }: Props) => {
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <Box
+      data-cy="MediaRulesTab"
+      display="flex"
+      flexDirection="column"
+      height="100%"
+    >
       <Box
         display="flex"
         flexDirection="column"
@@ -55,6 +60,7 @@ export const MediaRules = ({
                 }}
                 control={
                   <Checkbox
+                    data-cy={`MediaCheckbox_${rule.name}`}
                     sx={{
                       color: "grey.200",
                     }}

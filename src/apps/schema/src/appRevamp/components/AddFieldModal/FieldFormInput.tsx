@@ -174,6 +174,7 @@ export const FieldFormInput = ({
             )}
           </Box>
           <InputTextField
+            data-cy={`FieldFormInput_${fieldConfig.name}`}
             name={fieldConfig.name}
             required={fieldConfig.required}
             fullWidth={fieldConfig.fullWidth}
@@ -187,7 +188,14 @@ export const FieldFormInput = ({
             }}
             value={prefillData}
             error={Boolean(errorMsg)}
-            helperText={errorMsg}
+            helperText={
+              <Typography
+                data-cy={`ErrorMsg_${fieldConfig.name}`}
+                variant="caption"
+              >
+                {errorMsg}
+              </Typography>
+            }
             type={fieldConfig.inputType || "text"}
             inputProps={{
               min: 1,
@@ -266,6 +274,7 @@ export const FieldFormInput = ({
             {fieldConfig.label}
           </Typography>
           <Autocomplete
+            data-cy={`Autocomplete_${fieldConfig.name}`}
             size="small"
             disabled={disabled}
             value={
@@ -330,6 +339,7 @@ export const FieldFormInput = ({
 
             return (
               <KeyValueInput
+                id={index}
                 key={index}
                 optionKey={key}
                 optionValue={value}
@@ -347,6 +357,7 @@ export const FieldFormInput = ({
           })}
           {fieldConfig.type === "options" && (
             <Button
+              data-cy="DropdownAddOption"
               variant="outlined"
               startIcon={<AddRoundedIcon />}
               onClick={handleAddNewOption}
@@ -361,6 +372,7 @@ export const FieldFormInput = ({
 };
 
 interface KeyValueInputProps {
+  id: number;
   optionKey: string;
   optionValue: string;
   errorMsg?: [string, string];
@@ -370,6 +382,7 @@ interface KeyValueInputProps {
   disabledFields?: string[];
 }
 const KeyValueInput = ({
+  id,
   optionKey,
   optionValue,
   errorMsg,
@@ -404,6 +417,7 @@ const KeyValueInput = ({
     >
       <Box display="flex" gap={2} width="480px">
         <TextField
+          data-cy={`OptionLabel_${id}`}
           name="value"
           required
           fullWidth
@@ -412,11 +426,16 @@ const KeyValueInput = ({
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("value", e.target?.value);
           }}
-          helperText={labelErrorMsg}
+          helperText={
+            <Typography data-cy={`OptionLabelErrorMsg_${id}`} variant="caption">
+              {labelErrorMsg}
+            </Typography>
+          }
           error={Boolean(labelErrorMsg)}
           disabled={disabledFields.includes("value")}
         />
         <TextFieldWithCursorPosition
+          data-cy={`OptionValue_${id}`}
           name="key"
           required
           fullWidth
@@ -425,13 +444,21 @@ const KeyValueInput = ({
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             handleDataChanged("key", e.target?.value);
           }}
-          helperText={valueErrorMsg}
+          helperText={
+            <Typography data-cy={`OptionValueErrorMsg_${id}`} variant="caption">
+              {valueErrorMsg}
+            </Typography>
+          }
           error={Boolean(valueErrorMsg)}
           disabled={disabledFields.includes("key")}
         />
       </Box>
       {isDeletable && (
-        <IconButton size="small" onClick={onDeleteOption}>
+        <IconButton
+          data-cy={`DeleteOption_${id}`}
+          size="small"
+          onClick={onDeleteOption}
+        >
           <DeleteRoundedIcon />
         </IconButton>
       )}

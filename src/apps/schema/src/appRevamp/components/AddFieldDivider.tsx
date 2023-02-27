@@ -26,6 +26,7 @@ export const AddFieldDivider = ({
 
   return (
     <Box
+      data-cy="InBetweenFieldAddFieldBtn"
       py="5px"
       display="flex"
       alignItems={"center"}
