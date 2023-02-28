@@ -35,7 +35,7 @@ export const SearchModels = () => {
         alignItems="center"
         gap={1.5}
         px={3}
-        py={2}
+        py={1.5}
         sx={{
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
         }}

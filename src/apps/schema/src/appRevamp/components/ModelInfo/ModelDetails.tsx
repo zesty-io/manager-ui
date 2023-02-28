@@ -49,12 +49,17 @@ export const ModelDetails = () => {
         <Box
           display="flex"
           alignItems="center"
-          py={2}
           sx={{
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
-          <Box minWidth={280} display="flex" gap={1.5} alignItems="center">
+          <Box
+            minWidth={280}
+            display="flex"
+            gap={1.5}
+            alignItems="center"
+            py={2}
+          >
             <Typography color="text.secondary">Name</Typography>
             <Tooltip
               title="Name that is shown to content editors"
@@ -66,22 +71,29 @@ export const ModelDetails = () => {
               />
             </Tooltip>
           </Box>
-          <Box flex={1}>
+          <Box flex={1} py={2}>
             <Typography>{model?.label}</Typography>
           </Box>
-          <Button size="small" onClick={() => setShowDialogue("rename")}>
-            Edit
-          </Button>
+          <Box py={1.5}>
+            <Button size="small" onClick={() => setShowDialogue("rename")}>
+              Edit
+            </Button>
+          </Box>
         </Box>
         <Box
           display="flex"
           alignItems="center"
-          py={2}
           sx={{
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
-          <Box minWidth={280} display="flex" gap={1.5} alignItems="center">
+          <Box
+            minWidth={280}
+            display="flex"
+            gap={1.5}
+            alignItems="center"
+            py={2}
+          >
             <Typography color="text.secondary">Description</Typography>
             <Tooltip
               title="Displays the purpose of the model to help content writers"
@@ -93,25 +105,32 @@ export const ModelDetails = () => {
               />
             </Tooltip>
           </Box>
-          <Box flex={1}>
+          <Box flex={1} py={2}>
             <Typography>{model?.description}</Typography>
           </Box>
-          <Button
-            size="small"
-            onClick={() => setShowDialogue("updateDescription")}
-          >
-            Edit
-          </Button>
+          <Box py={1.5}>
+            <Button
+              size="small"
+              onClick={() => setShowDialogue("updateDescription")}
+            >
+              Edit
+            </Button>
+          </Box>
         </Box>
         <Box
           display="flex"
           alignItems="center"
-          py={2}
           sx={{
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
-          <Box minWidth={280} display="flex" gap={1.5} alignItems="center">
+          <Box
+            minWidth={280}
+            display="flex"
+            gap={1.5}
+            alignItems="center"
+            py={2}
+          >
             <Typography color="text.secondary">
               API/Parsley Reference ID
             </Typography>
@@ -125,10 +144,10 @@ export const ModelDetails = () => {
               />
             </Tooltip>
           </Box>
-          <Box flex={1}>
+          <Box flex={1} py={2}>
             <Typography>{model?.name}</Typography>
           </Box>
-          <Box display="flex">
+          <Box display="flex" py={1.5}>
             <Button size="small" onClick={() => handleCopy(model?.name)}>
               {isCopied === model?.name ? "Copied" : "Copy"}
             </Button>
@@ -147,12 +166,17 @@ export const ModelDetails = () => {
         <Box
           display="flex"
           alignItems="center"
-          py={2}
           sx={{
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
-          <Box minWidth={280} display="flex" gap={1.5} alignItems="center">
+          <Box
+            minWidth={280}
+            display="flex"
+            gap={1.5}
+            alignItems="center"
+            py={2}
+          >
             <Typography color="text.secondary">Parent Model</Typography>
             <Tooltip
               title="Selecting a parent affects default routing and content navigation in the UI"
@@ -164,10 +188,10 @@ export const ModelDetails = () => {
               />
             </Tooltip>
           </Box>
-          <Box flex={1}>
+          <Box flex={1} py={2}>
             <Typography>{parentModel?.label}</Typography>
           </Box>
-          <Box display="flex">
+          <Box display="flex" py={1.5}>
             <Button
               size="small"
               disabled={!parentModel}
@@ -193,12 +217,17 @@ export const ModelDetails = () => {
         <Box
           display="flex"
           alignItems="center"
-          py={2}
           sx={{
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
-          <Box minWidth={280} display="flex" gap={1.5} alignItems="center">
+          <Box
+            minWidth={280}
+            display="flex"
+            gap={1.5}
+            alignItems="center"
+            py={2}
+          >
             <Typography color="text.secondary">ZUID</Typography>
             <Tooltip
               title="The unique id of the model. Content items are always accessed relative to their model, so a model ZUID is required for each call."
@@ -210,12 +239,14 @@ export const ModelDetails = () => {
               />
             </Tooltip>
           </Box>
-          <Box flex={1}>
+          <Box flex={1} py={2}>
             <Typography>{model?.ZUID}</Typography>
           </Box>
-          <Button size="small" onClick={() => handleCopy(model?.ZUID)}>
-            {isCopied === model?.ZUID ? "Copied" : "Copy"}
-          </Button>
+          <Box py={1.5}>
+            <Button size="small" onClick={() => handleCopy(model?.ZUID)}>
+              {isCopied === model?.ZUID ? "Copied" : "Copy"}
+            </Button>
+          </Box>
         </Box>
       </Box>
       {showDialogue === "rename" && (
