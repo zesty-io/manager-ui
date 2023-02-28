@@ -29,22 +29,29 @@ export const Model = () => {
   return (
     <Box flex="1" display="flex" height="100%" flexDirection="column">
       <ModelHeader onNewFieldModalClick={handleNewFieldModalClick} />
+      <Route
+        path="/schema/:id/fields"
+        render={({ location }) => {
+          const fieldZuid = new URLSearchParams(location.search).get(
+            "fieldZuid"
+          );
+
+          if (fieldZuid) {
+            return (
+              <AddFieldModal
+                mode="update_field"
+                onModalClose={() => history.push(`/schema/${id}/fields`)}
+              />
+            );
+          }
+        }}
+      />
       <Switch>
         <Route
           exact
           path="/schema/:id/fields"
           render={() => (
             <FieldList onNewFieldModalClick={handleNewFieldModalClick} />
-          )}
-        />
-        <Route
-          exact
-          path="/schema/:id/fields/:fieldId"
-          render={() => (
-            <AddFieldModal
-              mode="update_field"
-              onModalClose={() => history.push(`/schema/${id}/fields`)}
-            />
           )}
         />
         <Route exact path="/schema/:id/info" component={ModelInfo} />

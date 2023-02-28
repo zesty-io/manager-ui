@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useParams } from "react-router";
+import { useParams, useLocation } from "react-router";
 import { Dialog } from "@mui/material";
 
 import { FieldSelection } from "./views/FieldSelection";
@@ -8,7 +8,6 @@ import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/
 
 type Params = {
   id: string;
-  fieldId: string;
 };
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
@@ -23,7 +22,9 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
     fieldName: "",
   });
   const params = useParams<Params>();
-  const { id, fieldId } = params;
+  const { id } = params;
+  const location = useLocation();
+  const fieldId = new URLSearchParams(location.search).get("fieldZuid");
   const [localSortIndex, setLocalSortIndex] = useState<number | null>(null);
   const { data: fields } = useGetContentModelFieldsQuery(id);
 
