@@ -16,16 +16,6 @@ export const RelatedModels = () => {
   const history = useHistory();
   const { data: fields } = useGetContentModelFieldsQuery(id);
   const { data: models } = useGetContentModelsQuery();
-  console.log("testing", fields);
-  // const model = models?.find((model) => model.ZUID === id);
-  // const parentModel = models?.find(
-  //   (modelI) => modelI.ZUID === model?.parentZUID
-  // );
-  // const relatedModels = models?.filter(
-  //   (m) =>
-  //     (m.parentZUID === parentModel?.ZUID || m.parentZUID === model.ZUID) &&
-  //     m.ZUID !== model?.ZUID
-  // );
   const relatedModelsZUIDs = fields
     ?.filter(
       (field) =>
