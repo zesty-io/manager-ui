@@ -56,14 +56,11 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       onClose={onModalClose}
       fullScreen
       sx={{
-        "& .MuiDialog-container": {
-          flexDirection: "column", //Needed so that the y-axis margins show up
-        },
+        my: "20px",
       }}
       PaperProps={{
         sx: {
           maxWidth: viewMode === "fields_list" ? "900px" : "640px",
-          my: "20px",
           maxHeight: "1000px",
         },
       }}

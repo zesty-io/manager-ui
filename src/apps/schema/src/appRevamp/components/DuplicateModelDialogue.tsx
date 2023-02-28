@@ -134,8 +134,11 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       open
       onClose={onClose}
       fullScreen
+      sx={{
+        my: "20px",
+      }}
       PaperProps={{
-        sx: { maxWidth: "640px", my: "20px", maxHeight: "1000px" },
+        sx: { maxWidth: "640px", maxHeight: "1000px" },
       }}
     >
       <DialogTitle>
