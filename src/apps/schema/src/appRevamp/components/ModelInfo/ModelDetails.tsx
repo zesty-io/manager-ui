@@ -44,7 +44,7 @@ export const ModelDetails = () => {
           Model Details
         </Typography>
         <Typography color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
-          View and edit the primary properties of your model
+          View and update the primary properties of your model
         </Typography>
         <Box
           display="flex"
