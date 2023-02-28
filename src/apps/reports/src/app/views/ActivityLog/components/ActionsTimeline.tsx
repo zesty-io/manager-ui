@@ -1,37 +1,54 @@
-import { useMemo } from "react";
+import { useMemo, FC, CSSProperties } from "react";
 import { FixedSizeList as List } from "react-window";
 import moment from "moment";
 import { useWindowSize } from "react-use";
-import { Typography, Skeleton } from "@mui/material";
+import { Typography, Skeleton, Box } from "@mui/material";
 import { ActionTimelineItem } from "./ActionTimelineItem";
 import { TimelineItem } from "./ActionTimelineItem/TimelineItem";
+import { Audit } from "../../../../../../../shell/services/types";
 
 const skeletonDataset = ["-", {}, {}, {}, "-", {}, {}, {}];
 
-export const ActionsTimeline = (props) => {
+type ActionsWithHeaders = (string | Audit)[];
+interface ListRowProps {
+  index: number;
+  data: ActionsWithHeaders;
+  style: CSSProperties;
+}
+interface ActionsTimelineProps {
+  showSkeletons: boolean;
+  actions: Audit[];
+}
+export const ActionsTimeline: FC<ActionsTimelineProps> = ({
+  showSkeletons,
+  actions,
+}) => {
   const { width, height } = useWindowSize();
 
   const actionsWithHeaders = useMemo(() => {
-    let arr = [];
-    props.actions.forEach((action) => {
+    let arr: ActionsWithHeaders = [];
+
+    actions?.forEach((action) => {
       const formattedDate = moment(action.happenedAt).format("LL");
+
       if (!arr.includes(formattedDate)) {
         arr.push(formattedDate);
       }
 
       arr.push(action);
     });
-    return arr;
-  });
 
-  const Row = ({ index, data, style }) => {
+    return arr;
+  }, [actions]);
+
+  const Row = ({ index, data, style }: ListRowProps) => {
     const action = data[index];
 
     if (typeof action === "string") {
       return (
-        <div style={style}>
+        <Box sx={style}>
           <Typography variant="h5" fontWeight={600}>
-            {props.showSkeletons ? (
+            {showSkeletons ? (
               <Skeleton variant="rectangular" width={120} />
             ) : moment().isSame(action, "day") ? (
               "Today"
@@ -41,13 +58,13 @@ export const ActionsTimeline = (props) => {
               action
             )}
           </Typography>
-        </div>
+        </Box>
       );
     }
 
-    if (props.showSkeletons) {
+    if (showSkeletons) {
       return (
-        <div style={style}>
+        <Box sx={style}>
           <TimelineItem
             showSkeletons
             divider
@@ -56,12 +73,12 @@ export const ActionsTimeline = (props) => {
               typeof skeletonDataset[index + 1] !== "string"
             }
           />
-        </div>
+        </Box>
       );
     }
 
     return (
-      <div style={style} key={action.ZUID}>
+      <Box sx={style} key={action.ZUID}>
         <ActionTimelineItem
           action={action}
           renderConnector={
@@ -69,17 +86,17 @@ export const ActionsTimeline = (props) => {
             typeof actionsWithHeaders[index + 1] !== "string"
           }
         />
-      </div>
+      </Box>
     );
   };
 
   return (
     <List
       height={height - 284}
-      itemCount={props.showSkeletons ? 10 : actionsWithHeaders.length}
+      itemCount={showSkeletons ? 10 : actionsWithHeaders.length}
       itemSize={79}
       width={"100%"}
-      itemData={props.showSkeletons ? skeletonDataset : actionsWithHeaders}
+      itemData={showSkeletons ? skeletonDataset : actionsWithHeaders}
     >
       {Row}
     </List>
