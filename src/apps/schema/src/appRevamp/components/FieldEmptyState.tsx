@@ -44,6 +44,7 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
           sx={{
             mt: 2,
           }}
+          size="small"
         >
           Add Field
         </Button>

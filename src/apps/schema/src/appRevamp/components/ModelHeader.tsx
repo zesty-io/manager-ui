@@ -171,7 +171,16 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                   startIcon={<PostAddRoundedIcon color="action" />}
                   onClick={() => history.push(`/content/${model?.ZUID}/new`)}
                 >
-                  Create {model?.label}
+                  <Box
+                    sx={{
+                      maxWidth: "220px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Create {model?.label}
+                  </Box>
                 </Button>
               )}
               <Button
