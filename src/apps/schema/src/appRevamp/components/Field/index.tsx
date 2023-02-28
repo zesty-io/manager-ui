@@ -321,7 +321,11 @@ export const Field = ({
             </IconButton>
             <Menu
               open={isMenuOpen}
-              onClose={() => setAnchorEl(null)}
+              onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.stopPropagation();
+
+                setAnchorEl(null);
+              }}
               anchorEl={anchorEl}
               anchorOrigin={{
                 vertical: "bottom",

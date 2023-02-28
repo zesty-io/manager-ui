@@ -350,8 +350,14 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
 
           {/* INACTIVE FIELDS ARE PRESENT */}
           {Boolean(deactivatedFields?.length) && !search && (
-            <Box mb={2} mt={0.5}>
-              <Box pl={3} pb={1.5}>
+            <Box
+              mb={2}
+              mt={0.5}
+              display="flex"
+              flexDirection="column"
+              gap={1.5}
+            >
+              <Box pl={3}>
                 <Typography variant="h6" mb={1}>
                   Deactivated Fields
                 </Typography>
