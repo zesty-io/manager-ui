@@ -90,9 +90,13 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
         const newFields = fields
           .filter((field) => !field?.deletedAt)
           .map((field) => {
-            const { ZUID, ...rest } = field;
+            const { ZUID, settings, ...rest } = field;
             return {
               ...rest,
+              settings: {
+                ...settings,
+                list: settings?.list || false,
+              },
             };
           });
         createFields({
