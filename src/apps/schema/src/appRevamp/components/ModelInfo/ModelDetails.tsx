@@ -70,7 +70,7 @@ export const ModelDetails = () => {
             <Typography>{model?.label}</Typography>
           </Box>
           <Button size="small" onClick={() => setShowDialogue("rename")}>
-            Update
+            Edit
           </Button>
         </Box>
         <Box
@@ -100,7 +100,7 @@ export const ModelDetails = () => {
             size="small"
             onClick={() => setShowDialogue("updateDescription")}
           >
-            Update
+            Edit
           </Button>
         </Box>
         <Box
@@ -140,7 +140,7 @@ export const ModelDetails = () => {
               }}
             />
             <Button size="small" onClick={() => setShowDialogue("rename")}>
-              Update
+              Edit
             </Button>
           </Box>
         </Box>
@@ -186,7 +186,7 @@ export const ModelDetails = () => {
               size="small"
               onClick={() => setShowDialogue("updateParent")}
             >
-              Update
+              Edit
             </Button>
           </Box>
         </Box>
