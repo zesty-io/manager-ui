@@ -136,6 +136,14 @@ export const ActivityDetails = () => {
           </Button>
         </Box>
       </Box>
+      <Button
+        sx={{ mt: 2 }}
+        size="large"
+        variant="outlined"
+        onClick={() => history.push(`/reports/activity-log/resources/${id}`)}
+      >
+        View All Activity
+      </Button>
     </Box>
   );
 };
