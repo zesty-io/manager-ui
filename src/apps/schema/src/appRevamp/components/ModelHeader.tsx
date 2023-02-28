@@ -219,13 +219,13 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
             }
           >
             <Tab
-              icon={<SplitscreenRoundedIcon color="action" />}
+              icon={<SplitscreenRoundedIcon color="action" fontSize="small" />}
               iconPosition="start"
               label="Fields"
               value="fields"
             />
             <Tab
-              icon={<InfoRoundedIcon color="action" />}
+              icon={<InfoRoundedIcon color="action" fontSize="small" />}
               iconPosition="start"
               label="Info"
               value="info"
