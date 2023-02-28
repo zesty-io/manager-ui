@@ -44,7 +44,7 @@ export const RelatedModels = () => {
           >
             <Box display="flex" flex={1} gap={1.5} alignItems="center">
               <SvgIcon color="action" component={modelIconMap[model?.type]} />
-              <Typography>{model.label}</Typography>
+              <Typography>{model?.label}</Typography>
             </Box>
             <Button
               size="small"
