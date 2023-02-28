@@ -75,9 +75,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       const newModel = { ...prev, ...next };
 
       if (prev.label !== newModel.label) {
-        newModel.name = newModel.label.toLowerCase().replaceAll(" ", "_");
+        newModel.name = newModel.label.toLowerCase().replace(/\W/g, "_");
       } else {
-        newModel.name = newModel.name.toLowerCase().replaceAll(" ", "_");
+        newModel.name = newModel.name.toLowerCase().replace(/\W/g, "_");
       }
 
       return newModel;
