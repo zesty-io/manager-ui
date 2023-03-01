@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useLocation } from "react-router";
 import { Dialog } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
@@ -58,6 +59,12 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       fullScreen
       sx={{
         my: "20px",
+        "*::-webkit-scrollbar-track-piece": {
+          backgroundColor: `${theme.palette.grey[100]} !important`,
+        },
+        "*::-webkit-scrollbar-thumb": {
+          backgroundColor: `${theme.palette.grey[300]} !important`,
+        },
       }}
       PaperProps={{
         sx: {

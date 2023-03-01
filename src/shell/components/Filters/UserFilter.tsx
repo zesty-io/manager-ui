@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { theme } from "@zesty-io/material";
 
 import { FilterButton } from "./FilterButton";
 import { useGetUsersQuery } from "../../services/accounts";
@@ -72,9 +73,17 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
         anchorEl={menuAnchorEl}
         onClose={() => setMenuAnchorEl(null)}
         PaperProps={{
-          style: {
-            maxHeight: 52 * 10 + 8, // Item Height * No. of items to show + Padding Top
+          sx: {
+            maxHeight: 420,
             width: 320,
+            mt: 1,
+            "::-webkit-scrollbar-track-piece": {
+              backgroundColor: `${theme.palette.grey[100]} !important`,
+              borderRadius: "4px",
+            },
+            "::-webkit-scrollbar-thumb": {
+              backgroundColor: `${theme.palette.grey[300]} !important`,
+            },
           },
         }}
       >

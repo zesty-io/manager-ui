@@ -5,7 +5,6 @@ import { FilterButton } from "../FilterButton";
 import { DateFilterModal } from "./DateFilterModal";
 import { PresetType, DateFilterModalType, DateFilterValue } from "./types";
 import moment from "moment-timezone";
-import { isEmpty } from "lodash";
 
 const PRESET_DATES: PresetDate[] = [
   {
@@ -47,6 +46,7 @@ const CUSTOM_DATES: CustomDate[] = [
     value: "after",
   },
 ];
+const ITEM_HEIGHT = 40;
 
 interface PresetDate {
   text: string;
@@ -130,6 +130,11 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
           open={isFilterMenuOpen}
           anchorEl={menuAnchorEl}
           onClose={() => setMenuAnchorEl(null)}
+          PaperProps={{
+            sx: {
+              mt: 1,
+            },
+          }}
         >
           {PRESET_DATES.map((date, index) => {
             const isPresetSelected =
@@ -147,6 +152,9 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
                     value: date.value,
                   });
                 }}
+                sx={{
+                  height: ITEM_HEIGHT,
+                }}
               >
                 <ListItemText>{date.text}</ListItemText>
               </MenuItem>
@@ -161,6 +169,9 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
                 selected={isCustomDateSelected}
                 key={date.value}
                 onClick={() => handleOpenCalendarModal(date.value)}
+                sx={{
+                  height: ITEM_HEIGHT,
+                }}
               >
                 <ListItemText>{date.text}</ListItemText>
               </MenuItem>

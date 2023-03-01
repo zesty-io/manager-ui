@@ -452,8 +452,7 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
       {
         name: "group_id",
         type: "autocomplete",
-        label: "Lock to a folder",
-        subLabel: "Select Folder",
+        label: "Select Folder",
         required: false,
         gridSize: 12,
       },

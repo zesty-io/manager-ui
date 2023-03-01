@@ -47,6 +47,11 @@ export const ModelType: FC<ModelTypeProps> = ({ value, onChange }) => {
           open={isFilterMenuOpen}
           anchorEl={menuAnchorEl}
           onClose={() => setMenuAnchorEl(null)}
+          PaperProps={{
+            sx: {
+              mt: 1,
+            },
+          }}
         >
           {MODEL_TYPE_FILTERS.map((filter, index) => (
             <MenuItem
@@ -57,6 +62,9 @@ export const ModelType: FC<ModelTypeProps> = ({ value, onChange }) => {
               }
               key={index}
               onClick={() => handleFilterSelect(filter)}
+              sx={{
+                height: "40px",
+              }}
             >
               <ListItemIcon>
                 <SvgIcon component={modelIconMap[filter]} />
