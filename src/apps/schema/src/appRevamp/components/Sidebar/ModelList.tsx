@@ -72,6 +72,7 @@ export const ModelList = ({ title, models, type }: Props) => {
           <IconButton
             size="small"
             onClick={() => setShowCreateModelDialogue(true)}
+            data-cy={`create-model-button-sidebar-${type}`}
           >
             <AddIcon fontSize="small" />
           </IconButton>

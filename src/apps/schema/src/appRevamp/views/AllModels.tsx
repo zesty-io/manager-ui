@@ -60,6 +60,7 @@ export const AllModels = () => {
               size="small"
               startIcon={<AddRoundedIcon />}
               onClick={() => setShowCreateModelDialogue(true)}
+              data-cy="create-model-button-all-models"
             >
               Create Model
             </Button>
