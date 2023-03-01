@@ -75,7 +75,13 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
       >
         <MenuItem
           disableRipple
-          onKeyDown={(e) => e.stopPropagation()}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            const allowedKeys = ["ArrowUp", "ArrowDown"];
+
+            if (!allowedKeys.includes(e.key)) {
+              e.stopPropagation();
+            }
+          }}
           sx={{
             "&:hover": {
               backgroundColor: "common.white",
