@@ -5,6 +5,7 @@ import { FilterButton } from "../FilterButton";
 import { DateFilterModal } from "./DateFilterModal";
 import { PresetType, DateFilterModalType, DateFilterValue } from "./types";
 import moment from "moment-timezone";
+import { isEmpty } from "lodash";
 
 const PRESET_DATES: PresetDate[] = [
   {
@@ -130,9 +131,15 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
           anchorEl={menuAnchorEl}
           onClose={() => setMenuAnchorEl(null)}
         >
-          {PRESET_DATES.map((date) => {
+          {PRESET_DATES.map((date, index) => {
+            const isPresetSelected =
+              value.type && value.value
+                ? value.type === "preset" && value.value === date.value
+                : index === 0;
+
             return (
               <MenuItem
+                selected={isPresetSelected}
                 key={date.value}
                 onClick={() => {
                   handleFilterSelect({
@@ -147,8 +154,11 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
           })}
           <Divider />
           {CUSTOM_DATES.map((date) => {
+            const isCustomDateSelected = value.type === date.value;
+
             return (
               <MenuItem
+                selected={isCustomDateSelected}
                 key={date.value}
                 onClick={() => handleOpenCalendarModal(date.value)}
               >
