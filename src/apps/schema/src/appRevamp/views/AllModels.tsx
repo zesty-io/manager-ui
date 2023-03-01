@@ -9,11 +9,18 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { ModelsTable } from "../components/ModelsTable";
 import { CreateModelDialogue } from "../components/CreateModelDialogue";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
+import { useLocation } from "react-router";
 
 export const AllModels = () => {
   const [search, setSearch] = useState("");
-  const [showCreateModelDialogue, setShowCreateModelDialogue] = useState(false);
+  const location = useLocation();
+  const triggerCreate = new URLSearchParams(location.search).get(
+    "triggerCreate"
+  );
+  const [showCreateModelDialogue, setShowCreateModelDialogue] = useState(
+    triggerCreate === "true" ? true : false
+  );
   const searchRef = useRef(null);
 
   return (
