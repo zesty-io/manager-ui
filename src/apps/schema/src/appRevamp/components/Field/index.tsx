@@ -185,7 +185,7 @@ export const Field = ({
     const { ZUID } = field as ContentModelField;
 
     if (ZUID) {
-      history.push(`${location.pathname}?fieldZuid=${ZUID}`);
+      history.push(`${location.pathname}/${ZUID}`);
       setAnchorEl(null);
     }
   };

@@ -9,6 +9,7 @@ import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/
 
 type Params = {
   id: string;
+  fieldId: string;
 };
 export type ViewMode = "fields_list" | "new_field" | "update_field";
 interface Props {
@@ -23,9 +24,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
     fieldName: "",
   });
   const params = useParams<Params>();
-  const { id } = params;
-  const location = useLocation();
-  const fieldId = new URLSearchParams(location.search).get("fieldZuid");
+  const { id, fieldId } = params;
   const [localSortIndex, setLocalSortIndex] = useState<number | null>(null);
   const { data: fields } = useGetContentModelFieldsQuery(id);
 

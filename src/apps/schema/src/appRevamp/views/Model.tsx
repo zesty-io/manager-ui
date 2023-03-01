@@ -25,35 +25,28 @@ export const Model = () => {
     setAddFieldModalOpen(false);
     setSortIndex(null);
   };
-
   return (
     <Box flex="1" display="flex" height="100%" flexDirection="column">
       <ModelHeader onNewFieldModalClick={handleNewFieldModalClick} />
       <Route
-        path="/schema/:id/fields"
-        render={({ location }) => {
-          const fieldZuid = new URLSearchParams(location.search).get(
-            "fieldZuid"
+        path="/schema/:id/fields/:fieldId"
+        render={() => {
+          return (
+            <AddFieldModal
+              mode="update_field"
+              onModalClose={() => history.push(`/schema/${id}/fields`)}
+            />
           );
-
-          if (fieldZuid) {
-            return (
-              <AddFieldModal
-                mode="update_field"
-                onModalClose={() => history.push(`/schema/${id}/fields`)}
-              />
-            );
-          }
         }}
       />
       <Switch>
         <Route
-          exact
           path="/schema/:id/fields"
           render={() => (
             <FieldList onNewFieldModalClick={handleNewFieldModalClick} />
           )}
         />
+
         <Route exact path="/schema/:id/info" component={ModelInfo} />
         <Redirect to="/schema/:id/fields" />
       </Switch>
