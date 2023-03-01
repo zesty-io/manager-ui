@@ -190,7 +190,7 @@ export const FieldForm = ({
         }
       } else {
         if (field.type === "checkbox") {
-          formFields[field.name] = false;
+          formFields[field.name] = true;
         } else if (field.type === "options") {
           formFields[field.name] = [{ "": "" }];
         } else if (field.type === "toggle_options") {
