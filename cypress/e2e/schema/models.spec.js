@@ -20,7 +20,7 @@ describe("Schema: Models", () => {
     cy.contains("Create Headless Dataset Model").should("be.visible");
     cy.get("body").type("{esc}");
   });
-  it.only("Creates a model", () => {
+  it("Creates model", () => {
     cy.getBySelector(`create-model-button-all-models`).click();
     cy.contains("Single Page Model").click();
     cy.contains("Next").click();
@@ -33,14 +33,31 @@ describe("Schema: Models", () => {
       .next()
       .type("Homepage{downArrow}{enter}");
     cy.contains("Description").next().type("Cypress test model description");
-    // cy.get(".MuiDialog-container").within(() => {
-    //   cy.contains("Create Model").click();
-    // });
-    // cy.intercept('POST', '/posts').as('post')
-    // cy.get('@post').should('have.property', 'status', 201)
-    // expect post request to be made
-    // cy.intercept('POST', '*/models', {
-    //   statusCode: 201,
-    // })
+    cy.get(".MuiDialog-container").within(() => {
+      cy.contains("Create Model").click();
+    });
+    cy.intercept("POST", "/models");
+    cy.intercept("GET", "/models");
+    cy.contains("Create Cypress Test Model").should("exist");
+  });
+  it("Renames model", () => {
+    cy.getBySelector(`model-header-menu`).click();
+    cy.contains("Rename Model").click();
+    cy.get(".MuiDialog-container").within(() => {
+      cy.get("label").contains("Display Name").next().type(" Updated");
+      cy.get("label").contains("Reference ID").next().type("_updated");
+      cy.contains("Save").click();
+    });
+    cy.intercept("PUT", "/models");
+    cy.intercept("GET", "/models");
+    cy.contains("Cypress Test Model Updated").should("exist");
+  });
+  it("Deletes model", () => {
+    cy.getBySelector(`model-header-menu`).click();
+    cy.contains("Delete Model").click();
+    cy.get(".MuiDialog-container").within(() => {
+      cy.get(".MuiOutlinedInput-root").type("Cypress Test Model Updated");
+    });
+    cy.contains("Delete Forever").click();
   });
 });

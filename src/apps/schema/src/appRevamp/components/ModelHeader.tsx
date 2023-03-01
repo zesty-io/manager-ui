@@ -98,6 +98,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 size="small"
                 onClick={(event) => setAnchorEl(event.currentTarget)}
                 sx={{ height: "fit-content" }}
+                data-cy="model-header-menu"
               >
                 <ArrowDropDownRoundedIcon fontSize="small" />
               </IconButton>
