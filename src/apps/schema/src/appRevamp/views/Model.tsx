@@ -18,7 +18,7 @@ export const Model = () => {
   const history = useHistory();
   const params = useParams<Params>();
   const { id } = params;
-  const { data: models, isLoading } = useGetContentModelsQuery();
+  const { data: models, isFetching } = useGetContentModelsQuery();
 
   const handleNewFieldModalClick = (sortIndex: number | null) => {
     setAddFieldModalOpen(true);
@@ -30,7 +30,7 @@ export const Model = () => {
     setSortIndex(null);
   };
 
-  if (!isLoading && !models?.find((model) => model.ZUID === id)) {
+  if (!isFetching && !models?.find((model) => model.ZUID === id)) {
     return (
       <NotFound
         title="Model Not Found"
