@@ -50,7 +50,7 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
   const activeUserFilter = users?.find((user) => user?.ZUID === value);
   const buttonText = activeUserFilter
     ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
-    : "People";
+    : "Created By";
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
