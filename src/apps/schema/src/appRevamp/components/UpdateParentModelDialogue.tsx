@@ -100,7 +100,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
               <TextField {...params} placeholder="None" />
             )}
             value={models?.find((m) => m.ZUID === newParentZUID) || null}
-            options={models || []}
+            options={models?.filter((m) => m.type !== "dataset") || []}
             onChange={(event, value: ContentModel) =>
               setNewParentZUID(value?.ZUID || null)
             }
