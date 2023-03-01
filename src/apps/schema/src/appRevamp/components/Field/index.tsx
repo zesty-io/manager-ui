@@ -186,6 +186,7 @@ export const Field = ({
 
     if (ZUID) {
       history.push(`${location.pathname}/${ZUID}`);
+      setAnchorEl(null);
     }
   };
 

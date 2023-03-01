@@ -233,7 +233,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 </Link>
                 .
               </Typography>
-              <Box display="flex" flexDirection="column" gap={1} mt={2}>
+              <Box display="flex" flexDirection="column" gap={1} mt={1.5}>
                 {SYSTEM_FIELDS.map((field, index) => (
                   <Field
                     key={index}

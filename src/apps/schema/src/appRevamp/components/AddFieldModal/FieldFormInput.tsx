@@ -13,6 +13,7 @@ import {
   Tooltip,
   Button,
   IconButton,
+  Stack,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -189,12 +190,14 @@ export const FieldFormInput = ({
             value={prefillData}
             error={Boolean(errorMsg)}
             helperText={
-              <Typography
-                data-cy={`ErrorMsg_${fieldConfig.name}`}
-                variant="caption"
-              >
-                {errorMsg}
-              </Typography>
+              errorMsg && (
+                <Typography
+                  data-cy={`ErrorMsg_${fieldConfig.name}`}
+                  variant="caption"
+                >
+                  {errorMsg}
+                </Typography>
+              )
             }
             type={fieldConfig.inputType || "text"}
             inputProps={{
@@ -219,11 +222,14 @@ export const FieldFormInput = ({
               checked={Boolean(prefillData)}
               sx={{
                 color: "grey.200",
+                pl: 1,
+                pt: 0,
               }}
+              size="small"
             />
           }
           label={
-            <>
+            <Stack>
               <Typography variant="body2" fontWeight={600}>
                 {fieldConfig.label}
               </Typography>
@@ -236,8 +242,11 @@ export const FieldFormInput = ({
                   {fieldConfig.subLabel}
                 </Typography>
               )}
-            </>
+            </Stack>
           }
+          sx={{
+            alignItems: "flex-start",
+          }}
         />
       )}
 

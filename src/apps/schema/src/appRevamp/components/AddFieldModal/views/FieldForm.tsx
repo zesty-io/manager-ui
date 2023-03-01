@@ -190,7 +190,7 @@ export const FieldForm = ({
         }
       } else {
         if (field.type === "checkbox") {
-          formFields[field.name] = false;
+          formFields[field.name] = true;
         } else if (field.type === "options") {
           formFields[field.name] = [{ "": "" }];
         } else if (field.type === "toggle_options") {
@@ -458,15 +458,15 @@ export const FieldForm = ({
     <>
       <DialogTitle
         sx={{
-          padding: 2.5,
-          paddingBottom: 0,
+          padding: 0,
         }}
       >
         <Box
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          pb={0.5}
+          px={2.5}
+          pt={2.5}
         >
           <Box display="flex" alignItems="center">
             {!isUpdateField && (
@@ -518,6 +518,8 @@ export const FieldForm = ({
           value={activeTab}
           onChange={(_, value: ActiveTab) => setActiveTab(value)}
           sx={{
+            px: 2.5,
+            height: "52px",
             ".Mui-selected": {
               svg: {
                 color: "primary.main",
@@ -529,21 +531,21 @@ export const FieldForm = ({
             data-cy="DetailsTabBtn"
             value="details"
             label="Details"
-            icon={<InfoRoundedIcon color="action" />}
+            icon={<InfoRoundedIcon fontSize="small" color="action" />}
             iconPosition="start"
           />
           <Tab
             data-cy="RulesTabBtn"
             value="rules"
             label="Rules"
-            icon={<RuleRoundedIcon color="action" />}
+            icon={<RuleRoundedIcon fontSize="small" color="action" />}
             iconPosition="start"
           />
           <Tab
             data-cy="LearnTabBtn"
             value="learn"
             label="Learn"
-            icon={<MenuBookRoundedIcon color="action" />}
+            icon={<MenuBookRoundedIcon fontSize="small" color="action" />}
             iconPosition="start"
           />
         </Tabs>

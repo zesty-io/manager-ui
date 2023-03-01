@@ -46,6 +46,7 @@ const CUSTOM_DATES: CustomDate[] = [
     value: "after",
   },
 ];
+const ITEM_HEIGHT = 40;
 
 interface PresetDate {
   text: string;
@@ -129,16 +130,30 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
           open={isFilterMenuOpen}
           anchorEl={menuAnchorEl}
           onClose={() => setMenuAnchorEl(null)}
+          PaperProps={{
+            sx: {
+              mt: 1,
+            },
+          }}
         >
-          {PRESET_DATES.map((date) => {
+          {PRESET_DATES.map((date, index) => {
+            const isPresetSelected =
+              value.type && value.value
+                ? value.type === "preset" && value.value === date.value
+                : index === 0;
+
             return (
               <MenuItem
+                selected={isPresetSelected}
                 key={date.value}
                 onClick={() => {
                   handleFilterSelect({
                     type: "preset",
                     value: date.value,
                   });
+                }}
+                sx={{
+                  height: ITEM_HEIGHT,
                 }}
               >
                 <ListItemText>{date.text}</ListItemText>
@@ -147,10 +162,16 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
           })}
           <Divider />
           {CUSTOM_DATES.map((date) => {
+            const isCustomDateSelected = value.type === date.value;
+
             return (
               <MenuItem
+                selected={isCustomDateSelected}
                 key={date.value}
                 onClick={() => handleOpenCalendarModal(date.value)}
+                sx={{
+                  height: ITEM_HEIGHT,
+                }}
               >
                 <ListItemText>{date.text}</ListItemText>
               </MenuItem>

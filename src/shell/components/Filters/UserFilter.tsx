@@ -1,4 +1,4 @@
-import { Dispatch, FC, useState, useMemo } from "react";
+import { useRef, FC, useState, useMemo, useEffect } from "react";
 import {
   Menu,
   MenuItem,
@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { theme } from "@zesty-io/material";
 
 import { FilterButton } from "./FilterButton";
 import { useGetUsersQuery } from "../../services/accounts";
@@ -27,6 +28,7 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
   );
   const isFilterMenuOpen = Boolean(menuAnchorEl);
   const { data: users } = useGetUsersQuery();
+  const searchField = useRef<HTMLInputElement | null>(null);
 
   const filteredUsers = useMemo(() => {
     if (!filter.length) {
@@ -41,10 +43,14 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
     );
   }, [filter, users]);
 
+  useEffect(() => {
+    searchField.current?.focus();
+  }, [filteredUsers]);
+
   const activeUserFilter = users?.find((user) => user?.ZUID === value);
   const buttonText = activeUserFilter
     ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
-    : "People";
+    : "Created By";
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
@@ -67,15 +73,29 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
         anchorEl={menuAnchorEl}
         onClose={() => setMenuAnchorEl(null)}
         PaperProps={{
-          style: {
-            maxHeight: 52 * 10 + 8, // Item Height * No. of items to show + Padding Top
+          sx: {
+            maxHeight: 420,
             width: 320,
+            mt: 1,
+            "::-webkit-scrollbar-track-piece": {
+              backgroundColor: `${theme.palette.grey[100]} !important`,
+              borderRadius: "4px",
+            },
+            "::-webkit-scrollbar-thumb": {
+              backgroundColor: `${theme.palette.grey[300]} !important`,
+            },
           },
         }}
       >
         <MenuItem
           disableRipple
-          onKeyDown={(e) => e.stopPropagation()}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            const allowedKeys = ["ArrowUp", "ArrowDown"];
+
+            if (!allowedKeys.includes(e.key)) {
+              e.stopPropagation();
+            }
+          }}
           sx={{
             "&:hover": {
               backgroundColor: "common.white",
@@ -102,13 +122,15 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
                 </IconButton>
               ) : null,
             }}
+            inputProps={{ ref: searchField }}
           />
         </MenuItem>
-        {filteredUsers?.map((user) => {
+        {filteredUsers?.map((user, index) => {
           return (
             <MenuItem
               key={user?.ZUID}
               onClick={() => handleFilterSelect(user?.ZUID)}
+              selected={value ? value === user?.ZUID : index === 0}
             >
               <ListItemAvatar>
                 <Avatar
