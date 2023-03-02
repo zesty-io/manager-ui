@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useLocation } from "react-router";
 import { Dialog } from "@mui/material";
 import { theme } from "@zesty-io/material";
@@ -55,7 +55,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       data-cy="AddFieldModal"
       open
       onClose={onModalClose}
-      fullScreen
+      fullScreen={viewMode === "fields_list"}
       sx={{
         my: "20px",
         "*::-webkit-scrollbar-track-piece": {
@@ -67,7 +67,9 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       }}
       PaperProps={{
         sx: {
-          maxWidth: viewMode === "fields_list" ? "900px" : "640px",
+          width: viewMode === "fields_list" ? "900px" : "640px",
+          maxWidth: "100%",
+          minHeight: "680px",
           maxHeight: "1000px",
         },
       }}

@@ -554,6 +554,7 @@ export const FieldForm = ({
         dividers
         sx={{
           p: 2.5,
+          position: "relative",
         }}
       >
         {activeTab === "details" && (

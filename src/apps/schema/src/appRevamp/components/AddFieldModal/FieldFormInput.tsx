@@ -175,6 +175,7 @@ export const FieldFormInput = ({
             )}
           </Box>
           <InputTextField
+            autoFocus={fieldConfig.name === "label"}
             data-cy={`FieldFormInput_${fieldConfig.name}`}
             name={fieldConfig.name}
             required={fieldConfig.required}
