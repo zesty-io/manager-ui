@@ -12,6 +12,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { theme } from "@zesty-io/material";
+import { cloneDeep } from "lodash";
 
 import { FilterButton } from "./FilterButton";
 import { useGetUsersQuery } from "../../services/accounts";
@@ -30,15 +31,33 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
   const { data: users } = useGetUsersQuery();
 
   const filteredUsers = useMemo(() => {
-    if (!filter.length) {
-      return users;
-    }
-    const _filter = filter.toLowerCase();
+    const _users = cloneDeep(users);
 
-    return users?.filter(
+    const sortedUsers = _users?.sort((a, b) => {
+      const nameA = a.firstName.toLowerCase();
+      const nameB = b.firstName.toLowerCase();
+
+      if (nameA < nameB) {
+        return -1;
+      }
+
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      return 0;
+    });
+
+    if (!filter.length) {
+      return sortedUsers;
+    }
+
+    const _filterTerm = filter.toLowerCase();
+
+    return sortedUsers?.filter(
       (user) =>
-        user?.firstName?.toLowerCase().includes(_filter) ||
-        user?.lastName?.toLowerCase().includes(_filter)
+        user?.firstName?.toLowerCase().includes(_filterTerm) ||
+        user?.lastName?.toLowerCase().includes(_filterTerm)
     );
   }, [filter, users]);
 
