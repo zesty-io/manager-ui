@@ -153,11 +153,13 @@ export const UserFilter: FC<UserFilterProps> = ({
             }}
           />
         </ListSubheader>
-        {!filteredUsers?.length && (
+
+        {!filteredUsers?.length && Boolean(filter) && (
           <ListItem>
             <ListItemText>No users found</ListItemText>
           </ListItem>
         )}
+
         {filteredUsers?.map((user) => {
           return (
             <MenuItem
