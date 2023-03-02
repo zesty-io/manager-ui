@@ -21,8 +21,13 @@ import { MD5 } from "../../../utility/md5";
 interface UserFilterProps {
   value: string;
   onChange: (filter: string) => void;
+  defaultButtonText?: string;
 }
-export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
+export const UserFilter: FC<UserFilterProps> = ({
+  value,
+  onChange,
+  defaultButtonText = "Created By",
+}) => {
   const [filter, setFilter] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
@@ -64,7 +69,7 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
   const activeUserFilter = users?.find((user) => user?.ZUID === value);
   const buttonText = activeUserFilter
     ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
-    : "Created By";
+    : defaultButtonText;
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
