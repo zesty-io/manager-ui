@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useLocation } from "react-router";
 import { Dialog } from "@mui/material";
 import { theme } from "@zesty-io/material";

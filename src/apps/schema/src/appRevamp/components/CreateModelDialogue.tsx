@@ -316,7 +316,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   renderInput={(params) => (
                     <TextField {...params} placeholder="Select" />
                   )}
-                  options={models || []}
+                  options={models?.filter((m) => m.type !== "dataset") || []}
                   onChange={(event, value: ContentModel) =>
                     updateModel({ parentZUID: value?.ZUID || null })
                   }

@@ -206,7 +206,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
               renderInput={(params) => (
                 <TextField {...params} placeholder="Select" />
               )}
-              options={models || []}
+              options={models?.filter((m) => m.type !== "dataset") || []}
               onChange={(event, value: ContentModel) =>
                 updateNewModel({ parentZUID: value?.ZUID || null })
               }
