@@ -555,6 +555,7 @@ export const FieldForm = ({
         sx={{
           p: 2.5,
           position: "relative",
+          minHeight: "486px",
         }}
       >
         {activeTab === "details" && (
