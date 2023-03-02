@@ -55,7 +55,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       data-cy="AddFieldModal"
       open
       onClose={onModalClose}
-      fullScreen
+      fullScreen={viewMode === "fields_list"}
       sx={{
         my: "20px",
         "*::-webkit-scrollbar-track-piece": {
@@ -67,8 +67,10 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       }}
       PaperProps={{
         sx: {
-          maxWidth: viewMode === "fields_list" ? "900px" : "640px",
-          maxHeight: "1000px",
+          width: viewMode === "fields_list" ? "900px" : "640px",
+          maxWidth: "100%",
+          maxHeight: "min(100%, 1000px)",
+          m: 0,
         },
       }}
     >

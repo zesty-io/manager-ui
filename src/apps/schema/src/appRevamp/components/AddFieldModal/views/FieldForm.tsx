@@ -554,6 +554,8 @@ export const FieldForm = ({
         dividers
         sx={{
           p: 2.5,
+          position: "relative",
+          minHeight: "486px",
         }}
       >
         {activeTab === "details" && (
