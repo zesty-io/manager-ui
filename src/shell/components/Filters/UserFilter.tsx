@@ -9,6 +9,7 @@ import {
   InputAdornment,
   IconButton,
   ListSubheader,
+  ListItem,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -152,6 +153,11 @@ export const UserFilter: FC<UserFilterProps> = ({
             }}
           />
         </ListSubheader>
+        {!filteredUsers?.length && (
+          <ListItem>
+            <ListItemText>No users found</ListItemText>
+          </ListItem>
+        )}
         {filteredUsers?.map((user) => {
           return (
             <MenuItem
