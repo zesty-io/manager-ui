@@ -1,4 +1,4 @@
-import { useRef, FC, useState, useMemo, useEffect } from "react";
+import { FC, useState, useMemo } from "react";
 import {
   Menu,
   MenuItem,
@@ -28,7 +28,6 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
   );
   const isFilterMenuOpen = Boolean(menuAnchorEl);
   const { data: users } = useGetUsersQuery();
-  const searchField = useRef<HTMLInputElement | null>(null);
 
   const filteredUsers = useMemo(() => {
     if (!filter.length) {
@@ -42,10 +41,6 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
         user?.lastName?.toLowerCase().includes(_filter)
     );
   }, [filter, users]);
-
-  useEffect(() => {
-    searchField.current?.focus();
-  }, [filteredUsers]);
 
   const activeUserFilter = users?.find((user) => user?.ZUID === value);
   const buttonText = activeUserFilter
@@ -86,11 +81,12 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
             },
           },
         }}
+        autoFocus={false}
       >
         <MenuItem
           disableRipple
           onKeyDown={(e: React.KeyboardEvent) => {
-            const allowedKeys = ["ArrowUp", "ArrowDown"];
+            const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
 
             if (!allowedKeys.includes(e.key)) {
               e.stopPropagation();
@@ -106,6 +102,7 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
           }}
         >
           <TextField
+            autoFocus
             fullWidth
             placeholder="Search Users"
             value={filter}
@@ -122,15 +119,14 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
                 </IconButton>
               ) : null,
             }}
-            inputProps={{ ref: searchField }}
           />
         </MenuItem>
-        {filteredUsers?.map((user, index) => {
+        {filteredUsers?.map((user) => {
           return (
             <MenuItem
               key={user?.ZUID}
               onClick={() => handleFilterSelect(user?.ZUID)}
-              selected={value ? value === user?.ZUID : index === 0}
+              selected={value && value === user?.ZUID}
             >
               <ListItemAvatar>
                 <Avatar
