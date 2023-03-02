@@ -6,13 +6,14 @@ export const ComingSoon = () => {
       data-cy="RulesTab"
       display="flex"
       flexDirection="column"
-      height="100%"
+      // height="100%"
+      // height={600}
       justifyContent="center"
       alignItems="center"
-      position="absolute"
-      top={0}
-      left={0}
-      right={0}
+      // position="absolute"
+      // top={0}
+      // left={0}
+      // right={0}
     >
       <Box
         display="flex"

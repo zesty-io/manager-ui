@@ -69,8 +69,8 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
         sx: {
           width: viewMode === "fields_list" ? "900px" : "640px",
           maxWidth: "100%",
-          minHeight: "680px",
-          maxHeight: "1000px",
+          maxHeight: "min(100%, 1000px)",
+          m: 0,
         },
       }}
     >
