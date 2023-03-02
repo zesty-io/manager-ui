@@ -8,6 +8,7 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  ListSubheader,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -105,10 +106,15 @@ export const UserFilter: FC<UserFilterProps> = ({
             },
           },
         }}
+        MenuListProps={{
+          sx: {
+            pt: 0,
+            pb: 1,
+          },
+        }}
         autoFocus={false}
       >
-        <MenuItem
-          disableRipple
+        <ListSubheader
           onKeyDown={(e: React.KeyboardEvent) => {
             const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
 
@@ -117,11 +123,12 @@ export const UserFilter: FC<UserFilterProps> = ({
             }
           }}
           sx={{
-            "&:hover": {
-              backgroundColor: "common.white",
-            },
-            "&.Mui-focusVisible": {
-              backgroundColor: "common.white",
+            pt: 1,
+            height: "60px",
+            display: "flex",
+            alignItems: "center",
+            "&:focus-visible": {
+              outline: "none",
             },
           }}
         >
@@ -144,13 +151,16 @@ export const UserFilter: FC<UserFilterProps> = ({
               ) : null,
             }}
           />
-        </MenuItem>
+        </ListSubheader>
         {filteredUsers?.map((user) => {
           return (
             <MenuItem
               key={user?.ZUID}
               onClick={() => handleFilterSelect(user?.ZUID)}
               selected={value && value === user?.ZUID}
+              sx={{
+                height: "52px",
+              }}
             >
               <ListItemAvatar>
                 <Avatar
