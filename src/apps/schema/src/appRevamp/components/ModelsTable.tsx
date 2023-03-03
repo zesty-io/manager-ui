@@ -214,6 +214,9 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
           ".MuiDataGrid-row": {
             cursor: "pointer",
           },
+          ".MuiDataGrid-cell:focus": {
+            outline: "none",
+          },
         }}
       />
       {!filteredModels?.length && !isFetching && search && (
