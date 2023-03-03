@@ -55,7 +55,7 @@
     "@sentry/tracing": "^6.4.0",
     "@tinymce/tinymce-react": "^3.12.6",
     "@welldone-software/why-did-you-render": "^6.1.1",
-    "@zesty-io/core": "1.6.9",
+    "@zesty-io/core": "1.7.0",
     "@zesty-io/material": "^0.6.3",
     "chart.js": "^3.8.0",
     "chartjs-plugin-datalabels": "^2.0.0",
