@@ -314,7 +314,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                   data-cy="EndOfListAddFieldBtn"
                   sx={{
                     justifyContent: "flex-start",
-                    my: 1,
+                    mt: 1.5,
                     px: 4.5,
                     borderRadius: "8px",
                     fontWeight: 700,
@@ -352,7 +352,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {Boolean(deactivatedFields?.length) && !search && (
             <Box
               mb={2}
-              mt={0.5}
+              mt={1.5}
               display="flex"
               flexDirection="column"
               gap={1.5}
