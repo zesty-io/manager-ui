@@ -63,6 +63,7 @@ export interface InputField {
   tooltip?: string;
   validate?: Validation[];
   inputType?: InputType;
+  autoFocus?: boolean;
 }
 export interface DropdownOptions {
   label: string;
@@ -175,7 +176,7 @@ export const FieldFormInput = ({
             )}
           </Box>
           <InputTextField
-            autoFocus={fieldConfig.name === "label"}
+            autoFocus={fieldConfig.autoFocus}
             data-cy={`FieldFormInput_${fieldConfig.name}`}
             name={fieldConfig.name}
             required={fieldConfig.required}
@@ -297,6 +298,7 @@ export const FieldFormInput = ({
                 {...params}
                 placeholder={fieldConfig.placeholder}
                 hiddenLabel
+                autoFocus={fieldConfig.autoFocus}
               />
             )}
             isOptionEqualToValue={(option, value) =>
