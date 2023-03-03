@@ -199,7 +199,8 @@ export const FieldForm = ({
         }
       } else {
         if (field.type === "checkbox") {
-          formFields[field.name] = true;
+          // Only "list" checkbox will be checked by default
+          formFields[field.name] = field.name === "list";
         } else if (field.type === "options") {
           formFields[field.name] = [{ "": "" }];
         } else if (field.type === "toggle_options") {
