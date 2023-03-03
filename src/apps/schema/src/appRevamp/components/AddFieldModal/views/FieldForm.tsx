@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import {
@@ -126,16 +126,25 @@ export const FieldForm = ({
 
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
-  const modelsOptions: DropdownOptions[] = allModels?.map((model) => ({
-    label: model.label,
-    value: model.ZUID,
-  }));
-  const fieldsOptions: DropdownOptions[] = selectedModelFields?.map(
-    (field) => ({
+  const modelsOptions: DropdownOptions[] = useMemo(() => {
+    // Remove the model that the field is from
+    const _filteredModels = allModels?.filter((model) => model.ZUID !== id);
+
+    return _filteredModels?.map((model) => {
+      if (model.ZUID !== id) {
+        return {
+          label: model.label,
+          value: model.ZUID,
+        };
+      }
+    });
+  }, [allModels]);
+  const fieldsOptions: DropdownOptions[] = useMemo(() => {
+    return selectedModelFields?.map((field) => ({
       label: field.label,
       value: field.ZUID,
-    })
-  );
+    }));
+  }, [selectedModelFields]);
   const [
     deleteContentModelField,
     { isLoading: isDeletingField, isSuccess: isFieldDeleted },
