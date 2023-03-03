@@ -96,6 +96,7 @@ export const ModelList = ({ title, models, type }: Props) => {
               sx={{ py: "6px", px: "12px", borderRadius: "4px" }}
               selected={selected}
               onClick={() => history.push(`/schema/${model.ZUID}`)}
+              autoFocus={selected}
             >
               <ListItemIcon
                 sx={{
