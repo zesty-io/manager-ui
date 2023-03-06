@@ -204,9 +204,13 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
             <Autocomplete
               fullWidth
               renderInput={(params) => (
-                <TextField {...params} placeholder="Select" />
+                <TextField {...params} placeholder="None" />
               )}
-              options={models?.filter((m) => m.type !== "dataset") || []}
+              options={
+                models
+                  ?.filter((m) => m.type !== "dataset")
+                  ?.sort((a, b) => a.label.localeCompare(b.label)) || []
+              }
               onChange={(event, value: ContentModel) =>
                 updateNewModel({ parentZUID: value?.ZUID || null })
               }

@@ -314,9 +314,13 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 <Autocomplete
                   fullWidth
                   renderInput={(params) => (
-                    <TextField {...params} placeholder="Select" />
+                    <TextField {...params} placeholder="None" />
                   )}
-                  options={models?.filter((m) => m.type !== "dataset") || []}
+                  options={
+                    models
+                      ?.filter((m) => m.type !== "dataset")
+                      ?.sort((a, b) => a.label.localeCompare(b.label)) || []
+                  }
                   onChange={(event, value: ContentModel) =>
                     updateModel({ parentZUID: value?.ZUID || null })
                   }

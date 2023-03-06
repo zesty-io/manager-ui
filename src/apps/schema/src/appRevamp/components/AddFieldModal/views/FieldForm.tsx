@@ -130,14 +130,16 @@ export const FieldForm = ({
     // Remove the model that the field is from
     const _filteredModels = allModels?.filter((model) => model.ZUID !== id);
 
-    return _filteredModels?.map((model) => {
-      if (model.ZUID !== id) {
-        return {
-          label: model.label,
-          value: model.ZUID,
-        };
-      }
-    });
+    return _filteredModels
+      ?.map((model) => {
+        if (model.ZUID !== id) {
+          return {
+            label: model.label,
+            value: model.ZUID,
+          };
+        }
+      })
+      ?.sort((a, b) => a.label.localeCompare(b.label));
   }, [allModels]);
   const fieldsOptions: DropdownOptions[] = useMemo(() => {
     return selectedModelFields?.map((field) => ({
