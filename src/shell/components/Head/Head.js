@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
-import Button from "@mui/material/Button";
+import { Button, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
 import { Notice } from "@zesty-io/core/Notice";
@@ -12,6 +12,7 @@ import { Preview } from "./Preview";
 
 import { fetchHeadTags, addHeadTag } from "shell/store/headTags";
 import { useDomain } from "shell/hooks/use-domain";
+import { useGetLegacyHeadTagsQuery } from "../../services/headTags";
 
 import styles from "./Head.less";
 export default connect((state, props) => {
@@ -40,10 +41,34 @@ export default connect((state, props) => {
   };
 })(function Head(props) {
   const domain = useDomain();
+  const { data: rawLegacyHeadTags, isFetching } = useGetLegacyHeadTagsQuery();
 
   useEffect(() => {
     props.dispatch(fetchHeadTags());
   }, []);
+
+  const legacyHeadTags = useMemo(() => {
+    // TODO: To determine how to identify the legacy headtags
+    const customRawLegacyHeadTags = rawLegacyHeadTags?.filter(
+      (tag) => tag.resourceZUID === null && tag.ID > 3
+    );
+
+    return customRawLegacyHeadTags?.map((tag) => {
+      const attributes = tag?.keys?.split("*|*").map((attr) => {
+        const [key, value] = attr.split(":");
+
+        return {
+          key,
+          value,
+        };
+      });
+
+      return {
+        type: tag.nodeName,
+        attributes,
+      };
+    });
+  }, [rawLegacyHeadTags]);
 
   function handleAdd() {
     props.dispatch(addHeadTag(props.resourceZUID, props.tags.length));
@@ -73,6 +98,15 @@ export default connect((state, props) => {
           </h1>
         </div>
 
+        {legacyHeadTags?.length && (
+          <Box sx={{ mx: 2 }} component="h1">
+            <Notice>
+              This instance has legacy head tags. If you want to edit or delete
+              these, please contact support.
+            </Notice>
+          </Box>
+        )}
+
         {props.tags.length ? (
           props.tags
             .sort((a, b) => (a.sort > b.sort ? 1 : -1))
@@ -93,6 +127,7 @@ export default connect((state, props) => {
         instanceName={props.instanceName}
         domain={domain}
         tags={props.tags}
+        legacyHeadTags={legacyHeadTags}
       />
     </div>
   );

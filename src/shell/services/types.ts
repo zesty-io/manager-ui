@@ -155,3 +155,21 @@ export interface Audit {
   lastName: string;
   email: string;
 }
+
+export interface LegacyHeader {
+  ID: number;
+  active: number;
+  comment: string | null;
+  createdAt: string;
+  isLocked: number | null;
+  keys: string;
+  module: number;
+  nodeName: string;
+  plugin: number;
+  resourceZUID: string;
+  sort: number;
+  template: number;
+  type: string;
+  updatedAt: string;
+  value: string | null;
+}

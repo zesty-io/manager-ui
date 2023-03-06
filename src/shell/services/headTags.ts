@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
+import { LegacyHeader } from "./types";
 
 export const headTagApi = createApi({
   reducerPath: "headTagApi",
@@ -11,7 +12,7 @@ export const headTagApi = createApi({
   }),
   tagTypes: ["LegacyHeadTags"],
   endpoints: (builder) => ({
-    getLegacyHeadTags: builder.query<any, void>({
+    getLegacyHeadTags: builder.query<LegacyHeader[], void>({
       query: () => `/web/headers`,
       transformResponse: getResponseData,
       keepUnusedDataFor: 0.0001,
