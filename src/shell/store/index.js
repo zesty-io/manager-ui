@@ -38,6 +38,7 @@ import { accountsApi } from "../services/accounts";
 import { mediaManagerApi } from "../services/mediaManager";
 import { metricsApi } from "../services/metrics";
 import { cloudFunctionsApi } from "../services/cloudFunctions";
+import { headTagApi } from "../services/headTags";
 
 // Middleware is applied in order of array
 const middlewares = [
@@ -53,6 +54,7 @@ const middlewares = [
   mediaManagerApi.middleware,
   metricsApi.middleware,
   cloudFunctionsApi.middleware,
+  headTagApi.middleware,
 ];
 
 /**
@@ -117,6 +119,7 @@ function createReducer(asyncReducers) {
     [mediaManagerApi.reducerPath]: mediaManagerApi.reducer,
     [metricsApi.reducerPath]: metricsApi.reducer,
     [cloudFunctionsApi.reducerPath]: cloudFunctionsApi.reducer,
+    [headTagApi.reducerPath]: headTagApi.reducer,
   };
 
   return combineReducers({
