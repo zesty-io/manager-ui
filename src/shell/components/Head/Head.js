@@ -48,7 +48,6 @@ export default connect((state, props) => {
   }, []);
 
   const legacyHeadTags = useMemo(() => {
-    // TODO: To determine how to identify the legacy headtags
     const customRawLegacyHeadTags = rawLegacyHeadTags?.filter(
       (tag) => tag.resourceZUID === null && tag.ID > 1
     );
