@@ -12,7 +12,7 @@ import { Preview } from "./Preview";
 
 import { fetchHeadTags, addHeadTag } from "shell/store/headTags";
 import { useDomain } from "shell/hooks/use-domain";
-import { useGetLegacyHeadTagsQuery } from "../../services/headTags";
+import { useGetLegacyHeadTagsQuery } from "../../services/instance";
 
 import styles from "./Head.less";
 export default connect((state, props) => {
