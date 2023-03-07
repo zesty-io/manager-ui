@@ -41,7 +41,7 @@ export default connect((state, props) => {
   };
 })(function Head(props) {
   const domain = useDomain();
-  const { data: rawLegacyHeadTags, isFetching } = useGetLegacyHeadTagsQuery();
+  const { data: rawLegacyHeadTags } = useGetLegacyHeadTagsQuery();
 
   useEffect(() => {
     props.dispatch(fetchHeadTags());
