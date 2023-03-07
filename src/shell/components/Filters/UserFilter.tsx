@@ -41,8 +41,8 @@ export const UserFilter: FC<UserFilterProps> = ({
     const _users = cloneDeep(users);
 
     const sortedUsers = _users?.sort((a, b) => {
-      const nameA = a.firstName.toLowerCase();
-      const nameB = b.firstName.toLowerCase();
+      const nameA = a?.firstName?.toLowerCase();
+      const nameB = b?.firstName?.toLowerCase();
 
       if (nameA < nameB) {
         return -1;
