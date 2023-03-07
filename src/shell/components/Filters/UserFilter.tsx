@@ -98,13 +98,6 @@ export const UserFilter: FC<UserFilterProps> = ({
             maxHeight: 420,
             width: 320,
             mt: 1,
-            "::-webkit-scrollbar-track-piece": {
-              backgroundColor: `${theme.palette.grey[100]} !important`,
-              borderRadius: "4px",
-            },
-            "::-webkit-scrollbar-thumb": {
-              backgroundColor: `${theme.palette.grey[300]} !important`,
-            },
           },
         }}
         MenuListProps={{
