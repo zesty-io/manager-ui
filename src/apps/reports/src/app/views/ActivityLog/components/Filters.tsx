@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, FC } from "react";
 import {
   Box,
   Select,
@@ -10,17 +10,34 @@ import {
 import moment from "moment";
 import { uniqBy } from "lodash";
 import DateRangePicker from "./DateRangePicker";
-import { useParams } from "shell/hooks/useParams";
-import { accountsApi } from "shell/services/accounts";
+import { useParams } from "../../../../../../../shell/hooks/useParams";
+import { accountsApi } from "../../../../../../../shell/services/accounts";
+import { Audit } from "../../../../../../../shell/services/types";
 
-export const Filters = (props) => {
+type Filter =
+  | "happenedAt"
+  | "sortByUsers"
+  | "resourceType"
+  | "actionByUserZUID"
+  | "action"
+  | "userRole";
+interface FiltersProps {
+  showSkeletons: boolean;
+  filters: Filter[];
+  actions: Audit[];
+}
+export const Filters: FC<FiltersProps> = ({
+  actions,
+  filters,
+  showSkeletons,
+}) => {
   const [params, setParams] = useParams();
 
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   const uniqueUserActions = useMemo(
-    () => uniqBy(props.actions, "actionByUserZUID"),
-    [props.actions]
+    () => uniqBy(actions, "actionByUserZUID"),
+    [actions]
   );
 
   const uniqueUsersRoles = useMemo(
@@ -28,7 +45,7 @@ export const Filters = (props) => {
     [usersRoles]
   );
 
-  const getFilter = (filter) => {
+  const getFilter = (filter: Filter) => {
     switch (filter) {
       case "happenedAt":
         return (
@@ -159,8 +176,8 @@ export const Filters = (props) => {
       }}
     >
       <Box sx={{ display: "flex", gap: 1.5 }}>
-        {props.filters.map((filter, idx) =>
-          props.showSkeletons ? (
+        {filters.map((filter, idx) =>
+          showSkeletons ? (
             <Skeleton key={idx} variant="rectangular" width={172} height={56} />
           ) : (
             <FormControl key={idx} sx={{ width: 172 }}>
@@ -169,7 +186,7 @@ export const Filters = (props) => {
           )
         )}
       </Box>
-      {props.showSkeletons ? (
+      {showSkeletons ? (
         <Skeleton variant="rectangular" width={250} height={56} />
       ) : (
         <Box sx={{ maxWidth: 358 }}>
@@ -179,7 +196,7 @@ export const Filters = (props) => {
               params.get("from") ? moment(params.get("from")) : null,
               params.get("to") ? moment(params.get("to")) : null,
             ]}
-            onChange={([from, to]) => {
+            onChange={([from, to]: [Date, Date]) => {
               setParams(
                 moment(from, "YYYY-MM-DD").isValid()
                   ? moment(from).format("YYYY-MM-DD")
