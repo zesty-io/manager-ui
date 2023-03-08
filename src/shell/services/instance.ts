@@ -2,7 +2,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
-import { Audit, ContentItem, ContentModel, Publishing } from "./types";
+import {
+  Audit,
+  ContentItem,
+  ContentModel,
+  Publishing,
+  LegacyHeader,
+} from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const instanceApi = createApi({
@@ -115,6 +121,10 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["ContentModels"],
     }),
+    getLegacyHeadTags: builder.query<LegacyHeader[], void>({
+      query: () => `/web/headers`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -131,4 +141,5 @@ export const {
   useGetContentItemPublishingsQuery,
   useGetLangsMappingQuery,
   useCreateContentModelFromTemplateMutation,
+  useGetLegacyHeadTagsQuery,
 } = instanceApi;
