@@ -223,3 +223,55 @@ export interface User {
   lastName: string;
   email: string;
 }
+
+export interface SystemRole {
+  ZUID: string;
+  create: boolean;
+  createdAt: string;
+  delete: boolean;
+  grant: boolean;
+  name: string;
+  publish: boolean;
+  read: boolean;
+  super: boolean;
+  update: boolean;
+  updatedAt: string;
+}
+
+export interface Role {
+  ZUID: string;
+  createdAt: string;
+  createdByUserZUID: string;
+  entityZUID: string;
+  expiry: string | null;
+  granularRoleZUID: string | null;
+  granularRoles: string | null;
+  name: string;
+  static: boolean;
+  systemRole: SystemRole;
+  systemRoleZUID: string;
+  updatedAt: string;
+}
+
+export interface UserRole {
+  ID: number;
+  ZUID: string;
+  authSource: string | null;
+  authyEnabled?: boolean;
+  authyPhoneCountryCode: string | null;
+  authyPhoneNumber: string | null;
+  authyUserID: string | null;
+  createdAt: string;
+  email: string;
+  firstName: string;
+  lastLogin: string;
+  lastName: string;
+  prefs: string | null;
+  role: Role;
+  signupInfo: string | null;
+  staff: boolean;
+  unverifiedEmails: string | null;
+  updatedAt: string;
+  verifiedEmails: string | null;
+  websiteCreator: boolean;
+}
