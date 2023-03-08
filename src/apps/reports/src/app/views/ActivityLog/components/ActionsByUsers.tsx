@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, FC } from "react";
 import {
   Avatar,
   List,
@@ -13,25 +13,34 @@ import {
 import { uniqBy } from "lodash";
 import { useDispatch } from "react-redux";
 import EmailIcon from "@mui/icons-material/Email";
-import { accountsApi } from "shell/services/accounts";
-import { notify } from "shell/store/notifications";
-import { MD5 } from "utility/md5";
+import { accountsApi } from "../../../../../../../shell/services/accounts";
+import { notify } from "../../../../../../../shell/store/notifications";
+import { MD5 } from "../../../../../../../utility/md5";
+import { Audit } from "../../../../../../../shell/services/types";
+
 import { useHistory } from "react-router";
 
-export const ActionsByUsers = (props) => {
+interface ActionsByUsersProps {
+  showSkeletons: boolean;
+  actions: Audit[];
+}
+export const ActionsByUsers: FC<ActionsByUsersProps> = ({
+  showSkeletons,
+  actions,
+}) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   const uniqueUserActions = useMemo(
-    () => uniqBy(props.actions, "actionByUserZUID"),
-    [props.actions]
+    () => uniqBy(actions, "actionByUserZUID"),
+    [actions]
   );
 
   return (
     <>
       <Typography variant="overline" sx={{ pl: 2 }}>
-        {props.showSkeletons ? (
+        {showSkeletons ? (
           <Skeleton variant="rectangular" width={159} />
         ) : (
           "ACTIONS BY"
@@ -49,19 +58,20 @@ export const ActionsByUsers = (props) => {
               divider
               sx={{ p: 0 }}
               secondaryAction={
-                <IconButton edge="end">
-                  <EmailIcon
-                    onClick={() =>
-                      navigator?.clipboard?.writeText(user?.email).then(() =>
-                        dispatch(
-                          notify({
-                            kind: "success",
-                            message: `User email copied to the clipboard`,
-                          })
-                        )
+                <IconButton
+                  onClick={() =>
+                    navigator?.clipboard?.writeText(user?.email).then(() =>
+                      dispatch(
+                        notify({
+                          kind: "success",
+                          message: `User email copied to the clipboard`,
+                        })
                       )
-                    }
-                  />
+                    )
+                  }
+                  edge="end"
+                >
+                  <EmailIcon />
                 </IconButton>
               }
             >
@@ -71,7 +81,7 @@ export const ActionsByUsers = (props) => {
                 }
               >
                 <ListItemAvatar>
-                  {props.showSkeletons ? (
+                  {showSkeletons ? (
                     <Skeleton variant="circular" width={40} height={40} />
                   ) : (
                     <Avatar
@@ -90,7 +100,7 @@ export const ActionsByUsers = (props) => {
                     textOverflow: "ellipsis",
                   }}
                   primary={
-                    props.showSkeletons ? (
+                    showSkeletons ? (
                       <Skeleton
                         variant="rectangular"
                         height={16}
@@ -102,7 +112,7 @@ export const ActionsByUsers = (props) => {
                     )
                   }
                   secondary={
-                    props.showSkeletons ? (
+                    showSkeletons ? (
                       <Skeleton variant="rectangular" height={12} width={224} />
                     ) : (
                       user?.role?.name
