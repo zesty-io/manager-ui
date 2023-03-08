@@ -35,6 +35,7 @@ import { modelIconMap, modelNameMap } from "../utils";
 import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
 import { DeleteModelDialogue } from "./DeleteModelDialogue";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 
 moment.updateLocale("en", {
   relativeTime: {
@@ -243,6 +244,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               iconPosition="start"
               label="Fields"
               value="fields"
+            />
+            <Tab
+              icon={<HistoryRoundedIcon color="action" fontSize="small" />}
+              iconPosition="start"
+              label="Activity Log"
+              value="activity-log"
             />
             <Tab
               icon={<InfoRoundedIcon color="action" fontSize="small" />}
