@@ -125,7 +125,7 @@ export default memo(function Editor({
         });
       }
     });
-  }, [fields]);
+  }, [fields, itemZUID]);
 
   useEffect(() => {
     if (isNewItem) {
