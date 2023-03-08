@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import {
@@ -126,16 +126,27 @@ export const FieldForm = ({
 
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
-  const modelsOptions: DropdownOptions[] = allModels?.map((model) => ({
-    label: model.label,
-    value: model.ZUID,
-  }));
-  const fieldsOptions: DropdownOptions[] = selectedModelFields?.map(
-    (field) => ({
+  const modelsOptions: DropdownOptions[] = useMemo(() => {
+    // Remove the model that the field is from
+    const _filteredModels = allModels?.filter((model) => model.ZUID !== id);
+
+    return _filteredModels
+      ?.map((model) => {
+        if (model.ZUID !== id) {
+          return {
+            label: model.label,
+            value: model.ZUID,
+          };
+        }
+      })
+      ?.sort((a, b) => a.label.localeCompare(b.label));
+  }, [allModels]);
+  const fieldsOptions: DropdownOptions[] = useMemo(() => {
+    return selectedModelFields?.map((field) => ({
       label: field.label,
       value: field.ZUID,
-    })
-  );
+    }));
+  }, [selectedModelFields]);
   const [
     deleteContentModelField,
     { isLoading: isDeletingField, isSuccess: isFieldDeleted },
@@ -190,7 +201,8 @@ export const FieldForm = ({
         }
       } else {
         if (field.type === "checkbox") {
-          formFields[field.name] = false;
+          // Only "list" checkbox will be checked by default
+          formFields[field.name] = field.name === "list";
         } else if (field.type === "options") {
           formFields[field.name] = [{ "": "" }];
         } else if (field.type === "toggle_options") {
@@ -458,15 +470,15 @@ export const FieldForm = ({
     <>
       <DialogTitle
         sx={{
-          padding: 2.5,
-          paddingBottom: 0,
+          padding: 0,
         }}
       >
         <Box
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          pb={0.5}
+          px={2.5}
+          pt={2.5}
         >
           <Box display="flex" alignItems="center">
             {!isUpdateField && (
@@ -518,6 +530,8 @@ export const FieldForm = ({
           value={activeTab}
           onChange={(_, value: ActiveTab) => setActiveTab(value)}
           sx={{
+            px: 2.5,
+            height: "52px",
             ".Mui-selected": {
               svg: {
                 color: "primary.main",
@@ -529,21 +543,21 @@ export const FieldForm = ({
             data-cy="DetailsTabBtn"
             value="details"
             label="Details"
-            icon={<InfoRoundedIcon color="action" />}
+            icon={<InfoRoundedIcon fontSize="small" color="action" />}
             iconPosition="start"
           />
           <Tab
             data-cy="RulesTabBtn"
             value="rules"
             label="Rules"
-            icon={<RuleRoundedIcon color="action" />}
+            icon={<RuleRoundedIcon fontSize="small" color="action" />}
             iconPosition="start"
           />
           <Tab
             data-cy="LearnTabBtn"
             value="learn"
             label="Learn"
-            icon={<MenuBookRoundedIcon color="action" />}
+            icon={<MenuBookRoundedIcon fontSize="small" color="action" />}
             iconPosition="start"
           />
         </Tabs>
@@ -552,6 +566,8 @@ export const FieldForm = ({
         dividers
         sx={{
           p: 2.5,
+          position: "relative",
+          minHeight: "486px",
         }}
       >
         {activeTab === "details" && (

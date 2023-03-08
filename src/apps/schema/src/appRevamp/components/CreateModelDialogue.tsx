@@ -75,9 +75,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       const newModel = { ...prev, ...next };
 
       if (prev.label !== newModel.label) {
-        newModel.name = newModel.label.toLowerCase().replaceAll(" ", "_");
+        newModel.name = newModel.label.toLowerCase().replace(/\W/g, "_");
       } else {
-        newModel.name = newModel.name.toLowerCase().replaceAll(" ", "_");
+        newModel.name = newModel.name.toLowerCase().replace(/\W/g, "_");
       }
 
       return newModel;
@@ -314,9 +314,13 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 <Autocomplete
                   fullWidth
                   renderInput={(params) => (
-                    <TextField {...params} placeholder="Select" />
+                    <TextField {...params} placeholder="None" />
                   )}
-                  options={models || []}
+                  options={
+                    models
+                      ?.filter((m) => m.type !== "dataset")
+                      ?.sort((a, b) => a.label.localeCompare(b.label)) || []
+                  }
                   onChange={(event, value: ContentModel) =>
                     updateModel({ parentZUID: value?.ZUID || null })
                   }
@@ -404,9 +408,15 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     <Dialog
       open
       onClose={onClose}
-      fullScreen
+      sx={{
+        my: "20px",
+      }}
       PaperProps={{
-        sx: { maxWidth: "640px", my: "20px", maxHeight: "1000px" },
+        sx: {
+          maxWidth: "640px",
+          maxHeight: "min(100%, 1000px)",
+          m: 0,
+        },
       }}
     >
       {getView()}

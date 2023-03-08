@@ -341,6 +341,7 @@ const COMMON_FIELDS: InputField[] = [
     gridSize: 12,
     tooltip: "The display name of the field seen in Schema.",
     validate: ["required", "length"],
+    autoFocus: true,
   },
   {
     name: "name",
@@ -452,8 +453,7 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
       {
         name: "group_id",
         type: "autocomplete",
-        label: "Lock to a folder",
-        subLabel: "Select Folder",
+        label: "Select Folder",
         required: false,
         gridSize: 12,
       },
@@ -484,6 +484,7 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
         required: false,
         gridSize: 6,
         placeholder: "Select a model",
+        autoFocus: true,
       },
       {
         name: "relatedFieldZUID",
@@ -493,7 +494,11 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
         gridSize: 6,
         placeholder: "Select a field",
       },
-      ...COMMON_FIELDS,
+      {
+        ...COMMON_FIELDS[0],
+        autoFocus: false,
+      },
+      ...COMMON_FIELDS.slice(1),
     ],
     rules: [],
   },
@@ -506,6 +511,7 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
         required: false,
         gridSize: 6,
         placeholder: "Select a model",
+        autoFocus: true,
       },
       {
         name: "relatedFieldZUID",
@@ -515,7 +521,11 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
         gridSize: 6,
         placeholder: "Select a field",
       },
-      ...COMMON_FIELDS,
+      {
+        ...COMMON_FIELDS[0],
+        autoFocus: false,
+      },
+      ...COMMON_FIELDS.slice(1),
     ],
     rules: [],
   },

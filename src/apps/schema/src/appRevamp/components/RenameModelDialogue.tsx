@@ -30,7 +30,7 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
     (prev: Partial<ContentModel>, next: Partial<ContentModel>) => {
       const newModel = { ...prev, ...next };
 
-      newModel.name = newModel.name.toLowerCase().replaceAll(" ", "_");
+      newModel.name = newModel.name.toLowerCase().replace(/\W/g, "_");
 
       return newModel;
     },

@@ -72,6 +72,7 @@ export const ModelList = ({ title, models, type }: Props) => {
           <IconButton
             size="small"
             onClick={() => setShowCreateModelDialogue(true)}
+            data-cy={`create-model-button-sidebar-${type}`}
           >
             <AddIcon fontSize="small" />
           </IconButton>
@@ -95,6 +96,7 @@ export const ModelList = ({ title, models, type }: Props) => {
               sx={{ py: "6px", px: "12px", borderRadius: "4px" }}
               selected={selected}
               onClick={() => history.push(`/schema/${model.ZUID}`)}
+              autoFocus={selected}
             >
               <ListItemIcon
                 sx={{

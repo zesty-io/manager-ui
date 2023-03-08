@@ -68,15 +68,14 @@ export const ActivityDetails = () => {
       <Box
         display="flex"
         alignItems="center"
-        py={2}
         sx={{
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
         }}
       >
-        <Box minWidth={280}>
+        <Box minWidth={280} py={2}>
           <Typography color="text.secondary">Created By</Typography>
         </Box>
-        <Box flex={1} display="flex" gap={1.5} alignItems="center">
+        <Box flex={1} display="flex" gap={1.5} alignItems="center" py={1.5}>
           <Avatar
             sx={{ width: 32, height: 32 }}
             src={`https://www.gravatar.com/avatar/${MD5(
@@ -87,9 +86,11 @@ export const ActivityDetails = () => {
             {createdByUser?.firstName} {createdByUser?.lastName}
           </Typography>
         </Box>
-        <Button onClick={() => handleCopy(createdByUser?.email)}>
-          {isCopied ? "Copied!" : "Copy Email"}
-        </Button>
+        <Box py={1.5}>
+          <Button onClick={() => handleCopy(createdByUser?.email)} size="small">
+            {isCopied ? "Copied!" : "Copy Email"}
+          </Button>
+        </Box>
       </Box>
       <Box
         display="flex"
@@ -111,15 +112,14 @@ export const ActivityDetails = () => {
       <Box
         display="flex"
         alignItems="center"
-        py={2}
         sx={{
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
         }}
       >
-        <Box minWidth={280}>
+        <Box minWidth={280} py={2}>
           <Typography color="text.secondary">Last Updated By</Typography>
         </Box>
-        <Box flex={1} display="flex" gap={1.5} alignItems="center">
+        <Box flex={1} display="flex" gap={1.5} alignItems="center" py={1.5}>
           <Avatar
             sx={{ width: 32, height: 32 }}
             src={`https://www.gravatar.com/avatar/${MD5(
@@ -130,10 +130,20 @@ export const ActivityDetails = () => {
             {updatedByUser?.firstName} {updatedByUser?.lastName}
           </Typography>
         </Box>
-        <Button onClick={() => handleCopy(updatedByUser?.email)}>
-          {isCopied ? "Copied!" : "Copy Email"}
-        </Button>
+        <Box sx={{ py: 1.5 }}>
+          <Button onClick={() => handleCopy(updatedByUser?.email)}>
+            {isCopied ? "Copied!" : "Copy Email"}
+          </Button>
+        </Box>
       </Box>
+      <Button
+        sx={{ mt: 2 }}
+        size="large"
+        variant="outlined"
+        onClick={() => history.push(`/reports/activity-log/resources/${id}`)}
+      >
+        View All Activity
+      </Button>
     </Box>
   );
 };

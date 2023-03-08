@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   SvgIcon,
+  Tooltip,
 } from "@mui/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import {
@@ -34,6 +35,16 @@ import { modelIconMap, modelNameMap } from "../utils";
 import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
 import { DeleteModelDialogue } from "./DeleteModelDialogue";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+
+moment.updateLocale("en", {
+  relativeTime: {
+    past: (string) => {
+      return string === "right now" ? string : string + " ago";
+    },
+    s: "right now",
+    ss: "right now",
+  },
+});
 
 type Params = {
   id: string;
@@ -98,6 +109,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 size="small"
                 onClick={(event) => setAnchorEl(event.currentTarget)}
                 sx={{ height: "fit-content" }}
+                data-cy="model-header-menu"
               >
                 <ArrowDropDownRoundedIcon fontSize="small" />
               </IconButton>
@@ -171,7 +183,16 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                   startIcon={<PostAddRoundedIcon color="action" />}
                   onClick={() => history.push(`/content/${model?.ZUID}/new`)}
                 >
-                  Create {model?.label}
+                  <Box
+                    sx={{
+                      maxWidth: "220px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Create {model?.label}
+                  </Box>
                 </Button>
               )}
               <Button
@@ -189,9 +210,17 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
           <Box mt={1.5}>
             <Typography variant="caption" color="textSecondary">{`${
               modelNameMap[model?.type]
-            } Model  •  ZUID: ${model?.ZUID}  •  Last Updated: ${moment(
-              model?.updatedAt
-            ).format("Do MMMM YYYY [at] h:mm A")}`}</Typography>
+            } Model  •  ZUID: ${model?.ZUID}  •  `}</Typography>
+            <Tooltip
+              title={moment(model?.updatedAt).format(
+                "Do MMMM YYYY [at] h:mm A"
+              )}
+              children={
+                <Typography variant="caption" color="textSecondary">
+                  Updated {moment(model?.updatedAt).fromNow()}
+                </Typography>
+              }
+            ></Tooltip>
           </Box>
           {/* TODO: Update tab theme to match design */}
           <Tabs
@@ -210,13 +239,13 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
             }
           >
             <Tab
-              icon={<SplitscreenRoundedIcon color="action" />}
+              icon={<SplitscreenRoundedIcon color="action" fontSize="small" />}
               iconPosition="start"
               label="Fields"
               value="fields"
             />
             <Tab
-              icon={<InfoRoundedIcon color="action" />}
+              icon={<InfoRoundedIcon color="action" fontSize="small" />}
               iconPosition="start"
               label="Info"
               value="info"

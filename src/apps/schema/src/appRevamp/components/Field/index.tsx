@@ -182,10 +182,15 @@ export const Field = ({
   const handleOpenEditModalField = (e: React.MouseEvent) => {
     e.stopPropagation();
 
+    if (isDeactivated) {
+      return;
+    }
+
     const { ZUID } = field as ContentModelField;
 
     if (ZUID) {
       history.push(`${location.pathname}/${ZUID}`);
+      setAnchorEl(null);
     }
   };
 
@@ -209,12 +214,13 @@ export const Field = ({
     }
   };
 
-  const hoverEffect = withHover
-    ? {
-        backgroundColor: "action.hover",
-        cursor: "pointer",
-      }
-    : {};
+  const hoverEffect =
+    withHover && !isDeactivated
+      ? {
+          backgroundColor: "action.hover",
+          cursor: "pointer",
+        }
+      : {};
 
   return (
     <Box

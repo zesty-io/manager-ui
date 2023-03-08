@@ -1,4 +1,4 @@
-import { Dispatch, FC, useState, useMemo } from "react";
+import { FC, useState, useMemo } from "react";
 import {
   Menu,
   MenuItem,
@@ -8,9 +8,13 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  ListSubheader,
+  ListItem,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { theme } from "@zesty-io/material";
+import { cloneDeep } from "lodash";
 
 import { FilterButton } from "./FilterButton";
 import { useGetUsersQuery } from "../../services/accounts";
@@ -19,8 +23,13 @@ import { MD5 } from "../../../utility/md5";
 interface UserFilterProps {
   value: string;
   onChange: (filter: string) => void;
+  defaultButtonText?: string;
 }
-export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
+export const UserFilter: FC<UserFilterProps> = ({
+  value,
+  onChange,
+  defaultButtonText = "Created By",
+}) => {
   const [filter, setFilter] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
@@ -29,22 +38,40 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
   const { data: users } = useGetUsersQuery();
 
   const filteredUsers = useMemo(() => {
-    if (!filter.length) {
-      return users;
-    }
-    const _filter = filter.toLowerCase();
+    const _users = cloneDeep(users);
 
-    return users?.filter(
+    const sortedUsers = _users?.sort((a, b) => {
+      const nameA = a?.firstName?.toLowerCase();
+      const nameB = b?.firstName?.toLowerCase();
+
+      if (nameA < nameB) {
+        return -1;
+      }
+
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      return 0;
+    });
+
+    if (!filter.length) {
+      return sortedUsers;
+    }
+
+    const _filterTerm = filter.toLowerCase();
+
+    return sortedUsers?.filter(
       (user) =>
-        user?.firstName?.toLowerCase().includes(_filter) ||
-        user?.lastName?.toLowerCase().includes(_filter)
+        user?.firstName?.toLowerCase().includes(_filterTerm) ||
+        user?.lastName?.toLowerCase().includes(_filterTerm)
     );
   }, [filter, users]);
 
   const activeUserFilter = users?.find((user) => user?.ZUID === value);
   const buttonText = activeUserFilter
     ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
-    : "People";
+    : defaultButtonText;
 
   const handleOpenMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
@@ -67,25 +94,47 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
         anchorEl={menuAnchorEl}
         onClose={() => setMenuAnchorEl(null)}
         PaperProps={{
-          style: {
-            maxHeight: 52 * 10 + 8, // Item Height * No. of items to show + Padding Top
+          sx: {
+            maxHeight: 420,
             width: 320,
+            mt: 1,
+            "::-webkit-scrollbar-track-piece": {
+              backgroundColor: `${theme.palette.grey[100]} !important`,
+              borderRadius: "4px",
+            },
+            "::-webkit-scrollbar-thumb": {
+              backgroundColor: `${theme.palette.grey[300]} !important`,
+            },
           },
         }}
+        MenuListProps={{
+          sx: {
+            pt: 0,
+            pb: 1,
+          },
+        }}
+        autoFocus={false}
       >
-        <MenuItem
-          disableRipple
-          onKeyDown={(e) => e.stopPropagation()}
+        <ListSubheader
+          onKeyDown={(e: React.KeyboardEvent) => {
+            const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
+
+            if (!allowedKeys.includes(e.key)) {
+              e.stopPropagation();
+            }
+          }}
           sx={{
-            "&:hover": {
-              backgroundColor: "common.white",
-            },
-            "&.Mui-focusVisible": {
-              backgroundColor: "common.white",
+            pt: 1,
+            height: "60px",
+            display: "flex",
+            alignItems: "center",
+            "&:focus-visible": {
+              outline: "none",
             },
           }}
         >
           <TextField
+            autoFocus
             fullWidth
             placeholder="Search Users"
             value={filter}
@@ -103,12 +152,23 @@ export const UserFilter: FC<UserFilterProps> = ({ value, onChange }) => {
               ) : null,
             }}
           />
-        </MenuItem>
+        </ListSubheader>
+
+        {!filteredUsers?.length && Boolean(filter) && (
+          <ListItem>
+            <ListItemText>No users found</ListItemText>
+          </ListItem>
+        )}
+
         {filteredUsers?.map((user) => {
           return (
             <MenuItem
               key={user?.ZUID}
               onClick={() => handleFilterSelect(user?.ZUID)}
+              selected={value && value === user?.ZUID}
+              sx={{
+                height: "52px",
+              }}
             >
               <ListItemAvatar>
                 <Avatar

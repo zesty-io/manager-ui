@@ -1,4 +1,10 @@
-import { Box, FormControlLabel, Checkbox, Typography } from "@mui/material";
+import {
+  Box,
+  FormControlLabel,
+  Checkbox,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { FormValue } from "./views/FieldForm";
 import { CustomGroup } from "../hooks/useMediaRules";
 
@@ -63,7 +69,10 @@ export const MediaRules = ({
                     data-cy={`MediaCheckbox_${rule.name}`}
                     sx={{
                       color: "grey.200",
+                      pl: 1,
+                      pt: 0,
                     }}
+                    size="small"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const { checked } = e.target;
                       let defaultValue;
@@ -85,8 +94,8 @@ export const MediaRules = ({
                   />
                 }
                 label={
-                  <Box>
-                    <Typography variant="body2">
+                  <Stack>
+                    <Typography variant="body2" fontWeight={600}>
                       {MediaLabelsConfig[rule.name as MediaFieldName].label}
                     </Typography>
                     <Typography
@@ -96,7 +105,7 @@ export const MediaRules = ({
                     >
                       {MediaLabelsConfig[rule.name as MediaFieldName].subLabel}
                     </Typography>
-                  </Box>
+                  </Stack>
                 }
               />
 

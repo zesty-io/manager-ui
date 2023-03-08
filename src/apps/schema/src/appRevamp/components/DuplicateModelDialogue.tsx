@@ -90,9 +90,13 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
         const newFields = fields
           .filter((field) => !field?.deletedAt)
           .map((field) => {
-            const { ZUID, ...rest } = field;
+            const { ZUID, settings, ...rest } = field;
             return {
               ...rest,
+              settings: {
+                ...settings,
+                list: settings?.list || false,
+              },
             };
           });
         createFields({
@@ -129,9 +133,11 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
     <Dialog
       open
       onClose={onClose}
-      fullScreen
+      sx={{
+        my: "20px",
+      }}
       PaperProps={{
-        sx: { maxWidth: "640px", my: "20px", maxHeight: "1000px" },
+        sx: { maxWidth: "640px", maxHeight: "min(100%, 1000px)", m: 0 },
       }}
     >
       <DialogTitle>
@@ -198,9 +204,13 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
             <Autocomplete
               fullWidth
               renderInput={(params) => (
-                <TextField {...params} placeholder="Select" />
+                <TextField {...params} placeholder="None" />
               )}
-              options={models || []}
+              options={
+                models
+                  ?.filter((m) => m.type !== "dataset")
+                  ?.sort((a, b) => a.label.localeCompare(b.label)) || []
+              }
               onChange={(event, value: ContentModel) =>
                 updateNewModel({ parentZUID: value?.ZUID || null })
               }

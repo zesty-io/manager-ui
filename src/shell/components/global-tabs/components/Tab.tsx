@@ -90,6 +90,7 @@ const BaseTab: FC<BaseTab> = ({
         )}
       </Box>
       <MuiLink
+        underline="none"
         component={Link}
         to={tab.pathname + tab.search}
         variant="caption"

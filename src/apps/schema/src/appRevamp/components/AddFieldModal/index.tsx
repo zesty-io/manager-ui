@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
-import { useParams } from "react-router";
+import { useParams, useLocation } from "react-router";
 import { Dialog } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
@@ -54,17 +55,22 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       data-cy="AddFieldModal"
       open
       onClose={onModalClose}
-      fullScreen
+      fullScreen={viewMode === "fields_list"}
       sx={{
-        "& .MuiDialog-container": {
-          flexDirection: "column", //Needed so that the y-axis margins show up
+        my: "20px",
+        "*::-webkit-scrollbar-track-piece": {
+          backgroundColor: `${theme.palette.grey[100]} !important`,
+        },
+        "*::-webkit-scrollbar-thumb": {
+          backgroundColor: `${theme.palette.grey[300]} !important`,
         },
       }}
       PaperProps={{
         sx: {
-          maxWidth: viewMode === "fields_list" ? "900px" : "640px",
-          my: "20px",
-          maxHeight: "1000px",
+          width: viewMode === "fields_list" ? "900px" : "640px",
+          maxWidth: "100%",
+          maxHeight: "min(100%, 1000px)",
+          m: 0,
         },
       }}
     >

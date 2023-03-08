@@ -222,7 +222,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 Each content item (child) of a model in Zesty comes included
                 with non-editable system fields that represent the state of the
                 content such as when it was created, updated, and the version.
-                The value of these fields can be under the{" "}
+                The value of these fields can be found under the{" "}
                 <strong>meta key</strong> in the{" "}
                 <Link
                   href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
@@ -233,7 +233,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 </Link>
                 .
               </Typography>
-              <Box display="flex" flexDirection="column" gap={1} mt={2}>
+              <Box display="flex" flexDirection="column" gap={1} mt={1.5}>
                 {SYSTEM_FIELDS.map((field, index) => (
                   <Field
                     key={index}
@@ -314,7 +314,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                   data-cy="EndOfListAddFieldBtn"
                   sx={{
                     justifyContent: "flex-start",
-                    my: 1,
+                    mt: 1.5,
                     px: 4.5,
                     borderRadius: "8px",
                     fontWeight: 700,
@@ -352,7 +352,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {Boolean(deactivatedFields?.length) && !search && (
             <Box
               mb={2}
-              mt={0.5}
+              mt={1.5}
               display="flex"
               flexDirection="column"
               gap={1.5}
