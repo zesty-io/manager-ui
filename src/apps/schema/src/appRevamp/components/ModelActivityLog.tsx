@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Grid } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import moment from "moment";
 import { isEmpty } from "lodash";
 
@@ -67,26 +67,33 @@ export const ModelActivityLog = () => {
   );
 
   return (
-    <Grid container>
-      <Grid item xs={12}>
-        <Filters
-          filters={["action", "actionByUserZUID"]}
-          actions={relatedAudits}
-          showSkeletons={isLoadingAudits || isLoadingModelData}
-        />
-      </Grid>
-      <Grid item xs={9}>
+    <Stack
+      px={3}
+      sx={{
+        "*::-webkit-scrollbar": {
+          display: "none",
+        },
+      }}
+    >
+      <Filters
+        filters={["action", "actionByUserZUID"]}
+        actions={relatedAudits}
+        showSkeletons={isLoadingAudits || isLoadingModelData}
+      />
+
+      <Stack direction="row" justifyContent="space-between" gap={6}>
         <ActionsTimeline
           actions={filteredAudits}
           showSkeletons={isLoadingAudits || isLoadingModelData}
         />
-      </Grid>
-      <Grid item xs={3}>
-        <ActionsByUsers
-          actions={filteredAudits}
-          showSkeletons={isFetchingAudits || isFetchingModelData}
-        />
-      </Grid>
-    </Grid>
+
+        <Box sx={{ minWidth: 260 }}>
+          <ActionsByUsers
+            actions={filteredAudits}
+            showSkeletons={isFetchingAudits || isFetchingModelData}
+          />
+        </Box>
+      </Stack>
+    </Stack>
   );
 };
