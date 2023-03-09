@@ -8,6 +8,7 @@ import {
   ContentModel,
   ContentModelField,
   Publishing,
+  LegacyHeader,
   WebView,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
@@ -300,6 +301,10 @@ export const instanceApi = createApi({
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
     }),
+    getLegacyHeadTags: builder.query<LegacyHeader[], void>({
+      query: () => `/web/headers`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -327,4 +332,5 @@ export const {
   useDeleteContentModelMutation,
   useGetLangsMappingQuery,
   useCreateContentModelFromTemplateMutation,
+  useGetLegacyHeadTagsQuery,
 } = instanceApi;

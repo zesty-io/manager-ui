@@ -16,6 +16,7 @@ export default memo(function Editor({
   itemZUID,
 }) {
   const dispatch = useDispatch();
+  const isNewItem = itemZUID.slice(0, 3) === "new";
   const firstTextField = fields.find((field) => field.datatype === "text");
   const firstContentField = fields.find(
     (field) =>
@@ -57,7 +58,7 @@ export default memo(function Editor({
     });
 
     // If we are working with a new item
-    if (itemZUID.slice(0, 3) === "new") {
+    if (isNewItem) {
       if (firstTextField && firstTextField.name === name) {
         dispatch({
           type: "SET_ITEM_WEB",
@@ -111,6 +112,26 @@ export default memo(function Editor({
       }
     }
   }, []);
+
+  // This function will be built upon when default values are added to the schema builder
+  const applyDefaultValuesToItemData = useCallback(() => {
+    fields.forEach((field) => {
+      if (field.datatype === "sort") {
+        dispatch({
+          type: "SET_ITEM_DATA",
+          itemZUID: itemZUID,
+          key: field.name,
+          value: 0,
+        });
+      }
+    });
+  }, [fields, itemZUID]);
+
+  useEffect(() => {
+    if (isNewItem) {
+      applyDefaultValuesToItemData();
+    }
+  }, [isNewItem]);
 
   return (
     <div className={styles.Fields}>
