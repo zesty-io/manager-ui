@@ -149,7 +149,9 @@ export const ApiInfo = ({ type, large }: Props) => {
         >
           <SvgIcon sx={{ color: "common.white" }} component={icon} />
         </Box>
-        {!large && <Chip label={tag} size="small" />}
+        {!large && (
+          <Chip sx={{ pointerEvents: "none" }} label={tag} size="small" />
+        )}
       </Box>
       <Typography
         variant={large ? "h5" : "h6"}
