@@ -31,6 +31,7 @@ import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRena
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
+import VerticalSplitRoundedIcon from "@mui/icons-material/VerticalSplitRounded";
 import { RenameModelDialogue } from "./RenameModelDialogue";
 import { modelIconMap, modelNameMap } from "../utils";
 import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
@@ -176,7 +177,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                   Edit in Code
                 </Button>
               )}
-              {canCreateModel && (
+              {/* {canCreateModel && (
                 <Button
                   size="small"
                   variant="outlined"
@@ -195,7 +196,16 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                     Create {model?.label}
                   </Box>
                 </Button>
-              )}
+              )} */}
+              <Button
+                size="small"
+                variant="outlined"
+                color="inherit"
+                startIcon={<VerticalSplitRoundedIcon color="action" />}
+                onClick={() => history.push(`/content/${model?.ZUID}`)}
+              >
+                View Content
+              </Button>
               <Button
                 size="small"
                 variant="contained"
