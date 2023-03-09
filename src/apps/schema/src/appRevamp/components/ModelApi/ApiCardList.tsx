@@ -5,7 +5,16 @@ import { apiTypes } from ".";
 export const ApiCardList = () => {
   return (
     <Box height="100%" sx={{ overflowY: "auto" }}>
-      <Stack spacing={0.5} px={3} py={2}>
+      <Stack
+        spacing={0.5}
+        px={3}
+        py={2}
+        sx={{
+          position: "sticky",
+          top: 0,
+          backgroundColor: "common.white",
+        }}
+      >
         <Typography variant="h5" fontWeight={600}>
           View APIs
         </Typography>
@@ -16,18 +25,24 @@ export const ApiCardList = () => {
           with unique benefits. Select one that best meets your needs.
         </Typography>
       </Stack>
-      <Box
-        display="flex"
-        bgcolor="grey.50"
-        gap={3}
-        px={3}
-        py={2}
-        flexWrap="wrap"
-        sx={{ overflowY: "auto" }}
-      >
-        {apiTypes.map((apiType) => (
-          <ApiCard type={apiType} />
-        ))}
+      <Box bgcolor="grey.50" height="100%">
+        <Box
+          gap={3}
+          px={3}
+          py={2}
+          maxWidth="1440px"
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateRows: "repeat(2, 1fr)",
+            gridColumnGap: "24px",
+            gridRowGap: "24px",
+          }}
+        >
+          {apiTypes.map((apiType) => (
+            <ApiCard type={apiType} />
+          ))}
+        </Box>
       </Box>
     </Box>
   );

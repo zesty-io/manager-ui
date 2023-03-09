@@ -58,7 +58,10 @@ export const ApiDomainEndpoints = ({ type, contentModelZUID }: Props) => {
               target="_blank"
             >
               {/* @ts-ignore */}
-              <li>{`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`}</li>
+              <Typography
+                component="li"
+                variant="body2"
+              >{`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`}</Typography>
             </Link>
           </Box>
           <Typography variant="h6" fontWeight={600} sx={{ mt: 2, mb: 1 }}>
@@ -77,8 +80,12 @@ export const ApiDomainEndpoints = ({ type, contentModelZUID }: Props) => {
                   key={domain.ZUID}
                   href={`https://${domain.domain}${apiTypeEndpointMap[type]}`}
                   target="_blank"
+                  variant="body2"
                 >
-                  <li>{`${domain.domain}${apiTypeEndpointMap[type]}`}</li>
+                  <Typography
+                    component="li"
+                    variant="body2"
+                  >{`${domain.domain}${apiTypeEndpointMap[type]}`}</Typography>
                 </Link>
               ))}
           </Box>
@@ -99,7 +106,10 @@ export const ApiDomainEndpoints = ({ type, contentModelZUID }: Props) => {
                   href={`https://${domain.domain}${apiTypeEndpointMap[type]}`}
                   target="_blank"
                 >
-                  <li>{`${domain.domain}${apiTypeEndpointMap[type]}`}</li>
+                  <Typography
+                    component="li"
+                    variant="body2"
+                  >{`${domain.domain}${apiTypeEndpointMap[type]}`}</Typography>
                 </Link>
               ))}
           </Box>

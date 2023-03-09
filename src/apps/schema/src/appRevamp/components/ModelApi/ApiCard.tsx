@@ -26,7 +26,7 @@ export const ApiCard = ({ type }: Props) => {
   const history = useHistory();
   return (
     <Box
-      width="300px"
+      width="100%"
       height="378px"
       p={2}
       borderRadius="8px"
@@ -34,7 +34,7 @@ export const ApiCard = ({ type }: Props) => {
       flexDirection="column"
       justifyContent="space-between"
       sx={{
-        border: (theme) => `1px solid ${theme.palette.border}`,
+        border: (theme: any) => `1px solid ${theme.palette.border}`,
       }}
       bgcolor="common.white"
     >
