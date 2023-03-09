@@ -26,7 +26,7 @@ export const ModelActivityLog = () => {
     data: modelData,
     isLoading: isLoadingModelData,
     isFetching: isFetchingModelData,
-  } = useGetContentModelQuery(id, { skip: !id });
+  } = useGetContentModelQuery(id);
   const {
     data: audits,
     isLoading: isLoadingAudits,
