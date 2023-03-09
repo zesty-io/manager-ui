@@ -19,10 +19,12 @@ interface ListRowProps {
 interface ActionsTimelineProps {
   showSkeletons: boolean;
   actions: Audit[];
+  heightOffset?: number;
 }
 export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   showSkeletons,
   actions,
+  heightOffset = 284,
 }) => {
   const { width, height } = useWindowSize();
 
@@ -93,7 +95,7 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
 
   return (
     <List
-      height={height - 284}
+      height={height - heightOffset}
       itemCount={showSkeletons ? 10 : actionsWithHeaders.length}
       itemSize={79}
       width={"100%"}

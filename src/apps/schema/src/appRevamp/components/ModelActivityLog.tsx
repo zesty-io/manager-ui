@@ -85,6 +85,7 @@ export const ModelActivityLog = () => {
         <ActionsTimeline
           actions={filteredAudits}
           showSkeletons={isLoadingAudits || isLoadingModelData}
+          heightOffset={230}
         />
 
         <Box sx={{ minWidth: 260 }}>
