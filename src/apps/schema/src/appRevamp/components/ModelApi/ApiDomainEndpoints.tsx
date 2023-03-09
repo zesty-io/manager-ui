@@ -28,6 +28,7 @@ export const ApiDomainEndpoints = ({ type, contentModelZUID }: Props) => {
             Rest Endpoint (needs authentication bearer)
           </Typography>
           <Link
+            variant="body2"
             href={`https://${instance.ZUID}.api.zesty.io/v1/content/models/${contentModelZUID}/items`}
             target="_blank"
           >{`${instance.ZUID}.api.zesty.io/v1/content/models/${contentModelZUID}/items`}</Link>
@@ -37,6 +38,7 @@ export const ApiDomainEndpoints = ({ type, contentModelZUID }: Props) => {
           <Link
             href="https://www.npmjs.com/package/@zesty-io/sdk"
             target="_blank"
+            variant="body2"
           >
             www.npmjs.com/package/@zesty-io/sdk
           </Link>
@@ -57,10 +59,10 @@ export const ApiDomainEndpoints = ({ type, contentModelZUID }: Props) => {
               href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`}
               target="_blank"
             >
-              {/* @ts-ignore */}
               <Typography
                 component="li"
                 variant="body2"
+                // @ts-ignore
               >{`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`}</Typography>
             </Link>
           </Box>
