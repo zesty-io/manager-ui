@@ -30,6 +30,7 @@ import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
+import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import { RenameModelDialogue } from "./RenameModelDialogue";
 import { modelIconMap, modelNameMap } from "../utils";
 import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
@@ -243,6 +244,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               iconPosition="start"
               label="Fields"
               value="fields"
+            />
+            <Tab
+              icon={<ApiRoundedIcon color="action" fontSize="small" />}
+              iconPosition="start"
+              label="API"
+              value="api"
             />
             <Tab
               icon={<InfoRoundedIcon color="action" fontSize="small" />}

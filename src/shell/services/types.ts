@@ -223,3 +223,14 @@ export interface User {
   lastName: string;
   email: string;
 }
+
+export interface Domain {
+  ZUID: string;
+  instanceZUID: string;
+  domain: string;
+  branch: string;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

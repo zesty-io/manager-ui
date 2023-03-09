@@ -8,6 +8,7 @@ import { ModelInfo } from "../components/ModelInfo";
 import { useGetContentModelsQuery } from "../../../../../shell/services/instance";
 import { NotFound } from "../../../../../shell/components/NotFound";
 import SchemaRoundedIcon from "@mui/icons-material/SchemaRounded";
+import { ModelApi } from "../components/ModelApi";
 
 type Params = {
   id: string;
@@ -69,7 +70,7 @@ export const Model = () => {
             <FieldList onNewFieldModalClick={handleNewFieldModalClick} />
           )}
         />
-
+        <Route path="/schema/:id/api" component={ModelApi} />
         <Route exact path="/schema/:id/info" component={ModelInfo} />
         <Redirect to="/schema/:id/fields" />
       </Switch>
