@@ -46,6 +46,11 @@ export const Filters: FC<FiltersProps> = ({
   );
 
   const getFilter = (filter: Filter) => {
+    /* 
+      TODO: 
+        - Make a generic filter component that will accept an array of options for the common filters
+        - For other more specific filters, convert them into reusable filters
+    */
     switch (filter) {
       case "happenedAt":
         return (
