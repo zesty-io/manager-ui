@@ -37,7 +37,7 @@ export const DateFilterModal: FC<DateFilterModalProps> = ({
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h5" textTransform="capitalize" fontWeight={600}>
-            {type === "daterange" ? "Custom date range" : `${type}...`}
+            {type}...
           </Typography>
           <IconButton size="small" onClick={onClose}>
             <CloseIcon fontSize="small" />
