@@ -9,10 +9,13 @@ import {
 } from "@mui/material";
 import moment from "moment";
 import { uniqBy } from "lodash";
-import DateRangePicker from "./DateRangePicker";
 import { useParams } from "../../../../../../../shell/hooks/useParams";
 import { accountsApi } from "../../../../../../../shell/services/accounts";
 import { Audit } from "../../../../../../../shell/services/types";
+import {
+  DateRangeFilter,
+  DateRangeFilterValue,
+} from "../../../../../../../shell/components/Filters";
 
 type Filter =
   | "happenedAt"
@@ -194,29 +197,20 @@ export const Filters: FC<FiltersProps> = ({
       {showSkeletons ? (
         <Skeleton variant="rectangular" width={250} height={56} />
       ) : (
-        <Box sx={{ maxWidth: 358 }}>
-          <DateRangePicker
-            inputFormat="MMM dd, yyyy"
-            value={[
-              params.get("from") ? moment(params.get("from")) : null,
-              params.get("to") ? moment(params.get("to")) : null,
-            ]}
-            onChange={([from, to]: [Date, Date]) => {
-              setParams(
-                moment(from, "YYYY-MM-DD").isValid()
-                  ? moment(from).format("YYYY-MM-DD")
-                  : "",
-                "from"
-              );
-              setParams(
-                moment(to, "YYYY-MM-DD").isValid()
-                  ? moment(to).format("YYYY-MM-DD")
-                  : "",
-                "to"
-              );
-            }}
-          />
-        </Box>
+        <DateRangeFilter
+          value={{
+            from: params.get("from")
+              ? moment(params.get("from")).format("YYYY-MM-DD")
+              : null,
+            to: params.get("to")
+              ? moment(params.get("to")).format("YYYY-MM-DD")
+              : null,
+          }}
+          onChange={(filter: DateRangeFilterValue) => {
+            setParams(moment(filter.from).isValid() ? filter.from : "", "from");
+            setParams(moment(filter.to).isValid() ? filter.to : "", "to");
+          }}
+        />
       )}
     </Box>
   );
