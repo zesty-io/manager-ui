@@ -45,6 +45,10 @@ const CUSTOM_DATES: CustomDate[] = [
     text: "After...",
     value: "after",
   },
+  {
+    text: "Custom date range",
+    value: "daterange",
+  },
 ];
 const ITEM_HEIGHT = 40;
 

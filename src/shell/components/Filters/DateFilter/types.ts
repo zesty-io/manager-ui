@@ -5,7 +5,7 @@ export type PresetType =
   | "last_30_days"
   | "last_3_months"
   | "last_12_months";
-export type DateFilterModalType = "on" | "before" | "after" | "";
+export type DateFilterModalType = "on" | "before" | "after" | "daterange" | "";
 
 export interface DateFilterValue {
   type: "preset" | DateFilterModalType;

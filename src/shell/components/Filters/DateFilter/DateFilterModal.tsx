@@ -11,6 +11,7 @@ import { CalendarPicker, LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { CalendarPickerView } from "@mui/x-date-pickers";
 import CloseIcon from "@mui/icons-material/Close";
+// import { DateRangeCalendar } from '@mui/x-date-pickers-pro';
 
 import { DateFilterModalType } from "./types";
 
@@ -37,7 +38,7 @@ export const DateFilterModal: FC<DateFilterModalProps> = ({
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h5" textTransform="capitalize" fontWeight={600}>
-            {type}...
+            {type === "daterange" ? "Custom date range" : `${type}...`}
           </Typography>
           <IconButton size="small" onClick={onClose}>
             <CloseIcon fontSize="small" />
