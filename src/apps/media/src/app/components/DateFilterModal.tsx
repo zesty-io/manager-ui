@@ -5,7 +5,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { CalendarPicker } from "@mui/x-date-pickers-pro";
+import { DateCalendar } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { DialogContent, DialogTitle, DialogProps } from "@mui/material";
@@ -52,12 +52,12 @@ export const DateFilterModal: FC<DateFilterModal> = ({
       </DialogTitle>
       <DialogContent sx={{ px: 0 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <CalendarPicker
+          <DateCalendar
             onChange={(date, state) => {
               setDateCallback(date);
               onClose();
             }}
-            date={highlightedDate}
+            value={highlightedDate}
           />
         </LocalizationProvider>
       </DialogContent>

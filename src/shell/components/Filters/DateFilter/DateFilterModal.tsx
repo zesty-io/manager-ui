@@ -7,11 +7,10 @@ import {
   DialogContent,
   IconButton,
 } from "@mui/material";
-import { CalendarPicker, LocalizationProvider } from "@mui/x-date-pickers-pro";
+import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { CalendarPickerView } from "@mui/x-date-pickers";
 import CloseIcon from "@mui/icons-material/Close";
-// import { DateRangeCalendar } from '@mui/x-date-pickers-pro';
 
 import { DateFilterModalType } from "./types";
 
@@ -47,8 +46,8 @@ export const DateFilterModal: FC<DateFilterModalProps> = ({
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <CalendarPicker
-            date={date.length ? new Date(date) : new Date()}
+          <DateCalendar
+            value={date.length ? new Date(date) : new Date()}
             onChange={(newValue) => {
               onDateChange({
                 type,
