@@ -118,6 +118,7 @@ export const Filters: FC<FiltersProps> = ({
               value={params.get("actionByUserZUID") || ""}
               onChange={(userZUID) => setParams(userZUID, "actionByUserZUID")}
               options={uniqueUserActions}
+              defaultButtonText="People"
             />
           </>
         );
