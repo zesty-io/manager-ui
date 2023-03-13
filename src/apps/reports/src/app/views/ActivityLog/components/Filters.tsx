@@ -205,6 +205,8 @@ export const Filters: FC<FiltersProps> = ({
             setParams(moment(filter.from).isValid() ? filter.from : "", "from");
             setParams(moment(filter.to).isValid() ? filter.to : "", "to");
           }}
+          inactiveButtonText="Date"
+          headerTitle="Date"
         />
       )}
     </Box>
