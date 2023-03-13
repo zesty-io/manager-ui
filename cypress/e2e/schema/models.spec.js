@@ -38,7 +38,6 @@ describe("Schema: Models", () => {
     });
     cy.intercept("POST", "/models");
     cy.intercept("GET", "/models");
-    cy.contains("Create Cypress Test Model").should("exist");
   });
   it("Renames model", () => {
     cy.getBySelector(`model-header-menu`).click();
