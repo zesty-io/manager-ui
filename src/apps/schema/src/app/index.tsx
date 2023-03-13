@@ -5,7 +5,7 @@ import { Redirect, Route, Switch } from "react-router";
 import { Model } from "./views/Model";
 import { AllModels } from "./views/AllModels";
 import { SearchModels } from "./views/SearchModels";
-import { SchemaCreateWizard } from "../app/views/SchemaCreateWizard";
+import { SchemaCreateWizard } from "./components/SchemaCreateWizard";
 
 export const SchemaApp = () => {
   return (
