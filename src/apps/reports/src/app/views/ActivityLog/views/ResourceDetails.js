@@ -215,7 +215,7 @@ export const ResourceDetails = () => {
             />
           </Box>
         ) : (
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box height="100%" display="flex" justifyContent="space-between">
             <ActionsTimeline
               actions={filteredActions}
               showSkeletons={isLoading}

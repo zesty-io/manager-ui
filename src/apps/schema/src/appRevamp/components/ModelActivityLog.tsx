@@ -70,6 +70,7 @@ export const ModelActivityLog = () => {
 
   return (
     <Stack
+      height="100%"
       px={3}
       sx={{
         "*::-webkit-scrollbar": {
@@ -99,11 +100,15 @@ export const ModelActivityLog = () => {
           />
         </Stack>
       ) : (
-        <Stack direction="row" justifyContent="space-between" gap={6}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          gap={6}
+          height="100%"
+        >
           <ActionsTimeline
             actions={filteredAudits}
             showSkeletons={isFetchingAudits || isLoadingModelData}
-            heightOffset={230}
           />
 
           <Box sx={{ minWidth: 260 }}>
