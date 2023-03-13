@@ -26,11 +26,13 @@ interface DateRangeFilterProps {
   value: DateRangeFilterValue;
   onChange: (filter: DateRangeFilterValue) => void;
   headerTitle?: string;
+  inactiveButtonText?: string;
 }
 export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   value,
   onChange,
   headerTitle = "Select a date range...",
+  inactiveButtonText = "Date range",
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange<any>>([
@@ -55,7 +57,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
     ? `${moment(value.from).format("MMM D, YYYY")} to ${moment(value.to).format(
         "MMM D, YYYY"
       )}`
-    : "Date range";
+    : inactiveButtonText;
 
   return (
     <>
