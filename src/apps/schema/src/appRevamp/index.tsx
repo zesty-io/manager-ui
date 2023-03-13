@@ -5,6 +5,7 @@ import { Redirect, Route, Switch } from "react-router";
 import { Model } from "./views/Model";
 import { AllModels } from "./views/AllModels";
 import { SearchModels } from "./views/SearchModels";
+import { SchemaCreateWizard } from "../app/views/SchemaCreateWizard";
 
 export const SchemaApp = () => {
   return (
@@ -31,6 +32,11 @@ export const SchemaApp = () => {
         <Switch>
           <Route exact path="/schema" render={() => <AllModels />} />
           <Route path="/schema/search" render={() => <SearchModels />} />
+          <Route
+            exact
+            path="/schema/start"
+            render={() => <SchemaCreateWizard />}
+          />
           <Redirect from="/schema/new" to="/schema" />
           <Route path="/schema/:id" render={() => <Model />} />
         </Switch>
