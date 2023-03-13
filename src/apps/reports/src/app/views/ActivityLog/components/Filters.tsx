@@ -15,6 +15,7 @@ import { Audit } from "../../../../../../../shell/services/types";
 import {
   DateRangeFilter,
   DateRangeFilterValue,
+  UserFilter,
 } from "../../../../../../../shell/components/Filters";
 
 type Filter =
@@ -38,10 +39,16 @@ export const Filters: FC<FiltersProps> = ({
 
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
-  const uniqueUserActions = useMemo(
-    () => uniqBy(actions, "actionByUserZUID"),
-    [actions]
-  );
+  const uniqueUserActions = useMemo(() => {
+    const uniqueUsers = uniqBy(actions, "actionByUserZUID");
+
+    return uniqueUsers?.map((user) => ({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      ZUID: user.ZUID,
+      email: user.email,
+    }));
+  }, [actions]);
 
   const uniqueUsersRoles = useMemo(
     () => uniqBy(usersRoles, "role.ZUID"),
@@ -107,25 +114,11 @@ export const Filters: FC<FiltersProps> = ({
       case "actionByUserZUID":
         return (
           <>
-            <FormLabel>Users</FormLabel>
-            <Select
+            <UserFilter
               value={params.get("actionByUserZUID") || ""}
-              onChange={(evt) =>
-                setParams(evt.target.value, "actionByUserZUID")
-              }
-              size="small"
-              displayEmpty
-            >
-              <MenuItem value="">All</MenuItem>
-              {uniqueUserActions
-                .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                .map((resource) => (
-                  <MenuItem
-                    key={resource.actionByUserZUID}
-                    value={resource.actionByUserZUID}
-                  >{`${resource.firstName} ${resource.lastName}`}</MenuItem>
-                ))}
-            </Select>
+              onChange={(userZUID) => setParams(userZUID, "actionByUserZUID")}
+              options={uniqueUserActions}
+            />
           </>
         );
       case "action":
@@ -173,6 +166,7 @@ export const Filters: FC<FiltersProps> = ({
   };
 
   return (
+    // TODO: Fix spacing layout
     <Box
       data-cy="filters"
       sx={{
