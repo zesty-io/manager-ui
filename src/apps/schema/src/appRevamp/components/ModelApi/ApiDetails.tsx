@@ -6,6 +6,7 @@ import {
   SvgIcon,
   ListItemText,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import { SvgIconComponent } from "@mui/icons-material";
@@ -23,6 +24,8 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { ApiDomainEndpoints } from "./ApiDomainEndpoints";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
+import { useGetInstanceSettingsQuery } from "../../../../../../shell/services/instance";
+import { HeadlessSwitcher } from "./HeadlessSwitcher";
 
 const apiTypeIconMap: Record<ApiType, SvgIconComponent> = {
   "quick-access": BoltRoundedIcon,
@@ -45,7 +48,14 @@ export const ApiDetails = () => {
   const location = useLocation();
   const installedApps = useSelector((state: AppState) => state.apps.installed);
   const { id } = useParams<{ id: string }>();
-  const selectedType = location.pathname.split("/").pop();
+  const selectedType = location.pathname.split("/").pop() as ApiType;
+  const { data: instanceSettings, isFetching } = useGetInstanceSettingsQuery(
+    null,
+    { skip: selectedType !== "site-generators" }
+  );
+  const headlessEnabled =
+    instanceSettings?.find((setting) => setting.key === "mode")?.value !==
+    "traditional";
 
   const handleVisualLayoutClick = () => {
     const layoutApp = installedApps?.find(
@@ -119,75 +129,97 @@ export const ApiDetails = () => {
           ))}
         </Box>
       </Box>
-      <Box flex={1} px={3} py={2} maxWidth="640px">
-        <ApiInfo type={selectedType} large />
+      {isFetching ? (
+        <Box
+          flex={1}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height="100%"
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Box flex={1} px={3} py={2}>
+          {selectedType === "site-generators" && !headlessEnabled ? (
+            <HeadlessSwitcher
+              instanceSetting={instanceSettings?.find(
+                (setting) => setting.key === "mode"
+              )}
+            />
+          ) : (
+            <Box maxWidth="640px">
+              <ApiInfo type={selectedType} large />
 
-        {[...apiTypesWithEndpoints].includes(selectedType) && (
-          <Button
-            variant="outlined"
-            startIcon={<MenuBookRoundedIcon />}
-            sx={{
-              my: 3,
-            }}
-            onClick={() => window.open(apiTypeDocsMap[selectedType])}
-          >
-            Read Docs
-          </Button>
-        )}
-        {selectedType === "custom-endpoints" && (
-          <Stack
-            direction="row"
-            gap={1.5}
-            sx={{
-              my: 3,
-            }}
-          >
-            <Button
-              variant="outlined"
-              startIcon={<CodeRoundedIcon />}
-              onClick={() => history.push("/code")}
-            >
-              Open Code App
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<MenuBookRoundedIcon color="action" />}
-              onClick={() => window.open(apiTypeDocsMap[selectedType])}
-              color="inherit"
-            >
-              Read Docs
-            </Button>
-          </Stack>
-        )}
-        {selectedType === "visual-layout" && (
-          <Stack
-            direction="row"
-            gap={1.5}
-            sx={{
-              my: 3,
-            }}
-          >
-            <Button
-              variant="outlined"
-              startIcon={<NewspaperRoundedIcon />}
-              onClick={handleVisualLayoutClick}
-            >
-              Open Visual Layout
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<MenuBookRoundedIcon color="action" />}
-              onClick={() => window.open(apiTypeDocsMap[selectedType])}
-              color="inherit"
-            >
-              Read Docs
-            </Button>
-          </Stack>
-        )}
-        {apiTypesWithEndpoints.includes(selectedType) && (
-          <ApiDomainEndpoints type={selectedType} contentModelZUID={id} />
-        )}
-      </Box>
+              {[...apiTypesWithEndpoints].includes(selectedType) && (
+                <Button
+                  variant="outlined"
+                  startIcon={<MenuBookRoundedIcon />}
+                  sx={{
+                    my: 3,
+                  }}
+                  onClick={() => window.open(apiTypeDocsMap[selectedType])}
+                >
+                  Read Docs
+                </Button>
+              )}
+              {selectedType === "custom-endpoints" && (
+                <Stack
+                  direction="row"
+                  gap={1.5}
+                  sx={{
+                    my: 3,
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    startIcon={<CodeRoundedIcon />}
+                    onClick={() => history.push("/code")}
+                  >
+                    Open Code App
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<MenuBookRoundedIcon color="action" />}
+                    onClick={() => window.open(apiTypeDocsMap[selectedType])}
+                    color="inherit"
+                  >
+                    Read Docs
+                  </Button>
+                </Stack>
+              )}
+              {selectedType === "visual-layout" && (
+                <Stack
+                  direction="row"
+                  gap={1.5}
+                  sx={{
+                    my: 3,
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    startIcon={<NewspaperRoundedIcon />}
+                    onClick={handleVisualLayoutClick}
+                  >
+                    Open Visual Layout
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<MenuBookRoundedIcon color="action" />}
+                    onClick={() => window.open(apiTypeDocsMap[selectedType])}
+                    color="inherit"
+                  >
+                    Read Docs
+                  </Button>
+                </Stack>
+              )}
+              {apiTypesWithEndpoints.includes(selectedType) && (
+                <ApiDomainEndpoints type={selectedType} contentModelZUID={id} />
+              )}
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };

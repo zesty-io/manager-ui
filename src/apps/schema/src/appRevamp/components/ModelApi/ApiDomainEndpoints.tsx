@@ -12,7 +12,7 @@ type Props = {
 export const ApiDomainEndpoints = ({ type, contentModelZUID }: Props) => {
   const instance = useSelector((state: AppState) => state.instance);
   const { data: domains } = useGetDomainsQuery();
-  const apiTypeEndpointMap: Record<ApiType, string> = {
+  const apiTypeEndpointMap: Partial<Record<ApiType, string>> = {
     "quick-access": `/-/instant/${contentModelZUID}.json`,
     "site-generators": "/?toJSON",
     graphql: "/-/gql/homepage.json",

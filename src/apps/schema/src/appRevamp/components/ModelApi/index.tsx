@@ -1,7 +1,3 @@
-import { Button, Box, Stack, Typography } from "@mui/material";
-import { ReactNode } from "react";
-import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
-import { ApiCard } from "./ApiCard";
 import { Redirect, Route, Switch } from "react-router";
 import { ApiCardList } from "./ApiCardList";
 import { ApiDetails } from "./ApiDetails";
@@ -13,7 +9,7 @@ export const apiTypes = [
   "site-generators",
   "custom-endpoints",
   "visual-layout",
-];
+] as const;
 
 export const apiTypeDocsMap: Record<ApiType, string> = {
   "quick-access": "https://zesty.org/apis/instant-content-api",
@@ -25,7 +21,7 @@ export const apiTypeDocsMap: Record<ApiType, string> = {
   "visual-layout": "https://zesty.org/?q=Visual%20Layout",
 };
 
-export const apiTypeLabelMap: Record<ApiType, string> = {
+export const apiTypeLabelMap: Partial<Record<ApiType, string>> = {
   "quick-access": "Quick Access",
   "backend-coding": "Back-End Coding",
   graphql: "GraphQL",

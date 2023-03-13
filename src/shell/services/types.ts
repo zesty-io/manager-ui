@@ -251,3 +251,19 @@ export interface LegacyHeader {
   updatedAt: string;
   value: string | null;
 }
+
+export interface InstanceSetting {
+  ID: number;
+  ZUID: string;
+  category: string;
+  key: string;
+  keyFriendly: string;
+  value: string;
+  admin?: boolean;
+  parsleyAccess?: boolean;
+  dataType: string;
+  options: string;
+  tips: string;
+  createdAt: string;
+  updatedAt: string;
+}

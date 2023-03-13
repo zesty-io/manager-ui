@@ -7,6 +7,7 @@ import {
   ContentItem,
   ContentModel,
   ContentModelField,
+  InstanceSetting,
   Publishing,
   LegacyHeader,
   WebView,
@@ -28,6 +29,7 @@ export const instanceApi = createApi({
     "ContentModelFields",
     "ContentModelField",
     "WebViews",
+    "InstanceSettings",
   ],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
@@ -305,6 +307,19 @@ export const instanceApi = createApi({
       query: () => `/web/headers`,
       transformResponse: getResponseData,
     }),
+    getInstanceSettings: builder.query<InstanceSetting[], void>({
+      query: () => `/env/settings`,
+      transformResponse: getResponseData,
+      providesTags: ["InstanceSettings"],
+    }),
+    updateInstanceSetting: builder.mutation<any, InstanceSetting>({
+      query: (body) => ({
+        url: `/env/settings/${body.ZUID}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["InstanceSettings"],
+    }),
   }),
 });
 
@@ -333,4 +348,6 @@ export const {
   useGetLangsMappingQuery,
   useCreateContentModelFromTemplateMutation,
   useGetLegacyHeadTagsQuery,
+  useGetInstanceSettingsQuery,
+  useUpdateInstanceSettingMutation,
 } = instanceApi;
