@@ -1,8 +1,8 @@
 import { useMemo, FC, CSSProperties } from "react";
 import { FixedSizeList as List } from "react-window";
 import moment from "moment";
-import { useWindowSize } from "react-use";
 import { Typography, Skeleton, Box } from "@mui/material";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 import { ActionTimelineItem } from "./ActionTimelineItem";
 import { TimelineItem } from "./ActionTimelineItem/TimelineItem";
@@ -24,8 +24,6 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   showSkeletons,
   actions,
 }) => {
-  const { width, height } = useWindowSize();
-
   const actionsWithHeaders = useMemo(() => {
     let arr: ActionsWithHeaders = [];
 
@@ -92,14 +90,20 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   };
 
   return (
-    <List
-      height={height - 284}
-      itemCount={showSkeletons ? 10 : actionsWithHeaders.length}
-      itemSize={79}
-      width={"100%"}
-      itemData={showSkeletons ? skeletonDataset : actionsWithHeaders}
-    >
-      {Row}
-    </List>
+    <Box id="test" flex={1}>
+      <AutoSizer>
+        {({ height, width }) => (
+          <List
+            height={height}
+            itemCount={showSkeletons ? 10 : actionsWithHeaders.length}
+            itemSize={79}
+            width={width}
+            itemData={showSkeletons ? skeletonDataset : actionsWithHeaders}
+          >
+            {Row}
+          </List>
+        )}
+      </AutoSizer>
+    </Box>
   );
 };
