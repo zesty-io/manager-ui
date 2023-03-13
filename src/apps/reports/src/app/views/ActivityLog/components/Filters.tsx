@@ -16,7 +16,10 @@ import {
   DateRangeFilter,
   DateRangeFilterValue,
   UserFilter,
+  GenericFilter,
 } from "../../../../../../../shell/components/Filters";
+
+const RESOURCE_TYPES = ["Code", "Content", "Schema", "Settings"];
 
 type Filter =
   | "happenedAt"
@@ -95,32 +98,26 @@ export const Filters: FC<FiltersProps> = ({
         );
       case "resourceType":
         return (
-          <>
-            <FormLabel>Resource Type</FormLabel>
-            <Select
-              value={params.get("resourceType") || ""}
-              onChange={(evt) => setParams(evt.target.value, "resourceType")}
-              size="small"
-              displayEmpty
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="code">Code</MenuItem>
-              <MenuItem value="content">Content</MenuItem>
-              <MenuItem value="schema">Schema</MenuItem>
-              <MenuItem value="settings">Settings</MenuItem>
-            </Select>
-          </>
+          <GenericFilter
+            defaultButtonText="Resource Type"
+            value={params.get("resourceType") || ""}
+            options={RESOURCE_TYPES.map((type) => ({
+              text: type,
+              value: type.toLowerCase(),
+            }))}
+            onChange={(resourceType) =>
+              setParams(resourceType?.toString(), "resourceType")
+            }
+          />
         );
       case "actionByUserZUID":
         return (
-          <>
-            <UserFilter
-              value={params.get("actionByUserZUID") || ""}
-              onChange={(userZUID) => setParams(userZUID, "actionByUserZUID")}
-              options={uniqueUserActions}
-              defaultButtonText="People"
-            />
-          </>
+          <UserFilter
+            value={params.get("actionByUserZUID") || ""}
+            onChange={(userZUID) => setParams(userZUID, "actionByUserZUID")}
+            options={uniqueUserActions}
+            defaultButtonText="People"
+          />
         );
       case "action":
         return (
