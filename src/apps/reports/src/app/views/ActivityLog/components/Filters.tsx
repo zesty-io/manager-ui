@@ -243,7 +243,6 @@ export const Filters: FC<FiltersProps> = ({
   };
 
   return (
-    // TODO: Fix spacing layout
     <Box
       data-cy="filters"
       sx={{
