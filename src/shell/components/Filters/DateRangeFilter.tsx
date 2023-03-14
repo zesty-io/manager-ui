@@ -44,8 +44,12 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   useEffect(() => {
     if (dateRangeState === "finish") {
       onChange({
-        from: moment(selectedDateRange[0]).format("YYYY-MM-DD"),
-        to: moment(selectedDateRange[1]).format("YYYY-MM-DD"),
+        from: moment(selectedDateRange[0]).isValid()
+          ? moment(selectedDateRange[0]).format("YYYY-MM-DD")
+          : null,
+        to: moment(selectedDateRange[1]).isValid()
+          ? moment(selectedDateRange[1]).format("YYYY-MM-DD")
+          : null,
       });
 
       setDateRangeState("");

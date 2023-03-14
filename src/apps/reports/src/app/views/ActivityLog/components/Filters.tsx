@@ -1,7 +1,7 @@
-import { useMemo, FC } from "react";
+import { useMemo, FC, useEffect, useState } from "react";
 import { Box, FormControl, Skeleton } from "@mui/material";
 import moment from "moment";
-import { uniqBy } from "lodash";
+import { uniqBy, isEqual } from "lodash";
 import { useParams } from "../../../../../../../shell/hooks/useParams";
 import { accountsApi } from "../../../../../../../shell/services/accounts";
 import { Audit } from "../../../../../../../shell/services/types";
@@ -92,15 +92,18 @@ interface FiltersProps {
   showSkeletons: boolean;
   filters: Filter[];
   actions: Audit[];
+  // defaultDateRange?: DateRangeFilterValue;
 }
 export const Filters: FC<FiltersProps> = ({
   actions,
   filters,
   showSkeletons,
+  // defaultDateRange = { from: null, to: null },
 }) => {
   const [params, setParams] = useParams();
-
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
+  const [defaultDateRange, setDefaultDateRange] =
+    useState<DateRangeFilterValue>({ from: null, to: null });
 
   const uniqueUserActions = useMemo(() => {
     const uniqueUsers = uniqBy(actions, "actionByUserZUID");
@@ -123,6 +126,39 @@ export const Filters: FC<FiltersProps> = ({
       }));
     }
   }, [usersRoles]);
+
+  const dateRange: DateRangeFilterValue = useMemo(() => {
+    if (Boolean(params.get("from")) && Boolean(params.get("to"))) {
+      const currentDateRange = {
+        from: moment(params.get("from")).format("YYYY-MM-DD"),
+        to: moment(params.get("to")).format("YYYY-MM-DD"),
+      };
+
+      if (isEqual(currentDateRange, defaultDateRange)) {
+        // Don't show the date on the date range filter if it's the same with the default date
+        return { from: null, to: null };
+      }
+
+      return currentDateRange;
+    }
+
+    return { from: null, to: null };
+  }, [params, defaultDateRange]);
+
+  useEffect(() => {
+    // Store a copy of the default date range which will be used to reset the date range
+    if (
+      Boolean(params.get("from")) &&
+      Boolean(params.get("to")) &&
+      !defaultDateRange.from &&
+      !defaultDateRange.to
+    ) {
+      setDefaultDateRange({
+        from: moment(params.get("from")).format("YYYY-MM-DD"),
+        to: moment(params.get("to")).format("YYYY-MM-DD"),
+      });
+    }
+  }, [params]);
 
   const getFilter = (filter: Filter) => {
     switch (filter) {
@@ -191,6 +227,23 @@ export const Filters: FC<FiltersProps> = ({
     }
   };
 
+  const handleDateRangeFilterChanged = (range: DateRangeFilterValue) => {
+    if (!range.to && !range.from) {
+      // Reset the date range filter to the default value when user input date range is cleared
+      setParams(
+        moment(defaultDateRange.from).isValid() ? defaultDateRange.from : "",
+        "from"
+      );
+      setParams(
+        moment(defaultDateRange.to).isValid() ? defaultDateRange.to : "",
+        "to"
+      );
+    } else {
+      setParams(range.from, "from");
+      setParams(range.to, "to");
+    }
+  };
+
   return (
     // TODO: Fix spacing layout
     <Box
@@ -218,18 +271,8 @@ export const Filters: FC<FiltersProps> = ({
         <Skeleton variant="rectangular" width={250} height={56} />
       ) : (
         <DateRangeFilter
-          value={{
-            from: params.get("from")
-              ? moment(params.get("from")).format("YYYY-MM-DD")
-              : null,
-            to: params.get("to")
-              ? moment(params.get("to")).format("YYYY-MM-DD")
-              : null,
-          }}
-          onChange={(filter: DateRangeFilterValue) => {
-            setParams(moment(filter.from).isValid() ? filter.from : "", "from");
-            setParams(moment(filter.to).isValid() ? filter.to : "", "to");
-          }}
+          value={dateRange}
+          onChange={handleDateRangeFilterChanged}
           inactiveButtonText="Date"
           headerTitle="Date"
         />
