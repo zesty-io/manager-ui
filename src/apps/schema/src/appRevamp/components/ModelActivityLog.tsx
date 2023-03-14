@@ -7,6 +7,7 @@ import { isEmpty } from "lodash";
 import { ActionsTimeline } from "../../../../reports/src/app/views/ActivityLog/components/ActionsTimeline";
 import { Filters } from "../../../../reports/src/app/views/ActivityLog/components/Filters";
 import { ActionsByUsers } from "../../../../reports/src/app/views/ActivityLog/components/ActionsByUsers";
+import { EmptyState } from "../../../../reports/src/app/views/ActivityLog/components/EmptyState";
 import {
   useGetContentModelQuery,
   useGetAuditsQuery,
@@ -45,11 +46,7 @@ export const ModelActivityLog = () => {
       !searchParams.get("to") &&
       !isEmpty(modelData)
     ) {
-      setSearchParams(
-        moment(modelData?.createdAt).format("YYYY-MM-DD"),
-        "from"
-      );
-      setSearchParams(moment().format("YYYY-MM-DD"), "to");
+      useDefaultDateParams();
     }
 
     setInitialized(true);
@@ -66,8 +63,14 @@ export const ModelActivityLog = () => {
     [relatedAudits, searchParams]
   );
 
+  const useDefaultDateParams = () => {
+    setSearchParams(moment(modelData?.createdAt).format("YYYY-MM-DD"), "from");
+    setSearchParams(moment().format("YYYY-MM-DD"), "to");
+  };
+
   return (
     <Stack
+      height="100%"
       px={3}
       sx={{
         "*::-webkit-scrollbar": {
@@ -81,20 +84,41 @@ export const ModelActivityLog = () => {
         showSkeletons={isLoadingAudits || isLoadingModelData}
       />
 
-      <Stack direction="row" justifyContent="space-between" gap={6}>
-        <ActionsTimeline
-          actions={filteredAudits}
-          showSkeletons={isLoadingAudits || isLoadingModelData}
-          heightOffset={230}
-        />
-
-        <Box sx={{ minWidth: 260 }}>
-          <ActionsByUsers
-            actions={filteredAudits}
-            showSkeletons={isFetchingAudits || isFetchingModelData}
+      {(!isFetchingAudits || !isFetchingAudits) && !filteredAudits?.length ? (
+        <Stack
+          height="calc(100svh - 230px)"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <EmptyState
+            title="No Logs Found"
+            onReset={() => {
+              setSearchParams("", "action");
+              setSearchParams("", "actionByUserZUID");
+              useDefaultDateParams();
+            }}
           />
-        </Box>
-      </Stack>
+        </Stack>
+      ) : (
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          gap={6}
+          height="100%"
+        >
+          <ActionsTimeline
+            actions={filteredAudits}
+            showSkeletons={isFetchingAudits || isLoadingModelData}
+          />
+
+          <Box sx={{ minWidth: 260 }}>
+            <ActionsByUsers
+              actions={filteredAudits}
+              showSkeletons={isFetchingAudits || isFetchingModelData}
+            />
+          </Box>
+        </Stack>
+      )}
     </Stack>
   );
 };
