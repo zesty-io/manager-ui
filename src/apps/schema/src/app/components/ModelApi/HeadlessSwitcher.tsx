@@ -9,8 +9,8 @@ import {
 import { useState } from "react";
 import { startCase } from "lodash";
 import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
-import headlessLogos from "../../../../../../../public/images/headlessLogos.png";
-import hybridLogos from "../../../../../../../public/images/hybridLogos.png";
+import headlessLogos from "../../../../../../../public/images/headlessLogos.jpg";
+import hybridLogos from "../../../../../../../public/images/hybridLogos.jpg";
 import { LoadingButton } from "@mui/lab";
 import { InstanceSetting } from "../../../../../../shell/services/types";
 import { useUpdateInstanceSettingMutation } from "../../../../../../shell/services/instance";
@@ -28,6 +28,7 @@ export const HeadlessSwitcher = ({ instanceSetting }: Props) => {
     updateInstanceSetting({
       ...instanceSetting,
       value: selected,
+      options: instanceSetting?.options?.replaceAll(",", ";"),
     });
   };
 

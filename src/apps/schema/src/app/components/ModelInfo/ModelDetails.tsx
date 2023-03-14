@@ -63,7 +63,7 @@ export const ModelDetails = () => {
             <Typography color="text.secondary">Name</Typography>
             <Tooltip
               title="Name that is shown to content editors"
-              placement="left"
+              placement="right"
             >
               <InfoRoundedIcon
                 color="action"
@@ -97,7 +97,7 @@ export const ModelDetails = () => {
             <Typography color="text.secondary">Description</Typography>
             <Tooltip
               title="Displays the purpose of the model to help content writers"
-              placement="left"
+              placement="right"
             >
               <InfoRoundedIcon
                 color="action"
@@ -136,7 +136,7 @@ export const ModelDetails = () => {
             </Typography>
             <Tooltip
               title="ID used for accessing this model through our API or Parsley"
-              placement="left"
+              placement="right"
             >
               <InfoRoundedIcon
                 color="action"
@@ -180,7 +180,7 @@ export const ModelDetails = () => {
             <Typography color="text.secondary">Parent Model</Typography>
             <Tooltip
               title="Selecting a parent affects default routing and content navigation in the UI"
-              placement="left"
+              placement="right"
             >
               <InfoRoundedIcon
                 color="action"
@@ -231,7 +231,7 @@ export const ModelDetails = () => {
             <Typography color="text.secondary">ZUID</Typography>
             <Tooltip
               title="The unique id of the model. Content items are always accessed relative to their model, so a model ZUID is required for each call."
-              placement="left"
+              placement="right"
             >
               <InfoRoundedIcon
                 color="action"
