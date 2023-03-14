@@ -92,13 +92,11 @@ interface FiltersProps {
   showSkeletons: boolean;
   filters: Filter[];
   actions: Audit[];
-  // defaultDateRange?: DateRangeFilterValue;
 }
 export const Filters: FC<FiltersProps> = ({
   actions,
   filters,
   showSkeletons,
-  // defaultDateRange = { from: null, to: null },
 }) => {
   const [params, setParams] = useParams();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
@@ -111,7 +109,7 @@ export const Filters: FC<FiltersProps> = ({
     return uniqueUsers?.map((user) => ({
       firstName: user.firstName,
       lastName: user.lastName,
-      ZUID: user.ZUID,
+      ZUID: user.actionByUserZUID,
       email: user.email,
     }));
   }, [actions]);
