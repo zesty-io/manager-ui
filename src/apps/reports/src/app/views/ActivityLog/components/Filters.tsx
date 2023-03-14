@@ -9,10 +9,17 @@ import {
 } from "@mui/material";
 import moment from "moment";
 import { uniqBy } from "lodash";
-import DateRangePicker from "./DateRangePicker";
 import { useParams } from "../../../../../../../shell/hooks/useParams";
 import { accountsApi } from "../../../../../../../shell/services/accounts";
 import { Audit } from "../../../../../../../shell/services/types";
+import {
+  DateRangeFilter,
+  DateRangeFilterValue,
+  UserFilter,
+  GenericFilter,
+} from "../../../../../../../shell/components/Filters";
+
+const RESOURCE_TYPES = ["Code", "Content", "Schema", "Settings"];
 
 type Filter =
   | "happenedAt"
@@ -35,10 +42,16 @@ export const Filters: FC<FiltersProps> = ({
 
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
-  const uniqueUserActions = useMemo(
-    () => uniqBy(actions, "actionByUserZUID"),
-    [actions]
-  );
+  const uniqueUserActions = useMemo(() => {
+    const uniqueUsers = uniqBy(actions, "actionByUserZUID");
+
+    return uniqueUsers?.map((user) => ({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      ZUID: user.ZUID,
+      email: user.email,
+    }));
+  }, [actions]);
 
   const uniqueUsersRoles = useMemo(
     () => uniqBy(usersRoles, "role.ZUID"),
@@ -85,45 +98,26 @@ export const Filters: FC<FiltersProps> = ({
         );
       case "resourceType":
         return (
-          <>
-            <FormLabel>Resource Type</FormLabel>
-            <Select
-              value={params.get("resourceType") || ""}
-              onChange={(evt) => setParams(evt.target.value, "resourceType")}
-              size="small"
-              displayEmpty
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="code">Code</MenuItem>
-              <MenuItem value="content">Content</MenuItem>
-              <MenuItem value="schema">Schema</MenuItem>
-              <MenuItem value="settings">Settings</MenuItem>
-            </Select>
-          </>
+          <GenericFilter
+            defaultButtonText="Resource Type"
+            value={params.get("resourceType") || ""}
+            options={RESOURCE_TYPES.map((type) => ({
+              text: type,
+              value: type.toLowerCase(),
+            }))}
+            onChange={(resourceType) =>
+              setParams(resourceType?.toString(), "resourceType")
+            }
+          />
         );
       case "actionByUserZUID":
         return (
-          <>
-            <FormLabel>Users</FormLabel>
-            <Select
-              value={params.get("actionByUserZUID") || ""}
-              onChange={(evt) =>
-                setParams(evt.target.value, "actionByUserZUID")
-              }
-              size="small"
-              displayEmpty
-            >
-              <MenuItem value="">All</MenuItem>
-              {uniqueUserActions
-                .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                .map((resource) => (
-                  <MenuItem
-                    key={resource.actionByUserZUID}
-                    value={resource.actionByUserZUID}
-                  >{`${resource.firstName} ${resource.lastName}`}</MenuItem>
-                ))}
-            </Select>
-          </>
+          <UserFilter
+            value={params.get("actionByUserZUID") || ""}
+            onChange={(userZUID) => setParams(userZUID, "actionByUserZUID")}
+            options={uniqueUserActions}
+            defaultButtonText="People"
+          />
         );
       case "action":
         return (
@@ -170,6 +164,7 @@ export const Filters: FC<FiltersProps> = ({
   };
 
   return (
+    // TODO: Fix spacing layout
     <Box
       data-cy="filters"
       sx={{
@@ -194,29 +189,22 @@ export const Filters: FC<FiltersProps> = ({
       {showSkeletons ? (
         <Skeleton variant="rectangular" width={250} height={56} />
       ) : (
-        <Box sx={{ maxWidth: 358 }}>
-          <DateRangePicker
-            inputFormat="MMM dd, yyyy"
-            value={[
-              params.get("from") ? moment(params.get("from")) : null,
-              params.get("to") ? moment(params.get("to")) : null,
-            ]}
-            onChange={([from, to]: [Date, Date]) => {
-              setParams(
-                moment(from, "YYYY-MM-DD").isValid()
-                  ? moment(from).format("YYYY-MM-DD")
-                  : "",
-                "from"
-              );
-              setParams(
-                moment(to, "YYYY-MM-DD").isValid()
-                  ? moment(to).format("YYYY-MM-DD")
-                  : "",
-                "to"
-              );
-            }}
-          />
-        </Box>
+        <DateRangeFilter
+          value={{
+            from: params.get("from")
+              ? moment(params.get("from")).format("YYYY-MM-DD")
+              : null,
+            to: params.get("to")
+              ? moment(params.get("to")).format("YYYY-MM-DD")
+              : null,
+          }}
+          onChange={(filter: DateRangeFilterValue) => {
+            setParams(moment(filter.from).isValid() ? filter.from : "", "from");
+            setParams(moment(filter.to).isValid() ? filter.to : "", "to");
+          }}
+          inactiveButtonText="Date"
+          headerTitle="Date"
+        />
       )}
     </Box>
   );
