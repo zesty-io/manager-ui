@@ -1,12 +1,5 @@
 import { useMemo, FC } from "react";
-import {
-  Box,
-  Select,
-  MenuItem,
-  FormControl,
-  FormLabel,
-  Skeleton,
-} from "@mui/material";
+import { Box, FormControl, Skeleton } from "@mui/material";
 import moment from "moment";
 import { uniqBy } from "lodash";
 import { useParams } from "../../../../../../../shell/hooks/useParams";
@@ -19,7 +12,74 @@ import {
   GenericFilter,
 } from "../../../../../../../shell/components/Filters";
 
-const RESOURCE_TYPES = ["Code", "Content", "Schema", "Settings"];
+const RESOURCE_TYPES = [
+  {
+    text: "Code",
+    value: "code",
+  },
+  {
+    text: "Content",
+    value: "content",
+  },
+  {
+    text: "Schema",
+    value: "schema",
+  },
+  {
+    text: "Settings",
+    value: "settings",
+  },
+];
+const HAPPENED_AT = [
+  {
+    text: "Most Recent",
+    value: "",
+  },
+  {
+    text: "Oldest First",
+    value: "happenedAt",
+  },
+];
+const USER_ACTIVITY = [
+  {
+    text: "Most Active",
+    value: "",
+  },
+  {
+    text: "Most Recently Active",
+    value: "happenedAt",
+  },
+  {
+    text: "Least Active",
+    value: "leastActive",
+  },
+];
+const ACTION = [
+  {
+    text: "Created",
+    value: "1",
+  },
+  {
+    text: "Modified",
+    value: "2",
+  },
+  {
+    text: "Deleted",
+    value: "3",
+  },
+  {
+    text: "Published",
+    value: "4",
+  },
+  {
+    text: "Unpublished",
+    value: "5",
+  },
+  {
+    text: "Scheduled",
+    value: "6",
+  },
+];
 
 type Filter =
   | "happenedAt"
@@ -53,58 +113,47 @@ export const Filters: FC<FiltersProps> = ({
     }));
   }, [actions]);
 
-  const uniqueUsersRoles = useMemo(
-    () => uniqBy(usersRoles, "role.ZUID"),
-    [usersRoles]
-  );
+  const uniqueUsersRoles = useMemo(() => {
+    if (usersRoles?.length) {
+      const uniqueRoles = uniqBy(usersRoles, "role.ZUID");
+
+      return uniqueRoles?.map((role) => ({
+        text: role.role.name,
+        value: role.role.name,
+      }));
+    }
+  }, [usersRoles]);
 
   const getFilter = (filter: Filter) => {
-    /* 
-      TODO: 
-        - Make a generic filter component that will accept an array of options for the common filters
-        - For other more specific filters, convert them into reusable filters
-    */
     switch (filter) {
       case "happenedAt":
         return (
-          <>
-            <FormLabel>Sort By</FormLabel>
-            <Select
-              value={params.get("sortBy") || ""}
-              onChange={(evt) => setParams(evt.target.value, "sortBy")}
-              size="small"
-              displayEmpty
-            >
-              <MenuItem value="">Most Recent</MenuItem>
-              <MenuItem value="happenedAt">Oldest First</MenuItem>
-            </Select>
-          </>
+          <GenericFilter
+            options={HAPPENED_AT}
+            value={params.get("sortBy") || ""}
+            onChange={(happenedAt) =>
+              setParams(happenedAt?.toString(), "sortBy")
+            }
+            defaultButtonText="Most Recent"
+          />
         );
       case "sortByUsers":
         return (
-          <>
-            <FormLabel>Sort By</FormLabel>
-            <Select
-              value={params.get("sortByUsers") || ""}
-              onChange={(evt) => setParams(evt.target.value, "sortByUsers")}
-              size="small"
-              displayEmpty
-            >
-              <MenuItem value="">Most Active</MenuItem>
-              <MenuItem value="happenedAt">Most Recently Active</MenuItem>
-              <MenuItem value="leastActive">Least Active</MenuItem>
-            </Select>
-          </>
+          <GenericFilter
+            defaultButtonText="Most Active"
+            value={params.get("sortByUsers") || ""}
+            onChange={(userActivity) =>
+              setParams(userActivity.toString(), "sortByUsers")
+            }
+            options={USER_ACTIVITY}
+          />
         );
       case "resourceType":
         return (
           <GenericFilter
             defaultButtonText="Resource Type"
             value={params.get("resourceType") || ""}
-            options={RESOURCE_TYPES.map((type) => ({
-              text: type,
-              value: type.toLowerCase(),
-            }))}
+            options={RESOURCE_TYPES}
             onChange={(resourceType) =>
               setParams(resourceType?.toString(), "resourceType")
             }
@@ -121,42 +170,21 @@ export const Filters: FC<FiltersProps> = ({
         );
       case "action":
         return (
-          <>
-            <FormLabel>Action Type</FormLabel>
-            <Select
-              value={params.get("action") || ""}
-              onChange={(evt) => setParams(evt.target.value, "action")}
-              size="small"
-              displayEmpty
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="1">Created</MenuItem>
-              <MenuItem value="2">Modified</MenuItem>
-              <MenuItem value="3">Deleted</MenuItem>
-              <MenuItem value="4">Published</MenuItem>
-              <MenuItem value="5">Unpublished</MenuItem>
-              <MenuItem value="6">Scheduled</MenuItem>
-            </Select>
-          </>
+          <GenericFilter
+            defaultButtonText="Action Type"
+            value={params.get("action") || ""}
+            options={ACTION}
+            onChange={(action) => setParams(action.toString(), "action")}
+          />
         );
       case "userRole":
         return (
-          <>
-            <FormLabel>User Role</FormLabel>
-            <Select
-              value={params.get("userRole") || ""}
-              onChange={(evt) => setParams(evt.target.value, "userRole")}
-              size="small"
-              displayEmpty
-            >
-              <MenuItem value="">All</MenuItem>
-              {uniqueUsersRoles.map((userRole) => (
-                <MenuItem key={userRole.role.ZUID} value={userRole.role.name}>
-                  {userRole.role.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </>
+          <GenericFilter
+            defaultButtonText="User Role"
+            value={params.get("userRole") || ""}
+            onChange={(role) => setParams(role.toString(), "userRole")}
+            options={uniqueUsersRoles}
+          />
         );
       default:
         break;
