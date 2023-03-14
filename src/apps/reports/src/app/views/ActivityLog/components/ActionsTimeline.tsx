@@ -19,12 +19,10 @@ interface ListRowProps {
 interface ActionsTimelineProps {
   showSkeletons: boolean;
   actions: Audit[];
-  heightOffset?: number;
 }
 export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   showSkeletons,
   actions,
-  heightOffset = 284,
 }) => {
   const actionsWithHeaders = useMemo(() => {
     let arr: ActionsWithHeaders = [];
