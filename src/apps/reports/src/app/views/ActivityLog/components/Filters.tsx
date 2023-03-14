@@ -248,23 +248,18 @@ export const Filters: FC<FiltersProps> = ({
       data-cy="filters"
       sx={{
         display: "flex",
-        gap: 1,
-        justifyContent: "space-between",
-        mt: 2,
-        mb: 1.5,
+        gap: 1.5,
+        my: 1.5,
       }}
     >
-      <Box sx={{ display: "flex", gap: 1.5 }}>
-        {filters.map((filter, idx) =>
-          showSkeletons ? (
-            <Skeleton key={idx} variant="rectangular" width={172} height={56} />
-          ) : (
-            <FormControl key={idx} sx={{ width: 172 }}>
-              {getFilter(filter)}
-            </FormControl>
-          )
-        )}
-      </Box>
+      {filters.map((filter, idx) =>
+        showSkeletons ? (
+          <Skeleton key={idx} variant="rectangular" width={172} height={56} />
+        ) : (
+          <Box key={idx}>{getFilter(filter)}</Box>
+        )
+      )}
+
       {showSkeletons ? (
         <Skeleton variant="rectangular" width={250} height={56} />
       ) : (
