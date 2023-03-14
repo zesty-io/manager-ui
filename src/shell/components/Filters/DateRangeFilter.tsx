@@ -49,6 +49,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
       });
 
       setDateRangeState("");
+      setIsModalOpen(false);
     }
   }, [dateRangeState]);
 
