@@ -89,6 +89,7 @@ export const UserFilter: FC<UserFilterProps> = ({
       buttonText={buttonText}
       onOpenMenu={handleOpenMenuClick}
       onRemoveFilter={() => onChange("")}
+      filterId="user"
     >
       <Menu
         open={isFilterMenuOpen}
@@ -170,6 +171,7 @@ export const UserFilter: FC<UserFilterProps> = ({
               sx={{
                 height: "52px",
               }}
+              data-cy={`filter_value_${user?.ZUID}`}
             >
               <ListItemAvatar>
                 <Avatar

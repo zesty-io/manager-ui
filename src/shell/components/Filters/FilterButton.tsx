@@ -10,6 +10,7 @@ interface FilterButton {
   onOpenMenu: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onRemoveFilter: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children?: React.ReactNode;
+  filterId?: string;
 }
 export const FilterButton: FC<FilterButton> = ({
   isFilterActive,
@@ -17,6 +18,7 @@ export const FilterButton: FC<FilterButton> = ({
   onOpenMenu,
   onRemoveFilter,
   children,
+  filterId = "genericFilter",
 }) => {
   if (isFilterActive) {
     return (
@@ -26,6 +28,7 @@ export const FilterButton: FC<FilterButton> = ({
             size="small"
             startIcon={<CheckIcon sx={{ width: "20px", height: "20px" }} />}
             onClick={onOpenMenu}
+            data-cy={`${filterId}_selected`}
           >
             {buttonText}
           </Button>
@@ -46,6 +49,7 @@ export const FilterButton: FC<FilterButton> = ({
         color="inherit"
         endIcon={<ArrowDropDownOutlinedIcon />}
         onClick={onOpenMenu}
+        data-cy={`${filterId}_default`}
       >
         {buttonText}
       </Button>
