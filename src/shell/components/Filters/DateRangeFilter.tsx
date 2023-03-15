@@ -96,7 +96,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
               </IconButton>
             </Box>
           </DialogTitle>
-          <DialogContent sx={{ p: 0 }}>
+          <DialogContent sx={{ px: 0, pb: 2.5 }}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DateRangeCalendar
                 value={selectedDateRange}
