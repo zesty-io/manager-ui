@@ -107,7 +107,9 @@ export const ItemSettings = memo(
               <div className={styles.SearchResult}>
                 <h6 className={styles.GoogleTitle}>
                   {web.metaTitle}
-                  {showSiteNameInMetaTitle ? ` | ${siteName}` : ""}
+                  {Boolean(Number(showSiteNameInMetaTitle))
+                    ? ` | ${siteName}`
+                    : ""}
                 </h6>
                 <div className={styles.GoogleLink}>
                   {domain ? (
