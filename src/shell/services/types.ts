@@ -61,6 +61,8 @@ export interface File {
   thumbnail: string;
 }
 
+export type ModelType = "pageset" | "templateset" | "dataset";
+
 export interface ContentModel {
   ZUID: string;
   masterZUID: string;
@@ -70,7 +72,7 @@ export interface ContentModel {
   metaTitle?: any;
   metaDescription?: any;
   metaKeywords?: any;
-  type: string;
+  type: ModelType;
   name: string;
   sort: number;
   listed: boolean;
@@ -134,6 +136,64 @@ export interface ContentItem {
   publishAt?: any;
 }
 
+export interface FieldSettingsOptions {
+  [key: string | number]: string;
+}
+
+export interface FieldSettings {
+  options?: FieldSettingsOptions;
+  group_id?: string;
+  limit?: number;
+  list: boolean;
+  tooltip?: string;
+}
+
+export type ContentModelFieldValue =
+  | string
+  | number
+  | boolean
+  | FieldSettings
+  | FieldSettingsOptions[];
+
+export interface ContentModelField {
+  ZUID: string;
+  contentModelZUID: string;
+  name: string;
+  label: string;
+  description: string;
+  datatype: string;
+  sort: number;
+  required?: boolean;
+  relationship?: any;
+  options?: any;
+  fieldOptions?: any;
+  datatypeOptions: string;
+  settings: FieldSettings;
+  relatedModelZUID?: any;
+  relatedFieldZUID?: any;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string;
+}
+
+export interface WebView {
+  ZUID: string;
+  status: "live" | "dev";
+  contentModelZUID: string;
+  contentModelType: string;
+  code: string;
+  type: string;
+  fileName: string;
+  customZNode: number;
+  template: number;
+  lastEditedID?: number;
+  module: number;
+  plugin: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AuditMeta {
   uri: string;
   url: string;
@@ -156,6 +216,24 @@ export interface Audit {
   email: string;
 }
 
+export interface User {
+  ZUID: string;
+  ID: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface Domain {
+  ZUID: string;
+  instanceZUID: string;
+  domain: string;
+  branch: string;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 export interface LegacyHeader {
   ID: number;
   active: number;
@@ -172,4 +250,20 @@ export interface LegacyHeader {
   type: string;
   updatedAt: string;
   value: string | null;
+}
+
+export interface InstanceSetting {
+  ID: number;
+  ZUID: string;
+  category: string;
+  key: string;
+  keyFriendly: string;
+  value: string;
+  admin?: boolean;
+  parsleyAccess?: boolean;
+  dataType: string;
+  options: string;
+  tips: string;
+  createdAt: string;
+  updatedAt: string;
 }

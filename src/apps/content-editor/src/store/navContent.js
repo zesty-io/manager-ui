@@ -8,14 +8,23 @@ import {
   faLink,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
+import { SvgIcon } from "@mui/material";
+import { modelIconMap } from "../../../schema/src/app/utils";
+
+const svgIconStyle = {
+  width: "12px",
+  height: "12px",
+};
 
 const ICONS = {
-  templateset: faFile,
-  pageset: faListAlt,
-  dataset: faDatabase,
+  templateset: (
+    <SvgIcon component={modelIconMap["templateset"]} sx={svgIconStyle} />
+  ),
+  pageset: <SvgIcon component={modelIconMap["pageset"]} sx={svgIconStyle} />,
+  dataset: <SvgIcon component={modelIconMap["dataset"]} sx={svgIconStyle} />,
   external: faExternalLinkSquareAlt,
   internal: faLink,
-  item: faFile,
+  item: <SvgIcon component={modelIconMap["templateset"]} sx={svgIconStyle} />,
   homepage: faHome,
 };
 
