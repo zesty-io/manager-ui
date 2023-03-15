@@ -211,6 +211,7 @@ export const Filters: FC<FiltersProps> = ({
             value={params.get("action") || ""}
             options={ACTION}
             onChange={(action) => setParams(action.toString(), "action")}
+            filterId="action"
           />
         );
       case "userRole":
