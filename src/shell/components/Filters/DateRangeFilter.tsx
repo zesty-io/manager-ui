@@ -74,6 +74,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
           setSelectedDateRange([null, null]);
           setDateRangeState("finish");
         }}
+        filterId="dateRange"
       />
       {isModalOpen && (
         <Dialog open onClose={() => setIsModalOpen(false)} maxWidth="md">
@@ -103,6 +104,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
                   setSelectedDateRange(newValue);
                   setDateRangeState(selectionState);
                 }}
+                data-cy="dateRange_picker"
               />
             </LocalizationProvider>
           </DialogContent>

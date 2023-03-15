@@ -12,12 +12,14 @@ interface GenericFilterProps {
   options: Option[];
   value: string;
   onChange: (filter: string | number) => void;
+  filterId?: string;
 }
 export const GenericFilter: FC<GenericFilterProps> = ({
   defaultButtonText,
   options,
   value,
   onChange,
+  filterId = "genericFilter",
 }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
@@ -42,6 +44,7 @@ export const GenericFilter: FC<GenericFilterProps> = ({
       buttonText={buttonText}
       onOpenMenu={handleOpenMenuClick}
       onRemoveFilter={() => onChange("")}
+      filterId={filterId}
     >
       <Menu
         open={Boolean(menuAnchorEl)}
@@ -61,6 +64,7 @@ export const GenericFilter: FC<GenericFilterProps> = ({
             }}
             onClick={() => handleFilterSelect(option.value)}
             selected={Boolean(value) ? option.value === value : index === 0}
+            data-cy={`filter_value_${option.value}`}
           >
             <ListItemText>{option.text}</ListItemText>
           </MenuItem>

@@ -163,6 +163,7 @@ export const Filters: FC<FiltersProps> = ({
       case "happenedAt":
         return (
           <GenericFilter
+            filterId="sortBy"
             options={HAPPENED_AT}
             value={params.get("sortBy") || ""}
             onChange={(happenedAt) =>
@@ -191,6 +192,7 @@ export const Filters: FC<FiltersProps> = ({
             onChange={(resourceType) =>
               setParams(resourceType?.toString(), "resourceType")
             }
+            filterId="resourceType"
           />
         );
       case "actionByUserZUID":
