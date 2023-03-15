@@ -90,7 +90,7 @@ export const ActionsTimeline: FC<ActionsTimelineProps> = ({
   };
 
   return (
-    <Box id="test" flex={1}>
+    <Box data-cy="resource_list" flex={1}>
       <AutoSizer>
         {({ height, width }) => (
           <List

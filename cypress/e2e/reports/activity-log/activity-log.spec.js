@@ -89,7 +89,7 @@ describe("Reports > Activity Log > Home", () => {
           "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
         );
       });
-      // Set daterange filter
+
       const from = moment()
         .hours(0)
         .minute(0)
@@ -137,7 +137,10 @@ describe("Reports > Activity Log > Home", () => {
       });
     });
     it("Navigates to Resource Detail on Resource Item click", () => {
-      cy.get(".MuiListItem-root").last().click();
+      cy.getBySelector("resouce_list_item")
+        .should("have.attr", "data-is-loading", "false")
+        .click();
+
       cy.location("pathname").should(
         "eq",
         "/reports/activity-log/resources/7-f28fd4d4a9-qtjb66"
@@ -160,7 +163,7 @@ describe("Reports > Activity Log > Home", () => {
       cy.get(".MuiSkeleton-root").should("have.length", 0);
     });
 
-    it.skip("Displays partial Skeletons when changing dates and refetching API", () => {
+    it("Displays partial Skeletons when changing dates and refetching API", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
           "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
@@ -177,15 +180,26 @@ describe("Reports > Activity Log > Home", () => {
         });
       }).as("request");
 
-      cy.get('[data-cy="filters"]').contains("From").next().click();
-      cy.get(
-        '.MuiDateRangePickerDay-root button[aria-label="Jul 18, 2022"]'
-      ).click();
-      cy.root().click();
-      cy.get('[data-cy="filters"]').contains("To").next().click();
-      cy.get(
-        '.MuiDateRangePickerDay-root button[aria-label="Jul 30, 2022"]'
-      ).click();
+      const from = moment()
+        .hours(0)
+        .minute(0)
+        .second(0)
+        .millisecond(0)
+        .format("x");
+      const to = moment()
+        .add(1, "day")
+        .hours(0)
+        .minute(0)
+        .second(0)
+        .millisecond(0)
+        .format("x");
+
+      // Set daterange filter
+      cy.getBySelector("dateRange_default").should("exist").click();
+      cy.getBySelector("dateRange_picker").should("exist");
+      cy.get(`[data-timestamp=${from}]`).should("exist").click();
+      cy.get(`[data-timestamp=${to}]`).should("exist").click();
+
       cy.root().click();
       cy.get(".MuiSkeleton-root").should("have.length", 16);
       cy.wait("@request");
