@@ -275,3 +275,47 @@ export interface UserRole {
   verifiedEmails: string | null;
   websiteCreator: boolean;
 }
+
+export interface Domain {
+  ZUID: string;
+  instanceZUID: string;
+  domain: string;
+  branch: string;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface LegacyHeader {
+  ID: number;
+  active: number;
+  comment: string | null;
+  createdAt: string;
+  isLocked: number | null;
+  keys: string;
+  module: number;
+  nodeName: string;
+  plugin: number;
+  resourceZUID: string;
+  sort: number;
+  template: number;
+  type: string;
+  updatedAt: string;
+  value: string | null;
+}
+
+export interface InstanceSetting {
+  ID: number;
+  ZUID: string;
+  category: string;
+  key: string;
+  keyFriendly: string;
+  value: string;
+  admin?: boolean;
+  parsleyAccess?: boolean;
+  dataType: string;
+  options: string;
+  tips: string;
+  createdAt: string;
+  updatedAt: string;
+}

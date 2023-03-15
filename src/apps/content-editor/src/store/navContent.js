@@ -9,7 +9,7 @@ import {
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { SvgIcon } from "@mui/material";
-import { modelIconMap } from "../../../schema/src/appRevamp/utils";
+import { modelIconMap } from "../../../schema/src/app/utils";
 
 const svgIconStyle = {
   width: "12px",
