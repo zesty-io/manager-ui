@@ -220,9 +220,13 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
             </Box>
           </Box>
           <Box mt={1.5}>
-            <Typography variant="caption" color="textSecondary">{`${
-              modelNameMap[model?.type]
-            } Model  •  ZUID: ${model?.ZUID}  •  `}</Typography>
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              whiteSpace="pre"
+            >{`${modelNameMap[model?.type]} Model  •  ZUID: ${
+              model?.ZUID
+            }  •  `}</Typography>
             <Tooltip
               title={moment(model?.updatedAt).format(
                 "Do MMMM YYYY [at] h:mm A"
