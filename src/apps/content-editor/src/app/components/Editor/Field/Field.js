@@ -1021,7 +1021,7 @@ export default function Field({
           }
           helperText={description}
           required={required}
-          value={value ? value.toString() : "0"}
+          value={value?.toString() || ""}
           onChange={(evt) => {
             onChange(parseInt(evt.target.value), name);
           }}
