@@ -54,7 +54,7 @@ export const Header = ({
     {
       icon: <Database />,
       name: "Create Model",
-      onClick: () => history.push("/schema/new"),
+      onClick: () => history.push("/schema?triggerCreate=true"),
     },
     {
       icon: <CodeRoundedIcon />,

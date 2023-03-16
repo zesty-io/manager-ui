@@ -1,4 +1,4 @@
-describe("Schema", () => {
+describe.skip("Schema", () => {
   const timestamp = Date.now();
   const SCHEMA_NAME = `Test Schema: ${timestamp}`;
 

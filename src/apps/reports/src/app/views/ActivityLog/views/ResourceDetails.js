@@ -16,6 +16,7 @@ import { resolveResourceType } from "utility/resolveResourceType";
 import { Filters } from "../components/Filters";
 import { EmptyState } from "../components/EmptyState";
 import { filterByParams } from "utility/filterByParams";
+import { resolveUrlFromAudit } from "../../../../../../../utility/resolveResourceUrlFromAudit";
 
 export const ResourceDetails = () => {
   const history = useHistory();
@@ -163,15 +164,9 @@ export const ResourceDetails = () => {
             startIcon={<OpenInNewIcon />}
             variant="outlined"
             size="small"
+            disabled={!actionsByZuid[0] || !actionsByZuid[0]?.meta}
             onClick={() => {
-              if (actionsByZuid[0]?.resourceType === "code") {
-                history.push(
-                  "/code/file/" +
-                    actionsByZuid[0]?.meta?.uri.split("/").slice(3).join("/")
-                );
-              } else {
-                history.push(new URL(actionsByZuid[0]?.meta?.url)?.pathname);
-              }
+              history.push(resolveUrlFromAudit(actionsByZuid[0]));
             }}
           >
             Open Resource
