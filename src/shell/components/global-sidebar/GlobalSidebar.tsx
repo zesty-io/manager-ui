@@ -11,12 +11,14 @@ import {
   Button,
   Dialog,
   Typography,
+  Stack,
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import { theme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
@@ -31,6 +33,7 @@ import { useGetInstancesQuery } from "../../services/accounts";
 import { useGetHeadTagsQuery } from "../../services/instance";
 import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
+import { ListItem } from "../../../apps/reports/src/app/views/ActivityLog/components/ResourceListItem/ListItem";
 
 const OnboardingCallSection = () => {
   const [showMeetModal, setShowMeetModal] = useState(false);
@@ -140,29 +143,43 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             backgroundColor: "grey.900",
           }}
         >
-          <Box sx={{ px: 2.5, py: 2 }}>
-            {openNav ? (
-              <Box
-                component="img"
-                data-src={fullZestyLogo}
-                src={fullZestyLogo}
-                sx={{
-                  width: "84.17px",
-                  height: "24px",
-                }}
+          <Stack
+            direction="row"
+            height={36}
+            mx={openNav ? 2.5 : 2}
+            mt={2.25}
+            mb={1.25}
+            justifyContent="space-between"
+            alignItems="center"
+            gap={1}
+          >
+            <Stack direction="row" gap={1} alignItems="center">
+              <Avatar
+                src={faviconURL || ""}
+                alt="favicon"
+                sx={{ height: 32, width: 32 }}
               />
-            ) : (
-              <Box
-                component="img"
-                data-src={zestyLogo}
-                src={zestyLogo}
-                sx={{
-                  width: "24px",
-                  height: "24px",
-                }}
-              />
-            )}
-          </Box>
+              {openNav && (
+                <Typography
+                  // @ts-ignore
+                  variant="body3"
+                  fontWeight={600}
+                  color="common.white"
+                  display="-webkit-box"
+                  sx={{
+                    "-webkit-box-orient": "vertical",
+                    "-webkit-line-clamp": "2",
+                  }}
+                  overflow="hidden"
+                >
+                  {instance?.name}
+                </Typography>
+              )}
+            </Stack>
+
+            {openNav && <ArrowDropDownIcon />}
+          </Stack>
+
           <IconButton
             onClick={onClick}
             sx={{
