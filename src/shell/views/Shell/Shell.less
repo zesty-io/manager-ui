@@ -24,29 +24,8 @@
   font-size: 12px;
 
   // Layout
-  height: 100vh;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 200px 1fr;
   scrollbar-color: @zesty-grey @zesty-light-grey;
   scrollbar-width: thin;
-
-  //CLOSED MENU
-  &.NavClosed {
-    grid-template-columns: 60px 1fr;
-
-    //Favicon
-    img[alt*="Favicon"] {
-      width: 30px;
-      height: 30px;
-    }
-
-    [data-icon="globe"],
-    [data-icon="file-image"] {
-      width: 20px;
-      height: 20px;
-    }
-  }
 
   .AppLoader {
     flex: 2;
