@@ -31,6 +31,7 @@ import {
   useGetAllBinGroupsQuery,
   useGetBinsQuery,
 } from "../../services/mediaManager";
+import { useGetContentModelsQuery } from "../../services/instance";
 
 const MIN_TAB_WIDTH = 180;
 const MAX_TAB_WIDTH = 180;
@@ -49,7 +50,7 @@ export default memo(function GlobalTabs() {
 
   const instanceZUID = useSelector((state: AppState) => state.instance.ZUID);
   const loadedTabs = useSelector((state: AppState) => state.ui.loadedTabs);
-  const models = useSelector((state: AppState) => state.models);
+  const { data: models } = useGetContentModelsQuery();
   const apps = useSelector((state: AppState) => state.apps.installed);
 
   const content = useSelector((state: AppState) => state.content);
@@ -71,8 +72,11 @@ export default memo(function GlobalTabs() {
         bins,
         binGroups: binGroups?.flat(),
       },
+      instance: {
+        models,
+      },
     };
-  }, [binGroups]);
+  }, [binGroups, models]);
 
   // load tabs from Indexeddb
   useEffect(() => {
@@ -83,7 +87,7 @@ export default memo(function GlobalTabs() {
     dispatch(setDocumentTitle(location, queryData));
 
     // If current location is not in topbartabs array, add it
-  }, [location.pathname, location.search]);
+  }, [location.pathname, location.search, queryData]);
 
   // rebuild tabs if any of the store slices changes
   // slices could include tab.name updates

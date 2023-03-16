@@ -23,6 +23,7 @@ import {
   useGetAllBinGroupsQuery,
   useGetBinsQuery,
 } from "../../../services/mediaManager";
+import { useGetContentModelsQuery } from "../../../services/instance";
 
 export type TopBarTab = {
   tab: Tab;
@@ -83,11 +84,15 @@ export const TopBarTab: FC<TopBarTab> = ({
       skip: !bins?.length,
     }
   );
+  const { data: models } = useGetContentModelsQuery();
   const queryData = useMemo(() => {
     return {
       mediaManager: {
         bins,
         binGroups: binGroups?.flat(),
+      },
+      instance: {
+        models,
       },
     };
   }, [binGroups]);
@@ -212,11 +217,15 @@ export const UnpinnedTopBarTab: FC<UnpinnedTopBarTab> = ({ tabWidth }) => {
       skip: !bins?.length,
     }
   );
+  const { data: models } = useGetContentModelsQuery();
   const queryData = useMemo(() => {
     return {
       mediaManager: {
         bins,
         binGroups: binGroups?.flat(),
+      },
+      instance: {
+        models,
       },
     };
   }, [binGroups]);

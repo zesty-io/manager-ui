@@ -37,6 +37,16 @@ export const Preview = (props) => (
                 .join(" ")} />`
           )
           .join("\n")}
+      {`\n`}
+      {props.legacyHeadTags &&
+        props.legacyHeadTags
+          .map(
+            (tag) =>
+              `  <${tag.type} ${tag.attributes
+                .map((attr) => `${attr.key}="${attr.value}"`)
+                .join(" ")} />`
+          )
+          .join("\n")}
 
       <div className={styles.Tag}>{`</head>`}</div>
     </pre>

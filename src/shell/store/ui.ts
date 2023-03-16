@@ -4,7 +4,7 @@ import { Location } from "history";
 import idb from "../../utility/idb";
 import { AppState } from "./types";
 import { isValid as zuidIsValid } from "zuid";
-
+import { ContentModel } from "../../shell/services/types";
 import {
   SearchRounded,
   RocketLaunchRounded,
@@ -276,6 +276,11 @@ export function createTab(
     if (parts[0] === "content" && parts[2] === "new" && zuidIsValid(parts[1])) {
       tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
     }
+    if (parts[0] === "schema" && zuidIsValid(parts[1])) {
+      tab.name = queryData?.instance?.models?.find(
+        (model: ContentModel) => model.ZUID === parts[1]
+      )?.label;
+    }
   }
   // resolve ZUID from store to determine display information
   switch (prefix) {
@@ -532,15 +537,39 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
     const tab = createTab(state, parsedPath, queryData);
     const { app } = tab;
     let item = tab.name || tab.pathname;
+    let keyword = "";
+
+    if (search && search.includes("?term=")) {
+      keyword = search.replace("?term=", "");
+    }
 
     // Don't repeat the sub-app name
     if (app === item) {
       item = "";
     }
 
-    const title = [app, item, "Zesty.io", instanceName, "Manager"]
+    let title = [app, item, "Zesty.io", instanceName, "Manager"]
+
       .filter((elem) => elem)
       .join(" - ");
+
+    if (parsedPath.path === "/schema") {
+      title = [app, "All Models", "Zesty.io", instanceName, "Manager"]
+        .filter((elem) => elem)
+        .join(" - ");
+    }
+
+    if (keyword) {
+      title = [
+        app,
+        `Search for "${keyword}"`,
+        "Zesty.io",
+        instanceName,
+        "Manager",
+      ]
+        .filter((elem) => elem)
+        .join(" - ");
+    }
 
     document.title = title;
   };
