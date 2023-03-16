@@ -1,6 +1,4 @@
-// TODO: Move all styles
 import { useState, useEffect, useMemo, FC } from "react";
-import styles from "./GlobalSidebar.less";
 import { useSelector } from "react-redux";
 import moment from "moment";
 
@@ -33,10 +31,6 @@ import { useGetInstancesQuery } from "../../services/accounts";
 import { useGetHeadTagsQuery } from "../../services/instance";
 import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
-
-const globalSideBarThemeStyles = {
-  backgroundColor: theme.palette.grey[900],
-};
 
 const OnboardingCallSection = () => {
   const [showMeetModal, setShowMeetModal] = useState(false);
@@ -138,9 +132,13 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <aside
-          className={styles.GlobalSidebar}
-          style={globalSideBarThemeStyles}
+        <Box
+          component="aside"
+          position="relative"
+          boxSizing="border-box"
+          sx={{
+            backgroundColor: "grey.900",
+          }}
         >
           <Box sx={{ px: 2.5, py: 2 }}>
             {openNav ? (
@@ -206,7 +204,8 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             )}
           </IconButton>
           <GlobalMenu />
-          {moment().diff(moment(instance?.createdAt), "days") <= 15 &&
+          {instance?.createdAt &&
+            moment().diff(moment(instance?.createdAt), "days") <= 15 &&
             ui.openNav && <OnboardingCallSection />}
 
           {/* Bottom bar */}
@@ -262,7 +261,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                     marginLeft: openNav ? "-12px" : "0px",
                   }}
                   alt={`${user.firstName} ${user.lastName} Avatar`}
-                  src={`https://www.gravatar.com/avatar/${user.emailHash}?d=mm&s=40`}
+                  src={`https://www.gravatar.com/avatar/${user.emailHash}.jpg?&s=40`}
                 />
               </AvatarGroup>
               <ArrowDropDownIcon
@@ -331,7 +330,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               />
             )}
           </Box>
-        </aside>
+        </Box>
       </ThemeProvider>
       {showFaviconModal && (
         <Favicon
