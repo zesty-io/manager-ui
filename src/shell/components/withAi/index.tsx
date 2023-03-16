@@ -1,7 +1,7 @@
 import { Popover, IconButton } from "@mui/material";
 import { Brain, theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
-import { ComponentType, useState } from "react";
+import { ComponentType, MouseEvent, useState } from "react";
 import { AIGenerator } from "./AIGenerator";
 import { useSelector } from "react-redux";
 import { AppState } from "../../store/types";
@@ -87,7 +87,12 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
                     color: "primary.main",
                   },
                 }}
-                onClick={handleClick}
+                onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                  const target = event.target as HTMLElement;
+                  if (target.nodeName === "svg" || target.nodeName === "path") {
+                    handleClick(event);
+                  }
+                }}
                 size="small"
               >
                 <Brain fontSize="small" />
