@@ -122,8 +122,6 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
     }
   }, [instances]);
 
-  const getFavoriteInstances = () => {};
-
   useEffect(() => {
     if (headTags?.length) {
       const allAttributes = headTags.map((tag) => tag.attributes);
