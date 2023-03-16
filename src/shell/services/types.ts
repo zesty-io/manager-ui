@@ -138,3 +138,62 @@ export interface ContentItem {
   data: Data;
   publishAt?: any;
 }
+
+export interface User {
+  ID: number;
+  ZUID: string;
+  authSource: string | null;
+  authyEnabled?: boolean;
+  authyPhoneCountryCode: string | null;
+  authyPhoneNumber: string | null;
+  authyUserID: string | null;
+  createdAt: string;
+  email: string;
+  emailHash?: string;
+  firstName: string;
+  lastLogin: string;
+  lastName: string;
+  prefs: string | null;
+  signupInfo: string | null;
+  staff: boolean;
+  unverifiedEmails: string | null;
+  updatedAt: string;
+  verifiedEmails: string | null;
+  websiteCreator: boolean;
+}
+
+export interface Instance {
+  ID: number;
+  ZUID: string;
+  blueprintID: number;
+  blueprintZUID: string;
+  cancelledReason: string | null;
+  createdAt: string;
+  createdByUserZUID: string;
+  domain: string;
+  ecoID: string | null;
+  ecoZUID: string | null;
+  legacy: boolean;
+  name: string;
+  planID: number;
+  prefs: string | null;
+  randomHashID: string;
+  requiresTwoFactor: number;
+  screenshotURL: string;
+  updatedAt: string;
+  useTLS: boolean;
+}
+
+export interface HeadTag {
+  ZUID: string;
+  type: string;
+  attributes: {
+    [key: string]: string;
+  };
+  resourceZUID: string;
+  sort: number;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+}

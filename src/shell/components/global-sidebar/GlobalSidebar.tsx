@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
-import { useDispatch, connect } from "react-redux";
+// TODO: Move all styles
+import { useState, useEffect, useMemo, FC } from "react";
 import styles from "./GlobalSidebar.less";
 import { useSelector } from "react-redux";
-import { fetchHeadTags } from "shell/store/headTags";
 import moment from "moment";
 
 import {
@@ -15,20 +14,25 @@ import {
   Dialog,
   Typography,
 } from "@mui/material";
-import GlobalMenu from "shell/components/global-menu";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import Favicon from "../favicon";
-import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
-import zestyLogo from "../../../../public/images/zestyLogo.svg";
-import salesAvatar from "../../../../public/images/salesAvatar.png";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { theme } from "@zesty-io/material";
 
+import GlobalMenu from "../global-menu";
+import Favicon from "../favicon";
+import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
+import zestyLogo from "../../../../public/images/zestyLogo.svg";
+import salesAvatar from "../../../../public/images/salesAvatar.png";
 import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
+import { User, Instance } from "../../services/types";
+import { useGetInstancesQuery } from "../../services/accounts";
+import { useGetHeadTagsQuery } from "../../services/instance";
+import { AppState } from "../../store/types";
+import instanceZUID from "../../../utility/instanceZUID";
 
 const globalSideBarThemeStyles = {
   backgroundColor: theme.palette.grey[900],
@@ -51,7 +55,11 @@ const OnboardingCallSection = () => {
           <Typography variant="h6" sx={{ color: "common.white" }}>
             Schedule an onboarding call
           </Typography>
-          <Typography variant="body3" sx={{ mt: 0.5, color: "grey.400" }}>
+          <Typography
+            // @ts-ignore
+            variant="body3"
+            sx={{ mt: 0.5, color: "grey.400" }}
+          >
             Our support team will set <br /> up you in just 20 minutes.
           </Typography>
         </Box>
@@ -74,51 +82,60 @@ const OnboardingCallSection = () => {
   );
 };
 
-export default connect((state) => {
-  return {
-    ui: state.ui,
-    instance: state.instance,
-    headTags: state.headTags,
-  };
-})(function GlobalSidebar(props) {
-  const dispatch = useDispatch();
+interface GlobalSidebarProps {
+  openNav: boolean;
+  onClick: () => void;
+}
+const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const [showFaviconModal, setShowFaviconModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const user = useSelector((state) => state.user);
-  const instances = useSelector((state) => state.instances);
+  const user: User = useSelector((state: AppState) => state.user);
+  const { data: instances } = useGetInstancesQuery();
   const [faviconURL, setFaviconURL] = useState("");
-  const [instanceCreationDate, setInstanceCreationDate] = useState("");
   const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
+  const { data: headTags } = useGetHeadTagsQuery();
+  const ui = useSelector((state: AppState) => state.ui);
+
+  const favoriteSites = useMemo(() => {
+    if (user && instances?.length) {
+      let data: Instance[] = [];
+      if (user?.prefs) {
+        const favorite_sites: string[] = JSON.parse(
+          user?.prefs
+        )?.favorite_sites;
+
+        favorite_sites?.forEach((fav) => {
+          const res = instances?.filter((instance) => instance.ZUID === fav);
+          data.push(...res);
+        });
+      }
+      return data;
+    }
+
+    return [];
+  }, [user, instances]);
+
+  const instance = useMemo(() => {
+    if (instances?.length) {
+      return instances.find((instance) => instance.ZUID === instanceZUID);
+    }
+  }, [instances]);
+
+  const getFavoriteInstances = () => {};
 
   useEffect(() => {
-    dispatch(fetchHeadTags());
-    getFavoriteInstances();
-  }, []);
-
-  const getFavoriteInstances = () => {
-    let data = [];
-    if (user?.prefs) {
-      JSON.parse(user?.prefs)?.favorite_sites?.forEach((fav) => {
-        const res = instances.filter((instance) => instance.ZUID === fav);
-        data.push(...res);
+    if (headTags?.length) {
+      const allAttributes = headTags.map((tag) => tag.attributes);
+      const faviconTag = allAttributes.find((attr) => {
+        if ("href" in attr && "sizes" in attr && attr["sizes"] === "196x196") {
+          return attr;
+        }
       });
-    }
-    return data;
-  };
 
-  useEffect(() => {
-    const tag = Object.values(props?.headTags).find((tag) =>
-      tag?.attributes.find(
-        (attr) => attr?.key === "sizes" && attr?.value === "196x196"
-      )
-    );
-    if (tag) {
-      const attr = tag.attributes.find((attr) => attr.key === "href");
-      setFaviconURL(attr.value);
-      setInstanceCreationDate(tag.createdAt);
+      setFaviconURL(faviconTag?.href || "");
     }
-  }, [props.headTags]);
+  }, [headTags]);
 
   return (
     <>
@@ -128,7 +145,7 @@ export default connect((state) => {
           style={globalSideBarThemeStyles}
         >
           <Box sx={{ px: 2.5, py: 2 }}>
-            {props.openNav ? (
+            {openNav ? (
               <Box
                 component="img"
                 data-src={fullZestyLogo}
@@ -151,7 +168,7 @@ export default connect((state) => {
             )}
           </Box>
           <IconButton
-            onClick={props.onClick}
+            onClick={onClick}
             sx={{
               borderColor: "grey.600",
               borderStyle: "solid",
@@ -176,7 +193,7 @@ export default connect((state) => {
               },
             }}
           >
-            {props.openNav ? (
+            {openNav ? (
               <KeyboardDoubleArrowLeftIcon
                 fontSize="small"
                 sx={{
@@ -190,9 +207,9 @@ export default connect((state) => {
               />
             )}
           </IconButton>
-          <GlobalMenu openNav={props.ui.openNav} />
-          {moment().diff(moment(instanceCreationDate), "days") <= 15 &&
-            props.ui.openNav && <OnboardingCallSection />}
+          <GlobalMenu />
+          {moment().diff(moment(instance?.createdAt), "days") <= 15 &&
+            ui.openNav && <OnboardingCallSection />}
 
           {/* Bottom bar */}
           <Box
@@ -209,7 +226,7 @@ export default connect((state) => {
               borderTopWidth: "1px",
               borderTopStyle: "solid",
               alignItems: "center",
-              flexDirection: props.openNav ? "row" : "column-reverse",
+              flexDirection: openNav ? "row" : "column-reverse",
               py: "10px",
             }}
           >
@@ -218,7 +235,7 @@ export default connect((state) => {
                 px: 2,
                 display: "flex",
                 cursor: "pointer",
-                mt: !props.openNav && 1,
+                mt: !openNav && 1,
               }}
               onClick={() => {
                 setShowDocsMenu(false);
@@ -228,7 +245,7 @@ export default connect((state) => {
               <AvatarGroup
                 total={2}
                 sx={{
-                  flexDirection: props.openNav ? "row-reverse" : "column",
+                  flexDirection: openNav ? "row-reverse" : "column",
                   "& .MuiAvatar-root": {
                     width: "32px",
                     height: "32px",
@@ -239,12 +256,12 @@ export default connect((state) => {
                 <Avatar
                   src={faviconURL}
                   style={{
-                    marginTop: props.openNav ? "0" : "-8px",
+                    marginTop: openNav ? "0" : "-8px",
                   }}
                 />
                 <Avatar
                   style={{
-                    marginLeft: props.openNav ? "-12px" : "0px",
+                    marginLeft: openNav ? "-12px" : "0px",
                   }}
                   alt={`${user.firstName} ${user.lastName} Avatar`}
                   src={`https://www.gravatar.com/avatar/${user.emailHash}?d=mm&s=40`}
@@ -255,15 +272,15 @@ export default connect((state) => {
                 sx={{
                   color: "grey.500",
                   mt: 0.5,
-                  display: props.openNav ? "block" : "none",
+                  display: openNav ? "block" : "none",
                 }}
               />
             </Box>
             <Box
               sx={{
                 display: "flex",
-                flexDirection: props.openNav ? "row" : "column",
-                pr: props.openNav ? 2 : 0,
+                flexDirection: openNav ? "row" : "column",
+                pr: openNav ? 2 : 0,
                 alignItems: "center",
               }}
             >
@@ -274,7 +291,7 @@ export default connect((state) => {
                   height: "26px",
                   width: "32px",
                   borderRadius: "4px",
-                  mr: props.openNav ? 1 : 0,
+                  mr: openNav ? 1 : 0,
                 }}
               >
                 <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
@@ -287,7 +304,7 @@ export default connect((state) => {
                 sx={{
                   backgroundColor: "grey.800",
                   width: "32px",
-                  mt: props.openNav ? 0 : 1,
+                  mt: openNav ? 0 : 1,
                   height: "26px",
                   borderRadius: "4px",
                 }}
@@ -301,11 +318,11 @@ export default connect((state) => {
             {showInstanceFlyoutMenu && (
               <InstanceFlyoutMenuModal
                 instanceFaviconUrl={faviconURL}
-                instanceName={props.instance?.name}
-                instanceZUID={props.instance?.ZUID}
+                instanceName={instance?.name}
+                instanceZUID={instance?.ZUID}
                 userFaviconUrl={user.emailHash}
                 userFullname={`${user.firstName} ${user.lastName}`}
-                favoriteInstances={getFavoriteInstances()}
+                favoriteInstances={favoriteSites}
                 showDocsMenu={showDocsMenu}
                 onSetShowDocsMenu={(val) => setShowDocsMenu(val)}
                 onSetShowFaviconModal={() => {
@@ -319,8 +336,13 @@ export default connect((state) => {
         </aside>
       </ThemeProvider>
       {showFaviconModal && (
-        <Favicon onCloseFaviconModal={() => setShowFaviconModal(false)} />
+        <Favicon
+          // @ts-ignore not a typescript file
+          onCloseFaviconModal={() => setShowFaviconModal(false)}
+        />
       )}
     </>
   );
-});
+};
+
+export default GlobalSidebar;

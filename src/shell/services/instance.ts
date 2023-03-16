@@ -2,7 +2,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
-import { ContentItem, ContentModel, Publishing, SearchQuery } from "./types";
+import {
+  ContentItem,
+  ContentModel,
+  Publishing,
+  SearchQuery,
+  HeadTag,
+} from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const instanceApi = createApi({
@@ -115,6 +121,10 @@ export const instanceApi = createApi({
       query: () => `env/langs/all`,
       transformResponse: getResponseData,
     }),
+    getHeadTags: builder.query<HeadTag[], void>({
+      query: () => "/web/headtags/",
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -131,4 +141,5 @@ export const {
   useGetContentItemPublishingsQuery,
   useSearchContentQuery,
   useGetLangsMappingQuery,
+  useGetHeadTagsQuery,
 } = instanceApi;
