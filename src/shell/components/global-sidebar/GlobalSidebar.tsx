@@ -18,7 +18,6 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import { theme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
@@ -30,10 +29,9 @@ import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
 import { User, Instance } from "../../services/types";
 import { useGetInstancesQuery } from "../../services/accounts";
-import { useGetHeadTagsQuery } from "../../services/instance";
 import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
-import { ListItem } from "../../../apps/reports/src/app/views/ActivityLog/components/ResourceListItem/ListItem";
+import { InstanceMenu } from "./components/InstanceMenu";
 
 const OnboardingCallSection = () => {
   const [showMeetModal, setShowMeetModal] = useState(false);
@@ -91,7 +89,6 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const [faviconURL, setFaviconURL] = useState("");
   const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
-  const { data: headTags } = useGetHeadTagsQuery();
   const ui = useSelector((state: AppState) => state.ui);
 
   const favoriteSites = useMemo(() => {
@@ -119,19 +116,6 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
     }
   }, [instances]);
 
-  useEffect(() => {
-    if (headTags?.length) {
-      const allAttributes = headTags.map((tag) => tag.attributes);
-      const faviconTag = allAttributes.find((attr) => {
-        if ("href" in attr && "sizes" in attr && attr["sizes"] === "196x196") {
-          return attr;
-        }
-      });
-
-      setFaviconURL(faviconTag?.href || "");
-    }
-  }, [headTags]);
-
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -143,42 +127,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             backgroundColor: "grey.900",
           }}
         >
-          <Stack
-            direction="row"
-            height={36}
-            mx={openNav ? 2.5 : 2}
-            mt={2.25}
-            mb={1.25}
-            justifyContent="space-between"
-            alignItems="center"
-            gap={1}
-          >
-            <Stack direction="row" gap={1} alignItems="center">
-              <Avatar
-                src={faviconURL || ""}
-                alt="favicon"
-                sx={{ height: 32, width: 32 }}
-              />
-              {openNav && (
-                <Typography
-                  // @ts-ignore
-                  variant="body3"
-                  fontWeight={600}
-                  color="common.white"
-                  display="-webkit-box"
-                  sx={{
-                    "-webkit-box-orient": "vertical",
-                    "-webkit-line-clamp": "2",
-                  }}
-                  overflow="hidden"
-                >
-                  {instance?.name}
-                </Typography>
-              )}
-            </Stack>
-
-            {openNav && <ArrowDropDownIcon />}
-          </Stack>
+          <InstanceMenu openNav={openNav} instanceName={instance?.name} />
 
           <IconButton
             onClick={onClick}

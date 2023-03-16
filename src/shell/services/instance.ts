@@ -122,7 +122,7 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
     }),
     getHeadTags: builder.query<HeadTag[], void>({
-      query: () => "/web/headtags/",
+      query: () => "/web/headtags",
       transformResponse: getResponseData,
     }),
   }),
