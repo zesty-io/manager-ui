@@ -4,14 +4,15 @@ import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
 import {
   Audit,
-  ContentItem,
-  ContentModel,
   ContentModelField,
   InstanceSetting,
-  Publishing,
   LegacyHeader,
   WebView,
+  ContentItem,
+  ContentModel,
+  Publishing,
   SearchQuery,
+  HeadTag,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -150,6 +151,10 @@ export const instanceApi = createApi({
     }),
     getLangsMapping: builder.query<any, void>({
       query: () => `env/langs/all`,
+      transformResponse: getResponseData,
+    }),
+    getHeadTags: builder.query<HeadTag[], void>({
+      query: () => "/web/headtags",
       transformResponse: getResponseData,
     }),
     createContentModelFromTemplate: builder.mutation<
@@ -361,6 +366,7 @@ export const {
   useUndeleteContentModelFieldMutation,
   useDeleteContentModelMutation,
   useGetLangsMappingQuery,
+  useGetHeadTagsQuery,
   useCreateContentModelFromTemplateMutation,
   useGetLegacyHeadTagsQuery,
   useGetInstanceSettingsQuery,

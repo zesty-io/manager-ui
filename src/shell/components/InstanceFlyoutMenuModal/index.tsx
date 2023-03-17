@@ -34,7 +34,7 @@ interface Props {
   userFullname?: string;
   onSetShowFaviconModal?: any;
   showDocsMenu?: boolean;
-  onSetShowDocsMenu?: any;
+  onSetShowDocsMenu?: (val: boolean) => void;
   favoriteInstances?: any;
   onClose?: () => void;
 }

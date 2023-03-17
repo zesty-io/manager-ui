@@ -1,38 +1,47 @@
 import { memo } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
-import { Sentry } from "utility/sentry";
+import { Sentry } from "../../../utility/sentry";
 import cx from "classnames";
+import { Box } from "@mui/material";
 
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "shell/store/ui";
+import { actions } from "../../store/ui";
 
-import AppError from "shell/components/AppError";
-import GlobalSidebar from "shell/components/global-sidebar";
-import GlobalTopbar from "shell/components/GlobalTopbar";
-import Missing from "shell/components/missing";
-import SearchPage from "shell/views/SearchPage";
+import AppError from "../../components/AppError";
+import GlobalSidebar from "../../components/global-sidebar";
+import GlobalTopbar from "../../components/GlobalTopbar";
+import Missing from "../../components/missing";
+import SearchPage from "../../views/SearchPage";
 
-import ContentApp from "apps/content-editor/src";
-import DamApp from "apps/media/src";
-import ReleaseApp from "apps/release/src";
-import ReportingApp from "apps/reports/src";
-import CodeApp from "apps/code-editor/src";
-import LeadsApp from "apps/leads/src";
-import SchemaApp from "apps/schema/src";
-import SeoApp from "apps/seo/src";
-import SettingsApp from "apps/settings/src";
-import HomeApp from "apps/home";
-import MarketplaceApp from "apps/marketplace/src";
+import ContentApp from "../../../apps/code-editor/src";
+import DamApp from "../../../apps/media/src";
+import ReleaseApp from "../../../apps/release/src";
+import ReportingApp from "../../../apps/reports/src";
+import CodeApp from "../../../apps/code-editor/src";
+import LeadsApp from "../../../apps/leads/src";
+import SchemaApp from "../../../apps/schema/src";
+import SeoApp from "../../../apps/seo/src";
+import SettingsApp from "../../../apps/settings/src";
+import HomeApp from "../../../apps/home";
+import MarketplaceApp from "../../../apps/marketplace/src";
+import { AppState } from "../../store/types";
 
 import styles from "./Shell.less";
 
 export default memo(function Shell() {
   const dispatch = useDispatch();
-  const openNav = useSelector((state) => state.ui.openNav);
-  const products = useSelector((state) => state.products);
+  const openNav = useSelector((state: AppState) => state.ui.openNav);
+  const products: string[] = useSelector((state: AppState) => state.products);
 
   return (
-    <section className={cx(styles.Shell, openNav ? null : styles.NavClosed)}>
+    <Box
+      component="section"
+      className={styles.Shell}
+      height="100vh"
+      overflow="hidden"
+      display="grid"
+      gridTemplateColumns={openNav ? "200px 1fr" : "64px 1fr"}
+    >
       <GlobalSidebar
         onClick={() => {
           dispatch(actions.setGlobalNav(!openNav));
@@ -123,6 +132,6 @@ export default memo(function Shell() {
           </Sentry.ErrorBoundary>
         </div>
       </main>
-    </section>
+    </Box>
   );
 });
