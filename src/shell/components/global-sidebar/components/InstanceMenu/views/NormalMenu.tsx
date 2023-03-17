@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Typography,
   Stack,
@@ -27,19 +28,23 @@ import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 import { View } from "../DropdownMenu";
 import { useGetInstanceQuery } from "../../../../../services/accounts";
 import instanceZUID from "../../../../../../utility/instanceZUID";
+import { actions } from "../../../../../store/ui";
 
 interface NormalMenuProps {
   faviconURL: string;
   onChangeView: (view: View) => void;
-  onUpdateFavicon: () => void;
+  onCloseDropdownMenu: () => void;
 }
 export const NormalMenu: FC<NormalMenuProps> = ({
   faviconURL,
-  onUpdateFavicon,
+  onChangeView,
+  onCloseDropdownMenu,
 }) => {
   const { data: instance } = useGetInstanceQuery();
+  const dispatch = useDispatch();
 
   const handleOpenUrl = (url: string) => {
+    onCloseDropdownMenu();
     window.open(url, "_blank", "noopener");
   };
 
@@ -74,7 +79,12 @@ export const NormalMenu: FC<NormalMenuProps> = ({
         </MenuItem>
       </MenuList>
       <Divider />
-      <MenuList onClick={onUpdateFavicon}>
+      <MenuList
+        onClick={() => {
+          onCloseDropdownMenu();
+          dispatch(actions.toggleUpdateFaviconModal(true));
+        }}
+      >
         <MenuItem>
           <ListItemIcon>
             <ImageRoundedIcon />

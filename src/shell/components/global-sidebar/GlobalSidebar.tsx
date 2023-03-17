@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, FC } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 
 import {
@@ -35,6 +35,7 @@ import {
 import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
 import { InstanceMenu } from "./components/InstanceMenu";
+import { actions } from "../../store/ui";
 
 const OnboardingCallSection = () => {
   const [showMeetModal, setShowMeetModal] = useState(false);
@@ -94,6 +95,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
   const ui = useSelector((state: AppState) => state.ui);
+  const dispatch = useDispatch();
 
   const favoriteSites = useMemo(() => {
     if (user && instances?.length) {
@@ -125,10 +127,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             backgroundColor: "grey.900",
           }}
         >
-          <InstanceMenu
-            openNav={openNav}
-            onUpdateFavicon={() => setShowFaviconModal(!showFaviconModal)}
-          />
+          <InstanceMenu openNav={openNav} />
 
           <IconButton
             onClick={onClick}
@@ -299,10 +298,12 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
           </Box>
         </Box>
       </ThemeProvider>
-      {showFaviconModal && (
+      {ui.isUpdateFaviconModalOpen && (
         <Favicon
           // @ts-ignore not a typescript file
-          onCloseFaviconModal={() => setShowFaviconModal(false)}
+          onCloseFaviconModal={() =>
+            dispatch(actions.toggleUpdateFaviconModal(false))
+          }
         />
       )}
     </>

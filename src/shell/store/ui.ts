@@ -51,6 +51,7 @@ export type UIState = {
   duoMode: boolean;
   codeEditorPosition: null | CodeEditorPosition;
   codeChangesModal: null | CodeChangesModalInfo;
+  isUpdateFaviconModalOpen: boolean;
 };
 export const ui = createSlice({
   name: "ui",
@@ -66,6 +67,7 @@ export const ui = createSlice({
     duoMode: false,
     codeEditorPosition: null,
     codeChangesModal: null,
+    isUpdateFaviconModalOpen: false,
   },
   reducers: {
     loadTabsSuccess(
@@ -127,6 +129,9 @@ export const ui = createSlice({
     },
     closeCodeChangesModal(state: UIState) {
       state.codeChangesModal = null;
+    },
+    toggleUpdateFaviconModal(state: UIState, action: { payload: boolean }) {
+      state.isUpdateFaviconModalOpen = action.payload;
     },
   },
 });
