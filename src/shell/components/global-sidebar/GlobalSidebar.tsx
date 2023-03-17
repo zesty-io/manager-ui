@@ -125,7 +125,10 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             backgroundColor: "grey.900",
           }}
         >
-          <InstanceMenu openNav={openNav} />
+          <InstanceMenu
+            openNav={openNav}
+            onUpdateFavicon={() => setShowFaviconModal(!showFaviconModal)}
+          />
 
           <IconButton
             onClick={onClick}

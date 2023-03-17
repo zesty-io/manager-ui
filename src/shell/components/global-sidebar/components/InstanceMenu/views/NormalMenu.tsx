@@ -31,8 +31,12 @@ import instanceZUID from "../../../../../../utility/instanceZUID";
 interface NormalMenuProps {
   faviconURL: string;
   onChangeView: (view: View) => void;
+  onUpdateFavicon: () => void;
 }
-export const NormalMenu: FC<NormalMenuProps> = ({ faviconURL }) => {
+export const NormalMenu: FC<NormalMenuProps> = ({
+  faviconURL,
+  onUpdateFavicon,
+}) => {
   const { data: instance } = useGetInstanceQuery();
 
   const handleOpenUrl = (url: string) => {
@@ -70,7 +74,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({ faviconURL }) => {
         </MenuItem>
       </MenuList>
       <Divider />
-      <MenuList>
+      <MenuList onClick={onUpdateFavicon}>
         <MenuItem>
           <ListItemIcon>
             <ImageRoundedIcon />

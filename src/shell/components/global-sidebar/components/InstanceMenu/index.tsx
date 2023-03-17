@@ -8,8 +8,12 @@ import { DropdownMenu } from "./DropdownMenu";
 
 interface InstanceMenuProps {
   openNav: boolean;
+  onUpdateFavicon: () => void;
 }
-export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
+export const InstanceMenu: FC<InstanceMenuProps> = ({
+  openNav,
+  onUpdateFavicon,
+}) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { data: headTags } = useGetHeadTagsQuery();
   const { data: instance } = useGetInstanceQuery();
@@ -80,6 +84,10 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
         anchorEl={anchorEl}
         faviconURL={faviconURL}
         onClose={() => setAnchorEl(null)}
+        onUpdateFavicon={() => {
+          setAnchorEl(null);
+          onUpdateFavicon();
+        }}
       />
     </>
   );
