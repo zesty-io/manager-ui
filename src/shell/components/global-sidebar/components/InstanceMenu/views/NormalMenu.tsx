@@ -26,6 +26,7 @@ import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 
 import { View } from "../DropdownMenu";
 import { useGetInstanceQuery } from "../../../../../services/accounts";
+import instanceZUID from "../../../../../../utility/instanceZUID";
 
 interface NormalMenuProps {
   faviconURL: string;
@@ -33,6 +34,10 @@ interface NormalMenuProps {
 }
 export const NormalMenu: FC<NormalMenuProps> = ({ faviconURL }) => {
   const { data: instance } = useGetInstanceQuery();
+
+  const handleOpenUrl = (url: string) => {
+    window.open(url, "_blank", "noopener");
+  };
 
   return (
     <>
@@ -93,13 +98,25 @@ export const NormalMenu: FC<NormalMenuProps> = ({ faviconURL }) => {
       </MenuList>
       <Divider />
       <MenuList>
-        <MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(
+              `https://www.zesty.io/instances/${instanceZUID}/users`
+            )
+          }
+        >
           <ListItemIcon>
             <PeopleRoundedIcon />
           </ListItemIcon>
           <ListItemText>Users</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(
+              `https://www.zesty.io/instances/${instanceZUID}/teams`
+            )
+          }
+        >
           <ListItemIcon>
             <GroupsRoundedIcon />
           </ListItemIcon>
@@ -112,25 +129,47 @@ export const NormalMenu: FC<NormalMenuProps> = ({ faviconURL }) => {
           <ListItemText>Domains</ListItemText>
           <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(
+              `https://www.zesty.io/instances/${instanceZUID}/usage`
+            )
+          }
+        >
           <ListItemIcon>
             <BarChartRoundedIcon />
           </ListItemIcon>
           <ListItemText>Usage</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(
+              `https://www.zesty.io/instances/${instanceZUID}/locales`
+            )
+          }
+        >
           <ListItemIcon>
             <TranslateRoundedIcon />
           </ListItemIcon>
           <ListItemText>Locales</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(`https://www.zesty.io/instances/${instanceZUID}/apis`)
+          }
+        >
           <ListItemIcon>
             <ApiRoundedIcon />
           </ListItemIcon>
           <ListItemText>APIs</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(
+              `https://www.zesty.io/instances/${instanceZUID}/webhooks`
+            )
+          }
+        >
           <ListItemIcon>
             <WebhookRoundedIcon />
           </ListItemIcon>
