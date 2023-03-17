@@ -22,6 +22,7 @@ import { saveStyleVariable } from "shell/store/settings";
 import CloseIcon from "@mui/icons-material/Close";
 
 import styles from "./Styles.less";
+import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 
 export default connect((state) => {
   return {
@@ -36,6 +37,7 @@ export default connect((state) => {
   const [fonts, setFonts] = useState([]);
   const [imageModal, setImageModal] = useState();
 
+  const helperText = useMetaKey("s", saveSettings);
   // Set Fields and Field Values from store/URL
   useEffect(() => {
     const category = props.match.params.category
@@ -351,7 +353,7 @@ export default connect((state) => {
         disabled={saving || dirtyFields.length === 0}
         startIcon={saving ? <CircularProgress size="20px" /> : <SaveIcon />}
       >
-        Save Settings
+        Save Settings {helperText}
       </Button>
     </>
   );

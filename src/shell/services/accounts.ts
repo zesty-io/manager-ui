@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
-import { Instance } from "./types";
+import { Domain, User, Instance } from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const accountsApi = createApi({
@@ -13,7 +13,7 @@ export const accountsApi = createApi({
   }),
   // always use the instanceZUID from the URL
   endpoints: (builder) => ({
-    getDomains: builder.query({
+    getDomains: builder.query<Domain[], void>({
       query: () => `instances/${instanceZUID}/domains`,
       transformResponse: (response: any) =>
         response.data.sort(
@@ -28,7 +28,7 @@ export const accountsApi = createApi({
       query: () => "instances",
       transformResponse: getResponseData,
     }),
-    getUsers: builder.query({
+    getUsers: builder.query<User[], void>({
       query: () => `instances/${instanceZUID}/users`,
       transformResponse: getResponseData,
     }),
