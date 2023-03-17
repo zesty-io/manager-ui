@@ -79,19 +79,26 @@ export const NormalMenu: FC<NormalMenuProps> = ({
         </MenuItem>
       </MenuList>
       <Divider />
-      <MenuList
-        onClick={() => {
-          onCloseDropdownMenu();
-          dispatch(actions.toggleUpdateFaviconModal(true));
-        }}
-      >
-        <MenuItem>
+      <MenuList>
+        <MenuItem
+          onClick={() => {
+            onCloseDropdownMenu();
+            dispatch(actions.toggleUpdateFaviconModal(true));
+          }}
+        >
           <ListItemIcon>
             <ImageRoundedIcon />
           </ListItemIcon>
           <ListItemText>Update Favicon</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(
+              // @ts-ignore
+              `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
+            )
+          }
+        >
           <ListItemIcon>
             <RemoveRedEyeRoundedIcon />
           </ListItemIcon>
