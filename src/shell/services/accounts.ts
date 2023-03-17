@@ -20,7 +20,7 @@ export const accountsApi = createApi({
           (a: any, b: any) => +new Date(a.createdAt) - +new Date(b.createdAt)
         ),
     }),
-    getInstance: builder.query({
+    getInstance: builder.query<Instance, void>({
       query: () => `instances/${instanceZUID}`,
       transformResponse: getResponseData,
     }),

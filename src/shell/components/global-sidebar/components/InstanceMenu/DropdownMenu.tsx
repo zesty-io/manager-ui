@@ -10,13 +10,11 @@ interface DropdownMenuProps {
   anchorEl: HTMLElement;
   onClose: () => void;
   faviconURL: string;
-  instanceName: string;
 }
 export const DropdownMenu: FC<DropdownMenuProps> = ({
   anchorEl,
   onClose,
   faviconURL,
-  instanceName,
 }) => {
   const [view, setView] = useState<View>("normal");
 
@@ -43,7 +41,6 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
       {view === "normal" && (
         <NormalMenu
           faviconURL={faviconURL}
-          instanceName={instanceName}
           onChangeView={(view) => setView(view)}
         />
       )}

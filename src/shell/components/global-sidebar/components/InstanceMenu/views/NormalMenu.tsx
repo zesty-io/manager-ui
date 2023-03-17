@@ -8,6 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   MenuList,
+  Link,
 } from "@mui/material";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
@@ -24,27 +25,33 @@ import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 
 import { View } from "../DropdownMenu";
+import { useGetInstanceQuery } from "../../../../../services/accounts";
 
 interface NormalMenuProps {
   faviconURL: string;
-  instanceName: string;
   onChangeView: (view: View) => void;
 }
-export const NormalMenu: FC<NormalMenuProps> = ({
-  faviconURL,
-  instanceName,
-}) => {
+export const NormalMenu: FC<NormalMenuProps> = ({ faviconURL }) => {
+  const { data: instance } = useGetInstanceQuery();
+
   return (
     <>
       <Stack direction="row" gap={1.5} p={2} alignItems="center">
         <Avatar src={faviconURL} alt="favicon" sx={{ height: 32, width: 32 }} />
         <Stack>
           <Typography variant="body2" fontWeight={600}>
-            {instanceName}
+            {instance?.name}
           </Typography>
-          <Typography variant="body2" fontWeight={600} color="info.dark">
-            www.something.com
-          </Typography>
+          <Link
+            variant="body2"
+            fontWeight={600}
+            color="info.dark"
+            href={`https://${instance?.domain}`}
+            target="_blank"
+            rel="noopener"
+          >
+            {instance?.domain}
+          </Link>
         </Stack>
       </Stack>
       <Divider />

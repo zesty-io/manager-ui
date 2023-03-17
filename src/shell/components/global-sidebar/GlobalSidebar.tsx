@@ -28,7 +28,10 @@ import salesAvatar from "../../../../public/images/salesAvatar.png";
 import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
 import { User, Instance } from "../../services/types";
-import { useGetInstancesQuery } from "../../services/accounts";
+import {
+  useGetInstancesQuery,
+  useGetInstanceQuery,
+} from "../../services/accounts";
 import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
 import { InstanceMenu } from "./components/InstanceMenu";
@@ -86,6 +89,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const user: User = useSelector((state: AppState) => state.user);
   const { data: instances } = useGetInstancesQuery();
+  const { data: instance } = useGetInstanceQuery();
   const [faviconURL, setFaviconURL] = useState("");
   const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
@@ -110,12 +114,6 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
     return [];
   }, [user, instances]);
 
-  const instance = useMemo(() => {
-    if (instances?.length) {
-      return instances.find((instance) => instance.ZUID === instanceZUID);
-    }
-  }, [instances]);
-
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -127,7 +125,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             backgroundColor: "grey.900",
           }}
         >
-          <InstanceMenu openNav={openNav} instanceName={instance?.name} />
+          <InstanceMenu openNav={openNav} />
 
           <IconButton
             onClick={onClick}

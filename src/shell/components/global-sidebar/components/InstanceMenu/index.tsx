@@ -3,18 +3,16 @@ import { Avatar, Stack, Typography } from "@mui/material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 
 import { useGetHeadTagsQuery } from "../../../../services/instance";
+import { useGetInstanceQuery } from "../../../../services/accounts";
 import { DropdownMenu } from "./DropdownMenu";
 
 interface InstanceMenuProps {
   openNav: boolean;
-  instanceName: string;
 }
-export const InstanceMenu: FC<InstanceMenuProps> = ({
-  openNav,
-  instanceName,
-}) => {
+export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { data: headTags } = useGetHeadTagsQuery();
+  const { data: instance } = useGetInstanceQuery();
 
   const faviconURL = useMemo(() => {
     if (headTags?.length) {
@@ -72,14 +70,13 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({
               }}
               overflow="hidden"
             >
-              {instanceName}
+              {instance?.name}
             </Typography>
           )}
         </Stack>
         {openNav && <ArrowDropDownRoundedIcon color="inherit" />}
       </Stack>
       <DropdownMenu
-        instanceName={instanceName}
         anchorEl={anchorEl}
         faviconURL={faviconURL}
         onClose={() => setAnchorEl(null)}
