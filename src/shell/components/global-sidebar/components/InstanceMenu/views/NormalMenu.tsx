@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import {
   Typography,
   Stack,
@@ -24,11 +24,13 @@ import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import TranslateRoundedIcon from "@mui/icons-material/TranslateRounded";
 import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
+import CheckIcon from "@mui/icons-material/Check";
 
 import { View } from "../DropdownMenu";
 import { useGetInstanceQuery } from "../../../../../services/accounts";
 import instanceZUID from "../../../../../../utility/instanceZUID";
 import { actions } from "../../../../../store/ui";
+import { notify } from "../../../../../store/notifications";
 
 interface NormalMenuProps {
   faviconURL: string;
@@ -40,12 +42,42 @@ export const NormalMenu: FC<NormalMenuProps> = ({
   onChangeView,
   onCloseDropdownMenu,
 }) => {
+  const [isInstanceZuidCopied, setIsInstanceZuidCopied] = useState(false);
   const { data: instance } = useGetInstanceQuery();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (isInstanceZuidCopied) {
+      timeoutId = setTimeout(() => setIsInstanceZuidCopied(false), 1500);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [isInstanceZuidCopied]);
 
   const handleOpenUrl = (url: string) => {
     onCloseDropdownMenu();
     window.open(url, "_blank", "noopener");
+  };
+
+  const handleCopyInstanceZUID = async () => {
+    try {
+      await navigator?.clipboard.writeText(instanceZUID);
+
+      setIsInstanceZuidCopied(true);
+    } catch (error) {
+      console.error("Failed to copy instance ZUID", error);
+
+      dispatch(
+        notify({
+          message: "Failed to copy instance ZUID",
+          kind: "error",
+        })
+      );
+    }
   };
 
   return (
@@ -104,9 +136,9 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           </ListItemIcon>
           <ListItemText>View Web Engine Preview (Stage)</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={handleCopyInstanceZUID}>
           <ListItemIcon>
-            <ContentCopyRoundedIcon />
+            {isInstanceZuidCopied ? <CheckIcon /> : <ContentCopyRoundedIcon />}
           </ListItemIcon>
           <ListItemText>Copy Instance ZUID</ListItemText>
         </MenuItem>
