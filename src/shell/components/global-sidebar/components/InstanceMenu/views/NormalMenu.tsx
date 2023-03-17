@@ -11,6 +11,7 @@ import {
   MenuList,
   Link,
 } from "@mui/material";
+import { keyframes } from "@mui/system";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
@@ -24,13 +25,23 @@ import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import TranslateRoundedIcon from "@mui/icons-material/TranslateRounded";
 import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
-import CheckIcon from "@mui/icons-material/Check";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 
 import { View } from "../DropdownMenu";
 import { useGetInstanceQuery } from "../../../../../services/accounts";
 import instanceZUID from "../../../../../../utility/instanceZUID";
 import { actions } from "../../../../../store/ui";
 import { notify } from "../../../../../store/notifications";
+import { useRefreshCacheMutation } from "../../../../../services/cloudFunctions";
+
+const rotateAnimation = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
 
 interface NormalMenuProps {
   faviconURL: string;
@@ -42,9 +53,18 @@ export const NormalMenu: FC<NormalMenuProps> = ({
   onChangeView,
   onCloseDropdownMenu,
 }) => {
+  const dispatch = useDispatch();
   const [isInstanceZuidCopied, setIsInstanceZuidCopied] = useState(false);
   const { data: instance } = useGetInstanceQuery();
-  const dispatch = useDispatch();
+  const [
+    refreshCache,
+    {
+      data,
+      isSuccess: isCacheRefreshed,
+      isLoading: isCacheRefreshing,
+      isError: isCacheRefreshFailed,
+    },
+  ] = useRefreshCacheMutation();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -57,6 +77,17 @@ export const NormalMenu: FC<NormalMenuProps> = ({
       clearTimeout(timeoutId);
     };
   }, [isInstanceZuidCopied]);
+
+  useEffect(() => {
+    if (isCacheRefreshFailed) {
+      dispatch(
+        notify({
+          message: "Failed to refresh the CDN cache",
+          kind: "error",
+        })
+      );
+    }
+  }, [isCacheRefreshFailed]);
 
   const handleOpenUrl = (url: string) => {
     onCloseDropdownMenu();
@@ -138,13 +169,27 @@ export const NormalMenu: FC<NormalMenuProps> = ({
         </MenuItem>
         <MenuItem onClick={handleCopyInstanceZUID}>
           <ListItemIcon>
-            {isInstanceZuidCopied ? <CheckIcon /> : <ContentCopyRoundedIcon />}
+            {isInstanceZuidCopied ? (
+              <CheckRoundedIcon />
+            ) : (
+              <ContentCopyRoundedIcon />
+            )}
           </ListItemIcon>
           <ListItemText>Copy Instance ZUID</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => refreshCache()}>
           <ListItemIcon>
-            <RefreshRoundedIcon />
+            {isCacheRefreshed ? (
+              <CheckRoundedIcon />
+            ) : (
+              <RefreshRoundedIcon
+                sx={{
+                  animation: isCacheRefreshing
+                    ? `${rotateAnimation} 1s infinite ease`
+                    : "none",
+                }}
+              />
+            )}
           </ListItemIcon>
           <ListItemText>Refresh CDN Cache</ListItemText>
         </MenuItem>
