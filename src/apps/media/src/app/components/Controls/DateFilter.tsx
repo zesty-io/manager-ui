@@ -49,16 +49,19 @@ export const DateRangeFilter: FC = () => {
       case "on": {
         setParams(format(dateRange.value), "to");
         setParams(format(dateRange.value), "from");
+        setParams(null, "dateFilter");
         return;
       }
       case "before": {
         setParams(format(dateRange.value), "to");
         setParams(null, "from");
+        setParams(null, "dateFilter");
         return;
       }
       case "after": {
         setParams(format(dateRange.value), "from");
         setParams(null, "to");
+        setParams(null, "dateFilter");
         return;
       }
       case "preset": {
