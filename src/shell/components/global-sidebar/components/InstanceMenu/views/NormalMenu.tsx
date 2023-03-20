@@ -132,7 +132,11 @@ export const NormalMenu: FC<NormalMenuProps> = ({
         </Stack>
       </Stack>
       <Divider />
-      <MenuList>
+      <MenuList
+        onClick={() => {
+          onChangeView("instances");
+        }}
+      >
         <MenuItem>
           <ListItemIcon>
             <ManageSearchRoundedIcon />
