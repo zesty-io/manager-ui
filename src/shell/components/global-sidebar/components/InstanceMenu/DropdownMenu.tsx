@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { Menu } from "@mui/material";
 
 import { NormalMenu } from "./views/NormalMenu";
-import { InstancesMenu } from "./views/InstancesMenu";
+import { InstancesListMenu } from "./views/InstancesListMenu";
 import { DomainsMenu } from "./views/DomainsMenu";
 
 export type View = "normal" | "instances" | "domains";
@@ -20,7 +20,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
 
   return (
     <Menu
-      open={Boolean(anchorEl)}
+      open
       anchorEl={anchorEl}
       onClose={onClose}
       PaperProps={{
@@ -45,7 +45,9 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
           onCloseDropdownMenu={onClose}
         />
       )}
-      {view === "instances" && <InstancesMenu />}
+      {view === "instances" && (
+        <InstancesListMenu onChangeView={(view) => setView(view)} />
+      )}
       {view === "domains" && <DomainsMenu />}
     </Menu>
   );
