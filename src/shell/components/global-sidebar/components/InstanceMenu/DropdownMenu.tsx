@@ -42,6 +42,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
         <NormalMenu
           faviconURL={faviconURL}
           onChangeView={(view) => setView(view)}
+          onCloseDropdownMenu={onClose}
         />
       )}
       {view === "instances" && <InstancesMenu />}

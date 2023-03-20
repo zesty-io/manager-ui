@@ -13,7 +13,7 @@ import GlobalTopbar from "../../components/GlobalTopbar";
 import Missing from "../../components/missing";
 import SearchPage from "../../views/SearchPage";
 
-import ContentApp from "../../../apps/code-editor/src";
+import ContentApp from "../../../apps/content-editor/src";
 import DamApp from "../../../apps/media/src";
 import ReleaseApp from "../../../apps/release/src";
 import ReportingApp from "../../../apps/reports/src";
