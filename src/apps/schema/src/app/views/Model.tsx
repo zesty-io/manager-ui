@@ -8,6 +8,7 @@ import { ModelInfo } from "../components/ModelInfo";
 import { useGetContentModelsQuery } from "../../../../../shell/services/instance";
 import { NotFound } from "../../../../../shell/components/NotFound";
 import SchemaRoundedIcon from "@mui/icons-material/SchemaRounded";
+import { ModelActivityLog } from "../components/ModelActivityLog";
 import { ModelApi } from "../components/ModelApi";
 
 type Params = {
@@ -72,6 +73,11 @@ export const Model = () => {
         />
         <Route path="/schema/:id/api" component={ModelApi} />
         <Route exact path="/schema/:id/info" component={ModelInfo} />
+        <Route
+          exact
+          path="/schema/:id/activity-log"
+          component={ModelActivityLog}
+        />
         <Redirect to="/schema/:id/fields" />
       </Switch>
       {isAddFieldModalOpen && (

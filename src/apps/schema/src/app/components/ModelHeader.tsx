@@ -37,6 +37,7 @@ import { modelIconMap, modelNameMap } from "../utils";
 import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
 import { DeleteModelDialogue } from "./DeleteModelDialogue";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 
 moment.updateLocale("en", {
   relativeTime: {
@@ -219,9 +220,13 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
             </Box>
           </Box>
           <Box mt={1.5}>
-            <Typography variant="caption" color="textSecondary">{`${
-              modelNameMap[model?.type]
-            } Model  •  ZUID: ${model?.ZUID}  •  `}</Typography>
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              whiteSpace="pre"
+            >{`${modelNameMap[model?.type]} Model  •  ZUID: ${
+              model?.ZUID
+            }  •  `}</Typography>
             <Tooltip
               title={moment(model?.updatedAt).format(
                 "Do MMMM YYYY [at] h:mm A"
@@ -260,6 +265,12 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               iconPosition="start"
               label="API"
               value="api"
+            />
+            <Tab
+              icon={<HistoryRoundedIcon color="action" fontSize="small" />}
+              iconPosition="start"
+              label="Activity Log"
+              value="activity-log"
             />
             <Tab
               icon={<InfoRoundedIcon color="action" fontSize="small" />}
