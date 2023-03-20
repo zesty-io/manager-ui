@@ -20,7 +20,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
 
   return (
     <Menu
-      open={Boolean(anchorEl)}
+      open
       anchorEl={anchorEl}
       onClose={onClose}
       PaperProps={{

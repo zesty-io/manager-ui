@@ -76,11 +76,13 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
         </Stack>
         {openNav && <ArrowDropDownRoundedIcon color="inherit" />}
       </Stack>
-      <DropdownMenu
-        anchorEl={anchorEl}
-        faviconURL={faviconURL}
-        onClose={() => setAnchorEl(null)}
-      />
+      {Boolean(anchorEl) && (
+        <DropdownMenu
+          anchorEl={anchorEl}
+          faviconURL={faviconURL}
+          onClose={() => setAnchorEl(null)}
+        />
+      )}
     </>
   );
 };
