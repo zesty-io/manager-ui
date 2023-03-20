@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useMemo, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import {
   TextField,
@@ -8,21 +8,27 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Stack,
+  Typography,
+  Button,
 } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import StarIcon from "@mui/icons-material/Star";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 import { View } from "../DropdownMenu";
 import { AppState } from "../../../../../store/types";
 import { User, Instance } from "../../../../../services/types";
 import { useGetInstancesQuery } from "../../../../../services/accounts";
+import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 
 interface InstancesMenuProps {
   onChangeView: (view: View) => void;
 }
 export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
   const [filter, setFilter] = useState("");
+  const searchField = useRef<HTMLInputElement | null>(null);
   const user: User = useSelector((state: AppState) => state.user);
   const { data: instances } = useGetInstancesQuery();
 
@@ -68,6 +74,11 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
     window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${ZUID}${CONFIG.URL_MANAGER}`;
   };
 
+  const handleResetFilter = () => {
+    setFilter("");
+    searchField.current?.focus();
+  };
+
   return (
     <>
       <ListSubheader
@@ -98,42 +109,82 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
               </IconButton>
             ),
           }}
+          inputRef={searchField}
         />
       </ListSubheader>
-      <MenuItem
-        disableRipple
-        sx={{
-          mt: 1,
-          "&:hover": { cursor: "default" },
-        }}
-      >
-        <ListItemIcon>
-          <StarIcon />
-        </ListItemIcon>
-        <ListItemText>Favorites</ListItemText>
-      </MenuItem>
-      {filteredFavoriteInstances?.map((instance) => (
-        <MenuItem onClick={() => handleSwitchInstance(instance.ZUID)}>
-          <ListItemText>{instance.name}</ListItemText>
-        </MenuItem>
-      ))}
-      <Divider />
-      <MenuItem
-        disableRipple
-        sx={{
-          "&:hover": { cursor: "default" },
-        }}
-      >
-        <ListItemIcon>
-          <GridViewRoundedIcon />
-        </ListItemIcon>
-        <ListItemText>All Instances</ListItemText>
-      </MenuItem>
-      {filteredInstances?.map((instance) => (
-        <MenuItem onClick={() => handleSwitchInstance(instance.ZUID)}>
-          <ListItemText>{instance.name}</ListItemText>
-        </MenuItem>
-      ))}
+      {filter && !filteredInstances?.length ? (
+        <Stack
+          px={2}
+          justifyContent="center"
+          alignItems="center"
+          textAlign="center"
+          height={445}
+        >
+          <img
+            src={noSearchResults}
+            alt="No Search Results"
+            width={88}
+            height={80}
+          />
+          <Typography variant="h5" fontWeight={600}>
+            Your search “{filter}” could not find any results
+          </Typography>
+          <Typography variant="body2" color="text.secondary" pb={3}>
+            Try adjusting tour search. We suggest check all words are spelled
+            correctly or try using different keywords.
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleResetFilter}
+            startIcon={<SearchRoundedIcon />}
+          >
+            Search Again
+          </Button>
+        </Stack>
+      ) : (
+        <>
+          <MenuItem
+            disableRipple
+            sx={{
+              mt: 1,
+              "&:hover": { cursor: "default" },
+            }}
+          >
+            <ListItemIcon>
+              <StarIcon />
+            </ListItemIcon>
+            <ListItemText>Favorites</ListItemText>
+          </MenuItem>
+          {filteredFavoriteInstances?.map((instance) => (
+            <MenuItem
+              key={instance.ZUID}
+              onClick={() => handleSwitchInstance(instance.ZUID)}
+            >
+              <ListItemText>{instance.name}</ListItemText>
+            </MenuItem>
+          ))}
+          <Divider />
+          <MenuItem
+            disableRipple
+            sx={{
+              "&:hover": { cursor: "default" },
+            }}
+          >
+            <ListItemIcon>
+              <GridViewRoundedIcon />
+            </ListItemIcon>
+            <ListItemText>All Instances</ListItemText>
+          </MenuItem>
+          {filteredInstances?.map((instance) => (
+            <MenuItem
+              key={instance.ZUID}
+              onClick={() => handleSwitchInstance(instance.ZUID)}
+            >
+              <ListItemText>{instance.name}</ListItemText>
+            </MenuItem>
+          ))}
+        </>
+      )}
     </>
   );
 };
