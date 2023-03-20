@@ -1,15 +1,11 @@
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  Box,
-  Stack,
   TextField,
   IconButton,
   Divider,
-  MenuList,
   ListSubheader,
   MenuItem,
-  ListItem,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
@@ -26,10 +22,11 @@ interface InstancesMenuProps {
   onChangeView: (view: View) => void;
 }
 export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
+  const [filter, setFilter] = useState("");
   const user: User = useSelector((state: AppState) => state.user);
   const { data: instances } = useGetInstancesQuery();
 
-  const favoriteSites = useMemo(() => {
+  const favoriteInstances = useMemo(() => {
     if (user && instances?.length) {
       let data: Instance[] = [];
       if (user?.prefs) {
@@ -45,6 +42,26 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
 
     return [];
   }, [user, instances]);
+
+  const filteredFavoriteInstances = useMemo(() => {
+    if (filter) {
+      return favoriteInstances?.filter((site) =>
+        site.name.toLowerCase().includes(filter.toLowerCase())
+      );
+    }
+
+    return favoriteInstances;
+  }, [filter, favoriteInstances]);
+
+  const filteredInstances = useMemo(() => {
+    if (filter) {
+      return instances?.filter((instance) =>
+        instance.name.toLowerCase().includes(filter.toLowerCase())
+      );
+    }
+
+    return instances;
+  }, [filter, instances]);
 
   const handleSwitchInstance = (ZUID: string) => {
     // @ts-ignore
@@ -69,8 +86,11 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
         }}
       >
         <TextField
+          autoFocus
           fullWidth
           placeholder="Search Instances"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
           InputProps={{
             startAdornment: (
               <IconButton onClick={() => onChangeView("normal")}>
@@ -92,9 +112,9 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
         </ListItemIcon>
         <ListItemText>Favorites</ListItemText>
       </MenuItem>
-      {favoriteSites?.map((site) => (
-        <MenuItem onClick={() => handleSwitchInstance(site.ZUID)}>
-          <ListItemText>{site.name}</ListItemText>
+      {filteredFavoriteInstances?.map((instance) => (
+        <MenuItem onClick={() => handleSwitchInstance(instance.ZUID)}>
+          <ListItemText>{instance.name}</ListItemText>
         </MenuItem>
       ))}
       <Divider />
@@ -109,9 +129,9 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
         </ListItemIcon>
         <ListItemText>All Instances</ListItemText>
       </MenuItem>
-      {instances?.map((site) => (
-        <MenuItem onClick={() => handleSwitchInstance(site.ZUID)}>
-          <ListItemText>{site.name}</ListItemText>
+      {filteredInstances?.map((instance) => (
+        <MenuItem onClick={() => handleSwitchInstance(instance.ZUID)}>
+          <ListItemText>{instance.name}</ListItemText>
         </MenuItem>
       ))}
     </>
