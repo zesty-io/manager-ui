@@ -84,36 +84,37 @@ export interface ContentModel {
   plugin?: number;
 }
 export interface Web {
-  version: number;
-  versionZUID: string;
-  metaDescription: string;
+  version?: number;
+  versionZUID?: string;
+  metaDescription?: string;
   metaTitle: string;
   metaLinkText: string;
   metaKeywords?: any;
   parentZUID?: any;
   pathPart: string;
-  path: string;
-  sitemapPriority: number;
+  path?: string;
+  sitemapPriority?: number;
   canonicalTagMode: number;
   canonicalQueryParamWhitelist?: any;
   canonicalTagCustomValue?: any;
-  createdByUserZUID: string;
-  createdAt: string;
-  updatedAt: string;
+  createdByUserZUID?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Meta {
-  ZUID: string;
-  zid: number;
-  masterZUID: string;
+  ZUID?: string;
+  zid?: number;
+  masterZUID?: string;
   contentModelZUID: string;
   contentModelName?: any;
-  sort: number;
-  listed: boolean;
-  version: number;
-  langID: number;
-  createdAt: string;
-  updatedAt: string;
+  sort?: number;
+  listed?: boolean;
+  version?: number;
+  langID?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  createdByUserZUID: string;
 }
 export interface Data {
   content: string;
@@ -131,8 +132,8 @@ export interface Data {
 export interface ContentItem {
   web: Web;
   meta: Meta;
-  siblings: [{ [key: number]: { value: string; id: number } }] | [];
-  data: Data;
+  siblings?: [{ [key: number]: { value: string; id: number } }] | [];
+  data?: Data;
   publishAt?: any;
 }
 
@@ -318,21 +319,4 @@ export interface InstanceSetting {
   tips: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface ContentModelItem {
-  data?: {
-    [key in string]: string;
-  };
-  web: {
-    pathPart: string;
-    metaTitle?: string;
-    metaLinkText?: string;
-    canonicalTagMode?: number;
-    parentZUID?: string;
-  };
-  meta?: {
-    contentModelZUID?: string;
-    createdByUserZUID?: string;
-  };
 }
