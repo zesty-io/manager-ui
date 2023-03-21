@@ -23,17 +23,23 @@ import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { isEmpty } from "lodash";
+import { useSelector } from "react-redux";
+
 import {
   useCreateContentModelMutation,
   useGetContentModelsQuery,
+  useCreateContentItemMutation,
 } from "../../../../../shell/services/instance";
-import { ContentModel } from "../../../../../shell/services/types";
+import { ContentModel, User } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 import { useHistory } from "react-router";
 import { modelIconMap } from "../utils";
 import { withCursorPosition } from "../../../../../shell/components/withCursorPosition";
+import { formatPathPart } from "../../../../../utility/formatPathPart";
+import { AppState } from "../../../../../shell/store/types";
 
 interface Props {
   onClose: () => void;
@@ -93,15 +99,62 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   );
 
   const { data: models } = useGetContentModelsQuery();
-  const [createModel, { isLoading, isSuccess, error, data }] =
-    useCreateContentModelMutation();
+  const [
+    createModel,
+    {
+      isLoading: isCreatingModel,
+      isSuccess: isModelCreated,
+      error: createModelError,
+      data: createModelData,
+    },
+  ] = useCreateContentModelMutation();
+  const [
+    createContentItem,
+    {
+      isLoading: isCreatingContentItem,
+      isSuccess: isContentItemCreated,
+      error: createContentItemError,
+    },
+  ] = useCreateContentItemMutation();
+  const user: User = useSelector((state: AppState) => state.user);
+
+  const error = createModelError || createContentItemError;
 
   useEffect(() => {
-    if (isSuccess && data) {
-      history.push(`/schema/${data.data.ZUID}`);
+    if (isModelCreated && !isEmpty(createModelData?.data)) {
+      // Create initial content item
+      // FIXME: parentZUID is incorrent will probably need to be the zuid from /env/nav
+      if (model.type !== "templateset") {
+        history.push(`/schema/${createModelData.data.ZUID}`);
+        onClose();
+      } else {
+        createContentItem({
+          modelZUID: createModelData.data.ZUID,
+          body: {
+            web: {
+              pathPart: formatPathPart(model.label),
+              canonicalTagMode: 1,
+              metaLinkText: model.label,
+              metaTitle: model.label,
+              parentZUID: model.parentZUID,
+            },
+            meta: {
+              contentModelZUID: createModelData.data.ZUID,
+              createdByUserZUID: user.ZUID,
+            },
+          },
+        });
+      }
+    }
+  }, [isModelCreated, createModelData]);
+
+  useEffect(() => {
+    // Only navigate to schema page once model and initial content is created for templateset
+    if (isContentItemCreated && createModelData) {
+      history.push(`/schema/${createModelData.data.ZUID}`);
       onClose();
     }
-  }, [isSuccess]);
+  }, [isContentItemCreated, createModelData]);
 
   useEffect(() => {
     if (error) {
@@ -389,7 +442,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             <LoadingButton
               variant="contained"
               disabled={!model.name || !model.label}
-              loading={!!isLoading}
+              loading={!!isCreatingModel || !!isCreatingContentItem}
               onClick={() =>
                 createModel({
                   ...model,

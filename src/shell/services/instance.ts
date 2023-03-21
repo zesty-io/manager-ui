@@ -11,6 +11,7 @@ import {
   Publishing,
   LegacyHeader,
   WebView,
+  ContentModelItem,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -322,6 +323,16 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["InstanceSettings"],
     }),
+    createContentItem: builder.mutation<
+      any,
+      { modelZUID: string; body: ContentModelItem }
+    >({
+      query: ({ modelZUID, body }) => ({
+        url: `content/models/${modelZUID}/items`,
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -352,4 +363,5 @@ export const {
   useGetLegacyHeadTagsQuery,
   useGetInstanceSettingsQuery,
   useUpdateInstanceSettingMutation,
+  useCreateContentItemMutation,
 } = instanceApi;

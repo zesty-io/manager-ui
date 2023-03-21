@@ -18,18 +18,23 @@ import {
 import { alpha } from "@mui/material/styles";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { useSelector } from "react-redux";
+
 import {
   useBulkCreateContentModelFieldMutation,
   useCreateContentModelMutation,
   useGetContentModelFieldsQuery,
   useGetContentModelsQuery,
+  useCreateContentItemMutation,
 } from "../../../../../shell/services/instance";
-import { ContentModel } from "../../../../../shell/services/types";
+import { ContentModel, User } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 import { useHistory } from "react-router";
 import { modelIconMap, modelNameMap } from "../utils";
+import { formatPathPart } from "../../../../../utility/formatPathPart";
+import { AppState } from "../../../../../shell/store/types";
 
 interface Props {
   onClose: () => void;
@@ -80,40 +85,49 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       error: createFieldsError,
     },
   ] = useBulkCreateContentModelFieldMutation();
+  const [
+    createContentItem,
+    {
+      isLoading: isCreatingContentItem,
+      isSuccess: isContentItemCreated,
+      error: createContentItemError,
+    },
+  ] = useCreateContentItemMutation();
+  const user: User = useSelector((state: AppState) => state.user);
 
-  const error = createModelError || createFieldsError;
+  const error = createModelError || createFieldsError || createContentItemError;
 
   useEffect(() => {
     if (createModelIsSuccess && createModelData) {
-      // If no fields to duplicate just redirect to the new model
-      if (fields?.length) {
-        const newFields = fields
-          .filter((field) => !field?.deletedAt)
-          .map((field) => {
-            const { ZUID, settings, ...rest } = field;
-            return {
-              ...rest,
-              settings: {
-                ...settings,
-                list: settings?.list || false,
-              },
-            };
-          });
-        createFields({
-          modelZUID: createModelData.data.ZUID,
-          fields: newFields,
-        });
+      if (newModel.type === "templateset") {
+        // Create initial content item for templateset
+        createInitialTemplatesetContent();
       } else {
-        history.push(`/schema/${createModelData.data.ZUID}`);
-        onClose();
+        // For other model types, immediately just check if there are fields to duplicate
+        if (fields?.length) {
+          duplicateFields();
+        } else {
+          navigateToModelSchema();
+        }
       }
     }
   }, [createModelIsSuccess]);
 
   useEffect(() => {
+    if (isContentItemCreated) {
+      // Flow only applies to templateset model types
+      // Duplicate fields if there any
+      if (fields?.length) {
+        duplicateFields();
+      } else {
+        navigateToModelSchema();
+      }
+    }
+  }, [isContentItemCreated]);
+
+  useEffect(() => {
     if (createFieldsIsSuccess) {
-      history.push(`/schema/${createModelData.data.ZUID}`);
-      onClose();
+      navigateToModelSchema();
     }
   }, [createFieldsIsSuccess]);
 
@@ -128,6 +142,51 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       );
     }
   }, [error]);
+
+  const navigateToModelSchema = () => {
+    history.push(`/schema/${createModelData?.data.ZUID}`);
+    onClose();
+  };
+
+  const createInitialTemplatesetContent = () => {
+    // FIXME: parentZUID is incorrent will probably need to be the zuid from /env/nav
+    createContentItem({
+      modelZUID: createModelData.data.ZUID,
+      body: {
+        web: {
+          pathPart: formatPathPart(newModel.label),
+          canonicalTagMode: 1,
+          metaLinkText: newModel.label,
+          metaTitle: newModel.label,
+          parentZUID: newModel.parentZUID,
+        },
+        meta: {
+          contentModelZUID: createModelData.data.ZUID,
+          createdByUserZUID: user.ZUID,
+        },
+      },
+    });
+  };
+
+  const duplicateFields = () => {
+    const newFields = fields
+      .filter((field) => !field?.deletedAt)
+      .map((field) => {
+        const { ZUID, settings, ...rest } = field;
+        return {
+          ...rest,
+          settings: {
+            ...settings,
+            list: settings?.list || false,
+          },
+        };
+      });
+
+    createFields({
+      modelZUID: createModelData.data.ZUID,
+      fields: newFields,
+    });
+  };
 
   return (
     <Dialog
@@ -268,7 +327,11 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
         <LoadingButton
           variant="contained"
           disabled={!newModel.name || !newModel.label}
-          loading={!!createModelIsLoading || !!createFieldsIsLoading}
+          loading={
+            !!createModelIsLoading ||
+            !!createFieldsIsLoading ||
+            !!isCreatingContentItem
+          }
           onClick={() =>
             createModel({
               ...newModel,

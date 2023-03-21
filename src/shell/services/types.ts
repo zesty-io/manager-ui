@@ -319,3 +319,20 @@ export interface InstanceSetting {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ContentModelItem {
+  data?: {
+    [key in string]: string;
+  };
+  web: {
+    pathPart: string;
+    metaTitle?: string;
+    metaLinkText?: string;
+    canonicalTagMode?: number;
+    parentZUID?: string;
+  };
+  meta?: {
+    contentModelZUID?: string;
+    createdByUserZUID?: string;
+  };
+}
