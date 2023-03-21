@@ -149,7 +149,6 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
   };
 
   const createInitialTemplatesetContent = () => {
-    // FIXME: parentZUID is incorrent will probably need to be the zuid from /env/nav
     createContentItem({
       modelZUID: createModelData.data.ZUID,
       body: {
@@ -158,7 +157,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
           canonicalTagMode: 1,
           metaLinkText: newModel.label,
           metaTitle: newModel.label,
-          parentZUID: newModel.parentZUID,
+          parentZUID: "0",
         },
         meta: {
           contentModelZUID: createModelData.data.ZUID,

@@ -123,7 +123,6 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   useEffect(() => {
     if (isModelCreated && !isEmpty(createModelData?.data)) {
       // Create initial content item
-      // FIXME: parentZUID is incorrent will probably need to be the zuid from /env/nav
       if (model.type !== "templateset") {
         history.push(`/schema/${createModelData.data.ZUID}`);
         onClose();
@@ -136,7 +135,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               canonicalTagMode: 1,
               metaLinkText: model.label,
               metaTitle: model.label,
-              parentZUID: model.parentZUID,
+              parentZUID: "0",
             },
             meta: {
               contentModelZUID: createModelData.data.ZUID,
