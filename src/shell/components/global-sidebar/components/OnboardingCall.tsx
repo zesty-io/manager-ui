@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Avatar, Box, Button, Dialog, Typography, Stack } from "@mui/material";
 
 import salesAvatar from "../../../../../public/images/salesAvatar.png";
-import fullZestyLogo from "../../../../../public/images/fullZestyLogo.svg";
+import zestyLogo from "../../../../../public/images/zestyLogo.svg";
 
 export const OnboardingCall = () => {
   const [showMeetModal, setShowMeetModal] = useState(false);
@@ -19,12 +19,7 @@ export const OnboardingCall = () => {
               height: "32px",
             }}
           />
-          <img
-            src={fullZestyLogo}
-            alt="Full Zesty Logo"
-            width={70}
-            height={20}
-          />
+          <img src={zestyLogo} alt="Full Zesty Logo" width={70} height={20} />
         </Stack>
         <Typography variant="h6" color="common.white" my={1.5}>
           Schedule an onboarding call with our support team

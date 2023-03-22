@@ -23,8 +23,8 @@ import { theme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
 import Favicon from "../favicon";
-import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
+import zestyLogoOnly from "../../../../public/images/zestyLogoOnly.svg";
 import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
 import { User, Instance } from "../../services/types";
@@ -53,6 +53,9 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const [showDocsMenu, setShowDocsMenu] = useState(false);
   const ui = useSelector((state: AppState) => state.ui);
   const dispatch = useDispatch();
+  const is15DaysFromCreation =
+    instance?.createdAt &&
+    moment().diff(moment(instance?.createdAt), "days") <= 15;
 
   const favoriteSites = useMemo(() => {
     if (user && instances?.length) {
@@ -132,65 +135,67 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
 
           {/* Bottom bar */}
           <Box position="absolute" bottom={0} left={0} right={0}>
-            {instance?.createdAt &&
-            moment().diff(moment(instance?.createdAt), "days") <= 15 &&
-            ui.openNav ? (
-              <OnboardingCall />
-            ) : (
+            {is15DaysFromCreation && openNav && <OnboardingCall />}
+
+            {!is15DaysFromCreation && (
               <Stack
-                direction="row"
+                direction={openNav ? "row" : "column"}
                 alignItems="center"
-                height={24}
+                height={openNav ? 24 : "inherit"}
                 px={2.5}
-                mb={1.25}
+                mb={openNav ? 1.25 : 0}
                 gap={1.5}
               >
                 <img
-                  src={fullZestyLogo}
-                  alt="Full Zesty Logo"
-                  width={84}
-                  height={24}
+                  src={openNav ? zestyLogo : zestyLogoOnly}
+                  alt="Zesty Logo"
+                  width={openNav ? 84 : 20}
+                  height={openNav ? 24 : 20}
                 />
-                <Box>
-                  <Link
-                    fontFamily="Roboto Mono"
-                    fontSize={10}
-                    letterSpacing={0.15}
-                    lineHeight={10}
-                    color="grey.500"
-                    underline="none"
-                    // @ts-ignore
-                    href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
-                  >
-                    #
-                    {
-                      //@ts-ignore
-                      CONFIG?.build?.data?.gitCommit
-                    }
-                  </Link>
-                </Box>
+                <Link
+                  fontFamily="Roboto Mono"
+                  fontSize={10}
+                  letterSpacing={0.15}
+                  lineHeight="10px"
+                  color="grey.500"
+                  underline="none"
+                  // @ts-ignore
+                  href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
+                  target="_blank"
+                  rel="noopener"
+                  width={openNav ? "inherit" : 32}
+                  textAlign="center"
+                  sx={{
+                    wordWrap: "break-word",
+                  }}
+                >
+                  #
+                  {
+                    //@ts-ignore
+                    CONFIG?.build?.data?.gitCommit
+                  }
+                </Link>
               </Stack>
             )}
 
-            <Box
+            <Stack
+              width="inherit"
+              justifyContent="space-between"
+              overflow="hidden"
+              borderTop={openNav ? "1px solid" : "none"}
+              alignItems="center"
+              flexDirection={openNav ? "row" : "column-reverse"}
+              py={1.25}
+              px={2}
+              gap={openNav ? 0 : 1}
               sx={{
-                display: "flex",
-                width: "inherit",
-                justifyContent: "space-between",
-                overflow: "hidden",
-                borderTopColor: "grey.800",
-                borderTopWidth: "1px",
-                borderTopStyle: "solid",
-                alignItems: "center",
-                flexDirection: openNav ? "row" : "column-reverse",
-                py: 1.25,
-                px: 2,
+                borderColor: "grey.800",
               }}
             >
               <Stack
                 direction="row"
                 alignItems="center"
-                width={49}
+                width={openNav ? 49 : 32}
                 onClick={() => {
                   setShowDocsMenu(false);
                   setShowInstanceFlyoutMenu(true);
@@ -206,24 +211,23 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   alt={`${user.firstName} ${user.lastName} Avatar`}
                   src={`https://www.gravatar.com/avatar/${user.emailHash}.jpg?&s=40`}
                   sx={{
-                    // ml: openNav ? "-12px" : "0px",
                     height: 32,
                     width: 32,
                   }}
                 />
-                <ArrowDropDownIcon
-                  fontSize="inherit"
-                  sx={{
-                    color: "grey.500",
-                    // display: openNav ? "block" : "none",
-                  }}
-                />
+                {openNav && (
+                  <ArrowDropDownIcon
+                    fontSize="inherit"
+                    sx={{
+                      color: "grey.500",
+                    }}
+                  />
+                )}
               </Stack>
               <Box
                 sx={{
                   display: "flex",
                   flexDirection: openNav ? "row" : "column",
-                  // pr: openNav ? 2 : 0,
                   alignItems: "center",
                 }}
               >
@@ -275,7 +279,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   onClose={() => setShowInstanceFlyoutMenu(false)}
                 />
               )} */}
-            </Box>
+            </Stack>
           </Box>
         </Box>
       </ThemeProvider>
