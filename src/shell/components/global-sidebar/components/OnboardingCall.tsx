@@ -9,7 +9,7 @@ export const OnboardingCall = () => {
 
   return (
     <>
-      <Box px={2} py={2.5}>
+      <Box px={2} py={2.5} borderTop="1px solid" borderColor="grey.800">
         <Stack direction="row" justifyContent="space-between">
           <Avatar
             src={salesAvatar}
