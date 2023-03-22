@@ -20,6 +20,7 @@ import { MENU_ITEMS, ClickAction } from "../config";
 import youtubeIcon from "../../../../../public/images/youtubeIcon.svg";
 import slackIcon from "../../../../../public/images/slackIcon.svg";
 import { View } from "../GlobalAccountMenu";
+import { handleOpenUrl } from "../util";
 
 interface AccountMenuProps {
   onCloseMenu: () => void;
@@ -36,15 +37,10 @@ export const AccountMenu: FC<AccountMenuProps> = ({
     return roles?.find((role) => role.ZUID === user.ZUID)?.role?.name;
   }, [roles]);
 
-  const handleOpenUrl = (url: string) => {
-    onCloseMenu();
-    window.open(url, "_blank", "noopener");
-  };
-
   const handleClickAction = ([action, location]: ClickAction) => {
     switch (action) {
       case "openUrl":
-        !!location && handleOpenUrl(location);
+        !!location && handleOpenUrl(location, onCloseMenu);
         break;
 
       case "openView":
@@ -52,7 +48,7 @@ export const AccountMenu: FC<AccountMenuProps> = ({
         break;
 
       case "openEmail":
-        handleOpenUrl("mailto:support@zesty.io");
+        handleOpenUrl("mailto:support@zesty.io", onCloseMenu);
         break;
 
       case "logOut":
