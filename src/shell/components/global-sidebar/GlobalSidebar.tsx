@@ -144,7 +144,12 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 height={openNav ? 24 : "inherit"}
                 px={2.5}
                 mb={openNav ? 1.25 : 0}
+                pt={openNav ? 0 : 1.5}
                 gap={1.5}
+                borderTop={openNav ? "none" : "1px solid"}
+                sx={{
+                  borderColor: "grey.800",
+                }}
               >
                 <img
                   src={openNav ? zestyLogo : zestyLogoOnly}
