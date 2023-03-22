@@ -49,7 +49,7 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
         />
       )}
 
-      {modalView === "docs" && <DocsMenu />}
+      {modalView === "docs" && <DocsMenu onCloseMenu={onClose} />}
     </Menu>
   );
 };
