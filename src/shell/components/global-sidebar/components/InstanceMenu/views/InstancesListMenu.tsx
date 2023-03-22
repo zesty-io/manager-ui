@@ -104,8 +104,8 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
           onChange={(e) => setFilter(e.target.value)}
           InputProps={{
             startAdornment: (
-              <IconButton onClick={() => onChangeView("normal")}>
-                <ArrowBackRoundedIcon />
+              <IconButton size="small" onClick={() => onChangeView("normal")}>
+                <ArrowBackRoundedIcon fontSize="small" />
               </IconButton>
             ),
           }}
@@ -175,10 +175,13 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
             </ListItemIcon>
             <ListItemText>All Instances</ListItemText>
           </MenuItem>
-          {filteredInstances?.map((instance) => (
+          {filteredInstances?.map((instance, index) => (
             <MenuItem
               key={instance.ZUID}
               onClick={() => handleSwitchInstance(instance.ZUID)}
+              sx={{
+                mb: index + 1 === filteredInstances?.length ? 1 : 0,
+              }}
             >
               <ListItemText>{instance.name}</ListItemText>
             </MenuItem>

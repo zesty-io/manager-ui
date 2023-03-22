@@ -34,7 +34,7 @@ import { actions } from "../../../../../store/ui";
 import { notify } from "../../../../../store/notifications";
 import { useRefreshCacheMutation } from "../../../../../services/cloudFunctions";
 
-const rotateAnimation = keyframes`
+export const rotateAnimation = keyframes`
   from {
     transform: rotate(0deg);
   }
@@ -224,7 +224,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           </ListItemIcon>
           <ListItemText>Teams</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => onChangeView("domains")}>
           <ListItemIcon>
             <LanguageRoundedIcon />
           </ListItemIcon>

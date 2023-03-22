@@ -24,7 +24,7 @@ interface UserFilterProps {
   value: string;
   onChange: (filter: string) => void;
   defaultButtonText?: string;
-  options: Omit<User, "ID">[];
+  options: Partial<User>[];
 }
 export const UserFilter: FC<UserFilterProps> = ({
   value,
