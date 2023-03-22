@@ -37,6 +37,7 @@ import instanceZUID from "../../../utility/instanceZUID";
 import { InstanceMenu } from "./components/InstanceMenu";
 import { actions } from "../../store/ui";
 import { OnboardingCall } from "./components/OnboardingCall";
+import { GlobalAccountMenu } from "../GlobalAccountMenu";
 
 interface GlobalSidebarProps {
   openNav: boolean;
@@ -49,7 +50,8 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const { data: instances } = useGetInstancesQuery();
   const { data: instance } = useGetInstanceQuery();
   const [faviconURL, setFaviconURL] = useState("");
-  const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
+  const [accountMenuAnchorEl, setAccountMenuAnchorEl] =
+    useState<HTMLElement | null>(null);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
   const ui = useSelector((state: AppState) => state.ui);
   const dispatch = useDispatch();
@@ -201,9 +203,10 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 direction="row"
                 alignItems="center"
                 width={openNav ? 49 : 32}
-                onClick={() => {
-                  setShowDocsMenu(false);
-                  setShowInstanceFlyoutMenu(true);
+                onClick={(evt: React.MouseEvent<HTMLDivElement>) => {
+                  // setShowDocsMenu(false);
+                  // setShowAccountMenu(true);
+                  setAccountMenuAnchorEl(evt.currentTarget);
                 }}
                 fontSize={16}
                 sx={{
@@ -250,8 +253,8 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 </IconButton>
                 <IconButton
                   onClick={() => {
-                    setShowDocsMenu(true);
-                    setShowInstanceFlyoutMenu(true);
+                    // setShowDocsMenu(true);
+                    // setShowAccountMenu(true);
                   }}
                   sx={{
                     backgroundColor: "grey.800",
@@ -284,6 +287,12 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   onClose={() => setShowInstanceFlyoutMenu(false)}
                 />
               )} */}
+              {Boolean(accountMenuAnchorEl) && (
+                <GlobalAccountMenu
+                  anchorEl={accountMenuAnchorEl}
+                  onClose={() => setAccountMenuAnchorEl(null)}
+                />
+              )}
             </Stack>
           </Box>
         </Box>
