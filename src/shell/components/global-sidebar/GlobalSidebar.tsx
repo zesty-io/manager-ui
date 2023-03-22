@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, FC } from "react";
+import { useState, FC } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 
@@ -7,10 +7,6 @@ import {
   ThemeProvider,
   IconButton,
   Avatar,
-  AvatarGroup,
-  Button,
-  Dialog,
-  Typography,
   Stack,
   Link,
 } from "@mui/material";
@@ -27,13 +23,9 @@ import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import zestyLogoOnly from "../../../../public/images/zestyLogoOnly.svg";
 import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
-import { User, Instance } from "../../services/types";
-import {
-  useGetInstancesQuery,
-  useGetInstanceQuery,
-} from "../../services/accounts";
+import { User } from "../../services/types";
+import { useGetInstanceQuery } from "../../services/accounts";
 import { AppState } from "../../store/types";
-import instanceZUID from "../../../utility/instanceZUID";
 import { InstanceMenu } from "./components/InstanceMenu";
 import { actions } from "../../store/ui";
 import { OnboardingCall } from "./components/OnboardingCall";
@@ -44,12 +36,9 @@ interface GlobalSidebarProps {
   onClick: () => void;
 }
 const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
-  const [showFaviconModal, setShowFaviconModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const user: User = useSelector((state: AppState) => state.user);
-  const { data: instances } = useGetInstancesQuery();
   const { data: instance } = useGetInstanceQuery();
-  const [faviconURL, setFaviconURL] = useState("");
   const [accountMenuAnchorEl, setAccountMenuAnchorEl] =
     useState<HTMLElement | null>(null);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
@@ -59,24 +48,17 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
     instance?.createdAt &&
     moment().diff(moment(instance?.createdAt), "days") <= 15;
 
-  const favoriteSites = useMemo(() => {
-    if (user && instances?.length) {
-      let data: Instance[] = [];
-      if (user?.prefs) {
-        const favorite_sites: string[] = JSON.parse(
-          user?.prefs
-        )?.favorite_sites;
+  const handleShowDocsMenu = () => {
+    // Trigger the account menu button click then immediately make the menu show the docs menu
+    const acctMenuBtn: HTMLDivElement = document.querySelector(
+      '[data-cy="AccountMenuButton"]'
+    );
 
-        favorite_sites?.forEach((fav) => {
-          const res = instances?.filter((instance) => instance.ZUID === fav);
-          data.push(...res);
-        });
-      }
-      return data;
+    if (acctMenuBtn) {
+      acctMenuBtn.click();
+      setShowDocsMenu(true);
     }
-
-    return [];
-  }, [user, instances]);
+  };
 
   return (
     <>
@@ -200,12 +182,11 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               }}
             >
               <Stack
+                data-cy="AccountMenuButton"
                 direction="row"
                 alignItems="center"
                 width={openNav ? 49 : 32}
                 onClick={(evt: React.MouseEvent<HTMLDivElement>) => {
-                  // setShowDocsMenu(false);
-                  // setShowAccountMenu(true);
                   setAccountMenuAnchorEl(evt.currentTarget);
                 }}
                 fontSize={16}
@@ -252,10 +233,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
                 </IconButton>
                 <IconButton
-                  onClick={() => {
-                    // setShowDocsMenu(true);
-                    // setShowAccountMenu(true);
-                  }}
+                  onClick={handleShowDocsMenu}
                   sx={{
                     backgroundColor: "grey.800",
                     width: "32px",
@@ -290,7 +268,11 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               {Boolean(accountMenuAnchorEl) && (
                 <GlobalAccountMenu
                   anchorEl={accountMenuAnchorEl}
-                  onClose={() => setAccountMenuAnchorEl(null)}
+                  onClose={() => {
+                    setAccountMenuAnchorEl(null);
+                    setShowDocsMenu(false);
+                  }}
+                  view={showDocsMenu ? "docs" : "account"}
                 />
               )}
             </Stack>
