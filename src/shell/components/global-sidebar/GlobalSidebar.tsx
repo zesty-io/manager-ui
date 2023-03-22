@@ -12,6 +12,7 @@ import {
   Dialog,
   Typography,
   Stack,
+  Link,
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -22,9 +23,8 @@ import { theme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
 import Favicon from "../favicon";
-import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
-import salesAvatar from "../../../../public/images/salesAvatar.png";
+import zestyLogoOnly from "../../../../public/images/zestyLogoOnly.svg";
 import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
 import { User, Instance } from "../../services/types";
@@ -36,50 +36,7 @@ import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
 import { InstanceMenu } from "./components/InstanceMenu";
 import { actions } from "../../store/ui";
-
-const OnboardingCallSection = () => {
-  const [showMeetModal, setShowMeetModal] = useState(false);
-
-  return (
-    <>
-      <Box sx={{ p: 2 }}>
-        <Avatar
-          src={salesAvatar}
-          sx={{
-            width: "32px",
-            height: "32px",
-          }}
-        />
-        <Box sx={{ mt: 1.5 }}>
-          <Typography variant="h6" sx={{ color: "common.white" }}>
-            Schedule an onboarding call
-          </Typography>
-          <Typography
-            // @ts-ignore
-            variant="body3"
-            sx={{ mt: 0.5, color: "grey.400" }}
-          >
-            Our support team will set <br /> up you in just 20 minutes.
-          </Typography>
-        </Box>
-        <Button
-          variant="outlined"
-          sx={{ mt: 1 }}
-          onClick={() => setShowMeetModal(true)}
-        >
-          Schedule a call
-        </Button>
-      </Box>
-      <Dialog open={showMeetModal} onClose={() => setShowMeetModal(false)}>
-        <iframe
-          width="364"
-          height="800"
-          src="https://zesty.zohobookings.com/portal-embed#/customer/3973976000000039370"
-        ></iframe>
-      </Dialog>
-    </>
-  );
-};
+import { OnboardingCall } from "./components/OnboardingCall";
 
 interface GlobalSidebarProps {
   openNav: boolean;
@@ -96,6 +53,9 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const [showDocsMenu, setShowDocsMenu] = useState(false);
   const ui = useSelector((state: AppState) => state.ui);
   const dispatch = useDispatch();
+  const is15DaysFromCreation =
+    instance?.createdAt &&
+    moment().diff(moment(instance?.createdAt), "days") <= 15;
 
   const favoriteSites = useMemo(() => {
     if (user && instances?.length) {
@@ -129,6 +89,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
         >
           <InstanceMenu openNav={openNav} />
 
+          {/* Sidebar handle */}
           <IconButton
             onClick={onClick}
             sx={{
@@ -169,132 +130,156 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               />
             )}
           </IconButton>
+
           <GlobalMenu />
-          {instance?.createdAt &&
-            moment().diff(moment(instance?.createdAt), "days") <= 15 &&
-            ui.openNav && <OnboardingCallSection />}
 
           {/* Bottom bar */}
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              display: "flex",
-              width: "inherit",
-              justifyContent: "space-between",
-              overflow: "hidden",
-              borderTopColor: "grey.800",
-              borderTopWidth: "1px",
-              borderTopStyle: "solid",
-              alignItems: "center",
-              flexDirection: openNav ? "row" : "column-reverse",
-              py: "10px",
-            }}
-          >
-            <Box
+          <Box position="absolute" bottom={0} left={0} right={0}>
+            {is15DaysFromCreation && openNav && <OnboardingCall />}
+
+            {!is15DaysFromCreation && (
+              <Stack
+                direction={openNav ? "row" : "column"}
+                alignItems="center"
+                height={openNav ? 24 : "inherit"}
+                px={2.5}
+                mb={openNav ? 1.25 : 0}
+                gap={1.5}
+              >
+                <img
+                  src={openNav ? zestyLogo : zestyLogoOnly}
+                  alt="Zesty Logo"
+                  width={openNav ? 84 : 20}
+                  height={openNav ? 24 : 20}
+                />
+                <Link
+                  fontFamily="Roboto Mono"
+                  fontSize={10}
+                  letterSpacing={0.15}
+                  lineHeight="10px"
+                  color="grey.500"
+                  underline="none"
+                  // @ts-ignore
+                  href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
+                  target="_blank"
+                  rel="noopener"
+                  width={openNav ? "inherit" : 32}
+                  textAlign="center"
+                  sx={{
+                    wordWrap: "break-word",
+                  }}
+                >
+                  #
+                  {
+                    //@ts-ignore
+                    CONFIG?.build?.data?.gitCommit
+                  }
+                </Link>
+              </Stack>
+            )}
+
+            <Stack
+              width="inherit"
+              justifyContent="space-between"
+              overflow="hidden"
+              borderTop={openNav ? "1px solid" : "none"}
+              alignItems="center"
+              flexDirection={openNav ? "row" : "column-reverse"}
+              py={1.25}
+              px={2}
+              gap={openNav ? 0 : 1}
               sx={{
-                px: 2,
-                display: "flex",
-                cursor: "pointer",
-                mt: !openNav && 1,
-              }}
-              onClick={() => {
-                setShowDocsMenu(false);
-                setShowInstanceFlyoutMenu(true);
+                borderColor: "grey.800",
               }}
             >
-              <AvatarGroup
-                total={2}
+              <Stack
+                direction="row"
+                alignItems="center"
+                width={openNav ? 49 : 32}
+                onClick={() => {
+                  setShowDocsMenu(false);
+                  setShowInstanceFlyoutMenu(true);
+                }}
+                fontSize={16}
                 sx={{
-                  flexDirection: openNav ? "row-reverse" : "column",
-                  "& .MuiAvatar-root": {
-                    width: "32px",
-                    height: "32px",
-                    border: "none",
+                  "&:hover": {
+                    cursor: "pointer",
                   },
                 }}
               >
                 <Avatar
-                  src={faviconURL}
-                  style={{
-                    marginTop: openNav ? "0" : "-8px",
-                  }}
-                />
-                <Avatar
-                  style={{
-                    marginLeft: openNav ? "-12px" : "0px",
-                  }}
                   alt={`${user.firstName} ${user.lastName} Avatar`}
                   src={`https://www.gravatar.com/avatar/${user.emailHash}.jpg?&s=40`}
+                  sx={{
+                    height: 32,
+                    width: 32,
+                  }}
                 />
-              </AvatarGroup>
-              <ArrowDropDownIcon
-                fontSize="small"
+                {openNav && (
+                  <ArrowDropDownIcon
+                    fontSize="inherit"
+                    sx={{
+                      color: "grey.500",
+                    }}
+                  />
+                )}
+              </Stack>
+              <Box
                 sx={{
-                  color: "grey.500",
-                  mt: 0.5,
-                  display: openNav ? "block" : "none",
-                }}
-              />
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: openNav ? "row" : "column",
-                pr: openNav ? 2 : 0,
-                alignItems: "center",
-              }}
-            >
-              <IconButton
-                onClick={() => setShowInviteModal(true)}
-                sx={{
-                  backgroundColor: "grey.800",
-                  height: "26px",
-                  width: "32px",
-                  borderRadius: "4px",
-                  mr: openNav ? 1 : 0,
+                  display: "flex",
+                  flexDirection: openNav ? "row" : "column",
+                  alignItems: "center",
                 }}
               >
-                <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  setShowDocsMenu(true);
-                  setShowInstanceFlyoutMenu(true);
-                }}
-                sx={{
-                  backgroundColor: "grey.800",
-                  width: "32px",
-                  mt: openNav ? 0 : 1,
-                  height: "26px",
-                  borderRadius: "4px",
-                }}
-              >
-                <MenuBookIcon fontSize="small" sx={{ color: "grey.500" }} />
-              </IconButton>
-            </Box>
-            {showInviteModal && (
-              <InviteMembersModal onClose={() => setShowInviteModal(false)} />
-            )}
-            {showInstanceFlyoutMenu && (
-              <InstanceFlyoutMenuModal
-                instanceFaviconUrl={faviconURL}
-                instanceName={instance?.name}
-                instanceZUID={instance?.ZUID}
-                userFaviconUrl={user.emailHash}
-                userFullname={`${user.firstName} ${user.lastName}`}
-                favoriteInstances={favoriteSites}
-                showDocsMenu={showDocsMenu}
-                onSetShowDocsMenu={(val) => setShowDocsMenu(val)}
-                onSetShowFaviconModal={() => {
-                  setShowFaviconModal(!showFaviconModal);
-                  setShowInstanceFlyoutMenu(false);
-                }}
-                onClose={() => setShowInstanceFlyoutMenu(false)}
-              />
-            )}
+                <IconButton
+                  onClick={() => setShowInviteModal(true)}
+                  sx={{
+                    backgroundColor: "grey.800",
+                    height: "26px",
+                    width: "32px",
+                    borderRadius: "4px",
+                    mr: openNav ? 1 : 0,
+                  }}
+                >
+                  <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    setShowDocsMenu(true);
+                    setShowInstanceFlyoutMenu(true);
+                  }}
+                  sx={{
+                    backgroundColor: "grey.800",
+                    width: "32px",
+                    mt: openNav ? 0 : 1,
+                    height: "26px",
+                    borderRadius: "4px",
+                  }}
+                >
+                  <MenuBookIcon fontSize="small" sx={{ color: "grey.500" }} />
+                </IconButton>
+              </Box>
+              {showInviteModal && (
+                <InviteMembersModal onClose={() => setShowInviteModal(false)} />
+              )}
+              {/* {showInstanceFlyoutMenu && (
+                <InstanceFlyoutMenuModal
+                  instanceFaviconUrl={faviconURL}
+                  instanceName={instance?.name}
+                  instanceZUID={instance?.ZUID}
+                  userFaviconUrl={user.emailHash}
+                  userFullname={`${user.firstName} ${user.lastName}`}
+                  favoriteInstances={favoriteSites}
+                  showDocsMenu={showDocsMenu}
+                  onSetShowDocsMenu={(val) => setShowDocsMenu(val)}
+                  onSetShowFaviconModal={() => {
+                    setShowFaviconModal(!showFaviconModal);
+                    setShowInstanceFlyoutMenu(false);
+                  }}
+                  onClose={() => setShowInstanceFlyoutMenu(false)}
+                />
+              )} */}
+            </Stack>
           </Box>
         </Box>
       </ThemeProvider>
