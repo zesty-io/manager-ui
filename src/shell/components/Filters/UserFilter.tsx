@@ -17,28 +17,29 @@ import { theme } from "@zesty-io/material";
 import { cloneDeep } from "lodash";
 
 import { FilterButton } from "./FilterButton";
-import { useGetUsersQuery } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
+import { User } from "../../../shell/services/types";
 
 interface UserFilterProps {
   value: string;
   onChange: (filter: string) => void;
   defaultButtonText?: string;
+  options: Omit<User, "ID">[];
 }
 export const UserFilter: FC<UserFilterProps> = ({
   value,
   onChange,
   defaultButtonText = "Created By",
+  options,
 }) => {
   const [filter, setFilter] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
   );
   const isFilterMenuOpen = Boolean(menuAnchorEl);
-  const { data: users } = useGetUsersQuery();
 
   const filteredUsers = useMemo(() => {
-    const _users = cloneDeep(users);
+    const _users = cloneDeep(options);
 
     const sortedUsers = _users?.sort((a, b) => {
       const nameA = a?.firstName?.toLowerCase();
@@ -66,9 +67,9 @@ export const UserFilter: FC<UserFilterProps> = ({
         user?.firstName?.toLowerCase().includes(_filterTerm) ||
         user?.lastName?.toLowerCase().includes(_filterTerm)
     );
-  }, [filter, users]);
+  }, [filter, options]);
 
-  const activeUserFilter = users?.find((user) => user?.ZUID === value);
+  const activeUserFilter = options?.find((user) => user?.ZUID === value);
   const buttonText = activeUserFilter
     ? `${activeUserFilter.firstName} ${activeUserFilter.lastName}`
     : defaultButtonText;
@@ -88,6 +89,7 @@ export const UserFilter: FC<UserFilterProps> = ({
       buttonText={buttonText}
       onOpenMenu={handleOpenMenuClick}
       onRemoveFilter={() => onChange("")}
+      filterId="user"
     >
       <Menu
         open={isFilterMenuOpen}
@@ -169,6 +171,7 @@ export const UserFilter: FC<UserFilterProps> = ({
               sx={{
                 height: "52px",
               }}
+              data-cy={`filter_value_${user?.ZUID}`}
             >
               <ListItemAvatar>
                 <Avatar

@@ -224,6 +224,8 @@ export const instanceApi = createApi({
         if (!arg.skipInvalidation) {
           return [{ type: "ContentModelFields", id: arg.modelZUID }];
         }
+
+        return [];
       },
     }),
     updateContentModelField: builder.mutation<

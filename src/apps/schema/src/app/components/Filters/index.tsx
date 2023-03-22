@@ -1,4 +1,4 @@
-import { Dispatch, FC } from "react";
+import { Dispatch, FC, useMemo } from "react";
 import { Box } from "@mui/material";
 
 import {
@@ -9,6 +9,7 @@ import { ModelType } from "./ModelType";
 import { ModelFilter } from "../ModelsTable";
 import { UserFilter } from "../../../../../../shell/components/Filters";
 import { ModelType as ModelSetType } from "../../../../../../shell/services/types";
+import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 
 type FilterParam = string | ModelSetType | DateFilterValue;
 export interface FiltersProps {
@@ -16,6 +17,16 @@ export interface FiltersProps {
   activeFilters: ModelFilter;
 }
 export const Filters: FC<FiltersProps> = ({ activeFilters, onChange }) => {
+  const { data: users } = useGetUsersQuery();
+  const userOptions = useMemo(() => {
+    return users?.map((user) => ({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      ZUID: user.ZUID,
+      email: user.email,
+    }));
+  }, [users]);
+
   const handleFilterChange = (
     type: "modelType" | "user" | "date",
     filter: FilterParam
@@ -40,6 +51,7 @@ export const Filters: FC<FiltersProps> = ({ activeFilters, onChange }) => {
       <UserFilter
         value={activeFilters.user}
         onChange={(filter) => handleFilterChange("user", filter)}
+        options={userOptions}
       />
       <DateFilter
         value={activeFilters.lastUpdated}
