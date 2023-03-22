@@ -26,6 +26,10 @@ import { rotateAnimation } from "./NormalMenu";
 import instanceZUID from "../../../../../../utility/instanceZUID";
 import { useRefreshCacheMutation } from "../../../../../services/cloudFunctions";
 import { notify } from "../../../../../store/notifications";
+import {
+  useGetInstanceQuery,
+  useGetDomainsQuery,
+} from "../../../../../services/accounts";
 
 interface DomainsMenuProps {
   onCloseDropdownMenu: () => void;
@@ -38,6 +42,8 @@ export const DomainsMenu: FC<DomainsMenuProps> = ({
   withBackButton = true,
 }) => {
   const dispatch = useDispatch();
+  const { data: domains } = useGetDomainsQuery();
+  const { data: instance } = useGetInstanceQuery();
   const [refreshCache, { isSuccess, isLoading, isError }] =
     useRefreshCacheMutation();
 
@@ -106,19 +112,34 @@ export const DomainsMenu: FC<DomainsMenuProps> = ({
       </Stack>
       <Divider />
       <MenuList>
-        <MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(
+              // @ts-ignore
+              `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
+            )
+          }
+        >
           <ListItemIcon>
             <RemoveRedEyeRoundedIcon />
           </ListItemIcon>
-          <ListItemText>something.dev</ListItemText>
+          <ListItemText primaryTypographyProps={{ noWrap: true }}>
+            {instance?.randomHashID}
+            {/* @ts-ignore */}
+            {CONFIG.URL_PREVIEW}
+          </ListItemText>
           <Chip size="small" label="Stage" />
         </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <LanguageRoundedIcon />
-          </ListItemIcon>
-          <ListItemText>something.dev</ListItemText>
-        </MenuItem>
+        {domains?.map((domain) => (
+          <MenuItem onClick={() => handleOpenUrl(`https://${domain.domain}`)}>
+            <ListItemIcon>
+              <LanguageRoundedIcon />
+            </ListItemIcon>
+            <ListItemText primaryTypographyProps={{ noWrap: true }}>
+              {domain.domain}
+            </ListItemText>
+          </MenuItem>
+        ))}
       </MenuList>
     </>
   );
