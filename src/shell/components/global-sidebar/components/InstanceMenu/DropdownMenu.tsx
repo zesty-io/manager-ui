@@ -3,7 +3,7 @@ import { Menu } from "@mui/material";
 
 import { NormalMenu } from "./views/NormalMenu";
 import { InstancesListMenu } from "./views/InstancesListMenu";
-import { DomainsMenu } from "./views/DomainsMenu";
+import { GlobalDomainsMenu } from "../../../GlobalDomainsMenu";
 
 export type View = "normal" | "instances" | "domains";
 interface DropdownMenuProps {
@@ -49,8 +49,8 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
         <InstancesListMenu onChangeView={(view) => setView(view)} />
       )}
       {view === "domains" && (
-        <DomainsMenu
-          onChangeView={(view) => setView(view)}
+        <GlobalDomainsMenu
+          onChangeView={(view) => setView(view as View)}
           onCloseDropdownMenu={onClose}
         />
       )}
