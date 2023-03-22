@@ -42,7 +42,12 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
         horizontal: "left",
       }}
     >
-      {modalView === "account" && <AccountMenu />}
+      {modalView === "account" && (
+        <AccountMenu
+          onChangeView={(view) => setModalView(view)}
+          onCloseMenu={onClose}
+        />
+      )}
 
       {modalView === "docs" && <DocsMenu />}
     </Menu>

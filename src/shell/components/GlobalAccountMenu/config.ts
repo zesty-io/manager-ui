@@ -9,10 +9,14 @@ import {
   SvgIconComponent,
 } from "@mui/icons-material";
 
+export type ClickAction = [
+  "openUrl" | "openView" | "openEmail" | "logOut",
+  string
+];
 interface MenuItem {
   icon: SvgIconComponent;
   text: string;
-  action: ["openUrl" | "openView" | "openEmail" | "logOut", string];
+  action: ClickAction;
 }
 
 export const MENU_ITEMS: MenuItem[] = [
