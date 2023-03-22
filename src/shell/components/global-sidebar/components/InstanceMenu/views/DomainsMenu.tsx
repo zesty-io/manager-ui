@@ -1,6 +1,11 @@
-import React from "react";
+import { FC } from "react";
+import {} from "@mui/material";
 
-// TODO: Update content
-export const DomainsMenu = () => {
+import { View } from "../DropdownMenu";
+
+interface DomainsMenuPrpos {
+  onChangeView: (view: View) => void;
+}
+export const DomainsMenu: FC<DomainsMenuPrpos> = () => {
   return <div>DomainsMenu</div>;
 };

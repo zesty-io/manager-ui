@@ -48,7 +48,9 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
       {view === "instances" && (
         <InstancesListMenu onChangeView={(view) => setView(view)} />
       )}
-      {view === "domains" && <DomainsMenu />}
+      {view === "domains" && (
+        <DomainsMenu onChangeView={(view) => setView(view)} />
+      )}
     </Menu>
   );
 };

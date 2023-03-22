@@ -224,7 +224,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           </ListItemIcon>
           <ListItemText>Teams</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => onChangeView("domains")}>
           <ListItemIcon>
             <LanguageRoundedIcon />
           </ListItemIcon>
