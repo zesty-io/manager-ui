@@ -11,6 +11,8 @@ import {
   Publishing,
   LegacyHeader,
   WebView,
+  Web,
+  Meta,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -324,7 +326,7 @@ export const instanceApi = createApi({
     }),
     createContentItem: builder.mutation<
       any,
-      { modelZUID: string; body: ContentItem }
+      { modelZUID: string; body: { web: Partial<Web>; meta: Partial<Meta> } }
     >({
       query: ({ modelZUID, body }) => ({
         url: `content/models/${modelZUID}/items`,
