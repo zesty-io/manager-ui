@@ -127,17 +127,12 @@ export const FieldForm = ({
   const isUpdateField = !isEmpty(fieldData);
   const isInbetweenField = sortIndex !== null;
   const modelsOptions: DropdownOptions[] = useMemo(() => {
-    // Remove the model that the field is from
-    const _filteredModels = allModels?.filter((model) => model.ZUID !== id);
-
-    return _filteredModels
+    return allModels
       ?.map((model) => {
-        if (model.ZUID !== id) {
-          return {
-            label: model.label,
-            value: model.ZUID,
-          };
-        }
+        return {
+          label: model.label,
+          value: model.ZUID,
+        };
       })
       ?.sort((a, b) => a.label.localeCompare(b.label));
   }, [allModels]);
