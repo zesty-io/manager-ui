@@ -104,8 +104,8 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
           onChange={(e) => setFilter(e.target.value)}
           InputProps={{
             startAdornment: (
-              <IconButton onClick={() => onChangeView("normal")}>
-                <ArrowBackRoundedIcon />
+              <IconButton size="small" onClick={() => onChangeView("normal")}>
+                <ArrowBackRoundedIcon fontSize="small" />
               </IconButton>
             ),
           }}

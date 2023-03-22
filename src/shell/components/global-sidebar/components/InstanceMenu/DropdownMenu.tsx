@@ -49,7 +49,10 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
         <InstancesListMenu onChangeView={(view) => setView(view)} />
       )}
       {view === "domains" && (
-        <DomainsMenu onChangeView={(view) => setView(view)} />
+        <DomainsMenu
+          onChangeView={(view) => setView(view)}
+          onCloseDropdownMenu={onClose}
+        />
       )}
     </Menu>
   );
