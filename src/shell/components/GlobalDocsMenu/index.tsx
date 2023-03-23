@@ -9,7 +9,7 @@ import {
   Typography,
   Divider,
   Avatar,
-  Box,
+  Menu,
   Grid,
   SvgIcon,
   ListItem,
@@ -20,15 +20,49 @@ import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import ChatRoundedIcon from "@mui/icons-material/ChatRounded";
 
-import { MAIN_DOC_ITEMS, SUB_DOC_ITEMS } from "../config";
-import { handleOpenUrl } from "../util";
+import { MAIN_DOC_ITEMS, SUB_DOC_ITEMS } from "./config";
+// import { handleOpenUrl } from "../util";
 
-interface DocsMenuProps {
-  onCloseMenu: () => void;
+interface GlobalDocsMenuProps {
+  open: boolean;
+  onClose: () => void;
+  anchorEl: HTMLElement;
 }
-export const DocsMenu: FC<DocsMenuProps> = ({ onCloseMenu }) => {
+export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
+  open,
+  onClose,
+  anchorEl,
+}) => {
+  const handleOpenUrl = (url: string) => {
+    onClose();
+    window.open(url, "_blank", "noopener");
+  };
+
   return (
-    <>
+    <Menu
+      open={open}
+      anchorEl={anchorEl}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          height: 536,
+          width: 340,
+        },
+      }}
+      MenuListProps={{
+        sx: {
+          pt: 0,
+        },
+      }}
+      anchorOrigin={{
+        vertical: -12,
+        horizontal: "left",
+      }}
+      transformOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+    >
       <Stack
         direction="row"
         gap={1.5}
@@ -60,7 +94,7 @@ export const DocsMenu: FC<DocsMenuProps> = ({ onCloseMenu }) => {
                 height: "inherit",
                 p: 0,
               }}
-              onClick={() => handleOpenUrl(docItem.url, onCloseMenu)}
+              onClick={() => handleOpenUrl(docItem.url)}
             >
               <ListItemIcon sx={{ justifyContent: "center" }}>
                 {docItem.iconType === "icon" && (
@@ -112,7 +146,7 @@ export const DocsMenu: FC<DocsMenuProps> = ({ onCloseMenu }) => {
           </ListItemText>
         </ListItem>
         {SUB_DOC_ITEMS.map((subDocItem, index) => (
-          <MenuItem onClick={() => handleOpenUrl(subDocItem.url, onCloseMenu)}>
+          <MenuItem key={index} onClick={() => handleOpenUrl(subDocItem.url)}>
             <ListItemIcon>
               <SvgIcon component={subDocItem.icon as SvgIconComponent} />
             </ListItemIcon>
@@ -142,7 +176,7 @@ export const DocsMenu: FC<DocsMenuProps> = ({ onCloseMenu }) => {
           variant="outlined"
           color="inherit"
           startIcon={<EmailRoundedIcon color="action" />}
-          onClick={() => handleOpenUrl("mailto:support@zesty.io", onCloseMenu)}
+          onClick={() => handleOpenUrl("mailto:support@zesty.io")}
         >
           support@zesty.io
         </Button>
@@ -151,13 +185,11 @@ export const DocsMenu: FC<DocsMenuProps> = ({ onCloseMenu }) => {
           variant="outlined"
           color="inherit"
           startIcon={<ChatRoundedIcon color="action" />}
-          onClick={() =>
-            handleOpenUrl("https://www.zesty.io/chat", onCloseMenu)
-          }
+          onClick={() => handleOpenUrl("https://www.zesty.io/chat")}
         >
           Get Help
         </Button>
       </ListItem>
-    </>
+    </Menu>
   );
 };
