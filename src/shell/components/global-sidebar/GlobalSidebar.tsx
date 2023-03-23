@@ -91,8 +91,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               zIndex: (theme) => theme.zIndex.drawer,
 
               "&:hover": {
-                backgroundColor: "primary.main",
-                borderColor: "common.white",
+                backgroundColor: "grey.900",
 
                 ".MuiSvgIcon-root": {
                   color: "common.white",
@@ -104,13 +103,13 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               <KeyboardDoubleArrowLeftIcon
                 fontSize="small"
                 sx={{
-                  color: "grey.600",
+                  color: "grey.500",
                 }}
               />
             ) : (
               <KeyboardDoubleArrowRightIcon
                 fontSize="small"
-                sx={{ color: "grey.600" }}
+                sx={{ color: "grey.500" }}
               />
             )}
           </IconButton>
@@ -248,23 +247,6 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               {showInviteModal && (
                 <InviteMembersModal onClose={() => setShowInviteModal(false)} />
               )}
-              {/* {showInstanceFlyoutMenu && (
-                <InstanceFlyoutMenuModal
-                  instanceFaviconUrl={faviconURL}
-                  instanceName={instance?.name}
-                  instanceZUID={instance?.ZUID}
-                  userFaviconUrl={user.emailHash}
-                  userFullname={`${user.firstName} ${user.lastName}`}
-                  favoriteInstances={favoriteSites}
-                  showDocsMenu={showDocsMenu}
-                  onSetShowDocsMenu={(val) => setShowDocsMenu(val)}
-                  onSetShowFaviconModal={() => {
-                    setShowFaviconModal(!showFaviconModal);
-                    setShowInstanceFlyoutMenu(false);
-                  }}
-                  onClose={() => setShowInstanceFlyoutMenu(false)}
-                />
-              )} */}
               {Boolean(accountMenuAnchorEl) && (
                 <GlobalAccountMenu
                   anchorEl={accountMenuAnchorEl}
