@@ -12,14 +12,15 @@ import {
   Box,
   Grid,
   SvgIcon,
+  ListItem,
+  MenuList,
 } from "@mui/material";
 import { SvgIconComponent } from "@mui/icons-material";
-import { PaletteColor } from "@mui/material/styles";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import ChatRoundedIcon from "@mui/icons-material/ChatRounded";
 
-import { MAIN_DOC_ITEMS } from "../config";
+import { MAIN_DOC_ITEMS, SUB_DOC_ITEMS } from "../config";
 import { handleOpenUrl } from "../util";
 
 interface DocsMenuProps {
@@ -100,6 +101,63 @@ export const DocsMenu: FC<DocsMenuProps> = ({ onCloseMenu }) => {
         ))}
       </Grid>
       <Divider />
+      <MenuList>
+        <ListItem sx={{ height: 36 }}>
+          <ListItemText
+            primaryTypographyProps={{
+              fontWeight: 600,
+            }}
+          >
+            Learn more about code
+          </ListItemText>
+        </ListItem>
+        {SUB_DOC_ITEMS.map((subDocItem, index) => (
+          <MenuItem onClick={() => handleOpenUrl(subDocItem.url, onCloseMenu)}>
+            <ListItemIcon>
+              <SvgIcon component={subDocItem.icon as SvgIconComponent} />
+            </ListItemIcon>
+            <ListItemText>{subDocItem.text}</ListItemText>
+          </MenuItem>
+        ))}
+      </MenuList>
+      <Divider />
+      <ListItem sx={{ height: 36, mt: 1 }}>
+        <ListItemText
+          primaryTypographyProps={{
+            fontWeight: 600,
+          }}
+        >
+          Need Help? Contact Support
+        </ListItemText>
+      </ListItem>
+      <ListItem
+        sx={{
+          display: "flex",
+          gap: 1.5,
+          height: 46,
+        }}
+      >
+        <Button
+          size="small"
+          variant="outlined"
+          color="inherit"
+          startIcon={<EmailRoundedIcon color="action" />}
+          onClick={() => handleOpenUrl("mailto:support@zesty.io", onCloseMenu)}
+        >
+          support@zesty.io
+        </Button>
+        <Button
+          size="small"
+          variant="outlined"
+          color="inherit"
+          startIcon={<ChatRoundedIcon color="action" />}
+          onClick={() =>
+            handleOpenUrl("https://www.zesty.io/chat", onCloseMenu)
+          }
+        >
+          Get Help
+        </Button>
+      </ListItem>
     </>
   );
 };

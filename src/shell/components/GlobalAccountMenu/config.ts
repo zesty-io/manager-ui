@@ -110,3 +110,21 @@ export const MAIN_DOC_ITEMS: MainDocItem[] = [
     iconType: "image",
   },
 ];
+
+export const SUB_DOC_ITEMS: Pick<MainDocItem, "text" | "url" | "icon">[] = [
+  {
+    text: "Code Overview",
+    url: "https://zesty.org/services/manager-ui/editor",
+    icon: BookRounded,
+  },
+  {
+    text: "Editor and Coding Basics",
+    url: "https://zesty.org/guides/editor-and-coding-basics",
+    icon: BookRounded,
+  },
+  {
+    text: "Schema, Content, and Code",
+    url: "https://zesty.org/guides/the-connection-between-schema-content-and-code",
+    icon: BookRounded,
+  },
+];

@@ -24,7 +24,6 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
       onClose={onClose}
       PaperProps={{
         sx: {
-          height: 395,
           width: 340,
         },
       }}
