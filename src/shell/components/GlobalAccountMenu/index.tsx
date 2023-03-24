@@ -95,10 +95,6 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
         horizontal: "left",
       }}
     >
-      {/* <AccountMenu
-        onChangeView={(view) => setModalView(view)}
-        onCloseMenu={onClose}
-      /> */}
       <Stack direction="row" gap={1.5} py={2.5} px={2} alignItems="center">
         <Avatar
           alt={`${user?.firstName} ${user?.lastName} Avatar`}

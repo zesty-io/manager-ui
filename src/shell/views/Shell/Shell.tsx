@@ -101,9 +101,14 @@ export default memo(function Shell() {
                         component={SchemaApp}
                       />
                     );
-                  case "seo":
+                  case "redirects":
+                    console.log("redirects page load");
                     return (
-                      <Route key={product} path="/seo" component={SeoApp} />
+                      <Route
+                        key={product}
+                        path="/redirects"
+                        component={SeoApp}
+                      />
                     );
                   case "settings":
                     return (
