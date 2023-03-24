@@ -47,7 +47,6 @@ const ContentSearch: FC = () => {
         zIndex: (theme) => theme.zIndex.drawer - 1,
         height: "40px",
         position: "relative",
-        width: "500px",
         "& .MuiCollapse-entered": {
           width: "500px",
         },
