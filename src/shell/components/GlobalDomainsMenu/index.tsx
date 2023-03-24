@@ -139,7 +139,10 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
           <Chip size="small" label="Stage" />
         </MenuItem>
         {domains?.map((domain) => (
-          <MenuItem onClick={() => handleOpenUrl(`https://${domain.domain}`)}>
+          <MenuItem
+            key={domain.ZUID}
+            onClick={() => handleOpenUrl(`https://${domain.domain}`)}
+          >
             <ListItemIcon>
               <LanguageRoundedIcon />
             </ListItemIcon>
