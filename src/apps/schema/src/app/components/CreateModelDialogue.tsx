@@ -27,7 +27,6 @@ import { isEmpty, cloneDeep } from "lodash";
 
 import {
   useCreateContentModelMutation,
-  useGetContentModelsQuery,
   useCreateContentItemMutation,
   useGetContentNavItemsQuery,
 } from "../../../../../shell/services/instance";
@@ -102,7 +101,6 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     }
   );
 
-  const { data: models } = useGetContentModelsQuery();
   const [
     createModel,
     {
@@ -140,7 +138,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               canonicalTagMode: 1,
               metaLinkText: model.label,
               metaTitle: model.label,
-              parentZUID: model.parentZUID, // FIXME: Fails when parent is a headless or multi page
+              parentZUID: model.parentZUID,
             },
             meta: {
               contentModelZUID: createModelData.data.ZUID,
