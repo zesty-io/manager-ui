@@ -172,7 +172,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
           canonicalTagMode: 1,
           metaLinkText: newModel.label,
           metaTitle: newModel.label,
-          parentZUID: newModel.parentZUID,
+          parentZUID: newModel.parentZUID || "0",
         },
         meta: {
           contentModelZUID: createModelData.data.ZUID,

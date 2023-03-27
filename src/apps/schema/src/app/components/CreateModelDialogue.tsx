@@ -138,7 +138,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               canonicalTagMode: 1,
               metaLinkText: model.label,
               metaTitle: model.label,
-              parentZUID: model.parentZUID,
+              parentZUID: model.parentZUID || "0",
             },
             meta: {
               contentModelZUID: createModelData.data.ZUID,
