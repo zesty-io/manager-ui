@@ -19,21 +19,25 @@ import {
   Autocomplete,
   Checkbox,
 } from "@mui/material";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useMemo } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import { isEmpty } from "lodash";
-import { useSelector } from "react-redux";
+import { isEmpty, cloneDeep } from "lodash";
 
 import {
   useCreateContentModelMutation,
   useGetContentModelsQuery,
   useCreateContentItemMutation,
+  useGetContentNavItemsQuery,
 } from "../../../../../shell/services/instance";
-import { ContentModel, User } from "../../../../../shell/services/types";
+import {
+  ContentModel,
+  ContentNavItem,
+  User,
+} from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 import { useHistory } from "react-router";
 import { modelIconMap } from "../utils";
@@ -117,6 +121,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     },
   ] = useCreateContentItemMutation();
   const user: User = useSelector((state: AppState) => state.user);
+  const { data: navItems } = useGetContentNavItemsQuery();
 
   const error = createModelError || createContentItemError;
 
@@ -135,7 +140,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               canonicalTagMode: 1,
               metaLinkText: model.label,
               metaTitle: model.label,
-              parentZUID: "0",
+              parentZUID: model.parentZUID, // FIXME: Fails when parent is a headless or multi page
             },
             meta: {
               contentModelZUID: createModelData.data.ZUID,
@@ -166,6 +171,16 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       );
     }
   }, [error]);
+
+  const parents = useMemo(() => {
+    if (navItems) {
+      const _navItems = cloneDeep(navItems);
+
+      return _navItems?.sort((a, b) => a.label.localeCompare(b.label));
+    }
+
+    return [];
+  }, [navItems]);
 
   const getView = () => {
     if (!model.type) {
@@ -368,12 +383,8 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   renderInput={(params) => (
                     <TextField {...params} placeholder="None" />
                   )}
-                  options={
-                    models
-                      ?.filter((m) => m.type !== "dataset")
-                      ?.sort((a, b) => a.label.localeCompare(b.label)) || []
-                  }
-                  onChange={(event, value: ContentModel) =>
+                  options={parents}
+                  onChange={(event, value: ContentNavItem) =>
                     updateModel({ parentZUID: value?.ZUID || null })
                   }
                   sx={{
