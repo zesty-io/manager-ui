@@ -65,8 +65,9 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
               color="common.white"
               display="-webkit-box"
               sx={{
-                "-webkit-box-orient": "vertical",
-                "-webkit-line-clamp": "2",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: "2",
+                wordBreak: "break-word",
               }}
               overflow="hidden"
             >

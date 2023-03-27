@@ -1,11 +1,13 @@
-import GlobalSearch from "shell/components/global-search";
-import GlobalTabs from "shell/components/global-tabs";
-import { GlobalNotifications } from "shell/components/global-notifications";
+import GlobalSearch from "../global-search";
+import GlobalTabs from "../global-tabs";
+import { GlobalNotifications } from "../global-notifications";
 
 import { theme, legacyTheme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
+
+import { DomainSwitcher } from "./DomainSwitcher";
 
 export function GlobalTopbar() {
   return (
@@ -36,9 +38,10 @@ export function GlobalTopbar() {
         >
           <GlobalTabs />
         </Box>
-        <Box display="flex" flexBasis={60}>
+        <Stack direction="row" flexBasis={100} alignItems="baseline" gap={1}>
+          <DomainSwitcher />
           <GlobalNotifications />
-        </Box>
+        </Stack>
       </Stack>
     </ThemeProvider>
   );

@@ -77,7 +77,9 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
             <ArrowBackRoundedIcon fontSize="small" />
           </IconButton>
         )}
-        <Typography variant="h5">Domains</Typography>
+        <Typography variant="h5" fontWeight={600}>
+          Domains
+        </Typography>
       </Stack>
       <Divider />
       <Stack direction="row" height={60} alignItems="center" gap={1.5} px={2}>
@@ -137,7 +139,10 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
           <Chip size="small" label="Stage" />
         </MenuItem>
         {domains?.map((domain) => (
-          <MenuItem onClick={() => handleOpenUrl(`https://${domain.domain}`)}>
+          <MenuItem
+            key={domain.ZUID}
+            onClick={() => handleOpenUrl(`https://${domain.domain}`)}
+          >
             <ListItemIcon>
               <LanguageRoundedIcon />
             </ListItemIcon>
