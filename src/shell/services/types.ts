@@ -114,6 +114,7 @@ export interface Meta {
   langID: number;
   createdAt: string;
   updatedAt: string;
+  createdByUserZUID: string;
 }
 export interface Data {
   [key: string]: number | string | null | undefined;
