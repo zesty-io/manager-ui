@@ -12,7 +12,6 @@ import {
   ImageRounded,
   BarChartRounded,
   CodeRounded,
-  RecommendRounded,
   PowerRounded,
   SettingsRounded,
   RecentActorsRounded,
@@ -389,7 +388,7 @@ export function loadTabs(instanceZUID: string) {
             break;
 
           case "Redirects":
-            tab.icon = ICON_CONFIG.seo;
+            tab.icon = ICON_CONFIG.redirects;
             break;
 
           case "Content":

@@ -102,7 +102,6 @@ export default memo(function Shell() {
                       />
                     );
                   case "redirects":
-                    console.log("redirects page load");
                     return (
                       <Route
                         key={product}
