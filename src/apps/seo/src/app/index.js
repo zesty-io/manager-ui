@@ -12,7 +12,7 @@ export default connect((state) => state)(
         <section className={styles.HealthApp}>
           <main className={styles.wrapper}>
             <Switch>
-              <Route exact path="/seo">
+              <Route exact path="/redirects">
                 <RedirectsManager {...this.props} />
               </Route>
             </Switch>

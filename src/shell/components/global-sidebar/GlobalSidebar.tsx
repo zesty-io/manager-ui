@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, FC } from "react";
+import { useState, FC, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 
@@ -7,10 +7,6 @@ import {
   ThemeProvider,
   IconButton,
   Avatar,
-  AvatarGroup,
-  Button,
-  Dialog,
-  Typography,
   Stack,
   Link,
 } from "@mui/material";
@@ -25,56 +21,32 @@ import GlobalMenu from "../global-menu";
 import Favicon from "../favicon";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import zestyLogoOnly from "../../../../public/images/zestyLogoOnly.svg";
-import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
-import { User, Instance } from "../../services/types";
-import {
-  useGetInstancesQuery,
-  useGetInstanceQuery,
-} from "../../services/accounts";
+import { User } from "../../services/types";
+import { useGetInstanceQuery } from "../../services/accounts";
 import { AppState } from "../../store/types";
-import instanceZUID from "../../../utility/instanceZUID";
 import { InstanceMenu } from "./components/InstanceMenu";
 import { actions } from "../../store/ui";
 import { OnboardingCall } from "./components/OnboardingCall";
+import { GlobalAccountMenu } from "../GlobalAccountMenu";
+import { GlobalDocsMenu } from "../GlobalDocsMenu";
 
 interface GlobalSidebarProps {
   openNav: boolean;
   onClick: () => void;
 }
 const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
-  const [showFaviconModal, setShowFaviconModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const user: User = useSelector((state: AppState) => state.user);
-  const { data: instances } = useGetInstancesQuery();
   const { data: instance } = useGetInstanceQuery();
-  const [faviconURL, setFaviconURL] = useState("");
-  const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
+  const accountMenuBtn = useRef<HTMLDivElement | null>(null);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
   const ui = useSelector((state: AppState) => state.ui);
   const dispatch = useDispatch();
   const is15DaysFromCreation =
     instance?.createdAt &&
     moment().diff(moment(instance?.createdAt), "days") <= 15;
-
-  const favoriteSites = useMemo(() => {
-    if (user && instances?.length) {
-      let data: Instance[] = [];
-      if (user?.prefs) {
-        const favorite_sites: string[] = JSON.parse(
-          user?.prefs
-        )?.favorite_sites;
-
-        favorite_sites?.forEach((fav) => {
-          const res = instances?.filter((instance) => instance.ZUID === fav);
-          data.push(...res);
-        });
-      }
-      return data;
-    }
-
-    return [];
-  }, [user, instances]);
 
   return (
     <>
@@ -107,8 +79,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               zIndex: (theme) => theme.zIndex.drawer,
 
               "&:hover": {
-                backgroundColor: "primary.main",
-                borderColor: "common.white",
+                backgroundColor: "grey.900",
 
                 ".MuiSvgIcon-root": {
                   color: "common.white",
@@ -120,13 +91,13 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               <KeyboardDoubleArrowLeftIcon
                 fontSize="small"
                 sx={{
-                  color: "grey.600",
+                  color: "grey.500",
                 }}
               />
             ) : (
               <KeyboardDoubleArrowRightIcon
                 fontSize="small"
-                sx={{ color: "grey.600" }}
+                sx={{ color: "grey.500" }}
               />
             )}
           </IconButton>
@@ -144,7 +115,12 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 height={openNav ? 24 : "inherit"}
                 px={2.5}
                 mb={openNav ? 1.25 : 0}
+                pt={openNav ? 0 : 1.5}
                 gap={1.5}
+                borderTop={openNav ? "none" : "1px solid"}
+                sx={{
+                  borderColor: "grey.800",
+                }}
               >
                 <img
                   src={openNav ? zestyLogo : zestyLogoOnly}
@@ -193,12 +169,13 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               }}
             >
               <Stack
+                ref={accountMenuBtn}
+                data-cy="AccountMenuButton"
                 direction="row"
                 alignItems="center"
                 width={openNav ? 49 : 32}
                 onClick={() => {
-                  setShowDocsMenu(false);
-                  setShowInstanceFlyoutMenu(true);
+                  setShowAccountMenu(true);
                 }}
                 fontSize={16}
                 sx={{
@@ -246,7 +223,6 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 <IconButton
                   onClick={() => {
                     setShowDocsMenu(true);
-                    setShowInstanceFlyoutMenu(true);
                   }}
                   sx={{
                     backgroundColor: "grey.800",
@@ -262,23 +238,26 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               {showInviteModal && (
                 <InviteMembersModal onClose={() => setShowInviteModal(false)} />
               )}
-              {/* {showInstanceFlyoutMenu && (
-                <InstanceFlyoutMenuModal
-                  instanceFaviconUrl={faviconURL}
-                  instanceName={instance?.name}
-                  instanceZUID={instance?.ZUID}
-                  userFaviconUrl={user.emailHash}
-                  userFullname={`${user.firstName} ${user.lastName}`}
-                  favoriteInstances={favoriteSites}
-                  showDocsMenu={showDocsMenu}
-                  onSetShowDocsMenu={(val) => setShowDocsMenu(val)}
-                  onSetShowFaviconModal={() => {
-                    setShowFaviconModal(!showFaviconModal);
-                    setShowInstanceFlyoutMenu(false);
-                  }}
-                  onClose={() => setShowInstanceFlyoutMenu(false)}
-                />
-              )} */}
+
+              <GlobalAccountMenu
+                open={showAccountMenu}
+                anchorEl={accountMenuBtn?.current}
+                onClose={() => {
+                  setShowAccountMenu(false);
+                }}
+                onShowDocsMenu={() => {
+                  setShowAccountMenu(false);
+                  setShowDocsMenu(true);
+                }}
+              />
+
+              <GlobalDocsMenu
+                open={showDocsMenu}
+                anchorEl={accountMenuBtn?.current}
+                onClose={() => {
+                  setShowDocsMenu(false);
+                }}
+              />
             </Stack>
           </Box>
         </Box>

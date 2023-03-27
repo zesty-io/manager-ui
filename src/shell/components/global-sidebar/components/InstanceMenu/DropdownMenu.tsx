@@ -26,7 +26,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
       PaperProps={{
         sx: {
           pt: 0,
-          mt: 1.25,
+          mt: 1.5,
           width: 340,
           height: 555,
           borderRadius: 1,

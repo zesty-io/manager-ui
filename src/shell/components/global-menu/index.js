@@ -10,10 +10,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import ImageIcon from "@mui/icons-material/Image";
 import CodeIcon from "@mui/icons-material/Code";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
-import RecommendIcon from "@mui/icons-material/Recommend";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExtensionIcon from "@mui/icons-material/Extension";
+import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
 import { Database } from "@zesty-io/material";
 
 import styles from "./styles.less";
@@ -31,7 +31,7 @@ export default memo(function GlobalMenu() {
     code: CodeIcon,
     leads: RecentActorsIcon,
     reports: BarChartIcon,
-    seo: RecommendIcon,
+    redirects: ShuffleRoundedIcon,
     settings: SettingsIcon,
     release: RocketLaunchIcon,
     apps: ExtensionIcon,
@@ -59,10 +59,6 @@ export default memo(function GlobalMenu() {
           .split("-")
           .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
           .join(" ");
-
-        if (product === "seo") {
-          name = name.toUpperCase();
-        }
 
         return (
           <Link

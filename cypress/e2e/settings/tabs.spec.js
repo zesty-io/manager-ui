@@ -115,8 +115,8 @@ describe("Tabs actions", () => {
     cy.wait(1000); // Makes sure that the pinned tabs have been properly saved to indexdb before navigating to a new url
 
     // Pin tab #3 and ensure it is pinned
-    cy.waitOn("/seo", () => {
-      cy.visit("/seo");
+    cy.waitOn("/redirects", () => {
+      cy.visit("/redirects");
     });
     cy.get('[data-cy="UnpinnedTab"]').should("exist");
     // Verify that the other tabs still exist
