@@ -12,12 +12,12 @@ import {
   ImageRounded,
   BarChartRounded,
   CodeRounded,
-  RecommendRounded,
   PowerRounded,
   SettingsRounded,
   RecentActorsRounded,
   SvgIconComponent,
   ExtensionRounded,
+  ShuffleRounded,
 } from "@mui/icons-material";
 import { Database } from "@zesty-io/material";
 import { isEqual } from "lodash";
@@ -140,7 +140,7 @@ export const { actions, reducer } = ui;
 
 const ICON_CONFIG: { [index: string]: SvgIconComponent } = Object.freeze({
   launchpad: RocketLaunchRounded,
-  seo: RecommendRounded,
+  redirects: ShuffleRounded,
   content: EditRounded,
   media: ImageRounded,
   schema: Database as SvgIconComponent,
@@ -195,7 +195,7 @@ export function createTab(
   const tab: Tab = { pathname: path, search };
   const appNameMap = {
     launchpad: "Launchpad",
-    seo: "SEO",
+    redirects: "Redirects",
     content: "Content",
     media: "All Media",
     schema: "Schema",
@@ -387,8 +387,8 @@ export function loadTabs(instanceZUID: string) {
             tab.icon = ICON_CONFIG.launchpad;
             break;
 
-          case "SEO":
-            tab.icon = ICON_CONFIG.seo;
+          case "Redirects":
+            tab.icon = ICON_CONFIG.redirects;
             break;
 
           case "Content":
