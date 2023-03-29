@@ -139,20 +139,22 @@ export default function ItemEdit() {
       }
 
       if (itemResponse?.data?.meta?.langID) {
-        // select lang based on content lang
-        dispatch(
-          selectLang(
-            languages.find((lang) => lang.ID === itemResponse.data.meta.langID)
-              .code
-          )
-        );
+        const selectedLang = languages.find(
+          (lang) => lang.ID === itemResponse.data.meta.langID
+        )?.code;
 
-        // once we selectLang we can fetchFields
-        // which triggers middleware which depends on lang
-        await Promise.all([
-          dispatch(fetchFields(modelZUID)),
-          dispatch(fetchItemPublishing(modelZUID, itemZUID)),
-        ]);
+        // Make sure that lang code exists
+        if (selectedLang) {
+          // select lang based on content lang
+          dispatch(selectLang(selectedLang));
+
+          // once we selectLang we can fetchFields
+          // which triggers middleware which depends on lang
+          await Promise.all([
+            dispatch(fetchFields(modelZUID)),
+            dispatch(fetchItemPublishing(modelZUID, itemZUID)),
+          ]);
+        }
       }
     } catch (err) {
       console.error("ItemEdit:load:error", err);

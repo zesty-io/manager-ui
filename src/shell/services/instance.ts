@@ -15,6 +15,7 @@ import {
   HeadTag,
   Web,
   Meta,
+  ContentNavItem,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -353,6 +354,10 @@ export const instanceApi = createApi({
         body,
       }),
     }),
+    getContentNavItems: builder.query<ContentNavItem[], void>({
+      query: () => `/env/nav`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -386,4 +391,5 @@ export const {
   useGetInstanceSettingsQuery,
   useUpdateInstanceSettingMutation,
   useCreateContentItemMutation,
+  useGetContentNavItemsQuery,
 } = instanceApi;
