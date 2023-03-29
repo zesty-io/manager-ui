@@ -16,7 +16,13 @@ export const Controls: FC<ControlsProps> = ({ showFilters = true }) => {
         mb: 3,
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Box
           sx={{
             gap: 1.5,
