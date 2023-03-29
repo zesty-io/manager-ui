@@ -7,8 +7,12 @@ import {
   ContentItem,
   ContentModel,
   ContentModelField,
+  InstanceSetting,
   Publishing,
+  LegacyHeader,
   WebView,
+  Web,
+  Meta,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -27,6 +31,7 @@ export const instanceApi = createApi({
     "ContentModelFields",
     "ContentModelField",
     "WebViews",
+    "InstanceSettings",
   ],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
@@ -202,6 +207,8 @@ export const instanceApi = createApi({
         if (!arg.skipInvalidation) {
           return [{ type: "ContentModelFields", id: arg.modelZUID }];
         }
+
+        return [];
       },
     }),
     updateContentModelField: builder.mutation<
@@ -300,6 +307,33 @@ export const instanceApi = createApi({
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
     }),
+    getLegacyHeadTags: builder.query<LegacyHeader[], void>({
+      query: () => `/web/headers`,
+      transformResponse: getResponseData,
+    }),
+    getInstanceSettings: builder.query<InstanceSetting[], void>({
+      query: () => `/env/settings`,
+      transformResponse: getResponseData,
+      providesTags: ["InstanceSettings"],
+    }),
+    updateInstanceSetting: builder.mutation<any, InstanceSetting>({
+      query: (body) => ({
+        url: `/env/settings/${body.ZUID}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["InstanceSettings"],
+    }),
+    createContentItem: builder.mutation<
+      any,
+      { modelZUID: string; body: { web: Partial<Web>; meta: Partial<Meta> } }
+    >({
+      query: ({ modelZUID, body }) => ({
+        url: `content/models/${modelZUID}/items`,
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -327,4 +361,8 @@ export const {
   useDeleteContentModelMutation,
   useGetLangsMappingQuery,
   useCreateContentModelFromTemplateMutation,
+  useGetLegacyHeadTagsQuery,
+  useGetInstanceSettingsQuery,
+  useUpdateInstanceSettingMutation,
+  useCreateContentItemMutation,
 } = instanceApi;

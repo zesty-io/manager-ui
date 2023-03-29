@@ -114,6 +114,7 @@ export interface Meta {
   langID: number;
   createdAt: string;
   updatedAt: string;
+  createdByUserZUID: string;
 }
 export interface Data {
   content: string;
@@ -222,4 +223,100 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+}
+
+export interface SystemRole {
+  ZUID: string;
+  create: boolean;
+  createdAt: string;
+  delete: boolean;
+  grant: boolean;
+  name: string;
+  publish: boolean;
+  read: boolean;
+  super: boolean;
+  update: boolean;
+  updatedAt: string;
+}
+
+export interface Role {
+  ZUID: string;
+  createdAt: string;
+  createdByUserZUID: string;
+  entityZUID: string;
+  expiry: string | null;
+  granularRoleZUID: string | null;
+  granularRoles: string | null;
+  name: string;
+  static: boolean;
+  systemRole: SystemRole;
+  systemRoleZUID: string;
+  updatedAt: string;
+}
+
+export interface UserRole {
+  ID: number;
+  ZUID: string;
+  authSource: string | null;
+  authyEnabled?: boolean;
+  authyPhoneCountryCode: string | null;
+  authyPhoneNumber: string | null;
+  authyUserID: string | null;
+  createdAt: string;
+  email: string;
+  firstName: string;
+  lastLogin: string;
+  lastName: string;
+  prefs: string | null;
+  role: Role;
+  signupInfo: string | null;
+  staff: boolean;
+  unverifiedEmails: string | null;
+  updatedAt: string;
+  verifiedEmails: string | null;
+  websiteCreator: boolean;
+}
+
+export interface Domain {
+  ZUID: string;
+  instanceZUID: string;
+  domain: string;
+  branch: string;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface LegacyHeader {
+  ID: number;
+  active: number;
+  comment: string | null;
+  createdAt: string;
+  isLocked: number | null;
+  keys: string;
+  module: number;
+  nodeName: string;
+  plugin: number;
+  resourceZUID: string;
+  sort: number;
+  template: number;
+  type: string;
+  updatedAt: string;
+  value: string | null;
+}
+
+export interface InstanceSetting {
+  ID: number;
+  ZUID: string;
+  category: string;
+  key: string;
+  keyFriendly: string;
+  value: string;
+  admin?: boolean;
+  parsleyAccess?: boolean;
+  dataType: string;
+  options: string;
+  tips: string;
+  createdAt: string;
+  updatedAt: string;
 }
