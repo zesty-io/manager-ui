@@ -11,6 +11,8 @@ import {
   Stack,
   Typography,
   Button,
+  Box,
+  Tooltip,
 } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import StarIcon from "@mui/icons-material/Star";
@@ -60,13 +62,17 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
   }, [filter, favoriteInstances]);
 
   const filteredInstances = useMemo(() => {
+    const sortedInstances = instances?.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
     if (filter) {
-      return instances?.filter((instance) =>
+      return sortedInstances?.filter((instance) =>
         instance.name.toLowerCase().includes(filter.toLowerCase())
       );
     }
 
-    return instances;
+    return sortedInstances;
   }, [filter, instances]);
 
   const handleSwitchInstance = (ZUID: string) => {
@@ -142,12 +148,12 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
           </Button>
         </Stack>
       ) : (
-        <>
+        <Box height={483} sx={{ overflowY: "auto" }}>
           <MenuItem
             disableRipple
             sx={{
               mt: 1,
-              "&:hover": { cursor: "default" },
+              "&:hover": { cursor: "default", backgroundColor: "transparent" },
             }}
           >
             <ListItemIcon>
@@ -160,14 +166,20 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
               key={instance.ZUID}
               onClick={() => handleSwitchInstance(instance.ZUID)}
             >
-              <ListItemText>{instance.name}</ListItemText>
+              <Tooltip
+                title={instance.name}
+                enterDelay={500}
+                enterNextDelay={500}
+              >
+                <ListItemText>{instance.name}</ListItemText>
+              </Tooltip>
             </MenuItem>
           ))}
           <Divider />
           <MenuItem
             disableRipple
             sx={{
-              "&:hover": { cursor: "default" },
+              "&:hover": { cursor: "default", backgroundColor: "transparent" },
             }}
           >
             <ListItemIcon>
@@ -183,10 +195,16 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
                 mb: index + 1 === filteredInstances?.length ? 1 : 0,
               }}
             >
-              <ListItemText>{instance.name}</ListItemText>
+              <Tooltip
+                title={instance.name}
+                enterDelay={500}
+                enterNextDelay={500}
+              >
+                <ListItemText>{instance.name}</ListItemText>
+              </Tooltip>
             </MenuItem>
           ))}
-        </>
+        </Box>
       )}
     </>
   );
