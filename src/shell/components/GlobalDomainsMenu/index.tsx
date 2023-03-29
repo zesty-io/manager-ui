@@ -20,7 +20,6 @@ import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
-import AutoSizer from "react-virtualized-auto-sizer";
 
 import instanceZUID from "../../../utility/instanceZUID";
 import { useRefreshCacheMutation } from "../../services/cloudFunctions";
