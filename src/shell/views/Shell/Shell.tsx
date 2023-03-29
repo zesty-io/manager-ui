@@ -3,6 +3,7 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import { Sentry } from "../../../utility/sentry";
 import cx from "classnames";
 import { Box } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "../../store/ui";
@@ -50,7 +51,18 @@ export default memo(function Shell() {
       />
       <main className={styles.AppLoader}>
         <GlobalTopbar />
-        <div className={styles.SubApp} data-cy="SubApp">
+        <Box
+          className={styles.SubApp}
+          data-cy="SubApp"
+          sx={{
+            zIndex: 30,
+
+            // Makes sure that tinyMCE is not overlapped when in fullscreen mode
+            "&:has(div.tox-fullscreen)": {
+              zIndex: (theme) => theme.zIndex.appBar + 1,
+            },
+          }}
+        >
           <Sentry.ErrorBoundary fallback={() => <AppError />}>
             <Switch>
               <Route path="/release" component={ReleaseApp} />
@@ -134,7 +146,7 @@ export default memo(function Shell() {
               <Route path="*" component={Missing} />
             </Switch>
           </Sentry.ErrorBoundary>
-        </div>
+        </Box>
       </main>
     </Box>
   );

@@ -76,7 +76,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               position: "absolute",
               top: "32px",
               right: "-12px",
-              zIndex: (theme) => theme.zIndex.drawer,
+              zIndex: (theme) => theme.zIndex.appBar,
 
               "&:hover": {
                 backgroundColor: "grey.900",
