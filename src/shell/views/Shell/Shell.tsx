@@ -1,9 +1,7 @@
 import { memo } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { Sentry } from "../../../utility/sentry";
-import cx from "classnames";
 import { Box } from "@mui/material";
-import { theme } from "@zesty-io/material";
 
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "../../store/ui";
