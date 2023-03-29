@@ -376,3 +376,16 @@ export interface InstanceSetting {
   createdAt: string;
   updatedAt: string;
 }
+
+export type Products =
+  | "launchpad"
+  | "content"
+  | "media"
+  | "schema"
+  | "code"
+  | "leads"
+  | "reports"
+  | "redirects"
+  | "settings"
+  | "release"
+  | "apps";
