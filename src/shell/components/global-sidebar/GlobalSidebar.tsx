@@ -162,7 +162,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               alignItems="center"
               flexDirection={openNav ? "row" : "column-reverse"}
               py={1.25}
-              px={2}
+              px={2.5}
               gap={openNav ? 0 : 1}
               sx={{
                 borderColor: "grey.800",

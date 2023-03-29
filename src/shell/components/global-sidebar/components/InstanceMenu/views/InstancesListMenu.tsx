@@ -85,7 +85,7 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
         sx={{
           p: 2,
           borderBottom: "1px solid",
-          borderColor: "divider",
+          borderColor: "border",
           height: 72,
         }}
         onKeyDown={(e: React.KeyboardEvent) => {
