@@ -28,13 +28,15 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
           pt: 0,
           mt: 1.5,
           width: 340,
-          height: 555,
-          borderRadius: 1,
+          borderRadius: "8px",
+          elevation: 8,
+          overflow: "hidden",
         },
       }}
       MenuListProps={{
         sx: {
           p: 0,
+          height: 555,
         },
       }}
     >

@@ -2,9 +2,8 @@ import { memo } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import cx from "classnames";
 
-import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { ListItem, ListItemIcon, ListItemText, Box } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import EditIcon from "@mui/icons-material/Edit";
 import ImageIcon from "@mui/icons-material/Image";
@@ -16,11 +15,13 @@ import ExtensionIcon from "@mui/icons-material/Extension";
 import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
 import { Database } from "@zesty-io/material";
 
-import styles from "./styles.less";
+import { AppState } from "../../store/types";
+import { Products } from "../../services/types";
+
 export default memo(function GlobalMenu() {
   const location = useLocation();
-  const openNav = useSelector((state) => state.ui.openNav);
-  const products = useSelector((state) => state.products);
+  const openNav = useSelector((state: AppState) => state.ui.openNav);
+  const products: Products[] = useSelector((state: AppState) => state.products);
 
   const slug = location.pathname.split("/")[1];
   const icons = {
@@ -37,7 +38,7 @@ export default memo(function GlobalMenu() {
     apps: ExtensionIcon,
   };
 
-  const MenuItemIcon = ({ product }) => {
+  const MenuItemIcon = ({ product }: { product: Products }) => {
     const SpecificIcon = icons[product];
     return (
       <ListItemIcon sx={{ minWidth: "36px" }}>
@@ -51,7 +52,13 @@ export default memo(function GlobalMenu() {
   };
 
   return (
-    <menu className={cx(styles.GlobalMenu, openNav ? null : styles.Closed)}>
+    <Box
+      component="menu"
+      width="100%"
+      px={1}
+      boxSizing="border-box"
+      overflow="auto"
+    >
       {products.map((product) => {
         // Covert dashes to spaces
         // Uppercase first letter of word
@@ -71,15 +78,19 @@ export default memo(function GlobalMenu() {
           >
             <ListItem
               sx={{
-                px: "10px",
-                mb: "4px",
+                px: 1.5,
+                py: 0.75,
+                mb: 0.5,
                 height: "36px",
                 borderRadius: "4px",
                 backgroundColor: slug === product ? "grey.800" : "transparent",
                 "&:hover": {
-                  backgroundColor: "grey.900",
+                  backgroundColor: slug === product ? "grey.800" : "grey.900",
                   svg: {
                     color: "primary.main",
+                  },
+                  "& .menu-item-text": {
+                    color: "common.white",
                   },
                 },
               }}
@@ -88,8 +99,10 @@ export default memo(function GlobalMenu() {
 
               {openNav && (
                 <ListItemText
+                  className="menu-item-text"
                   primary={name}
                   primaryTypographyProps={{
+                    // @ts-ignore
                     variant: "body3",
                   }}
                   sx={{
@@ -103,6 +116,6 @@ export default memo(function GlobalMenu() {
           </Link>
         );
       })}
-    </menu>
+    </Box>
   );
 });

@@ -12,6 +12,7 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Tooltip,
 } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
@@ -53,6 +54,14 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
   const [refreshCache, { isSuccess, isLoading, isError }] =
     useRefreshCacheMutation();
 
+  const stageDomainText = `
+    ${instance?.randomHashID}
+    ${
+      // @ts-ignore
+      CONFIG.URL_PREVIEW
+    }
+  `;
+
   useEffect(() => {
     if (isError) {
       dispatch(
@@ -70,7 +79,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
   };
 
   return (
-    <>
+    <Stack height="inherit">
       <Stack direction="row" gap={1.5} p={2}>
         {withBackButton && (
           <IconButton size="small" onClick={() => onChangeView("normal")}>
@@ -82,44 +91,51 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
         </Typography>
       </Stack>
       <Divider />
-      <Stack direction="row" height={60} alignItems="center" gap={1.5} px={2}>
-        <Button
-          variant="outlined"
-          color="inherit"
-          size="small"
-          startIcon={<SettingsRoundedIcon />}
-          onClick={() =>
-            handleOpenUrl(
-              `https://www.zesty.io/instances/${instanceZUID}/domains`
-            )
-          }
-        >
-          Manage
-        </Button>
-        <Button
-          variant="outlined"
-          color="inherit"
-          size="small"
-          startIcon={
-            isSuccess ? (
-              <CheckRoundedIcon />
-            ) : (
-              <RefreshRoundedIcon
-                sx={{
-                  animation: isLoading
-                    ? `${rotateAnimation} 1s infinite ease`
-                    : "none",
-                }}
-              />
-            )
-          }
-          onClick={() => refreshCache()}
-        >
-          Refresh CDN Cache
-        </Button>
-      </Stack>
-      <Divider />
       <MenuList>
+        <Stack direction="row" alignItems="center" gap={1.5} px={2} py={0.75}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            size="small"
+            startIcon={<SettingsRoundedIcon />}
+            onClick={() =>
+              handleOpenUrl(
+                `https://www.zesty.io/instances/${instanceZUID}/domains`
+              )
+            }
+          >
+            Manage
+          </Button>
+          <Button
+            variant="outlined"
+            color="inherit"
+            size="small"
+            startIcon={
+              isSuccess ? (
+                <CheckRoundedIcon />
+              ) : (
+                <RefreshRoundedIcon
+                  sx={{
+                    animation: isLoading
+                      ? `${rotateAnimation} 1s infinite ease`
+                      : "none",
+                  }}
+                />
+              )
+            }
+            onClick={() => refreshCache()}
+          >
+            Refresh CDN Cache
+          </Button>
+        </Stack>
+      </MenuList>
+      <Divider />
+      <MenuList
+        sx={{
+          height: "100%",
+          overflowY: "auto",
+        }}
+      >
         <MenuItem
           onClick={() =>
             handleOpenUrl(
@@ -131,11 +147,15 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
           <ListItemIcon>
             <RemoveRedEyeRoundedIcon />
           </ListItemIcon>
-          <ListItemText primaryTypographyProps={{ noWrap: true }}>
-            {instance?.randomHashID}
-            {/* @ts-ignore */}
-            {CONFIG.URL_PREVIEW}
-          </ListItemText>
+          <Tooltip
+            title={stageDomainText}
+            enterDelay={500}
+            enterNextDelay={500}
+          >
+            <ListItemText primaryTypographyProps={{ noWrap: true }}>
+              {stageDomainText}
+            </ListItemText>
+          </Tooltip>
           <Chip size="small" label="Stage" />
         </MenuItem>
         {domains?.map((domain) => (
@@ -146,12 +166,18 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
             <ListItemIcon>
               <LanguageRoundedIcon />
             </ListItemIcon>
-            <ListItemText primaryTypographyProps={{ noWrap: true }}>
-              {domain.domain}
-            </ListItemText>
+            <Tooltip
+              title={domain.domain}
+              enterDelay={500}
+              enterNextDelay={500}
+            >
+              <ListItemText primaryTypographyProps={{ noWrap: true }}>
+                {domain.domain}
+              </ListItemText>
+            </Tooltip>
           </MenuItem>
         ))}
       </MenuList>
-    </>
+    </Stack>
   );
 };

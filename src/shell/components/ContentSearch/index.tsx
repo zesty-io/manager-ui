@@ -44,7 +44,7 @@ const ContentSearch: FC = () => {
       collapsedSize="288px"
       orientation="horizontal"
       sx={{
-        zIndex: (theme) => theme.zIndex.drawer - 1,
+        zIndex: (theme) => theme.zIndex.appBar - 1,
         height: "40px",
         position: "relative",
         "& .MuiCollapse-entered": {
@@ -99,7 +99,7 @@ const ContentSearch: FC = () => {
               style={{
                 ...props.style,
                 // default z-index is too high, we want it to be BELOW the side nav close button
-                zIndex: theme.zIndex.drawer - 1,
+                zIndex: theme.zIndex.appBar - 1,
               }}
             />
           );
