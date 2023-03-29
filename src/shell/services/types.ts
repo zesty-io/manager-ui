@@ -320,3 +320,20 @@ export interface InstanceSetting {
   createdAt: string;
   updatedAt: string;
 }
+
+type ContentNavItemType =
+  | "dataset"
+  | "external"
+  | "internal"
+  | "item"
+  | "pageset"
+  | "redirect";
+
+export interface ContentNavItem {
+  ZUID: string;
+  label: string;
+  sort: number;
+  type: ContentNavItemType;
+  contentModelZUID?: string;
+  parentZUID?: string;
+}

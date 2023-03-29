@@ -16,18 +16,23 @@ import {
   Alert,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useMemo } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useSelector } from "react-redux";
+import { cloneDeep } from "lodash";
 
 import {
   useBulkCreateContentModelFieldMutation,
   useCreateContentModelMutation,
   useGetContentModelFieldsQuery,
-  useGetContentModelsQuery,
   useCreateContentItemMutation,
+  useGetContentNavItemsQuery,
 } from "../../../../../shell/services/instance";
-import { ContentModel, User } from "../../../../../shell/services/types";
+import {
+  ContentModel,
+  User,
+  ContentNavItem,
+} from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
@@ -66,7 +71,6 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
     }
   );
 
-  const { data: models } = useGetContentModelsQuery();
   const { data: fields } = useGetContentModelFieldsQuery(model.ZUID);
   const [
     createModel,
@@ -94,6 +98,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
     },
   ] = useCreateContentItemMutation();
   const user: User = useSelector((state: AppState) => state.user);
+  const { data: navItems } = useGetContentNavItemsQuery();
 
   const error = createModelError || createFieldsError || createContentItemError;
 
@@ -143,6 +148,16 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
     }
   }, [error]);
 
+  const parents = useMemo(() => {
+    if (navItems) {
+      const _navItems = cloneDeep(navItems);
+
+      return _navItems?.sort((a, b) => a.label.localeCompare(b.label));
+    }
+
+    return [];
+  }, [navItems]);
+
   const navigateToModelSchema = () => {
     history.push(`/schema/${createModelData?.data.ZUID}`);
     onClose();
@@ -157,7 +172,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
           canonicalTagMode: 1,
           metaLinkText: newModel.label,
           metaTitle: newModel.label,
-          parentZUID: "0",
+          parentZUID: newModel.parentZUID || "0",
         },
         meta: {
           contentModelZUID: createModelData.data.ZUID,
@@ -264,12 +279,8 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
               renderInput={(params) => (
                 <TextField {...params} placeholder="None" />
               )}
-              options={
-                models
-                  ?.filter((m) => m.type !== "dataset")
-                  ?.sort((a, b) => a.label.localeCompare(b.label)) || []
-              }
-              onChange={(event, value: ContentModel) =>
+              options={parents}
+              onChange={(event, value: ContentNavItem) =>
                 updateNewModel({ parentZUID: value?.ZUID || null })
               }
               sx={{

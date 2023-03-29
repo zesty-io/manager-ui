@@ -1,6 +1,9 @@
 import { Box, Tooltip, Typography, Button } from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
+import {
+  useGetContentModelsQuery,
+  useGetContentNavItemsQuery,
+} from "../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
 import { useState } from "react";
 import { RenameModelDialogue } from "../RenameModelDialogue";
@@ -16,8 +19,13 @@ export const ModelDetails = () => {
   const { id } = params;
   const history = useHistory();
   const { data: models } = useGetContentModelsQuery();
+  const { data: navItems } = useGetContentNavItemsQuery();
+
   const model = models?.find((model) => model.ZUID === id);
-  const parentModel = models?.find((m) => m.ZUID === model?.parentZUID);
+  // const parentModel = models?.find((m) => m.ZUID === model?.parentZUID);
+  const parentModel = navItems?.find(
+    (navItem) => navItem.ZUID === model?.parentZUID
+  );
   const [showDialogue, setShowDialogue] = useState<
     "rename" | "updateDescription" | "updateParent" | null
   >(null);
@@ -195,7 +203,9 @@ export const ModelDetails = () => {
             <Button
               size="small"
               disabled={!parentModel}
-              onClick={() => history.push(`/schema/${parentModel?.ZUID}`)}
+              onClick={() =>
+                history.push(`/schema/${parentModel?.contentModelZUID}`)
+              }
             >
               View
             </Button>
