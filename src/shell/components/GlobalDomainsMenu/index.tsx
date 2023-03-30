@@ -38,6 +38,11 @@ const rotateAnimation = keyframes`
   }
 `;
 
+const CHIP_TITLE = {
+  live: "Prod",
+  dev: "Stage",
+};
+
 interface GlobalDomainsMenuProps {
   onCloseDropdownMenu: () => void;
   onChangeView?: (view: string) => void;
@@ -175,6 +180,10 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
                 {domain.domain}
               </ListItemText>
             </Tooltip>
+            <Chip
+              size="small"
+              label={CHIP_TITLE[domain.branch as "live" | "dev"] || ""}
+            />
           </MenuItem>
         ))}
       </MenuList>
