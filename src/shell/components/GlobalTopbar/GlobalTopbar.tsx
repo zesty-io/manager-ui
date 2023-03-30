@@ -38,7 +38,7 @@ export function GlobalTopbar() {
         >
           <GlobalTabs />
         </Box>
-        <Stack direction="row" flexBasis={100} alignItems="baseline" gap={1}>
+        <Stack direction="row" flexBasis={72} alignItems="baseline" gap={1}>
           <DomainSwitcher />
           <GlobalNotifications />
         </Stack>
