@@ -26,6 +26,7 @@ import TranslateRoundedIcon from "@mui/icons-material/TranslateRounded";
 import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 
 import { View } from "../DropdownMenu";
 import { useGetInstanceQuery } from "../../../../../services/accounts";
@@ -276,6 +277,18 @@ export const NormalMenu: FC<NormalMenuProps> = ({
             <WebhookRoundedIcon />
           </ListItemIcon>
           <ListItemText>Webhooks</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(
+              `https://www.zesty.io/instances/${instanceZUID}/support`
+            )
+          }
+        >
+          <ListItemIcon>
+            <SupportAgentRoundedIcon />
+          </ListItemIcon>
+          <ListItemText>Contact Support</ListItemText>
         </MenuItem>
       </MenuList>
     </>

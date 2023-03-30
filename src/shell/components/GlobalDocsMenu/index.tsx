@@ -18,10 +18,10 @@ import {
 import { SvgIconComponent } from "@mui/icons-material";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
-import ChatRoundedIcon from "@mui/icons-material/ChatRounded";
+import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 
 import { MAIN_DOC_ITEMS, SUB_DOC_ITEMS } from "./config";
-// import { handleOpenUrl } from "../util";
+import instanceZUID from "../../../utility/instanceZUID";
 
 interface GlobalDocsMenuProps {
   open: boolean;
@@ -46,7 +46,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
       PaperProps={{
         sx: {
           height: 536,
-          width: 340,
+          width: 352,
         },
       }}
       MenuListProps={{
@@ -184,10 +184,14 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
           size="small"
           variant="outlined"
           color="inherit"
-          startIcon={<ChatRoundedIcon color="action" />}
-          onClick={() => handleOpenUrl("https://www.zesty.io/chat")}
+          startIcon={<SupportAgentRoundedIcon color="action" />}
+          onClick={() =>
+            handleOpenUrl(
+              `https://www.zesty.io/instances/${instanceZUID}/support`
+            )
+          }
         >
-          Get Help
+          Contact Support
         </Button>
       </ListItem>
     </Menu>
