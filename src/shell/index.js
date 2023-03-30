@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { legacyTheme } from "@zesty-io/material";
+import CssBaseline from "@mui/material/CssBaseline";
 
 import "chart.js/auto";
 
@@ -53,15 +54,17 @@ const App = Sentry.withProfiler(() => (
   <StrictMode>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
       <ThemeProvider theme={legacyTheme}>
-        <Provider store={store}>
-          <Router history={history}>
-            <PrivateRoute>
-              <LoadInstance>
-                <Shell />
-              </LoadInstance>
-            </PrivateRoute>
-          </Router>
-        </Provider>
+        <CssBaseline>
+          <Provider store={store}>
+            <Router history={history}>
+              <PrivateRoute>
+                <LoadInstance>
+                  <Shell />
+                </LoadInstance>
+              </PrivateRoute>
+            </Router>
+          </Provider>
+        </CssBaseline>
       </ThemeProvider>
     </Sentry.ErrorBoundary>
   </StrictMode>

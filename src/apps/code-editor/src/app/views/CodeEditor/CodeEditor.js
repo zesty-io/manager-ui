@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
+import GlobalStyles from "@mui/material/GlobalStyles";
 
 import { FileList } from "../../components/FileList";
 import { Workspace } from "../../components/Workspace/";
@@ -10,6 +11,22 @@ import { Workspace } from "../../components/Workspace/";
 import { fetchFiles } from "../../../store/files";
 
 import styles from "./CodeEditor.less";
+
+const scrollBarGlobalStyles = (
+  <GlobalStyles
+    styles={{
+      body: {
+        "*::-webkit-scrollbar-track-piece": {
+          backgroundColor: "#a7afbf",
+        },
+        "*::-webkit-scrollbar-thumb": {
+          backgroundColor: "#5b667d",
+        },
+      },
+    }}
+  />
+);
+
 export default connect((state) => {
   return {
     files: state.files,
@@ -45,6 +62,7 @@ export default connect((state) => {
 
   return (
     <main className={styles.CodeEditor}>
+      {scrollBarGlobalStyles}
       <WithLoader
         condition={props.files.length}
         message="Starting Code Editor"
