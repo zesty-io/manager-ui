@@ -54,7 +54,7 @@ export default memo(function Shell() {
           data-cy="SubApp"
           sx={{
             zIndex: 30,
-
+            backgroundColor: "background.paper",
             // Makes sure that tinyMCE is not overlapped when in fullscreen mode
             "&:has(div.tox-fullscreen)": {
               zIndex: (theme) => theme.zIndex.appBar + 1,

@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { Switch, Route, Link } from "react-router-dom";
 import { connect } from "react-redux";
+import { Box } from "@mui/material";
 
 import { RedirectsManager } from "../views/RedirectsManager";
 
@@ -9,15 +10,21 @@ export default connect((state) => state)(
   class HealthApp extends Component {
     render() {
       return (
-        <section className={styles.HealthApp}>
-          <main className={styles.wrapper}>
+        <Box component="section" className={styles.HealthApp}>
+          <Box
+            component="main"
+            className={styles.wrapper}
+            sx={{
+              backgroundColor: "background.paper",
+            }}
+          >
             <Switch>
               <Route exact path="/redirects">
                 <RedirectsManager {...this.props} />
               </Route>
             </Switch>
-          </main>
-        </section>
+          </Box>
+        </Box>
       );
     }
   }
