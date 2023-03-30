@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
+import { Box } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { SettingsNav } from "./components/Nav";
@@ -46,7 +48,13 @@ export default connect((state) => ({
       <section className={styles.Settings}>
         <div className={styles.AppWrap}>
           <SettingsNav />
-          <div className={styles.OverflowWrap}>
+          <Box
+            className={styles.OverflowWrap}
+            sx={{
+              borderLeft: "1px solid",
+              borderColor: theme.palette.border,
+            }}
+          >
             <main className={styles.Content}>
               <Switch>
                 <Route
@@ -81,7 +89,7 @@ export default connect((state) => ({
                 />
               </Switch>
             </main>
-          </div>
+          </Box>
         </div>
       </section>
     </WithLoader>
