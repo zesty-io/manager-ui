@@ -40,6 +40,9 @@ export default memo(function Shell() {
       overflow="hidden"
       display="grid"
       gridTemplateColumns={openNav ? "200px 1fr" : "64px 1fr"}
+      sx={{
+        backgroundColor: "background.paper",
+      }}
     >
       <GlobalSidebar
         onClick={() => {

@@ -4,6 +4,8 @@ import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
+import { Box } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
@@ -76,11 +78,15 @@ export default function ContentEditor() {
               nav={navContent}
             />
 
-            <div
+            <Box
               className={cx(
                 styles.Content,
                 ui.openNav ? styles.GlobalOpen : styles.GlobalClosed
               )}
+              sx={{
+                borderLeft: "1px solid",
+                borderColor: theme.palette.border,
+              }}
             >
               <div className={styles.ContentWrap}>
                 <Switch>
@@ -113,7 +119,7 @@ export default function ContentEditor() {
                   <Route path="*" component={NotFound} />
                 </Switch>
               </div>
-            </div>
+            </Box>
           </section>
         )}
       </WithLoader>
