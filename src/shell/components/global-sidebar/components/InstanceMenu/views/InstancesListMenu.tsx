@@ -18,6 +18,7 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import StarIcon from "@mui/icons-material/Star";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import { cloneDeep } from "lodash";
 
 import { View } from "../DropdownMenu";
 import { AppState } from "../../../../../store/types";
@@ -62,7 +63,8 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
   }, [filter, favoriteInstances]);
 
   const filteredInstances = useMemo(() => {
-    const sortedInstances = instances?.sort((a, b) =>
+    const _instances = cloneDeep(instances);
+    const sortedInstances = _instances?.sort((a, b) =>
       a.name.localeCompare(b.name)
     );
 

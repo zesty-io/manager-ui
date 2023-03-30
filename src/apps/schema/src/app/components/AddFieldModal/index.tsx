@@ -58,12 +58,6 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       fullScreen={viewMode === "fields_list"}
       sx={{
         my: "20px",
-        "*::-webkit-scrollbar-track-piece": {
-          backgroundColor: `${theme.palette.grey[100]} !important`,
-        },
-        "*::-webkit-scrollbar-thumb": {
-          backgroundColor: `${theme.palette.grey[300]} !important`,
-        },
       }}
       PaperProps={{
         sx: {
