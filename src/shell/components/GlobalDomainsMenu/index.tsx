@@ -59,13 +59,8 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
   const [refreshCache, { isSuccess, isLoading, isError }] =
     useRefreshCacheMutation();
 
-  const stageDomainText = `
-    ${instance?.randomHashID}
-    ${
-      // @ts-ignore
-      CONFIG.URL_PREVIEW
-    }
-  `;
+  // @ts-ignore
+  const stageDomainText = `${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
 
   useEffect(() => {
     if (isError) {
