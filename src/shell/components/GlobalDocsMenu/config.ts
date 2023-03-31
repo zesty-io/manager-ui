@@ -155,9 +155,9 @@ export const SUB_DOC_ITEMS: SubDocItems = {
       url: "https://zesty.org/services/manager-ui/settings/instance-settings#analytics",
     },
   ],
-  seo: [
+  redirects: [
     {
-      text: "SEO Overview",
+      text: "Redirects Overview",
       url: "https://zesty.org/services/manager-ui/health",
     },
     {

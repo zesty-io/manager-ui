@@ -51,7 +51,6 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
       onClose={onClose}
       PaperProps={{
         sx: {
-          height: 536,
           width: 352,
         },
       }}
