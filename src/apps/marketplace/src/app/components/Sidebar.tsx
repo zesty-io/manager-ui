@@ -6,6 +6,8 @@ import {
   Box,
   Typography,
   Button,
+  Divider,
+  MenuList,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchInstalledApps } from "../../../../../shell/store/apps";
@@ -55,7 +57,7 @@ export const Sidebar = () => {
           onClick={() =>
             window.open("https://www.zesty.io/marketplace/apps/", "_blank")
           }
-          sx={{ mt: 2, width: "100%" }}
+          sx={{ mt: 1.5, width: "100%" }}
         >
           <Typography
             // @ts-ignore
@@ -65,36 +67,42 @@ export const Sidebar = () => {
           </Typography>
         </Button>
       </Box>
-      {installedApps.map((app: any) => {
-        return (
-          <MenuItem
-            onClick={() => history.push(`/apps/${app.ZUID}`)}
-            selected={location.pathname === `/apps/${app.ZUID}`}
-            sx={{
-              mt: 1,
-              borderRadius: "4px",
-              "&.Mui-selected .MuiListItemIcon-root ": {
-                color: "primary.main",
-              },
-              "&.Mui-selected .MuiTypography-root": {
-                color: "primary.dark",
-              },
-            }}
-          >
-            <ListItemIcon>
-              <PowerIcon />
-            </ListItemIcon>
-            <ListItemText
-              primaryTypographyProps={{
-                // @ts-ignore
-                variant: "body3",
-                color: "text.secondary",
+      <Divider />
+      <MenuList
+        sx={{
+          px: 1,
+        }}
+      >
+        {installedApps.map((app: any) => {
+          return (
+            <MenuItem
+              onClick={() => history.push(`/apps/${app.ZUID}`)}
+              selected={location.pathname === `/apps/${app.ZUID}`}
+              sx={{
+                borderRadius: "4px",
+                "&.Mui-selected .MuiListItemIcon-root ": {
+                  color: "primary.main",
+                },
+                "&.Mui-selected .MuiTypography-root": {
+                  color: "primary.dark",
+                },
               }}
-              primary={app.label}
-            />
-          </MenuItem>
-        );
-      })}
+            >
+              <ListItemIcon>
+                <PowerIcon />
+              </ListItemIcon>
+              <ListItemText
+                primaryTypographyProps={{
+                  // @ts-ignore
+                  variant: "body3",
+                  color: "text.secondary",
+                }}
+                primary={app.label}
+              />
+            </MenuItem>
+          );
+        })}
+      </MenuList>
     </Box>
   );
 };
