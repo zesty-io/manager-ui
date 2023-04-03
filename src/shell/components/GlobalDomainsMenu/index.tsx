@@ -177,7 +177,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
             </Tooltip>
             <Chip
               size="small"
-              label={CHIP_TITLE[domain.branch as "live" | "dev"] || ""}
+              label={CHIP_TITLE[domain.branch as keyof typeof CHIP_TITLE] || ""}
             />
           </MenuItem>
         ))}
