@@ -18,10 +18,11 @@ import {
 import { SvgIconComponent } from "@mui/icons-material";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
-import ChatRoundedIcon from "@mui/icons-material/ChatRounded";
+import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
+import BookRoundedIcon from "@mui/icons-material/BookRounded";
 
 import { MAIN_DOC_ITEMS, SUB_DOC_ITEMS } from "./config";
-// import { handleOpenUrl } from "../util";
+import instanceZUID from "../../../utility/instanceZUID";
 
 interface GlobalDocsMenuProps {
   open: boolean;
@@ -33,6 +34,11 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
   onClose,
   anchorEl,
 }) => {
+  const mainApp = location.pathname.split("/")[1];
+  const subApp = location.pathname.split("/")[2];
+  const section = mainApp === "reports" ? `reports/${subApp}` : mainApp;
+  const subDocs = SUB_DOC_ITEMS[section] || SUB_DOC_ITEMS.default;
+
   const handleOpenUrl = (url: string) => {
     onClose();
     window.open(url, "_blank", "noopener");
@@ -45,8 +51,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
       onClose={onClose}
       PaperProps={{
         sx: {
-          height: 536,
-          width: 340,
+          width: 352,
         },
       }}
       MenuListProps={{
@@ -142,13 +147,13 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
               fontWeight: 600,
             }}
           >
-            Learn more about code
+            Learn more about {mainApp}
           </ListItemText>
         </ListItem>
-        {SUB_DOC_ITEMS.map((subDocItem, index) => (
+        {subDocs?.map((subDocItem, index) => (
           <MenuItem key={index} onClick={() => handleOpenUrl(subDocItem.url)}>
             <ListItemIcon>
-              <SvgIcon component={subDocItem.icon as SvgIconComponent} />
+              <BookRoundedIcon />
             </ListItemIcon>
             <ListItemText>{subDocItem.text}</ListItemText>
           </MenuItem>
@@ -184,10 +189,14 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
           size="small"
           variant="outlined"
           color="inherit"
-          startIcon={<ChatRoundedIcon color="action" />}
-          onClick={() => handleOpenUrl("https://www.zesty.io/chat")}
+          startIcon={<SupportAgentRoundedIcon color="action" />}
+          onClick={() =>
+            handleOpenUrl(
+              `https://www.zesty.io/instances/${instanceZUID}/support`
+            )
+          }
         >
-          Get Help
+          Contact Support
         </Button>
       </ListItem>
     </Menu>
