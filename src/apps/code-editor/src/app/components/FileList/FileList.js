@@ -92,7 +92,13 @@ export const FileList = memo(function FileList(props) {
         </div>
       </Box>
 
-      <main className={styles.List}>
+      <Box
+        component="main"
+        className={styles.List}
+        sx={{
+          backgroundColor: theme.palette.grey[900],
+        }}
+      >
         <div className={styles.Files}>
           <Nav
             name="views"
@@ -145,7 +151,7 @@ export const FileList = memo(function FileList(props) {
             collapseNode={collapseNode}
           />
         </div>
-      </main>
+      </Box>
     </section>
   );
 });
