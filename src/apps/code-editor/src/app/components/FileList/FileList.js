@@ -5,6 +5,8 @@ import cx from "classnames";
 import { Nav } from "@zesty-io/core/Nav";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+import { Box } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 import { CreateFile } from "./components/CreateFile";
 import { OrderFiles } from "./components/OrderFiles";
@@ -57,7 +59,15 @@ export const FileList = memo(function FileList(props) {
 
   return (
     <section className={styles.FileList}>
-      <header className={styles.NavActions}>
+      <Box
+        component="header"
+        className={styles.NavActions}
+        sx={{
+          backgroundColor: theme.palette.grey[800],
+          borderBottom: "1px solid",
+          borderColor: theme.palette.grey[900],
+        }}
+      >
         <div className={styles.Actions}>
           {/* <div className={cx(styles.Action, styles.PublishAll)}>
               <PublishAll dispatch={props.dispatch} branch={branch} />
@@ -80,7 +90,7 @@ export const FileList = memo(function FileList(props) {
             <FilterFiles setShownFiles={setShownFiles} nav={props.navCode} />
           </div>
         </div>
-      </header>
+      </Box>
 
       <main className={styles.List}>
         <div className={styles.Files}>
