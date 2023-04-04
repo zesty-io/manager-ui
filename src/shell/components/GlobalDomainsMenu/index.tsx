@@ -38,6 +38,11 @@ const rotateAnimation = keyframes`
   }
 `;
 
+const CHIP_TITLE = {
+  live: "Prod",
+  dev: "Stage",
+};
+
 interface GlobalDomainsMenuProps {
   onCloseDropdownMenu: () => void;
   onChangeView?: (view: string) => void;
@@ -54,13 +59,8 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
   const [refreshCache, { isSuccess, isLoading, isError }] =
     useRefreshCacheMutation();
 
-  const stageDomainText = `
-    ${instance?.randomHashID}
-    ${
-      // @ts-ignore
-      CONFIG.URL_PREVIEW
-    }
-  `;
+  // @ts-ignore
+  const stageDomainText = `${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
 
   useEffect(() => {
     if (isError) {
@@ -175,6 +175,10 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
                 {domain.domain}
               </ListItemText>
             </Tooltip>
+            <Chip
+              size="small"
+              label={CHIP_TITLE[domain.branch as keyof typeof CHIP_TITLE] || ""}
+            />
           </MenuItem>
         ))}
       </MenuList>

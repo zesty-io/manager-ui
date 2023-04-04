@@ -36,7 +36,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
       MenuListProps={{
         sx: {
           p: 0,
-          height: 555,
+          height: 591,
         },
       }}
     >

@@ -40,7 +40,7 @@ const ContentSearch: FC = () => {
   const theme = useTheme();
   return (
     <Collapse
-      in={open}
+      in
       collapsedSize="288px"
       orientation="horizontal"
       sx={{
@@ -68,7 +68,7 @@ const ContentSearch: FC = () => {
               elevation={0}
               sx={{
                 borderStyle: "solid",
-                borderWidth: "0px 1px 1px 1px",
+                borderWidth: topSuggestions?.length ? "0px 1px 1px 1px" : "0px",
                 borderColor: "border",
                 borderRadius: "0px 0px 4px 4px",
               }}
@@ -79,23 +79,6 @@ const ContentSearch: FC = () => {
           return (
             <Popper
               {...props}
-              modifiers={[
-                {
-                  name: "offset",
-                  options: {
-                    offset: [-1, 0],
-                  },
-                },
-                {
-                  name: "width",
-                  enabled: true,
-                  phase: "beforeWrite",
-                  requires: ["computeStyles"],
-                  fn: ({ state }) => {
-                    state.styles.popper.width = "502px";
-                  },
-                },
-              ]}
               style={{
                 ...props.style,
                 // default z-index is too high, we want it to be BELOW the side nav close button
@@ -109,6 +92,7 @@ const ContentSearch: FC = () => {
         selectOnFocus
         clearOnBlur
         handleHomeEndKeys
+        blurOnSelect
         options={topSuggestions}
         filterOptions={(x) => x}
         sx={{
@@ -120,6 +104,9 @@ const ContentSearch: FC = () => {
           boxSizing: "border-box",
           "& .MuiFormControl-root": {
             gap: "10px",
+          },
+          "&.Mui-focused .MuiAutocomplete-clearIndicator": {
+            visibility: value ? "visible" : "hidden",
           },
         }}
         onInputChange={(event, newVal) => {
@@ -202,6 +189,12 @@ const ContentSearch: FC = () => {
                 "& .Mui-focused": {
                   width: "500px",
                 },
+                "&:hover .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
+                  visibility: value ? "visible" : "hidden",
+                },
+                "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
+                  visibility: value ? "visible" : "hidden",
+                },
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -228,9 +221,14 @@ const ContentSearch: FC = () => {
                     height: "40px",
                   },
 
-                  borderRadius: "4px 4px 0px 0px",
+                  borderRadius: open ? "4px 4px 0px 0px" : "0px",
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderWidth: "1px",
+                    border: "1px solid",
+                    borderColor: "border",
+                  },
+                  "&.Mui-focused:hover .MuiOutlinedInput-notchedOutline": {
+                    border: "1px solid",
+                    borderColor: "border",
                   },
                   boxSizing: "border-box",
                   width: "100%",

@@ -62,8 +62,16 @@ export function useMetaKey(key, modifier, callback) {
     };
   }, [key, modifier, callback]);
 
-  const metaKey = platform.isMac ? `cmd` : `ctrl`;
+  const metaKey = platform.isMac ? `⌘` : `ctrl`;
   const modifierKey = typeof modifier === "string" ? "+" + modifier : "";
 
-  return `(${metaKey} ${modifierKey} + ${key})`;
+  if (platform.isMac) {
+    return `(${metaKey}${modifierKey}${key.toUpperCase()})`;
+  } else {
+    if (modifierKey) {
+      return `(${metaKey} ${modifierKey} + ${key})`;
+    } else {
+      return `(${metaKey} + ${key})`;
+    }
+  }
 }
