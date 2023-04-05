@@ -65,7 +65,7 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
   const filteredInstances = useMemo(() => {
     const _instances = cloneDeep(instances);
     const sortedInstances = _instances?.sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name?.localeCompare(b.name)
     );
 
     if (filter) {
@@ -150,7 +150,7 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
           </Button>
         </Stack>
       ) : (
-        <Box height={483} sx={{ overflowY: "auto" }}>
+        <Box height={519} sx={{ overflowY: "auto" }}>
           <MenuItem
             disableRipple
             sx={{
@@ -173,7 +173,13 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
                 enterDelay={500}
                 enterNextDelay={500}
               >
-                <ListItemText>{instance.name}</ListItemText>
+                <ListItemText
+                  primaryTypographyProps={{
+                    noWrap: true,
+                  }}
+                >
+                  {instance.name}
+                </ListItemText>
               </Tooltip>
             </MenuItem>
           ))}
@@ -202,7 +208,13 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
                 enterDelay={500}
                 enterNextDelay={500}
               >
-                <ListItemText>{instance.name}</ListItemText>
+                <ListItemText
+                  primaryTypographyProps={{
+                    noWrap: true,
+                  }}
+                >
+                  {instance.name}
+                </ListItemText>
               </Tooltip>
             </MenuItem>
           ))}
