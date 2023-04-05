@@ -9,7 +9,7 @@ import PencilIcon from "@mui/icons-material/Create";
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
 import { ContentItem } from "../../services/types";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../../store/notifications";
 import Paper from "@mui/material/Paper";
@@ -20,6 +20,7 @@ import { useTheme } from "@mui/material/styles";
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
   const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const textfieldRef = useRef<HTMLDivElement>();
@@ -38,6 +39,19 @@ const ContentSearch: FC = () => {
   const [open, setOpen] = useState(false);
 
   const theme = useTheme();
+
+  const goToSearchPage = (queryTerm: string) => {
+    const isOnSearchPage = location.pathname === "/search";
+
+    // Only add the search page on the history stack during initial page visit
+    // Makes sure clicking close on the search page brings the user back to the previous page
+    if (isOnSearchPage) {
+      history.replace(`/search?q=${queryTerm}`);
+    } else {
+      history.push(`/search?q=${queryTerm}`);
+    }
+  };
+
   return (
     <Collapse
       in
@@ -120,7 +134,7 @@ const ContentSearch: FC = () => {
           }
           // string represents search term entered
           if (typeof newVal === "string") {
-            history.push(`/search?q=${newVal}`);
+            goToSearchPage(newVal);
           } else {
             // ContentItem represents a suggestion being clicked
             if (newVal?.meta) {
@@ -151,7 +165,7 @@ const ContentSearch: FC = () => {
                 aria-selected={false}
                 key={"global-search-term"}
                 icon="search"
-                onClick={() => history.push(`/search?q=${option}`)}
+                onClick={() => goToSearchPage(option)}
                 text={option}
               />
             );
@@ -198,7 +212,7 @@ const ContentSearch: FC = () => {
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  history.push(`/search?q=${value}`);
+                  goToSearchPage(value);
                 }
               }}
               inputProps={{
