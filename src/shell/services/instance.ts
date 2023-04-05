@@ -116,16 +116,18 @@ export const instanceApi = createApi({
       keepUnusedDataFor: 0.0001,
     }),
     searchContent: builder.query<ContentItem[], SearchQuery>({
-      query: ({ query, limit, ...restOpts }) => {
-        const params = new URLSearchParams({
+      query: ({ query, ...rest }) => ({
+        url: `search/items`,
+        params: {
           q: query,
-          ...restOpts,
-        });
-        if (limit) params.set("limit", limit.toString());
-        return `search/items?${params.toString()}`;
-      },
+          ...rest,
+        },
+      }),
       transformResponse: getResponseData,
-      providesTags: ["SearchQuery"],
+      // Makes sure that the query is ran everytime the user searches.
+      // Prevents issue where the query no longer hits the endpoint
+      // when the case-sensitive value on the query parameter is the same as a previous query
+      keepUnusedDataFor: 0.0001,
     }),
     getContentModel: builder.query<ContentModel, string>({
       query: (modelZUID) => `content/models/${modelZUID}`,
