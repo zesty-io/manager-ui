@@ -172,7 +172,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           <ListItemIcon>
             <RemoveRedEyeRoundedIcon />
           </ListItemIcon>
-          <ListItemText>View Web Engine Preview (Stage)</ListItemText>
+          <ListItemText>View WebEngine Preview (Stage)</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleCopyInstanceZUID}>
           <ListItemIcon>
