@@ -182,7 +182,11 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
           variant="outlined"
           color="inherit"
           startIcon={<EmailRoundedIcon color="action" />}
-          onClick={() => handleOpenUrl("mailto:support@zesty.io")}
+          onClick={() =>
+            handleOpenUrl(
+              `mailto:support@zesty.io?subject=%5BInstance%20ZUID%3A%20${instanceZUID}%5D%20Support%20Request`
+            )
+          }
         >
           support@zesty.io
         </Button>
