@@ -20,6 +20,7 @@ import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 import BookRoundedIcon from "@mui/icons-material/BookRounded";
+import { capitalize } from "lodash";
 
 import { MAIN_DOC_ITEMS, SUB_DOC_ITEMS } from "./config";
 import instanceZUID from "../../../utility/instanceZUID";
@@ -147,7 +148,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
               fontWeight: 600,
             }}
           >
-            Learn more about {mainApp}
+            Learn more about {capitalize(mainApp)}
           </ListItemText>
         </ListItem>
         {subDocs?.map((subDocItem, index) => (
@@ -181,7 +182,11 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
           variant="outlined"
           color="inherit"
           startIcon={<EmailRoundedIcon color="action" />}
-          onClick={() => handleOpenUrl("mailto:support@zesty.io")}
+          onClick={() =>
+            handleOpenUrl(
+              `mailto:support@zesty.io?subject=%5BInstance%20ZUID%3A%20${instanceZUID}%5D%20Support%20Request`
+            )
+          }
         >
           support@zesty.io
         </Button>

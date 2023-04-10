@@ -34,6 +34,7 @@ import instanceZUID from "../../../../../../utility/instanceZUID";
 import { actions } from "../../../../../store/ui";
 import { notify } from "../../../../../store/notifications";
 import { useRefreshCacheMutation } from "../../../../../services/cloudFunctions";
+import { useDomain } from "../../../../../hooks/use-domain";
 
 export const rotateAnimation = keyframes`
   from {
@@ -66,6 +67,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
       isError: isCacheRefreshFailed,
     },
   ] = useRefreshCacheMutation();
+  const domain = useDomain();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -124,11 +126,11 @@ export const NormalMenu: FC<NormalMenuProps> = ({
             variant="body2"
             fontWeight={600}
             color="info.dark"
-            href={`https://${instance?.domain}`}
+            href={domain}
             target="_blank"
             rel="noopener"
           >
-            {instance?.domain}
+            {domain.replace(/http:\/\/|https:\/\//gm, "")}
           </Link>
         </Stack>
       </Stack>
@@ -170,7 +172,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           <ListItemIcon>
             <RemoveRedEyeRoundedIcon />
           </ListItemIcon>
-          <ListItemText>View Web Engine Preview (Stage)</ListItemText>
+          <ListItemText>View WebEngine Preview (Stage)</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleCopyInstanceZUID}>
           <ListItemIcon>
