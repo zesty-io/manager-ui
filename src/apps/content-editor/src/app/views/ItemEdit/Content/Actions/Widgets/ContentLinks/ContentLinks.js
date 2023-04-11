@@ -17,7 +17,7 @@ import styles from "./ContentLinks.less";
 export const ContentLinks = memo(function ContentLinks(props) {
   return (
     <Fragment>
-      <Card className={styles.ContentLinks} sx={{ m: 2 }}>
+      <Card className={styles.ContentLinks} sx={{ m: 2 }} elevation={0}>
         <CardHeader
           avatar={<LinkIcon fontSize="small" />}
           title="Links"

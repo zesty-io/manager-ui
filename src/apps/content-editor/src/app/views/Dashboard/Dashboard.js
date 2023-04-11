@@ -99,7 +99,7 @@ export default memo(function Dashboard() {
   }, [user.ZUID]);
   return (
     <section className={styles.Dashboard}>
-      <section className={styles.LinkOuts}>
+      {/* <section className={styles.LinkOuts}>
         <div className={styles.Cards}>
           <AccountInfo
             instanceZUID={instance.ZUID}
@@ -137,6 +137,10 @@ export default memo(function Dashboard() {
             quickJump={"settings"}
           />
         </div>
+      </section> */}
+      <section className={styles.Chart}>
+        <InstanceActivity logs={logs} user={user} />
+        <ChartDashboard logs={logs} />
       </section>
       <section className={styles.LatestActivity}>
         <UserLatest
@@ -152,10 +156,7 @@ export default memo(function Dashboard() {
           action="4"
         />
       </section>
-      <section className={styles.Chart}>
-        <InstanceActivity logs={logs} user={user} />
-        <ChartDashboard logs={logs} />
-      </section>
+
       <section className={styles.RecentActivities}>
         {favoriteModels.map((arr, i) => {
           const [contentModelZUID, items] = arr;

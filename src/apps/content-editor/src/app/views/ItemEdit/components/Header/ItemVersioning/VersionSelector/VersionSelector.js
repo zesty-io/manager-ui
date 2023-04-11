@@ -79,7 +79,7 @@ export default connect((state, props) => {
               className={styles.VersionOption}
               value={item.meta?.version}
             >
-              Version {item.meta?.version}
+              v{item.meta?.version}
               <Box component="small" sx={{ ml: 0.5 }}>
                 {" "}
                 {moment(item.web?.createdAt).format("MMM Do YYYY, [at] h:mm a")}

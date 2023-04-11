@@ -26,7 +26,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
     });
   };
   return (
-    <Card className={styles.WidgetListed} sx={{ m: 2 }}>
+    <Card className={styles.WidgetListed} sx={{ m: 2 }} elevation={0}>
       <CardHeader
         avatar={<CodeIcon fontSize="small" />}
         title="Parsley Behaviors"

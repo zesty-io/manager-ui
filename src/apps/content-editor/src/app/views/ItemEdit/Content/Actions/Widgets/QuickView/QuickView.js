@@ -30,12 +30,47 @@ export const QuickView = memo(function QuickView(props) {
 
   return (
     <Fragment>
-      <Card className={styles.QuickView} sx={{ m: 2 }}>
+      <Card className={styles.QuickView} sx={{ m: 2 }} elevation={0}>
         <CardHeader
-          avatar={<AccountTreeIcon fontSize="small" />}
+          sx={{
+            p: 0,
+            backgroundColor: "transparent",
+            fontSize: "16px",
+            color: "#10182866",
+            ".MuiCardHeader-avatar": {
+              mr: 1,
+            },
+          }}
+          avatar={<AccountTreeIcon fontSize="inherit" color="inherit" />}
           title={
             <section className={styles.StatusHeader}>
-              <div>&nbsp;Item Status</div>
+              Item Status
+              {/* <div
+                className={
+                  isPublished
+                    ? styles.Published
+                    : isScheduled
+                    ? styles.Scheduled
+                    : styles.Unpublished
+                }
+              >
+                {isPublished
+                  ? "Published"
+                  : isScheduled
+                  ? "Scheduled"
+                  : "Unpublished"}
+              </div> */}
+            </section>
+          }
+        ></CardHeader>
+        <CardContent
+          className={cx(styles.Content, SharedWidgetStyles.CardListSpace)}
+          sx={{
+            p: 0,
+          }}
+        >
+          <ul>
+            <li className={styles.StatusHeader}>
               <div
                 className={
                   isPublished
@@ -51,13 +86,8 @@ export const QuickView = memo(function QuickView(props) {
                   ? "Scheduled"
                   : "Unpublished"}
               </div>
-            </section>
-          }
-        ></CardHeader>
-        <CardContent
-          className={cx(styles.Content, SharedWidgetStyles.CardListSpace)}
-        >
-          <ul>
+            </li>
+
             <li>
               <strong>ZUID:</strong>&nbsp;
               <CopyButton size="small" value={props.itemZUID} />
@@ -83,7 +113,7 @@ export const QuickView = memo(function QuickView(props) {
             </li>
           </ul>
         </CardContent>
-        <CardActions sx={{ gap: 1 }}>
+        <CardActions sx={{ gap: 1, px: 0 }}>
           {codeAccess && (
             <>
               <AppLink to={`/schema/${props.modelZUID}`}>

@@ -40,6 +40,7 @@ export default connect((state) => {
         id="WidgetPublishHistory"
         className="pageDetailWidget"
         sx={{ m: 2 }}
+        elevation={0}
       >
         <CardHeader
           avatar={<PersonIcon fontSize="small" />}
@@ -47,7 +48,6 @@ export default connect((state) => {
             <>
               {" "}
               <span className="audit-title">Publish History </span>
-              <small>&nbsp;Activity Log</small>
             </>
           }
         ></CardHeader>

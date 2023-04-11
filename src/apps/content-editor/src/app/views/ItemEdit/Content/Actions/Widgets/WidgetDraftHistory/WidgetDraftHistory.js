@@ -27,14 +27,18 @@ export default connect((state, props) => {
   }, []);
 
   return (
-    <Card id="WidgetDraftHistory" className="pageDetailWidget" sx={{ m: 2 }}>
+    <Card
+      id="WidgetDraftHistory"
+      className="pageDetailWidget"
+      sx={{ m: 2 }}
+      elevation={0}
+    >
       <CardHeader
         avatar={<PersonIcon fontSize="small" />}
         title={
           <>
             {" "}
             <span className="audit-title">Draft History</span>
-            <small>&nbsp;Activity Log</small>
           </>
         }
       ></CardHeader>

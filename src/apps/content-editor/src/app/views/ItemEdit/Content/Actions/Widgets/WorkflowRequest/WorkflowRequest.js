@@ -125,7 +125,7 @@ ${
 
   return (
     <Box sx={{ m: 2 }}>
-      <Accordion>
+      <Accordion elevation={0}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography sx={{ display: "flex", alignItems: "center" }}>
             {" "}

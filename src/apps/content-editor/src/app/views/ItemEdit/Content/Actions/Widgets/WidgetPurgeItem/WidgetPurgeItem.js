@@ -16,7 +16,12 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
   const [loading, setLoading] = useState(false);
 
   return (
-    <Card id="WidgetDeleteItem" className="pageDetailWidget" sx={{ m: 2 }}>
+    <Card
+      id="WidgetDeleteItem"
+      className="pageDetailWidget"
+      sx={{ m: 2 }}
+      elevation={0}
+    >
       <CardHeader
         avatar={<SyncIcon fontSize="small" />}
         title="CDN"

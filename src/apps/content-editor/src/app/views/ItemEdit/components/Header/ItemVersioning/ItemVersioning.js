@@ -116,10 +116,30 @@ export function ItemVersioning(props) {
 
       {canPublish && (
         <Stack direction="row" spacing={1} className={styles.Publish}>
-          <ButtonGroup variant="contained">
+          <LoadingButton
+            variant="contained"
+            color="primary"
+            title="Save Version"
+            disabled={!props.item.dirty}
+            onClick={props.onSave}
+            id="SaveItemButton"
+            loading={props.saving}
+            loadingPosition="start"
+            startIcon={<SaveIcon fontSize="small" />}
+          >
+            <span className={styles.SaveVersion}>&nbsp;Save</span>
+          </LoadingButton>
+          <ButtonGroup
+            variant="contained"
+            sx={{
+              ".MuiButtonGroup-grouped:not(:last-of-type)": {
+                borderColor: "#039855",
+              },
+            }}
+          >
             <Button
               variant="contained"
-              color="secondary"
+              color="success"
               title="Publish"
               id="PublishButton"
               disabled={publishingDisabled || false}
@@ -139,7 +159,7 @@ export function ItemVersioning(props) {
             </Button>
             <Button
               variant="contained"
-              color={open ? "primary" : "secondary"}
+              color={open ? "primary" : "success"}
               title="Publish Schedule"
               id="PublishScheduleButton"
               disabled={schedulingDisabled || false}
@@ -162,22 +182,6 @@ export function ItemVersioning(props) {
           />
         </Stack>
       )}
-
-      <LoadingButton
-        variant="contained"
-        color="success"
-        title="Save Version"
-        disabled={!props.item.dirty}
-        onClick={props.onSave}
-        id="SaveItemButton"
-        loading={props.saving}
-        loadingPosition="start"
-        startIcon={<SaveIcon fontSize="small" />}
-      >
-        <span className={styles.SaveVersion}>
-          &nbsp;Save Version {metaShortcut}
-        </span>
-      </LoadingButton>
     </Stack>
   );
 }

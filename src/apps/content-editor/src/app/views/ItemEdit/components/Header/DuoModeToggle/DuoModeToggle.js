@@ -55,7 +55,7 @@ export function DuoModeToggle(props) {
       ) : (
         <ToggleButtonGroup
           title="Duo Mode Toggle"
-          color="secondary"
+          color="primary"
           value={Number(ui.duoMode)}
           exclusive
           size="small"

@@ -26,7 +26,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
 
   return (
     <Box sx={{ m: 2 }} data-cy="WidgetDeleteAccordion">
-      <Accordion>
+      <Accordion elevation={0}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography sx={{ display: "flex", alignItems: "center" }}>
             {" "}
