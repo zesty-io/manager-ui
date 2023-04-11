@@ -80,7 +80,8 @@ describe("Navigation through content editor", () => {
       });
   });
 
-  it("Open and Close Global Account", () => {
+  // Skipped for now since Global Account has been removed from the top tab bar
+  it.skip("Open and Close Global Account", () => {
     cy.get("[data-cy=globalAccountAvatar]").click();
     cy.get("menu").should("exist");
     cy.get("[data-cy=globalAccountAvatar]").click();

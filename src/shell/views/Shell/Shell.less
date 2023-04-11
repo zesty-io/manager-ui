@@ -1,18 +1,5 @@
 @import "~@zesty-io/core/colors.less";
 
-// Default App Scrollbar styles
-&::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-&::-webkit-scrollbar-track-piece {
-  background-color: @zesty-light-grey;
-}
-&::-webkit-scrollbar-thumb {
-  background-color: @zesty-grey;
-  border-radius: 4px;
-}
-
 .Shell {
   background-color: @appBkgColor;
   color: @zesty-grey;
@@ -22,43 +9,21 @@
   font-size: 12px;
 
   // Layout
-  height: 100vh;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 155px 1fr;
   scrollbar-color: @zesty-grey @zesty-light-grey;
   scrollbar-width: thin;
-
-  //CLOSED MENU
-  &.NavClosed {
-    grid-template-columns: 60px 1fr;
-
-    //Favicon
-    img[alt*="Favicon"] {
-      width: 30px;
-      height: 30px;
-    }
-    [data-icon="globe"],
-    [data-icon="file-image"] {
-      width: 20px;
-      height: 20px;
-    }
-  }
 
   .AppLoader {
     flex: 2;
     background-color: #171b26;
 
     .SubApp {
-      height: calc(100vh - 54px);
+      height: calc(100vh - 40px);
       background-color: @appBkgColor;
 
       // shadow effect
-      border-radius: 10px 0 0 0;
       overflow: hidden;
       //box-shadow: 0px 0px 25px #0b0d13;
       position: relative;
-      z-index: 30;
 
       /* Safari 10.1+  fix media selected modal
       overlapped by GlobalSidebar & GlobalTopBar */
@@ -69,6 +34,7 @@
       }
     }
   }
+
   @media (min-width: 2000px) {
     & {
       font-size: 14px;

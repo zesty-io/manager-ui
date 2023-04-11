@@ -13,6 +13,10 @@ import {
 
 import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
 import { AppLink } from "@zesty-io/core/AppLink";
+import Box from "@mui/material/Box";
+import Badge from "@mui/material/Badge";
+import IconButton from "@mui/material/IconButton";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 import styles from "./GlobalNotifications.less";
 export default connect((state) => {
@@ -69,17 +73,28 @@ export default connect((state) => {
 
     return (
       <aside ref={ref} className={cx(styles.Notifications)}>
-        <span
-          className={cx(styles.Bell, showToast ? styles.Flash : null)}
-          title="See All Notifications"
+        <IconButton
+          size="small"
+          aria-label="See All Notifications"
           onClick={() => setDrawerOpen(!drawerOpen)}
         >
-          {props.notifications.length ? (
-            <span className={styles.Count}>{props.notifications.length}</span>
-          ) : (
-            <FontAwesomeIcon icon={faBell} />
-          )}
-        </span>
+          <Badge
+            invisible={!props.notifications.length}
+            max={999}
+            badgeContent={props.notifications.length}
+            sx={{
+              "& .MuiBadge-badge": {
+                left: "4px",
+              },
+              "& .MuiBadge-standard": {
+                backgroundColor: "deepOrange.100",
+                color: "primary.main",
+              },
+            }}
+          >
+            <NotificationsIcon fontSize="inherit" />
+          </Badge>
+        </IconButton>
 
         {props.notifications[0] && (
           <div
@@ -104,7 +119,7 @@ export default connect((state) => {
           position="right"
           offset="0px"
           width="450px"
-          height="calc(100vh - 54px)"
+          height="calc(100vh - 40px)"
           open={drawerOpen}
         >
           <DrawerContent className={styles.DrawerContent}>

@@ -17,7 +17,9 @@ describe("Instance", () => {
 
   it("Developer", () => {
     cy.get("[data-cy=SettingsNav]").contains("developer").click();
-    cy.get('input[type="text"]').type("test test test").clear();
+    cy.get('[data-cy=SubApp] input[type="text"]')
+      .type("test test test")
+      .clear();
 
     cy.get("[data-cy=SubApp] button").first().click({ force: true });
 

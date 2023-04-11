@@ -16,7 +16,7 @@ import RedirectsImport from "../../../RedirectsManager/RedirectActions/Redirects
 
 import { CSVImporter } from "../../../../../src/store/imports";
 
-import ContentSearch from "shell/components/ContentSearch";
+import ContentSearch from "shell/components/LegacyContentSearch";
 
 import styles from "./RedirectCreator.less";
 

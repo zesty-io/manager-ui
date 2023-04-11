@@ -1,37 +1,46 @@
 import { memo } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
-import { Sentry } from "utility/sentry";
-import cx from "classnames";
+import { Sentry } from "../../../utility/sentry";
+import { Box } from "@mui/material";
 
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "shell/store/ui";
+import { actions } from "../../store/ui";
 
-import AppError from "shell/components/AppError";
-import GlobalSidebar from "shell/components/global-sidebar";
-import GlobalTopbar from "shell/components/GlobalTopbar";
-import Missing from "shell/components/missing";
+import AppError from "../../components/AppError";
+import GlobalSidebar from "../../components/global-sidebar";
+import GlobalTopbar from "../../components/GlobalTopbar";
+import Missing from "../../components/missing";
+import SearchPage from "../../views/SearchPage";
 
-import ContentApp from "apps/content-editor/src";
-import DamApp from "apps/media/src";
-import ReleaseApp from "apps/release/src";
-import ReportingApp from "apps/reports/src";
-import CodeApp from "apps/code-editor/src";
-import LeadsApp from "apps/leads/src";
-import SchemaApp from "apps/schema/src";
-import SeoApp from "apps/seo/src";
-import SettingsApp from "apps/settings/src";
-import CustomApp from "apps/custom-app/src";
-import HomeApp from "apps/home";
+import ContentApp from "../../../apps/content-editor/src";
+import DamApp from "../../../apps/media/src";
+import ReleaseApp from "../../../apps/release/src";
+import ReportingApp from "../../../apps/reports/src";
+import CodeApp from "../../../apps/code-editor/src";
+import LeadsApp from "../../../apps/leads/src";
+import SchemaApp from "../../../apps/schema/src";
+import SeoApp from "../../../apps/seo/src";
+import SettingsApp from "../../../apps/settings/src";
+import HomeApp from "../../../apps/home";
+import MarketplaceApp from "../../../apps/marketplace/src";
+import { AppState } from "../../store/types";
 
 import styles from "./Shell.less";
 
 export default memo(function Shell() {
   const dispatch = useDispatch();
-  const openNav = useSelector((state) => state.ui.openNav);
-  const products = useSelector((state) => state.products);
+  const openNav = useSelector((state: AppState) => state.ui.openNav);
+  const products: string[] = useSelector((state: AppState) => state.products);
 
   return (
-    <section className={cx(styles.Shell, openNav ? null : styles.NavClosed)}>
+    <Box
+      component="section"
+      className={styles.Shell}
+      height="100vh"
+      overflow="hidden"
+      display="grid"
+      gridTemplateColumns={openNav ? "200px 1fr" : "64px 1fr"}
+    >
       <GlobalSidebar
         onClick={() => {
           dispatch(actions.setGlobalNav(!openNav));
@@ -40,7 +49,18 @@ export default memo(function Shell() {
       />
       <main className={styles.AppLoader}>
         <GlobalTopbar />
-        <div className={styles.SubApp} data-cy="SubApp">
+        <Box
+          className={styles.SubApp}
+          data-cy="SubApp"
+          sx={{
+            zIndex: 30,
+
+            // Makes sure that tinyMCE is not overlapped when in fullscreen mode
+            "&:has(div.tox-fullscreen)": {
+              zIndex: (theme) => theme.zIndex.appBar + 1,
+            },
+          }}
+        >
           <Sentry.ErrorBoundary fallback={() => <AppError />}>
             <Switch>
               <Route path="/release" component={ReleaseApp} />
@@ -48,9 +68,7 @@ export default memo(function Shell() {
               <Route path="/media/:groupID/file/:fileID" component={DamApp} />
               <Route path="/media/:groupID" component={DamApp} />
               <Route path="/media" component={DamApp} />
-
-              <Route path="/app*" component={CustomApp} />
-
+              <Route path="/search" component={SearchPage} />
               {products.map((product) => {
                 switch (product) {
                   case "launchpad":
@@ -93,9 +111,13 @@ export default memo(function Shell() {
                         component={SchemaApp}
                       />
                     );
-                  case "seo":
+                  case "redirects":
                     return (
-                      <Route key={product} path="/seo" component={SeoApp} />
+                      <Route
+                        key={product}
+                        path="/redirects"
+                        component={SeoApp}
+                      />
                     );
                   case "settings":
                     return (
@@ -103,6 +125,14 @@ export default memo(function Shell() {
                         key={product}
                         path="/settings"
                         component={SettingsApp}
+                      />
+                    );
+                  case "apps":
+                    return (
+                      <Route
+                        key={product}
+                        path="/apps*"
+                        component={MarketplaceApp}
                       />
                     );
                   default:
@@ -114,8 +144,8 @@ export default memo(function Shell() {
               <Route path="*" component={Missing} />
             </Switch>
           </Sentry.ErrorBoundary>
-        </div>
+        </Box>
       </main>
-    </section>
+    </Box>
   );
 });
