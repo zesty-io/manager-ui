@@ -8,6 +8,7 @@ import CardHeader from "@mui/material/CardHeader";
 
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
+import Typography from "@mui/material/Typography";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
@@ -51,13 +52,18 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
           },
         }}
       >
-        <p>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            fontSize: "14px",
+            lineHeight: "20px",
+          }}
+        >
           Force the CDN to refresh the cache for this item. CDN caching can take
           from a few seconds to minutes to occur as this re-caches the item
           across the entire global network.
-        </p>
-      </CardContent>
-      <CardActions>
+        </Typography>
         <LoadingButton
           variant="contained"
           id="RefreshCache"
@@ -89,10 +95,21 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
           loading={loading}
           loadingPosition="start"
           startIcon={<SyncIcon />}
+          disableElevation
+          sx={{
+            backgroundColor: "#F2F4F7",
+            color: "text.secondary",
+            mt: 1.5,
+
+            "&:hover": {
+              backgroundColor: "#E4E7EC",
+              color: "text.secondary",
+            },
+          }}
         >
           {loading ? "Refreshing Cached Item" : "Refresh Cached Item"}
         </LoadingButton>
-      </CardActions>
+      </CardContent>
     </Card>
   );
 });
