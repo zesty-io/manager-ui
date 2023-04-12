@@ -61,11 +61,12 @@ export default connect((state, props) => {
       <Select
         name="itemVersion"
         sx={{
-          maxWidth: "125px",
+          maxWidth: "96px",
           backgroundColor:
             selectedVersionNum !== props.latestVersionNum
               ? "warning.light"
               : "",
+          height: "32px",
         }}
         value={selectedVersionNum}
         loading={loading}

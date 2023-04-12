@@ -126,6 +126,9 @@ export function ItemVersioning(props) {
             loading={props.saving}
             loadingPosition="start"
             startIcon={<SaveIcon fontSize="small" />}
+            sx={{
+              height: "32px",
+            }}
           >
             <span className={styles.SaveVersion}>&nbsp;Save</span>
           </LoadingButton>
@@ -135,6 +138,7 @@ export function ItemVersioning(props) {
               ".MuiButtonGroup-grouped:not(:last-of-type)": {
                 borderColor: "#039855",
               },
+              height: "32px",
             }}
           >
             <Button
@@ -164,12 +168,6 @@ export function ItemVersioning(props) {
               id="PublishScheduleButton"
               disabled={schedulingDisabled || false}
               onClick={toggleScheduleModal}
-              sx={{
-                ...(props.item.scheduling &&
-                  props.item.scheduling.isScheduled && {
-                    backgroundColor: "warning.main",
-                  }),
-              }}
             >
               <CalendarMonthIcon fontSize="small" />
             </Button>

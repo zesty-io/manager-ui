@@ -68,6 +68,9 @@ export function DuoModeToggle(props) {
               dispatch(actions.setContentActions(true));
             }
           }}
+          sx={{
+            height: "32px",
+          }}
         >
           <ToggleButton value={0}>
             <CloseIcon fontSize="small" />
