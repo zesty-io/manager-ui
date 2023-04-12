@@ -180,7 +180,7 @@ export function ContentNav(props) {
         )}
       >
         <div className={styles.NavTitle}>
-          <h1>Content</h1>
+          <h1>Pages</h1>
 
           <Link to="/content">
             <Button
