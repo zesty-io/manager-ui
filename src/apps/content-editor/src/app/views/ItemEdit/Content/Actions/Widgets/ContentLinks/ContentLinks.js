@@ -7,6 +7,8 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import LinkIcon from "@mui/icons-material/Link";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 
 import { PreviewUrl } from "../../../../components/Header/PreviewUrl";
 import { LiveUrl } from "../../../../components/Header/LiveUrl";
@@ -24,43 +26,57 @@ export const ContentLinks = memo(function ContentLinks(props) {
             backgroundColor: "transparent",
             fontSize: "16px",
             color: "#10182866",
-            ".MuiCardHeader-avatar": {
-              mr: 1,
-            },
+            borderBottom: 1,
+            borderColor: "grey.200",
           }}
           titleTypographyProps={{
             sx: {
-              fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
+              fontWeight: 400,
+              fontSize: "12px",
+              lineHeight: "32px",
               color: "#101828",
             },
           }}
-          avatar={<LinkIcon fontSize="inherit" color="inherit" />}
-          title="Links"
+          title="LINKS"
         ></CardHeader>
         <CardContent
           className={styles.Content}
           sx={{
             p: 0,
+            pt: 2,
           }}
         >
-          <ul>
+          <List>
             {props.item?.web?.path && (
               <Fragment>
-                <li>
+                <ListItem
+                  sx={{
+                    fontSize: "14px",
+                    px: 0,
+                  }}
+                >
                   <LiveUrl item={props.item} />
-                </li>
-                <li>
+                </ListItem>
+                <ListItem
+                  sx={{
+                    fontSize: "14px",
+                    px: 0,
+                  }}
+                >
                   <PreviewUrl item={props.item} />
-                </li>
+                </ListItem>
               </Fragment>
             )}
 
-            <li>
+            <ListItem
+              sx={{
+                fontSize: "14px",
+                px: 0,
+              }}
+            >
               <InstantUrl item={props.item} />
-            </li>
-          </ul>
+            </ListItem>
+          </List>
         </CardContent>
       </Card>
     </Fragment>
