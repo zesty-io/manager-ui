@@ -129,7 +129,7 @@ export function ContentNav(props) {
           defaultValue="0"
           size="small"
         >
-          <MenuItem value="0">— Create Item —</MenuItem>
+          <MenuItem value="0">Create Item</MenuItem>
           <MenuItem value="link">Internal/External Link</MenuItem>
           {Object.keys(props.models)
             .filter((modelZUID) => {
