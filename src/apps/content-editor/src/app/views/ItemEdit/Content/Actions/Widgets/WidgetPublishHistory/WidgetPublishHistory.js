@@ -9,6 +9,8 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import PersonIcon from "@mui/icons-material/Person";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 import { fetchAuditTrailPublish } from "shell/store/logs";
 import cx from "classnames";
@@ -49,20 +51,18 @@ export default connect((state) => {
             backgroundColor: "transparent",
             fontSize: "16px",
             color: "#10182866",
-            ".MuiCardHeader-avatar": {
-              mr: 1,
-            },
+            borderBottom: 1,
+            borderColor: "grey.200",
           }}
           titleTypographyProps={{
             sx: {
-              fontWeight: 600,
-              fontSize: "14px",
-              lineHeight: "20px",
+              fontWeight: 400,
+              fontSize: "12px",
+              lineHeight: "32px",
               color: "#101828",
             },
           }}
-          avatar={<PersonIcon fontSize="inherit" color="inherit" />}
-          title="Publish History"
+          title="PUBLISH HISTORY"
         ></CardHeader>
         <CardContent
           className={cx(
@@ -71,32 +71,51 @@ export default connect((state) => {
           )}
           sx={{
             p: 0,
+            pt: 2,
           }}
         >
           {loading ? (
             <p>Loading Logs</p>
           ) : (
             <>
-              <ul className="logs">
-                {Array.isArray(logs) && !logs.length && <p>Not published</p>}
+              <Stack gap={1.5}>
+                {Array.isArray(logs) && !logs.length && (
+                  <Typography>Not published</Typography>
+                )}
 
                 {Array.isArray(logs) &&
                   logs.map((log) => {
                     const { firstName, lastName } = log;
                     return (
-                      <li className="log" key={log.ZUID}>
-                        <strong>{`${firstName} ${lastName}`}</strong> published{" "}
-                        {moment(log.happenedAt).fromNow()}
-                      </li>
+                      <Stack direction="row" justifyContent="space-between">
+                        <Typography
+                          sx={{
+                            fontWeight: 500,
+                            fontSize: "14px",
+                            lineHeight: "20px",
+                            color: "#101828",
+                          }}
+                        >{`${firstName} ${lastName}`}</Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 500,
+                            fontSize: "14px",
+                            lineHeight: "20px",
+                            color: "#1018288f",
+                          }}
+                        >
+                          {moment(log.happenedAt).fromNow()}
+                        </Typography>
+                      </Stack>
                     );
                   })}
-              </ul>
-              <AppLink
-                className={styles.AppLink}
-                to={`/reports/activity-log/resources/${props.itemZUID}`}
-              >
-                View Logs
-              </AppLink>
+                <AppLink
+                  className={styles.AppLink}
+                  to={`/reports/activity-log/resources/${props.itemZUID}`}
+                >
+                  View Logs
+                </AppLink>
+              </Stack>
             </>
           )}
         </CardContent>
