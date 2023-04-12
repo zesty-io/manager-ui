@@ -7,6 +7,7 @@ import isEmpty from "lodash/isEmpty";
 
 import Button from "@mui/material/Button";
 import ClearIcon from "@mui/icons-material/Clear";
+import Typography from "@mui/material/Typography";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -625,6 +626,32 @@ export default connect((state, props) => {
 
   return (
     <main className={styles.ItemList}>
+      <Typography
+        sx={{
+          fontWeight: 600,
+          fontSize: "24px",
+          lineHeight: "32px",
+          letterSpacing: "-0.02em",
+          color: "text.primary",
+          pl: 4,
+          pt: 2,
+        }}
+      >
+        {props.model?.label}
+      </Typography>
+      <Typography
+        sx={{
+          pt: 0.5,
+          pl: 4,
+          fontSize: "12px",
+          fontWeight: 400,
+          lineHeight: "18px",
+          letterSpacing: "0.15px",
+          color: "text.secondary",
+        }}
+      >
+        {itemCount} Items
+      </Typography>
       <SetActions
         user={props.user}
         modelZUID={props.modelZUID}
