@@ -1,15 +1,11 @@
 import { memo, useState } from "react";
 
-import Box from "@mui/material/Box";
 import LoadingButton from "@mui/lab/LoadingButton";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionActions from "@mui/material/AccordionActions";
 import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import LinkOffIcon from "@mui/icons-material/LinkOff";
-import UnpublishedIcon from "@mui/icons-material/Unpublished";
+import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
 
 import { unpublish } from "shell/store/content";
 import { useHistory, useLocation } from "react-router";
@@ -34,61 +30,69 @@ export const Unpublish = memo(function Unpublish(props) {
   };
 
   return (
-    <Box sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}>
-      <Accordion elevation={0}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
+    <Card sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }} elevation={0}>
+      <CardHeader
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          fontSize: "16px",
+          color: "#10182866",
+          borderBottom: 1,
+          borderColor: "grey.200",
+        }}
+        titleTypographyProps={{
+          sx: {
+            fontWeight: 400,
+            fontSize: "12px",
+            lineHeight: "32px",
+            color: "#101828",
+          },
+        }}
+        title="UNPUBLISH"
+      ></CardHeader>
+      <CardContent
+        sx={{
+          p: 0,
+          pt: 2,
+          "&:last-child": {
+            pb: 0,
+          },
+        }}
+      >
+        <Typography
+          variant="body2"
+          color="text.secondary"
           sx={{
-            backgroundColor: "transparent",
-            p: 0,
+            fontSize: "14px",
+            lineHeight: "20px",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              fontSize: "16px",
-              color: "#10182866",
-              ".MuiSvgIcon-root": {
-                mr: 1,
-              },
-            }}
-          >
-            <UnpublishedIcon fontSize="inherit" color="inherit" />
-            <Typography
-              sx={{
-                fontWeight: 600,
-                fontSize: "14px",
-                lineHeight: "20px",
-                color: "#101828",
-              }}
-            >
-              Unpublish
-            </Typography>
-          </Box>
-        </AccordionSummary>
-        <AccordionDetails
-          sx={{ display: "flex", flexDirection: "column", gap: "16px", p: 0 }}
+          By unpublishing this content it will no longer be served if the URL is
+          requested. The URL will return a 404 not found response.
+        </Typography>
+        <LoadingButton
+          disableElevation
+          variant="contained"
+          id="UnpublishItemButton"
+          onClick={handleUnpublish}
+          disabled={!isPublished}
+          loading={loading}
+          loadingPosition="start"
+          startIcon={<ManageAccountsRoundedIcon />}
+          sx={{
+            backgroundColor: "#F2F4F7",
+            color: "text.secondary",
+            mt: 1.5,
+
+            "&:hover": {
+              backgroundColor: "#E4E7EC",
+              color: "text.secondary",
+            },
+          }}
         >
-          <Typography>
-            By unpublishing this content it will no longer be served if the URL
-            is requested. The URL will return a 404 not found response.
-          </Typography>
-        </AccordionDetails>
-        <AccordionActions>
-          <LoadingButton
-            variant="contained"
-            id="UnpublishItemButton"
-            onClick={handleUnpublish}
-            disabled={!isPublished}
-            loading={loading}
-            loadingPosition="start"
-            startIcon={<LinkOffIcon />}
-          >
-            Unpublish
-          </LoadingButton>
-        </AccordionActions>
-      </Accordion>
-    </Box>
+          Manage Publish State
+        </LoadingButton>
+      </CardContent>
+    </Card>
   );
 });
