@@ -19,10 +19,32 @@ export const ContentLinks = memo(function ContentLinks(props) {
     <Fragment>
       <Card className={styles.ContentLinks} sx={{ m: 2 }} elevation={0}>
         <CardHeader
-          avatar={<LinkIcon fontSize="small" />}
+          sx={{
+            p: 0,
+            backgroundColor: "transparent",
+            fontSize: "16px",
+            color: "#10182866",
+            ".MuiCardHeader-avatar": {
+              mr: 1,
+            },
+          }}
+          titleTypographyProps={{
+            sx: {
+              fontWeight: 600,
+              fontSize: "14px",
+              lineHeight: "20px",
+              color: "#101828",
+            },
+          }}
+          avatar={<LinkIcon fontSize="inherit" color="inherit" />}
           title="Links"
         ></CardHeader>
-        <CardContent className={styles.Content}>
+        <CardContent
+          className={styles.Content}
+          sx={{
+            p: 0,
+          }}
+        >
           <ul>
             {props.item?.web?.path && (
               <Fragment>
