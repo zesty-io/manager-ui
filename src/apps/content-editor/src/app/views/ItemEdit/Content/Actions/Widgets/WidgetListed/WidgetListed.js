@@ -59,7 +59,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
           },
         }}
       >
-        <FormLabel sx={{ color: "primary.dark" }}>
+        <FormLabel sx={{ color: "secondary" }}>
           <Stack
             direction="row"
             alignItems="center"
@@ -74,7 +74,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
             >
               <InfoIcon fontSize="small" />
             </Tooltip>
-            Available in Loops
+            &nbsp;Available in Loops
           </Stack>
         </FormLabel>
         <ToggleButtonGroup

@@ -209,7 +209,6 @@ function DashboardCardFooter(props) {
     <CardActions>
       <Button
         variant="contained"
-        color="secondary"
         onClick={() => history.push(`/content/${props.contentModelZUID}/new`)}
         startIcon={<AddIcon />}
       >
