@@ -71,64 +71,6 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
           },
         }}
       >
-        {/* <ButtonGroup className={styles.ShareLinks}>
-          <span
-            className="twitter"
-            onClick={(evt) =>
-              handleOpen(
-                evt,
-                `https://twitter.com/share?url=${encodeURIComponent(
-                  props.url
-                )}&text=${encodeURIComponent(props.metaLinkText)}`
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faTwitterSquare} />
-            <p>Tweet</p>
-          </span>
-          <span
-            className="facebook"
-            onClick={(evt) =>
-              handleOpen(
-                evt,
-                `http://www.facebook.com/sharer.php?u=${encodeURIComponent(
-                  props.url
-                )}&t=${encodeURIComponent(props.metaLinkText)}`
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faFacebookSquare} />
-            <p>Share</p>
-          </span>
-          <span
-            className="linkedin"
-            onClick={(evt) =>
-              handleOpen(
-                evt,
-                `http://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
-                  props.url
-                )}`
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faLinkedinIn} />
-            <p>Share</p>
-          </span>
-          <span
-            className="reddit"
-            onClick={(evt) =>
-              handleOpen(
-                evt,
-                `http://reddit.com/submit?url=${encodeURIComponent(
-                  props.url
-                )}&title=${encodeURIComponent(props.metaLinkText)}`
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faRedditSquare} />
-            <p>Share</p>
-          </span>
-        </ButtonGroup> */}
         <Stack
           gap={1.5}
           sx={{
