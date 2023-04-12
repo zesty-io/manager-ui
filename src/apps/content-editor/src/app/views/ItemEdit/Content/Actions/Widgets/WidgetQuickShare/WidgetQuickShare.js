@@ -139,10 +139,70 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
           }}
         >
           <Link
-            href={`http://reddit.com/submit?url=${encodeURIComponent(
-              props.url
-            )}&title=${encodeURIComponent(props.metaLinkText)}`}
+            onClick={(evt) =>
+              handleOpen(
+                evt,
+                `https://twitter.com/share?url=${encodeURIComponent(
+                  props.url
+                )}&text=${encodeURIComponent(props.metaLinkText)}`
+              )
+            }
             underline="none"
+            sx={{
+              cursor: "pointer",
+              color: "info.dark",
+            }}
+          >
+            <FontAwesomeIcon icon={faTwitterSquare} /> Tweet
+          </Link>
+          <Link
+            onClick={(evt) =>
+              handleOpen(
+                evt,
+                `http://www.facebook.com/sharer.php?u=${encodeURIComponent(
+                  props.url
+                )}&t=${encodeURIComponent(props.metaLinkText)}`
+              )
+            }
+            underline="none"
+            sx={{
+              cursor: "pointer",
+              color: "info.dark",
+            }}
+          >
+            <FontAwesomeIcon icon={faFacebookSquare} /> Share
+          </Link>
+          <Link
+            onClick={(evt) =>
+              handleOpen(
+                evt,
+                `http://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
+                  props.url
+                )}`
+              )
+            }
+            underline="none"
+            sx={{
+              cursor: "pointer",
+              color: "info.dark",
+            }}
+          >
+            <FontAwesomeIcon icon={faLinkedinIn} /> Share
+          </Link>
+          <Link
+            onClick={(evt) =>
+              handleOpen(
+                evt,
+                `http://reddit.com/submit?url=${encodeURIComponent(
+                  props.url
+                )}&title=${encodeURIComponent(props.metaLinkText)}`
+              )
+            }
+            underline="none"
+            sx={{
+              cursor: "pointer",
+              color: "info.dark",
+            }}
           >
             <FontAwesomeIcon icon={faRedditSquare} /> Share
           </Link>
