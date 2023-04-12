@@ -41,7 +41,7 @@ export const ContentInfo = (props) => {
   };
 
   return (
-    <Card elevation={0} sx={{ mx: 2, mb: 3 }}>
+    <Card elevation={0} sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}>
       <CardHeader
         sx={{
           p: 0,

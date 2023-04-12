@@ -8,6 +8,14 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import ShareIcon from "@mui/icons-material/Share";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
 
 import styles from "./WidgetQuickShare.less";
 import {
@@ -29,7 +37,11 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
   };
 
   return (
-    <Card id="WidgetQuickShare" sx={{ mx: 2, mb: 3 }} elevation={0}>
+    <Card
+      id="WidgetQuickShare"
+      sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+      elevation={0}
+    >
       <CardHeader
         sx={{
           p: 0,
@@ -59,7 +71,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
           },
         }}
       >
-        <ButtonGroup className={styles.ShareLinks}>
+        {/* <ButtonGroup className={styles.ShareLinks}>
           <span
             className="twitter"
             onClick={(evt) =>
@@ -116,7 +128,25 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
             <FontAwesomeIcon icon={faRedditSquare} />
             <p>Share</p>
           </span>
-        </ButtonGroup>
+        </ButtonGroup> */}
+        <Stack
+          gap={1.5}
+          sx={{
+            fontSize: "14px",
+            fontWeight: 500,
+            lineHeight: "20px",
+            letteSpacing: "0px",
+          }}
+        >
+          <Link
+            href={`http://reddit.com/submit?url=${encodeURIComponent(
+              props.url
+            )}&title=${encodeURIComponent(props.metaLinkText)}`}
+            underline="none"
+          >
+            <FontAwesomeIcon icon={faRedditSquare} /> Share
+          </Link>
+        </Stack>
       </CardContent>
     </Card>
   );

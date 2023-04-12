@@ -33,7 +33,7 @@ export default connect((state, props) => {
     <Card
       id="WidgetDraftHistory"
       className="pageDetailWidget"
-      sx={{ mx: 2, mb: 3 }}
+      sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
       elevation={0}
     >
       <CardHeader

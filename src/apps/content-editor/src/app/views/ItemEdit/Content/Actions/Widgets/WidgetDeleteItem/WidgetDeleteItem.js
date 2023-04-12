@@ -25,7 +25,10 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
   const [deleting, setDeleting] = useState(false);
 
   return (
-    <Box sx={{ mx: 2, mb: 3 }} data-cy="WidgetDeleteAccordion">
+    <Box
+      sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+      data-cy="WidgetDeleteAccordion"
+    >
       <Accordion elevation={0}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}

@@ -34,7 +34,7 @@ export const Unpublish = memo(function Unpublish(props) {
   };
 
   return (
-    <Box sx={{ mx: 2, mb: 3 }}>
+    <Box sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}>
       <Accordion elevation={0}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}

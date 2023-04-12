@@ -42,7 +42,7 @@ export default connect((state) => {
       <Card
         id="WidgetPublishHistory"
         className="pageDetailWidget"
-        sx={{ mx: 2, mb: 3 }}
+        sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
         elevation={0}
       >
         <CardHeader
