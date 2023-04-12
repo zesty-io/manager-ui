@@ -7,6 +7,7 @@ import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "@zesty-io/core";
+import styles from "./WidgetDraftHistory.less";
 
 export default connect((state, props) => {
   return {
@@ -34,19 +35,34 @@ export default connect((state, props) => {
       elevation={0}
     >
       <CardHeader
-        avatar={<PersonIcon fontSize="small" />}
-        title={
-          <>
-            {" "}
-            <span className="audit-title">Draft History</span>
-          </>
-        }
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          fontSize: "16px",
+          color: "#10182866",
+          ".MuiCardHeader-avatar": {
+            mr: 1,
+          },
+        }}
+        titleTypographyProps={{
+          sx: {
+            fontWeight: 600,
+            fontSize: "14px",
+            lineHeight: "20px",
+            color: "#101828",
+          },
+        }}
+        avatar={<PersonIcon fontSize="inherit" color="inherit" />}
+        title="Draft History"
       ></CardHeader>
       <CardContent
         className={cx(
           "setting-field audit-trail-content",
           SharedWidgetStyles.CardListSpace
         )}
+        sx={{
+          p: 0,
+        }}
       >
         {loading ? (
           <p>Loading Logs</p>
@@ -63,7 +79,10 @@ export default connect((state, props) => {
                 </li>
               ))}
             </ul>
-            <AppLink to={`/reports/activity-log/resources/${props.itemZUID}`}>
+            <AppLink
+              className={styles.AppLink}
+              to={`/reports/activity-log/resources/${props.itemZUID}`}
+            >
               View Logs
             </AppLink>
           </>

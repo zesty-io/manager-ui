@@ -14,13 +14,7 @@ export function LiveUrl(props) {
   const url = domain + pathPart;
 
   return props.item.publishing && props.item.publishing.isPublished ? (
-    <Link
-      underline="none"
-      color="secondary"
-      target="_blank"
-      title="Live Published"
-      href={url}
-    >
+    <Link underline="none" target="_blank" title="Live Published" href={url}>
       {props.item.web.pathPart === "zesty_home" ? (
         <FontAwesomeIcon icon={faHome} />
       ) : (

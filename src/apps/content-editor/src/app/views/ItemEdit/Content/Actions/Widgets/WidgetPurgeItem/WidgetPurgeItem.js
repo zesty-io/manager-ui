@@ -23,10 +23,32 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
       elevation={0}
     >
       <CardHeader
-        avatar={<SyncIcon fontSize="small" />}
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          fontSize: "16px",
+          color: "#10182866",
+          ".MuiCardHeader-avatar": {
+            mr: 1,
+          },
+        }}
+        titleTypographyProps={{
+          sx: {
+            fontWeight: 600,
+            fontSize: "14px",
+            lineHeight: "20px",
+            color: "#101828",
+          },
+        }}
+        avatar={<SyncIcon fontSize="inherit" color="inherit" />}
         title="CDN"
       ></CardHeader>
-      <CardContent className="setting-field">
+      <CardContent
+        className="setting-field"
+        sx={{
+          p: 0,
+        }}
+      >
         <p>
           Force the CDN to refresh the cache for this item. CDN caching can take
           from a few seconds to minutes to occur as this re-caches the item

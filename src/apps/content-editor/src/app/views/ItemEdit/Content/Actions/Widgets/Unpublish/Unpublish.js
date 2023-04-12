@@ -36,14 +36,39 @@ export const Unpublish = memo(function Unpublish(props) {
   return (
     <Box sx={{ m: 2 }}>
       <Accordion elevation={0}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography sx={{ display: "flex", alignItems: "center" }}>
-            {" "}
-            <UnpublishedIcon fontSize="small" /> Unpublish
-          </Typography>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          sx={{
+            backgroundColor: "transparent",
+            p: 0,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              fontSize: "16px",
+              color: "#10182866",
+              ".MuiSvgIcon-root": {
+                mr: 1,
+              },
+            }}
+          >
+            <UnpublishedIcon fontSize="inherit" color="inherit" />
+            <Typography
+              sx={{
+                fontWeight: 600,
+                fontSize: "14px",
+                lineHeight: "20px",
+                color: "#101828",
+              }}
+            >
+              Unpublish
+            </Typography>
+          </Box>
         </AccordionSummary>
         <AccordionDetails
-          sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
+          sx={{ display: "flex", flexDirection: "column", gap: "16px", p: 0 }}
         >
           <Typography>
             By unpublishing this content it will no longer be served if the URL

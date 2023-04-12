@@ -28,10 +28,31 @@ export const WidgetListed = memo(function WidgetListed(props) {
   return (
     <Card className={styles.WidgetListed} sx={{ m: 2 }} elevation={0}>
       <CardHeader
-        avatar={<CodeIcon fontSize="small" />}
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          fontSize: "16px",
+          color: "#10182866",
+          ".MuiCardHeader-avatar": {
+            mr: 1,
+          },
+        }}
+        titleTypographyProps={{
+          sx: {
+            fontWeight: 600,
+            fontSize: "14px",
+            lineHeight: "20px",
+            color: "#101828",
+          },
+        }}
+        avatar={<CodeIcon fontSize="inherit" color="inherit" />}
         title="Parsley Behaviors"
       ></CardHeader>
-      <CardContent>
+      <CardContent
+        sx={{
+          p: 0,
+        }}
+      >
         <FormLabel sx={{ color: "primary.dark" }}>
           <Stack
             direction="row"

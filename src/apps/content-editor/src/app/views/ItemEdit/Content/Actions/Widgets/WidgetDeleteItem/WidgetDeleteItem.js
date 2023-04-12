@@ -27,14 +27,39 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
   return (
     <Box sx={{ m: 2 }} data-cy="WidgetDeleteAccordion">
       <Accordion elevation={0}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography sx={{ display: "flex", alignItems: "center" }}>
-            {" "}
-            <DeleteIcon fontSize="small" /> Delete Content
-          </Typography>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          sx={{
+            backgroundColor: "transparent",
+            p: 0,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              fontSize: "16px",
+              color: "#10182866",
+              ".MuiSvgIcon-root": {
+                mr: 1,
+              },
+            }}
+          >
+            <DeleteIcon fontSize="inherit" color="inherit" />
+            <Typography
+              sx={{
+                fontWeight: 600,
+                fontSize: "14px",
+                lineHeight: "20px",
+                color: "#101828",
+              }}
+            >
+              Delete Content
+            </Typography>
+          </Box>
         </AccordionSummary>
         <AccordionDetails
-          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+          sx={{ display: "flex", flexDirection: "column", gap: 2, p: 0 }}
         >
           <Typography>
             Delete this content? Removing it from all locations throughout your

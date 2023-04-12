@@ -31,10 +31,32 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
   return (
     <Card id="WidgetQuickShare" sx={{ m: 2 }} elevation={0}>
       <CardHeader
-        avatar={<ShareIcon fontSize="small" />}
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          fontSize: "16px",
+          color: "#10182866",
+          ".MuiCardHeader-avatar": {
+            mr: 1,
+          },
+        }}
+        titleTypographyProps={{
+          sx: {
+            fontWeight: 600,
+            fontSize: "14px",
+            lineHeight: "20px",
+            color: "#101828",
+          },
+        }}
+        avatar={<ShareIcon fontSize="inherit" color="inherit" />}
         title="Quick Share Options"
       ></CardHeader>
-      <CardContent className="setting-field">
+      <CardContent
+        className="setting-field"
+        sx={{
+          p: 0,
+        }}
+      >
         <ButtonGroup className={styles.ShareLinks}>
           <span
             className="twitter"

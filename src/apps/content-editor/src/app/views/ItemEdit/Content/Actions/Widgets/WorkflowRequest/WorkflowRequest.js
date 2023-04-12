@@ -126,14 +126,39 @@ ${
   return (
     <Box sx={{ m: 2 }}>
       <Accordion elevation={0}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography sx={{ display: "flex", alignItems: "center" }}>
-            {" "}
-            <EmailIcon fontSize="small" /> Workflow Request
-          </Typography>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          sx={{
+            backgroundColor: "transparent",
+            p: 0,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              fontSize: "16px",
+              color: "#10182866",
+              ".MuiSvgIcon-root": {
+                mr: 1,
+              },
+            }}
+          >
+            <EmailIcon fontSize="inherit" color="inherit" />
+            <Typography
+              sx={{
+                fontWeight: 600,
+                fontSize: "14px",
+                lineHeight: "20px",
+                color: "#101828",
+              }}
+            >
+              Workflow Request
+            </Typography>
+          </Box>
         </AccordionSummary>
         <AccordionDetails
-          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+          sx={{ display: "flex", flexDirection: "column", gap: 2, p: 0 }}
         >
           <Box component="div">
             <Typography component="h3" variant="h6">

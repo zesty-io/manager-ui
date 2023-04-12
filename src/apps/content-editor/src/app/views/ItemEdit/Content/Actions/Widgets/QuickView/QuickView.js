@@ -42,26 +42,7 @@ export const QuickView = memo(function QuickView(props) {
             },
           }}
           avatar={<AccountTreeIcon fontSize="inherit" color="inherit" />}
-          title={
-            <section className={styles.StatusHeader}>
-              Item Status
-              {/* <div
-                className={
-                  isPublished
-                    ? styles.Published
-                    : isScheduled
-                    ? styles.Scheduled
-                    : styles.Unpublished
-                }
-              >
-                {isPublished
-                  ? "Published"
-                  : isScheduled
-                  ? "Scheduled"
-                  : "Unpublished"}
-              </div> */}
-            </section>
-          }
+          title={<section className={styles.StatusHeader}>Item Status</section>}
         ></CardHeader>
         <CardContent
           className={cx(styles.Content, SharedWidgetStyles.CardListSpace)}
@@ -116,11 +97,14 @@ export const QuickView = memo(function QuickView(props) {
         <CardActions sx={{ gap: 1, px: 0 }}>
           {codeAccess && (
             <>
-              <AppLink to={`/schema/${props.modelZUID}`}>
+              <AppLink
+                className={styles.AppLink}
+                to={`/schema/${props.modelZUID}`}
+              >
                 <FontAwesomeIcon icon={faDatabase} />
                 &nbsp;Edit Schema
               </AppLink>
-              <AppLink to={codePath}>
+              <AppLink className={styles.AppLink} to={codePath}>
                 <FontAwesomeIcon icon={faCode} />
                 &nbsp;Edit Code
               </AppLink>
