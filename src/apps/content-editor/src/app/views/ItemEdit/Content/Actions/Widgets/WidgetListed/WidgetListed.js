@@ -26,7 +26,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
     });
   };
   return (
-    <Card className={styles.WidgetListed} sx={{ m: 2 }} elevation={0}>
+    <Card className={styles.WidgetListed} sx={{ mx: 2, mb: 3 }} elevation={0}>
       <CardHeader
         sx={{
           p: 0,
@@ -51,6 +51,9 @@ export const WidgetListed = memo(function WidgetListed(props) {
       <CardContent
         sx={{
           p: 0,
+          "&:last-child": {
+            pb: 0,
+          },
         }}
       >
         <FormLabel sx={{ color: "primary.dark" }}>

@@ -19,7 +19,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
     <Card
       id="WidgetDeleteItem"
       className="pageDetailWidget"
-      sx={{ m: 2 }}
+      sx={{ mx: 2, mb: 3 }}
       elevation={0}
     >
       <CardHeader
@@ -47,6 +47,9 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
         className="setting-field"
         sx={{
           p: 0,
+          "&:last-child": {
+            pb: 0,
+          },
         }}
       >
         <p>

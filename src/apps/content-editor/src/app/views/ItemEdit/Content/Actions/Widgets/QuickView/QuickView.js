@@ -35,7 +35,11 @@ export const QuickView = memo(function QuickView(props) {
 
   return (
     <Fragment>
-      <Card className={styles.QuickView} sx={{ m: 2 }} elevation={0}>
+      <Card
+        className={styles.QuickView}
+        sx={{ mx: 2, mb: 3, mt: 2 }}
+        elevation={0}
+      >
         <CardHeader
           sx={{
             p: 0,
@@ -60,6 +64,9 @@ export const QuickView = memo(function QuickView(props) {
           sx={{
             p: 0,
             pt: 2,
+            "&:last-child": {
+              pb: 0,
+            },
           }}
         >
           <Stack gap={1.5}>

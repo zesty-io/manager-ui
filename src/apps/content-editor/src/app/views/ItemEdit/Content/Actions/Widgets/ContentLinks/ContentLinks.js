@@ -19,7 +19,7 @@ import styles from "./ContentLinks.less";
 export const ContentLinks = memo(function ContentLinks(props) {
   return (
     <Fragment>
-      <Card className={styles.ContentLinks} sx={{ m: 2 }} elevation={0}>
+      <Card className={styles.ContentLinks} sx={{ mx: 2, mb: 3 }} elevation={0}>
         <CardHeader
           sx={{
             p: 0,
@@ -44,6 +44,9 @@ export const ContentLinks = memo(function ContentLinks(props) {
           sx={{
             p: 0,
             pt: 2,
+            "&:last-child": {
+              pb: 0,
+            },
           }}
         >
           <List>

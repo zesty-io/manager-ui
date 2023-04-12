@@ -41,7 +41,7 @@ export const ContentInfo = (props) => {
   };
 
   return (
-    <Card elevation={0} sx={{ m: 2 }}>
+    <Card elevation={0} sx={{ mx: 2, mb: 3 }}>
       <CardHeader
         sx={{
           p: 0,
@@ -65,6 +65,9 @@ export const ContentInfo = (props) => {
         sx={{
           p: 0,
           pt: 2,
+          "&:last-child": {
+            pb: 0,
+          },
         }}
       >
         <Stack gap={1.5}>

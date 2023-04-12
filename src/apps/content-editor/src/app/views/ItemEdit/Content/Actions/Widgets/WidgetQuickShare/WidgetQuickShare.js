@@ -29,7 +29,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
   };
 
   return (
-    <Card id="WidgetQuickShare" sx={{ m: 2 }} elevation={0}>
+    <Card id="WidgetQuickShare" sx={{ mx: 2, mb: 3 }} elevation={0}>
       <CardHeader
         sx={{
           p: 0,
@@ -55,6 +55,9 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
         className="setting-field"
         sx={{
           p: 0,
+          "&:last-child": {
+            pb: 0,
+          },
         }}
       >
         <ButtonGroup className={styles.ShareLinks}>

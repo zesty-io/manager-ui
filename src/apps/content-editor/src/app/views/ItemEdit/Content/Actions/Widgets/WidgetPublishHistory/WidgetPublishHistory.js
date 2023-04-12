@@ -42,7 +42,7 @@ export default connect((state) => {
       <Card
         id="WidgetPublishHistory"
         className="pageDetailWidget"
-        sx={{ m: 2 }}
+        sx={{ mx: 2, mb: 3 }}
         elevation={0}
       >
         <CardHeader
@@ -72,6 +72,9 @@ export default connect((state) => {
           sx={{
             p: 0,
             pt: 2,
+            "&:last-child": {
+              pb: 0,
+            },
           }}
         >
           {loading ? (
