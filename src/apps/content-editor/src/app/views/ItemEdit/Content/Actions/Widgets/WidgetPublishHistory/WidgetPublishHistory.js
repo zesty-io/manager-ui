@@ -75,19 +75,41 @@ export default connect((state) => {
           }}
         >
           {loading ? (
-            <p>Loading Logs</p>
+            <Typography
+              sx={{
+                fontWeight: 500,
+                fontSize: "14px",
+                lineHeight: "20px",
+                color: "#101828",
+              }}
+            >
+              Loading Logs
+            </Typography>
           ) : (
             <>
               <Stack gap={1.5}>
                 {Array.isArray(logs) && !logs.length && (
-                  <Typography>Not published</Typography>
+                  <Typography
+                    sx={{
+                      fontWeight: 500,
+                      fontSize: "14px",
+                      lineHeight: "20px",
+                      color: "#101828",
+                    }}
+                  >
+                    Not published
+                  </Typography>
                 )}
 
                 {Array.isArray(logs) &&
                   logs.map((log) => {
                     const { firstName, lastName } = log;
                     return (
-                      <Stack direction="row" justifyContent="space-between">
+                      <Stack
+                        key={log.happenedAt}
+                        direction="row"
+                        justifyContent="space-between"
+                      >
                         <Typography
                           sx={{
                             fontWeight: 500,
