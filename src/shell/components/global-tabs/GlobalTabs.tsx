@@ -4,18 +4,17 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  FC,
   useMemo,
 } from "react";
-import { createDispatchHook, useDispatch, useSelector } from "react-redux";
-import { useLocation, Link as Link } from "react-router-dom";
-import { debounce } from "lodash";
+import { useDispatch, useSelector } from "react-redux";
+import { useWindowSize } from "react-use";
+import { useLocation } from "react-router-dom";
+import debounce from "lodash/debounce";
+import isEqual from "lodash/isEqual";
 
 import { Dropdown } from "./components/Dropdown";
 import { GlobalDirtyCodeModal } from "./components/GlobalDirtyCodeModal";
-import { ActiveTab, InactiveTabGroup } from "./components/Tab";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
+import { TopBarTab, UnpinnedTopBarTab } from "./components/Tab";
 import Stack from "@mui/material/Stack";
 
 import {
@@ -25,6 +24,7 @@ import {
   rebuildTabs,
   tabLocationEquality,
   setDocumentTitle,
+  updatePinnedTabs,
 } from "../../../shell/store/ui";
 import { AppState } from "../../store/types";
 import {
@@ -33,21 +33,23 @@ import {
 } from "../../services/mediaManager";
 import { useGetContentModelsQuery } from "../../services/instance";
 
-const MIN_TAB_WIDTH = 250;
-const MAX_TAB_WIDTH = 300;
+const MIN_TAB_WIDTH = 180;
+const MAX_TAB_WIDTH = 180;
 const TAB_PADDING = 16;
 const TAB_BORDER = 1;
+const MORE_MENU_WIDTH = 85;
 
 export default memo(function GlobalTabs() {
+  const windowWidth = useWindowSize();
   const location = useLocation();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const dispatch = useDispatch();
   const pinnedTabs = useSelector((state: AppState) => state.ui.pinnedTabs);
+  const [tabs, setTabs] = useState([]);
 
   const instanceZUID = useSelector((state: AppState) => state.instance.ZUID);
   const loadedTabs = useSelector((state: AppState) => state.ui.loadedTabs);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const { data: models } = useGetContentModelsQuery();
   const apps = useSelector((state: AppState) => state.apps.installed);
 
@@ -76,16 +78,6 @@ export default memo(function GlobalTabs() {
     };
   }, [binGroups, models]);
 
-  // update state if window is resized (debounced)
-  useEffect(() => {
-    const debouncedResize = debounce(function handleResize() {
-      setWindowWidth(window.innerWidth);
-    }, 300);
-
-    window.addEventListener("resize", debouncedResize);
-    return () => window.removeEventListener("resize", debouncedResize);
-  }, []);
-
   // load tabs from Indexeddb
   useEffect(() => {
     dispatch(loadTabs(instanceZUID));
@@ -93,6 +85,8 @@ export default memo(function GlobalTabs() {
 
   useEffect(() => {
     dispatch(setDocumentTitle(location, queryData));
+
+    // If current location is not in topbartabs array, add it
   }, [location.pathname, location.search, queryData]);
 
   // rebuild tabs if any of the store slices changes
@@ -103,6 +97,10 @@ export default memo(function GlobalTabs() {
     }
   }, [loadedTabs, models, content, files, queryData, apps, users]);
 
+  useEffect(() => {
+    setTabs(pinnedTabs);
+  }, [pinnedTabs]);
+
   // measure the tab bar width and set state
   // to trigger a synchronous re-render before paint
   // recalculate tab bar width if window is resized
@@ -110,67 +108,117 @@ export default memo(function GlobalTabs() {
   useLayoutEffect(() => {
     if (tabContainerRef.current) {
       setTabBarWidth(
-        Math.floor(tabContainerRef.current.getBoundingClientRect().width)
+        Math.floor(tabContainerRef.current.clientWidth) - MORE_MENU_WIDTH
       );
     }
   }, [windowWidth]);
 
+  /**
+   * Determines which tabs will be placed on the topbar and dropdown menu.
+   */
+  const getTabs = (numTabs: number) => {
+    const isCurrLocPinned = Boolean(
+      tabs.find((tab) => tabLocationEquality(location, tab))
+    );
+    const tabCount = isCurrLocPinned ? numTabs : numTabs - 1;
+    const topbar = tabs.filter((_, i) => i < tabCount);
+    const dropdown = tabs.filter((_, i) => i >= tabCount);
+
+    // If the current active tab gets pushed to the dropdown menu
+    // on tab resize, move it as the first tab.
+    const currLocInDropdown = dropdown.find((tab) =>
+      tabLocationEquality(location, tab)
+    );
+    const debouncedUpdate = debounce(
+      () => dispatch(updatePinnedTabs(currLocInDropdown)),
+      250
+    );
+
+    if (currLocInDropdown) {
+      debouncedUpdate();
+    }
+
+    return { topbar, dropdown };
+  };
+
   const tabWidth =
     Math.floor(
       Math.min(
-        Math.max(tabBarWidth / pinnedTabs.length, MIN_TAB_WIDTH),
+        Math.max(tabBarWidth / tabs.length, MIN_TAB_WIDTH),
         MAX_TAB_WIDTH
       )
     ) -
     TAB_PADDING -
     TAB_BORDER;
 
-  //const inactiveTabs = [] //tabs.filter(tab => tab.pathname !== location.pathname)
-  const inactiveTabs = pinnedTabs.filter(
-    (tab) => !tabLocationEquality(tab, location)
-  );
-
+  // Determines if the opened url is a pinned tab or not. Used to show/hide the unpinned tab component.
+  const isCurrLocPinned = tabs.filter((tab) =>
+    tabLocationEquality(tab, location)
+  ).length;
   const numTabs = Math.floor(tabBarWidth / tabWidth);
-
-  const topBarTabs = inactiveTabs.filter((t, i) => i < numTabs);
-  const dropDownTabs = inactiveTabs.filter((t, i) => i >= numTabs);
+  const { topbar, dropdown } = getTabs(numTabs);
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <GlobalDirtyCodeModal />
       <Stack
         ref={tabContainerRef}
         component="nav"
         direction="row"
         sx={{
-          height: "46px",
-          padding: "8px 0 0 0",
           display: "grid",
-          gridTemplateColumns: "1fr 80px",
+          "*": {
+            boxSizing: "border-box",
+          },
         }}
       >
         <Stack
-          component="ol"
-          direction="row"
+          component="div"
+          overflow="hidden"
+          display="grid"
+          gridTemplateColumns={`repeat(${numTabs}, ${tabWidth}px) ${MORE_MENU_WIDTH}px`}
           sx={{
-            display: "flex",
-            overflow: "hidden",
+            "& .tab-item:nth-of-type(1) > div": {
+              borderColor: "transparent",
+            },
+            "& .tab-item:nth-last-of-type(2):hover + .more-menu-tab > span": {
+              borderColor: "transparent",
+            },
+            "& .tab-item:hover + .tab-item > div": {
+              borderColor: "transparent",
+            },
+            "& .tab-item[data-active=true] + .tab-item > div": {
+              borderColor: "transparent",
+            },
+            "& .tab-item[data-active=true] + .more-menu-tab > span": {
+              borderColor: "transparent",
+            },
           }}
         >
-          <ActiveTab tabWidth={tabWidth} />
-          <InactiveTabGroup tabs={topBarTabs} tabWidth={tabWidth} />
+          {!isCurrLocPinned && <UnpinnedTopBarTab tabWidth={tabWidth} />}
+          {topbar.map((tab, i) => (
+            <TopBarTab
+              tabIndex={i}
+              key={tab.pathname + tab.search}
+              tab={tab}
+              tabWidth={tabWidth}
+              isDarkMode={tab.app === "Code"}
+              isActive={tabLocationEquality(tab, location)}
+              isPinned={pinnedTabs.some((t) => isEqual(t, tab))}
+            />
+          ))}
+          <Dropdown
+            tabs={dropdown}
+            tabWidth={MORE_MENU_WIDTH}
+            removeOne={(tab) => {
+              dispatch(unpinTab(tab, false, queryData));
+            }}
+            removeMany={(tabs) => {
+              dispatch(unpinManyTabs(tabs));
+            }}
+          />
         </Stack>
-        <Dropdown
-          tabs={dropDownTabs}
-          tabWidth={tabWidth}
-          removeOne={(tab) => {
-            dispatch(unpinTab(tab, false, queryData));
-          }}
-          removeMany={(tabs) => {
-            dispatch(unpinManyTabs(tabs));
-          }}
-        />
       </Stack>
-    </ThemeProvider>
+    </>
   );
 });

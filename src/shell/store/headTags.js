@@ -81,16 +81,16 @@ export function headTags(state = [], action) {
 // Transform attributes into an array structure.
 // Also helpful for maintaining order
 function transformAttributes(attrs) {
-  if (!Object.keys(attrs).length) {
-    return {};
+  if (!!attrs && !!Object.keys(attrs).length) {
+    return Object.keys(attrs).map((key) => {
+      return {
+        key: key,
+        value: attrs[key],
+      };
+    });
   }
 
-  return Object.keys(attrs).map((key) => {
-    return {
-      key: key,
-      value: attrs[key],
-    };
-  });
+  return {};
 }
 
 export const fetchHeadTags = () => {

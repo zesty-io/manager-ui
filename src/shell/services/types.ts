@@ -117,17 +117,22 @@ export interface Meta {
   createdByUserZUID: string;
 }
 export interface Data {
-  content: string;
-  david_uuid: string;
-  habibi: string;
-  image: string;
-  image_1: string;
-  image_2?: any;
-  image_3?: any;
-  image_4?: any;
-  image_5?: any;
-  title: string;
+  [key: string]: number | string | null | undefined;
 }
+
+type UnorderedQuery = {
+  limit?: number;
+  startDate?: string;
+  endDate?: string;
+  query: string;
+};
+
+type OrderedQuery = UnorderedQuery & {
+  order?: "created" | "modified" | "name";
+  dir: "asc" | "desc";
+};
+
+export type SearchQuery = UnorderedQuery | OrderedQuery;
 
 export interface ContentItem {
   web: Web;
@@ -135,6 +140,42 @@ export interface ContentItem {
   siblings: [{ [key: number]: { value: string; id: number } }] | [];
   data: Data;
   publishAt?: any;
+}
+
+export interface Instance {
+  ID: number;
+  ZUID: string;
+  blueprintID: number;
+  blueprintZUID: string;
+  cancelledReason: string | null;
+  createdAt: string;
+  createdByUserZUID: string;
+  domain: string;
+  ecoID: string | null;
+  ecoZUID: string | null;
+  legacy: boolean;
+  name: string;
+  planID: number;
+  prefs: string | null;
+  randomHashID: string;
+  requiresTwoFactor: number;
+  screenshotURL: string;
+  updatedAt: string;
+  useTLS: boolean;
+}
+
+export interface HeadTag {
+  ZUID: string;
+  type: string;
+  attributes: {
+    [key: string]: string;
+  };
+  resourceZUID: string;
+  sort: number;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface FieldSettingsOptions {
@@ -218,11 +259,26 @@ export interface Audit {
 }
 
 export interface User {
-  ZUID: string;
   ID: number;
-  firstName: string;
-  lastName: string;
+  ZUID: string;
+  authSource: string | null;
+  authyEnabled?: boolean;
+  authyPhoneCountryCode: string | null;
+  authyPhoneNumber: string | null;
+  authyUserID: string | null;
+  createdAt: string;
   email: string;
+  emailHash?: string;
+  firstName: string;
+  lastLogin: string;
+  lastName: string;
+  prefs: string | null;
+  signupInfo: string | null;
+  staff: boolean;
+  unverifiedEmails: string | null;
+  updatedAt: string;
+  verifiedEmails: string | null;
+  websiteCreator: boolean;
 }
 
 export interface SystemRole {
@@ -320,6 +376,19 @@ export interface InstanceSetting {
   createdAt: string;
   updatedAt: string;
 }
+
+export type Products =
+  | "launchpad"
+  | "content"
+  | "media"
+  | "schema"
+  | "code"
+  | "leads"
+  | "reports"
+  | "redirects"
+  | "settings"
+  | "release"
+  | "apps";
 
 type ContentNavItemType =
   | "dataset"

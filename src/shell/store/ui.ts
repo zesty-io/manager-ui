@@ -6,18 +6,20 @@ import { AppState } from "./types";
 import { isValid as zuidIsValid } from "zuid";
 import { ContentModel } from "../../shell/services/types";
 import {
-  faCode,
-  faCog,
-  faChartLine,
-  faDatabase,
-  faEdit,
-  faPlug,
-  faBullseye,
-  faImage,
-  faAddressCard,
-  IconDefinition,
-  faRocket,
-} from "@fortawesome/free-solid-svg-icons";
+  SearchRounded,
+  RocketLaunchRounded,
+  EditRounded,
+  ImageRounded,
+  BarChartRounded,
+  CodeRounded,
+  PowerRounded,
+  SettingsRounded,
+  RecentActorsRounded,
+  SvgIconComponent,
+  ExtensionRounded,
+  ShuffleRounded,
+} from "@mui/icons-material";
+import { Database } from "@zesty-io/material";
 import { isEqual } from "lodash";
 
 export type Tab = {
@@ -25,7 +27,7 @@ export type Tab = {
   search: string;
   name?: string;
   app?: string;
-  icon?: IconDefinition;
+  icon?: SvgIconComponent;
 };
 export type CodeEditorPosition = Record<
   string,
@@ -49,6 +51,7 @@ export type UIState = {
   duoMode: boolean;
   codeEditorPosition: null | CodeEditorPosition;
   codeChangesModal: null | CodeChangesModalInfo;
+  isUpdateFaviconModalOpen: boolean;
 };
 export const ui = createSlice({
   name: "ui",
@@ -64,6 +67,7 @@ export const ui = createSlice({
     duoMode: false,
     codeEditorPosition: null,
     codeChangesModal: null,
+    isUpdateFaviconModalOpen: false,
   },
   reducers: {
     loadTabsSuccess(
@@ -126,10 +130,28 @@ export const ui = createSlice({
     closeCodeChangesModal(state: UIState) {
       state.codeChangesModal = null;
     },
+    toggleUpdateFaviconModal(state: UIState, action: { payload: boolean }) {
+      state.isUpdateFaviconModalOpen = action.payload;
+    },
   },
 });
 
 export const { actions, reducer } = ui;
+
+const ICON_CONFIG: { [index: string]: SvgIconComponent } = Object.freeze({
+  launchpad: RocketLaunchRounded,
+  redirects: ShuffleRounded,
+  content: EditRounded,
+  media: ImageRounded,
+  schema: Database as SvgIconComponent,
+  code: CodeRounded,
+  leads: RecentActorsRounded,
+  settings: SettingsRounded,
+  app: PowerRounded,
+  reports: BarChartRounded,
+  search: SearchRounded,
+  apps: ExtensionRounded,
+});
 
 // Thunk helper functions
 export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
@@ -171,50 +193,37 @@ export function createTab(
 ) {
   const { path, parts, zuid, prefix, search } = parsedPath;
   const tab: Tab = { pathname: path, search };
-
   const appNameMap = {
-    launchpad: {
-      name: "Launchpad",
-      icon: faRocket,
-    },
-    seo: {
-      name: "SEO",
-      icon: faBullseye,
-    },
-    content: {
-      name: "Content",
-      icon: faEdit,
-    },
-    media: {
-      name: "All Media",
-      icon: faImage,
-    },
-    schema: {
-      name: "Schema",
-      icon: faDatabase,
-    },
-    code: {
-      name: "Code",
-      icon: faCode,
-    },
-    leads: {
-      name: "Leads",
-      icon: faAddressCard,
-    },
-    settings: {
-      name: "Settings",
-      icon: faCog,
-    },
+    launchpad: "Launchpad",
+    redirects: "Redirects",
+    content: "Content",
+    media: "All Media",
+    schema: "Schema",
+    code: "Code",
+    leads: "Leads",
+    settings: "Settings",
+    search: "Search",
+    apps: "Apps",
   };
 
   if (parts[0] === "app") {
-    tab.icon = faPlug;
+    // Icon is non-serializable so it cannot be saved to idb
+    Object.defineProperty(tab, "icon", {
+      value: ICON_CONFIG.app,
+      enumerable: false,
+    });
+
     const app = state.apps.installed.find(
       (app: { ZUID: string }) => app.ZUID === zuid
     );
     tab.name = app?.label || app?.name || "Custom App";
   } else if (parts[0] === "reports") {
-    tab.icon = faChartLine;
+    // Icon is non-serializable so it cannot be saved to idb
+    Object.defineProperty(tab, "icon", {
+      value: ICON_CONFIG.reports,
+      enumerable: false,
+    });
+
     switch (parts[1]) {
       case "activity-log":
         tab.name = "Activity Log";
@@ -259,9 +268,16 @@ export function createTab(
     }
   } else if (parts[0] in appNameMap) {
     const name = parts[0] as keyof typeof appNameMap;
-    tab.name = appNameMap[name].name;
-    tab.icon = appNameMap[name].icon;
-    tab.app = appNameMap[name].name;
+
+    // Icon is non-serializable so it cannot be saved to idb
+    Object.defineProperty(tab, "icon", {
+      value: ICON_CONFIG[name],
+      enumerable: false,
+    });
+
+    tab.name = appNameMap[name];
+    tab.app = appNameMap[name];
+
     if (parts[0] === "content" && parts[2] === "new" && zuidIsValid(parts[1])) {
       tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
     }
@@ -346,7 +362,7 @@ export function createTab(
 
   if (parts[1] === "search" && parts[0] in appNameMap) {
     const name = parts[0] as keyof typeof appNameMap;
-    tab.name = `${appNameMap[name].name} Search Results`;
+    tab.name = `${appNameMap[name]} Search Results`;
   }
   return tab;
 }
@@ -359,6 +375,58 @@ function toCapitalCase(string: string) {
 export function loadTabs(instanceZUID: string) {
   return async (dispatch: Dispatch) => {
     const pinnedTabs = (await idb.get(`${instanceZUID}:pinned`)) || [];
+
+    /**
+     * - Map all the icons here since MUI Icons can't be saved to idb
+     * - This also make sure that already pinned tabs previously still using FA will be handled
+     */
+    if (pinnedTabs.length) {
+      pinnedTabs.forEach((tab: Tab) => {
+        switch (tab.app) {
+          case "Launchpad":
+            tab.icon = ICON_CONFIG.launchpad;
+            break;
+
+          case "Redirects":
+            tab.icon = ICON_CONFIG.redirects;
+            break;
+
+          case "Content":
+            tab.icon = ICON_CONFIG.content;
+            break;
+
+          case "All Media":
+            tab.icon = ICON_CONFIG.media;
+            break;
+
+          case "Schema":
+            tab.icon = ICON_CONFIG.schema;
+            break;
+
+          case "Code":
+            tab.icon = ICON_CONFIG.code;
+            break;
+
+          case "Leads":
+            tab.icon = ICON_CONFIG.leads;
+            break;
+
+          case "Settings":
+            tab.icon = ICON_CONFIG.settings;
+            break;
+
+          case "Activity Log":
+          case "Metrics":
+          case "Analytics":
+            tab.icon = ICON_CONFIG.reports;
+            break;
+
+          case "Custom App":
+            tab.icon = ICON_CONFIG.app;
+            break;
+        }
+      });
+    }
     return dispatch(actions.loadTabsSuccess({ pinnedTabs }));
   };
 }
@@ -380,6 +448,19 @@ export function pinTab({ pathname, search }: TabLocation, queryData: any) {
       // if it does exist, update it with new information
       // state.pinnedTabs[tabIndex] = action.payload
     }
+    dispatch(actions.setPinnedTabs(newTabs));
+    await idb.set(`${state.instance.ZUID}:pinned`, newTabs);
+  };
+}
+
+export function updatePinnedTabs(tab: Tab) {
+  return async (dispatch: Dispatch, getState: () => AppState) => {
+    const state = getState();
+    const { pinnedTabs } = state.ui;
+    const newTabs = pinnedTabs.filter((t) => t !== tab);
+
+    newTabs.unshift(tab);
+
     dispatch(actions.setPinnedTabs(newTabs));
     await idb.set(`${state.instance.ZUID}:pinned`, newTabs);
   };

@@ -17,7 +17,6 @@ import parsleyIcon from "../../../../../public/images/parsleyIcon.svg";
 import starCheckIcon from "../../../../../public/images/starCheckIcon.svg";
 import slackIcon from "../../../../../public/images/slackIcon.svg";
 import youtubeIcon from "../../../../../public/images/youtubeIcon.svg";
-import discordIcon from "../../../../../public/images/discordIcon.svg";
 import salesAvatar from "../../../../../public/images/salesAvatar.png";
 import NewspaperRoundedIcon from "@mui/icons-material/NewspaperRounded";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";

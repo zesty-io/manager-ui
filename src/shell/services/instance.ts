@@ -4,13 +4,15 @@ import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
 import {
   Audit,
-  ContentItem,
-  ContentModel,
   ContentModelField,
   InstanceSetting,
-  Publishing,
   LegacyHeader,
   WebView,
+  ContentItem,
+  ContentModel,
+  Publishing,
+  SearchQuery,
+  HeadTag,
   Web,
   Meta,
   ContentNavItem,
@@ -33,6 +35,7 @@ export const instanceApi = createApi({
     "ContentModelField",
     "WebViews",
     "InstanceSettings",
+    "SearchQuery",
   ],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
@@ -112,6 +115,20 @@ export const instanceApi = createApi({
       // Restore cache once content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
     }),
+    searchContent: builder.query<ContentItem[], SearchQuery>({
+      query: ({ query, ...rest }) => ({
+        url: `search/items`,
+        params: {
+          q: query,
+          ...rest,
+        },
+      }),
+      transformResponse: getResponseData,
+      // Makes sure that the query is ran everytime the user searches.
+      // Prevents issue where the query no longer hits the endpoint
+      // when the case-sensitive value on the query parameter is the same as a previous query
+      keepUnusedDataFor: 0.0001,
+    }),
     getContentModel: builder.query<ContentModel, string>({
       query: (modelZUID) => `content/models/${modelZUID}`,
       transformResponse: getResponseData,
@@ -139,6 +156,10 @@ export const instanceApi = createApi({
     }),
     getLangsMapping: builder.query<any, void>({
       query: () => `env/langs/all`,
+      transformResponse: getResponseData,
+    }),
+    getHeadTags: builder.query<HeadTag[], void>({
+      query: () => "/web/headtags",
       transformResponse: getResponseData,
     }),
     createContentModelFromTemplate: builder.mutation<
@@ -353,6 +374,7 @@ export const {
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
   useGetContentItemPublishingsQuery,
+  useSearchContentQuery,
   useGetContentModelFieldsQuery,
   useBulkUpdateContentModelFieldMutation,
   useUpdateContentModelMutation,
@@ -365,6 +387,7 @@ export const {
   useUndeleteContentModelFieldMutation,
   useDeleteContentModelMutation,
   useGetLangsMappingQuery,
+  useGetHeadTagsQuery,
   useCreateContentModelFromTemplateMutation,
   useGetLegacyHeadTagsQuery,
   useGetInstanceSettingsQuery,
