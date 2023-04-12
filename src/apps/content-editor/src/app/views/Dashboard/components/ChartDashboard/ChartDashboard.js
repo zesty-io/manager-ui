@@ -52,9 +52,9 @@ export function ChartDashboard(props) {
     }
   }, [Object.keys(props.logs).length]);
 
-  // const color = new Array(30).fill("rgba(54, 162, 235, 0.2)");
+  const color = new Array(30).fill("rgba(54, 162, 235, 0.2)");
   // TODO: Changes bar chart colors
-  const color = new Array(30).fill("#FF5D0A");
+  // const color = new Array(30).fill("#FF5D0A");
 
   return (
     <div className={styles.ChartDashboard}>
