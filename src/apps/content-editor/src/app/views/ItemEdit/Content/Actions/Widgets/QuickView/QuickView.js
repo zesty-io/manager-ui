@@ -2,6 +2,7 @@ import { memo, Fragment } from "react";
 import { useFilePath } from "shell/hooks/useFilePath";
 import moment from "moment-timezone";
 import cx from "classnames";
+import { isEmpty } from "lodash";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faCode } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +11,10 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import Typography from "@mui/material/Typography";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -37,64 +42,93 @@ export const QuickView = memo(function QuickView(props) {
             backgroundColor: "transparent",
             fontSize: "16px",
             color: "#10182866",
-            ".MuiCardHeader-avatar": {
-              mr: 1,
+            borderBottom: 1,
+            borderColor: "grey.200",
+          }}
+          titleTypographyProps={{
+            sx: {
+              fontWeight: 400,
+              fontSize: "12px",
+              lineHeight: "32px",
+              color: "#101828",
             },
           }}
-          avatar={<AccountTreeIcon fontSize="inherit" color="inherit" />}
-          title={<section className={styles.StatusHeader}>Item Status</section>}
+          title="STATUS"
         ></CardHeader>
         <CardContent
           className={cx(styles.Content, SharedWidgetStyles.CardListSpace)}
           sx={{
             p: 0,
+            pt: 2,
           }}
         >
-          <ul>
-            <li className={styles.StatusHeader}>
-              <div
-                className={
-                  isPublished
-                    ? styles.Published
-                    : isScheduled
-                    ? styles.Scheduled
-                    : styles.Unpublished
-                }
-              >
-                {isPublished
-                  ? "Published"
-                  : isScheduled
-                  ? "Scheduled"
-                  : "Unpublished"}
-              </div>
-            </li>
-
-            <li>
-              <strong>ZUID:</strong>&nbsp;
-              <CopyButton size="small" value={props.itemZUID} />
-            </li>
-            <li data-cy="ContentLanguage">
-              <strong>Language:</strong>&nbsp;
-              <span>
-                {Object.keys(props.siblings || {}).find(
-                  (lang) => props.siblings[lang] === props.itemZUID
-                )}
-              </span>
-            </li>
-            <li>Last edited {moment(props.updatedAt).fromNow()}</li>
-            {props.publishing && props.publishing.version && (
-              <li>Version {props.publishing.version} is published</li>
+          <Stack gap={1.5}>
+            {props.version &&
+              props.version !== props.publishing?.version &&
+              props.version !== props.scheduling?.version && (
+                <Stack direction="row" justifyContent="space-between">
+                  <Typography
+                    sx={{
+                      fontWeight: 500,
+                      fontSize: "14px",
+                      lineHeight: "20px",
+                      color: "#101828",
+                    }}
+                  >
+                    v{props.version} - {moment(props.updatedAt).fromNow()}
+                  </Typography>
+                  <Chip
+                    label="Draft"
+                    color="info"
+                    size="small"
+                    sx={{ borderRadius: "4px", color: "#fff" }}
+                  />
+                </Stack>
+              )}
+            {!isEmpty(props.scheduling) && (
+              <Stack direction="row" justifyContent="space-between">
+                <Typography
+                  sx={{
+                    fontWeight: 500,
+                    fontSize: "14px",
+                    lineHeight: "20px",
+                    color: "#101828",
+                  }}
+                >
+                  v{props.scheduling.version} -{" "}
+                  {moment(props.scheduling?.updatedAt).fromNow()}
+                </Typography>
+                <Chip
+                  label="Scheduled"
+                  size="small"
+                  sx={{ borderRadius: "4px" }}
+                />
+              </Stack>
             )}
-            {props.scheduling && props.scheduling.version && (
-              <li>Version {props.scheduling.version} is scheduled</li>
+            {!isEmpty(props.publishing) && (
+              <Stack direction="row" justifyContent="space-between">
+                <Typography
+                  sx={{
+                    fontWeight: 500,
+                    fontSize: "14px",
+                    lineHeight: "20px",
+                    color: "#101828",
+                  }}
+                >
+                  v{props.publishing.version} -{" "}
+                  {moment(props.publishing?.publishAt).fromNow()}
+                </Typography>
+                <Chip
+                  label="Published"
+                  color="success"
+                  size="small"
+                  sx={{ borderRadius: "4px" }}
+                />
+              </Stack>
             )}
-            <li>Viewing version {props.version}</li>
-            <li>
-              Your timezone is <strong>{moment.tz.guess()}</strong>
-            </li>
-          </ul>
+          </Stack>
         </CardContent>
-        <CardActions sx={{ gap: 1, px: 0 }}>
+        {/* <CardActions sx={{ gap: 1, px: 0 }}>
           {codeAccess && (
             <>
               <AppLink
@@ -110,7 +144,7 @@ export const QuickView = memo(function QuickView(props) {
               </AppLink>
             </>
           )}
-        </CardActions>
+        </CardActions> */}
       </Card>
     </Fragment>
   );
