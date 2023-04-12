@@ -13,7 +13,7 @@ export const modelIconMap = {
 
 export const modelNameMap = {
   templateset: "Single Page",
-  dataset: "Headless Dataset",
+  dataset: "Dataset",
   pageset: "Multi Page",
 };
 

@@ -129,7 +129,7 @@ export const Sidebar = () => {
           </Box>
           <Box sx={{ mt: 1 }}>
             <ModelList
-              title="headless dataset"
+              title="dataset"
               type="dataset"
               models={models?.filter((model) => model.type === "dataset") || []}
             />
