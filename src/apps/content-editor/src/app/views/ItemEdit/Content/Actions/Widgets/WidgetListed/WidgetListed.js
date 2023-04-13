@@ -93,7 +93,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
           sx={{ maxWidth: "200px" }}
           name="sort"
           label={
-            <span style={{ color: "#101828" }}>
+            <span style={{ color: "#101828", marginBottom: "8px" }}>
               <Tooltip
                 title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls."
                 arrow

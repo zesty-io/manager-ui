@@ -93,9 +93,19 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
             sx={{
               cursor: "pointer",
               color: "info.dark",
+              width: "fit-content",
             }}
           >
-            <FontAwesomeIcon icon={faTwitterSquare} /> Tweet
+            <FontAwesomeIcon
+              icon={faTwitterSquare}
+              style={{
+                color: "#0BA5EC",
+                marginRight: "8px",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+            Twitter
           </Link>
           <Link
             onClick={(evt) =>
@@ -110,9 +120,19 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
             sx={{
               cursor: "pointer",
               color: "info.dark",
+              width: "fit-content",
             }}
           >
-            <FontAwesomeIcon icon={faFacebookSquare} /> Share
+            <FontAwesomeIcon
+              icon={faFacebookSquare}
+              style={{
+                color: "#0BA5EC",
+                marginRight: "8px",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+            Facebook
           </Link>
           <Link
             onClick={(evt) =>
@@ -127,9 +147,19 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
             sx={{
               cursor: "pointer",
               color: "info.dark",
+              width: "fit-content",
             }}
           >
-            <FontAwesomeIcon icon={faLinkedinIn} /> Share
+            <FontAwesomeIcon
+              icon={faLinkedinIn}
+              style={{
+                color: "#0BA5EC",
+                marginRight: "8px",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+            Linkedin
           </Link>
           <Link
             onClick={(evt) =>
@@ -144,9 +174,19 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
             sx={{
               cursor: "pointer",
               color: "info.dark",
+              width: "fit-content",
             }}
           >
-            <FontAwesomeIcon icon={faRedditSquare} /> Share
+            <FontAwesomeIcon
+              icon={faRedditSquare}
+              style={{
+                color: "#0BA5EC",
+                marginRight: "8px",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+            Reddit
           </Link>
         </Stack>
       </CardContent>

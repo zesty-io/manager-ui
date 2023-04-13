@@ -24,9 +24,15 @@ export function PreviewUrl(props) {
       target="_blank"
       title={url}
       href={url}
+      sx={{
+        color: "info.dark",
+      }}
     >
-      <FontAwesomeIcon icon={faEye} />
-      &nbsp;Preview {props.item.meta.version}
+      <FontAwesomeIcon
+        icon={faEye}
+        style={{ color: "#0BA5EC", marginRight: "8px" }}
+      />
+      Preview {props.item.meta.version}
     </Link>
   );
 }
