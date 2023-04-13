@@ -147,7 +147,7 @@ describe("Actions in content editor", () => {
 
   it("Deletes an item", () => {
     cy.contains(timestamp).click();
-    cy.get('[data-cy="WidgetDeleteAccordion"]').click();
+    // cy.get('[data-cy="WidgetDeleteAccordion"]').click();
     cy.get("#DeleteItemButton").click();
     cy.get("#deleteConfirmButton").should("exist");
     cy.get("#deleteConfirmButton").click();
