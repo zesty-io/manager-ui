@@ -131,6 +131,13 @@ ${
           sx={{
             backgroundColor: "transparent",
             p: 0,
+            borderBottom: 1,
+            borderColor: "grey.200",
+            minHeight: "0px",
+            height: "32px",
+            ".MuiAccordionSummary-content": {
+              m: 0,
+            },
           }}
         >
           <Box
@@ -144,21 +151,21 @@ ${
               },
             }}
           >
-            <EmailIcon fontSize="inherit" color="inherit" />
             <Typography
               sx={{
-                fontWeight: 600,
-                fontSize: "14px",
-                lineHeight: "20px",
+                fontWeight: 400,
+                fontSize: "12px",
+                lineHeight: "32px",
                 color: "#101828",
               }}
+              textTransform="uppercase"
             >
               Workflow Request
             </Typography>
           </Box>
         </AccordionSummary>
         <AccordionDetails
-          sx={{ display: "flex", flexDirection: "column", gap: 2, p: 0 }}
+          sx={{ display: "flex", flexDirection: "column", gap: 2, p: 0, mt: 2 }}
         >
           <Box component="div">
             <Typography component="h3" variant="h6">
