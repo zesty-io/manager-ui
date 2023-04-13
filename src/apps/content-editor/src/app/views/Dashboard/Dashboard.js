@@ -169,7 +169,10 @@ export default memo(function Dashboard() {
                 title={
                   <>
                     Recent{" "}
-                    <AppLink to={`/content/${contentModelZUID}`}>
+                    <AppLink
+                      to={`/content/${contentModelZUID}`}
+                      className={styles.AppLink}
+                    >
                       {model && model.label}
                     </AppLink>{" "}
                     Edits
@@ -183,6 +186,7 @@ export default memo(function Dashboard() {
                       <li key={i}>
                         <AppLink
                           to={`/content/${contentModelZUID}/${item.meta.ZUID}`}
+                          className={styles.AppLink}
                         >
                           {item.web.metaTitle}
                         </AppLink>
