@@ -284,11 +284,25 @@ export function ContentInsights(props) {
   return (
     <Card
       className={styles.ContentInsights}
-      sx={{ m: 2, backgroundColor: "theme.common.white" }}
+      sx={{
+        m: 2,
+        backgroundColor: "theme.common.white",
+        border: 1,
+        borderColor: "grey.100",
+      }}
+      variant="outlined"
     >
       <CardHeader
-        avatar={<SavedSearchIcon fontSize="small" />}
+        avatar={<SavedSearchIcon fontSize="small" sx={{ fill: "#10182866" }} />}
         title="Content Insights"
+        sx={{
+          backgroundColor: "grey.100",
+        }}
+        titleTypographyProps={{
+          sx: {
+            color: "text.primary",
+          },
+        }}
       ></CardHeader>
       <CardContent>
         <div className={styles.level}>
