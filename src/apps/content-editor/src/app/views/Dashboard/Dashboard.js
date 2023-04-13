@@ -163,7 +163,7 @@ export default memo(function Dashboard() {
           const model = modelsByZuid[contentModelZUID];
 
           return (
-            <Card key={i} sx={{ m: 2 }}>
+            <Card key={i} sx={{ borderColor: "grey.100" }} variant="outlined">
               <CardHeader
                 avatar={<AccessTimeIcon fontSize="small" />}
                 title={
@@ -208,6 +208,7 @@ function DashboardCardFooter(props) {
   return (
     <CardActions>
       <Button
+        disableElevation
         variant="contained"
         onClick={() => history.push(`/content/${props.contentModelZUID}/new`)}
         startIcon={<AddIcon />}

@@ -58,7 +58,7 @@ export function ChartDashboard(props) {
 
   return (
     <div className={styles.ChartDashboard}>
-      <Card sx={{ m: 2 }}>
+      <Card sx={{ borderColor: "grey.100" }} variant="outlined">
         <CardHeader
           avatar={<CalendarMonthIcon fontSize="small" />}
           title="30 days of team actions"
@@ -103,7 +103,7 @@ export function ChartDashboard(props) {
             }}
           />
         </CardContent>
-        <CardActions>
+        <CardActions sx={{ color: "text.primary" }}>
           There were <strong>&nbsp;{total} actions&nbsp;</strong> in the past{" "}
           <strong>30 days</strong>
         </CardActions>

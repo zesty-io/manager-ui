@@ -285,9 +285,7 @@ export function ContentInsights(props) {
     <Card
       className={styles.ContentInsights}
       sx={{
-        m: 2,
         backgroundColor: "theme.common.white",
-        border: 1,
         borderColor: "grey.100",
       }}
       variant="outlined"
@@ -304,7 +302,11 @@ export function ContentInsights(props) {
           },
         }}
       ></CardHeader>
-      <CardContent>
+      <CardContent
+        sx={{
+          color: "text.primary",
+        }}
+      >
         <div className={styles.level}>
           <div>
             Total Words <span>{totalWords}</span>

@@ -2,9 +2,11 @@
 @import "~@zesty-io/core/typography.less";
 
 .Dashboard {
-  width: 100%;
+  // width: 100%;
+  width: auto;
   height: calc(100vh - 40px);
   overflow: auto;
+  padding: 16px 24px 16px 24px;
 
   .Header {
     padding: 8px 16px;
@@ -15,8 +17,11 @@
   }
 
   .LatestActivity {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-direction: column;
+    row-gap: 24px;
+    margin-top: 24px;
+    margin-bottom: 24px;
   }
 
   .LinkOuts {
@@ -30,11 +35,13 @@
   .TopPerforming {
     display: grid;
     grid-template-columns: 1fr 2fr;
+    column-gap: 24px;
   }
 
   .RecentActivities {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
 
     ul {
       list-style: circle;
