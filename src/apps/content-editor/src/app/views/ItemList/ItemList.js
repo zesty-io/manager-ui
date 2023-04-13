@@ -341,7 +341,7 @@ export default connect((state, props) => {
   }
 
   function getRowSize(index) {
-    return index === 0 ? 55 : 90;
+    return index === 0 ? 55 : 72;
   }
 
   function persistFilters() {
