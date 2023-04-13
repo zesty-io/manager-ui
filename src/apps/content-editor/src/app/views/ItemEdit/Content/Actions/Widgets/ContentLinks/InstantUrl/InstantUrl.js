@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
+import ListItem from "@mui/material/ListItem";
 
 import { useSelector } from "react-redux";
 
@@ -18,17 +19,25 @@ export function InstantUrl(props) {
   return (
     <Fragment>
       {instantApiEnabled && (
-        <Link
-          underline="none"
-          color="secondary"
-          target="_blank"
-          title="Instant API"
-          href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.item.meta.ZUID}.json`}
+        <ListItem
+          sx={{
+            fontSize: "14px",
+            p: 0,
+            m: 0,
+          }}
         >
-          <FontAwesomeIcon icon={faBolt} />
-          &nbsp;
-          {`/-/instant/${props.item.meta.ZUID}.json`}
-        </Link>
+          <Link
+            underline="none"
+            color="secondary"
+            target="_blank"
+            title="Instant API"
+            href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.item.meta.ZUID}.json`}
+          >
+            <FontAwesomeIcon icon={faBolt} />
+            &nbsp;
+            {`/-/instant/${props.item.meta.ZUID}.json`}
+          </Link>
+        </ListItem>
       )}
     </Fragment>
   );

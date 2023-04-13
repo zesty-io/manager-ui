@@ -95,6 +95,7 @@ export const ContentInfo = (props) => {
             <TextField
               disabled
               value={props.modelZUID}
+              size="small"
               fullWidth
               inputProps={{
                 sx: {

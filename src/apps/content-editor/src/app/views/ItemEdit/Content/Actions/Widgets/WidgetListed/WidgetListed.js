@@ -59,7 +59,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
           },
         }}
       >
-        <FormLabel sx={{ color: "secondary" }}>
+        <FormLabel sx={{ color: "text.primary" }}>
           <Stack
             direction="row"
             alignItems="center"
@@ -93,7 +93,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
           sx={{ maxWidth: "200px" }}
           name="sort"
           label={
-            <span>
+            <span style={{ color: "#101828" }}>
               <Tooltip
                 title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls."
                 arrow

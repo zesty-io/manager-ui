@@ -59,7 +59,8 @@ export const ContentLinks = memo(function ContentLinks(props) {
                 <ListItem
                   sx={{
                     fontSize: "14px",
-                    px: 0,
+                    p: 0,
+                    m: 0,
                   }}
                 >
                   <LiveUrl item={props.item} />
@@ -67,7 +68,8 @@ export const ContentLinks = memo(function ContentLinks(props) {
                 <ListItem
                   sx={{
                     fontSize: "14px",
-                    px: 0,
+                    p: 0,
+                    m: 0,
                   }}
                 >
                   <PreviewUrl item={props.item} />
@@ -75,14 +77,7 @@ export const ContentLinks = memo(function ContentLinks(props) {
               </Fragment>
             )}
 
-            <ListItem
-              sx={{
-                fontSize: "14px",
-                px: 0,
-              }}
-            >
-              <InstantUrl item={props.item} />
-            </ListItem>
+            <InstantUrl item={props.item} />
           </List>
         </CardContent>
       </Card>
