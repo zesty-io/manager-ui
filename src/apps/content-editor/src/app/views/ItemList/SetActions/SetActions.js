@@ -184,8 +184,9 @@ export class SetActions extends Component {
             </Link>
             <AppLink to={`/content/${this.props.modelZUID}/new`}>
               <Button
+                disableElevation
                 variant="contained"
-                color="secondary"
+                color="primary"
                 title="Create Item"
                 data-cy="AddItemButton"
                 startIcon={<AddIcon />}

@@ -117,6 +117,7 @@ export function ItemVersioning(props) {
       {canPublish && (
         <Stack direction="row" spacing={1} className={styles.Publish}>
           <LoadingButton
+            disableElevation
             variant="contained"
             color="primary"
             title="Save Version"
