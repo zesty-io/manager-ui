@@ -115,7 +115,7 @@ export function ContentNav(props) {
           pb: 1.5,
           lineHeight: "32px",
           fontSize: "24px",
-          fontWeight: 400,
+          fontWeight: 600,
           color: "#101828",
         }}
       >
