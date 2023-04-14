@@ -63,6 +63,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
 
           {/* Sidebar handle */}
           <IconButton
+            data-cy="CollapseGlobalSideBar"
             onClick={onClick}
             sx={{
               borderColor: "grey.600",
@@ -210,6 +211,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 }}
               >
                 <IconButton
+                  data-cy="InviteUser"
                   onClick={() => setShowInviteModal(true)}
                   sx={{
                     backgroundColor: "grey.800",
@@ -222,6 +224,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
                 </IconButton>
                 <IconButton
+                  data-cy="ReadDocs"
                   onClick={() => {
                     setShowDocsMenu(true);
                   }}

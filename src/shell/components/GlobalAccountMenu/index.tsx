@@ -118,6 +118,7 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
         <MenuItem
           key={index}
           onClick={() => handleClickAction(menuItem.action)}
+          data-cy={menuItem.text.replace(" ", "")}
         >
           <ListItemIcon>
             <SvgIcon component={menuItem.icon} />
