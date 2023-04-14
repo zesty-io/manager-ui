@@ -75,7 +75,7 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
                 setParams(null, "dateFilter");
                 setParams(null, "q");
                 const searchField: HTMLInputElement = document.querySelector(
-                  "[data-cy=global-search-textfield] input"
+                  "[data-cy=ContentSearch] input"
                 );
                 searchField?.focus();
               }}

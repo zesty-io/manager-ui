@@ -195,7 +195,7 @@ const ContentSearch: FC = () => {
               {...params}
               ref={textfieldRef}
               fullWidth
-              data-cy="global-search-textfield"
+              data-cy="ContentSearch"
               variant="outlined"
               placeholder={`Search Instance ${shortcutHelpText}`}
               sx={{

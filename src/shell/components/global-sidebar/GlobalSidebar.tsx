@@ -141,6 +141,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   rel="noopener"
                   width={openNav ? "inherit" : 32}
                   textAlign="center"
+                  title="View source code commit"
                   sx={{
                     wordWrap: "break-word",
                   }}
@@ -170,7 +171,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             >
               <Stack
                 ref={accountMenuBtn}
-                data-cy="AccountMenuButton"
+                data-cy="globalAccountAvatar"
                 direction="row"
                 alignItems="center"
                 width={openNav ? 49 : 32}

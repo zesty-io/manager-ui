@@ -155,6 +155,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
             onCloseDropdownMenu();
             dispatch(actions.toggleUpdateFaviconModal(true));
           }}
+          data-cy="Favicon"
         >
           <ListItemIcon>
             <ImageRoundedIcon />
