@@ -7,6 +7,9 @@ import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "@zesty-io/core";
+import styles from "./WidgetDraftHistory.less";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 export default connect((state, props) => {
   return {
@@ -27,44 +30,105 @@ export default connect((state, props) => {
   }, []);
 
   return (
-    <Card id="WidgetDraftHistory" className="pageDetailWidget" sx={{ m: 2 }}>
+    <Card
+      id="WidgetDraftHistory"
+      className="pageDetailWidget"
+      sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+      elevation={0}
+    >
       <CardHeader
-        avatar={<PersonIcon fontSize="small" />}
-        title={
-          <>
-            {" "}
-            <span className="audit-title">Draft History</span>
-            <small>&nbsp;Activity Log</small>
-          </>
-        }
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          fontSize: "16px",
+          color: "#10182866",
+          borderBottom: 1,
+          borderColor: "grey.200",
+        }}
+        titleTypographyProps={{
+          sx: {
+            fontWeight: 400,
+            fontSize: "12px",
+            lineHeight: "32px",
+            color: "#101828",
+          },
+        }}
+        title="DRAFT HISTORY"
       ></CardHeader>
       <CardContent
         className={cx(
           "setting-field audit-trail-content",
           SharedWidgetStyles.CardListSpace
         )}
+        sx={{
+          p: 0,
+          pt: 2,
+          "&:last-child": {
+            pb: 0,
+          },
+        }}
       >
         {loading ? (
-          <p>Loading Logs</p>
+          <Typography
+            sx={{
+              fontWeight: 500,
+              fontSize: "14px",
+              lineHeight: "20px",
+              color: "#101828",
+            }}
+          >
+            Loading Logs
+          </Typography>
         ) : props.logs.length ? (
           <>
-            <ul className="logs">
+            <Stack gap={1.5} className="logs">
               {props.logs.map((log) => (
-                <li className="log" key={log.ZUID}>
-                  <strong>
-                    {log.firstName} {log.lastName}
-                  </strong>
-                  &nbsp;
-                  <span>modified {moment(log.happenedAt).fromNow()}</span>
-                </li>
+                <Stack
+                  className="log"
+                  key={log.ZUID}
+                  direction="row"
+                  justifyContent="space-between"
+                >
+                  <Typography
+                    sx={{
+                      fontWeight: 500,
+                      fontSize: "14px",
+                      lineHeight: "20px",
+                      color: "#101828",
+                    }}
+                  >{`${log.firstName} ${log.lastName}`}</Typography>
+                  <Typography
+                    sx={{
+                      fontWeight: 500,
+                      fontSize: "14px",
+                      lineHeight: "20px",
+                      color: "#1018288f",
+                    }}
+                  >
+                    {moment(log.happenedAt).fromNow()}
+                  </Typography>
+                </Stack>
               ))}
-            </ul>
-            <AppLink to={`/reports/activity-log/resources/${props.itemZUID}`}>
-              View Logs
-            </AppLink>
+              <AppLink
+                className={styles.AppLink}
+                to={`/reports/activity-log/resources/${props.itemZUID}`}
+              >
+                View Logs
+              </AppLink>
+            </Stack>
           </>
         ) : (
-          <p className="noLogs">No Activity Log edit logs for this content.</p>
+          <Typography
+            className="noLogs"
+            sx={{
+              fontWeight: 500,
+              fontSize: "14px",
+              lineHeight: "20px",
+              color: "#101828",
+            }}
+          >
+            No Activity Log edit logs for this content.
+          </Typography>
         )}
       </CardContent>
     </Card>

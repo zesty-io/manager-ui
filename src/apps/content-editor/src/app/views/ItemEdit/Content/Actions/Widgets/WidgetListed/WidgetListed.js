@@ -26,13 +26,40 @@ export const WidgetListed = memo(function WidgetListed(props) {
     });
   };
   return (
-    <Card className={styles.WidgetListed} sx={{ m: 2 }}>
+    <Card
+      className={styles.WidgetListed}
+      sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+      elevation={0}
+    >
       <CardHeader
-        avatar={<CodeIcon fontSize="small" />}
-        title="Parsley Behaviors"
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          fontSize: "16px",
+          color: "#10182866",
+          borderBottom: 1,
+          borderColor: "grey.200",
+        }}
+        titleTypographyProps={{
+          sx: {
+            fontWeight: 400,
+            fontSize: "12px",
+            lineHeight: "32px",
+            color: "#101828",
+          },
+        }}
+        title="PARSLEY BEHAVIORS"
       ></CardHeader>
-      <CardContent>
-        <FormLabel sx={{ color: "primary.dark" }}>
+      <CardContent
+        sx={{
+          p: 0,
+          pt: 2,
+          "&:last-child": {
+            pb: 0,
+          },
+        }}
+      >
+        <FormLabel sx={{ color: "text.primary" }}>
           <Stack
             direction="row"
             alignItems="center"
@@ -47,7 +74,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
             >
               <InfoIcon fontSize="small" />
             </Tooltip>
-            Available in Loops
+            &nbsp;Available in Loops
           </Stack>
         </FormLabel>
         <ToggleButtonGroup
@@ -66,7 +93,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
           sx={{ maxWidth: "200px" }}
           name="sort"
           label={
-            <span>
+            <span style={{ color: "#101828", marginBottom: "8px" }}>
               <Tooltip
                 title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls."
                 arrow

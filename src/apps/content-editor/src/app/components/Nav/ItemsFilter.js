@@ -6,7 +6,7 @@ const ItemsFilter = (props) => {
   return (
     <TextField
       name="itemsFilter"
-      placeholder="Filter items by name, zuid or path"
+      placeholder="Search by Name, ZUID or Path"
       type="search"
       variant="outlined"
       fullWidth
@@ -15,7 +15,12 @@ const ItemsFilter = (props) => {
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <SearchIcon fontSize="small" />
+            <SearchIcon
+              fontSize="small"
+              sx={{
+                color: "#10182866",
+              }}
+            />
           </InputAdornment>
         ),
       }}
@@ -40,7 +45,11 @@ const ItemsFilter = (props) => {
           props.setFilteredItems(props.nav.nav);
         }
       }}
-      sx={{ boxSizing: "border-box", p: 1 }}
+      sx={{
+        boxSizing: "border-box",
+        p: 1,
+        color: "#1018288F",
+      }}
     />
   );
 };

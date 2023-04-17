@@ -38,7 +38,7 @@ export function Header(props) {
             props.saving ? <CircularProgress size="20px" /> : <SaveIcon />
           }
         >
-          Create Item&nbsp; {metaShortcut}
+          Create
         </Button>
       </ButtonGroup>
     </header>

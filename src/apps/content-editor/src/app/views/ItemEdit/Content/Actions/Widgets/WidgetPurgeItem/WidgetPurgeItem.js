@@ -8,6 +8,7 @@ import CardHeader from "@mui/material/CardHeader";
 
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
+import Typography from "@mui/material/Typography";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
@@ -16,19 +17,53 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
   const [loading, setLoading] = useState(false);
 
   return (
-    <Card id="WidgetDeleteItem" className="pageDetailWidget" sx={{ m: 2 }}>
+    <Card
+      id="WidgetDeleteItem"
+      className="pageDetailWidget"
+      sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+      elevation={0}
+    >
       <CardHeader
-        avatar={<SyncIcon fontSize="small" />}
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          fontSize: "16px",
+          color: "#10182866",
+          borderBottom: 1,
+          borderColor: "grey.200",
+        }}
+        titleTypographyProps={{
+          sx: {
+            fontWeight: 400,
+            fontSize: "12px",
+            lineHeight: "32px",
+            color: "#101828",
+          },
+        }}
         title="CDN"
       ></CardHeader>
-      <CardContent className="setting-field">
-        <p>
+      <CardContent
+        className="setting-field"
+        sx={{
+          p: 0,
+          pt: 2,
+          "&:last-child": {
+            pb: 0,
+          },
+        }}
+      >
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            fontSize: "14px",
+            lineHeight: "20px",
+          }}
+        >
           Force the CDN to refresh the cache for this item. CDN caching can take
           from a few seconds to minutes to occur as this re-caches the item
           across the entire global network.
-        </p>
-      </CardContent>
-      <CardActions>
+        </Typography>
         <LoadingButton
           variant="contained"
           id="RefreshCache"
@@ -60,10 +95,21 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
           loading={loading}
           loadingPosition="start"
           startIcon={<SyncIcon />}
+          disableElevation
+          sx={{
+            backgroundColor: "#F2F4F7",
+            color: "text.secondary",
+            mt: 1.5,
+
+            "&:hover": {
+              backgroundColor: "#E4E7EC",
+              color: "text.secondary",
+            },
+          }}
         >
           {loading ? "Refreshing Cached Item" : "Refresh Cached Item"}
         </LoadingButton>
-      </CardActions>
+      </CardContent>
     </Card>
   );
 });

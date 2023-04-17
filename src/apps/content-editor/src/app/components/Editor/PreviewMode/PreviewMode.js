@@ -76,7 +76,8 @@ export default function PreviewMode(props) {
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
       <iframe
         ref={preview}
-        src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+        // src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+        src={`https://${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
         frameBorder="0"
       ></iframe>
     </div>

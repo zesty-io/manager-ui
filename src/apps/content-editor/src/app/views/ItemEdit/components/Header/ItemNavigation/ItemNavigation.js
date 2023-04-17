@@ -27,7 +27,7 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         Edit Content
       </AppLink>
       <AppLink
-        title="SEO & Meta"
+        title="SEO"
         data-cy="meta"
         className={cx(
           styles.AppLink,
@@ -36,7 +36,7 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/meta`}
       >
-        SEO &amp; Meta
+        SEO
       </AppLink>
       {item.web.path && (
         <AppLink
@@ -54,7 +54,7 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
       )}
 
       <AppLink
-        title="Headless Options"
+        title="API"
         data-cy="headless"
         className={cx(
           styles.AppLink,
@@ -63,7 +63,9 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/headless`}
       >
-        Headless <span className={styles.Hide}>Options</span>
+        {/* Headless <span className={styles.Hide}>Options</span>
+         */}
+        API
       </AppLink>
       <AppLink
         title="Publish State"

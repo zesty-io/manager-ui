@@ -61,11 +61,12 @@ export default connect((state, props) => {
       <Select
         name="itemVersion"
         sx={{
-          maxWidth: "125px",
+          maxWidth: "96px",
           backgroundColor:
             selectedVersionNum !== props.latestVersionNum
               ? "warning.light"
               : "",
+          height: "32px",
         }}
         value={selectedVersionNum}
         loading={loading}
@@ -79,7 +80,7 @@ export default connect((state, props) => {
               className={styles.VersionOption}
               value={item.meta?.version}
             >
-              Version {item.meta?.version}
+              v{item.meta?.version}
               <Box component="small" sx={{ ml: 0.5 }}>
                 {" "}
                 {moment(item.web?.createdAt).format("MMM Do YYYY, [at] h:mm a")}
