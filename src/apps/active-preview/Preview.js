@@ -134,8 +134,14 @@ export function Preview(props) {
                   href={`//${instance.domain}${route}`}
                   target="_blank"
                   title="Open live link in standard browser window"
+                  sx={{
+                    color: "#026AA2",
+                  }}
                 >
-                  <FontAwesomeIcon icon={faExternalLinkAlt} />
+                  <FontAwesomeIcon
+                    icon={faExternalLinkAlt}
+                    style={{ color: "#0BA5EC" }}
+                  />
                   &nbsp;Live
                 </Link>
               )}
@@ -145,28 +151,53 @@ export function Preview(props) {
                 href={`${domain}${route}`}
                 target="_blank"
                 title="Open preview link in standard browser window"
+                sx={{
+                  color: "#026AA2",
+                }}
               >
-                <FontAwesomeIcon icon={faEye} />
+                <FontAwesomeIcon icon={faEye} style={{ color: "#0BA5EC" }} />
                 &nbsp;Preview
               </Link>
             </div>
 
             <div className={styles.Url}>
               <CopyButton
+                disableElevation
                 variant="contained"
                 value={`${domain}${route}`}
                 sx={{
                   mr: 1,
+                  backgroundColor: "#F2F4F7",
+                  color: "text.secondary",
+
+                  "&:hover": {
+                    backgroundColor: "#E4E7EC",
+                    color: "text.secondary",
+                  },
+
+                  ".MuiButton-startIcon": {
+                    color: "#10182866",
+                  },
                 }}
               >
                 URL
               </CopyButton>
               <Button
+                disableElevation
                 variant="contained"
                 onClick={() => setRefresh(Date.now())}
                 title="Reload current url in ActivePreview"
+                sx={{
+                  backgroundColor: "#F2F4F7",
+                  color: "text.secondary",
+
+                  "&:hover": {
+                    backgroundColor: "#E4E7EC",
+                    color: "text.secondary",
+                  },
+                }}
               >
-                <SyncIcon fontSize="small" />
+                <SyncIcon fontSize="small" sx={{ fill: "#10182866" }} />
               </Button>
               <TextField
                 ref={input}
@@ -192,7 +223,7 @@ export function Preview(props) {
                 onChange={(evt) => setDevice(evt.target.value)}
                 size="small"
               >
-                <MenuItem value="fullscreen">Viewport</MenuItem>
+                <MenuItem value="fullscreen">Device</MenuItem>
                 {/*
             Generate available options from templates,
             except the initial "No Template" template
@@ -206,29 +237,50 @@ export function Preview(props) {
                   ))}
               </Select>
               <Button
+                disableElevation
                 variant="contained"
                 onClick={() => setRotate(!rotate)}
                 title="Rotate device"
+                sx={{
+                  backgroundColor: "#F2F4F7",
+                  color: "text.secondary",
+
+                  "&:hover": {
+                    backgroundColor: "#E4E7EC",
+                    color: "text.secondary",
+                  },
+                }}
               >
                 <MobileScreenShareIcon
                   fontSize="small"
                   sx={{
                     transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
+                    fill: "#10182866",
                   }}
                 />
               </Button>
             </div>
 
-            <div className={styles.Menu}>
+            {/* <div className={styles.Menu}>
               <Button
+                disableElevation
                 variant="contained"
                 onClick={() => setOpen(!open)}
                 title="Additional menu options"
+                sx={{
+                  backgroundColor: "#F2F4F7",
+                  color: "text.secondary",
+
+                  "&:hover": {
+                    backgroundColor: "#E4E7EC",
+                    color: "text.secondary",
+                  },
+                }}
               >
-                <MoreVertIcon fontSize="small" />
+                <MoreVertIcon fontSize="small" sx={{ fill: "#10182866" }} />
               </Button>
               <Meta open={open} route={route} instanceZUID={ZUID} />
-            </div>
+            </div> */}
           </div>
         </header>
         <main

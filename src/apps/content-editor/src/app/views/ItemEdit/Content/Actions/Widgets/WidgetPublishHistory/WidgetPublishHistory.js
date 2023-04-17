@@ -9,11 +9,14 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import PersonIcon from "@mui/icons-material/Person";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 import { fetchAuditTrailPublish } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 import { AppLink } from "@zesty-io/core";
+import styles from "./WidgetPublishHistory.less";
 
 export default connect((state) => {
   return {
@@ -39,45 +42,105 @@ export default connect((state) => {
       <Card
         id="WidgetPublishHistory"
         className="pageDetailWidget"
-        sx={{ m: 2 }}
+        sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+        elevation={0}
       >
         <CardHeader
-          avatar={<PersonIcon fontSize="small" />}
-          title={
-            <>
-              {" "}
-              <span className="audit-title">Publish History </span>
-              <small>&nbsp;Activity Log</small>
-            </>
-          }
+          sx={{
+            p: 0,
+            backgroundColor: "transparent",
+            fontSize: "16px",
+            color: "#10182866",
+            borderBottom: 1,
+            borderColor: "grey.200",
+          }}
+          titleTypographyProps={{
+            sx: {
+              fontWeight: 400,
+              fontSize: "12px",
+              lineHeight: "32px",
+              color: "#101828",
+            },
+          }}
+          title="PUBLISH HISTORY"
         ></CardHeader>
         <CardContent
           className={cx(
             "setting-field audit-trail-content",
             SharedWidgetStyles.CardListSpace
           )}
+          sx={{
+            p: 0,
+            pt: 2,
+            "&:last-child": {
+              pb: 0,
+            },
+          }}
         >
           {loading ? (
-            <p>Loading Logs</p>
+            <Typography
+              sx={{
+                fontWeight: 500,
+                fontSize: "14px",
+                lineHeight: "20px",
+                color: "#101828",
+              }}
+            >
+              Loading Logs
+            </Typography>
           ) : (
             <>
-              <ul className="logs">
-                {Array.isArray(logs) && !logs.length && <p>Not published</p>}
+              <Stack gap={1.5}>
+                {Array.isArray(logs) && !logs.length && (
+                  <Typography
+                    sx={{
+                      fontWeight: 500,
+                      fontSize: "14px",
+                      lineHeight: "20px",
+                      color: "#101828",
+                    }}
+                  >
+                    Not published
+                  </Typography>
+                )}
 
                 {Array.isArray(logs) &&
                   logs.map((log) => {
                     const { firstName, lastName } = log;
                     return (
-                      <li className="log" key={log.ZUID}>
-                        <strong>{`${firstName} ${lastName}`}</strong> published{" "}
-                        {moment(log.happenedAt).fromNow()}
-                      </li>
+                      <Stack
+                        key={log.happenedAt}
+                        direction="row"
+                        justifyContent="space-between"
+                      >
+                        <Typography
+                          sx={{
+                            fontWeight: 500,
+                            fontSize: "14px",
+                            lineHeight: "20px",
+                            color: "#101828",
+                          }}
+                        >{`${firstName} ${lastName}`}</Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 500,
+                            fontSize: "14px",
+                            lineHeight: "20px",
+                            color: "#1018288f",
+                          }}
+                        >
+                          {moment(log.happenedAt).fromNow()}
+                        </Typography>
+                      </Stack>
                     );
                   })}
-              </ul>
-              <AppLink to={`/reports/activity-log/resources/${props.itemZUID}`}>
-                View Logs
-              </AppLink>
+                <AppLink
+                  className={styles.AppLink}
+                  to={`/reports/activity-log/resources/${props.itemZUID}`}
+                >
+                  View Logs
+                </AppLink>
+              </Stack>
             </>
           )}
         </CardContent>

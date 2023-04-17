@@ -55,7 +55,7 @@ export function DuoModeToggle(props) {
       ) : (
         <ToggleButtonGroup
           title="Duo Mode Toggle"
-          color="secondary"
+          color="primary"
           value={Number(ui.duoMode)}
           exclusive
           size="small"
@@ -67,6 +67,9 @@ export function DuoModeToggle(props) {
               dispatch(actions.setDuoMode(false));
               dispatch(actions.setContentActions(true));
             }
+          }}
+          sx={{
+            height: "32px",
           }}
         >
           <ToggleButton value={0}>

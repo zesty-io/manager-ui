@@ -99,7 +99,7 @@ export default memo(function Dashboard() {
   }, [user.ZUID]);
   return (
     <section className={styles.Dashboard}>
-      <section className={styles.LinkOuts}>
+      {/* <section className={styles.LinkOuts}>
         <div className={styles.Cards}>
           <AccountInfo
             instanceZUID={instance.ZUID}
@@ -137,6 +137,10 @@ export default memo(function Dashboard() {
             quickJump={"settings"}
           />
         </div>
+      </section> */}
+      <section className={styles.Chart}>
+        <InstanceActivity logs={logs} user={user} />
+        <ChartDashboard logs={logs} />
       </section>
       <section className={styles.LatestActivity}>
         <UserLatest
@@ -152,23 +156,23 @@ export default memo(function Dashboard() {
           action="4"
         />
       </section>
-      <section className={styles.Chart}>
-        <InstanceActivity logs={logs} user={user} />
-        <ChartDashboard logs={logs} />
-      </section>
+
       <section className={styles.RecentActivities}>
         {favoriteModels.map((arr, i) => {
           const [contentModelZUID, items] = arr;
           const model = modelsByZuid[contentModelZUID];
 
           return (
-            <Card key={i} sx={{ m: 2 }}>
+            <Card key={i} sx={{ borderColor: "grey.100" }} variant="outlined">
               <CardHeader
                 avatar={<AccessTimeIcon fontSize="small" />}
                 title={
                   <>
                     Recent{" "}
-                    <AppLink to={`/content/${contentModelZUID}`}>
+                    <AppLink
+                      to={`/content/${contentModelZUID}`}
+                      className={styles.AppLink}
+                    >
                       {model && model.label}
                     </AppLink>{" "}
                     Edits
@@ -182,6 +186,7 @@ export default memo(function Dashboard() {
                       <li key={i}>
                         <AppLink
                           to={`/content/${contentModelZUID}/${item.meta.ZUID}`}
+                          className={styles.AppLink}
                         >
                           {item.web.metaTitle}
                         </AppLink>
@@ -207,8 +212,8 @@ function DashboardCardFooter(props) {
   return (
     <CardActions>
       <Button
+        disableElevation
         variant="contained"
-        color="secondary"
         onClick={() => history.push(`/content/${props.contentModelZUID}/new`)}
         startIcon={<AddIcon />}
       >

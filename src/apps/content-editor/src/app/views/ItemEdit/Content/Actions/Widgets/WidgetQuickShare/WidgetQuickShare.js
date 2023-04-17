@@ -8,6 +8,14 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import ShareIcon from "@mui/icons-material/Share";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
 
 import styles from "./WidgetQuickShare.less";
 import {
@@ -29,15 +37,50 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
   };
 
   return (
-    <Card id="WidgetQuickShare" sx={{ m: 2 }}>
+    <Card
+      id="WidgetQuickShare"
+      sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+      elevation={0}
+    >
       <CardHeader
-        avatar={<ShareIcon fontSize="small" />}
-        title="Quick Share Options"
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          fontSize: "16px",
+          color: "#10182866",
+          borderBottom: 1,
+          borderColor: "grey.200",
+        }}
+        titleTypographyProps={{
+          sx: {
+            fontWeight: 400,
+            fontSize: "12px",
+            lineHeight: "32px",
+            color: "#101828",
+          },
+        }}
+        title="QUICK SHARE"
       ></CardHeader>
-      <CardContent className="setting-field">
-        <ButtonGroup className={styles.ShareLinks}>
-          <span
-            className="twitter"
+      <CardContent
+        className="setting-field"
+        sx={{
+          p: 0,
+          pt: 2,
+          "&:last-child": {
+            pb: 0,
+          },
+        }}
+      >
+        <Stack
+          gap={1.5}
+          sx={{
+            fontSize: "14px",
+            fontWeight: 500,
+            lineHeight: "20px",
+            letteSpacing: "0px",
+          }}
+        >
+          <Link
             onClick={(evt) =>
               handleOpen(
                 evt,
@@ -46,12 +89,25 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                 )}&text=${encodeURIComponent(props.metaLinkText)}`
               )
             }
+            underline="none"
+            sx={{
+              cursor: "pointer",
+              color: "info.dark",
+              width: "fit-content",
+            }}
           >
-            <FontAwesomeIcon icon={faTwitterSquare} />
-            <p>Tweet</p>
-          </span>
-          <span
-            className="facebook"
+            <FontAwesomeIcon
+              icon={faTwitterSquare}
+              style={{
+                color: "#0BA5EC",
+                marginRight: "8px",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+            Twitter
+          </Link>
+          <Link
             onClick={(evt) =>
               handleOpen(
                 evt,
@@ -60,12 +116,25 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                 )}&t=${encodeURIComponent(props.metaLinkText)}`
               )
             }
+            underline="none"
+            sx={{
+              cursor: "pointer",
+              color: "info.dark",
+              width: "fit-content",
+            }}
           >
-            <FontAwesomeIcon icon={faFacebookSquare} />
-            <p>Share</p>
-          </span>
-          <span
-            className="linkedin"
+            <FontAwesomeIcon
+              icon={faFacebookSquare}
+              style={{
+                color: "#0BA5EC",
+                marginRight: "8px",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+            Facebook
+          </Link>
+          <Link
             onClick={(evt) =>
               handleOpen(
                 evt,
@@ -74,12 +143,25 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                 )}`
               )
             }
+            underline="none"
+            sx={{
+              cursor: "pointer",
+              color: "info.dark",
+              width: "fit-content",
+            }}
           >
-            <FontAwesomeIcon icon={faLinkedinIn} />
-            <p>Share</p>
-          </span>
-          <span
-            className="reddit"
+            <FontAwesomeIcon
+              icon={faLinkedinIn}
+              style={{
+                color: "#0BA5EC",
+                marginRight: "8px",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+            Linkedin
+          </Link>
+          <Link
             onClick={(evt) =>
               handleOpen(
                 evt,
@@ -88,11 +170,25 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                 )}&title=${encodeURIComponent(props.metaLinkText)}`
               )
             }
+            underline="none"
+            sx={{
+              cursor: "pointer",
+              color: "info.dark",
+              width: "fit-content",
+            }}
           >
-            <FontAwesomeIcon icon={faRedditSquare} />
-            <p>Share</p>
-          </span>
-        </ButtonGroup>
+            <FontAwesomeIcon
+              icon={faRedditSquare}
+              style={{
+                color: "#0BA5EC",
+                marginRight: "8px",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+            Reddit
+          </Link>
+        </Stack>
       </CardContent>
     </Card>
   );

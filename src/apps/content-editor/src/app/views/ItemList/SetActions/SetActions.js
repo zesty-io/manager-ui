@@ -8,7 +8,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import SaveIcon from "@mui/icons-material/Save";
 import StorageIcon from "@mui/icons-material/Storage";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
+import TableChartRoundedIcon from "@mui/icons-material/TableChartRounded";
 import AddIcon from "@mui/icons-material/Add";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
@@ -48,10 +48,16 @@ export class SetActions extends Component {
                     <SearchIcon fontSize="small" />
                   </InputAdornment>
                 ),
+                sx: {
+                  height: "32px",
+                },
               }}
               onChange={(evt) => {
                 const term = evt.target.value;
                 this.props.onFilter(term);
+              }}
+              sx={{
+                height: "32px",
               }}
             />
 
@@ -68,26 +74,15 @@ export class SetActions extends Component {
                 this.props.onStatus(evt.target.value, "status")
               }
               size="small"
+              sx={{
+                height: "32px",
+              }}
             >
               <MenuItem value="all">All Status</MenuItem>
               <MenuItem value="published">Published</MenuItem>
               <MenuItem value="scheduled">Scheduled</MenuItem>
               <MenuItem value="unpublished">Un-Published</MenuItem>
             </Select>
-
-            <AppLink to={`/content/${this.props.modelZUID}/new`}>
-              <Button
-                variant="contained"
-                color="secondary"
-                title="Create Item"
-                data-cy="AddItemButton"
-                startIcon={<AddIcon />}
-              >
-                {this.props.model
-                  ? `Create ${this.props.model.label} Item`
-                  : "Create Model Item"}{" "}
-              </Button>
-            </AppLink>
 
             {Boolean(this.props.isDirty) && (
               <Button
@@ -103,6 +98,9 @@ export class SetActions extends Component {
                     <SaveIcon />
                   )
                 }
+                sx={{
+                  height: "32px",
+                }}
               >
                 Save All Changes
               </Button>
@@ -120,6 +118,7 @@ export class SetActions extends Component {
                 startIcon={<CloseIcon />}
                 sx={{
                   cursor: "pointer",
+                  height: "32px",
                 }}
               >
                 Clear Sort
@@ -127,8 +126,6 @@ export class SetActions extends Component {
             )}
           </div>
           <div className={styles.Right}>
-            <span>{this.props.itemCount} Total Items</span>
-
             {this.props.instance.basicApi ? (
               <MuiLink
                 underline="none"
@@ -141,6 +138,9 @@ export class SetActions extends Component {
                     ? `${this.props.instance.protocol}://${this.props.instance.live_domain}`
                     : this.props.instance.preview_domain
                 }/-/instant/${this.props.modelZUID}.json`}
+                sx={{
+                  height: "32px",
+                }}
               >
                 <FontAwesomeIcon icon={faBolt} />
                 &nbsp;Instant API
@@ -156,20 +156,47 @@ export class SetActions extends Component {
                   (window.location.hash = `/schema/${this.props.modelZUID}`)
                 }
                 startIcon={<StorageIcon />}
+                sx={{
+                  height: "32px",
+                }}
               >
                 Edit Schema
               </Button>
             )}
-            <Link to={`/content/${this.props.modelZUID}/import`}>
+            <Link
+              to={`/content/${this.props.modelZUID}/import`}
+              style={{ color: "#475467" }}
+            >
               <Button
-                variant="contained"
+                variant="outlined"
                 title="Add CSV Button"
                 id="AddCSVButton"
-                startIcon={<FileUploadIcon />}
+                color="inherit"
+                startIcon={<TableChartRoundedIcon sx={{ fill: "#10182866" }} />}
+                sx={{
+                  height: "32px",
+                  mr: 1.5,
+                  borderColor: "grey.200",
+                }}
               >
                 Import CSV
               </Button>
             </Link>
+            <AppLink to={`/content/${this.props.modelZUID}/new`}>
+              <Button
+                disableElevation
+                variant="contained"
+                color="primary"
+                title="Create Item"
+                data-cy="AddItemButton"
+                startIcon={<AddIcon />}
+                sx={{
+                  height: "32px",
+                }}
+              >
+                {this.props.model ? `Create Item` : "Create Model Item"}{" "}
+              </Button>
+            </AppLink>
           </div>
         </header>
       );

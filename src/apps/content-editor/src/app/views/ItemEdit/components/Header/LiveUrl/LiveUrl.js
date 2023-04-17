@@ -16,23 +16,31 @@ export function LiveUrl(props) {
   return props.item.publishing && props.item.publishing.isPublished ? (
     <Link
       underline="none"
-      color="secondary"
       target="_blank"
       title="Live Published"
       href={url}
+      sx={{
+        color: "info.dark",
+      }}
     >
       {props.item.web.pathPart === "zesty_home" ? (
-        <FontAwesomeIcon icon={faHome} />
+        <FontAwesomeIcon
+          icon={faHome}
+          style={{ color: "#0BA5EC", marginRight: "8px" }}
+        />
       ) : (
-        <FontAwesomeIcon icon={faLink} />
+        <FontAwesomeIcon
+          icon={faLink}
+          style={{ color: "#0BA5EC", marginRight: "8px" }}
+        />
       )}
-      &nbsp;
+
       <span>Live</span>
     </Link>
   ) : (
     <span className={styles.Unpublished}>
-      <FontAwesomeIcon icon={faUnlink} />
-      &nbsp;<span>Offline</span>
+      <FontAwesomeIcon icon={faUnlink} style={{ marginRight: "8px" }} />
+      <span>Offline</span>
     </span>
   );
 }
