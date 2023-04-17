@@ -9,6 +9,8 @@ import {
   SvgIconComponent,
 } from "@mui/icons-material";
 
+import instanceZUID from "../../../utility/instanceZUID";
+
 export type ClickAction = [
   "openUrl" | "openView" | "openEmail" | "logOut",
   string
@@ -48,7 +50,10 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     icon: SupportAgentRounded,
     text: "Get Help",
-    action: ["openEmail", ""],
+    action: [
+      "openUrl",
+      `https://www.zesty.io/instances/${instanceZUID}/support`,
+    ],
   },
   {
     icon: LogoutRounded,

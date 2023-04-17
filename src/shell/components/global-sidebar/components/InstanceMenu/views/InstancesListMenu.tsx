@@ -1,9 +1,8 @@
-import { FC, useMemo, useState, useRef } from "react";
+import { FC, useMemo, useState, useRef, CSSProperties } from "react";
 import { useSelector } from "react-redux";
 import {
   TextField,
   IconButton,
-  Divider,
   ListSubheader,
   MenuItem,
   ListItemIcon,
@@ -13,11 +12,15 @@ import {
   Button,
   Box,
   Tooltip,
+  Skeleton,
 } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import StarIcon from "@mui/icons-material/Star";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import { cloneDeep } from "lodash";
+import { FixedSizeList } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 import { View } from "../DropdownMenu";
 import { AppState } from "../../../../../store/types";
@@ -25,6 +28,11 @@ import { User, Instance } from "../../../../../services/types";
 import { useGetInstancesQuery } from "../../../../../services/accounts";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 
+interface ListRowData {
+  type: "header" | "data" | "skeleton";
+  data?: Instance;
+  headerText?: string;
+}
 interface InstancesMenuProps {
   onChangeView: (view: View) => void;
 }
@@ -32,7 +40,7 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
   const [filter, setFilter] = useState("");
   const searchField = useRef<HTMLInputElement | null>(null);
   const user: User = useSelector((state: AppState) => state.user);
-  const { data: instances } = useGetInstancesQuery();
+  const { data: instances, isLoading } = useGetInstancesQuery();
 
   const favoriteInstances = useMemo(() => {
     if (user && instances?.length) {
@@ -54,7 +62,7 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
   const filteredFavoriteInstances = useMemo(() => {
     if (filter) {
       return favoriteInstances?.filter((site) =>
-        site.name.toLowerCase().includes(filter.toLowerCase())
+        site.name?.toLowerCase().includes(filter.toLowerCase())
       );
     }
 
@@ -62,23 +70,60 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
   }, [filter, favoriteInstances]);
 
   const filteredInstances = useMemo(() => {
-    const sortedInstances = instances?.sort((a, b) =>
-      a.name.localeCompare(b.name)
+    const _instances = cloneDeep(instances);
+    const sortedInstances = _instances?.sort((a, b) =>
+      a.name?.localeCompare(b.name)
     );
 
     if (filter) {
       return sortedInstances?.filter((instance) =>
-        instance.name.toLowerCase().includes(filter.toLowerCase())
+        instance.name?.toLowerCase().includes(filter.toLowerCase())
       );
     }
 
     return sortedInstances;
   }, [filter, instances]);
 
-  const handleSwitchInstance = (ZUID: string) => {
-    // @ts-ignore
-    window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${ZUID}${CONFIG.URL_MANAGER}`;
-  };
+  const listData = useMemo(() => {
+    let faveInstances: ListRowData[] = [];
+    let allInstances: ListRowData[] = [];
+
+    if (filteredFavoriteInstances?.length) {
+      faveInstances = filteredFavoriteInstances?.map((instance) => ({
+        type: "data" as "header" | "data",
+        data: instance,
+      }));
+    }
+
+    if (isLoading) {
+      faveInstances = [...Array(5)].map(() => ({
+        type: "skeleton",
+      }));
+      allInstances = [...Array(10)].map(() => ({
+        type: "skeleton",
+      }));
+    }
+
+    if (filteredInstances?.length) {
+      allInstances = filteredInstances?.map((instance) => ({
+        type: "data" as "header" | "data",
+        data: instance,
+      }));
+    }
+
+    return [
+      {
+        type: "header",
+        headerText: "Favorites",
+      },
+      ...faveInstances,
+      {
+        type: "header",
+        headerText: "All Instances",
+      },
+      ...allInstances,
+    ];
+  }, [filteredInstances, filteredFavoriteInstances]);
 
   const handleResetFilter = () => {
     setFilter("");
@@ -86,7 +131,7 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
   };
 
   return (
-    <>
+    <Stack flexDirection="column" height="inherit">
       <ListSubheader
         sx={{
           p: 2,
@@ -148,64 +193,92 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
           </Button>
         </Stack>
       ) : (
-        <Box height={483} sx={{ overflowY: "auto" }}>
-          <MenuItem
-            disableRipple
-            sx={{
-              mt: 1,
-              "&:hover": { cursor: "default", backgroundColor: "transparent" },
-            }}
-          >
-            <ListItemIcon>
-              <StarIcon />
-            </ListItemIcon>
-            <ListItemText>Favorites</ListItemText>
-          </MenuItem>
-          {filteredFavoriteInstances?.map((instance) => (
-            <MenuItem
-              key={instance.ZUID}
-              onClick={() => handleSwitchInstance(instance.ZUID)}
-            >
-              <Tooltip
-                title={instance.name}
-                enterDelay={500}
-                enterNextDelay={500}
+        <Box height="100%">
+          <AutoSizer>
+            {({ height, width }) => (
+              <FixedSizeList
+                height={height}
+                width={width}
+                itemCount={listData?.length}
+                itemSize={36}
+                itemData={listData}
               >
-                <ListItemText>{instance.name}</ListItemText>
-              </Tooltip>
-            </MenuItem>
-          ))}
-          <Divider />
-          <MenuItem
-            disableRipple
-            sx={{
-              "&:hover": { cursor: "default", backgroundColor: "transparent" },
-            }}
-          >
-            <ListItemIcon>
-              <GridViewRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>All Instances</ListItemText>
-          </MenuItem>
-          {filteredInstances?.map((instance, index) => (
-            <MenuItem
-              key={instance.ZUID}
-              onClick={() => handleSwitchInstance(instance.ZUID)}
-              sx={{
-                mb: index + 1 === filteredInstances?.length ? 1 : 0,
-              }}
-            >
-              <Tooltip
-                title={instance.name}
-                enterDelay={500}
-                enterNextDelay={500}
-              >
-                <ListItemText>{instance.name}</ListItemText>
-              </Tooltip>
-            </MenuItem>
-          ))}
+                {Row}
+              </FixedSizeList>
+            )}
+          </AutoSizer>
         </Box>
       )}
-    </>
+    </Stack>
   );
+};
+
+interface ListRowProps {
+  index: number;
+  data: ListRowData[];
+  style: CSSProperties;
+}
+const Row = ({ index, data, style }: ListRowProps) => {
+  const instance = data[index];
+
+  const handleSwitchInstance = (ZUID: string) => {
+    // @ts-ignore
+    window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${ZUID}${CONFIG.URL_MANAGER}`;
+  };
+
+  if (instance.type === "skeleton") {
+    return (
+      <MenuItem sx={style}>
+        <Skeleton width="100%" height={36} />
+      </MenuItem>
+    );
+  }
+
+  if (instance.type === "header") {
+    const isFave = instance.headerText?.toLowerCase() === "favorites";
+    const isAll = instance.headerText?.toLowerCase() === "all instances";
+
+    return (
+      <MenuItem
+        disableRipple
+        sx={{
+          mt: 1,
+          borderTop: isAll ? 1 : 0,
+          borderColor: "border",
+          "&:hover": { cursor: "default", backgroundColor: "transparent" },
+          ...style,
+        }}
+      >
+        <ListItemIcon>
+          {isFave && <StarIcon />}
+          {isAll && <GridViewRoundedIcon />}
+        </ListItemIcon>
+        <ListItemText>{instance.headerText}</ListItemText>
+      </MenuItem>
+    );
+  }
+
+  if (instance.type === "data") {
+    return (
+      <MenuItem
+        key={instance.data.ZUID}
+        onClick={() => handleSwitchInstance(instance.data.ZUID)}
+        sx={style}
+      >
+        <Tooltip
+          title={instance.data.name}
+          enterDelay={500}
+          enterNextDelay={500}
+        >
+          <ListItemText
+            primaryTypographyProps={{
+              noWrap: true,
+            }}
+          >
+            {instance.data.name}
+          </ListItemText>
+        </Tooltip>
+      </MenuItem>
+    );
+  }
 };

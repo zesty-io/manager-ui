@@ -26,6 +26,7 @@ import TranslateRoundedIcon from "@mui/icons-material/TranslateRounded";
 import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 
 import { View } from "../DropdownMenu";
 import { useGetInstanceQuery } from "../../../../../services/accounts";
@@ -33,6 +34,7 @@ import instanceZUID from "../../../../../../utility/instanceZUID";
 import { actions } from "../../../../../store/ui";
 import { notify } from "../../../../../store/notifications";
 import { useRefreshCacheMutation } from "../../../../../services/cloudFunctions";
+import { useDomain } from "../../../../../hooks/use-domain";
 
 export const rotateAnimation = keyframes`
   from {
@@ -65,6 +67,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
       isError: isCacheRefreshFailed,
     },
   ] = useRefreshCacheMutation();
+  const domain = useDomain();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -123,11 +126,11 @@ export const NormalMenu: FC<NormalMenuProps> = ({
             variant="body2"
             fontWeight={600}
             color="info.dark"
-            href={`https://${instance?.domain}`}
+            href={domain}
             target="_blank"
             rel="noopener"
           >
-            {instance?.domain}
+            {domain.replace(/http:\/\/|https:\/\//gm, "")}
           </Link>
         </Stack>
       </Stack>
@@ -169,7 +172,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           <ListItemIcon>
             <RemoveRedEyeRoundedIcon />
           </ListItemIcon>
-          <ListItemText>View Web Engine Preview (Stage)</ListItemText>
+          <ListItemText>View WebEngine Preview (Stage)</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleCopyInstanceZUID}>
           <ListItemIcon>
@@ -276,6 +279,18 @@ export const NormalMenu: FC<NormalMenuProps> = ({
             <WebhookRoundedIcon />
           </ListItemIcon>
           <ListItemText>Webhooks</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() =>
+            handleOpenUrl(
+              `https://www.zesty.io/instances/${instanceZUID}/support`
+            )
+          }
+        >
+          <ListItemIcon>
+            <SupportAgentRoundedIcon />
+          </ListItemIcon>
+          <ListItemText>Contact Support</ListItemText>
         </MenuItem>
       </MenuList>
     </>

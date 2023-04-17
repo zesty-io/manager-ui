@@ -30,12 +30,6 @@ export const SearchPage: FC = () => {
           width: "100%",
           height: "100%",
           backgroundColor: "background.paper",
-          "*::-webkit-scrollbar-track-piece": {
-            backgroundColor: `${theme.palette.grey[100]} !important`,
-          },
-          "*::-webkit-scrollbar-thumb": {
-            backgroundColor: `${theme.palette.grey[300]} !important`,
-          },
         }}
       >
         <Box
