@@ -269,7 +269,7 @@ export const Filters: FC<FiltersProps> = ({
           value={dateRange}
           onChange={handleDateRangeFilterChanged}
           inactiveButtonText="Date"
-          headerTitle="Date"
+          headerTitle="Select Date Range"
         />
       )}
     </Box>
