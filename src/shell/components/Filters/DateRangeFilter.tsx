@@ -36,8 +36,8 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange<any>>([
-    value.from ? new Date(value.from) : null,
-    value.to ? new Date(value.to) : null,
+    null,
+    null,
   ]);
   const [dateRangeState, setDateRangeState] = useState("");
 
@@ -56,6 +56,12 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
       setIsModalOpen(false);
     }
   }, [dateRangeState]);
+
+  useEffect(() => {
+    if (value.from && value.to) {
+      setSelectedDateRange([new Date(value.from), new Date(value.to)]);
+    }
+  }, [value]);
 
   const isFilterActive = Boolean(value?.from && value?.to);
   const buttonText = isFilterActive

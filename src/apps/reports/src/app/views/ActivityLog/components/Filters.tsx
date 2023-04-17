@@ -2,6 +2,7 @@ import { useMemo, FC, useEffect, useState } from "react";
 import { Box, FormControl, Skeleton } from "@mui/material";
 import moment from "moment";
 import { uniqBy, isEqual } from "lodash";
+import { useLocation } from "react-router-dom";
 import { useParams } from "../../../../../../../shell/hooks/useParams";
 import { accountsApi } from "../../../../../../../shell/services/accounts";
 import { Audit } from "../../../../../../../shell/services/types";
@@ -99,6 +100,7 @@ export const Filters: FC<FiltersProps> = ({
   showSkeletons,
 }) => {
   const [params, setParams] = useParams();
+  const location = useLocation();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
   const [defaultDateRange, setDefaultDateRange] =
     useState<DateRangeFilterValue>({ from: null, to: null });
@@ -132,7 +134,10 @@ export const Filters: FC<FiltersProps> = ({
         to: moment(params.get("to")).format("YYYY-MM-DD"),
       };
 
-      if (isEqual(currentDateRange, defaultDateRange)) {
+      if (
+        location?.pathname.includes("schema") &&
+        isEqual(currentDateRange, defaultDateRange)
+      ) {
         // Don't show the date on the date range filter if it's the same with the default date
         return { from: null, to: null };
       }
