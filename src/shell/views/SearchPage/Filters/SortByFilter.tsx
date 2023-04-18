@@ -41,17 +41,18 @@ export const SortByFilter: FC<SortByFilter> = ({
           },
         }}
       >
-        {Object.entries(OPTIONS).map(([key, value]) => (
+        {Object.entries(OPTIONS).map(([filter, text]) => (
           <MenuItem
+            selected={value === filter}
             sx={{
               height: 40,
             }}
             onClick={() => {
-              onChange(key as FilterValues);
+              onChange(filter as FilterValues);
               setAnchorRef(null);
             }}
           >
-            {value}
+            {text}
           </MenuItem>
         ))}
       </Menu>
