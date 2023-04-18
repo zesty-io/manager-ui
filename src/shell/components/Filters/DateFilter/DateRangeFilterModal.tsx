@@ -19,6 +19,7 @@ import moment from "moment";
 import { DateRangeFilterValue, DateFilterModalType } from "./types";
 
 interface DateRangeFilterModal {
+  date: DateRangeFilterValue;
   onClose: () => void;
   onDateChange: ({
     type,
@@ -27,9 +28,9 @@ interface DateRangeFilterModal {
     type: DateFilterModalType;
     date: DateRangeFilterValue;
   }) => void;
-  // date: string;
 }
 export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
+  date,
   onClose,
   onDateChange,
 }) => {
@@ -38,6 +39,12 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
     null,
   ]);
   const [dateRangeState, setDateRangeState] = useState("");
+
+  useEffect(() => {
+    if (date?.from && date?.to) {
+      setSelectedDateRange([new Date(date.from), new Date(date.to)]);
+    }
+  }, [date]);
 
   useEffect(() => {
     if (dateRangeState === "finish") {
@@ -74,7 +81,7 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
       <DialogContent sx={{ px: 0, pb: 2.5 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateRangeCalendar
-            // value={selectedDateRange}
+            value={selectedDateRange}
             onChange={(newValue, selectionState) => {
               setSelectedDateRange(newValue);
               setDateRangeState(selectionState);

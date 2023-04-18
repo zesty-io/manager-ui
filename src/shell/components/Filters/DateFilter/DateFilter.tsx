@@ -209,6 +209,7 @@ export const DateFilter: FC<DateFilterProps> = ({
           })}
           {withDateRange && (
             <MenuItem
+              selected={value?.type === "daterange"}
               sx={{
                 height: ITEM_HEIGHT,
               }}
@@ -230,11 +231,20 @@ export const DateFilter: FC<DateFilterProps> = ({
             });
           }}
           type={calendarModalType}
-          date={value?.type !== "preset" ? (value?.value as string) : ""}
+          date={
+            ["on", "before", "after"].includes(value?.type)
+              ? (value?.value as string)
+              : ""
+          }
         />
       )}
       {Boolean(calendarModalType) && calendarModalType === "daterange" && (
         <DateRangeFilterModal
+          date={
+            value?.type === "daterange"
+              ? (value?.value as DateRangeFilterValue)
+              : { from: null, to: null }
+          }
           onClose={() => setCalendarModalType("")}
           onDateChange={({ type, date }) => {
             handleFilterSelect({
