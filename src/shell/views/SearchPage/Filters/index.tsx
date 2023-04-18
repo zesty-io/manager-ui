@@ -61,13 +61,70 @@ export const Filters = () => {
       case "preset": {
         const value = dateFilter.value as string;
 
-        setParams(value.replace(/_/g, ""), "datePreset");
+        setParams(value, "datePreset");
         setParams(null, "to");
         setParams(null, "from");
         return;
       }
     }
   };
+
+  const activeDateFilter: DateFilterValue = useMemo(() => {
+    const isPreset = Boolean(params.get("datePreset"));
+    const isBefore = Boolean(params.get("to")) && !Boolean(params.get("from"));
+    const isAfter = Boolean(params.get("from")) && !Boolean(params.get("to"));
+    const isOn =
+      Boolean(params.get("to")) &&
+      Boolean(params.get("from")) &&
+      params.get("to") === params.get("from");
+    const isDateRange =
+      Boolean(params.get("to")) &&
+      Boolean(params.get("from")) &&
+      params.get("to") !== params.get("from");
+
+    if (isPreset) {
+      return {
+        type: "preset",
+        value: params.get("datePreset"),
+      };
+    }
+
+    if (isBefore) {
+      return {
+        type: "before",
+        value: params.get("to"),
+      };
+    }
+
+    if (isAfter) {
+      return {
+        type: "after",
+        value: params.get("from"),
+      };
+    }
+
+    if (isOn) {
+      return {
+        type: "on",
+        value: params.get("from"),
+      };
+    }
+
+    if (isDateRange) {
+      return {
+        type: "daterange",
+        value: {
+          from: params.get("from"),
+          to: params.get("to"),
+        },
+      };
+    }
+
+    return {
+      type: "",
+      value: "",
+    };
+  }, [params]);
 
   return (
     <Stack direction="row" gap={1.5}>
@@ -85,10 +142,7 @@ export const Filters = () => {
         withDateRange
         defaultButtonText="Date"
         onChange={(value) => handleDateFilterChanged(value)}
-        value={{
-          type: "",
-          value: "",
-        }}
+        value={activeDateFilter}
       />
     </Stack>
   );

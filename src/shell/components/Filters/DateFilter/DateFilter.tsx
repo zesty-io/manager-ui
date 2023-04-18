@@ -101,6 +101,13 @@ export const DateFilter: FC<DateFilterProps> = ({
       case "after":
         return `After ${moment(value?.value as string).format("MMM D, YYYY")}`;
 
+      case "daterange":
+        const dateRange = value?.value as DateRangeFilterValue;
+
+        return `${moment(dateRange?.from).format("MMM D, YYYY")} to ${moment(
+          dateRange?.to
+        ).format("MMM D, YYYY")}`;
+
       default:
         return defaultButtonText;
     }
