@@ -66,6 +66,13 @@ export const Filters = () => {
         setParams(null, "from");
         return;
       }
+
+      default: {
+        setParams(null, "to");
+        setParams(null, "from");
+        setParams(null, "datePreset");
+        return;
+      }
     }
   };
 
