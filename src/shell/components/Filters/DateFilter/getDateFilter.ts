@@ -36,14 +36,16 @@ export const getDateFilterFn = ({ type, value }: DateFilterValue) => {
       }
 
     case "on":
-      return (date: string) => moment(date).isSame(moment(value), "day");
+      return (date: string) =>
+        moment(date).isSame(moment(value as string), "day");
 
     case "before":
       return (date: string) =>
-        moment(date).isSameOrBefore(moment(value), "day");
+        moment(date).isSameOrBefore(moment(value as string), "day");
 
     case "after":
-      return (date: string) => moment(date).isSameOrAfter(moment(value), "day");
+      return (date: string) =>
+        moment(date).isSameOrAfter(moment(value as string), "day");
 
     // should never happen
     default:
