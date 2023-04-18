@@ -46,7 +46,10 @@ export const SortByFilter: FC<SortByFilter> = ({
             sx={{
               height: 40,
             }}
-            onClick={() => onChange(key as FilterValues)}
+            onClick={() => {
+              onChange(key as FilterValues);
+              setAnchorRef(null);
+            }}
           >
             {value}
           </MenuItem>
