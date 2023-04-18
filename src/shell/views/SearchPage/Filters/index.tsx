@@ -3,8 +3,13 @@ import { Stack } from "@mui/material";
 
 import { useParams } from "../../../hooks/useParams";
 import { SortByFilter, FilterValues } from "./SortByFilter";
-import { UserFilter, DateFilter } from "../../../components/Filters/";
+import {
+  UserFilter,
+  DateFilter,
+  DateRangeFilterValue,
+} from "../../../components/Filters/";
 import { useGetUsersQuery } from "../../../services/accounts";
+import { DateFilterValue } from "../../../components/Filters/DateFilter";
 
 export const Filters = () => {
   const [params, setParams] = useParams();
@@ -17,6 +22,52 @@ export const Filters = () => {
       email: user.email,
     }));
   }, [users]);
+
+  const handleDateFilterChanged = (dateFilter: DateFilterValue) => {
+    switch (dateFilter.type) {
+      case "daterange": {
+        const value = dateFilter.value as DateRangeFilterValue;
+
+        setParams(value.to, "to");
+        setParams(value.from, "from");
+        setParams(null, "datePreset");
+        return;
+      }
+
+      case "on": {
+        const value = dateFilter.value as string;
+
+        setParams(value, "to");
+        setParams(value, "from");
+        setParams(null, "datePreset");
+        return;
+      }
+      case "before": {
+        const value = dateFilter.value as string;
+
+        setParams(value, "to");
+        setParams(null, "from");
+        setParams(null, "datePreset");
+        return;
+      }
+      case "after": {
+        const value = dateFilter.value as string;
+
+        setParams(value, "from");
+        setParams(null, "to");
+        setParams(null, "datePreset");
+        return;
+      }
+      case "preset": {
+        const value = dateFilter.value as string;
+
+        setParams(value.replace(/_/g, ""), "datePreset");
+        setParams(null, "to");
+        setParams(null, "from");
+        return;
+      }
+    }
+  };
 
   return (
     <Stack direction="row" gap={1.5}>
@@ -33,7 +84,7 @@ export const Filters = () => {
       <DateFilter
         withDateRange
         defaultButtonText="Date"
-        onChange={() => {}}
+        onChange={(value) => handleDateFilterChanged(value)}
         value={{
           type: "",
           value: "",

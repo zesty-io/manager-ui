@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -16,12 +16,49 @@ import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import CloseIcon from "@mui/icons-material/Close";
 import moment from "moment";
 
+import { DateRangeFilterValue, DateFilterModalType } from "./types";
+
 interface DateRangeFilterModal {
   onClose: () => void;
-  // onDateChange: ({ type, date }: SelectedDate) => void;
+  onDateChange: ({
+    type,
+    date,
+  }: {
+    type: DateFilterModalType;
+    date: DateRangeFilterValue;
+  }) => void;
   // date: string;
 }
-export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({ onClose }) => {
+export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
+  onClose,
+  onDateChange,
+}) => {
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange<any>>([
+    null,
+    null,
+  ]);
+  const [dateRangeState, setDateRangeState] = useState("");
+
+  useEffect(() => {
+    if (dateRangeState === "finish") {
+      const date = {
+        from: moment(selectedDateRange[0]).isValid()
+          ? moment(selectedDateRange[0]).format("YYYY-MM-DD")
+          : null,
+        to: moment(selectedDateRange[1]).isValid()
+          ? moment(selectedDateRange[1]).format("YYYY-MM-DD")
+          : null,
+      };
+
+      onDateChange({
+        type: "daterange",
+        date,
+      });
+      setDateRangeState("");
+      onClose();
+    }
+  }, [dateRangeState]);
+
   return (
     <Dialog open onClose={onClose} maxWidth="md">
       <DialogTitle>
@@ -38,10 +75,10 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({ onClose }) => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateRangeCalendar
             // value={selectedDateRange}
-            // onChange={(newValue, selectionState) => {
-            //   setSelectedDateRange(newValue);
-            //   setDateRangeState(selectionState);
-            // }}
+            onChange={(newValue, selectionState) => {
+              setSelectedDateRange(newValue);
+              setDateRangeState(selectionState);
+            }}
             data-cy="dateRange_picker"
           />
         </LocalizationProvider>

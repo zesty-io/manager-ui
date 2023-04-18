@@ -5,7 +5,12 @@ import moment from "moment-timezone";
 
 import { FilterButton } from "../FilterButton";
 import { DateFilterModal } from "./DateFilterModal";
-import { PresetType, DateFilterModalType, DateFilterValue } from "./types";
+import {
+  PresetType,
+  DateFilterModalType,
+  DateFilterValue,
+  DateRangeFilterValue,
+} from "./types";
 import { DateRangeFilterModal } from "./DateRangeFilterModal";
 
 const PRESET_DATES: PresetDate[] = [
@@ -60,7 +65,7 @@ interface CustomDate {
 }
 interface FilterSelectParam {
   type: "preset" | DateFilterModalType;
-  value: Date | PresetType;
+  value: Date | PresetType | DateRangeFilterValue;
 }
 interface DateFilterProps {
   value: DateFilterValue;
@@ -88,13 +93,13 @@ export const DateFilter: FC<DateFilterProps> = ({
         return match?.text;
 
       case "on":
-        return `On ${moment(value?.value).format("MMM D, YYYY")}`;
+        return `On ${moment(value?.value as string).format("MMM D, YYYY")}`;
 
       case "before":
-        return `Before ${moment(value?.value).format("MMM D, YYYY")}`;
+        return `Before ${moment(value?.value as string).format("MMM D, YYYY")}`;
 
       case "after":
-        return `After ${moment(value?.value).format("MMM D, YYYY")}`;
+        return `After ${moment(value?.value as string).format("MMM D, YYYY")}`;
 
       default:
         return defaultButtonText;
@@ -110,11 +115,20 @@ export const DateFilter: FC<DateFilterProps> = ({
       setMenuAnchorEl(null);
     }
 
-    onChange({
-      type,
-      value:
-        typeof value === "object" ? moment(value).format("YYYY-MM-DD") : value,
-    });
+    if (type === "daterange") {
+      onChange({
+        type,
+        value: value as DateRangeFilterValue,
+      });
+    } else {
+      onChange({
+        type,
+        value:
+          typeof value === "object"
+            ? moment(value as Date).format("YYYY-MM-DD")
+            : value,
+      });
+    }
   };
 
   const handleOpenCalendarModal = (type: DateFilterModalType) => {
@@ -209,11 +223,19 @@ export const DateFilter: FC<DateFilterProps> = ({
             });
           }}
           type={calendarModalType}
-          date={value?.type !== "preset" ? value?.value : ""}
+          date={value?.type !== "preset" ? (value?.value as string) : ""}
         />
       )}
       {Boolean(calendarModalType) && calendarModalType === "daterange" && (
-        <DateRangeFilterModal onClose={() => setCalendarModalType("")} />
+        <DateRangeFilterModal
+          onClose={() => setCalendarModalType("")}
+          onDateChange={({ type, date }) => {
+            handleFilterSelect({
+              type,
+              value: date,
+            });
+          }}
+        />
       )}
     </>
   );
