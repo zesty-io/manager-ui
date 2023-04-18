@@ -3,7 +3,7 @@ import { Stack } from "@mui/material";
 
 import { useParams } from "../../../hooks/useParams";
 import { SortByFilter, FilterValues } from "./SortByFilter";
-import { UserFilter } from "../../../components/Filters/";
+import { UserFilter, DateFilter } from "../../../components/Filters/";
 import { useGetUsersQuery } from "../../../services/accounts";
 
 export const Filters = () => {
@@ -29,6 +29,15 @@ export const Filters = () => {
         onChange={(value) => setParams(value, "user")}
         defaultButtonText="People"
         options={userOptions}
+      />
+      <DateFilter
+        withDateRange
+        defaultButtonText="Date"
+        onChange={() => {}}
+        value={{
+          type: "",
+          value: "",
+        }}
       />
     </Stack>
   );
