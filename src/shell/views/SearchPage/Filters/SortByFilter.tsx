@@ -11,18 +11,21 @@ const OPTIONS: { [key in FilterValues]: string } = Object.freeze({
   ZtoA: "Name (Z to A)",
 });
 
-interface SortBy {
+interface SortByFilter {
   onChange: (value: FilterValues) => void;
-  activeFilter?: FilterValues;
+  value?: FilterValues;
 }
-export const SortBy: FC<SortBy> = ({ onChange, activeFilter = "modified" }) => {
+export const SortByFilter: FC<SortByFilter> = ({
+  onChange,
+  value = "modified",
+}) => {
   const [anchorRef, setAnchorRef] = useState<HTMLElement | null>(null);
 
   return (
     <>
       <FilterButton
         isFilterActive={false}
-        buttonText={`Sort: ${OPTIONS[activeFilter]}`}
+        buttonText={`Sort: ${OPTIONS[value]}`}
         onOpenMenu={(e: React.MouseEvent<HTMLButtonElement>) =>
           setAnchorRef(e.currentTarget)
         }
