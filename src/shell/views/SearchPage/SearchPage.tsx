@@ -1,8 +1,7 @@
 import { FC } from "react";
 
 import { useParams } from "../../../shell/hooks/useParams";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import { Typography, Box, Stack } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import moment from "moment-timezone";
@@ -11,6 +10,8 @@ import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
 import { ContentList } from "./ContentList";
 import { BackButton } from "./BackButton";
+import { Filters } from "./Filters";
+
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q") || "";
@@ -52,6 +53,9 @@ export const SearchPage: FC = () => {
             {results?.length} results for "{query}"
           </Typography>
           <BackButton />
+        </Box>
+        <Box pt={2} px={3}>
+          <Filters />
         </Box>
         {!isLoading && !results?.length && <NoSearchResults query={query} />}
         {isLoading ||
