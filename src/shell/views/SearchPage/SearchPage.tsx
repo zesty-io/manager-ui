@@ -1,10 +1,11 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 import { useParams } from "../../../shell/hooks/useParams";
 import { Typography, Box, Stack } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import moment from "moment-timezone";
+import { cloneDeep } from "lodash";
 
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
@@ -19,10 +20,37 @@ export const SearchPage: FC = () => {
     { query, order: "created", dir: "desc" },
     { skip: !query }
   );
-  const sortedResults = results ? [...results] : [];
-  sortedResults?.sort((a, b) => {
-    return moment(b.meta.updatedAt).diff(moment(a.meta.updatedAt));
-  });
+
+  const sortedResults = useMemo(() => {
+    const sortBy = params.get("sort") || "";
+    const _results = results ? cloneDeep(results) : [];
+
+    switch (sortBy) {
+      case "":
+      case "modified":
+        return _results?.sort((a, b) => {
+          return moment(b.meta.updatedAt).diff(moment(a.meta.updatedAt));
+        });
+
+      case "created":
+        return _results?.sort((a, b) => {
+          return moment(b.meta.createdAt).diff(moment(a.meta.createdAt));
+        });
+
+      case "AtoZ":
+        return _results?.sort((a, b) => {
+          return a.web?.metaTitle?.localeCompare(b.web?.metaTitle);
+        });
+
+      case "ZtoA":
+        return _results?.sort((a, b) => {
+          return b.web?.metaTitle?.localeCompare(a.web?.metaTitle);
+        });
+
+      default:
+        return _results;
+    }
+  }, [results, params]);
 
   return (
     <ThemeProvider theme={theme}>
