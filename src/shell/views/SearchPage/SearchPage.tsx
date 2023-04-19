@@ -124,7 +124,7 @@ export const SearchPage: FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
+      <Stack
         sx={{
           width: "100%",
           height: "100%",
@@ -181,7 +181,7 @@ export const SearchPage: FC = () => {
               <ContentList results={filteredResults} loading={isLoading} />
             </Box>
           ))}
-      </Box>
+      </Stack>
     </ThemeProvider>
   );
 };
