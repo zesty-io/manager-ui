@@ -90,6 +90,12 @@ describe("Reports > Activity Log > Home", () => {
         );
       });
 
+      /**
+       * Note: Date needs to be hard-coded here to make sure that when the datepicker opens,
+       * the cypress test runner can easily pick the date from the datepicker modal
+       * instead of having to determine how many times to click the next month arrow everytime
+       * to get to the current date.
+       */
       const from = moment("2022-07-14")
         .hours(0)
         .minute(0)
@@ -182,6 +188,12 @@ describe("Reports > Activity Log > Home", () => {
         });
       }).as("request");
 
+      /**
+       * Note: Date needs to be hard-coded here to make sure that when the datepicker opens,
+       * the cypress test runner can easily pick the date from the datepicker modal
+       * instead of having to determine how many times to click the next month arrow everytime
+       * to get to the current date.
+       */
       const from = moment("2022-07-14")
         .hours(0)
         .minute(0)
