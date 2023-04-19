@@ -12,6 +12,7 @@ import { useSearchContentQuery } from "../../services/instance";
 import { ContentList } from "./ContentList";
 import { BackButton } from "./BackButton";
 import { Filters } from "./Filters";
+import { getDateFilterFn } from "../../components/Filters/DateFilter";
 
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
@@ -60,11 +61,62 @@ export const SearchPage: FC = () => {
       from: params.get("from") || "",
       to: params.get("to") || "",
     };
+    const isPreset = Boolean(dateFilter.preset);
+    const isBefore = Boolean(dateFilter.to) && !Boolean(dateFilter.from);
+    const isAfter = Boolean(dateFilter.from) && !Boolean(dateFilter.to);
+    const isOn =
+      Boolean(dateFilter.to) &&
+      Boolean(dateFilter.from) &&
+      dateFilter.to === dateFilter.from;
+    const isRange =
+      Boolean(dateFilter.to) &&
+      Boolean(dateFilter.from) &&
+      dateFilter.to !== dateFilter.from;
+    let dateFilterFn: (date: string) => boolean;
 
+    // Filter by user
     if (userFilter) {
-      return _results.filter(
+      _results = _results.filter(
         (result) => result.web?.createdByUserZUID === userFilter
       );
+    }
+
+    // Determine the date filter function to use
+    if (isPreset) {
+      dateFilterFn = getDateFilterFn({
+        type: "preset",
+        value: dateFilter.preset,
+      });
+    }
+
+    if (isBefore) {
+      dateFilterFn = getDateFilterFn({ type: "before", value: dateFilter.to });
+    }
+
+    if (isAfter) {
+      dateFilterFn = getDateFilterFn({ type: "after", value: dateFilter.from });
+    }
+
+    if (isOn) {
+      dateFilterFn = getDateFilterFn({ type: "on", value: dateFilter.from });
+    }
+
+    if (isRange) {
+      dateFilterFn = getDateFilterFn({
+        type: "daterange",
+        value: { from: dateFilter.from, to: dateFilter.to },
+      });
+    }
+
+    // Apply date filter if there is any
+    if (dateFilterFn) {
+      _results = _results.filter((result) => {
+        if (result.meta?.createdAt) {
+          return dateFilterFn(result.meta?.createdAt);
+        }
+
+        return false;
+      });
     }
 
     return _results;

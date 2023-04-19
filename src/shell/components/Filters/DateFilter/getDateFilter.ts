@@ -1,10 +1,9 @@
 import moment from "moment-timezone";
 
-import { DateFilterValue, PresetType } from "./types";
+import { DateFilterValue, DateRangeFilterValue, PresetType } from "./types";
 
 export const getDateFilterFn = ({ type, value }: DateFilterValue) => {
   switch (type) {
-    case "preset":
     case "preset":
       switch (value as PresetType) {
         case "today":
@@ -46,6 +45,18 @@ export const getDateFilterFn = ({ type, value }: DateFilterValue) => {
     case "after":
       return (date: string) =>
         moment(date).isSameOrAfter(moment(value as string), "day");
+
+    case "daterange":
+      return (date: string) => {
+        const _value = value as DateRangeFilterValue;
+
+        return moment(date).isBetween(
+          moment(_value.from),
+          moment(_value.to),
+          "day",
+          "[]"
+        );
+      };
 
     // should never happen
     default:
