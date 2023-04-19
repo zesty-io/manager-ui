@@ -1,10 +1,18 @@
-import TextField from "@mui/material/TextField";
 import { FC, useState, useRef } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
-import Autocomplete from "@mui/material/Autocomplete";
 import InputAdornment from "@mui/material/InputAdornment";
 import { HTMLAttributes } from "react";
-import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import {
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Button,
+  TextField,
+  Autocomplete,
+  Paper,
+  Popper,
+  Collapse,
+} from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
@@ -12,9 +20,6 @@ import { ContentItem } from "../../services/types";
 import { useHistory, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../../store/notifications";
-import Paper from "@mui/material/Paper";
-import Popper from "@mui/material/Popper";
-import Collapse from "@mui/material/Collapse";
 import { useTheme } from "@mui/material/styles";
 
 const ContentSearch: FC = () => {
@@ -29,7 +34,9 @@ const ContentSearch: FC = () => {
 
   const suggestions = res.data;
   const topSuggestions =
-    suggestions && value ? [value, ...suggestions.slice(0, 5)] : [];
+    suggestions && value
+      ? [value, ...suggestions.slice(0, 5), "AdvancedSearchButton"]
+      : [];
 
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
@@ -157,7 +164,7 @@ const ContentSearch: FC = () => {
         }}
         renderOption={(props, option) => {
           // type of string represents the top-row search term
-          if (typeof option === "string")
+          if (typeof option === "string" && option !== "AdvancedSearchButton") {
             return (
               <Suggestion
                 {...props}
@@ -169,6 +176,21 @@ const ContentSearch: FC = () => {
                 text={option}
               />
             );
+          } else if (
+            typeof option === "string" &&
+            option === "AdvancedSearchButton"
+          ) {
+            return (
+              <ListItem
+                sx={{
+                  height: 32,
+                  mt: 1,
+                }}
+              >
+                <Button size="small">Advanced Search</Button>
+              </ListItem>
+            );
+          }
           // type of ContentItem represents a suggestion from the search API
           else {
             const getText = () => {
