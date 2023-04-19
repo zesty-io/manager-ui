@@ -1,10 +1,17 @@
 import { Dispatch, FC, useState, useMemo } from "react";
 import { Menu, MenuItem, ListItemText, Divider } from "@mui/material";
+import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
+import moment from "moment-timezone";
 
 import { FilterButton } from "../FilterButton";
 import { DateFilterModal } from "./DateFilterModal";
-import { PresetType, DateFilterModalType, DateFilterValue } from "./types";
-import moment from "moment-timezone";
+import {
+  PresetType,
+  DateFilterModalType,
+  DateFilterValue,
+  DateRangeFilterValue,
+} from "./types";
+import { DateRangeFilterModal } from "./DateRangeFilterModal";
 
 const PRESET_DATES: PresetDate[] = [
   {
@@ -58,13 +65,20 @@ interface CustomDate {
 }
 interface FilterSelectParam {
   type: "preset" | DateFilterModalType;
-  value: Date | PresetType;
+  value: Date | PresetType | DateRangeFilterValue;
 }
 interface DateFilterProps {
   value: DateFilterValue;
   onChange: (filter: DateFilterValue) => void;
+  withDateRange?: boolean;
+  defaultButtonText?: string;
 }
-export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
+export const DateFilter: FC<DateFilterProps> = ({
+  onChange,
+  value,
+  withDateRange = false,
+  defaultButtonText = "Last Updated",
+}) => {
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
@@ -79,16 +93,23 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
         return match?.text;
 
       case "on":
-        return `On ${moment(value?.value).format("MMM D, YYYY")}`;
+        return `On ${moment(value?.value as string).format("MMM D, YYYY")}`;
 
       case "before":
-        return `Before ${moment(value?.value).format("MMM D, YYYY")}`;
+        return `Before ${moment(value?.value as string).format("MMM D, YYYY")}`;
 
       case "after":
-        return `After ${moment(value?.value).format("MMM D, YYYY")}`;
+        return `After ${moment(value?.value as string).format("MMM D, YYYY")}`;
+
+      case "daterange":
+        const dateRange = value?.value as DateRangeFilterValue;
+
+        return `${moment(dateRange?.from).format("MMM D, YYYY")} to ${moment(
+          dateRange?.to
+        ).format("MMM D, YYYY")}`;
 
       default:
-        return "Last Updated";
+        return defaultButtonText;
     }
   }, [value]);
 
@@ -101,11 +122,20 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
       setMenuAnchorEl(null);
     }
 
-    onChange({
-      type,
-      value:
-        typeof value === "object" ? moment(value).format("YYYY-MM-DD") : value,
-    });
+    if (type === "daterange") {
+      onChange({
+        type,
+        value: value as DateRangeFilterValue,
+      });
+    } else {
+      onChange({
+        type,
+        value:
+          typeof value === "object"
+            ? moment(value as Date).format("YYYY-MM-DD")
+            : value,
+      });
+    }
   };
 
   const handleOpenCalendarModal = (type: DateFilterModalType) => {
@@ -116,7 +146,7 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
   return (
     <>
       <FilterButton
-        isFilterActive={Boolean(activeFilterText !== "Last Updated")}
+        isFilterActive={Boolean(activeFilterText !== defaultButtonText)}
         buttonText={activeFilterText}
         onOpenMenu={handleOpenMenuClick}
         onRemoveFilter={() => {
@@ -177,9 +207,21 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
               </MenuItem>
             );
           })}
+          {withDateRange && (
+            <MenuItem
+              selected={value?.type === "daterange"}
+              sx={{
+                height: ITEM_HEIGHT,
+              }}
+              onClick={() => handleOpenCalendarModal("daterange")}
+            >
+              <ListItemText>Custom date range</ListItemText>
+              <ChevronRightOutlinedIcon color="action" />
+            </MenuItem>
+          )}
         </Menu>
       </FilterButton>
-      {Boolean(calendarModalType) && (
+      {Boolean(calendarModalType) && calendarModalType !== "daterange" && (
         <DateFilterModal
           onClose={() => setCalendarModalType("")}
           onDateChange={({ type, date }) => {
@@ -189,7 +231,27 @@ export const DateFilter: FC<DateFilterProps> = ({ onChange, value }) => {
             });
           }}
           type={calendarModalType}
-          date={value?.type !== "preset" ? value?.value : ""}
+          date={
+            ["on", "before", "after"].includes(value?.type)
+              ? (value?.value as string)
+              : ""
+          }
+        />
+      )}
+      {Boolean(calendarModalType) && calendarModalType === "daterange" && (
+        <DateRangeFilterModal
+          date={
+            value?.type === "daterange"
+              ? (value?.value as DateRangeFilterValue)
+              : { from: null, to: null }
+          }
+          onClose={() => setCalendarModalType("")}
+          onDateChange={({ type, date }) => {
+            handleFilterSelect({
+              type,
+              value: date,
+            });
+          }}
         />
       )}
     </>
