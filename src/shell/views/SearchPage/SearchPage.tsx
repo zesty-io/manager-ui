@@ -52,6 +52,24 @@ export const SearchPage: FC = () => {
     }
   }, [results, params]);
 
+  const filteredResults = useMemo(() => {
+    let _results = cloneDeep(sortedResults);
+    const userFilter = params.get("user") || "";
+    const dateFilter = {
+      preset: params.get("datePreset") || "",
+      from: params.get("from") || "",
+      to: params.get("to") || "",
+    };
+
+    if (userFilter) {
+      return _results.filter(
+        (result) => result.web?.createdByUserZUID === userFilter
+      );
+    }
+
+    return _results;
+  }, [sortedResults, params]);
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -99,7 +117,7 @@ export const SearchPage: FC = () => {
                 height: "100%",
               }}
             >
-              <ContentList results={sortedResults} loading={isLoading} />
+              <ContentList results={filteredResults} loading={isLoading} />
             </Box>
           ))}
       </Box>
