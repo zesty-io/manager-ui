@@ -139,6 +139,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
         onClick={() => {
           onChangeView("instances");
         }}
+        data-cy="InstanceSwitcher"
       >
         <MenuItem>
           <ListItemIcon>
@@ -155,6 +156,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
             onCloseDropdownMenu();
             dispatch(actions.toggleUpdateFaviconModal(true));
           }}
+          data-cy="Favicon"
         >
           <ListItemIcon>
             <ImageRoundedIcon />
@@ -168,13 +170,14 @@ export const NormalMenu: FC<NormalMenuProps> = ({
               `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
             )
           }
+          data-cy="WebEnginePreviewLink"
         >
           <ListItemIcon>
             <RemoveRedEyeRoundedIcon />
           </ListItemIcon>
           <ListItemText>View WebEngine Preview (Stage)</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleCopyInstanceZUID}>
+        <MenuItem onClick={handleCopyInstanceZUID} data-cy="CopyInstanceZUID">
           <ListItemIcon>
             {isInstanceZuidCopied ? (
               <CheckRoundedIcon />
@@ -184,7 +187,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           </ListItemIcon>
           <ListItemText>Copy Instance ZUID</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => refreshCache()}>
+        <MenuItem onClick={() => refreshCache()} data-cy="RefreshCache">
           <ListItemIcon>
             {isCacheRefreshed ? (
               <CheckRoundedIcon />
@@ -227,7 +230,10 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           </ListItemIcon>
           <ListItemText>Teams</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => onChangeView("domains")}>
+        <MenuItem
+          onClick={() => onChangeView("domains")}
+          data-cy="DomainSwitcher"
+        >
           <ListItemIcon>
             <LanguageRoundedIcon />
           </ListItemIcon>
@@ -286,6 +292,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
               `https://www.zesty.io/instances/${instanceZUID}/support`
             )
           }
+          data-cy="GetHelp"
         >
           <ListItemIcon>
             <SupportAgentRoundedIcon />

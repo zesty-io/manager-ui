@@ -63,6 +63,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
 
           {/* Sidebar handle */}
           <IconButton
+            data-cy="CollapseGlobalSideBar"
             onClick={onClick}
             sx={{
               borderColor: "grey.600",
@@ -141,6 +142,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   rel="noopener"
                   width={openNav ? "inherit" : 32}
                   textAlign="center"
+                  title="View source code commit"
                   sx={{
                     wordWrap: "break-word",
                   }}
@@ -170,7 +172,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             >
               <Stack
                 ref={accountMenuBtn}
-                data-cy="AccountMenuButton"
+                data-cy="globalAccountAvatar"
                 direction="row"
                 alignItems="center"
                 width={openNav ? 49 : 32}
@@ -209,6 +211,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 }}
               >
                 <IconButton
+                  data-cy="InviteUser"
                   onClick={() => setShowInviteModal(true)}
                   sx={{
                     backgroundColor: "grey.800",
@@ -221,6 +224,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
                 </IconButton>
                 <IconButton
+                  data-cy="ReadDocs"
                   onClick={() => {
                     setShowDocsMenu(true);
                   }}
