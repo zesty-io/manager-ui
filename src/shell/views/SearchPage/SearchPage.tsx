@@ -101,7 +101,7 @@ export const SearchPage: FC = () => {
           <BackButton />
         </Box>
         <Box
-          pt={2}
+          py={2}
           px={3}
           sx={{
             backgroundColor: "grey.50",
@@ -117,7 +117,8 @@ export const SearchPage: FC = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                padding: "16px 24px 0px",
+                px: 3,
+                py: 0,
                 gap: 2,
                 backgroundColor: "grey.50",
                 height: "100%",
