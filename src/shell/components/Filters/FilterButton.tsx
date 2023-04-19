@@ -50,6 +50,9 @@ export const FilterButton: FC<FilterButton> = ({
         endIcon={<ArrowDropDownOutlinedIcon />}
         onClick={onOpenMenu}
         data-cy={`${filterId}_default`}
+        sx={{
+          backgroundColor: "common.white",
+        }}
       >
         {buttonText}
       </Button>

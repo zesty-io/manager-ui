@@ -100,7 +100,13 @@ export const SearchPage: FC = () => {
           </Typography>
           <BackButton />
         </Box>
-        <Box pt={2} px={3}>
+        <Box
+          pt={2}
+          px={3}
+          sx={{
+            backgroundColor: "grey.50",
+          }}
+        >
           <Filters />
         </Box>
         {!isLoading && !results?.length && <NoSearchResults query={query} />}
