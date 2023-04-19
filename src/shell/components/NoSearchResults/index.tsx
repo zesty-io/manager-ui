@@ -26,6 +26,8 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
         display: "flex",
         flexDirection: "column",
         height: "100%",
+        borderTop: 1,
+        borderColor: "border",
       }}
     >
       <Box

@@ -148,7 +148,7 @@ export const SearchPage: FC = () => {
           }}
         >
           <Typography variant="h6" color="text.primary">
-            {results?.length} results for "{query}"
+            {filteredResults?.length} results for "{query}"
           </Typography>
           <BackButton />
         </Box>
@@ -161,9 +161,11 @@ export const SearchPage: FC = () => {
         >
           <Filters />
         </Box>
-        {!isLoading && !results?.length && <NoSearchResults query={query} />}
+        {!isLoading && !filteredResults?.length && (
+          <NoSearchResults query={query} />
+        )}
         {isLoading ||
-          (results?.length && (
+          (Boolean(filteredResults?.length) && (
             <Box
               sx={{
                 display: "flex",
