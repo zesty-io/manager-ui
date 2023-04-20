@@ -223,8 +223,6 @@ const ContentSearch: FC = () => {
               variant="outlined"
               placeholder={`Search Instance ${shortcutHelpText}`}
               sx={{
-                // Remove position absolute in MuiAutocomplete-endAdornment
-                // Remove right padding in MuiAutocomplete-root .MuiOutlinedInput-root
                 height: "40px",
                 "& .Mui-focused": {
                   width: "500px",
