@@ -12,6 +12,7 @@ import {
   Paper,
   Popper,
   Collapse,
+  IconButton,
 } from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
@@ -21,6 +22,7 @@ import { useHistory, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../../store/notifications";
 import { useTheme } from "@mui/material/styles";
+import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
@@ -221,6 +223,8 @@ const ContentSearch: FC = () => {
               variant="outlined"
               placeholder={`Search Instance ${shortcutHelpText}`}
               sx={{
+                // Remove position absolute in MuiAutocomplete-endAdornment
+                // Remove right padding in MuiAutocomplete-root .MuiOutlinedInput-root
                 height: "40px",
                 "& .Mui-focused": {
                   width: "500px",
@@ -231,6 +235,13 @@ const ContentSearch: FC = () => {
                 "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
                   visibility: value ? "visible" : "hidden",
                 },
+                ".MuiAutocomplete-endAdornment": {
+                  position: "initial",
+                },
+                "& .MuiInputBase-root.MuiAutocomplete-inputRoot.MuiOutlinedInput-root":
+                  {
+                    pr: "0px",
+                  },
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -250,6 +261,16 @@ const ContentSearch: FC = () => {
                   <InputAdornment position="start" sx={{ marginRight: 0 }}>
                     <SearchIcon fontSize="small" color="action" />
                   </InputAdornment>
+                ),
+                endAdornment: (
+                  <>
+                    {params.InputProps.endAdornment}
+                    <InputAdornment position="end">
+                      <IconButton size="small" sx={{ marginRight: 1 }}>
+                        <TuneRoundedIcon fontSize="small" color="action" />
+                      </IconButton>
+                    </InputAdornment>
+                  </>
                 ),
                 sx: {
                   "&.MuiAutocomplete-inputRoot": {
