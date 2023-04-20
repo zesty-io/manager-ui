@@ -43,6 +43,7 @@ export const SortByFilter: FC<SortByFilter> = ({
       >
         {Object.entries(OPTIONS).map(([filter, text]) => (
           <MenuItem
+            key={filter}
             selected={value === filter}
             sx={{
               height: 40,
