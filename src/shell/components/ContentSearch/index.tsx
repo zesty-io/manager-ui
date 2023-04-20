@@ -196,6 +196,7 @@ const ContentSearch: FC = () => {
                     height: 32,
                     mt: 1,
                   }}
+                  key={option}
                 >
                   <Button
                     size="small"
