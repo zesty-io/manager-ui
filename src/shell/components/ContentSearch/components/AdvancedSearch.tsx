@@ -14,8 +14,10 @@ import {
   Autocomplete,
   ListItem,
   MenuItem,
+  Tooltip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 import { useGetUsersQuery } from "../../../services/accounts";
 import { User } from "../../../services/types";
@@ -128,7 +130,18 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
       <DialogContent>
         <Stack gap={2.5}>
           <Box>
-            <InputLabel>Keywords*</InputLabel>
+            <InputLabel>
+              Keywords*
+              <Tooltip
+                placement="top"
+                title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+              >
+                <InfoRoundedIcon
+                  sx={{ ml: 1, width: "12px", height: "12px" }}
+                  color="action"
+                />
+              </Tooltip>
+            </InputLabel>
             <TextField
               placeholder="ex. Articles"
               fullWidth
@@ -137,7 +150,18 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
             />
           </Box>
           <Box>
-            <InputLabel>Created or Modified By</InputLabel>
+            <InputLabel>
+              Created or Modified By
+              <Tooltip
+                placement="top"
+                title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+              >
+                <InfoRoundedIcon
+                  sx={{ ml: 1, width: "12px", height: "12px" }}
+                  color="action"
+                />
+              </Tooltip>
+            </InputLabel>
             <Autocomplete
               fullWidth
               options={userOptions}
@@ -169,7 +193,18 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
             />
           </Box>
           <Box>
-            <InputLabel>Date</InputLabel>
+            <InputLabel>
+              Date
+              <Tooltip
+                placement="top"
+                title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+              >
+                <InfoRoundedIcon
+                  sx={{ ml: 1, width: "12px", height: "12px" }}
+                  color="action"
+                />
+              </Tooltip>
+            </InputLabel>
             <Select
               displayEmpty
               fullWidth
