@@ -20,7 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 import { useGetUsersQuery } from "../../../services/accounts";
-import { User } from "../../../services/types";
+// import { User } from "../../../services/types";
 
 const PRESET_DATES: PresetDate[] = [
   {
@@ -81,9 +81,15 @@ interface CustomDate {
   text: string;
   value: "on" | "before" | "after" | "daterange" | "";
 }
+interface User {
+  firstName: string;
+  lastName: string;
+  ZUID: string;
+  email: string;
+}
 export interface SearchData {
   keyword: string;
-  user: Partial<User>;
+  user: User | null;
   date: string;
 }
 interface AdvancedSearch {
@@ -98,7 +104,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
   onUpdateSearchData,
   onResetSearchData,
 }) => {
-  const { data: users } = useGetUsersQuery();
+  const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
   const userOptions = useMemo(() => {
     return users?.map((user) => ({
@@ -108,6 +114,10 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       email: user.email,
     }));
   }, [users]);
+
+  // const selectedUser = useMemo(() => {
+
+  // }, [searchData.user])
 
   const handleSearchClicked = () => {
     console.log(searchData);
@@ -162,7 +172,15 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </InputLabel>
             <Autocomplete
               fullWidth
-              options={userOptions}
+              options={userOptions || []}
+              disabled={isLoadingUsers}
+              value={searchData.user}
+              onChange={(_, newVal: User | null) => {
+                onUpdateSearchData({ user: newVal });
+              }}
+              isOptionEqualToValue={(option, value) =>
+                option?.ZUID === value?.ZUID
+              }
               renderInput={(params: any) => (
                 <TextField
                   {...params}

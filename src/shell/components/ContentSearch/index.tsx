@@ -58,7 +58,11 @@ const ContentSearch: FC = () => {
         ...payload,
       };
     },
-    { keyword: "", user: {}, date: "" }
+    {
+      keyword: "",
+      user: null,
+      date: "",
+    }
   );
 
   const goToSearchPage = (queryTerm: string) => {
@@ -82,7 +86,11 @@ const ContentSearch: FC = () => {
   };
 
   const resetAdvancedSearchData = () => {
-    updateAdvancedSearchData({ keyword: "", user: {}, date: "" });
+    updateAdvancedSearchData({
+      keyword: "",
+      user: null,
+      date: "",
+    });
   };
 
   return (
