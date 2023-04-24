@@ -1,4 +1,4 @@
-import { FC, useState, useRef } from "react";
+import { FC, useState, useRef, useReducer } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import InputAdornment from "@mui/material/InputAdornment";
 import { HTMLAttributes } from "react";
@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../../store/notifications";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import { AdvancedSearch } from "./components/AdvancedSearch";
+import { AdvancedSearch, SearchData } from "./components/AdvancedSearch";
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
@@ -50,6 +50,16 @@ const ContentSearch: FC = () => {
   const [open, setOpen] = useState(false);
 
   const theme = useTheme();
+
+  const [searchData, updateSearchData] = useReducer(
+    (state: SearchData, payload: Partial<SearchData>) => {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
+    { keyword: "", user: {}, date: "" }
+  );
 
   const goToSearchPage = (queryTerm: string) => {
     const isOnSearchPage = location.pathname === "/search";
@@ -139,6 +149,7 @@ const ContentSearch: FC = () => {
           }}
           onInputChange={(event, newVal) => {
             setValue(newVal);
+            updateSearchData({ keyword: newVal });
           }}
           onChange={(event, newVal) => {
             // null represents "X" button clicked
@@ -316,8 +327,9 @@ const ContentSearch: FC = () => {
       </Collapse>
       {isAdvancedSearchOpen && (
         <AdvancedSearch
-          keyword={value}
+          searchData={searchData}
           onClose={() => setIsAdvancedSearchOpen(false)}
+          updateSearchData={updateSearchData}
         />
       )}
     </>

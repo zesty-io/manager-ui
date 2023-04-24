@@ -21,7 +21,6 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 import { useGetUsersQuery } from "../../../services/accounts";
 import { User } from "../../../services/types";
-import { useAdvanceSearchData } from "../../../hooks/useAdvanceSearchData";
 
 const PRESET_DATES: PresetDate[] = [
   {
@@ -82,17 +81,22 @@ interface CustomDate {
   text: string;
   value: "on" | "before" | "after" | "daterange" | "";
 }
-interface AdvancedSearch {
+export interface SearchData {
   keyword: string;
-  onClose: () => void;
+  user: Partial<User>;
+  date: string;
 }
-export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
+interface AdvancedSearch {
+  onClose: () => void;
+  searchData: SearchData;
+  updateSearchData: (payload: Partial<SearchData>) => void;
+}
+export const AdvancedSearch: FC<AdvancedSearch> = ({
+  onClose,
+  searchData,
+  updateSearchData,
+}) => {
   const { data: users } = useGetUsersQuery();
-  const [searchData, updateSearchData] = useAdvanceSearchData();
-
-  useEffect(() => {
-    updateSearchData({ keyword });
-  }, [keyword]);
 
   const userOptions = useMemo(() => {
     return users?.map((user) => ({
