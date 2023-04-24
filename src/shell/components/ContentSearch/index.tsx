@@ -51,7 +51,7 @@ const ContentSearch: FC = () => {
 
   const theme = useTheme();
 
-  const [searchData, updateSearchData] = useReducer(
+  const [advancedSearchData, updateAdvancedSearchData] = useReducer(
     (state: SearchData, payload: Partial<SearchData>) => {
       return {
         ...state,
@@ -71,6 +71,18 @@ const ContentSearch: FC = () => {
     } else {
       history.push(`/search?q=${queryTerm}`);
     }
+  };
+
+  const openAdvancedSearchDataModal = () => {
+    if (value) {
+      updateAdvancedSearchData({ keyword: value });
+    }
+
+    setIsAdvancedSearchOpen(true);
+  };
+
+  const resetAdvancedSearchData = () => {
+    updateAdvancedSearchData({ keyword: "", user: {}, date: "" });
   };
 
   return (
@@ -149,7 +161,7 @@ const ContentSearch: FC = () => {
           }}
           onInputChange={(event, newVal) => {
             setValue(newVal);
-            updateSearchData({ keyword: newVal });
+            updateAdvancedSearchData({ keyword: newVal });
           }}
           onChange={(event, newVal) => {
             // null represents "X" button clicked
@@ -209,10 +221,7 @@ const ContentSearch: FC = () => {
                   }}
                   key={option}
                 >
-                  <Button
-                    size="small"
-                    onClick={() => setIsAdvancedSearchOpen(true)}
-                  >
+                  <Button size="small" onClick={openAdvancedSearchDataModal}>
                     Advanced Search
                   </Button>
                 </ListItem>
@@ -293,7 +302,7 @@ const ContentSearch: FC = () => {
                         <IconButton
                           size="small"
                           sx={{ marginRight: 1 }}
-                          onClick={() => setIsAdvancedSearchOpen(true)}
+                          onClick={openAdvancedSearchDataModal}
                         >
                           <TuneRoundedIcon fontSize="small" color="action" />
                         </IconButton>
@@ -327,9 +336,10 @@ const ContentSearch: FC = () => {
       </Collapse>
       {isAdvancedSearchOpen && (
         <AdvancedSearch
-          searchData={searchData}
+          searchData={advancedSearchData}
           onClose={() => setIsAdvancedSearchOpen(false)}
-          updateSearchData={updateSearchData}
+          onUpdateSearchData={updateAdvancedSearchData}
+          onResetSearchData={resetAdvancedSearchData}
         />
       )}
     </>

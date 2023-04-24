@@ -89,12 +89,14 @@ export interface SearchData {
 interface AdvancedSearch {
   onClose: () => void;
   searchData: SearchData;
-  updateSearchData: (payload: Partial<SearchData>) => void;
+  onUpdateSearchData: (payload: Partial<SearchData>) => void;
+  onResetSearchData: () => void;
 }
 export const AdvancedSearch: FC<AdvancedSearch> = ({
   onClose,
   searchData,
-  updateSearchData,
+  onUpdateSearchData,
+  onResetSearchData,
 }) => {
   const { data: users } = useGetUsersQuery();
 
@@ -142,7 +144,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
               placeholder="ex. Articles"
               fullWidth
               value={searchData.keyword}
-              onChange={(e) => updateSearchData({ keyword: e.target.value })}
+              onChange={(e) => onUpdateSearchData({ keyword: e.target.value })}
             />
           </Box>
           <Box>
@@ -234,7 +236,9 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       </DialogContent>
       <DialogActions>
         <Stack direction="row" justifyContent="space-between" width="100%">
-          <Button color="inherit">Clear All</Button>
+          <Button color="inherit" onClick={onResetSearchData}>
+            Clear All
+          </Button>
           <Box>
             <Button color="inherit" sx={{ mr: 1 }} onClick={onClose}>
               Cancel
