@@ -107,6 +107,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
             Manage
           </Button>
           <Button
+            data-cy="RefreshCache"
             variant="outlined"
             color="inherit"
             size="small"
@@ -143,6 +144,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
               `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
             )
           }
+          data-cy="WebEnginePreviewLink"
         >
           <ListItemIcon>
             <RemoveRedEyeRoundedIcon />

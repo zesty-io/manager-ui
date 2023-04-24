@@ -10,7 +10,11 @@ export const BackButton: FC = () => {
     return null;
   }
   return (
-    <IconButton size="small" onClick={() => history.goBack()}>
+    <IconButton
+      size="small"
+      onClick={() => history.goBack()}
+      data-cy="CloseSearchPage"
+    >
       <CloseIcon fontSize="medium" />
     </IconButton>
   );
