@@ -11,7 +11,11 @@ import instanceZUID from "../../../utility/instanceZUID";
 // This date is used determine if the AI feature is enabled
 const enabledDate = "2023-01-13";
 // This array is used to determine if the AI feature is enabled for a specific instance ZUID
-const enabledZUIDs = ["8-ccaa9ae88b-j7gv1p", "8-da90a8a6fd-mz0q4d"];
+const enabledZUIDs = [
+  "8-ccaa9ae88b-j7gv1p",
+  "8-da90a8a6fd-mz0q4d",
+  "8-8afecde885-314dm",
+];
 
 const paragraphFormat = (text: string) => {
   return `<p>${text
