@@ -21,6 +21,12 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 import { useGetUsersQuery } from "../../../services/accounts";
 // import { User } from "../../../services/types";
+import {
+  PresetType,
+  DateFilterModalType,
+  DateRangeFilterValue,
+  DateFilterValue,
+} from "../../../components/Filters/DateFilter/types";
 
 const PRESET_DATES: PresetDate[] = [
   {
@@ -69,17 +75,11 @@ const CUSTOM_DATES: CustomDate[] = [
 
 interface PresetDate {
   text: string;
-  value:
-    | "today"
-    | "yesterday"
-    | "last_7_days"
-    | "last_30_days"
-    | "last_3_months"
-    | "last_12_months";
+  value: PresetType;
 }
 interface CustomDate {
   text: string;
-  value: "on" | "before" | "after" | "daterange" | "";
+  value: DateFilterModalType;
 }
 interface User {
   firstName: string;
@@ -224,7 +224,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             <Select
               displayEmpty
               fullWidth
-              value=""
+              value={searchData.date}
               sx={{
                 "& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input.MuiOutlinedInput-input":
                   {
