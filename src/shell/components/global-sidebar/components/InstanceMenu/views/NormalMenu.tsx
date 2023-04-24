@@ -35,6 +35,7 @@ import { actions } from "../../../../../store/ui";
 import { notify } from "../../../../../store/notifications";
 import { useRefreshCacheMutation } from "../../../../../services/cloudFunctions";
 import { useDomain } from "../../../../../hooks/use-domain";
+import { InstanceAvatar } from "../../InstanceAvatar";
 
 export const rotateAnimation = keyframes`
   from {
@@ -46,12 +47,10 @@ export const rotateAnimation = keyframes`
 `;
 
 interface NormalMenuProps {
-  faviconURL: string;
   onChangeView: (view: View) => void;
   onCloseDropdownMenu: () => void;
 }
 export const NormalMenu: FC<NormalMenuProps> = ({
-  faviconURL,
   onChangeView,
   onCloseDropdownMenu,
 }) => {
@@ -117,7 +116,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
   return (
     <>
       <Stack direction="row" gap={1.5} p={2} alignItems="center">
-        <Avatar src={faviconURL} alt="favicon" sx={{ height: 32, width: 32 }} />
+        <InstanceAvatar />
         <Stack>
           <Typography variant="body2" fontWeight={600}>
             {instance?.name}
