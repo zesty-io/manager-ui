@@ -116,7 +116,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
   return (
     <>
       <Stack direction="row" gap={1.5} p={2} alignItems="center">
-        <InstanceAvatar />
+        <InstanceAvatar onFaviconModalOpen={() => onCloseDropdownMenu()} />
         <Stack>
           <Typography variant="body2" fontWeight={600}>
             {instance?.name}

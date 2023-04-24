@@ -46,7 +46,7 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
           }
         >
           <Stack direction="row" gap={1} alignItems="center">
-            <InstanceAvatar />
+            <InstanceAvatar canUpdateAvatar={false} />
             {openNav && (
               <Typography
                 // @ts-ignore

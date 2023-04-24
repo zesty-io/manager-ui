@@ -1,10 +1,23 @@
-import { useMemo } from "react";
-import { Avatar, Skeleton } from "@mui/material";
+import { FC, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Avatar, Skeleton, Box } from "@mui/material";
+import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 
 import { useGetHeadTagsQuery } from "../../../services/instance";
 import { useGetInstanceQuery } from "../../../services/accounts";
+import { AppState } from "../../../store/types";
+import { actions } from "../../../store/ui";
 
-export const InstanceAvatar = () => {
+interface InstanceAvatar {
+  canUpdateAvatar?: boolean;
+  onFaviconModalOpen?: () => void;
+}
+export const InstanceAvatar: FC<InstanceAvatar> = ({
+  canUpdateAvatar = true,
+  onFaviconModalOpen,
+}) => {
+  const ui = useSelector((state: AppState) => state.ui);
+  const dispatch = useDispatch();
   const { data: headTags, isLoading: isLoadingHeadTags } =
     useGetHeadTagsQuery();
   const { data: instance, isLoading: isLoadingInstance } =
@@ -37,16 +50,49 @@ export const InstanceAvatar = () => {
   }
 
   return (
-    <Avatar
-      src={faviconURL}
-      alt="favicon"
+    <Box
+      position="relative"
       sx={{
-        height: 32,
-        width: 32,
-        backgroundColor: faviconURL ? "initial" : "info.main",
+        "&:hover [data-cy='AvatarHoverOverlay']": {
+          display: "flex",
+        },
       }}
     >
-      {(!faviconURL && instance?.name[0]?.toUpperCase()) || "A"}
-    </Avatar>
+      <Avatar
+        src={faviconURL}
+        alt="favicon"
+        sx={{
+          height: 32,
+          width: 32,
+          backgroundColor: faviconURL ? "initial" : "info.main",
+        }}
+      >
+        {(!faviconURL && instance?.name[0]?.toUpperCase()) || "A"}
+      </Avatar>
+      {canUpdateAvatar && (
+        <Box
+          data-cy="AvatarHoverOverlay"
+          sx={{
+            backgroundColor: "#10182880",
+            borderRadius: "50%",
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            display: "none",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            dispatch(actions.toggleUpdateFaviconModal(true));
+            onFaviconModalOpen && onFaviconModalOpen();
+          }}
+        >
+          <ImageRoundedIcon sx={{ width: 16, height: 16, fill: "white" }} />
+        </Box>
+      )}
+    </Box>
   );
 };
