@@ -155,6 +155,14 @@ const ICON_CONFIG: { [index: string]: SvgIconComponent } = Object.freeze({
 
 // Thunk helper functions
 export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
+  // Makes sure that a new tab isn't created when the user searches for something and only the filters are changed in the params
+  if (tab1.pathname === "/search" && tab2.pathname === "/search") {
+    const params1 = new URLSearchParams(tab1.search);
+    const params2 = new URLSearchParams(tab2.search);
+
+    return params1.get("q") === params2.get("q");
+  }
+
   return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
 }
 
@@ -285,6 +293,15 @@ export function createTab(
       tab.name = queryData?.instance?.models?.find(
         (model: ContentModel) => model.ZUID === parts[1]
       )?.label;
+    }
+    if (parts[0] === "search") {
+      // Replaces the tab name to whatever the search keyword is on the /search page
+      const searchParams = new URLSearchParams(search);
+      const keyword = searchParams.get("q");
+
+      if (keyword) {
+        tab.name = keyword;
+      }
     }
   }
   // resolve ZUID from store to determine display information
@@ -491,10 +508,15 @@ export function unpinTab(
         return;
       }
     }
-    //
-    const newTabs = state.ui.pinnedTabs.filter(
-      (t) => t.pathname !== tab.pathname
-    );
+
+    const newTabs = state.ui.pinnedTabs.filter((t) => {
+      if (t.pathname === tab.pathname) {
+        // Makes sure that unpinning tabs with search params only unpins that specific tab
+        return t.search !== tab.search;
+      }
+
+      return true;
+    });
     dispatch(actions.setPinnedTabs(newTabs));
     idb.set(`${state.instance.ZUID}:pinned`, newTabs);
   };
