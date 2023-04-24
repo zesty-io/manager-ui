@@ -160,7 +160,7 @@ export const UserFilter: FC<UserFilterProps> = ({
             <MenuItem
               key={user?.ZUID}
               onClick={() => handleFilterSelect(user?.ZUID)}
-              selected={value && value === user?.ZUID}
+              selected={value ? value === user?.ZUID : false}
               sx={{
                 height: "52px",
               }}
