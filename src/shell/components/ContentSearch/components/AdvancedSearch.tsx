@@ -1,4 +1,4 @@
-import { FC, useReducer, useEffect, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -21,6 +21,7 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 import { useGetUsersQuery } from "../../../services/accounts";
 import { User } from "../../../services/types";
+import { useAdvanceSearchData } from "../../../hooks/useAdvanceSearchData";
 
 const PRESET_DATES: PresetDate[] = [
   {
@@ -81,26 +82,13 @@ interface CustomDate {
   text: string;
   value: "on" | "before" | "after" | "daterange" | "";
 }
-interface SearchData {
-  keyword: string;
-  user: Partial<User>;
-  date: string;
-}
 interface AdvancedSearch {
   keyword: string;
   onClose: () => void;
 }
 export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
   const { data: users } = useGetUsersQuery();
-  const [searchData, updateSearchData] = useReducer(
-    (state: SearchData, payload: Partial<SearchData>) => {
-      return {
-        ...state,
-        ...payload,
-      };
-    },
-    { keyword: "", user: {}, date: "" }
-  );
+  const [searchData, updateSearchData] = useAdvanceSearchData();
 
   useEffect(() => {
     updateSearchData({ keyword });
@@ -114,6 +102,10 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
       email: user.email,
     }));
   }, [users]);
+
+  const handleSearchClicked = () => {
+    console.log(searchData);
+  };
 
   return (
     <Dialog open onClose={onClose}>
@@ -243,7 +235,11 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
             <Button color="inherit" sx={{ mr: 1 }} onClick={onClose}>
               Cancel
             </Button>
-            <Button variant="contained" startIcon={<SearchIcon />}>
+            <Button
+              variant="contained"
+              startIcon={<SearchIcon />}
+              onClick={handleSearchClicked}
+            >
               Search
             </Button>
           </Box>
