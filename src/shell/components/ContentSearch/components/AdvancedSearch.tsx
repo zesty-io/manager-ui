@@ -20,7 +20,8 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import moment from "moment";
-import { update, upperFirst } from "lodash";
+import { upperFirst } from "lodash";
+import { useHistory, useLocation } from "react-router";
 
 import { useGetUsersQuery } from "../../../services/accounts";
 import {
@@ -49,6 +50,8 @@ interface AdvancedSearch {
   onClose: () => void;
 }
 export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
+  const history = useHistory();
+  const location = useLocation();
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
@@ -155,7 +158,60 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
 
   const handleSearchClicked = () => {
     // TODO: Push to search page route with proper params
-    console.log(searchData);
+    // console.log(searchData);
+    const isOnSearchPage = location.pathname === "/search";
+    const { keyword, user, date } = searchData;
+    const searchParams = new URLSearchParams();
+
+    if (keyword) {
+      searchParams.set("q", keyword);
+    }
+
+    if (user) {
+      searchParams.set("user", user.ZUID);
+    }
+
+    if (date) {
+      switch (date.type) {
+        case "preset":
+          searchParams.set("datePreset", date.value as string);
+          break;
+
+        case "before":
+          searchParams.set("to", date.value as string);
+          break;
+
+        case "after":
+          searchParams.set("from", date.value as string);
+          break;
+
+        case "on":
+          searchParams.set("from", date.value as string);
+          searchParams.set("to", date.value as string);
+          break;
+
+        case "daterange":
+          const { from, to } = date.value as DateRangeFilterValue;
+          searchParams.set("from", from);
+          searchParams.set("to", to);
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    if (keyword) {
+      onClose();
+
+      // Only add the search page on the history stack during initial page visit
+      // Makes sure clicking close on the search page brings the user back to the previous page
+      if (isOnSearchPage) {
+        history.replace(`/search?${searchParams.toString()}`);
+      } else {
+        history.push(`/search?${searchParams.toString()}`);
+      }
+    }
   };
 
   return (
@@ -330,6 +386,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                 variant="contained"
                 startIcon={<SearchIcon />}
                 onClick={handleSearchClicked}
+                disabled={!keyword || !searchData.keyword}
               >
                 Search
               </Button>
