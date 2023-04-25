@@ -283,6 +283,9 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                           py: "2px",
                           height: "40px",
                         },
+                        "&.MuiAutocomplete-inputRoot .MuiAutocomplete-input": {
+                          pl: 0,
+                        },
                       },
                     }}
                   />
@@ -321,7 +324,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                       color:
                         searchData.date === null
                           ? "text.disabled"
-                          : "text.secondary",
+                          : "text.primary",
                     },
                 }}
                 onChange={(e) => {
