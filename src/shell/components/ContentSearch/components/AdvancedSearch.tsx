@@ -387,7 +387,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                 variant="contained"
                 startIcon={<SearchIcon />}
                 onClick={handleSearchClicked}
-                disabled={!keyword || !searchData.keyword}
+                disabled={!searchData.keyword}
               >
                 Search
               </Button>
