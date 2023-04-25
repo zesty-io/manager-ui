@@ -20,7 +20,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import moment from "moment";
-import { upperFirst } from "lodash";
+import { update, upperFirst } from "lodash";
 
 import { useGetUsersQuery } from "../../../services/accounts";
 import {
@@ -92,7 +92,12 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
     value: Date | PresetType | DateRangeFilterValue;
   }) => {
     if (type === "daterange") {
-      // TODO: Add logic here
+      updateSearchData({
+        date: {
+          type,
+          value: value as DateRangeFilterValue,
+        },
+      });
     } else {
       updateSearchData({
         date: {
@@ -111,11 +116,12 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
       return "";
     }
 
-    // Adds the custom date as a list item on the select component if a custom date is selected
+    // Adds the custom date as a menu item on the select component if a custom date is selected
     if (isCustomDate) {
       return "custom_date_value";
     }
 
+    // Otherwise, just set the value accordingly for the date presets
     if (date.type === "preset") {
       return date.value;
     }
@@ -126,10 +132,19 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
       return;
     }
 
+    // Custom menu item for daterange
     if (searchData.date?.type === "daterange") {
-      return <></>;
+      const dates = searchData.date?.value as DateRangeFilterValue;
+
+      return (
+        <MenuItem value="custom_date_value" selected>
+          {moment(dates.from).format("MMM D, YYYY")} to{" "}
+          {moment(dates.to).format("MMM D, YYYY")}
+        </MenuItem>
+      );
     }
 
+    // Custom menu item for single date
     return (
       <MenuItem value="custom_date_value" selected>
         {upperFirst(searchData.date?.type)}{" "}
@@ -139,6 +154,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
   };
 
   const handleSearchClicked = () => {
+    // TODO: Push to search page route with proper params
     console.log(searchData);
   };
 
@@ -346,7 +362,10 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
           }
           onClose={() => setCalendarModalType("")}
           onDateChange={({ type, date }) => {
-            // TODO: add handler
+            handleSetSelectedDate({
+              type,
+              value: date,
+            });
           }}
         />
       )}
