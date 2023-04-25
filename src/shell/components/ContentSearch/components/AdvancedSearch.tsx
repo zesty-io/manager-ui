@@ -15,9 +15,12 @@ import {
   ListItem,
   MenuItem,
   Tooltip,
+  Divider,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import moment from "moment";
+import { upperFirst } from "lodash";
 
 import { useGetUsersQuery } from "../../../services/accounts";
 import {
@@ -62,6 +65,9 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
       date: null,
     }
   );
+  const isCustomDate = CUSTOM_DATES.map((d) => d.value).includes(
+    searchData.date?.type as DateFilterModalType
+  );
 
   const userOptions = useMemo(() => {
     return users?.map((user) => ({
@@ -77,6 +83,60 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
       updateSearchData({ keyword });
     }
   }, [keyword]);
+
+  const handleSetSelectedDate = ({
+    type,
+    value,
+  }: {
+    type: "preset" | DateFilterModalType;
+    value: Date | PresetType | DateRangeFilterValue;
+  }) => {
+    if (type === "daterange") {
+      // TODO: Add logic here
+    } else {
+      updateSearchData({
+        date: {
+          type,
+          value:
+            typeof value === "object"
+              ? moment(value as Date).format("YYYY-MM-DD")
+              : value,
+        },
+      });
+    }
+  };
+
+  const setDateSelectValue = (date: DateFilterValue) => {
+    if (!date) {
+      return "";
+    }
+
+    // Adds the custom date as a list item on the select component if a custom date is selected
+    if (isCustomDate) {
+      return "custom_date_value";
+    }
+
+    if (date.type === "preset") {
+      return date.value;
+    }
+  };
+
+  const renderCustomDateOption = () => {
+    if (!isCustomDate) {
+      return;
+    }
+
+    if (searchData.date?.type === "daterange") {
+      return <></>;
+    }
+
+    return (
+      <MenuItem value="custom_date_value" selected>
+        {upperFirst(searchData.date?.type)}{" "}
+        {moment(searchData.date?.value as string).format("MMM D, YYYY")}
+      </MenuItem>
+    );
+  };
 
   const handleSearchClicked = () => {
     console.log(searchData);
@@ -184,7 +244,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
               <Select
                 displayEmpty
                 fullWidth
-                value={searchData.date?.value || ""}
+                value={setDateSelectValue(searchData.date)}
                 sx={{
                   "& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input.MuiOutlinedInput-input":
                     {
@@ -221,6 +281,8 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                     {option.text}
                   </MenuItem>
                 ))}
+                {renderCustomDateOption()}
+                <Divider />
                 {CUSTOM_DATES.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.text}
@@ -264,7 +326,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
         <DateFilterModal
           onClose={() => setCalendarModalType("")}
           onDateChange={({ type, date }) => {
-            // TODO: Add handler
+            handleSetSelectedDate({ type, value: date });
           }}
           type={calendarModalType}
           date={
