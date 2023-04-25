@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../../store/notifications";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import { AdvancedSearch, SearchData } from "./components/AdvancedSearch";
+import { AdvancedSearch } from "./components/AdvancedSearch";
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
@@ -51,20 +51,6 @@ const ContentSearch: FC = () => {
 
   const theme = useTheme();
 
-  const [advancedSearchData, updateAdvancedSearchData] = useReducer(
-    (state: SearchData, payload: Partial<SearchData>) => {
-      return {
-        ...state,
-        ...payload,
-      };
-    },
-    {
-      keyword: "",
-      user: null,
-      date: "",
-    }
-  );
-
   const goToSearchPage = (queryTerm: string) => {
     const isOnSearchPage = location.pathname === "/search";
 
@@ -75,22 +61,6 @@ const ContentSearch: FC = () => {
     } else {
       history.push(`/search?q=${queryTerm}`);
     }
-  };
-
-  const openAdvancedSearchDataModal = () => {
-    if (value) {
-      updateAdvancedSearchData({ keyword: value });
-    }
-
-    setIsAdvancedSearchOpen(true);
-  };
-
-  const resetAdvancedSearchData = () => {
-    updateAdvancedSearchData({
-      keyword: "",
-      user: null,
-      date: "",
-    });
   };
 
   return (
@@ -169,7 +139,6 @@ const ContentSearch: FC = () => {
           }}
           onInputChange={(event, newVal) => {
             setValue(newVal);
-            updateAdvancedSearchData({ keyword: newVal });
           }}
           onChange={(event, newVal) => {
             // null represents "X" button clicked
@@ -229,7 +198,10 @@ const ContentSearch: FC = () => {
                   }}
                   key={option}
                 >
-                  <Button size="small" onClick={openAdvancedSearchDataModal}>
+                  <Button
+                    size="small"
+                    onClick={() => setIsAdvancedSearchOpen(true)}
+                  >
                     Advanced Search
                   </Button>
                 </ListItem>
@@ -310,7 +282,7 @@ const ContentSearch: FC = () => {
                         <IconButton
                           size="small"
                           sx={{ marginRight: 1 }}
-                          onClick={openAdvancedSearchDataModal}
+                          onClick={() => setIsAdvancedSearchOpen(true)}
                         >
                           <TuneRoundedIcon fontSize="small" color="action" />
                         </IconButton>
@@ -342,12 +314,11 @@ const ContentSearch: FC = () => {
           }}
         />
       </Collapse>
+
       {isAdvancedSearchOpen && (
         <AdvancedSearch
-          searchData={advancedSearchData}
+          keyword={value}
           onClose={() => setIsAdvancedSearchOpen(false)}
-          onUpdateSearchData={updateAdvancedSearchData}
-          onResetSearchData={resetAdvancedSearchData}
         />
       )}
     </>
