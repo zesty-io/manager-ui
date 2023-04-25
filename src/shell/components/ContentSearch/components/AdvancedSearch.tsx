@@ -157,8 +157,6 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
   };
 
   const handleSearchClicked = () => {
-    // TODO: Push to search page route with proper params
-    // console.log(searchData);
     const isOnSearchPage = location.pathname === "/search";
     const { keyword, user, date } = searchData;
     const searchParams = new URLSearchParams();
