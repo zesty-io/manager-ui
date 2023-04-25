@@ -27,60 +27,9 @@ import {
   DateFilterValue,
 } from "../../../components/Filters/DateFilter/types";
 import { DateFilterModal } from "../../../components/Filters/DateFilter/DateFilterModal";
+import { DateRangeFilterModal } from "../../../components/Filters/DateFilter/DateRangeFilterModal";
+import { PRESET_DATES, CUSTOM_DATES } from "./config";
 
-const PRESET_DATES: PresetDate[] = [
-  {
-    text: "Today",
-    value: "today",
-  },
-  {
-    text: "Yesterday",
-    value: "yesterday",
-  },
-  {
-    text: "Last 7 days",
-    value: "last_7_days",
-  },
-  {
-    text: "Last 30 days",
-    value: "last_30_days",
-  },
-  {
-    text: "Last 3 months",
-    value: "last_3_months",
-  },
-  {
-    text: "Last 12 months",
-    value: "last_12_months",
-  },
-];
-const CUSTOM_DATES: CustomDate[] = [
-  {
-    text: "On...",
-    value: "on",
-  },
-  {
-    text: "Before...",
-    value: "before",
-  },
-  {
-    text: "After...",
-    value: "after",
-  },
-  {
-    text: "Custom date range",
-    value: "daterange",
-  },
-];
-
-interface PresetDate {
-  text: string;
-  value: PresetType;
-}
-interface CustomDate {
-  text: string;
-  value: DateFilterModalType;
-}
 interface User {
   firstName: string;
   lastName: string;
@@ -310,14 +259,12 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
           </Stack>
         </DialogActions>
       </Dialog>
+
       {Boolean(calendarModalType) && calendarModalType !== "daterange" && (
         <DateFilterModal
           onClose={() => setCalendarModalType("")}
           onDateChange={({ type, date }) => {
-            // handleFilterSelect({
-            //   type: type,
-            //   value: date,
-            // });
+            // TODO: Add handler
           }}
           type={calendarModalType}
           date={
@@ -325,6 +272,20 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
               ? (searchData.date?.value as string)
               : ""
           }
+        />
+      )}
+
+      {Boolean(calendarModalType) && calendarModalType === "daterange" && (
+        <DateRangeFilterModal
+          date={
+            searchData.date?.type === "daterange"
+              ? (searchData.date?.value as DateRangeFilterValue)
+              : { from: null, to: null }
+          }
+          onClose={() => setCalendarModalType("")}
+          onDateChange={({ type, date }) => {
+            // TODO: add handler
+          }}
         />
       )}
     </>
