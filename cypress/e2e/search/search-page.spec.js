@@ -47,19 +47,24 @@ describe("Global Search: Search Page", () => {
 
     // Set sort
     cy.getBySelector("sortBy_default").should("exist").click();
-    cy.get("[data-cy='SortByFilterMenu'] li:nth-child(2)")
+    cy.getBySelector("SortByFilterMenu")
+      .find("li:nth-child(2)")
       .should("exist")
       .click();
 
     // Set user filter
     cy.getBySelector("user_default").should("exist").click();
-    cy.get("[data-cy='UserFilterMenu'] li:nth-child(2)")
+    cy.getBySelector("UserFilterMenu")
+      .find("li:nth-child(2)")
       .should("exist")
       .click();
 
     // Set date filter
     cy.getBySelector("date_default").should("exist").click();
-    cy.get("[data-cy='DateFilterMenu'] li:first-child").should("exist").click();
+    cy.getBySelector("DateFilterMenu")
+      .find("li:first-child")
+      .should("exist")
+      .click();
 
     cy.location("search").should(
       "equal",
