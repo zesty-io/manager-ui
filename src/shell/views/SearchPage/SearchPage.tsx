@@ -139,7 +139,7 @@ export const SearchPage: FC = () => {
             justifyContent: "space-between",
             padding: "8px 24px",
             gap: "10px",
-            height: "52px",
+            minHeight: "52px",
             boxSizing: "border-box",
             borderColor: "grey.100",
             borderStyle: "solid",
