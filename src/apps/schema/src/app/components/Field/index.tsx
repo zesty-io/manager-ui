@@ -103,11 +103,11 @@ export const Field = ({
       let message = "";
 
       if (isFieldDeleted) {
-        message = `\"${field?.label}\" field is de-activated`;
+        message = `\"${field?.label}\" field is deactivated`;
       }
 
       if (isFieldUndeleted) {
-        message = `\"${field?.label}\" field is re-activated`;
+        message = `\"${field?.label}\" field is reactivated`;
       }
 
       dispatch(
@@ -366,10 +366,10 @@ export const Field = ({
                     <CircularProgress size={24} color="inherit" />
                   </ListItemIcon>
                   {isDeletingField && (
-                    <ListItemText>De-activating Field</ListItemText>
+                    <ListItemText>Deactivating Field</ListItemText>
                   )}
                   {isUndeletingField && (
-                    <ListItemText>Re-activating Field</ListItemText>
+                    <ListItemText>Reactivating Field</ListItemText>
                   )}
                 </MenuItem>
               ) : (
@@ -401,7 +401,7 @@ export const Field = ({
                     )}
                   </ListItemIcon>
                   <ListItemText>
-                    {isDeactivated ? "Re-activate Field" : "De-activate Field"}
+                    {isDeactivated ? "Reactivate Field" : "Deactivate Field"}
                   </ListItemText>
                 </MenuItem>
               )}
