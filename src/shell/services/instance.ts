@@ -100,7 +100,12 @@ export const instanceApi = createApi({
       transformResponse: (response: { data: any[] }) => response?.data?.[0],
     }),
     getContentModelItems: builder.query<ContentItem[], string>({
-      query: (ZUID) => `content/models/${ZUID}/items`,
+      query: (ZUID) => ({
+        url: `content/models/${ZUID}/items`,
+        params: {
+          limit: 5000,
+        },
+      }),
       transformResponse: getResponseData,
       // Restore cache when content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
