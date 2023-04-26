@@ -199,6 +199,7 @@ const ContentSearch: FC = () => {
                   key={option}
                 >
                   <Button
+                    data-cy="AdvancedSearchButton"
                     size="small"
                     onClick={() => setIsAdvancedSearchOpen(true)}
                   >
@@ -280,6 +281,7 @@ const ContentSearch: FC = () => {
                       {params.InputProps.endAdornment}
                       <InputAdornment position="end">
                         <IconButton
+                          data-cy="GlobalSearchFilterButton"
                           size="small"
                           sx={{ marginRight: 1 }}
                           onClick={() => setIsAdvancedSearchOpen(true)}

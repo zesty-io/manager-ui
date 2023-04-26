@@ -226,7 +226,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <Stack gap={2.5}>
+          <Stack gap={2.5} data-cy="AdvanceSearchModal">
             <Box>
               <InputLabel>
                 Keywords*
@@ -241,6 +241,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                 </Tooltip>
               </InputLabel>
               <TextField
+                data-cy="AdvanceSearchKeyword"
                 placeholder="ex. Articles"
                 fullWidth
                 value={searchData.keyword}
@@ -261,6 +262,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                 </Tooltip>
               </InputLabel>
               <Autocomplete
+                data-cy="AdvanceSearchUser"
                 fullWidth
                 options={userOptions || []}
                 disabled={isLoadingUsers}
@@ -315,6 +317,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                 </Tooltip>
               </InputLabel>
               <Select
+                data-cy="AdvanceSearchDate"
                 displayEmpty
                 fullWidth
                 value={setDateSelectValue(searchData.date)}
@@ -368,6 +371,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
         <DialogActions>
           <Stack direction="row" justifyContent="space-between" width="100%">
             <Button
+              data-cy="AdvanceSearchClearButton"
               color="inherit"
               onClick={() => {
                 updateSearchData({
@@ -384,6 +388,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                 Cancel
               </Button>
               <Button
+                data-cy="AdvanceSearchSubmitButton"
                 variant="contained"
                 startIcon={<SearchIcon />}
                 onClick={handleSearchClicked}
