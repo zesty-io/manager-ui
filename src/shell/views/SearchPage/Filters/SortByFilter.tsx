@@ -24,6 +24,7 @@ export const SortByFilter: FC<SortByFilter> = ({
   return (
     <>
       <FilterButton
+        filterId="sortBy"
         isFilterActive={false}
         buttonText={`Sort: ${OPTIONS[value]}`}
         onOpenMenu={(e: React.MouseEvent<HTMLButtonElement>) =>
@@ -32,6 +33,7 @@ export const SortByFilter: FC<SortByFilter> = ({
         onRemoveFilter={() => {}} // Setting to empty as this is required by the component but not needed here
       />
       <Menu
+        data-cy="SortByFilterMenu"
         anchorEl={anchorRef}
         open={Boolean(anchorRef)}
         onClose={() => setAnchorRef(null)}

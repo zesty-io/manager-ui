@@ -146,6 +146,7 @@ export const DateFilter: FC<DateFilterProps> = ({
   return (
     <>
       <FilterButton
+        filterId="date"
         isFilterActive={Boolean(activeFilterText !== defaultButtonText)}
         buttonText={activeFilterText}
         onOpenMenu={handleOpenMenuClick}
@@ -157,6 +158,7 @@ export const DateFilter: FC<DateFilterProps> = ({
         }}
       >
         <Menu
+          data-cy="DateFilterMenu"
           open={isFilterMenuOpen}
           anchorEl={menuAnchorEl}
           onClose={() => setMenuAnchorEl(null)}

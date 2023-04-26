@@ -27,6 +27,7 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
 
   return (
     <Box
+      data-cy="NoSearchResults"
       component="main"
       sx={{
         flex: 1,

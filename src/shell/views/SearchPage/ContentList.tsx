@@ -43,7 +43,11 @@ export const ContentList: FC<ContentList> = ({
   );
 
   return (
-    <Stack direction="column" sx={{ width: "100%", height: "100%" }}>
+    <Stack
+      direction="column"
+      sx={{ width: "100%", height: "100%" }}
+      data-cy="ContentList"
+    >
       <AutoSizer>
         {({ height, width }: Size) => (
           <FixedSizeList
