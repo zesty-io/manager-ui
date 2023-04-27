@@ -147,7 +147,7 @@ export const Filters = () => {
       />
       <DateFilter
         withDateRange
-        defaultButtonText="Date"
+        defaultButtonText="Date Modified"
         onChange={(value) => handleDateFilterChanged(value)}
         value={activeDateFilter}
       />

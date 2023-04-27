@@ -111,8 +111,8 @@ export const SearchPage: FC = () => {
     // Apply date filter if there is any
     if (dateFilterFn) {
       _results = _results.filter((result) => {
-        if (result.meta?.createdAt) {
-          return dateFilterFn(result.meta?.createdAt);
+        if (result.meta?.updatedAt) {
+          return dateFilterFn(result.meta?.updatedAt);
         }
 
         return false;

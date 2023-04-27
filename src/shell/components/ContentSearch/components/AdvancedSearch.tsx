@@ -232,7 +232,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                 Keywords*
                 <Tooltip
                   placement="top"
-                  title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                  title="Enter a term or multiple terms that match part of the resource name."
                 >
                   <InfoRoundedIcon
                     sx={{ ml: 1, width: "12px", height: "12px" }}
@@ -253,7 +253,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                 Created or Modified By
                 <Tooltip
                   placement="top"
-                  title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                  title="Select a user from all users on the instance."
                 >
                   <InfoRoundedIcon
                     sx={{ ml: 1, width: "12px", height: "12px" }}
@@ -305,10 +305,10 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
             </Box>
             <Box>
               <InputLabel>
-                Date
+                Date Modified
                 <Tooltip
                   placement="top"
-                  title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                  title="Select the date range for which you want to see results for."
                 >
                   <InfoRoundedIcon
                     sx={{ ml: 1, width: "12px", height: "12px" }}
