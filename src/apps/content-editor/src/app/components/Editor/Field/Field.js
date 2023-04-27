@@ -275,7 +275,22 @@ export default function Field({
       return (
         <AITextField
           name={name}
-          label={FieldTypeLabel}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+              {FieldTypeLabel}
+            </Stack>
+          }
           helperText={description}
           tooltip={settings.tooltip}
           required={required}
@@ -288,7 +303,22 @@ export default function Field({
       return (
         <FieldTypeText
           name={name}
-          label={FieldTypeLabel}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+              {FieldTypeLabel}
+            </Stack>
+          }
           helperText={description}
           tooltip={settings.tooltip}
           required={required}
@@ -301,7 +331,22 @@ export default function Field({
       return (
         <FieldTypeText
           name={name}
-          label={FieldTypeLabel}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+              {FieldTypeLabel}
+            </Stack>
+          }
           helperText={description}
           tooltip={settings.tooltip}
           required={required}

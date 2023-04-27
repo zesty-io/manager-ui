@@ -326,7 +326,7 @@ export const FieldForm = ({
     if (isFieldDeleted) {
       dispatch(
         notify({
-          message: `\"${fieldData?.label}\" field is de-activated`,
+          message: `\"${fieldData?.label}\" field is deactivated`,
           kind: "success",
         })
       );
@@ -337,7 +337,7 @@ export const FieldForm = ({
     if (isFieldUndeleted) {
       dispatch(
         notify({
-          message: `\"${fieldData?.label}\" field is re-activated`,
+          message: `\"${fieldData?.label}\" field is reactivated`,
           kind: "success",
         })
       );
@@ -631,8 +631,8 @@ export const FieldForm = ({
                   loading={isDeletingField || isUndeletingField}
                 >
                   {fieldData?.deletedAt
-                    ? "Re-activate Field"
-                    : "De-activate Field"}
+                    ? "Reactivate Field"
+                    : "Deactivate Field"}
                 </LoadingButton>
               </Grid>
             )}

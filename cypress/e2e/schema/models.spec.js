@@ -17,7 +17,7 @@ describe("Schema: Models", () => {
     cy.contains("Create Multi Page Model").should("be.visible");
     cy.get("body").type("{esc}");
     cy.getBySelector(`create-model-button-sidebar-dataset`).click();
-    cy.contains("Create Headless Dataset Model").should("be.visible");
+    cy.contains("Create Dataset Model").should("be.visible");
     cy.get("body").type("{esc}");
   });
   it("Creates model", () => {
