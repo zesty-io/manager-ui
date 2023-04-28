@@ -55,7 +55,7 @@ export const ContentList: FC<ContentList> = ({
             width={width}
             itemCount={results.length}
             height={height}
-            style={{ borderRadius: "8px 8px 0 0" }}
+            style={{ borderRadius: "8px" }}
           >
             {Row}
           </FixedSizeList>
