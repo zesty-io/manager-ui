@@ -23,7 +23,7 @@ export const FilterButton: FC<FilterButton> = ({
   if (isFilterActive) {
     return (
       <>
-        <ButtonGroup variant="contained">
+        <ButtonGroup variant="contained" sx={{ height: "28px" }}>
           <Button
             size="small"
             startIcon={<CheckIcon sx={{ width: "20px", height: "20px" }} />}
@@ -52,6 +52,7 @@ export const FilterButton: FC<FilterButton> = ({
         data-cy={`${filterId}_default`}
         sx={{
           backgroundColor: "common.white",
+          height: "28px",
         }}
       >
         {buttonText}

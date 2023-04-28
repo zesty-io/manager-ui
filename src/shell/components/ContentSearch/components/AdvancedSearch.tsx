@@ -214,7 +214,16 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
 
   return (
     <>
-      <Dialog open onClose={onClose}>
+      <Dialog
+        open
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            borderRadius: "4px",
+            maxWidth: "480px",
+          },
+        }}
+      >
         <DialogTitle component="div">
           <Typography variant="h5" fontWeight={600} mb={1}>
             Advanced Search
