@@ -111,8 +111,8 @@ export const SearchPage: FC = () => {
     // Apply date filter if there is any
     if (dateFilterFn) {
       _results = _results.filter((result) => {
-        if (result.meta?.createdAt) {
-          return dateFilterFn(result.meta?.createdAt);
+        if (result.meta?.updatedAt) {
+          return dateFilterFn(result.meta?.updatedAt);
         }
 
         return false;
@@ -139,7 +139,7 @@ export const SearchPage: FC = () => {
             justifyContent: "space-between",
             padding: "8px 24px",
             gap: "10px",
-            height: "52px",
+            minHeight: "52px",
             boxSizing: "border-box",
             borderColor: "grey.100",
             borderStyle: "solid",

@@ -1,4 +1,4 @@
-import { FC, useState, useRef } from "react";
+import { FC, useState, useRef, useReducer } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import InputAdornment from "@mui/material/InputAdornment";
 import { HTMLAttributes } from "react";
@@ -199,6 +199,7 @@ const ContentSearch: FC = () => {
                   key={option}
                 >
                   <Button
+                    data-cy="AdvancedSearchButton"
                     size="small"
                     onClick={() => setIsAdvancedSearchOpen(true)}
                   >
@@ -280,6 +281,7 @@ const ContentSearch: FC = () => {
                       {params.InputProps.endAdornment}
                       <InputAdornment position="end">
                         <IconButton
+                          data-cy="GlobalSearchFilterButton"
                           size="small"
                           sx={{ marginRight: 1 }}
                           onClick={() => setIsAdvancedSearchOpen(true)}
@@ -314,6 +316,7 @@ const ContentSearch: FC = () => {
           }}
         />
       </Collapse>
+
       {isAdvancedSearchOpen && (
         <AdvancedSearch
           keyword={value}

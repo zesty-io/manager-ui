@@ -92,6 +92,7 @@ export const UserFilter: FC<UserFilterProps> = ({
       filterId="user"
     >
       <Menu
+        data-cy="UserFilterMenu"
         open={isFilterMenuOpen}
         anchorEl={menuAnchorEl}
         onClose={() => setMenuAnchorEl(null)}
