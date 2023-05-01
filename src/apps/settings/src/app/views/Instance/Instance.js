@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
+import { theme } from "@zesty-io/material";
 
 import {
   Divider,
@@ -122,7 +123,11 @@ export default connect((state) => {
       <div className={styles.row}>
         <div className={styles.column}>
           <h1 className={typographystyles.subheadline}>
-            <FontAwesomeIcon icon={faCog} className={styles.titleIcon} />
+            <FontAwesomeIcon
+              color={theme.palette.action.active}
+              icon={faCog}
+              className={styles.titleIcon}
+            />
             {capitalizeFirstLetter(props.match.params.category)} Settings
           </h1>
         </div>
