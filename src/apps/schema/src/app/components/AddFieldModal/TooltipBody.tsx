@@ -53,14 +53,12 @@ export const TooltipBody = ({
             fontWeight: 700,
           }}
           secondaryTypographyProps={{
-            // @ts-expect-error missing body3 module augmentation
             variant: "body3",
           }}
         />
       </ListItem>
       <Box px={2} py={1}>
         <Typography
-          // @ts-expect-error missing body3 module augmentation
           variant="body3"
           color="text.secondary"
           whiteSpace="pre-line"
@@ -74,7 +72,6 @@ export const TooltipBody = ({
           <Box pl={2} component="ul">
             {commonUses.map((string, index) => (
               <Typography
-                // @ts-expect-error missing body3 module augmentation
                 variant="body3"
                 color="text.secondary"
                 component="li"
@@ -88,11 +85,7 @@ export const TooltipBody = ({
         <Typography variant="body2" fontWeight="700">
           Pro Tip
         </Typography>
-        <Typography
-          // @ts-expect-error missing body3 module augmentation
-          variant="body3"
-          color="text.secondary"
-        >
+        <Typography variant="body3" color="text.secondary">
           {proTip}
         </Typography>
       </Box>

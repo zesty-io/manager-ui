@@ -20,9 +20,6 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [params, setParams] = useParams();
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
   const handleClose = () => {
     setAnchorEl(null);
     onClose();
@@ -34,8 +31,7 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
   };
   return (
     <>
-      {/*@ts-expect-error*/}
-      <MenuItem onClick={handleClick}>
+      <MenuItem onClick={(event) => setAnchorEl(event.currentTarget)}>
         <ListItemIcon>
           <ImageRounded fontSize="small" />
         </ListItemIcon>

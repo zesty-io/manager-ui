@@ -25,11 +25,7 @@ export const ComingSoon = () => {
           label={
             <>
               <Typography variant="body2">Unique Field</Typography>
-              <Typography
-                // @ts-expect-error body3 module augmentation required
-                variant="body3"
-                color="text.secondary"
-              >
+              <Typography variant="body3" color="text.secondary">
                 Ensures that multiple items can't have the same value for this
                 field
               </Typography>
@@ -41,11 +37,7 @@ export const ComingSoon = () => {
           label={
             <>
               <Typography variant="body2">Default Value</Typography>
-              <Typography
-                // @ts-expect-error body3 module augmentation required
-                variant="body3"
-                color="text.secondary"
-              >
+              <Typography variant="body3" color="text.secondary">
                 Ensures that multiple items can't have the same value for this
                 field
               </Typography>
@@ -57,11 +49,7 @@ export const ComingSoon = () => {
           label={
             <>
               <Typography variant="body2">Limit character count</Typography>
-              <Typography
-                // @ts-expect-error body3 module augmentation required
-                variant="body3"
-                color="text.secondary"
-              >
+              <Typography variant="body3" color="text.secondary">
                 Specifies a minimum and/or maximum allowed number of characters
               </Typography>
             </>

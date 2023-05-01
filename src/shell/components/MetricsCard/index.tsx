@@ -63,7 +63,6 @@ export const MetricCard = ({
             <Box marginTop={0.5} display="flex" gap={1}>
               <GrowthIndicator delta={isNaN(delta) ? 0 : delta} />
               <Typography
-                // @ts-ignore
                 variant="body3"
                 color="text.disabled"
                 fontWeight={600}

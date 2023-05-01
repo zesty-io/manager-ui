@@ -318,7 +318,6 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
               <Typography variant="body2">List this model</Typography>
               <Typography
                 component="p"
-                // @ts-expect-error need to import module augmentations
                 variant="body3"
                 color="text.secondary"
                 fontWeight={600}

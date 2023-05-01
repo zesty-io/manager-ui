@@ -41,13 +41,11 @@ export const AllModelsEmptyState = () => {
           Create Model
         </Button>
         <Box mt={3}>
-          {/* @ts-ignore */}
           <Typography variant="body3">Need help?</Typography>
           <List sx={{ listStyleType: "disc", ml: 2, pt: 0 }}>
             <ListItem sx={{ display: "list-item", p: 0 }}>
               <ListItemText
                 primaryTypographyProps={{
-                  // @ts-ignore
                   variant: "body3",
                   color: "info.dark",
                 }}
@@ -58,7 +56,6 @@ export const AllModelsEmptyState = () => {
             <ListItem sx={{ display: "list-item", p: 0 }}>
               <ListItemText
                 primaryTypographyProps={{
-                  // @ts-ignore
                   variant: "body3",
                   color: "info.dark",
                 }}

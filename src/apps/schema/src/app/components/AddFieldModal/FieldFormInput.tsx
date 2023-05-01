@@ -165,12 +165,7 @@ export const FieldFormInput = ({
               </Tooltip>
             )}
             {fieldConfig.subLabel && (
-              <Typography
-                component="p"
-                // @ts-expect-error body3 module augmentation required
-                variant="body3"
-                color="text.secondary"
-              >
+              <Typography component="p" variant="body3" color="text.secondary">
                 {fieldConfig.subLabel}
               </Typography>
             )}
@@ -236,11 +231,7 @@ export const FieldFormInput = ({
                 {fieldConfig.label}
               </Typography>
               {fieldConfig.subLabel && (
-                <Typography
-                  // @ts-expect-error body3 module augmentation required
-                  variant="body3"
-                  color="text.secondary"
-                >
+                <Typography variant="body3" color="text.secondary">
                   {fieldConfig.subLabel}
                 </Typography>
               )}

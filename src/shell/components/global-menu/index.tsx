@@ -102,7 +102,6 @@ export default memo(function GlobalMenu() {
                   className="menu-item-text"
                   primary={name}
                   primaryTypographyProps={{
-                    // @ts-ignore
                     variant: "body3",
                   }}
                   sx={{
