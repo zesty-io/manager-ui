@@ -90,13 +90,19 @@ describe("Reports > Activity Log > Home", () => {
         );
       });
 
-      const from = moment()
+      /**
+       * Note: Date needs to be hard-coded here to make sure that when the datepicker opens,
+       * the cypress test runner can easily pick the date from the datepicker modal
+       * instead of having to determine how many times to click the next month arrow everytime
+       * to get to the current date.
+       */
+      const from = moment("2022-07-14")
         .hours(0)
         .minute(0)
         .second(0)
         .millisecond(0)
         .format("x");
-      const to = moment()
+      const to = moment("2022-07-14")
         .add(1, "day")
         .hours(0)
         .minute(0)
@@ -105,7 +111,7 @@ describe("Reports > Activity Log > Home", () => {
         .format("x");
 
       // Set daterange filter
-      cy.getBySelector("dateRange_default").should("exist").click();
+      cy.getBySelector("dateRange_selected").should("exist").click();
       cy.getBySelector("dateRange_picker").should("exist");
       cy.get(`[data-timestamp=${from}]`).should("exist").click();
       cy.get(`[data-timestamp=${to}]`).should("exist").click();
@@ -118,8 +124,10 @@ describe("Reports > Activity Log > Home", () => {
       cy.getBySelector("resourceType_default").should("exist").click();
       cy.getBySelector("filter_value_content").should("exist").click();
 
-      const expectedFromDate = moment().format("YYYY-MM-DD");
-      const expectedToDate = moment().add(1, "day").format("YYYY-MM-DD");
+      const expectedFromDate = moment("2022-07-14").format("YYYY-MM-DD");
+      const expectedToDate = moment("2022-07-14")
+        .add(1, "day")
+        .format("YYYY-MM-DD");
 
       cy.location("search").should(
         "eq",
@@ -180,13 +188,19 @@ describe("Reports > Activity Log > Home", () => {
         });
       }).as("request");
 
-      const from = moment()
+      /**
+       * Note: Date needs to be hard-coded here to make sure that when the datepicker opens,
+       * the cypress test runner can easily pick the date from the datepicker modal
+       * instead of having to determine how many times to click the next month arrow everytime
+       * to get to the current date.
+       */
+      const from = moment("2022-07-14")
         .hours(0)
         .minute(0)
         .second(0)
         .millisecond(0)
         .format("x");
-      const to = moment()
+      const to = moment("2022-07-14")
         .add(1, "day")
         .hours(0)
         .minute(0)
@@ -195,7 +209,7 @@ describe("Reports > Activity Log > Home", () => {
         .format("x");
 
       // Set daterange filter
-      cy.getBySelector("dateRange_default").should("exist").click();
+      cy.getBySelector("dateRange_selected").should("exist").click();
       cy.getBySelector("dateRange_picker").should("exist");
       cy.get(`[data-timestamp=${from}]`).should("exist").click();
       cy.get(`[data-timestamp=${to}]`).should("exist").click();

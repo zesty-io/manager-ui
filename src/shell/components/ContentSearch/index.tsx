@@ -99,6 +99,10 @@ const ContentSearch: FC = () => {
                     : "0px",
                   borderColor: "border",
                   borderRadius: "0px 0px 4px 4px",
+
+                  "& .MuiAutocomplete-listbox": {
+                    maxHeight: "60vh",
+                  },
                 }}
               />
             );

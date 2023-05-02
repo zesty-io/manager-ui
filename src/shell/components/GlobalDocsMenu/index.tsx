@@ -178,6 +178,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
         }}
       >
         <Button
+          data-cy="SendSupportEmail"
           size="small"
           variant="outlined"
           color="inherit"
@@ -191,6 +192,7 @@ export const GlobalDocsMenu: FC<GlobalDocsMenuProps> = ({
           support@zesty.io
         </Button>
         <Button
+          data-cy="GetHelp"
           size="small"
           variant="outlined"
           color="inherit"

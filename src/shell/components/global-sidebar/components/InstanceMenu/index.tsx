@@ -1,33 +1,18 @@
-import React, { FC, useMemo, useState, useRef } from "react";
-import { Avatar, Stack, Typography, ListItem, Box } from "@mui/material";
+import React, { FC, useState } from "react";
+import { Stack, Typography, ListItem, Skeleton } from "@mui/material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 
-import { useGetHeadTagsQuery } from "../../../../services/instance";
 import { useGetInstanceQuery } from "../../../../services/accounts";
 import { DropdownMenu } from "./DropdownMenu";
+import { InstanceAvatar } from "../InstanceAvatar";
 
 interface InstanceMenuProps {
   openNav: boolean;
 }
 export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const { data: headTags } = useGetHeadTagsQuery();
-  const { data: instance } = useGetInstanceQuery();
-
-  const faviconURL = useMemo(() => {
-    if (headTags?.length) {
-      const allAttributes = headTags.map((tag) => tag.attributes);
-      const faviconTag = allAttributes.find((attr) => {
-        if ("href" in attr && "sizes" in attr && attr["sizes"] === "196x196") {
-          return attr;
-        }
-      });
-
-      return faviconTag?.href;
-    }
-
-    return "";
-  }, [headTags]);
+  const { data: instance, isLoading: isLoadingInstance } =
+    useGetInstanceQuery();
 
   return (
     <>
@@ -61,11 +46,7 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
           }
         >
           <Stack direction="row" gap={1} alignItems="center">
-            <Avatar
-              src={faviconURL}
-              alt="favicon"
-              sx={{ height: 32, width: 32 }}
-            />
+            <InstanceAvatar canUpdateAvatar={false} />
             {openNav && (
               <Typography
                 // @ts-ignore
@@ -80,7 +61,11 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
                 }}
                 overflow="hidden"
               >
-                {instance?.name}
+                {isLoadingInstance ? (
+                  <Skeleton sx={{ bgcolor: "grey.500", width: 70 }} />
+                ) : (
+                  instance?.name
+                )}
               </Typography>
             )}
           </Stack>
@@ -88,11 +73,7 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
         </Stack>
       </ListItem>
       {Boolean(anchorEl) && (
-        <DropdownMenu
-          anchorEl={anchorEl}
-          faviconURL={faviconURL}
-          onClose={() => setAnchorEl(null)}
-        />
+        <DropdownMenu anchorEl={anchorEl} onClose={() => setAnchorEl(null)} />
       )}
     </>
   );

@@ -65,10 +65,10 @@ const modelTypes = [
     key: "pageset",
   },
   {
-    name: "Headless Dataset Model",
+    name: "Dataset Model",
     description:
       "Creates a collection of entries with no URLs and no code templates",
-    examples: "e.g. Categories, Articles, Slides, FAQS, Brands, etc.",
+    examples: "e.g. Categories, Logos, Slides, FAQS, Brands, etc.",
     key: "dataset",
   },
 ];

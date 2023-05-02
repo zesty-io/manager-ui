@@ -35,6 +35,7 @@ import { actions } from "../../../../../store/ui";
 import { notify } from "../../../../../store/notifications";
 import { useRefreshCacheMutation } from "../../../../../services/cloudFunctions";
 import { useDomain } from "../../../../../hooks/use-domain";
+import { InstanceAvatar } from "../../InstanceAvatar";
 
 export const rotateAnimation = keyframes`
   from {
@@ -46,12 +47,10 @@ export const rotateAnimation = keyframes`
 `;
 
 interface NormalMenuProps {
-  faviconURL: string;
   onChangeView: (view: View) => void;
   onCloseDropdownMenu: () => void;
 }
 export const NormalMenu: FC<NormalMenuProps> = ({
-  faviconURL,
   onChangeView,
   onCloseDropdownMenu,
 }) => {
@@ -117,7 +116,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
   return (
     <>
       <Stack direction="row" gap={1.5} p={2} alignItems="center">
-        <Avatar src={faviconURL} alt="favicon" sx={{ height: 32, width: 32 }} />
+        <InstanceAvatar onFaviconModalOpen={() => onCloseDropdownMenu()} />
         <Stack>
           <Typography variant="body2" fontWeight={600}>
             {instance?.name}
@@ -139,6 +138,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
         onClick={() => {
           onChangeView("instances");
         }}
+        data-cy="InstanceSwitcher"
       >
         <MenuItem>
           <ListItemIcon>
@@ -155,6 +155,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
             onCloseDropdownMenu();
             dispatch(actions.toggleUpdateFaviconModal(true));
           }}
+          data-cy="Favicon"
         >
           <ListItemIcon>
             <ImageRoundedIcon />
@@ -168,13 +169,14 @@ export const NormalMenu: FC<NormalMenuProps> = ({
               `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
             )
           }
+          data-cy="WebEnginePreviewLink"
         >
           <ListItemIcon>
             <RemoveRedEyeRoundedIcon />
           </ListItemIcon>
           <ListItemText>View WebEngine Preview (Stage)</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleCopyInstanceZUID}>
+        <MenuItem onClick={handleCopyInstanceZUID} data-cy="CopyInstanceZUID">
           <ListItemIcon>
             {isInstanceZuidCopied ? (
               <CheckRoundedIcon />
@@ -184,7 +186,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           </ListItemIcon>
           <ListItemText>Copy Instance ZUID</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => refreshCache()}>
+        <MenuItem onClick={() => refreshCache()} data-cy="RefreshCache">
           <ListItemIcon>
             {isCacheRefreshed ? (
               <CheckRoundedIcon />
@@ -227,7 +229,10 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           </ListItemIcon>
           <ListItemText>Teams</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => onChangeView("domains")}>
+        <MenuItem
+          onClick={() => onChangeView("domains")}
+          data-cy="DomainSwitcher"
+        >
           <ListItemIcon>
             <LanguageRoundedIcon />
           </ListItemIcon>
@@ -286,6 +291,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
               `https://www.zesty.io/instances/${instanceZUID}/support`
             )
           }
+          data-cy="GetHelp"
         >
           <ListItemIcon>
             <SupportAgentRoundedIcon />

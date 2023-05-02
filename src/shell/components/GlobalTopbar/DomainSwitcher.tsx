@@ -16,6 +16,7 @@ export const DomainSwitcher = () => {
         onClick={(evt: React.MouseEvent<HTMLButtonElement>) =>
           setAnchorRef(evt.currentTarget)
         }
+        data-cy="DomainSwitcher"
       >
         <LanguageRoundedIcon fontSize="inherit" />
       </IconButton>

@@ -40,6 +40,9 @@ export default memo(function Shell() {
       overflow="hidden"
       display="grid"
       gridTemplateColumns={openNav ? "200px 1fr" : "64px 1fr"}
+      sx={{
+        backgroundColor: "background.paper",
+      }}
     >
       <GlobalSidebar
         onClick={() => {
@@ -54,7 +57,7 @@ export default memo(function Shell() {
           data-cy="SubApp"
           sx={{
             zIndex: 30,
-
+            backgroundColor: "background.paper",
             // Makes sure that tinyMCE is not overlapped when in fullscreen mode
             "&:has(div.tox-fullscreen)": {
               zIndex: (theme) => theme.zIndex.appBar + 1,
