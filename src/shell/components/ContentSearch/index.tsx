@@ -26,7 +26,6 @@ import { AdvancedSearch } from "./components/AdvancedSearch";
 import { useRecentSearches } from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
 
-// The order here matters as this is how it will be rendered as well
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ElementId = "global-search-autocomplete";
 
