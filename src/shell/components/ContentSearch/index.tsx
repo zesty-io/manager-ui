@@ -1,11 +1,8 @@
 import { FC, useState, useRef, useMemo } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import InputAdornment from "@mui/material/InputAdornment";
-import { HTMLAttributes } from "react";
 import {
   ListItem,
-  ListItemIcon,
-  ListItemText,
   Button,
   TextField,
   Autocomplete,
@@ -14,19 +11,12 @@ import {
   Collapse,
   IconButton,
   ListSubheader,
-  SvgIcon,
 } from "@mui/material";
-import PencilIcon from "@mui/icons-material/Create";
 import { useHistory, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import {
-  ScheduleRounded,
-  SearchRounded,
-  Create,
-  SvgIconComponent,
-} from "@mui/icons-material";
+import { ScheduleRounded, SearchRounded, Create } from "@mui/icons-material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
