@@ -48,17 +48,9 @@ const ContentSearch: FC = () => {
     const _recentSearches = recentSearches?.length
       ? ["RecentSearches", ...recentSearches]
       : [];
+    const _suggestions = suggestions?.length ? suggestions?.slice(0, 5) : [];
 
-    if (suggestions && value) {
-      return [
-        value,
-        ...suggestions.slice(0, 5),
-        ..._recentSearches,
-        "AdvancedSearchButton",
-      ];
-    }
-
-    return [..._recentSearches, "AdvancedSearchButton"];
+    return [value, ..._suggestions, ..._recentSearches, "AdvancedSearchButton"];
   }, [suggestions, recentSearches, value]);
 
   //@ts-ignore TODO fix typing for useMetaKey
@@ -204,14 +196,10 @@ const ContentSearch: FC = () => {
           renderOption={(props, option) => {
             if (typeof option === "string") {
               if (!AdditionalDropdownOptions.includes(option)) {
-                let icon;
+                const isSearchTerm = props.id === `${ElementId}-option-0`;
 
-                if (props.id === `${ElementId}-option-0`) {
-                  // First option is the user input term
-                  icon = SearchRounded;
-                } else {
-                  // These represent the recent search terms
-                  icon = ScheduleRounded;
+                if (isSearchTerm && !value) {
+                  return;
                 }
 
                 return (
@@ -219,8 +207,8 @@ const ContentSearch: FC = () => {
                     {...props}
                     // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
                     aria-selected={false}
-                    key={"global-search-term"}
-                    icon={icon}
+                    key={isSearchTerm ? "global-search-term" : option}
+                    icon={isSearchTerm ? SearchRounded : ScheduleRounded}
                     onClick={() => goToSearchPage(option)}
                     text={option}
                   />
@@ -241,6 +229,7 @@ const ContentSearch: FC = () => {
                       lineHeight: "18px",
                       letterSpacing: "0.15px",
                     }}
+                    key={option}
                   >
                     Recent Searches
                   </ListSubheader>
