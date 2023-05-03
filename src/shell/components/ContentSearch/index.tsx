@@ -59,8 +59,6 @@ const ContentSearch: FC = () => {
       ? ["RecentSearches", ...recentSearches]
       : [];
 
-    console.log(_recentSearches);
-
     if (suggestions && value) {
       return [
         value,
@@ -234,7 +232,22 @@ const ContentSearch: FC = () => {
 
               // Renders the recent searches component
               if (option === "RecentSearches") {
-                return <ListSubheader>Recent Searches</ListSubheader>;
+                return (
+                  <ListSubheader
+                    sx={{
+                      px: 1.5,
+                      pb: 0.5,
+                      pt: 0,
+                      mt: 1,
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      lineHeight: "18px",
+                      letterSpacing: "0.15px",
+                    }}
+                  >
+                    Recent Searches
+                  </ListSubheader>
+                );
               }
 
               // Renders the advanced search button
