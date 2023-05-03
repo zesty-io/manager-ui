@@ -1,4 +1,4 @@
-import { FC, useState, useRef, useReducer } from "react";
+import { FC, useState, useRef, useMemo } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import InputAdornment from "@mui/material/InputAdornment";
 import { HTMLAttributes } from "react";
@@ -13,12 +13,20 @@ import {
   Popper,
   Collapse,
   IconButton,
+  ListSubheader,
+  SvgIcon,
 } from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
 import { useHistory, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
+import {
+  ScheduleRounded,
+  SearchRounded,
+  Create,
+  SvgIconComponent,
+} from "@mui/icons-material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
@@ -29,6 +37,7 @@ import { useRecentSearches } from "../../hooks/useRecentSearches";
 
 // The order here matters as this is how it will be rendered as well
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
+const ElementId = "global-search-autocomplete";
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
@@ -43,10 +52,25 @@ const ContentSearch: FC = () => {
   const res = useSearchContentQuery({ query: value }, { skip: !value });
 
   const suggestions = res.data;
-  const topSuggestions =
-    suggestions && value
-      ? [value, ...suggestions.slice(0, 5), ...AdditionalDropdownOptions]
-      : [...AdditionalDropdownOptions];
+  const topSuggestions = useMemo(() => {
+    // Hides the recent searches if there's none
+    const _recentSearches = recentSearches?.length
+      ? ["RecentSearches", ...recentSearches]
+      : [];
+
+    console.log(_recentSearches);
+
+    if (suggestions && value) {
+      return [
+        value,
+        ...suggestions.slice(0, 5),
+        ..._recentSearches,
+        "AdvancedSearchButton",
+      ];
+    }
+
+    return [..._recentSearches, "AdvancedSearchButton"];
+  }, [suggestions, recentSearches, value]);
 
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
@@ -127,7 +151,7 @@ const ContentSearch: FC = () => {
               />
             );
           }}
-          id="global-search-autocomplete"
+          id={ElementId}
           freeSolo
           selectOnFocus
           clearOnBlur
@@ -183,15 +207,24 @@ const ContentSearch: FC = () => {
           }}
           renderOption={(props, option) => {
             if (typeof option === "string") {
-              // Represents the top-row search term
               if (!AdditionalDropdownOptions.includes(option)) {
+                let icon;
+
+                if (props.id === `${ElementId}-option-0`) {
+                  // First option is the user input term
+                  icon = SearchRounded;
+                } else {
+                  // These represent the recent search terms
+                  icon = ScheduleRounded;
+                }
+
                 return (
                   <Suggestion
                     {...props}
                     // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
                     aria-selected={false}
                     key={"global-search-term"}
-                    icon="search"
+                    icon={icon}
                     onClick={() => goToSearchPage(option)}
                     text={option}
                   />
@@ -200,7 +233,7 @@ const ContentSearch: FC = () => {
 
               // Renders the recent searches component
               if (option === "RecentSearches") {
-                return <ListItem>Recent Searches</ListItem>;
+                return <ListSubheader>Recent Searches</ListSubheader>;
               }
 
               // Renders the advanced search button
@@ -237,7 +270,7 @@ const ContentSearch: FC = () => {
                 <Suggestion
                   {...props}
                   key={option.meta.ZUID}
-                  icon="pencil"
+                  icon={Create}
                   text={getText()}
                 />
               );
@@ -346,10 +379,11 @@ export default ContentSearch;
 
 type SuggestionProps = HTMLAttributes<HTMLLIElement> & {
   text: string;
-  icon: "search" | "pencil";
+  icon: SvgIconComponent;
 };
 const Suggestion: FC<SuggestionProps> = ({ text, icon, ...props }) => {
-  const Icon = icon === "search" ? SearchIcon : PencilIcon;
+  // const Icon = icon === "search" ? SearchIcon : PencilIcon;
+
   return (
     <ListItem
       {...props}
@@ -365,7 +399,7 @@ const Suggestion: FC<SuggestionProps> = ({ text, icon, ...props }) => {
       }}
     >
       <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
-        <Icon fontSize="small" />
+        <SvgIcon component={icon} fontSize="small" />
       </ListItemIcon>
       <ListItemText
         primary={text}
