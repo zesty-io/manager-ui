@@ -73,7 +73,14 @@ const ContentSearch: FC = () => {
   const goToSearchPage = (queryTerm: string) => {
     const isOnSearchPage = location.pathname === "/search";
 
+    setOpen(false);
     updateRecentSearches(queryTerm);
+    textfieldRef.current?.querySelector("input").blur();
+
+    if (queryTerm !== value) {
+      // Makes sure that the textfield value gets updated if the user has clicked on a recent search item
+      setValue(queryTerm);
+    }
 
     // Only add the search page on the history stack during initial page visit
     // Makes sure clicking close on the search page brings the user back to the previous page
