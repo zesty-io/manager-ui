@@ -15,15 +15,17 @@ import {
   IconButton,
 } from "@mui/material";
 import PencilIcon from "@mui/icons-material/Create";
+import { useHistory, useLocation } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useTheme } from "@mui/material/styles";
+import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
+
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
 import { ContentItem } from "../../services/types";
-import { useHistory, useLocation } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../../store/notifications";
-import { useTheme } from "@mui/material/styles";
-import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import { AdvancedSearch } from "./components/AdvancedSearch";
+import { useRecentSearches } from "../../hooks/useRecentSearches";
 
 // The order here matters as this is how it will be rendered as well
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
@@ -31,6 +33,7 @@ const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
+  const [recentSearches, updateRecentSearches] = useRecentSearches();
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -56,6 +59,8 @@ const ContentSearch: FC = () => {
 
   const goToSearchPage = (queryTerm: string) => {
     const isOnSearchPage = location.pathname === "/search";
+
+    updateRecentSearches(queryTerm);
 
     // Only add the search page on the history stack during initial page visit
     // Makes sure clicking close on the search page brings the user back to the previous page
