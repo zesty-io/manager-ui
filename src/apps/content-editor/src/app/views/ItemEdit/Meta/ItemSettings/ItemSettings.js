@@ -98,16 +98,31 @@ export const ItemSettings = memo(
           )}
         </main>
         <aside className={styles.MetaSide}>
-          <Card sx={{ m: 2 }}>
+          <Card
+            sx={{ m: 2, border: 1, borderColor: "grey.100" }}
+            variant="outlined"
+          >
             <CardHeader
-              avatar={<SearchIcon fontSize="small" />}
+              avatar={
+                <SearchIcon fontSize="small" sx={{ fill: "#10182866" }} />
+              }
               title="Example Search Engine Listing"
+              sx={{
+                backgroundColor: "grey.100",
+              }}
+              titleTypographyProps={{
+                sx: {
+                  color: "text.primary",
+                },
+              }}
             ></CardHeader>
             <CardContent>
               <div className={styles.SearchResult}>
                 <h6 className={styles.GoogleTitle}>
                   {web.metaTitle}
-                  {showSiteNameInMetaTitle ? ` | ${siteName}` : ""}
+                  {Boolean(Number(showSiteNameInMetaTitle))
+                    ? ` | ${siteName}`
+                    : ""}
                 </h6>
                 <div className={styles.GoogleLink}>
                   {domain ? (

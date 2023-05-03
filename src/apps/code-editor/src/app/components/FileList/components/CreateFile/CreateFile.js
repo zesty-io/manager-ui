@@ -4,8 +4,8 @@ import { useHistory } from "react-router-dom";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
-import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
@@ -178,25 +178,22 @@ export const CreateFile = memo(function CreateFile(props) {
               label="File Name"
               value={name}
               onChange={(evt) => setName(evt.target.value)}
+              maxLength={100}
             />
           </ModalContent>
           <ModalFooter>
             <ButtonGroup className={styles.ModalActions}>
-              <Button
+              <LoadingButton
                 variant="contained"
                 color="success"
                 onClick={handleCreateFile}
-                disabled={type === "" || type === "0" || loading}
-                startIcon={
-                  loading ? (
-                    <CircularProgress size="20px" />
-                  ) : (
-                    <CheckCircleIcon />
-                  )
-                }
+                disabled={type === "" || type === "0"}
+                loading={loading}
+                loadingPosition="start"
+                startIcon={<CheckCircleIcon />}
               >
                 Create File
-              </Button>
+              </LoadingButton>
               <Button
                 variant="contained"
                 onClick={() => {

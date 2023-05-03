@@ -5,8 +5,8 @@ import { Dialog, IconButton, Button } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import CircularProgress from "@mui/material/CircularProgress";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -40,6 +40,7 @@ import {
 import { notify } from "shell/store/notifications";
 
 import styles from "./favicon.less";
+import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
 
 export default connect((state) => {
   return {
@@ -48,7 +49,7 @@ export default connect((state) => {
   };
 })(function favicon(props) {
   const [hover, setHover] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const [faviconZUID, setFaviconZUID] = useState("");
@@ -87,8 +88,6 @@ export default connect((state) => {
       );
     });
   };
-
-  const handleClose = () => setOpen(false);
 
   const handleImage = (zuid) => {
     if (!zuid) {
@@ -185,32 +184,12 @@ export default connect((state) => {
   const images = faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : [];
 
   return (
-    <div
-      data-cy="Favicon"
-      className={styles.Favicon}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div className={styles.display}>
-        {hover ? (
-          <FontAwesomeIcon
-            title="Select Instance Favicon"
-            icon={faFileImage}
-            onClick={() => setOpen(!open)}
-          />
-        ) : faviconURL ? (
-          <img
-            src={faviconURL}
-            width="60px"
-            height="60px"
-            alt=" Select Favicon"
-          />
-        ) : (
-          <FontAwesomeIcon icon={faGlobe} />
-        )}
-      </div>
-
-      <Modal open={open} className={styles.Modal}>
+    <>
+      <Modal
+        open={open}
+        className={styles.Modal}
+        onClose={() => props.onCloseFaviconModal()}
+      >
         <ModalHeader>
           <h1 className={styles.headline}>Select Instance Favicon</h1>
         </ModalHeader>
@@ -258,6 +237,7 @@ export default connect((state) => {
                   isSelectDialog={true}
                   showHeaderActions={false}
                   addImagesCallback={(images) => {
+                    if (!isImage(images[0])) return;
                     imageModal.callback(images);
                     setImageModal();
                   }}
@@ -281,7 +261,9 @@ export default connect((state) => {
           <AppLink
             className={styles.SettingsLink}
             to="/settings/head"
-            onClick={handleClose}
+            onClick={() => {
+              props.onCloseFaviconModal();
+            }}
           >
             <FontAwesomeIcon icon={faCog} />
             Manage Instance Head Tags
@@ -290,24 +272,26 @@ export default connect((state) => {
         <ModalFooter className={styles.Actions}>
           <Button
             variant="contained"
-            onClick={handleClose}
+            onClick={() => {
+              props.onCloseFaviconModal();
+            }}
             startIcon={<DoDisturbAltIcon />}
           >
             Cancel (ESC)
           </Button>
-          <Button
+          <LoadingButton
             variant="contained"
             color="success"
             data-cy="faviconSave"
+            loadingPosition="start"
             onClick={handleSave}
-            startIcon={
-              loading ? <CircularProgress size="20px" /> : <SaveIcon />
-            }
+            loading={loading}
+            startIcon={<SaveIcon />}
           >
             Save Favicon
-          </Button>
+          </LoadingButton>
         </ModalFooter>
       </Modal>
-    </div>
+    </>
   );
 });

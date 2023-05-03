@@ -51,6 +51,9 @@ export const LanguageSelector = connect((state, props) => {
           value={props.selectedLang}
           onChange={handleSelect}
           size="small"
+          sx={{
+            height: "32px",
+          }}
         >
           {props.languages.map((lang) => (
             <MenuItem key={lang.code} value={lang.code}>

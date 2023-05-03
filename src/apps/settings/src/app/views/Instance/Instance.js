@@ -3,20 +3,20 @@ import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
+import { theme } from "@zesty-io/material";
 
 import {
   Divider,
   ToggleButtonGroup,
   ToggleButton,
   FormLabel,
-  Button,
-  CircularProgress,
   Tooltip,
   Select,
   MenuItem,
   Stack,
 } from "@mui/material";
 
+import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
@@ -123,7 +123,11 @@ export default connect((state) => {
       <div className={styles.row}>
         <div className={styles.column}>
           <h1 className={typographystyles.subheadline}>
-            <FontAwesomeIcon icon={faCog} className={styles.titleIcon} />
+            <FontAwesomeIcon
+              color={theme.palette.action.active}
+              icon={faCog}
+              className={styles.titleIcon}
+            />
             {capitalizeFirstLetter(props.match.params.category)} Settings
           </h1>
         </div>
@@ -136,19 +140,19 @@ export default connect((state) => {
                 cache clear
               </Notice>
             )}
-            <Button
+            <LoadingButton
               variant="contained"
               id="saveSettings"
               color="success"
               onClick={saveFields}
-              disabled={saving || dirtyFields.length === 0}
-              startIcon={
-                saving ? <CircularProgress size="20px" /> : <SaveIcon />
-              }
+              disabled={dirtyFields.length === 0}
+              loading={saving}
+              loadingPosition="start"
+              startIcon={<SaveIcon />}
               sx={{ alignSelf: "flex-end" }}
             >
               Save Settings
-            </Button>
+            </LoadingButton>
           </div>
         </div>
       </div>

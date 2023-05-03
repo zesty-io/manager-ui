@@ -44,7 +44,7 @@ export const HomeApp = () => {
   const hasPublishedHomepage = !!contentItemPublishings?.length;
   const hasCreatedNewModel = models?.some(
     (model) =>
-      moment(model.createdAt).diff(instanceCreatedAtDate, "minutes") >= 10
+      moment(model.createdAt).diff(instanceCreatedAtDate, "minutes") >= 2
   );
   const isFetching =
     isModelsFetching ||
@@ -65,12 +65,6 @@ export const HomeApp = () => {
           height: "100%",
           "*": {
             boxSizing: "border-box",
-          },
-          "*::-webkit-scrollbar-track-piece": {
-            backgroundColor: `${theme.palette.grey[100]} !important`,
-          },
-          "*::-webkit-scrollbar-thumb": {
-            backgroundColor: `${theme.palette.grey[300]} !important`,
           },
         }}
       >

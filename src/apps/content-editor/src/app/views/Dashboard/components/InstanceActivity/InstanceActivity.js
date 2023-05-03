@@ -30,12 +30,12 @@ export function InstanceActivity(props) {
 
   return (
     <>
-      <Card sx={{ m: 2 }}>
+      <Card sx={{ borderColor: "grey.100" }} variant="outlined">
         <CardHeader
           avatar={<CalendarMonthIcon fontSize="small" />}
           title="30 days of your actions"
         ></CardHeader>
-        <CardContent>
+        <CardContent sx={{ color: "text.primary" }}>
           <div className={styles.WrapperActivity}>
             <div className={styles.Stats}>
               <div className={styles.Stat}>

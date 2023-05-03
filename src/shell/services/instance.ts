@@ -2,7 +2,22 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
-import { ContentItem, ContentModel, Publishing } from "./types";
+import {
+  Audit,
+  ContentModelField,
+  InstanceSetting,
+  LegacyHeader,
+  WebView,
+  ContentItem,
+  ContentModel,
+  Publishing,
+  SearchQuery,
+  HeadTag,
+  Web,
+  Meta,
+  ContentNavItem,
+} from "./types";
+import { batchApiRequests } from "../../utility/batchApiRequests";
 
 // Define a service using a base URL and expected endpoints
 export const instanceApi = createApi({
@@ -12,7 +27,16 @@ export const instanceApi = createApi({
     baseUrl: `${__CONFIG__.API_INSTANCE_PROTOCOL}${instanceZUID}${__CONFIG__.API_INSTANCE}`,
     prepareHeaders,
   }),
-  tagTypes: ["ItemPublishing"],
+  tagTypes: [
+    "ItemPublishing",
+    "ContentModels",
+    "ContentModel",
+    "ContentModelFields",
+    "ContentModelField",
+    "WebViews",
+    "InstanceSettings",
+    "SearchQuery",
+  ],
   endpoints: (builder) => ({
     getItemPublishings: builder.query<
       Publishing[],
@@ -38,7 +62,7 @@ export const instanceApi = createApi({
         { type: "ItemPublishing", id: id.itemZUID },
       ],
     }),
-    getAudits: builder.query({
+    getAudits: builder.query<Audit[], any>({
       query: (options) => {
         const params = new URLSearchParams(options as any).toString();
         return `env/audits?${params}&limit=100000`;
@@ -68,25 +92,22 @@ export const instanceApi = createApi({
           };
         });
       },
+      // always refresh audits to avoid invalidating the cache on every request
+      keepUnusedDataFor: 0.0001,
     }),
     getContentItem: builder.query<ContentItem, string>({
       query: (ZUID) => `search/items?q=${ZUID}&order=created&dir=DESC&limit=1`,
       transformResponse: (response: { data: any[] }) => response?.data?.[0],
     }),
-    getContentModel: builder.query<ContentModel, string>({
-      query: (modelZUID) => `content/models/${modelZUID}`,
-      transformResponse: getResponseData,
-    }),
-    getContentModels: builder.query<ContentModel[], void>({
-      query: () => `content/models`,
-      transformResponse: getResponseData,
-      // Restore cache content/schema uses rtk query for mutations and can invalidate this
-      keepUnusedDataFor: 0.0001,
-    }),
     getContentModelItems: builder.query<ContentItem[], string>({
-      query: (ZUID) => `content/models/${ZUID}/items`,
+      query: (ZUID) => ({
+        url: `content/models/${ZUID}/items`,
+        params: {
+          limit: 5000,
+        },
+      }),
       transformResponse: getResponseData,
-      // Restore cache content/schema uses rtk query for mutations and can invalidate this
+      // Restore cache when content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
     }),
     getContentItemPublishings: builder.query<
@@ -98,6 +119,251 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       // Restore cache once content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
+    }),
+    searchContent: builder.query<ContentItem[], SearchQuery>({
+      query: ({ query, ...rest }) => ({
+        url: `search/items`,
+        params: {
+          q: query,
+          ...rest,
+        },
+      }),
+      transformResponse: getResponseData,
+      // Makes sure that the query is ran everytime the user searches.
+      // Prevents issue where the query no longer hits the endpoint
+      // when the case-sensitive value on the query parameter is the same as a previous query
+      keepUnusedDataFor: 0.0001,
+    }),
+    getContentModel: builder.query<ContentModel, string>({
+      query: (modelZUID) => `content/models/${modelZUID}`,
+      transformResponse: getResponseData,
+      providesTags: (result, error, modelZUID) => [
+        { type: "ContentModel", id: modelZUID },
+      ],
+    }),
+    getContentModels: builder.query<ContentModel[], void>({
+      query: () => `content/models`,
+      transformResponse: getResponseData,
+      // Restore cache when content/schema uses rtk query for mutations and can invalidate this
+      keepUnusedDataFor: 0.0001,
+      providesTags: ["ContentModels"],
+    }),
+    createContentModel: builder.mutation<
+      { data: ContentModel },
+      Partial<ContentModel>
+    >({
+      query: (body) => ({
+        url: `content/models`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["ContentModels", "WebViews"],
+    }),
+    getLangsMapping: builder.query<any, void>({
+      query: () => `env/langs/all`,
+      transformResponse: getResponseData,
+    }),
+    getHeadTags: builder.query<HeadTag[], void>({
+      query: () => "/web/headtags",
+      transformResponse: getResponseData,
+    }),
+    createContentModelFromTemplate: builder.mutation<
+      any,
+      { instance_zuid: string; repository: string; parent_zuid: string }
+    >({
+      query: (body) => ({
+        // @ts-ignore
+        url: `${CONFIG.SERVICE_INSTANCE_INSTALLER}/install/model`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["ContentModels"],
+    }),
+    updateContentModel: builder.mutation<
+      any,
+      // Could also be refactored to use single object param and destructure ZUID if needed
+      { ZUID: string; body: Partial<ContentModel> }
+    >({
+      query: ({ ZUID, body }) => ({
+        url: `content/models/${ZUID}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModel", id: arg.ZUID },
+        "ContentModels",
+      ],
+    }),
+    deleteContentModel: builder.mutation<
+      any,
+      // Could also be refactored to use single object param and destructure ZUID if needed
+      string
+    >({
+      query: (ZUID) => ({
+        url: `content/models/${ZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ContentModels"],
+    }),
+    getContentModelFields: builder.query<ContentModelField[], string>({
+      query: (modelZUID) =>
+        `content/models/${modelZUID}/fields?showDeleted=true`,
+      transformResponse: (res: { data: ContentModelField[] }) =>
+        res.data.sort((a, b) => a.sort - b.sort),
+      providesTags: (result, error, modelZUID) => [
+        { type: "ContentModelFields", id: modelZUID },
+      ],
+    }),
+    createContentModelField: builder.mutation<
+      any,
+      {
+        modelZUID: string;
+        body: Omit<
+          ContentModelField,
+          "ZUID" | "datatypeOptions" | "createdAt" | "updatedAt" | "deletedAt"
+        >;
+        skipInvalidation?: boolean;
+      }
+    >({
+      query: ({ modelZUID, body }) => ({
+        url: `content/models/${modelZUID}/fields`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => {
+        if (!arg.skipInvalidation) {
+          return [{ type: "ContentModelFields", id: arg.modelZUID }];
+        }
+
+        return [];
+      },
+    }),
+    updateContentModelField: builder.mutation<
+      any,
+      // Could also be refactored to use single object param and destructure ZUID if needed
+      { modelZUID: string; fieldZUID: string; body: ContentModelField }
+    >({
+      query: ({ modelZUID, fieldZUID, body }) => ({
+        url: `content/models/${modelZUID}/fields/${fieldZUID}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModelFields", id: arg.modelZUID },
+      ],
+    }),
+    bulkCreateContentModelField: builder.mutation<
+      any,
+      { modelZUID: string; fields: Omit<ContentModelField, "ZUID">[] }
+    >({
+      async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
+        try {
+          const requests = args.fields.map((field) => ({
+            url: `content/models/${args.modelZUID}/fields`,
+            method: "POST",
+            body: field,
+          }));
+          const responses = await batchApiRequests(requests, fetchWithBQ);
+          return {
+            data: {
+              success: responses.success,
+              error: responses.error,
+            },
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModelFields", id: arg.modelZUID },
+      ],
+    }),
+    bulkUpdateContentModelField: builder.mutation<
+      any,
+      { modelZUID: string; fields: ContentModelField[] }
+    >({
+      async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
+        try {
+          const requests = args.fields.map((field) => ({
+            url: `content/models/${args.modelZUID}/fields/${field.ZUID}`,
+            method: "PUT",
+            body: field,
+          }));
+          const responses = await batchApiRequests(requests, fetchWithBQ);
+          return {
+            data: {
+              success: responses.success,
+              error: responses.error,
+            },
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModelFields", id: arg.modelZUID },
+      ],
+    }),
+    deleteContentModelField: builder.mutation<
+      any,
+      // Could also be refactored to use single object param and destructure ZUID if needed
+      { modelZUID: string; fieldZUID: string }
+    >({
+      query: ({ modelZUID, fieldZUID }) => ({
+        url: `content/models/${modelZUID}/fields/${fieldZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModelFields", id: arg.modelZUID },
+      ],
+    }),
+    getWebViews: builder.query<WebView[], void>({
+      query: () => `/web/views`,
+      transformResponse: getResponseData,
+      providesTags: ["WebViews"],
+    }),
+    undeleteContentModelField: builder.mutation<
+      any,
+      { modelZUID: string; fieldZUID: string }
+    >({
+      query: ({ modelZUID, fieldZUID }) => ({
+        url: `content/models/${modelZUID}/fields/${fieldZUID}?action=undelete`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModelFields", id: arg.modelZUID },
+      ],
+    }),
+    getLegacyHeadTags: builder.query<LegacyHeader[], void>({
+      query: () => `/web/headers`,
+      transformResponse: getResponseData,
+    }),
+    getInstanceSettings: builder.query<InstanceSetting[], void>({
+      query: () => `/env/settings`,
+      transformResponse: getResponseData,
+      providesTags: ["InstanceSettings"],
+    }),
+    updateInstanceSetting: builder.mutation<any, InstanceSetting>({
+      query: (body) => ({
+        url: `/env/settings/${body.ZUID}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["InstanceSettings"],
+    }),
+    createContentItem: builder.mutation<
+      any,
+      { modelZUID: string; body: { web: Partial<Web>; meta: Partial<Meta> } }
+    >({
+      query: ({ modelZUID, body }) => ({
+        url: `content/models/${modelZUID}/items`,
+        method: "POST",
+        body,
+      }),
+    }),
+    getContentNavItems: builder.query<ContentNavItem[], void>({
+      query: () => `/env/nav`,
+      transformResponse: getResponseData,
     }),
   }),
 });
@@ -113,4 +379,24 @@ export const {
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
   useGetContentItemPublishingsQuery,
+  useSearchContentQuery,
+  useGetContentModelFieldsQuery,
+  useBulkUpdateContentModelFieldMutation,
+  useUpdateContentModelMutation,
+  useCreateContentModelFieldMutation,
+  useUpdateContentModelFieldMutation,
+  useCreateContentModelMutation,
+  useGetWebViewsQuery,
+  useBulkCreateContentModelFieldMutation,
+  useDeleteContentModelFieldMutation,
+  useUndeleteContentModelFieldMutation,
+  useDeleteContentModelMutation,
+  useGetLangsMappingQuery,
+  useGetHeadTagsQuery,
+  useCreateContentModelFromTemplateMutation,
+  useGetLegacyHeadTagsQuery,
+  useGetInstanceSettingsQuery,
+  useUpdateInstanceSettingMutation,
+  useCreateContentItemMutation,
+  useGetContentNavItemsQuery,
 } = instanceApi;

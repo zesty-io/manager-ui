@@ -17,7 +17,6 @@ import parsleyIcon from "../../../../../public/images/parsleyIcon.svg";
 import starCheckIcon from "../../../../../public/images/starCheckIcon.svg";
 import slackIcon from "../../../../../public/images/slackIcon.svg";
 import youtubeIcon from "../../../../../public/images/youtubeIcon.svg";
-import discordIcon from "../../../../../public/images/discordIcon.svg";
 import salesAvatar from "../../../../../public/images/salesAvatar.png";
 import NewspaperRoundedIcon from "@mui/icons-material/NewspaperRounded";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -305,10 +304,6 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
                 handleNavigation("https://www.youtube.com/c/Zestyio/videos")
               }
             />
-            <img
-              src={discordIcon}
-              onClick={() => handleNavigation("https://discord.gg/uqDqeX8RXE")}
-            />
             <NewspaperRoundedIcon
               sx={{ cursor: "pointer" }}
               color="primary"
@@ -324,7 +319,7 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
         <iframe
           width="364"
           height="800"
-          src="https://www.zesty.io/meet/"
+          src="https://zesty.zohobookings.com/portal-embed#/customer/3973976000000039370"
         ></iframe>
       </Dialog>
       {showInviteModal && (

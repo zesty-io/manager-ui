@@ -130,17 +130,18 @@ export function UserLatest(props) {
     <Card
       className={styles.UserLatestEdits}
       sx={{
-        m: 2,
         display: "flex",
         flexDirection: "column",
         minHeight: "275px",
+        borderColor: "grey.100",
       }}
+      variant="outlined"
     >
       <CardHeader
         avatar={<AccessTimeIcon fontSize="small" />}
         title={props.cardTitle}
       ></CardHeader>
-      <CardContent sx={{ p: 0 }}>
+      <CardContent sx={{ p: 0, color: "text.primary" }}>
         <WithLoader condition={!loading} message={`Loading ${props.cardTitle}`}>
           {!latest.length && props.action === "2" && (
             <h3 className={cx(styles.NoLogs, styles.display)}>

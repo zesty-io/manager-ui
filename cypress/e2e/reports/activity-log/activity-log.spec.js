@@ -70,10 +70,16 @@ describe("Reports > Activity Log > Home", () => {
           "/reports/activity-log/resources?from=2022-07-14&to=2022-07-29&resourceType=content&actionByUserZUID=5-84d1e6d4ae-s3m974&sortBy=happenedAt"
         );
       });
-      cy.get('[data-cy="filters"]').within(() => {
-        cy.contains("Sort By").next().contains("Oldest First");
-        cy.contains("Resource Type").next().contains("Content");
-        cy.contains("User").next().contains("Andres Galindo");
+      cy.getBySelector("filters").within(() => {
+        cy.getBySelector("sortBy_selected")
+          .should("exist")
+          .contains("Oldest First");
+        cy.getBySelector("resourceType_selected")
+          .should("exist")
+          .contains("Content");
+        cy.getBySelector("user_selected")
+          .should("exist")
+          .contains("Andres Galindo");
       });
     });
 
@@ -83,26 +89,49 @@ describe("Reports > Activity Log > Home", () => {
           "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
         );
       });
-      cy.get('[data-cy="filters"]').contains("Sort By").next().click();
-      cy.get('li[data-value="happenedAt"]').click();
 
-      cy.get('[data-cy="filters"]').contains("Resource Type").next().click();
-      cy.get('li[data-value="content"]').click();
+      /**
+       * Note: Date needs to be hard-coded here to make sure that when the datepicker opens,
+       * the cypress test runner can easily pick the date from the datepicker modal
+       * instead of having to determine how many times to click the next month arrow everytime
+       * to get to the current date.
+       */
+      const from = moment("2022-07-14")
+        .hours(0)
+        .minute(0)
+        .second(0)
+        .millisecond(0)
+        .format("x");
+      const to = moment("2022-07-14")
+        .add(1, "day")
+        .hours(0)
+        .minute(0)
+        .second(0)
+        .millisecond(0)
+        .format("x");
 
-      cy.get('[data-cy="filters"]').contains("User").next().click();
-      cy.get('li[data-value="5-84d1e6d4ae-s3m974"]').click();
+      // Set daterange filter
+      cy.getBySelector("dateRange_selected").should("exist").click();
+      cy.getBySelector("dateRange_picker").should("exist");
+      cy.get(`[data-timestamp=${from}]`).should("exist").click();
+      cy.get(`[data-timestamp=${to}]`).should("exist").click();
 
-      cy.get('[data-cy="filters"]').contains("From").next().click();
-      cy.get(
-        '.MuiDateRangePickerDay-root button[aria-label="Jul 18, 2022"]'
-      ).click();
-      cy.get('[data-cy="filters"]').contains("To").next().click();
-      cy.get(
-        '.MuiDateRangePickerDay-root button[aria-label="Jul 30, 2022"]'
-      ).click();
+      // Set sort by filter
+      cy.getBySelector("sortBy_default").should("exist").click();
+      cy.getBySelector("filter_value_happenedAt").should("exist").click();
+
+      // Set resource type filter
+      cy.getBySelector("resourceType_default").should("exist").click();
+      cy.getBySelector("filter_value_content").should("exist").click();
+
+      const expectedFromDate = moment("2022-07-14").format("YYYY-MM-DD");
+      const expectedToDate = moment("2022-07-14")
+        .add(1, "day")
+        .format("YYYY-MM-DD");
+
       cy.location("search").should(
         "eq",
-        "?from=2022-07-18&sortBy=happenedAt&resourceType=content&actionByUserZUID=5-84d1e6d4ae-s3m974&to=2022-07-30"
+        `?from=${expectedFromDate}&to=${expectedToDate}&sortBy=happenedAt&resourceType=content`
       );
     });
   });
@@ -116,7 +145,10 @@ describe("Reports > Activity Log > Home", () => {
       });
     });
     it("Navigates to Resource Detail on Resource Item click", () => {
-      cy.get(".MuiListItem-root").last().click();
+      cy.getBySelector("resouce_list_item")
+        .should("have.attr", "data-is-loading", "false")
+        .click();
+
       cy.location("pathname").should(
         "eq",
         "/reports/activity-log/resources/7-f28fd4d4a9-qtjb66"
@@ -156,15 +188,32 @@ describe("Reports > Activity Log > Home", () => {
         });
       }).as("request");
 
-      cy.get('[data-cy="filters"]').contains("From").next().click();
-      cy.get(
-        '.MuiDateRangePickerDay-root button[aria-label="Jul 18, 2022"]'
-      ).click();
-      cy.root().click();
-      cy.get('[data-cy="filters"]').contains("To").next().click();
-      cy.get(
-        '.MuiDateRangePickerDay-root button[aria-label="Jul 30, 2022"]'
-      ).click();
+      /**
+       * Note: Date needs to be hard-coded here to make sure that when the datepicker opens,
+       * the cypress test runner can easily pick the date from the datepicker modal
+       * instead of having to determine how many times to click the next month arrow everytime
+       * to get to the current date.
+       */
+      const from = moment("2022-07-14")
+        .hours(0)
+        .minute(0)
+        .second(0)
+        .millisecond(0)
+        .format("x");
+      const to = moment("2022-07-14")
+        .add(1, "day")
+        .hours(0)
+        .minute(0)
+        .second(0)
+        .millisecond(0)
+        .format("x");
+
+      // Set daterange filter
+      cy.getBySelector("dateRange_selected").should("exist").click();
+      cy.getBySelector("dateRange_picker").should("exist");
+      cy.get(`[data-timestamp=${from}]`).should("exist").click();
+      cy.get(`[data-timestamp=${to}]`).should("exist").click();
+
       cy.root().click();
       cy.get(".MuiSkeleton-root").should("have.length", 16);
       cy.wait("@request");

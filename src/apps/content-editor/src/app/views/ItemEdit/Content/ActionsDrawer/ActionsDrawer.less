@@ -2,13 +2,13 @@
 @import "~@zesty-io/core/typography.less";
 
 /* Scroll Calc (GlobalTopbar - Content Header - button - padding) */
-@height: calc(100vh - 54px - 73px);
+@height: calc(100vh - 40px - 73px);
 
 .Drawer {
   background-color: @white;
   display: flex;
   flex-direction: column;
-  border: 1px solid @bright-gray;
+  // border: 1px solid @bright-gray;
   border-width: 1px 0 0 0;
   height: @height;
   width: 40px;
@@ -29,7 +29,6 @@
     right: 0;
     top: 0;
     z-index: 10;
-    box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
   }
 
   &.DrawerLock {
@@ -54,6 +53,7 @@
   .ActionsContent {
     display: none;
     width: 20vw;
+    background-color: #f9fafb;
 
     &.ActionsDisplay {
       display: block;

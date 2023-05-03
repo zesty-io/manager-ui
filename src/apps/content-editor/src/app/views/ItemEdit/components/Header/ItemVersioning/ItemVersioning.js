@@ -11,6 +11,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import BackupIcon from "@mui/icons-material/Backup";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
@@ -115,10 +116,35 @@ export function ItemVersioning(props) {
 
       {canPublish && (
         <Stack direction="row" spacing={1} className={styles.Publish}>
-          <ButtonGroup variant="contained">
+          <LoadingButton
+            disableElevation
+            variant="contained"
+            color="primary"
+            title="Save Version"
+            disabled={!props.item.dirty}
+            onClick={props.onSave}
+            id="SaveItemButton"
+            loading={props.saving}
+            loadingPosition="start"
+            startIcon={<SaveIcon fontSize="small" />}
+            sx={{
+              height: "32px",
+            }}
+          >
+            <span className={styles.SaveVersion}>&nbsp;Save</span>
+          </LoadingButton>
+          <ButtonGroup
+            variant="contained"
+            sx={{
+              ".MuiButtonGroup-grouped:not(:last-of-type)": {
+                borderColor: "#039855",
+              },
+              height: "32px",
+            }}
+          >
             <Button
               variant="contained"
-              color="secondary"
+              color="success"
               title="Publish"
               id="PublishButton"
               disabled={publishingDisabled || false}
@@ -138,17 +164,11 @@ export function ItemVersioning(props) {
             </Button>
             <Button
               variant="contained"
-              color={open ? "primary" : "secondary"}
+              color={open ? "primary" : "success"}
               title="Publish Schedule"
               id="PublishScheduleButton"
               disabled={schedulingDisabled || false}
               onClick={toggleScheduleModal}
-              sx={{
-                ...(props.item.scheduling &&
-                  props.item.scheduling.isScheduled && {
-                    backgroundColor: "warning.main",
-                  }),
-              }}
             >
               <CalendarMonthIcon fontSize="small" />
             </Button>
@@ -161,24 +181,6 @@ export function ItemVersioning(props) {
           />
         </Stack>
       )}
-
-      <Button
-        variant="contained"
-        color="success"
-        title="Save Version"
-        disabled={props.saving || !props.item.dirty}
-        onClick={props.onSave}
-        id="SaveItemButton"
-      >
-        {props.saving ? (
-          <CircularProgress size="20px" />
-        ) : (
-          <SaveIcon fontSize="small" />
-        )}
-        <span className={styles.SaveVersion}>
-          &nbsp;Save Version {metaShortcut}
-        </span>
-      </Button>
     </Stack>
   );
 }

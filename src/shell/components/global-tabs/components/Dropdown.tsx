@@ -1,8 +1,8 @@
 import { useState, FC } from "react";
 import { Link as Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import { ConfirmDialog } from "@zesty-io/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PinIcon from "@mui/icons-material/PushPin";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -12,11 +12,14 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import IconButton from "@mui/material/IconButton";
+import InputBase from "@mui/material/InputBase";
+import SvgIcon from "@mui/material/SvgIcon";
+import Typography from "@mui/material/Typography";
 
-import { Tab } from "../../../../shell/store/ui";
-import { Typography } from "@mui/material";
+import { Tab, updatePinnedTabs } from "../../../../shell/store/ui";
 
 export type Dropdown = {
   tabs: Tab[];
@@ -25,9 +28,14 @@ export type Dropdown = {
   removeMany: (tabs: Tab[]) => void;
 };
 
-const ITEM_HEIGHT = 48;
+const ITEM_HEIGHT = 56;
 
-export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
+export const Dropdown: FC<Dropdown> = ({
+  tabs,
+  removeOne,
+  removeMany,
+  tabWidth,
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [filter, setFilter] = useState("");
@@ -52,45 +60,64 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
       tab.pathname.toLocaleLowerCase().includes(filterTerm) ||
       (tab.name && tab.name.toLocaleLowerCase().includes(filterTerm))
   );
+  const getDropdownHeader = () => {
+    if (Boolean(filterTerm)) {
+      if (filteredTabs.length) {
+        return `${filteredTabs.length} Results`;
+      } else {
+        return "No results found";
+      }
+    } else {
+      return "Pinned Tabs";
+    }
+  };
 
   return (
     <>
-      <Box>
-        <Button
-          id="basic-button"
+      <Box
+        height={34}
+        width={tabWidth}
+        py={0.5}
+        borderRadius="8px 8px 0px 0px"
+        className="more-menu-tab"
+        sx={{
+          "&:hover": {
+            backgroundColor: "grey.50",
+            cursor: "pointer",
+          },
+        }}
+      >
+        <Stack
+          direction="row"
+          component="span"
+          height={24}
+          alignItems="center"
+          justifyContent="flex-start"
+          borderLeft={1}
+          borderColor="grey.300"
+          sx={{
+            "&:hover": {
+              borderColor: "transparent",
+            },
+          }}
+          data-cy="TabsDropdownButton"
+          onClick={handleClick}
           aria-controls={open ? "basic-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
-          onClick={handleClick}
-          disableRipple
-          disableElevation
-          disableTouchRipple
-          data-cy="TabsDropdownButton"
-          sx={{
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            textTransform: "none",
-            padding: "12px 12px 12px",
-            gap: "8px",
-            borderRadius: "12px 12px 0px 0px",
-            "&:hover": {
-              backgroundColor: "grey.800",
-            },
-            /*
-             Needed to prevent button from outgrowing parent
-             which will push the dropdown below the nav bar,
-             creating an unsightly gap
-            */
-            lineHeight: "inherit",
-          }}
         >
-          <Box component="span" sx={{ color: "white" }}>
-            <Typography variant="caption">More</Typography>
-          </Box>
-          <ArrowDropDownIcon sx={{ color: "grey.400" }} fontSize="small" />
-        </Button>
+          <Typography
+            // @ts-expect-error missing body3 module augmentation
+            variant="body3"
+            fontWeight={600}
+            pl={1.5}
+          >
+            More
+          </Typography>
+          <IconButton disableTouchRipple disableRipple size="small">
+            <ArrowDropDownIcon />
+          </IconButton>
+        </Stack>
         <Menu
           id="basic-menu"
           anchorEl={anchorEl}
@@ -102,10 +129,14 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           MenuListProps={{
             "aria-labelledby": "basic-button",
             sx: {
-              backgroundColor: "grey.900",
-              boxSizing: "border-box",
+              backgroundColor: "common.white",
               padding: "0px",
-              width: "240px",
+              width: "274px",
+            },
+          }}
+          sx={{
+            "*": {
+              boxSizing: "border-box",
             },
           }}
         >
@@ -114,46 +145,68 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             disableRipple
             sx={{
               cursor: "auto",
-              padding: "12px 12px 12px 12px",
-              height: "56px",
+              height: "60px",
+              padding: 1.5,
+              "&:hover": {
+                backgroundColor: "common.white",
+              },
+              "&.Mui-focusVisible": {
+                backgroundColor: "common.white",
+              },
             }}
           >
-            <TextField
-              variant="outlined"
-              placeholder="Search Tabs"
-              size="small"
-              sx={{ height: "32px" }}
-              InputProps={{
-                startAdornment: (
-                  <SearchIcon fontSize="small" sx={{ color: "grey.300" }} />
-                ),
-                sx: {
+            <Box
+              display="flex"
+              bgcolor="grey.50"
+              border={1}
+              borderColor="grey.50"
+              borderRadius={1}
+              height={36}
+              width="100%"
+            >
+              <InputBase
+                fullWidth
+                placeholder="Search Tabs"
+                value={filter}
+                onChange={(evt) => setFilter(evt.target.value)}
+                startAdornment={
+                  <IconButton disableRipple disableTouchRipple size="small">
+                    <SearchIcon />
+                  </IconButton>
+                }
+                endAdornment={
+                  filter.length ? (
+                    <IconButton
+                      disableRipple
+                      disableTouchRipple
+                      size="small"
+                      onClick={() => setFilter("")}
+                    >
+                      <CloseRoundedIcon />
+                    </IconButton>
+                  ) : null
+                }
+                sx={{
                   "&.Mui-focused": {
-                    backgroundColor: "white",
-                    color: "grey.900",
+                    borderColor: "border",
+                    backgroundColor: "common.white",
                   },
-                  "&.Mui-focused fieldset": {
-                    border: "none",
-                  },
-                  "&.Mui-focused svg": {
-                    color: "grey.400",
-                  },
-                  backgroundColor: "grey.800",
-                  color: "grey.50",
-                  padding: "0px 8px",
-                  gap: "8px",
-                },
-              }}
-              value={filter}
-              onChange={(evt) => setFilter(evt.target.value)}
-            />
+                }}
+              />
+            </Box>
           </MenuItem>
           <MenuItem
             disableRipple
             sx={{
               cursor: "auto",
-              padding: "6px 12px",
-              height: "32px",
+              padding: 1.5,
+              height: "56px",
+              "&:hover": {
+                backgroundColor: "common.white",
+              },
+              "&.Mui-focusVisible": {
+                backgroundColor: "common.white",
+              },
             }}
           >
             <Stack
@@ -162,29 +215,23 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               alignItems="center"
               flex="1"
             >
-              <Box component="span" sx={{ color: "white", lineHeight: "266%" }}>
-                <Typography variant="overline">
-                  {Boolean(filterTerm)
-                    ? `${filteredTabs.length} RESULTS`
-                    : "PINNED TABS"}
+              <Box component="span">
+                <Typography
+                  variant="h6"
+                  fontWeight={600}
+                  sx={{ color: "text.secondary" }}
+                >
+                  {getDropdownHeader()}
                 </Typography>
               </Box>
               {Boolean(filterTerm) || (
                 <Button
-                  disableRipple
-                  disableFocusRipple
-                  disableTouchRipple
+                  variant="outlined"
                   onClick={() => setConfirmOpen(true)}
                   size="small"
                   sx={{
-                    mr: 0,
-                    pr: 0,
-                    color: "grey.400",
-                    lineHeight: "266%",
-                    "&:hover": {
-                      color: "warning.main",
-                      backgroundColor: "transparent",
-                    },
+                    color: "text.secondary",
+                    borderColor: "border",
                   }}
                 >
                   <Typography variant="overline">Unpin All</Typography>
@@ -239,69 +286,67 @@ type DropdownItem = {
   remove: () => void;
 };
 const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
+  const dispatch = useDispatch();
+
   return (
     <MenuItem
       disableRipple
       sx={{
-        color: "grey.400",
         width: "100%",
-        display: "grid",
-        gridTemplateColumns: "20px 1fr 20px",
+        display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         height: `${ITEM_HEIGHT}px`,
-        padding: "12px 12px 12px 12px",
+        padding: 1.5,
         gap: "8px",
         cursor: "auto",
-
         boxSizing: "border-box",
         borderBottom: "1px solid",
-        borderColor: "grey.800",
+        borderColor: "border",
       }}
     >
-      <Box component="span" color="grey.400">
+      <Box
+        component="span"
+        pr={0.5}
+        sx={{ color: "action.active" }}
+        fontSize={18}
+      >
         {tab.icon && (
-          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
+          <SvgIcon
+            component={tab.icon}
+            fontSize="inherit"
+            sx={{
+              verticalAlign: "middle",
+            }}
+          />
         )}
       </Box>
       <MuiLink
         component={Link}
         to={tab.pathname + tab.search}
+        onClick={() => dispatch(updatePinnedTabs(tab))}
         underline="none"
         sx={{
-          color: "grey.400",
           textDecoration: "none",
           flex: "1",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-
           alignContent: "center",
         }}
       >
-        <Typography variant="caption">
+        <Typography noWrap variant="body2" color="text.primary">
           {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
         </Typography>
       </MuiLink>
-      <Box
-        component="span"
-        onClick={remove}
-        sx={{
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <IconButton size="small" onClick={remove}>
         <PinIcon
           fontSize="small"
           sx={{
-            width: "16px",
-            height: "16px",
             transform: "rotate(45deg)",
           }}
         />
-      </Box>
+      </IconButton>
     </MenuItem>
   );
 };

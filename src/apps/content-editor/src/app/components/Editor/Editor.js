@@ -16,8 +16,12 @@ export default memo(function Editor({
   itemZUID,
 }) {
   const dispatch = useDispatch();
-  const firstTextField = fields.find((field) => field.datatype === "text");
-  const firstContentField = fields.find(
+  const isNewItem = itemZUID.slice(0, 3) === "new";
+  const activeFields = fields.filter((field) => !field.deletedAt);
+  const firstTextField = activeFields.find(
+    (field) => field.datatype === "text"
+  );
+  const firstContentField = activeFields.find(
     (field) =>
       field.datatype === "textarea" ||
       field.datatype === "article_writer" ||
@@ -57,7 +61,7 @@ export default memo(function Editor({
     });
 
     // If we are working with a new item
-    if (itemZUID.slice(0, 3) === "new") {
+    if (isNewItem) {
       if (firstTextField && firstTextField.name === name) {
         dispatch({
           type: "SET_ITEM_WEB",
@@ -112,41 +116,55 @@ export default memo(function Editor({
     }
   }, []);
 
+  // This function will be built upon when default values are added to the schema builder
+  const applyDefaultValuesToItemData = useCallback(() => {
+    activeFields.forEach((field) => {
+      if (field.datatype === "sort") {
+        dispatch({
+          type: "SET_ITEM_DATA",
+          itemZUID: itemZUID,
+          key: field.name,
+          value: 0,
+        });
+      }
+    });
+  }, [activeFields, itemZUID]);
+
+  useEffect(() => {
+    if (isNewItem) {
+      applyDefaultValuesToItemData();
+    }
+  }, [isNewItem]);
+
   return (
     <div className={styles.Fields}>
       {item.meta && item.meta.ZUID && <Breadcrumbs itemZUID={item.meta.ZUID} />}
 
-      {fields.length ? (
-        fields
-          .filter((field) => !field.deletedAt)
-          .map((field) => {
-            return (
-              <div
-                key={`${field.ZUID}`}
-                id={field.ZUID}
-                className={styles.Field}
-              >
-                <Field
-                  ZUID={field.ZUID}
-                  contentModelZUID={field.contentModelZUID}
-                  active={active === field.ZUID}
-                  name={field.name}
-                  label={field.label}
-                  description={field.description}
-                  required={field.required}
-                  relatedFieldZUID={field.relatedFieldZUID}
-                  relatedModelZUID={field.relatedModelZUID}
-                  datatype={field.datatype}
-                  options={field.options}
-                  settings={field.settings}
-                  onChange={onChange}
-                  onSave={onSave}
-                  item={item}
-                  langID={item?.meta?.langID}
-                />
-              </div>
-            );
-          })
+      {activeFields.length ? (
+        activeFields.map((field) => {
+          return (
+            <div key={`${field.ZUID}`} id={field.ZUID} className={styles.Field}>
+              <Field
+                ZUID={field.ZUID}
+                contentModelZUID={field.contentModelZUID}
+                active={active === field.ZUID}
+                name={field.name}
+                label={field.label}
+                description={field.description}
+                required={field.required}
+                relatedFieldZUID={field.relatedFieldZUID}
+                relatedModelZUID={field.relatedModelZUID}
+                datatype={field.datatype}
+                options={field.options}
+                settings={field.settings}
+                onChange={onChange}
+                onSave={onSave}
+                item={item}
+                langID={item?.meta?.langID}
+              />
+            </div>
+          );
+        })
       ) : (
         <div className={styles.NoFields}>
           <h1 className={styles.Display}>No fields have been added</h1>

@@ -13,6 +13,7 @@ import { WidgetQuickShare } from "./Widgets/WidgetQuickShare";
 import { WidgetListed } from "./Widgets/WidgetListed";
 import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
 import { ContentLinks } from "./Widgets/ContentLinks";
+import { ContentInfo } from "./Widgets/ContentInfo";
 
 import { Release } from "./Widgets/Release";
 
@@ -50,6 +51,7 @@ export function Actions(props) {
         liveURL={liveURL}
       />
 
+      <ContentInfo modelZUID={props.modelZUID} />
       <ContentLinks item={props.item} />
 
       {/* <Release item={props.item} /> */}

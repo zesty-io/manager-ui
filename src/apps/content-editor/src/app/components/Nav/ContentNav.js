@@ -7,7 +7,7 @@ import { ContentNavToggle } from "./components/ContentNavToggle";
 
 import { actions as uiActions } from "../../../../../../shell/store/ui";
 
-import { Select, MenuItem, Button } from "@mui/material";
+import { Select, MenuItem, Button, Typography } from "@mui/material";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import HomeIcon from "@mui/icons-material/Home";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
@@ -108,6 +108,19 @@ export function ContentNav(props) {
         ui.contentNav ? styles.ContentNavOpen : ""
       )}
     >
+      <Typography
+        sx={{
+          px: 1,
+          pt: 2,
+          pb: 1.5,
+          lineHeight: "32px",
+          fontSize: "24px",
+          fontWeight: 600,
+          color: "#101828",
+        }}
+      >
+        Content
+      </Typography>
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -116,7 +129,7 @@ export function ContentNav(props) {
           defaultValue="0"
           size="small"
         >
-          <MenuItem value="0">— Create Item —</MenuItem>
+          <MenuItem value="0">Create Item</MenuItem>
           <MenuItem value="link">Internal/External Link</MenuItem>
           {Object.keys(props.models)
             .filter((modelZUID) => {
@@ -134,7 +147,20 @@ export function ContentNav(props) {
               </MenuItem>
             ))}
         </Select>
-        <Button variant="contained" id="ReorderNavButton" onClick={toggleModal}>
+        <Button
+          disableElevation
+          variant="contained"
+          id="ReorderNavButton"
+          onClick={toggleModal}
+          sx={{
+            backgroundColor: "#F2F4F7",
+            color: "#10182866",
+            "&:hover": {
+              backgroundColor: "#E4E7EC",
+              color: "#10182866",
+            },
+          }}
+        >
           <ZoomOutMapIcon
             fontSize="small"
             title="Re-order content navigation"
@@ -154,10 +180,22 @@ export function ContentNav(props) {
         )}
       >
         <div className={styles.NavTitle}>
-          <h1>Content</h1>
+          <h1>Pages</h1>
 
           <Link to="/content">
-            <Button variant="outlined" size="small">
+            <Button
+              disableElevation
+              variant="contained"
+              size="small"
+              sx={{
+                backgroundColor: "#ffffff",
+                color: "#10182866",
+                ":hover": {
+                  backgroundColor: "#1018280A",
+                  color: "#10182866",
+                },
+              }}
+            >
               <HomeIcon title="Dashboard" fontSize="small" />
             </Button>
           </Link>

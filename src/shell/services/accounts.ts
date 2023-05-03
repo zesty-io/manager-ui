@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
+import { User, UserRole, Domain, Instance } from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const accountsApi = createApi({
@@ -12,26 +13,26 @@ export const accountsApi = createApi({
   }),
   // always use the instanceZUID from the URL
   endpoints: (builder) => ({
-    getDomains: builder.query({
+    getDomains: builder.query<Domain[], void>({
       query: () => `instances/${instanceZUID}/domains`,
       transformResponse: (response: any) =>
         response.data.sort(
           (a: any, b: any) => +new Date(a.createdAt) - +new Date(b.createdAt)
         ),
     }),
-    getInstance: builder.query({
+    getInstance: builder.query<Instance, void>({
       query: () => `instances/${instanceZUID}`,
       transformResponse: getResponseData,
     }),
-    getInstances: builder.query({
+    getInstances: builder.query<Instance[], void>({
       query: () => "instances",
       transformResponse: getResponseData,
     }),
-    getUsers: builder.query({
+    getUsers: builder.query<User[], void>({
       query: () => `instances/${instanceZUID}/users`,
       transformResponse: getResponseData,
     }),
-    getUsersRoles: builder.query({
+    getUsersRoles: builder.query<UserRole[], void>({
       query: () => `instances/${instanceZUID}/users/roles`,
       transformResponse: getResponseData,
     }),

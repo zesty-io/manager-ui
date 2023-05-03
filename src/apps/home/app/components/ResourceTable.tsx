@@ -17,6 +17,9 @@ import { Database } from "@zesty-io/material";
 import { useHistory } from "react-router";
 import { useMemo } from "react";
 import { uniqBy } from "lodash";
+import { EmptyState } from "./EmptyState";
+import { resolveUrlFromAudit } from "../../../../utility/resolveResourceUrlFromAudit";
+import { Audit } from "../../../../shell/services/types";
 
 interface Props {
   dateRange: number;
@@ -118,12 +121,8 @@ export const ResourceTable = ({ dateRange }: Props) => {
 
   const history = useHistory();
 
-  const handleRowClick = ({ affectedZUID, resourceType, meta }: any) => {
-    if (resourceType === "code") {
-      history.push("/code/file/" + meta?.uri.split("/").slice(3).join("/"));
-    } else {
-      history.push(new URL(meta?.url)?.pathname);
-    }
+  const handleRowClick = (row: Audit) => {
+    history.push(resolveUrlFromAudit(row));
   };
 
   const columns = [
@@ -144,6 +143,18 @@ export const ResourceTable = ({ dateRange }: Props) => {
       renderCell: ({ row }: GridRenderCellParams) => <VersionCell {...row} />,
     },
   ];
+
+  if (
+    !isAuditFetching &&
+    !uniqBy(
+      audit?.filter((resource) =>
+        viewableResourceTypes.includes(resource.resourceType)
+      ),
+      "affectedZUID"
+    )?.length
+  ) {
+    return <EmptyState />;
+  }
 
   return (
     <DataGridPro

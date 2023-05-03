@@ -14,15 +14,20 @@ export const Controls: FC<ControlsProps> = ({ showFilters = true }) => {
       sx={{
         px: 3,
         mb: 3,
-        // Set static height to avoid fractional pixel visual issues with media grid caused by default MUI small buttons
-        height: "28px",
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Box
           sx={{
             gap: 1.5,
             display: "flex",
+            height: "28px",
           }}
         >
           {showFilters && (

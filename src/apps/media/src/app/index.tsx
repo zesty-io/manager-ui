@@ -33,7 +33,7 @@ export const MediaApp = ({
   showHeaderActions = true,
   isSelectDialog = false,
   addImagesCallback,
-  limitSelected = 50,
+  limitSelected,
 }: Props) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -73,12 +73,6 @@ export const MediaApp = ({
           display: "flex",
           "*": {
             boxSizing: "border-box",
-          },
-          "*::-webkit-scrollbar-track-piece": {
-            backgroundColor: `${theme.palette.grey[100]} !important`,
-          },
-          "*::-webkit-scrollbar-thumb": {
-            backgroundColor: `${theme.palette.grey[300]} !important`,
           },
         }}
       >

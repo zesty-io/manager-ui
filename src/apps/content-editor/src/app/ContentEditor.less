@@ -6,21 +6,21 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: calc(100vh - 54px);
+  height: calc(100vh - 40px);
   a {
     font-size: 16px;
   }
 }
 
 .ContentEditor {
-  height: calc(100vh - 54px);
+  height: calc(100vh - 40px);
   display: grid;
   grid-template-columns: 60px 1fr;
   position: relative;
 
   .Content {
     overflow: hidden;
-    box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
+    border-left: 1px solid #f2f4f7;
     z-index: 1;
 
     .ContentWrap {

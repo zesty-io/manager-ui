@@ -104,7 +104,7 @@ export const Release = memo(function Release(props) {
   }, [releases]);
 
   return (
-    <Card className={styles.Release} sx={{ m: 2 }}>
+    <Card className={styles.Release} sx={{ m: 2 }} elevation={0}>
       <CardHeader
         avatar={<RocketLaunchIcon fontSize="small" />}
         title={<AppLink to="/release">Releases</AppLink>}
