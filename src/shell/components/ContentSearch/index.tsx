@@ -25,6 +25,9 @@ import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 
+// The order here matters as this is how it will be rendered as well
+const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
+
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
@@ -39,8 +42,8 @@ const ContentSearch: FC = () => {
   const suggestions = res.data;
   const topSuggestions =
     suggestions && value
-      ? [value, ...suggestions.slice(0, 5), "AdvancedSearchButton"]
-      : [];
+      ? [value, ...suggestions.slice(0, 5), ...AdditionalDropdownOptions]
+      : [...AdditionalDropdownOptions];
 
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
@@ -174,46 +177,49 @@ const ContentSearch: FC = () => {
             return value;
           }}
           renderOption={(props, option) => {
-            // type of string represents the top-row search term
-            if (
-              typeof option === "string" &&
-              option !== "AdvancedSearchButton"
-            ) {
-              return (
-                <Suggestion
-                  {...props}
-                  // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
-                  aria-selected={false}
-                  key={"global-search-term"}
-                  icon="search"
-                  onClick={() => goToSearchPage(option)}
-                  text={option}
-                />
-              );
-            } else if (
-              typeof option === "string" &&
-              option === "AdvancedSearchButton"
-            ) {
-              return (
-                <ListItem
-                  sx={{
-                    height: 32,
-                    mt: 1,
-                  }}
-                  key={option}
-                >
-                  <Button
-                    data-cy="AdvancedSearchButton"
-                    size="small"
-                    onClick={() => setIsAdvancedSearchOpen(true)}
+            if (typeof option === "string") {
+              // Represents the top-row search term
+              if (!AdditionalDropdownOptions.includes(option)) {
+                return (
+                  <Suggestion
+                    {...props}
+                    // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
+                    aria-selected={false}
+                    key={"global-search-term"}
+                    icon="search"
+                    onClick={() => goToSearchPage(option)}
+                    text={option}
+                  />
+                );
+              }
+
+              // Renders the recent searches component
+              if (option === "RecentSearches") {
+                return <ListItem>Recent Searches</ListItem>;
+              }
+
+              // Renders the advanced search button
+              if (option === "AdvancedSearchButton") {
+                return (
+                  <ListItem
+                    sx={{
+                      height: 32,
+                      mt: 1,
+                    }}
+                    key={option}
                   >
-                    Advanced Search
-                  </Button>
-                </ListItem>
-              );
-            }
-            // type of ContentItem represents a suggestion from the search API
-            else {
+                    <Button
+                      data-cy="AdvancedSearchButton"
+                      size="small"
+                      onClick={() => setIsAdvancedSearchOpen(true)}
+                    >
+                      Advanced Search
+                    </Button>
+                  </ListItem>
+                );
+              }
+            } else {
+              // type of ContentItem represents a suggestion from the search API
               const getText = () => {
                 const title = option?.web?.metaTitle || "Missing Meta Title";
                 const langCode = languages.find(
