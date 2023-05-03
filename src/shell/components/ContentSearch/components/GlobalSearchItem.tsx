@@ -16,12 +16,15 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
       {...props}
       sx={{
         "&.MuiAutocomplete-option": {
-          padding: "4px 16px 4px 16px",
+          px: 2,
+          py: 0.5,
         },
         minHeight: "36px",
         "&.Mui-focused": {
           borderLeft: (theme) => "4px solid " + theme.palette.primary.main,
-          padding: "4px 16px 4px 12px",
+          py: 0.5,
+          pr: 2,
+          pl: 1.5,
         },
       }}
     >
