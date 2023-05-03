@@ -38,6 +38,7 @@ export const instanceApi = createApi({
     "SearchQuery",
   ],
   endpoints: (builder) => ({
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
     getItemPublishings: builder.query<
       Publishing[],
       { modelZUID: string; itemZUID: string }
@@ -50,6 +51,7 @@ export const instanceApi = createApi({
         { type: "ItemPublishing", id: id.itemZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Delete-Item-Publishing
     deleteItemPublishing: builder.mutation<
       any,
       { modelZUID: string; itemZUID: string; publishingZUID: string }
@@ -62,6 +64,7 @@ export const instanceApi = createApi({
         { type: "ItemPublishing", id: id.itemZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/env/audits/#Get-All-Audits
     getAudits: builder.query<Audit[], any>({
       query: (options) => {
         const params = new URLSearchParams(options as any).toString();
@@ -95,10 +98,12 @@ export const instanceApi = createApi({
       // always refresh audits to avoid invalidating the cache on every request
       keepUnusedDataFor: 0.0001,
     }),
+    // https://www.zesty.io/docs/instances/api-reference/search/#Search
     getContentItem: builder.query<ContentItem, string>({
       query: (ZUID) => `search/items?q=${ZUID}&order=created&dir=DESC&limit=1`,
       transformResponse: (response: { data: any[] }) => response?.data?.[0],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Get-All-Items
     getContentModelItems: builder.query<ContentItem[], string>({
       query: (ZUID) => ({
         url: `content/models/${ZUID}/items`,
@@ -110,6 +115,7 @@ export const instanceApi = createApi({
       // Restore cache when content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-Item-Publishing
     getContentItemPublishings: builder.query<
       ContentModel[],
       { modelZUID: string; itemZUID: string }
@@ -120,6 +126,7 @@ export const instanceApi = createApi({
       // Restore cache once content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
     }),
+    // https://www.zesty.io/docs/instances/api-reference/search/#Search
     searchContent: builder.query<ContentItem[], SearchQuery>({
       query: ({ query, ...rest }) => ({
         url: `search/items`,
@@ -134,6 +141,7 @@ export const instanceApi = createApi({
       // when the case-sensitive value on the query parameter is the same as a previous query
       keepUnusedDataFor: 0.0001,
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/#Get-Content-Model
     getContentModel: builder.query<ContentModel, string>({
       query: (modelZUID) => `content/models/${modelZUID}`,
       transformResponse: getResponseData,
@@ -141,6 +149,7 @@ export const instanceApi = createApi({
         { type: "ContentModel", id: modelZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/#Get-All-Content-Models
     getContentModels: builder.query<ContentModel[], void>({
       query: () => `content/models`,
       transformResponse: getResponseData,
@@ -148,6 +157,7 @@ export const instanceApi = createApi({
       keepUnusedDataFor: 0.0001,
       providesTags: ["ContentModels"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/#Create-Content-Model
     createContentModel: builder.mutation<
       { data: ContentModel },
       Partial<ContentModel>
@@ -159,10 +169,12 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["ContentModels", "WebViews"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/env/langs/#Get-Langs
     getLangsMapping: builder.query<any, void>({
       query: () => `env/langs/all`,
       transformResponse: getResponseData,
     }),
+    // https://www.zesty.io/docs/instances/api-reference/web/headtags/#Get-HeadTag(s)
     getHeadTags: builder.query<HeadTag[], void>({
       query: () => "/web/headtags",
       transformResponse: getResponseData,
@@ -179,9 +191,9 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["ContentModels"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/#Update-Content-Model
     updateContentModel: builder.mutation<
       any,
-      // Could also be refactored to use single object param and destructure ZUID if needed
       { ZUID: string; body: Partial<ContentModel> }
     >({
       query: ({ ZUID, body }) => ({
@@ -194,17 +206,15 @@ export const instanceApi = createApi({
         "ContentModels",
       ],
     }),
-    deleteContentModel: builder.mutation<
-      any,
-      // Could also be refactored to use single object param and destructure ZUID if needed
-      string
-    >({
+    // https://www.zesty.io/docs/instances/api-reference/content/models/#Delete-Content-Model
+    deleteContentModel: builder.mutation<any, string>({
       query: (ZUID) => ({
         url: `content/models/${ZUID}`,
         method: "DELETE",
       }),
       invalidatesTags: ["ContentModels"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/#Get-Fields
     getContentModelFields: builder.query<ContentModelField[], string>({
       query: (modelZUID) =>
         `content/models/${modelZUID}/fields?showDeleted=true`,
@@ -214,6 +224,7 @@ export const instanceApi = createApi({
         { type: "ContentModelFields", id: modelZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/fields/#Create-Field
     createContentModelField: builder.mutation<
       any,
       {
@@ -238,20 +249,7 @@ export const instanceApi = createApi({
         return [];
       },
     }),
-    updateContentModelField: builder.mutation<
-      any,
-      // Could also be refactored to use single object param and destructure ZUID if needed
-      { modelZUID: string; fieldZUID: string; body: ContentModelField }
-    >({
-      query: ({ modelZUID, fieldZUID, body }) => ({
-        url: `content/models/${modelZUID}/fields/${fieldZUID}`,
-        method: "PUT",
-        body,
-      }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "ContentModelFields", id: arg.modelZUID },
-      ],
-    }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/fields/#Create-Field
     bulkCreateContentModelField: builder.mutation<
       any,
       { modelZUID: string; fields: Omit<ContentModelField, "ZUID">[] }
@@ -278,6 +276,21 @@ export const instanceApi = createApi({
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/fields/#Update-Field
+    updateContentModelField: builder.mutation<
+      any,
+      { modelZUID: string; fieldZUID: string; body: ContentModelField }
+    >({
+      query: ({ modelZUID, fieldZUID, body }) => ({
+        url: `content/models/${modelZUID}/fields/${fieldZUID}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentModelFields", id: arg.modelZUID },
+      ],
+    }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/fields/#Update-Field
     bulkUpdateContentModelField: builder.mutation<
       any,
       { modelZUID: string; fields: ContentModelField[] }
@@ -304,6 +317,7 @@ export const instanceApi = createApi({
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/fields/#Delete-Field
     deleteContentModelField: builder.mutation<
       any,
       // Could also be refactored to use single object param and destructure ZUID if needed
@@ -317,6 +331,7 @@ export const instanceApi = createApi({
         { type: "ContentModelFields", id: arg.modelZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/#Get-View(s)
     getWebViews: builder.query<WebView[], void>({
       query: () => `/web/views`,
       transformResponse: getResponseData,
@@ -338,11 +353,13 @@ export const instanceApi = createApi({
       query: () => `/web/headers`,
       transformResponse: getResponseData,
     }),
+    // https://www.zesty.io/docs/instances/api-reference/env/settings/#Get-All-Settings
     getInstanceSettings: builder.query<InstanceSetting[], void>({
       query: () => `/env/settings`,
       transformResponse: getResponseData,
       providesTags: ["InstanceSettings"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/env/settings/#Update-Setting
     updateInstanceSetting: builder.mutation<any, InstanceSetting>({
       query: (body) => ({
         url: `/env/settings/${body.ZUID}`,
@@ -351,6 +368,7 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["InstanceSettings"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/env/settings/#Create-Item
     createContentItem: builder.mutation<
       any,
       { modelZUID: string; body: { web: Partial<Web>; meta: Partial<Meta> } }
@@ -361,6 +379,7 @@ export const instanceApi = createApi({
         body,
       }),
     }),
+    // https://www.zesty.io/docs/instances/api-reference/env/nav/#Get-Content-Navigation
     getContentNavItems: builder.query<ContentNavItem[], void>({
       query: () => `/env/nav`,
       transformResponse: getResponseData,
