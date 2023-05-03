@@ -34,6 +34,7 @@ import { ContentItem } from "../../services/types";
 import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import { useRecentSearches } from "../../hooks/useRecentSearches";
+import { GlobalSearchItem } from "./components/GlobalSearchItem";
 
 // The order here matters as this is how it will be rendered as well
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
@@ -219,7 +220,7 @@ const ContentSearch: FC = () => {
                 }
 
                 return (
-                  <Suggestion
+                  <GlobalSearchItem
                     {...props}
                     // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
                     aria-selected={false}
@@ -267,7 +268,7 @@ const ContentSearch: FC = () => {
                 return langDisplay ? `${langDisplay}${title}` : title;
               };
               return (
-                <Suggestion
+                <GlobalSearchItem
                   {...props}
                   key={option.meta.ZUID}
                   icon={Create}
@@ -376,35 +377,3 @@ const ContentSearch: FC = () => {
 };
 
 export default ContentSearch;
-
-type SuggestionProps = HTMLAttributes<HTMLLIElement> & {
-  text: string;
-  icon: SvgIconComponent;
-};
-const Suggestion: FC<SuggestionProps> = ({ text, icon, ...props }) => {
-  // const Icon = icon === "search" ? SearchIcon : PencilIcon;
-
-  return (
-    <ListItem
-      {...props}
-      sx={{
-        "&.MuiAutocomplete-option": {
-          padding: "4px 16px 4px 16px",
-        },
-        minHeight: "36px",
-        "&.Mui-focused": {
-          borderLeft: (theme) => "4px solid " + theme.palette.primary.main,
-          padding: "4px 16px 4px 12px",
-        },
-      }}
-    >
-      <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
-        <SvgIcon component={icon} fontSize="small" />
-      </ListItemIcon>
-      <ListItemText
-        primary={text}
-        primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
-      />
-    </ListItem>
-  );
-};
