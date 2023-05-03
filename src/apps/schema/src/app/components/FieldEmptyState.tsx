@@ -63,7 +63,6 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
             >
               <ListItemText
                 primaryTypographyProps={{
-                  // @ts-ignore
                   variant: "body3",
                   color: "info.dark",
                 }}
@@ -74,7 +73,6 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
             <ListItem sx={{ display: "list-item", p: 0, cursor: "pointer" }}>
               <ListItemText
                 primaryTypographyProps={{
-                  // @ts-ignore
                   variant: "body3",
                   color: "info.dark",
                 }}

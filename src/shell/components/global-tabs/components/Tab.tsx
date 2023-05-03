@@ -160,7 +160,6 @@ export const TopBarTab: FC<TopBarTab> = ({
           <MuiLink
             component={Link}
             to={tab.pathname + tab.search}
-            // @ts-expect-error missing body3 module augmentation
             variant="body3"
             color={styles.fontColor}
             fontWeight={600}

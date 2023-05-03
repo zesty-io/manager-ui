@@ -155,7 +155,6 @@ export const ContentListItem: FC<ContentListItem> = ({
               </>
             )}
           </Typography>
-          {/* @ts-ignore */}
           <Typography variant="body3" color="text.secondary">
             {loading ? (
               <Skeleton

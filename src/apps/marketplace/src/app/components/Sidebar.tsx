@@ -57,12 +57,7 @@ export const Sidebar = () => {
           }
           sx={{ mt: 2, width: "100%" }}
         >
-          <Typography
-            // @ts-ignore
-            variant="body3"
-          >
-            Browse Apps
-          </Typography>
+          <Typography variant="body3">Browse Apps</Typography>
         </Button>
       </Box>
       {installedApps.map((app: any) => {
@@ -86,7 +81,6 @@ export const Sidebar = () => {
             </ListItemIcon>
             <ListItemText
               primaryTypographyProps={{
-                // @ts-ignore
                 variant: "body3",
                 color: "text.secondary",
               }}

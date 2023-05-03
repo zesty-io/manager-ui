@@ -237,7 +237,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               color="action.active"
             />
             <Typography
-              // @ts-expect-error body3 additional variant is not on Typography augmentation
               variant="body3"
               color="text.secondary"
               fontWeight={500}
@@ -362,7 +361,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Box display="flex" alignItems="center" gap={1}>
                   <VisibilityIcon sx={{ color: "action.active" }} />
-                  {/** @ts-expect-error body3 variant needs to be typed */}
                   <Typography color="text.secondary" variant="body3">
                     Hidden Folders
                   </Typography>
