@@ -237,7 +237,6 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
             <ListItemText
               primary="Get Started"
               primaryTypographyProps={{
-                // @ts-ignore
                 variant: "body3",
               }}
             />
@@ -257,7 +256,6 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
             <ListItemText
               primary="Platform Docs"
               primaryTypographyProps={{
-                // @ts-ignore
                 variant: "body3",
               }}
             />
@@ -277,7 +275,6 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
             <ListItemText
               primary="Auth API"
               primaryTypographyProps={{
-                // @ts-ignore
                 variant: "body3",
               }}
             />
@@ -299,7 +296,6 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
             <ListItemText
               primary="Instance API Docs"
               primaryTypographyProps={{
-                // @ts-ignore
                 variant: "body3",
               }}
             />
@@ -321,7 +317,6 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
             <ListItemText
               primary="GraphQL Docs"
               primaryTypographyProps={{
-                // @ts-ignore
                 variant: "body3",
               }}
             />
@@ -341,7 +336,6 @@ const DocsMenu = ({ onClose, instanceZUID }: Props) => {
             <ListItemText
               primary="Parsley Docs"
               primaryTypographyProps={{
-                // @ts-ignore
                 variant: "body3",
               }}
             />

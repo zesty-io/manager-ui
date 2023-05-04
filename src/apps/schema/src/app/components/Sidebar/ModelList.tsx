@@ -81,7 +81,6 @@ export const ModelList = ({ title, models, type }: Props) => {
           <Typography
             color="text.secondary"
             component="div"
-            //@ts-expect-error need to add augmentation
             variant="body3"
             sx={{ px: "8px" }}
           >

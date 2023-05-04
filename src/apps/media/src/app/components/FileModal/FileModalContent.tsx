@@ -465,7 +465,6 @@ export const FileModalContent: FC<Props> = ({
           />
         </Box>
         <Box sx={{ mt: 3 }}>
-          {/* @ts-expect-error body3 is not defined */}
           <Typography color="text.secondary" sx={{ mt: 1 }} variant="body3">
             UPLOADED ON
           </Typography>

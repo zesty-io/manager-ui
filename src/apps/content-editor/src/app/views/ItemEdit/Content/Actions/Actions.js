@@ -52,7 +52,7 @@ export function Actions(props) {
         liveURL={liveURL}
       />
 
-      <ContentInfo modelZUID={props.modelZUID} />
+      <ContentInfo modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
       <ContentLinks item={props.item} />
 
       {/* <Release item={props.item} /> */}

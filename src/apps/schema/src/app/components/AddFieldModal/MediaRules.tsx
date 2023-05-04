@@ -98,11 +98,7 @@ export const MediaRules = ({
                     <Typography variant="body2" fontWeight={600}>
                       {MediaLabelsConfig[rule.name as MediaFieldName].label}
                     </Typography>
-                    <Typography
-                      // @ts-expect-error body3 module augmentation required
-                      variant="body3"
-                      color="text.secondary"
-                    >
+                    <Typography variant="body3" color="text.secondary">
                       {MediaLabelsConfig[rule.name as MediaFieldName].subLabel}
                     </Typography>
                   </Stack>
