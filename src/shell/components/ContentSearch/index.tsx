@@ -48,7 +48,8 @@ const ContentSearch: FC = () => {
       recentSearches?.length && !value
         ? ["RecentSearches", ...recentSearches.slice(0, 5)]
         : [];
-    const _suggestions = suggestions?.length ? suggestions?.slice(0, 5) : [];
+    const _suggestions =
+      suggestions?.length && value ? suggestions?.slice(0, 5) : [];
 
     return [value, ..._suggestions, ..._recentSearches, "AdvancedSearchButton"];
   }, [suggestions, recentSearches, value]);
