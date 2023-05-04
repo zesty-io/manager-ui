@@ -43,7 +43,11 @@ export const ContentList: FC<ContentList> = ({
   );
 
   return (
-    <Stack direction="column" sx={{ width: "100%", height: "100%" }}>
+    <Stack
+      direction="column"
+      sx={{ width: "100%", height: "100%" }}
+      data-cy="ContentList"
+    >
       <AutoSizer>
         {({ height, width }: Size) => (
           <FixedSizeList
@@ -51,7 +55,7 @@ export const ContentList: FC<ContentList> = ({
             width={width}
             itemCount={results.length}
             height={height}
-            style={{ borderRadius: "8px 8px 0 0" }}
+            style={{ borderRadius: "8px" }}
           >
             {Row}
           </FixedSizeList>
