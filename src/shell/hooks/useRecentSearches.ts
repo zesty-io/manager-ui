@@ -4,8 +4,12 @@ import { cloneDeep } from "lodash";
 
 const MaxSavedKeywords = 5;
 
-type UseRecentSearches = [string[], (keyword: string) => void];
-export const useRecentSearches: () => UseRecentSearches = () => {
+type UseRecentSearches = [
+  string[],
+  (keyword: string) => void,
+  (keyword: string) => void
+];
+const useRecentSearches: () => UseRecentSearches = () => {
   const [recentSearches, setRecentSearches] = useLocalStorage(
     "zesty:globalSearch:recentSearches",
     "[]"
@@ -15,7 +19,7 @@ export const useRecentSearches: () => UseRecentSearches = () => {
     return JSON.parse(recentSearches || "[]");
   }, [recentSearches]);
 
-  const updateRecentSearches = (keyword: string) => {
+  const addSearchTerm = (keyword: string) => {
     if (!Array.isArray(recentSearchesArray)) {
       return;
     }
@@ -36,5 +40,14 @@ export const useRecentSearches: () => UseRecentSearches = () => {
     setRecentSearches(JSON.stringify(keywords));
   };
 
-  return [recentSearchesArray, updateRecentSearches];
+  const deleteSearchTerm = (keyword: string) => {
+    let keywords = cloneDeep(recentSearchesArray);
+    keywords = keywords.filter((term) => term !== keyword);
+
+    setRecentSearches(JSON.stringify(keywords));
+  };
+
+  return [recentSearchesArray, addSearchTerm, deleteSearchTerm];
 };
+
+export default useRecentSearches;

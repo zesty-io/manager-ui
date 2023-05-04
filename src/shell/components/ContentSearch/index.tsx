@@ -23,7 +23,7 @@ import { useSearchContentQuery } from "../../services/instance";
 import { ContentItem } from "../../services/types";
 import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
-import { useRecentSearches } from "../../hooks/useRecentSearches";
+import useRecentSearches from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
@@ -32,7 +32,7 @@ const ElementId = "global-search-autocomplete";
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
-  const [recentSearches, updateRecentSearches] = useRecentSearches();
+  const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -65,7 +65,7 @@ const ContentSearch: FC = () => {
     const isOnSearchPage = location.pathname === "/search";
 
     setOpen(false);
-    updateRecentSearches(queryTerm);
+    addSearchTerm(queryTerm);
     textfieldRef.current?.querySelector("input").blur();
 
     if (queryTerm !== value) {
@@ -210,6 +210,8 @@ const ContentSearch: FC = () => {
                     icon={isSearchTerm ? SearchRounded : ScheduleRounded}
                     onClick={() => goToSearchPage(option)}
                     text={option}
+                    isRemovable={!isSearchTerm}
+                    onRemove={deleteSearchTerm}
                   />
                 );
               }
