@@ -90,7 +90,6 @@ export const Sidebar = () => {
           <ListItemText
             primary="All Models"
             primaryTypographyProps={{
-              // @ts-expect-error need body 3 module augmentation
               variant: "body3",
               color: "text.secondary",
             }}

@@ -81,7 +81,6 @@ export const FieldItem = ({
               fontWeight: 700,
             }}
             secondaryTypographyProps={{
-              // @ts-expect-error missing body3 module augmentation
               variant: "body3",
             }}
           />

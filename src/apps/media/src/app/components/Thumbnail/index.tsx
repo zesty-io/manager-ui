@@ -182,7 +182,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     return (
       <Chip
         label={
-          // @ts-ignore
           <Typography variant="body3" color="text.secondary">
             {isCopied ? "Copied" : "Copy URL"}
           </Typography>
@@ -217,7 +216,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     return (
       <Chip
         label={
-          // @ts-ignore
           <Typography variant="body3" color="text.secondary">
             Preview
           </Typography>

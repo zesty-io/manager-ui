@@ -228,7 +228,6 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
                   </Box>
                   <Box>
                     <Typography variant="body2">{video.title}</Typography>
-                    {/* @ts-expect-error body3 module augmentation required */}
                     <Typography variant="body3" color="text.secondary">
                       {video.length}
                     </Typography>
@@ -264,7 +263,6 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
             Resources
           </Typography>
           <Typography
-            // @ts-ignore
             variant="body3"
             color="text.secondary"
             fontWeight={600}
@@ -277,7 +275,6 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
       {isMature ? matureItems(false, false) : newItems()}
       {!hideFooter && (
         <Box display="flex" justifyContent="space-between" padding={2}>
-          {/* @ts-ignore */}
           <Typography variant="body3" color="text.secondary">
             JOIN OUR COMMUNITY
           </Typography>

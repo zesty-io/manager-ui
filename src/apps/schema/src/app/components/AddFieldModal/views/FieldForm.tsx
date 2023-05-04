@@ -500,11 +500,7 @@ export const FieldForm = ({
                   ? `Edit ${fieldData.label}`
                   : `Add ${name} Field`}
               </Typography>
-              <Typography
-                // @ts-expect-error body3 additional variant is not on Typography augmentation
-                variant="body3"
-                color="text.secondary"
-              >
+              <Typography variant="body3" color="text.secondary">
                 {isUpdateField
                   ? `${TYPE_TEXT[type]} Field`
                   : FIELD_COPY_CONFIG[getCategory(type)]?.find(

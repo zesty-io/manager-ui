@@ -358,6 +358,7 @@ export const OTFEditor = ({
           fullWidth
           placeholder="Auto"
           value={newUrl}
+          disabled
           InputProps={{
             readOnly: true,
             disableUnderline: true,
@@ -373,6 +374,11 @@ export const OTFEditor = ({
                 )}
               </InputAdornment>
             ),
+          }}
+          inputProps={{
+            style: {
+              WebkitTextFillColor: "unset",
+            },
           }}
         />
         <Alert severity="info" sx={{ mt: 2 }}>

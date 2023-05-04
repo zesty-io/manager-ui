@@ -49,7 +49,6 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
             <InstanceAvatar canUpdateAvatar={false} />
             {openNav && (
               <Typography
-                // @ts-ignore
                 variant="body3"
                 fontWeight={600}
                 color="common.white"
