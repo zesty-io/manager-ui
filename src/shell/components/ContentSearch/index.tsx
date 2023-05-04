@@ -43,10 +43,11 @@ const ContentSearch: FC = () => {
 
   const suggestions = res.data;
   const options = useMemo(() => {
-    // Hides the recent searches if there's none, otherwise show first 5
-    const _recentSearches = recentSearches?.length
-      ? ["RecentSearches", ...recentSearches.slice(0, 5)]
-      : [];
+    // Only show the first 5 recent searches when user has not typed in a query
+    const _recentSearches =
+      recentSearches?.length && !value
+        ? ["RecentSearches", ...recentSearches.slice(0, 5)]
+        : [];
     const _suggestions = suggestions?.length ? suggestions?.slice(0, 5) : [];
 
     return [value, ..._suggestions, ..._recentSearches, "AdvancedSearchButton"];
@@ -193,8 +194,14 @@ const ContentSearch: FC = () => {
           renderOption={(props, option) => {
             if (typeof option === "string") {
               if (!AdditionalDropdownOptions.includes(option)) {
+                // Means that this option is the top row global search term typed by the userf
                 const isSearchTerm = props.id === `${ElementId}-option-0`;
 
+                // Determines if the user-typed top row global search term already exists in the recent searches
+                const searchTermInRecentSearches =
+                  isSearchTerm && recentSearches.includes(option);
+
+                // Hides the top row global search term if no value is present
                 if (isSearchTerm && !value) {
                   return;
                 }
@@ -205,10 +212,14 @@ const ContentSearch: FC = () => {
                     // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
                     aria-selected={false}
                     key={isSearchTerm ? "global-search-term" : option}
-                    icon={isSearchTerm ? SearchRounded : ScheduleRounded}
+                    icon={
+                      searchTermInRecentSearches
+                        ? ScheduleRounded
+                        : SearchRounded
+                    }
                     onClick={() => goToSearchPage(option)}
                     text={option}
-                    isRemovable={!isSearchTerm}
+                    isRemovable={!isSearchTerm || searchTermInRecentSearches}
                     onRemove={deleteSearchTerm}
                   />
                 );
