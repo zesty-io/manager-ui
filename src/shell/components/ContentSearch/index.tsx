@@ -214,7 +214,7 @@ const ContentSearch: FC = () => {
                     aria-selected={false}
                     key={isSearchTerm ? "global-search-term" : option}
                     icon={
-                      searchTermInRecentSearches
+                      !isSearchTerm || searchTermInRecentSearches
                         ? ScheduleRounded
                         : SearchRounded
                     }
