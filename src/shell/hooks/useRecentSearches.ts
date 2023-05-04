@@ -1,6 +1,4 @@
-import { useMemo } from "react";
 import { useLocalStorage } from "react-use";
-import { cloneDeep } from "lodash";
 
 const MaxSavedKeywords = 50;
 
@@ -20,27 +18,18 @@ const useRecentSearches: () => UseRecentSearches = () => {
       return;
     }
 
-    let keywords = cloneDeep(recentSearches);
-
-    // Remove the keyword if it was already saved
-    if (keywords.includes(keyword)) {
-      keywords = keywords.filter((term) => term !== keyword);
-    }
+    // Remove the keyword if it was already saved previously
+    let keywords = recentSearches.filter((term) => term !== keyword);
 
     // Add the keyword at the beginning
     keywords.unshift(keyword);
 
     // Limit the number of keywords saved
-    keywords = keywords.slice(0, MaxSavedKeywords);
-
-    setRecentSearches(keywords);
+    setRecentSearches(keywords.slice(0, MaxSavedKeywords));
   };
 
   const deleteSearchTerm = (keyword: string) => {
-    let keywords = cloneDeep(recentSearches);
-    keywords = keywords.filter((term) => term !== keyword);
-
-    setRecentSearches(keywords);
+    setRecentSearches(recentSearches.filter((term) => term !== keyword));
   };
 
   return [recentSearches, addSearchTerm, deleteSearchTerm];
