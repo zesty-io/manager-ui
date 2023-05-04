@@ -12,19 +12,15 @@ type UseRecentSearches = [
 const useRecentSearches: () => UseRecentSearches = () => {
   const [recentSearches, setRecentSearches] = useLocalStorage(
     "zesty:globalSearch:recentSearches",
-    "[]"
+    []
   );
 
-  const recentSearchesArray: string[] = useMemo(() => {
-    return JSON.parse(recentSearches || "[]");
-  }, [recentSearches]);
-
   const addSearchTerm = (keyword: string) => {
-    if (!Array.isArray(recentSearchesArray)) {
+    if (!Array.isArray(recentSearches)) {
       return;
     }
 
-    let keywords = cloneDeep(recentSearchesArray);
+    let keywords = cloneDeep(recentSearches);
 
     // Remove the keyword if it was already saved
     if (keywords.includes(keyword)) {
@@ -37,17 +33,17 @@ const useRecentSearches: () => UseRecentSearches = () => {
     // Limit the number of keywords saved
     keywords = keywords.slice(0, MaxSavedKeywords);
 
-    setRecentSearches(JSON.stringify(keywords));
+    setRecentSearches(keywords);
   };
 
   const deleteSearchTerm = (keyword: string) => {
-    let keywords = cloneDeep(recentSearchesArray);
+    let keywords = cloneDeep(recentSearches);
     keywords = keywords.filter((term) => term !== keyword);
 
-    setRecentSearches(JSON.stringify(keywords));
+    setRecentSearches(keywords);
   };
 
-  return [recentSearchesArray, addSearchTerm, deleteSearchTerm];
+  return [recentSearches, addSearchTerm, deleteSearchTerm];
 };
 
 export default useRecentSearches;
