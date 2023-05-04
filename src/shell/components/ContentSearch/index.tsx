@@ -42,10 +42,10 @@ const ContentSearch: FC = () => {
   const res = useSearchContentQuery({ query: value }, { skip: !value });
 
   const suggestions = res.data;
-  const topSuggestions = useMemo(() => {
-    // Hides the recent searches if there's none
+  const options = useMemo(() => {
+    // Hides the recent searches if there's none, otherwise show first 5
     const _recentSearches = recentSearches?.length
-      ? ["RecentSearches", ...recentSearches]
+      ? ["RecentSearches", ...recentSearches.slice(0, 5)]
       : [];
     const _suggestions = suggestions?.length ? suggestions?.slice(0, 5) : [];
 
@@ -113,9 +113,7 @@ const ContentSearch: FC = () => {
                 elevation={0}
                 sx={{
                   borderStyle: "solid",
-                  borderWidth: topSuggestions?.length
-                    ? "0px 1px 1px 1px"
-                    : "0px",
+                  borderWidth: options?.length ? "0px 1px 1px 1px" : "0px",
                   borderColor: "border",
                   borderRadius: "0px 0px 4px 4px",
 
@@ -144,7 +142,7 @@ const ContentSearch: FC = () => {
           clearOnBlur
           handleHomeEndKeys
           blurOnSelect
-          options={topSuggestions}
+          options={options}
           filterOptions={(x) => x}
           sx={{
             height: "40px",

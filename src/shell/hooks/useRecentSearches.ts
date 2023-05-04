@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useLocalStorage } from "react-use";
 import { cloneDeep } from "lodash";
 
-const MaxSavedKeywords = 5;
+const MaxSavedKeywords = 50;
 
 type UseRecentSearches = [
   string[],
@@ -34,7 +34,7 @@ const useRecentSearches: () => UseRecentSearches = () => {
     // Add the keyword at the beginning
     keywords.unshift(keyword);
 
-    // Make sure only 5 keywords are saved
+    // Limit the number of keywords saved
     keywords = keywords.slice(0, MaxSavedKeywords);
 
     setRecentSearches(JSON.stringify(keywords));
