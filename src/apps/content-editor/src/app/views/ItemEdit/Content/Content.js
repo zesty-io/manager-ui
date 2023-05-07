@@ -1,15 +1,21 @@
 import { useSelector } from "react-redux";
 import cx from "classnames";
+import { isEmpty } from "lodash";
 
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
 import { ActionsDrawer } from "./ActionsDrawer";
+import { NotFound } from "../../../../../../../shell/components/NotFound";
 
 import styles from "./Content.less";
 export default function Content(props) {
   const ui = useSelector((state) => state.ui);
+
+  if (isEmpty(props.model)) {
+    return <NotFound message="Failed to load model content" />;
+  }
 
   return (
     <main className={styles.Content}>
