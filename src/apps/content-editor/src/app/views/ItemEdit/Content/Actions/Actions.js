@@ -15,9 +15,6 @@ import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
 import { ContentLinks } from "./Widgets/ContentLinks";
 import { ContentInfo } from "./Widgets/ContentInfo";
 
-import { Release } from "./Widgets/Release";
-
-import styles from "./Actions.less";
 export function Actions(props) {
   if (!props.item.meta || !props.item.web) {
     console.error("Actions:missing item");
