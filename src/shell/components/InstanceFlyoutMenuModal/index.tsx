@@ -391,7 +391,6 @@ export default function InstanceFlyoutMenuModal({
                 title="Connect with Zesty"
                 href="https://www.zesty.io/meet/"
               >
-                {/* @ts-ignore */}
                 <Typography variant="body3" color="text.secondary">
                   CONNECT WITH ZESTY
                 </Typography>

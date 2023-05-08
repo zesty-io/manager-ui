@@ -106,12 +106,7 @@ export const Dropdown: FC<Dropdown> = ({
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
         >
-          <Typography
-            // @ts-expect-error missing body3 module augmentation
-            variant="body3"
-            fontWeight={600}
-            pl={1.5}
-          >
+          <Typography variant="body3" fontWeight={600} pl={1.5}>
             More
           </Typography>
           <IconButton disableTouchRipple disableRipple size="small">

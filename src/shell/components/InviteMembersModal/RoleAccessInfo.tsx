@@ -88,7 +88,6 @@ export const RoleAccessInfo = ({ role }: Props) => {
             {accessIcon[access as keyof typeof accessIcon]}
             <Typography
               sx={{ ml: 1, textTransform: "capitalize" }}
-              // @ts-expect-error body3 module augmentation missing
               variant="body3"
             >
               {access === "code" ? "Code (Zesty IDE)" : access}

@@ -24,7 +24,6 @@ export const Menu = () => {
           <BackupTableIcon />
         </ListItemIcon>
         <ListItemText
-          //@ts-expect-error body3 additional variant is not on Typography augmentation
           primaryTypographyProps={{ variant: "body3", color: "text.secondary" }}
           primary="All Media"
         />
@@ -47,7 +46,6 @@ export const Menu = () => {
           <InsightsRoundedIcon />
         </ListItemIcon>
         <ListItemText
-          //@ts-expect-error body3 additional variant is not on Typography augmentation
           primaryTypographyProps={{ variant: "body3", color: "text.secondary" }}
           primary="Insights"
         />

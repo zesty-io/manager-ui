@@ -111,6 +111,9 @@ export const ContentListItem: FC<ContentListItem> = ({
           borderRadius: "8px 8px 0 0",
           borderWidth: "1px",
         },
+        "&:last-of-type": {
+          borderRadius: "0 0 8px 8px",
+        },
       }}
     >
       <Stack
@@ -155,7 +158,6 @@ export const ContentListItem: FC<ContentListItem> = ({
               </>
             )}
           </Typography>
-          {/* @ts-ignore */}
           <Typography variant="body3" color="text.secondary">
             {loading ? (
               <Skeleton

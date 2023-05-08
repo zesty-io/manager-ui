@@ -94,7 +94,7 @@ export const ContentInfo = (props) => {
             </Stack>
             <TextField
               disabled
-              value={props.modelZUID}
+              value={props.itemZUID || ""}
               size="small"
               fullWidth
               inputProps={{

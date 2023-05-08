@@ -285,11 +285,7 @@ export const Field = ({
             {field.label}
           </Typography>
         </Tooltip>
-        <Typography
-          // @ts-expect-error missing body3 module augmentation
-          variant="body3"
-          color="text.secondary"
-        >
+        <Typography variant="body3" color="text.secondary">
           {TYPE_TEXT[field.datatype]}
         </Typography>
       </Box>
