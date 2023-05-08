@@ -85,6 +85,8 @@ export default function ItemEdit() {
   const [notFound, setNotFound] = useState("");
 
   useEffect(() => {
+    setNotFound("");
+
     // on mount and modelZUID/itemZUID update,
     // lock item and load all item data
     lockItem(itemZUID);
