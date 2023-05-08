@@ -9,7 +9,6 @@ import {
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
-import { isEmpty } from "lodash";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -69,7 +68,6 @@ export default function ItemEdit() {
   const { modelZUID, itemZUID } = useParams();
   const item = useSelector((state) => state.content[itemZUID]);
   const items = useSelector((state) => state.content);
-  const contentModels = useSelector((state) => state.models);
   const model = useSelector((state) => state.models[modelZUID]);
   const fields = useSelector((state) =>
     selectSortedModelFields(state, modelZUID)
@@ -87,12 +85,6 @@ export default function ItemEdit() {
   const [notFound, setNotFound] = useState("");
 
   useEffect(() => {
-    if (isEmpty(contentModels) && isEmpty(model)) {
-      setNotFound("Failed to load model");
-    } else {
-      setNotFound("");
-    }
-
     // on mount and modelZUID/itemZUID update,
     // lock item and load all item data
     lockItem(itemZUID);
@@ -102,7 +94,7 @@ export default function ItemEdit() {
     return () => {
       releaseLock(itemZUID);
     };
-  }, [modelZUID, itemZUID, model, contentModels]);
+  }, [modelZUID, itemZUID]);
 
   async function lockItem() {
     setCheckingLock(true);
@@ -250,7 +242,7 @@ export default function ItemEdit() {
 
   return (
     <Fragment>
-      {notFound || isEmpty(contentModels) ? (
+      {notFound ? (
         <NotFound message={notFound} />
       ) : (
         <WithLoader
