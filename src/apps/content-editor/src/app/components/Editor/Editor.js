@@ -36,8 +36,6 @@ export default memo(function Editor({
     }
   }, [active]);
 
-  console.log(model?.ZUID, modelZUID);
-
   const scrollToField = (fieldZUID) => {
     const node = document.getElementById(fieldZUID);
     if (node) {
