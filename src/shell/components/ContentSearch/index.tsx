@@ -212,6 +212,11 @@ const ContentSearch: FC = () => {
                     {...props}
                     // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
                     aria-selected={false}
+                    data-cy={
+                      isSearchTerm
+                        ? "global-search-term"
+                        : "global-search-recent-keyword"
+                    }
                     key={isSearchTerm ? "global-search-term" : option}
                     icon={
                       !isSearchTerm || searchTermInRecentSearches

@@ -55,7 +55,11 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
       />
       {isRemovable && (
         <ListItemSecondaryAction>
-          <IconButton size="small" onClick={() => onRemove && onRemove(text)}>
+          <IconButton
+            data-cy="RemoveRecentSearchKeyword"
+            size="small"
+            onClick={() => onRemove && onRemove(text)}
+          >
             <CloseIcon fontSize="small" />
           </IconButton>
         </ListItemSecondaryAction>
