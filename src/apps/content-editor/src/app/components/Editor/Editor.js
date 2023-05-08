@@ -14,6 +14,7 @@ export default memo(function Editor({
   model,
   onSave,
   itemZUID,
+  modelZUID,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
@@ -34,6 +35,8 @@ export default memo(function Editor({
       scrollToField(active);
     }
   }, [active]);
+
+  console.log(model?.ZUID, modelZUID);
 
   const scrollToField = (fieldZUID) => {
     const node = document.getElementById(fieldZUID);
@@ -170,7 +173,7 @@ export default memo(function Editor({
           <h1 className={styles.Display}>No fields have been added</h1>
           <h2 className={styles.SubHead}>
             Use the{" "}
-            <AppLink to={`/schema/${model.ZUID}`}>Schema Builder</AppLink> to
+            <AppLink to={`/schema/${modelZUID}`}>Schema Builder</AppLink> to
             define your items content
           </h2>
         </div>
