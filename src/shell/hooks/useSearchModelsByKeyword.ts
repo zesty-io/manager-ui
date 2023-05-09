@@ -22,6 +22,13 @@ const datasetKeywords = [
   "headless data model",
 ];
 
+/**
+ * This hook is used to easily filter content models via a keyword that will
+ * match the following:
+ * - Model title
+ * - Model ZUID
+ * - Model type
+ */
 type UseSearchModelsByKeyword = [ContentModel[], (searchTerm: string) => void];
 export const useSearchModelsByKeyword: () => UseSearchModelsByKeyword = () => {
   const [searchTerm, setSearchTerm] = useState("");
