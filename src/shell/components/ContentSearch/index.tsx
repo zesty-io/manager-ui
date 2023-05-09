@@ -33,7 +33,7 @@ import { AdvancedSearch } from "./components/AdvancedSearch";
 import useRecentSearches from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
 import { useGetContentModelsQuery } from "../../services/instance";
-import { getContentTitle } from "./utils";
+import { getContentTitle, getItemIcon } from "./utils";
 import { useFilteredModels } from "./hooks/useFilteredModels";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
@@ -323,26 +323,11 @@ const ContentSearch: FC = () => {
                 );
               }
             } else {
-              let icon;
-
-              switch (option.type) {
-                case "content":
-                  icon = Create;
-                  break;
-
-                case "schema":
-                  icon = Database as SvgIconComponent;
-                  break;
-
-                default:
-                  break;
-              }
-
               return (
                 <GlobalSearchItem
                   {...props}
                   key={option.ZUID}
-                  icon={icon}
+                  icon={getItemIcon(option.type)}
                   text={option.title}
                 />
               );
