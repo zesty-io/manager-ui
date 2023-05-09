@@ -79,6 +79,7 @@ export function ItemVersioning(props) {
     return (
       publishing ||
       props.item.dirty ||
+      props.item?.scheduling?.isScheduled ||
       // (props.item.scheduling && props.item.scheduling.isScheduled) ||
       (props.item.publishing &&
         props.item.publishing.version === props.item.meta.version)
