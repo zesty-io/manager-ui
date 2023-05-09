@@ -28,6 +28,7 @@ const datasetKeywords = [
  * - Model title
  * - Model ZUID
  * - Model type
+ * - User ZUID
  */
 type UseSearchModelsByKeyword = [ContentModel[], (searchTerm: string) => void];
 export const useSearchModelsByKeyword: () => UseSearchModelsByKeyword = () => {
@@ -58,13 +59,15 @@ export const useSearchModelsByKeyword: () => UseSearchModelsByKeyword = () => {
        * - Model title
        * - Model ZUID
        * - Model type
+       * - User ZUID
        */
       // TODO: Verify if we still need to use a fuzzy search lib
       return models.filter(
         (model) =>
           model.label?.toLowerCase().includes(term) ||
           model.ZUID === term ||
-          model.type === modelDatatype
+          model.type === modelDatatype ||
+          model.createdByUserZUID === term
       );
     }
 
