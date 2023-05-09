@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import { ScheduleRounded, SearchRounded, Create } from "@mui/icons-material";
+import { isEmpty } from "lodash";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
@@ -25,23 +26,56 @@ import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import useRecentSearches from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
+import { useGetContentModelsQuery } from "../../services/instance";
+import { getContentTitle } from "./utils";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ElementId = "global-search-autocomplete";
 
+interface Suggestion {
+  type: "schema" | "content";
+  ZUID: string;
+  title: string;
+  url: string;
+  noUrlErrorMessage: string;
+}
+
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
+  const [open, setOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
+  const { data: models } = useGetContentModelsQuery();
+  const languages = useSelector((state: any) => state.languages);
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
+  const theme = useTheme();
 
   const textfieldRef = useRef<HTMLDivElement>();
 
-  const res = useSearchContentQuery({ query: value }, { skip: !value });
+  const contentSearchResponse = useSearchContentQuery(
+    { query: value },
+    { skip: !value }
+  );
 
-  const suggestions = res.data;
+  const suggestions: Suggestion[] = useMemo(() => {
+    const contentSuggestions: Suggestion[] =
+      contentSearchResponse?.data?.map((content) => {
+        return {
+          type: "content",
+          ZUID: content.meta?.ZUID,
+          title: getContentTitle(content, languages),
+          url: isEmpty(content.meta)
+            ? ""
+            : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
+          noUrlErrorMessage: "Selected item is missing meta data",
+        };
+      }) || [];
+
+    return [...contentSuggestions];
+  }, [contentSearchResponse, models]);
+
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
     const _recentSearches =
@@ -58,10 +92,6 @@ const ContentSearch: FC = () => {
   const shortcutHelpText = useMetaKey("k", () => {
     textfieldRef.current?.querySelector("input").focus();
   });
-  const languages = useSelector((state: any) => state.languages);
-  const [open, setOpen] = useState(false);
-
-  const theme = useTheme();
 
   const goToSearchPage = (queryTerm: string) => {
     const isOnSearchPage = location.pathname === "/search";
@@ -164,31 +194,31 @@ const ContentSearch: FC = () => {
             setValue(newVal);
           }}
           onChange={(event, newVal) => {
+            /** This is when the user selects any of the suggestions */
+
             // null represents "X" button clicked
             if (!newVal) {
               setValue("");
               return;
             }
+
             // string represents search term entered
             if (typeof newVal === "string") {
               goToSearchPage(newVal);
             } else {
-              // ContentItem represents a suggestion being clicked
-              if (newVal?.meta) {
-                history.push(
-                  `/content/${newVal.meta.contentModelZUID}/${newVal.meta.ZUID}`
-                );
+              if (newVal?.url) {
+                history.push(newVal.url);
               } else {
                 dispatch(
                   notify({
                     kind: "warn",
-                    message: "Selected item is missing meta data",
+                    message: newVal.noUrlErrorMessage,
                   })
                 );
               }
             }
           }}
-          getOptionLabel={(option: ContentItem) => {
+          getOptionLabel={(option: Suggestion) => {
             // do not change the input value when a suggestion is selected
             return value;
           }}
@@ -268,21 +298,23 @@ const ContentSearch: FC = () => {
                 );
               }
             } else {
-              // type of ContentItem represents a suggestion from the search API
-              const getText = () => {
-                const title = option?.web?.metaTitle || "Missing Meta Title";
-                const langCode = languages.find(
-                  (lang: any) => lang.ID === option?.meta?.langID
-                )?.code;
-                const langDisplay = langCode ? `(${langCode}) ` : null;
-                return langDisplay ? `${langDisplay}${title}` : title;
-              };
+              let icon;
+
+              switch (option.type) {
+                case "content":
+                  icon = Create;
+                  break;
+
+                default:
+                  break;
+              }
+
               return (
                 <GlobalSearchItem
                   {...props}
-                  key={option.meta.ZUID}
-                  icon={Create}
-                  text={getText()}
+                  key={option.ZUID}
+                  icon={icon}
+                  text={option.title}
                 />
               );
             }
