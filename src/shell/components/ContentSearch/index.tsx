@@ -16,25 +16,17 @@ import { useHistory, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import {
-  ScheduleRounded,
-  SearchRounded,
-  Create,
-  SvgIconComponent,
-} from "@mui/icons-material";
+import { ScheduleRounded, SearchRounded } from "@mui/icons-material";
 import { isEmpty } from "lodash";
-import { Database } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
-import { ContentItem } from "../../services/types";
 import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import useRecentSearches from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
-import { useGetContentModelsQuery } from "../../services/instance";
 import { getContentTitle, getItemIcon } from "./utils";
-import { useFilteredModels } from "./hooks/useFilteredModels";
+import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ElementId = "global-search-autocomplete";
@@ -53,8 +45,7 @@ const ContentSearch: FC = () => {
   const [open, setOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
-  const { data: models } = useGetContentModelsQuery();
-  const [modelSuggestions, setSearchTerm] = useFilteredModels();
+  const [models, setKeyword] = useSearchModelsByKeyword();
   const languages = useSelector((state: any) => state.languages);
   const history = useHistory();
   const location = useLocation();
@@ -83,7 +74,16 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
-    // const modelSuggestions = [];
+    const modelSuggestions: Suggestion[] = models.map((model) => {
+      return {
+        type: "schema",
+        ZUID: model.ZUID,
+        title: model.label,
+        updatedAt: model.updatedAt,
+        url: `/schema/${model.ZUID}`,
+      };
+    });
+
     const consolidatedResults = [
       ...contentSuggestions,
       ...modelSuggestions,
@@ -95,7 +95,7 @@ const ContentSearch: FC = () => {
     console.log(consolidatedResults);
 
     return consolidatedResults;
-  }, [contentSearchResponse, modelSuggestions]);
+  }, [contentSearchResponse, models]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
@@ -110,7 +110,7 @@ const ContentSearch: FC = () => {
   }, [suggestions, recentSearches, value]);
 
   useEffect(() => {
-    setSearchTerm(value);
+    setKeyword(value);
   }, [value]);
 
   //@ts-ignore TODO fix typing for useMetaKey

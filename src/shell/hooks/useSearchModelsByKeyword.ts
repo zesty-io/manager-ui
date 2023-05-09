@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { isEmpty } from "lodash";
 
-import { Suggestion } from "../index";
-import { useGetContentModelsQuery } from "../../../services/instance";
+import { ContentModel } from "../services/types";
+import { useGetContentModelsQuery } from "../services/instance";
 
 const templatesetKeywords = [
   "single page model",
@@ -22,12 +22,12 @@ const datasetKeywords = [
   "headless data model",
 ];
 
-type UseFilteredModels = [Suggestion[], (searchTerm: string) => void];
-export const useFilteredModels: () => UseFilteredModels = () => {
+type UseSearchModelsByKeyword = [ContentModel[], (searchTerm: string) => void];
+export const useSearchModelsByKeyword: () => UseSearchModelsByKeyword = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { data: models } = useGetContentModelsQuery();
 
-  const filteredModels: Suggestion[] = useMemo(() => {
+  const filteredModels: ContentModel[] = useMemo(() => {
     let modelDatatype = "";
     const term = searchTerm?.toLowerCase();
 
@@ -53,22 +53,12 @@ export const useFilteredModels: () => UseFilteredModels = () => {
        * - Model type
        */
       // TODO: Verify if we still need to use a fuzzy search lib for the model type keywords and model label
-      const _models = models.filter(
+      return models.filter(
         (model) =>
           model.label?.toLowerCase().includes(term) ||
           model.ZUID === term ||
           model.type === modelDatatype
       );
-
-      return _models.map((model) => {
-        return {
-          type: "schema",
-          ZUID: model.ZUID,
-          title: model.label,
-          updatedAt: model.updatedAt,
-          url: `/schema/${model.ZUID}`,
-        };
-      });
     }
 
     return [];
