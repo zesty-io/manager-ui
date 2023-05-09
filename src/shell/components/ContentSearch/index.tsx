@@ -1,4 +1,4 @@
-import { FC, useState, useRef, useMemo } from "react";
+import { FC, useState, useRef, useMemo, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import InputAdornment from "@mui/material/InputAdornment";
 import {
@@ -16,8 +16,14 @@ import { useHistory, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import { ScheduleRounded, SearchRounded, Create } from "@mui/icons-material";
+import {
+  ScheduleRounded,
+  SearchRounded,
+  Create,
+  SvgIconComponent,
+} from "@mui/icons-material";
 import { isEmpty } from "lodash";
+import { Database } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
@@ -28,16 +34,18 @@ import useRecentSearches from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
 import { useGetContentModelsQuery } from "../../services/instance";
 import { getContentTitle } from "./utils";
+import { useFilteredModels } from "./hooks/useFilteredModels";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ElementId = "global-search-autocomplete";
 
-interface Suggestion {
+export interface Suggestion {
   type: "schema" | "content";
   ZUID: string;
   title: string;
+  updatedAt: string;
   url: string;
-  noUrlErrorMessage: string;
+  noUrlErrorMessage?: string;
 }
 
 const ContentSearch: FC = () => {
@@ -46,6 +54,7 @@ const ContentSearch: FC = () => {
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
   const { data: models } = useGetContentModelsQuery();
+  const [modelSuggestions, setSearchTerm] = useFilteredModels();
   const languages = useSelector((state: any) => state.languages);
   const history = useHistory();
   const location = useLocation();
@@ -66,6 +75,7 @@ const ContentSearch: FC = () => {
           type: "content",
           ZUID: content.meta?.ZUID,
           title: getContentTitle(content, languages),
+          updatedAt: content.meta?.updatedAt,
           url: isEmpty(content.meta)
             ? ""
             : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
@@ -73,8 +83,19 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
-    return [...contentSuggestions];
-  }, [contentSearchResponse, models]);
+    // const modelSuggestions = [];
+    const consolidatedResults = [
+      ...contentSuggestions,
+      ...modelSuggestions,
+    ].sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+
+    console.log(consolidatedResults);
+
+    return consolidatedResults;
+  }, [contentSearchResponse, modelSuggestions]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
@@ -87,6 +108,10 @@ const ContentSearch: FC = () => {
 
     return [value, ..._suggestions, ..._recentSearches, "AdvancedSearchButton"];
   }, [suggestions, recentSearches, value]);
+
+  useEffect(() => {
+    setSearchTerm(value);
+  }, [value]);
 
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
@@ -303,6 +328,10 @@ const ContentSearch: FC = () => {
               switch (option.type) {
                 case "content":
                   icon = Create;
+                  break;
+
+                case "schema":
+                  icon = Database as SvgIconComponent;
                   break;
 
                 default:
