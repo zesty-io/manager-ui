@@ -52,7 +52,7 @@ export const useSearchModelsByKeyword: () => UseSearchModelsByKeyword = () => {
        * - Model ZUID
        * - Model type
        */
-      // TODO: Verify if we still need to use a fuzzy search lib for the model type keywords and model label
+      // TODO: Verify if we still need to use a fuzzy search lib
       return models.filter(
         (model) =>
           model.label?.toLowerCase().includes(term) ||
