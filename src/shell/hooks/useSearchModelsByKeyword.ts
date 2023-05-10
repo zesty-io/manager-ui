@@ -3,6 +3,7 @@ import { isEmpty } from "lodash";
 
 import { ContentModel } from "../services/types";
 import { useGetContentModelsQuery } from "../services/instance";
+import { useGetUsersQuery } from "../services/accounts";
 
 const templatesetKeywords = [
   "single page model",
@@ -22,6 +23,10 @@ const datasetKeywords = [
   "headless data model",
 ];
 
+interface UsersList {
+  [key: string]: string;
+}
+
 /**
  * This hook is used to easily filter content models via a keyword that will
  * match the following:
@@ -29,15 +34,40 @@ const datasetKeywords = [
  * - Model ZUID
  * - Model type
  * - User ZUID
+ * - User full name
  */
 type UseSearchModelsByKeyword = [ContentModel[], (searchTerm: string) => void];
 export const useSearchModelsByKeyword: () => UseSearchModelsByKeyword = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { data: models } = useGetContentModelsQuery();
+  const { data: users } = useGetUsersQuery();
+
+  const allUsers: UsersList = useMemo(() => {
+    let _users: UsersList = {};
+
+    if (!isEmpty(users)) {
+      users.forEach((user) => {
+        const key = `${user.firstName} ${user.lastName}`.toLowerCase();
+
+        _users = {
+          ..._users,
+          [key]: user.ZUID,
+        };
+      });
+    }
+
+    return _users;
+  }, [users]);
 
   const filteredModels: ContentModel[] = useMemo(() => {
+    let matchedUserZUID = "";
     let modelDatatype = "";
     const term = searchTerm?.toLowerCase();
+
+    // Check if the user's keyword matches a user's full name
+    if (allUsers[term]) {
+      matchedUserZUID = allUsers[term];
+    }
 
     // Check if the user's keyword is a datatype
     if (templatesetKeywords.includes(term)) {
@@ -60,14 +90,15 @@ export const useSearchModelsByKeyword: () => UseSearchModelsByKeyword = () => {
        * - Model ZUID
        * - Model type
        * - User ZUID
+       * - User full name
        */
-      // TODO: Verify if we still need to use a fuzzy search lib
       return models.filter(
         (model) =>
           model.label?.toLowerCase().includes(term) ||
           model.ZUID === term ||
           model.type === modelDatatype ||
-          model.createdByUserZUID === term
+          model.createdByUserZUID === term ||
+          model.createdByUserZUID === matchedUserZUID
       );
     }
 
