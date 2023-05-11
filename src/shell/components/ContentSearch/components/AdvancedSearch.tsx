@@ -324,7 +324,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                 Resource Type
                 <Tooltip
                   placement="top"
-                  title="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, fugiat?"
+                  title="Use this filter when you want to only view search results for a single resource type such as a content item, model (schema), or code file."
                 >
                   <InfoRoundedIcon
                     sx={{ ml: 1, width: "12px", height: "12px" }}
