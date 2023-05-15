@@ -32,8 +32,9 @@ import {
 } from "../../../components/Filters/DateFilter/types";
 import { DateFilterModal } from "../../../components/Filters/DateFilter/DateFilterModal";
 import { DateRangeFilterModal } from "../../../components/Filters/DateFilter/DateRangeFilterModal";
-import { PRESET_DATES, CUSTOM_DATES } from "./config";
+import { PRESET_DATES, CUSTOM_DATES, RESOURCE_TYPES } from "./config";
 
+type ResourceType = "content" | "schema" | null;
 interface User {
   firstName: string;
   lastName: string;
@@ -44,6 +45,7 @@ export interface SearchData {
   keyword: string;
   user: User | null;
   date: DateFilterValue | null;
+  resourceType: ResourceType;
 }
 interface AdvancedSearch {
   keyword: string;
@@ -66,6 +68,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
       keyword: "",
       user: null,
       date: null,
+      resourceType: null,
     }
   );
   const isCustomDate = CUSTOM_DATES.map((d) => d.value).includes(
@@ -158,7 +161,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
 
   const handleSearchClicked = () => {
     const isOnSearchPage = location.pathname === "/search";
-    const { keyword, user, date } = searchData;
+    const { keyword, user, date, resourceType } = searchData;
     const searchParams = new URLSearchParams();
 
     if (keyword) {
@@ -197,6 +200,10 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
         default:
           break;
       }
+    }
+
+    if (resourceType) {
+      searchParams.set("resource", resourceType);
     }
 
     if (keyword) {
@@ -314,6 +321,51 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
             </Box>
             <Box>
               <InputLabel>
+                Resource Type
+                <Tooltip
+                  placement="top"
+                  title="Use this filter when you want to only view search results for a single resource type such as a content item, model (schema), or code file."
+                >
+                  <InfoRoundedIcon
+                    sx={{ ml: 1, width: "12px", height: "12px" }}
+                    color="action"
+                  />
+                </Tooltip>
+              </InputLabel>
+              <Select
+                data-cy="AdvanceSearchResourceType"
+                displayEmpty
+                fullWidth
+                value={searchData.resourceType || ""}
+                sx={{
+                  "& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input.MuiOutlinedInput-input":
+                    {
+                      color:
+                        searchData.resourceType === null
+                          ? "text.disabled"
+                          : "text.primary",
+                    },
+                }}
+                onChange={(e) => {
+                  const { value } = e.target;
+
+                  updateSearchData({
+                    resourceType: value as ResourceType,
+                  });
+                }}
+              >
+                <MenuItem value="" disabled sx={{ display: "none" }}>
+                  Select
+                </MenuItem>
+                {Object.entries(RESOURCE_TYPES).map(([value, text]) => (
+                  <MenuItem key={value} value={value}>
+                    {text}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+            <Box>
+              <InputLabel>
                 Date Modified
                 <Tooltip
                   placement="top"
@@ -387,6 +439,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
                   keyword: "",
                   user: null,
                   date: null,
+                  resourceType: null,
                 });
               }}
             >

@@ -10,6 +10,7 @@ import {
 } from "../../../components/Filters/";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { DateFilterValue } from "../../../components/Filters/DateFilter";
+import { ResourceTypeFilter, ResourceType } from "./ResourceTypeFilter";
 
 export const Filters = () => {
   const [params, setParams] = useParams();
@@ -138,6 +139,10 @@ export const Filters = () => {
       <SortByFilter
         value={(params.get("sort") as FilterValues) || "modified"}
         onChange={(value) => setParams(value, "sort")}
+      />
+      <ResourceTypeFilter
+        onChange={(value) => setParams(value, "resource")}
+        value={(params.get("resource") as ResourceType) || ""}
       />
       <UserFilter
         value={params.get("user") || ""}
