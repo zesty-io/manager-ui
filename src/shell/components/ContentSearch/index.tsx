@@ -1,11 +1,8 @@
-import { FC, useState, useRef, useReducer } from "react";
+import { FC, useState, useRef, useMemo } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import InputAdornment from "@mui/material/InputAdornment";
-import { HTMLAttributes } from "react";
 import {
   ListItem,
-  ListItemIcon,
-  ListItemText,
   Button,
   TextField,
   Autocomplete,
@@ -13,21 +10,29 @@ import {
   Popper,
   Collapse,
   IconButton,
+  ListSubheader,
 } from "@mui/material";
-import PencilIcon from "@mui/icons-material/Create";
+import { useHistory, useLocation } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useTheme } from "@mui/material/styles";
+import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
+import { ScheduleRounded, SearchRounded, Create } from "@mui/icons-material";
+
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
 import { ContentItem } from "../../services/types";
-import { useHistory, useLocation } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
 import { notify } from "../../store/notifications";
-import { useTheme } from "@mui/material/styles";
-import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import { AdvancedSearch } from "./components/AdvancedSearch";
+import useRecentSearches from "../../hooks/useRecentSearches";
+import { GlobalSearchItem } from "./components/GlobalSearchItem";
+
+const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
+const ElementId = "global-search-autocomplete";
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
+  const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -37,10 +42,17 @@ const ContentSearch: FC = () => {
   const res = useSearchContentQuery({ query: value }, { skip: !value });
 
   const suggestions = res.data;
-  const topSuggestions =
-    suggestions && value
-      ? [value, ...suggestions.slice(0, 5), "AdvancedSearchButton"]
-      : [];
+  const options = useMemo(() => {
+    // Only show the first 5 recent searches when user has not typed in a query
+    const _recentSearches =
+      recentSearches?.length && !value
+        ? ["RecentSearches", ...recentSearches.slice(0, 5)]
+        : [];
+    const _suggestions =
+      suggestions?.length && value ? suggestions?.slice(0, 5) : [];
+
+    return [value, ..._suggestions, ..._recentSearches, "AdvancedSearchButton"];
+  }, [suggestions, recentSearches, value]);
 
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
@@ -53,6 +65,15 @@ const ContentSearch: FC = () => {
 
   const goToSearchPage = (queryTerm: string) => {
     const isOnSearchPage = location.pathname === "/search";
+
+    setOpen(false);
+    addSearchTerm(queryTerm);
+    textfieldRef.current?.querySelector("input").blur();
+
+    if (queryTerm !== value) {
+      // Makes sure that the textfield value gets updated if the user has clicked on a recent search item
+      setValue(queryTerm);
+    }
 
     // Only add the search page on the history stack during initial page visit
     // Makes sure clicking close on the search page brings the user back to the previous page
@@ -94,9 +115,7 @@ const ContentSearch: FC = () => {
                 elevation={0}
                 sx={{
                   borderStyle: "solid",
-                  borderWidth: topSuggestions?.length
-                    ? "0px 1px 1px 1px"
-                    : "0px",
+                  borderWidth: options?.length ? "0px 1px 1px 1px" : "0px",
                   borderColor: "border",
                   borderRadius: "0px 0px 4px 4px",
 
@@ -119,13 +138,13 @@ const ContentSearch: FC = () => {
               />
             );
           }}
-          id="global-search-autocomplete"
+          id={ElementId}
           freeSolo
           selectOnFocus
           clearOnBlur
           handleHomeEndKeys
           blurOnSelect
-          options={topSuggestions}
+          options={options}
           filterOptions={(x) => x}
           sx={{
             height: "40px",
@@ -174,46 +193,87 @@ const ContentSearch: FC = () => {
             return value;
           }}
           renderOption={(props, option) => {
-            // type of string represents the top-row search term
-            if (
-              typeof option === "string" &&
-              option !== "AdvancedSearchButton"
-            ) {
-              return (
-                <Suggestion
-                  {...props}
-                  // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
-                  aria-selected={false}
-                  key={"global-search-term"}
-                  icon="search"
-                  onClick={() => goToSearchPage(option)}
-                  text={option}
-                />
-              );
-            } else if (
-              typeof option === "string" &&
-              option === "AdvancedSearchButton"
-            ) {
-              return (
-                <ListItem
-                  sx={{
-                    height: 32,
-                    mt: 1,
-                  }}
-                  key={option}
-                >
-                  <Button
-                    data-cy="AdvancedSearchButton"
-                    size="small"
-                    onClick={() => setIsAdvancedSearchOpen(true)}
+            if (typeof option === "string") {
+              if (!AdditionalDropdownOptions.includes(option)) {
+                // Means that this option is the top row global search term typed by the userf
+                const isSearchTerm = props.id === `${ElementId}-option-0`;
+
+                // Determines if the user-typed top row global search term already exists in the recent searches
+                const searchTermInRecentSearches =
+                  isSearchTerm && recentSearches.includes(option);
+
+                // Hides the top row global search term if no value is present
+                if (isSearchTerm && !value) {
+                  return;
+                }
+
+                return (
+                  <GlobalSearchItem
+                    {...props}
+                    // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
+                    aria-selected={false}
+                    data-cy={
+                      isSearchTerm
+                        ? "global-search-term"
+                        : "global-search-recent-keyword"
+                    }
+                    key={isSearchTerm ? "global-search-term" : option}
+                    icon={
+                      !isSearchTerm || searchTermInRecentSearches
+                        ? ScheduleRounded
+                        : SearchRounded
+                    }
+                    onClick={() => goToSearchPage(option)}
+                    text={option}
+                    isRemovable={!isSearchTerm || searchTermInRecentSearches}
+                    onRemove={deleteSearchTerm}
+                  />
+                );
+              }
+
+              // Renders the recent searches component
+              if (option === "RecentSearches") {
+                return (
+                  <ListSubheader
+                    sx={{
+                      px: 1.5,
+                      pb: 0.5,
+                      pt: 0,
+                      mt: 1,
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      lineHeight: "18px",
+                      letterSpacing: "0.15px",
+                    }}
+                    key={option}
                   >
-                    Advanced Search
-                  </Button>
-                </ListItem>
-              );
-            }
-            // type of ContentItem represents a suggestion from the search API
-            else {
+                    Recent Searches
+                  </ListSubheader>
+                );
+              }
+
+              // Renders the advanced search button
+              if (option === "AdvancedSearchButton") {
+                return (
+                  <ListItem
+                    sx={{
+                      height: 32,
+                      mt: 1,
+                    }}
+                    key={option}
+                  >
+                    <Button
+                      data-cy="AdvancedSearchButton"
+                      size="small"
+                      onClick={() => setIsAdvancedSearchOpen(true)}
+                    >
+                      Advanced Search
+                    </Button>
+                  </ListItem>
+                );
+              }
+            } else {
+              // type of ContentItem represents a suggestion from the search API
               const getText = () => {
                 const title = option?.web?.metaTitle || "Missing Meta Title";
                 const langCode = languages.find(
@@ -223,10 +283,10 @@ const ContentSearch: FC = () => {
                 return langDisplay ? `${langDisplay}${title}` : title;
               };
               return (
-                <Suggestion
+                <GlobalSearchItem
                   {...props}
                   key={option.meta.ZUID}
-                  icon="pencil"
+                  icon={Create}
                   text={getText()}
                 />
               );
@@ -325,6 +385,7 @@ const ContentSearch: FC = () => {
         <AdvancedSearch
           keyword={value}
           onClose={() => setIsAdvancedSearchOpen(false)}
+          onSearch={(searchData) => addSearchTerm(searchData.keyword)}
         />
       )}
     </>
@@ -332,34 +393,3 @@ const ContentSearch: FC = () => {
 };
 
 export default ContentSearch;
-
-type SuggestionProps = HTMLAttributes<HTMLLIElement> & {
-  text: string;
-  icon: "search" | "pencil";
-};
-const Suggestion: FC<SuggestionProps> = ({ text, icon, ...props }) => {
-  const Icon = icon === "search" ? SearchIcon : PencilIcon;
-  return (
-    <ListItem
-      {...props}
-      sx={{
-        "&.MuiAutocomplete-option": {
-          padding: "4px 16px 4px 16px",
-        },
-        minHeight: "36px",
-        "&.Mui-focused": {
-          borderLeft: (theme) => "4px solid " + theme.palette.primary.main,
-          padding: "4px 16px 4px 12px",
-        },
-      }}
-    >
-      <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
-        <Icon fontSize="small" />
-      </ListItemIcon>
-      <ListItemText
-        primary={text}
-        primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
-      />
-    </ListItem>
-  );
-};
