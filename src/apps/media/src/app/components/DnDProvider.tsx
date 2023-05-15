@@ -34,7 +34,9 @@ export const DnDProvider = ({
 }: Props) => {
   const dispatch = useDispatch();
   const { data: currentGroup, isFetching: groupIsFetching } =
-    useGetGroupDataQuery(currentGroupId, { skip: !currentGroupId });
+    useGetGroupDataQuery(currentGroupId, {
+      skip: !currentGroupId || currentGroupId === currentBinId,
+    });
   const { data: binData, isFetching: binIsFetching } = useGetBinQuery(
     currentBinId,
     { skip: !currentBinId }
