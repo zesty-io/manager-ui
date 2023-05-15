@@ -109,9 +109,9 @@ export const ContentInfo = (props) => {
                   <InputAdornment position="end">
                     <IconButton
                       size="small"
-                      onClick={() => handleCopyClick(props.modelZUID)}
+                      onClick={() => handleCopyClick(props.itemZUID || "")}
                     >
-                      {isCopied === props.modelZUID ? (
+                      {isCopied === props.itemZUID ? (
                         <CheckIcon color="action" />
                       ) : (
                         <ContentCopyRoundedIcon color="action" />
