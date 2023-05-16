@@ -34,6 +34,7 @@ import { NotFound } from "../NotFound";
 
 import { PublishState } from "./PublishState.tsx";
 import { Header } from "./components/Header";
+import Analytics from "./Analytics";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -319,6 +320,22 @@ export default function ItemEdit() {
                     dispatch={dispatch}
                     saving={saving}
                   />
+                )}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/analytics"
+                render={() => (
+                  <>
+                    <Header
+                      instance={instance}
+                      modelZUID={modelZUID}
+                      model={model}
+                      itemZUID={itemZUID}
+                      item={item}
+                    />
+                    <Analytics item={item} />
+                  </>
                 )}
               />
               <Route

@@ -18,7 +18,8 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
             slug !== "head" &&
             slug !== "preview" &&
             slug !== "headless" &&
-            slug !== "publishings"
+            slug !== "publishings" &&
+            slug !== "analytics"
             ? styles.Selected
             : null
         )}
@@ -37,6 +38,17 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         to={`/content/${modelZUID}/${itemZUID}/meta`}
       >
         SEO
+      </AppLink>
+      <AppLink
+        title="Analytics"
+        className={cx(
+          styles.AppLink,
+          styles.buttonText,
+          slug === "analytics" ? styles.Selected : null
+        )}
+        to={`/content/${modelZUID}/${itemZUID}/analytics`}
+      >
+        Analytics
       </AppLink>
       {item.web.path && (
         <AppLink
