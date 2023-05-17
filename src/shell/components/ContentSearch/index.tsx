@@ -91,7 +91,7 @@ const ContentSearch: FC = () => {
         collapsedSize="288px"
         orientation="horizontal"
         sx={{
-          zIndex: (theme) => theme.zIndex.appBar - 1,
+          zIndex: 2,
           height: "40px",
           position: "relative",
           "& .MuiCollapse-entered": {
