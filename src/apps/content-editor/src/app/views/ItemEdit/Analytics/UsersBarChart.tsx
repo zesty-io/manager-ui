@@ -181,7 +181,7 @@ export const UsersBarChart = ({ startDate, endDate }: Props) => {
             top: tooltipModel?.y,
             left: tooltipModel?.x,
             width: 258,
-            zIndex: 100,
+            zIndex: theme.zIndex.tooltip,
           }}
           onMouseLeave={() => {
             setTooltipModel(null);

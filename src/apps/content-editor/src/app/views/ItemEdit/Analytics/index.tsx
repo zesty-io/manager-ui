@@ -11,12 +11,12 @@ import { AppState } from "../../../../../../../shell/store/types";
 import { NotFound } from "../../../../../../../shell/components/NotFound";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
-import formatNumberWithSuffix from "../../../../../../../utility/formatNumberWithSuffix";
 import { UsersDoughnutChart } from "./UsersDoughnutChart";
 import { ByDayLineChart } from "./ByDayLineChart";
 import { useGetAuditsQuery } from "../../../../../../../shell/services/instance";
 import moment from "moment-timezone";
 import { UsersBarChart } from "./UsersBarChart";
+import { numberFormatter } from "../../../../../../../utility/numberFormatter";
 
 const Analytics = () => {
   return (
@@ -177,10 +177,10 @@ const Metric = () => {
         Sessions
       </Typography>
       <Typography variant="h2" fontWeight={600} sx={{ mb: 1 }}>
-        {formatNumberWithSuffix(13000)}
+        {numberFormatter.format(13000)}
       </Typography>
       <Typography variant="body3" color="text.disabled">
-        {formatNumberWithSuffix(10000)}{" "}
+        {numberFormatter.format(10000)}{" "}
         <Typography variant="body3" color="success.main">
           + 13.74%
         </Typography>

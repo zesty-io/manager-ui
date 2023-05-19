@@ -71,8 +71,6 @@ export const ByDayLineChart = ({ auditData, startDate, endDate }: Props) => {
     const index = activeElement?.index;
 
     if (typeof datasetIndex === "number" && typeof index === "number") {
-      const meta = chart.getDatasetMeta(datasetIndex);
-      // const data = meta.data[index];
       const model = {
         datasetIndex,
         dataIndex: index,
@@ -273,6 +271,7 @@ export const ByDayLineChart = ({ auditData, startDate, endDate }: Props) => {
             position: "absolute",
             top: tooltipModel?.y,
             left: tooltipModel?.x,
+            zIndex: theme.zIndex.tooltip,
           }}
           onMouseLeave={() => {
             setIsTooltipEntered(false);
