@@ -34,7 +34,7 @@ export default class ScheduleFlyout extends Component {
       scheduling: false,
       userTimezone: userTimezone,
       selectedTimezone: userTimezone,
-      selectedTime: moment().format(UTC_FORMAT),
+      selectedTime: moment().add(5, "minutes").format(UTC_FORMAT),
       timezones: moment.tz.names(),
     });
   }
@@ -42,7 +42,9 @@ export default class ScheduleFlyout extends Component {
   componentDidUpdate(prevProps) {
     // Resets selectedTime when flyout is toggled
     if (prevProps.isOpen !== this.props.isOpen) {
-      this.setState({ selectedTime: moment().format(UTC_FORMAT) });
+      this.setState({
+        selectedTime: moment().add(5, "minutes").format(UTC_FORMAT),
+      });
     }
   }
 
