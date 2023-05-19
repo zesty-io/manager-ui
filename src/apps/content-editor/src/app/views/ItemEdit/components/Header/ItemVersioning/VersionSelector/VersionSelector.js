@@ -7,6 +7,7 @@ import { Box, Select, MenuItem } from "@mui/material";
 import { fetchVersions } from "shell/store/contentVersions";
 
 import styles from "./VersionSelector.less";
+import { useLocation } from "react-router";
 export default connect((state, props) => {
   const versions = state.contentVersions[props.itemZUID] || [];
 
@@ -21,6 +22,9 @@ export default connect((state, props) => {
   };
 })(
   memo(function VersionSelector(props) {
+    // get version from params
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
     const [loading, setLoading] = useState(true);
     const [selectedVersionNum, setSelectedVersionNum] = useState(
       props.latestVersionNum
@@ -40,12 +44,18 @@ export default connect((state, props) => {
       setSelectedVersionNum(props.latestVersionNum);
     }, [props.latestVersionNum]);
 
+    useEffect(() => {
+      const version = queryParams.get("version");
+      if (version && props.versions?.length) {
+        onSelect({ target: { value: version } });
+      }
+    }, [queryParams.get("version"), props.versions]);
+
     // Set item editing view to selected version
     const onSelect = (e) => {
       const version = props.versions.find(
         (version) => version.meta.version == e.target.value
       );
-
       if (version) {
         props.dispatch({
           type: "LOAD_ITEM_VERSION",

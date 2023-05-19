@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Box, Typography, Divider } from "@mui/material";
+import { Button, Box, Typography, Divider, Paper } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
 import contentAnalytics from "../../../../../../../../public/images/contentAnalytics.svg";
@@ -12,7 +12,11 @@ import { NotFound } from "../../../../../../../shell/components/NotFound";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import formatNumberWithSuffix from "../../../../../../../utility/formatNumberWithSuffix";
-import { Doughnut } from "react-chartjs-2";
+import { UsersDoughnutChart } from "./UsersDoughnutChart";
+import { ByDayLineChart } from "./ByDayLineChart";
+import { useGetAuditsQuery } from "../../../../../../../shell/services/instance";
+import moment from "moment-timezone";
+import { UsersBarChart } from "./UsersBarChart";
 
 const Analytics = () => {
   return (
@@ -76,8 +80,16 @@ const AuthView = () => {
   );
 };
 
+const startDate = moment().subtract(13, "days");
+// const endDate = moment(). subtract(1, "days");
+const endDate = moment();
+
 const AnalyticsView = () => {
   const instance = useSelector((state: AppState) => state.instance);
+  const { data: auditData } = useGetAuditsQuery({
+    start_date: startDate.format("L"),
+    end: endDate.format("L"),
+  });
   return (
     <Box height="100%">
       <Box>FILTERS</Box>
@@ -98,82 +110,35 @@ const AnalyticsView = () => {
         <Divider orientation="vertical" flexItem />
         <Metric />
         <Box width="184px" height="100px">
-          <Doughnut
-            data={{
-              labels: ["New", "Returning"],
-              datasets: [
-                {
-                  label: "First Dataset",
-                  data: [500, 3000],
-                  backgroundColor: [
-                    theme.palette.info.light,
-                    theme.palette.info.main,
-                  ],
-                  borderWidth: 0,
-                },
-                {
-                  label: "Second Dataset",
-                  data: [500 + 3000, 1500],
-                  backgroundColor: [
-                    theme.palette.grey[200],
-                    theme.palette.grey[500],
-                  ],
-                  borderWidth: 0,
-                },
-              ],
-            }}
-            options={{
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: true,
-                  position: "right",
-                  labels: {
-                    usePointStyle: true,
-                    pointStyle: "circle",
-                    boxWidth: 12,
-                    font: {
-                      family: "Mulish",
-                      size: 12,
-                    },
-                    color: theme.palette.text.secondary,
-                    padding: 14,
-                  },
-                },
-              },
-              cutout: "65%",
-            }}
-            plugins={[
-              {
-                id: "users-chart",
-                beforeDatasetsDraw: (chart) => {
-                  const ctx = chart.ctx;
-                  ctx.save();
-                  ctx.textAlign = "center";
-                  ctx.textBaseline = "middle";
+          <UsersDoughnutChart />
+        </Box>
+      </Box>
+      <Box display="flex" mt={2.5} gap={2}>
+        <Box
+          width="40%"
+          height="446px"
+          borderRadius={"8px"}
+          p={2}
+          border={(theme) => `1px solid ${theme.palette.border}`}
+        >
+          <UsersBarChart
+            auditData={auditData}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        </Box>
 
-                  ctx.font = "bold 12px Mulish";
-                  ctx.fillStyle = theme.palette.text.secondary;
-                  const xCoor = chart.getDatasetMeta(0).data[0].x;
-                  const yCoor = chart.getDatasetMeta(0).data[0].y;
-                  const title = "Users";
-
-                  ctx.fillText(title, xCoor, yCoor - 14);
-
-                  ctx.font = "bold 20px Mulish";
-                  ctx.fillStyle = theme.palette.text.primary;
-                  // ADD TOTAL USERS FROM SECONDARY DATASET
-                  const subtitle = formatNumberWithSuffix(
-                    chart.data.datasets[0].data.reduce(
-                      (a: number, b: number) => a + b,
-                      0
-                    ) as number
-                  );
-                  ctx.fillText(subtitle, xCoor, yCoor + 6);
-                  ctx.restore();
-                },
-              },
-            ]}
+        <Box
+          width="60%"
+          height="446px"
+          borderRadius={"8px"}
+          p={2}
+          border={(theme) => `1px solid ${theme.palette.border}`}
+        >
+          <ByDayLineChart
+            auditData={auditData}
+            startDate={startDate}
+            endDate={endDate}
           />
         </Box>
       </Box>
