@@ -54,14 +54,14 @@ const ContentSearch: FC = () => {
 
   const textfieldRef = useRef<HTMLDivElement>();
 
-  const contentSearchResponse = useSearchContentQuery(
+  const { data: contents } = useSearchContentQuery(
     { query: value },
     { skip: !value }
   );
 
   const suggestions: Suggestion[] = useMemo(() => {
     const contentSuggestions: Suggestion[] =
-      contentSearchResponse?.data?.map((content) => {
+      contents?.map((content) => {
         return {
           type: "content",
           ZUID: content.meta?.ZUID,
@@ -92,10 +92,8 @@ const ContentSearch: FC = () => {
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
 
-    console.log(consolidatedResults);
-
     return consolidatedResults;
-  }, [contentSearchResponse, models]);
+  }, [contents, models]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
