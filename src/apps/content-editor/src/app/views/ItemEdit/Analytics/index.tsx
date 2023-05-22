@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { Button, Box, Typography, Divider, Paper } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
@@ -17,6 +17,23 @@ import { useGetAuditsQuery } from "../../../../../../../shell/services/instance"
 import moment from "moment-timezone";
 import { UsersBarChart } from "./UsersBarChart";
 import { numberFormatter } from "../../../../../../../utility/numberFormatter";
+import {
+  DateFilter,
+  DateRangeFilterValue,
+} from "../../../../../../../shell/components/Filters";
+import { useParams as useQueryParams } from "../../../../../../../shell/hooks/useParams";
+import { DateFilterValue } from "../../../../../../../shell/components/Filters/DateFilter";
+import { useParams } from "react-router-dom";
+
+const getDateRangeFromPreset = (preset: DateFilterValue) => {
+  switch (preset.value) {
+    case "last_14_days":
+      // 14 and 1 for proper date range
+      return [moment().subtract(13, "days"), moment().subtract(0, "days")];
+    default:
+      return [moment().subtract(6, "days"), moment().subtract(1, "days")];
+  }
+};
 
 const Analytics = () => {
   return (
@@ -80,19 +97,145 @@ const AuthView = () => {
   );
 };
 
-const startDate = moment().subtract(13, "days");
-// const endDate = moment(). subtract(1, "days");
-const endDate = moment();
-
 const AnalyticsView = () => {
+  const [params, setParams] = useQueryParams();
+  const { itemZUID } = useParams<{ itemZUID: string }>();
   const instance = useSelector((state: AppState) => state.instance);
   const { data: auditData } = useGetAuditsQuery({
-    start_date: startDate.format("L"),
-    end: endDate.format("L"),
+    // Start of content item version support in audit
+    start_date: "05/18/2023",
+    end: moment().format("L"),
+    affectedZUID: itemZUID,
   });
+
+  useEffect(() => {
+    if (
+      !params.get("datePreset") ||
+      (!params.get("from") && !params.get("to"))
+    ) {
+      handleDateFilterChanged({ type: "preset", value: "last_14_days" });
+    }
+  }, []);
+
+  const activeDateFilter: DateFilterValue = useMemo(() => {
+    const isPreset = Boolean(params.get("datePreset"));
+    const isBefore = Boolean(params.get("to")) && !Boolean(params.get("from"));
+    const isAfter = Boolean(params.get("from")) && !Boolean(params.get("to"));
+    const isOn =
+      Boolean(params.get("to")) &&
+      Boolean(params.get("from")) &&
+      params.get("to") === params.get("from");
+    const isDateRange =
+      Boolean(params.get("to")) &&
+      Boolean(params.get("from")) &&
+      params.get("to") !== params.get("from");
+
+    if (isPreset) {
+      return {
+        type: "preset",
+        value: params.get("datePreset"),
+      };
+    }
+
+    if (isBefore) {
+      return {
+        type: "before",
+        value: params.get("to"),
+      };
+    }
+
+    if (isAfter) {
+      return {
+        type: "after",
+        value: params.get("from"),
+      };
+    }
+
+    if (isOn) {
+      return {
+        type: "on",
+        value: params.get("from"),
+      };
+    }
+
+    if (isDateRange) {
+      return {
+        type: "daterange",
+        value: {
+          from: params.get("from"),
+          to: params.get("to"),
+        },
+      };
+    }
+
+    return {
+      type: "",
+      value: "",
+    };
+  }, [params]);
+
+  const [startDate, endDate] = getDateRangeFromPreset(activeDateFilter);
+
+  const handleDateFilterChanged = (dateFilter: DateFilterValue) => {
+    switch (dateFilter.type) {
+      case "daterange": {
+        const value = dateFilter.value as DateRangeFilterValue;
+
+        setParams(value.to, "to");
+        setParams(value.from, "from");
+        setParams(null, "datePreset");
+        return;
+      }
+
+      case "on": {
+        const value = dateFilter.value as string;
+
+        setParams(value, "to");
+        setParams(value, "from");
+        setParams(null, "datePreset");
+        return;
+      }
+      case "before": {
+        const value = dateFilter.value as string;
+
+        setParams(value, "to");
+        setParams(null, "from");
+        setParams(null, "datePreset");
+        return;
+      }
+      case "after": {
+        const value = dateFilter.value as string;
+
+        setParams(value, "from");
+        setParams(null, "to");
+        setParams(null, "datePreset");
+        return;
+      }
+      case "preset": {
+        const value = dateFilter.value as string;
+
+        setParams(value, "datePreset");
+        setParams(null, "to");
+        setParams(null, "from");
+        return;
+      }
+
+      default: {
+        setParams(null, "to");
+        setParams(null, "from");
+        setParams(null, "datePreset");
+        return;
+      }
+    }
+  };
+
   return (
     <Box height="100%">
-      <Box>FILTERS</Box>
+      <DateFilter
+        clearable={false}
+        value={activeDateFilter}
+        onChange={handleDateFilterChanged}
+      />
       <Box
         display="flex"
         justifyContent={"space-between"}
@@ -139,6 +282,7 @@ const AnalyticsView = () => {
             auditData={auditData}
             startDate={startDate}
             endDate={endDate}
+            dateLabel={(activeDateFilter.value as string).replace("_", " ")}
           />
         </Box>
       </Box>

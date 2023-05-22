@@ -27,6 +27,10 @@ const PRESET_DATES: PresetDate[] = [
     value: "last_7_days",
   },
   {
+    text: "Last 14 days",
+    value: "last_14_days",
+  },
+  {
     text: "Last 30 days",
     value: "last_30_days",
   },
@@ -72,12 +76,14 @@ interface DateFilterProps {
   onChange: (filter: DateFilterValue) => void;
   withDateRange?: boolean;
   defaultButtonText?: string;
+  clearable?: boolean;
 }
 export const DateFilter: FC<DateFilterProps> = ({
   onChange,
   value,
   withDateRange = false,
   defaultButtonText = "Last Updated",
+  clearable = true,
 }) => {
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
@@ -146,6 +152,7 @@ export const DateFilter: FC<DateFilterProps> = ({
   return (
     <>
       <FilterButton
+        clearable={clearable}
         filterId="date"
         isFilterActive={Boolean(activeFilterText !== defaultButtonText)}
         buttonText={activeFilterText}

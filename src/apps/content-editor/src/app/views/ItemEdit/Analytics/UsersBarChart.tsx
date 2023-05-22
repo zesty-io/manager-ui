@@ -27,7 +27,7 @@ function calculatePercentageDifference(
   newValue: number
 ) {
   const difference = newValue - originalValue;
-  const percentageDifference = ((difference / originalValue) * 100).toFixed(0);
+  const percentageDifference = ((difference / originalValue) * 100).toFixed(2);
   return `${
     Math.sign((difference / originalValue) * 100) === 1 ? "+" : ""
   }${percentageDifference}`;

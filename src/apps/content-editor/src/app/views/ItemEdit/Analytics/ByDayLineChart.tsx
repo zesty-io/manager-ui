@@ -18,6 +18,7 @@ type Props = {
   auditData: any;
   startDate: Moment;
   endDate: Moment;
+  dateLabel: string;
 };
 
 function getDatesArray(start: Moment, end: Moment) {
@@ -29,7 +30,12 @@ function getDatesArray(start: Moment, end: Moment) {
   return datesArray;
 }
 
-export const ByDayLineChart = ({ auditData, startDate, endDate }: Props) => {
+export const ByDayLineChart = ({
+  auditData,
+  startDate,
+  endDate,
+  dateLabel,
+}: Props) => {
   const history = useHistory();
   const { modelZUID, itemZUID } = useParams<Params>();
   const chartRef = useRef(null);
@@ -86,7 +92,7 @@ export const ByDayLineChart = ({ auditData, startDate, endDate }: Props) => {
 
   const lastData = [12, 19, 3, 5, 2, 3, 9, 12, 19, 3, 5, 2, 3, 9];
 
-  const dateLabels = useMemo(
+  const dateChartLabels = useMemo(
     () => getDatesArray(startDate, endDate),
     [startDate, endDate]
   );
@@ -140,7 +146,7 @@ export const ByDayLineChart = ({ auditData, startDate, endDate }: Props) => {
         <Line
           ref={chartRef}
           data={{
-            labels: dateLabels,
+            labels: dateChartLabels,
             datasets: [
               {
                 label: "Item Published",

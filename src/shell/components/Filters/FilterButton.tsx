@@ -11,6 +11,7 @@ interface FilterButton {
   onRemoveFilter: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children?: React.ReactNode;
   filterId?: string;
+  clearable?: boolean;
 }
 export const FilterButton: FC<FilterButton> = ({
   isFilterActive,
@@ -19,8 +20,9 @@ export const FilterButton: FC<FilterButton> = ({
   onRemoveFilter,
   children,
   filterId = "genericFilter",
+  clearable = true,
 }) => {
-  if (isFilterActive) {
+  if (isFilterActive && clearable) {
     return (
       <>
         <ButtonGroup variant="contained" sx={{ height: "28px" }}>
