@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useMemo, useEffect } from "react";
 
 import { useParams } from "../../../shell/hooks/useParams";
 import { Typography, Box, Stack } from "@mui/material";
@@ -9,52 +9,127 @@ import { cloneDeep } from "lodash";
 
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
-import { ContentList } from "./ContentList";
+import { SearchPageList } from "./List/SearchPageList";
 import { BackButton } from "./BackButton";
 import { Filters } from "./Filters";
 import { getDateFilterFn } from "../../components/Filters/DateFilter";
+import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
+import { ContentItem, ContentModel } from "../../services/types";
 
+export interface SearchPageItem {
+  ZUID: string;
+  title: string;
+  type: "schema" | "content";
+  updatedAt: string;
+  createdAt: string;
+  createdByUserZUID: string;
+  data: ContentItem | ContentModel;
+}
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q") || "";
-  const { data: results, isLoading } = useSearchContentQuery(
+  const { data: contents, isLoading } = useSearchContentQuery(
     { query, order: "created", dir: "desc" },
     { skip: !query }
   );
+  const [models, setKeyword] = useSearchModelsByKeyword();
 
-  const sortedResults = useMemo(() => {
+  useEffect(() => {
+    setKeyword(query);
+  }, [query]);
+
+  // Combine results from contents and models
+  const results: SearchPageItem[] = useMemo(() => {
     const sortBy = params.get("sort") || "";
-    const _results = results ? cloneDeep(results) : [];
+    const contentResults: SearchPageItem[] =
+      contents?.map((content) => {
+        return {
+          ZUID: content.meta?.ZUID,
+          title: content.web?.metaTitle,
+          type: "content",
+          updatedAt: content.meta?.updatedAt,
+          createdAt: content.meta?.createdAt,
+          createdByUserZUID: content.web?.createdByUserZUID,
+          data: content,
+        };
+      }) || [];
 
+    const modelResults: SearchPageItem[] =
+      models?.map((model) => {
+        return {
+          ZUID: model.ZUID,
+          title: model.label,
+          type: "schema",
+          updatedAt: model.updatedAt,
+          createdAt: model.createdAt,
+          createdByUserZUID: model.createdByUserZUID,
+          data: model,
+        };
+      }) || [];
+
+    const consolidatedResults = [...contentResults, ...modelResults];
+
+    // Sort the results
     switch (sortBy) {
       case "":
       case "modified":
-        return _results?.sort((a, b) => {
-          return moment(b.meta.updatedAt).diff(moment(a.meta.updatedAt));
+        return consolidatedResults?.sort((a, b) => {
+          return moment(b.updatedAt).diff(moment(a.updatedAt));
         });
 
       case "created":
-        return _results?.sort((a, b) => {
-          return moment(b.meta.createdAt).diff(moment(a.meta.createdAt));
+        return consolidatedResults?.sort((a, b) => {
+          return moment(b.createdAt).diff(moment(a.createdAt));
         });
 
       case "AtoZ":
-        return _results?.sort((a, b) => {
-          return a.web?.metaTitle?.localeCompare(b.web?.metaTitle);
+        return consolidatedResults?.sort((a, b) => {
+          return a.title?.localeCompare(b.title);
         });
 
       case "ZtoA":
-        return _results?.sort((a, b) => {
-          return b.web?.metaTitle?.localeCompare(a.web?.metaTitle);
+        return consolidatedResults?.sort((a, b) => {
+          return b.title?.localeCompare(a.title);
         });
 
       default:
-        return _results;
+        return consolidatedResults;
     }
-  }, [results, params]);
+  }, [contents, models, params]);
+
+  // const sortedResults = useMemo(() => {
+  //   const sortBy = params.get("sort") || "";
+  //   const _results = contents ? cloneDeep(contents) : [];
+
+  //   switch (sortBy) {
+  //     case "":
+  //     case "modified":
+  //       return _results?.sort((a, b) => {
+  //         return moment(b.meta.updatedAt).diff(moment(a.meta.updatedAt));
+  //       });
+
+  //     case "created":
+  //       return _results?.sort((a, b) => {
+  //         return moment(b.meta.createdAt).diff(moment(a.meta.createdAt));
+  //       });
+
+  //     case "AtoZ":
+  //       return _results?.sort((a, b) => {
+  //         return a.web?.metaTitle?.localeCompare(b.web?.metaTitle);
+  //       });
+
+  //     case "ZtoA":
+  //       return _results?.sort((a, b) => {
+  //         return b.web?.metaTitle?.localeCompare(a.web?.metaTitle);
+  //       });
+
+  //     default:
+  //       return _results;
+  //   }
+  // }, [contents, params]);
 
   const filteredResults = useMemo(() => {
-    let _results = cloneDeep(sortedResults);
+    let _results = cloneDeep(results);
     const userFilter = params.get("user") || "";
     const dateFilter = {
       preset: params.get("datePreset") || "",
@@ -77,7 +152,7 @@ export const SearchPage: FC = () => {
     // Filter by user
     if (userFilter) {
       _results = _results.filter(
-        (result) => result.web?.createdByUserZUID === userFilter
+        (result) => result.createdByUserZUID === userFilter
       );
     }
 
@@ -111,8 +186,8 @@ export const SearchPage: FC = () => {
     // Apply date filter if there is any
     if (dateFilterFn) {
       _results = _results.filter((result) => {
-        if (result.meta?.updatedAt) {
-          return dateFilterFn(result.meta?.updatedAt);
+        if (result.updatedAt) {
+          return dateFilterFn(result.updatedAt);
         }
 
         return false;
@@ -120,7 +195,7 @@ export const SearchPage: FC = () => {
     }
 
     return _results;
-  }, [sortedResults, params]);
+  }, [results, params]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -178,7 +253,7 @@ export const SearchPage: FC = () => {
                 height: "100%",
               }}
             >
-              <ContentList results={filteredResults} loading={isLoading} />
+              <SearchPageList results={filteredResults} loading={isLoading} />
             </Box>
           ))}
       </Stack>

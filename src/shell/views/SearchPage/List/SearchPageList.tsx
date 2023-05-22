@@ -1,16 +1,19 @@
 import { FC, useCallback } from "react";
-import { ContentItem } from "../../services/types";
-import { ContentListItem } from "./ContentListItem";
 import Stack from "@mui/material/Stack";
 import { FixedSizeList } from "react-window";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
-type ContentList = {
-  results: ContentItem[];
+import { ContentItem, ContentModel } from "../../../services/types";
+import { SearchPageItem } from "../SearchPage";
+import { Content } from "./Content";
+import { Model } from "./Model";
+
+type SearchPageList = {
+  results: SearchPageItem[];
   loading: boolean;
 };
 
-export const ContentList: FC<ContentList> = ({
+export const SearchPageList: FC<SearchPageList> = ({
   results: backendResults,
   loading,
 }) => {
@@ -21,18 +24,33 @@ export const ContentList: FC<ContentList> = ({
     ({ index, style }) => {
       if (!loading) {
         const result = backendResults[index];
-        return (
-          <ContentListItem
-            key={result.meta.ZUID}
-            result={result}
-            style={style}
-          />
-        );
+
+        switch (result.type) {
+          case "content":
+            return (
+              <Content
+                key={result.ZUID}
+                data={result.data as ContentItem}
+                style={style}
+              />
+            );
+
+          case "schema":
+            return (
+              <Model
+                key={result.ZUID}
+                data={result.data as ContentModel}
+                style={style}
+              />
+            );
+          default:
+            break;
+        }
       } else {
         return (
-          <ContentListItem
+          <Content
             key={index}
-            result={results[index]}
+            data={results[index]}
             style={style}
             loading={loading}
           />
@@ -46,7 +64,7 @@ export const ContentList: FC<ContentList> = ({
     <Stack
       direction="column"
       sx={{ width: "100%", height: "100%" }}
-      data-cy="ContentList"
+      data-cy="SearchPageList"
     >
       <AutoSizer>
         {({ height, width }: Size) => (
