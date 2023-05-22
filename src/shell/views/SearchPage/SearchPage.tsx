@@ -130,6 +130,7 @@ export const SearchPage: FC = () => {
 
   const filteredResults = useMemo(() => {
     let _results = cloneDeep(results);
+    const resourceTypeFilter = params.get("resource") || "";
     const userFilter = params.get("user") || "";
     const dateFilter = {
       preset: params.get("datePreset") || "",
@@ -153,6 +154,13 @@ export const SearchPage: FC = () => {
     if (userFilter) {
       _results = _results.filter(
         (result) => result.createdByUserZUID === userFilter
+      );
+    }
+
+    // Filter by resource type
+    if (resourceTypeFilter) {
+      _results = _results.filter(
+        (result) => result.type === resourceTypeFilter
       );
     }
 
