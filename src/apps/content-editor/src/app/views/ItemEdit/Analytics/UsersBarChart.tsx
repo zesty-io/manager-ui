@@ -108,7 +108,11 @@ export const UsersBarChart = ({
           </Button>
         </ButtonGroup>
       </Box>
-      <Box position="relative" height="100%">
+      <Box
+        position="relative"
+        height="100%"
+        onMouseLeave={() => setTooltipModel(null)}
+      >
         <Bar
           ref={chartRef}
           data={{

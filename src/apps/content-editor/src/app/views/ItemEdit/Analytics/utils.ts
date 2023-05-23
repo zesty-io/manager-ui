@@ -3,13 +3,13 @@ export function calculatePercentageDifference(
   newValue: number
 ) {
   const difference = newValue - originalValue;
-  const percentageDifference = ((difference / originalValue) * 100).toFixed(2);
+  const percentageDifference = (difference / (originalValue || 1)) * 100;
 
-  return Number.isNaN((difference / originalValue) * 100)
-    ? ""
-    : `${
-        Math.sign((difference / originalValue) * 100) === 1 ? "+" : ""
-      }${percentageDifference}%`;
+  return `${Math.sign(percentageDifference * 100) === 1 ? "+" : ""}${
+    Number.isNaN(percentageDifference)
+      ? ""
+      : `${percentageDifference.toFixed(2)}%`
+  }`;
 }
 
 export function convertSecondsToMinutesAndSeconds(

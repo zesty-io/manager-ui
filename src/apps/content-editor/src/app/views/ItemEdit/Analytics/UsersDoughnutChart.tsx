@@ -90,7 +90,11 @@ export const UsersDoughnutChart = ({
   };
 
   return (
-    <Box position="relative" height="100%">
+    <Box
+      position="relative"
+      height="100%"
+      onMouseLeave={() => setTooltipModel(null)}
+    >
       <Doughnut
         ref={chartRef}
         data={{
