@@ -10,8 +10,9 @@ import moment, { Moment } from "moment-timezone";
 import "chartjs-adapter-moment";
 import {
   calculatePercentageDifference,
+  convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
-} from "./utils";
+} from "../utils";
 
 type Params = {
   modelZUID: string;
@@ -316,6 +317,16 @@ export const ByDayLineChart = ({
                   font: {
                     size: 12,
                     family: "Mulish",
+                  },
+                  callback: function (value, index, values) {
+                    switch (type) {
+                      case 1:
+                        return convertSecondsToMinutesAndSeconds(+value);
+                      case 2:
+                        return Math.floor(+value * 100) + "%";
+                      default:
+                        return value;
+                    }
                   },
                 },
               },

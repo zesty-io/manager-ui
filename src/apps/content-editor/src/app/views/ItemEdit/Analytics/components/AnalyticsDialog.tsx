@@ -6,7 +6,7 @@ import {
   DialogActions,
   Typography,
 } from "@mui/material";
-import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
+import googleAnalyticsIcon from "../../../../../../../../../public/images/googleAnalyticsIcon.svg";
 
 type Props = {
   title: string;
@@ -17,10 +17,10 @@ type Props = {
 export const AnalyticsDialog = ({ title, subTitle, buttons }: Props) => {
   return (
     <Dialog open sx={{ textAlign: "center" }}>
-      <DialogTitle>
+      <DialogTitle sx={{ p: 6 }}>
         <img src={googleAnalyticsIcon} alt="googleAnalyticsIcon" />
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ pb: 3, px: 6 }}>
         <Typography variant="h3" fontWeight="600">
           {title}
         </Typography>
@@ -28,7 +28,9 @@ export const AnalyticsDialog = ({ title, subTitle, buttons }: Props) => {
           {subTitle}
         </Typography>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "center" }}>{buttons}</DialogActions>
+      <DialogActions sx={{ justifyContent: "center", p: 6, pt: 0 }}>
+        {buttons}
+      </DialogActions>
     </Dialog>
   );
 };

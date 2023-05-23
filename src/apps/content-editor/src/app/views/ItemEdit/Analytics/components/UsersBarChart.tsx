@@ -5,13 +5,11 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Button, Box, Paper, Typography, ButtonGroup } from "@mui/material";
 import { isEqual } from "lodash";
 import { ChartEvent } from "chart.js";
-import { Moment } from "moment-timezone";
-import { numberFormatter } from "../../../../../../../utility/numberFormatter";
 import {
   calculatePercentageDifference,
   findTopDimensionsForDateRange,
   findValuesForDimensions,
-} from "./utils";
+} from "../utils";
 
 type Props = {
   usersBySourceReport: any;
@@ -215,7 +213,7 @@ export const UsersBarChart = ({
               {dateRange0Label} vs {dateRange1Label}
             </Typography>
             <Typography variant="h2" fontWeight={600}>
-              {numberFormatter.format(lastSet?.[tooltipModel?.dataIndex])}
+              {lastSet?.[tooltipModel?.dataIndex]?.toLocaleString()}
             </Typography>
             <Typography
               variant="body3"

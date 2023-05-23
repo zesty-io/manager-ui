@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
-import { numberFormatter } from "../../../../../../../utility/numberFormatter";
-import { calculatePercentageDifference } from "./utils";
+import { numberFormatter } from "../../../../../../../../utility/numberFormatter";
+import { calculatePercentageDifference } from "../utils";
 export const Metric = ({
   title,
   value = 0,

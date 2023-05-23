@@ -87,6 +87,7 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
               setDateRangeState(selectionState);
             }}
             data-cy="dateRange_picker"
+            disableFuture
           />
         </LocalizationProvider>
       </DialogContent>
