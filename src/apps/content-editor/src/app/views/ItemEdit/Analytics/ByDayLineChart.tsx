@@ -7,6 +7,7 @@ import { Button, Box, Paper, Typography, ButtonGroup } from "@mui/material";
 import { isEqual, last } from "lodash";
 import { ChartEvent } from "chart.js";
 import moment, { Moment } from "moment-timezone";
+import "chartjs-adapter-moment";
 import {
   calculatePercentageDifference,
   findValuesForDimensions,
@@ -31,7 +32,7 @@ function getDatesArray(start: Moment, end: Moment) {
   const datesArray = Array.from({ length: diff + 1 }, (_, index) => {
     const currentDate = start.clone().add(index, "days");
     const format = currentDate.date() === 1 || index === 0 ? "MMM D" : "D";
-    return currentDate.format(format);
+    return start.clone().add(index, "days").format("YYYY-MM-DD");
   });
 
   return datesArray;
@@ -89,11 +90,12 @@ export const ByDayLineChart = ({
     )[0];
     const datasetIndex = activeElement?.datasetIndex;
     const index = activeElement?.index;
-
+    console.log("testing", activeElement);
     if (
       typeof datasetIndex === "number" &&
       typeof index === "number" &&
-      datasetIndex === 0
+      datasetIndex === 0 &&
+      itemPublishesByDayArray[index]?.version
     ) {
       const model = {
         datasetIndex,
@@ -320,6 +322,14 @@ export const ByDayLineChart = ({
               x: {
                 grid: {
                   drawOnChartArea: false,
+                },
+                type: "time",
+                time: {
+                  parser: "YYYY-MM-DD",
+                  unit: "day",
+                  displayFormats: {
+                    month: "MMM YYYY",
+                  },
                 },
                 ticks: {
                   color: theme.palette.text.disabled,
