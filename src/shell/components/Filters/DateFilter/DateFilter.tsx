@@ -77,6 +77,7 @@ interface DateFilterProps {
   withDateRange?: boolean;
   defaultButtonText?: string;
   clearable?: boolean;
+  hideCustomDates?: boolean;
 }
 export const DateFilter: FC<DateFilterProps> = ({
   onChange,
@@ -84,6 +85,7 @@ export const DateFilter: FC<DateFilterProps> = ({
   withDateRange = false,
   defaultButtonText = "Last Updated",
   clearable = true,
+  hideCustomDates = false,
 }) => {
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
@@ -200,22 +202,24 @@ export const DateFilter: FC<DateFilterProps> = ({
             );
           })}
           <Divider />
-          {CUSTOM_DATES.map((date) => {
-            const isCustomDateSelected = value.type === date.value;
+          {hideCustomDates
+            ? null
+            : CUSTOM_DATES.map((date) => {
+                const isCustomDateSelected = value.type === date.value;
 
-            return (
-              <MenuItem
-                selected={isCustomDateSelected}
-                key={date.value}
-                onClick={() => handleOpenCalendarModal(date.value)}
-                sx={{
-                  height: ITEM_HEIGHT,
-                }}
-              >
-                <ListItemText>{date.text}</ListItemText>
-              </MenuItem>
-            );
-          })}
+                return (
+                  <MenuItem
+                    selected={isCustomDateSelected}
+                    key={date.value}
+                    onClick={() => handleOpenCalendarModal(date.value)}
+                    sx={{
+                      height: ITEM_HEIGHT,
+                    }}
+                  >
+                    <ListItemText>{date.text}</ListItemText>
+                  </MenuItem>
+                );
+              })}
           {withDateRange && (
             <MenuItem
               selected={value?.type === "daterange"}

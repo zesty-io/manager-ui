@@ -4,7 +4,7 @@ import { Line } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useHistory, useParams } from "react-router";
 import { Button, Box, Paper, Typography, ButtonGroup } from "@mui/material";
-import { isEqual } from "lodash";
+import { isEqual, last } from "lodash";
 import { ChartEvent } from "chart.js";
 import moment, { Moment } from "moment-timezone";
 import {
@@ -21,15 +21,18 @@ type Props = {
   auditData: any;
   startDate: Moment;
   endDate: Moment;
-  dateLabel: string;
+  dateRange0Label: string;
+  dateRange1Label: string;
   data: any;
 };
 
 function getDatesArray(start: Moment, end: Moment) {
   const diff = end.diff(start, "days");
-  const datesArray = Array.from({ length: diff + 1 }, (_, index) =>
-    start.clone().add(index, "days").format("D")
-  );
+  const datesArray = Array.from({ length: diff + 1 }, (_, index) => {
+    const currentDate = start.clone().add(index, "days");
+    const format = currentDate.date() === 1 || index === 0 ? "MMM D" : "D";
+    return currentDate.format(format);
+  });
 
   return datesArray;
 }
@@ -40,7 +43,8 @@ export const ByDayLineChart = ({
   auditData,
   startDate,
   endDate,
-  dateLabel,
+  dateRange0Label,
+  dateRange1Label,
   data,
 }: Props) => {
   const history = useHistory();
@@ -95,7 +99,7 @@ export const ByDayLineChart = ({
         datasetIndex,
         dataIndex: index,
         x: event.x - 180,
-        y: event.y - 80,
+        y: event.y - 100,
       };
       if (!isEqual(tooltipModel, model)) {
         setTooltipModel(model);
@@ -109,12 +113,28 @@ export const ByDayLineChart = ({
     [startDate, endDate]
   );
 
-  const lastData = findValuesForDimensions(data.rows, ["date_range_0"], type);
-  const priorData = findValuesForDimensions(data.rows, ["date_range_1"], type);
+  const lastData = useMemo(() => {
+    const result = findValuesForDimensions(data.rows, ["date_range_0"], type);
+    const diff = (endDate.diff(startDate, "days") + 1) * 2 - result.length - 2;
+    const zeroPadding = diff ? new Array(Math.abs(diff)).fill(0) : [];
+    return [...zeroPadding, ...result].slice(
+      endDate.diff(startDate, "days") - 1
+    );
+  }, [data, type]);
+
+  const priorData = useMemo(() => {
+    const result = findValuesForDimensions(data.rows, ["date_range_1"], type);
+    const diff = (endDate.diff(startDate, "days") + 1) * 2 - result.length - 2;
+    const zeroPadding = diff ? new Array(Math.abs(diff)).fill(0) : [];
+    return [...zeroPadding, ...result].slice(
+      0,
+      endDate.diff(startDate, "days") + 1
+    );
+  }, [data, type]);
 
   const itemPublishesByDayArray = useMemo(
     () =>
-      new Array(14).fill(0).map((_, i) => {
+      new Array(endDate.diff(startDate, "days") + 1).fill(0).map((_, i) => {
         if (
           itemPublishes?.find(
             (item: any) =>
@@ -132,7 +152,7 @@ export const ByDayLineChart = ({
           return null;
         }
       }),
-    [itemPublishes, startDate, lastData]
+    [itemPublishes, startDate, endDate, lastData]
   );
 
   return (
@@ -211,23 +231,23 @@ export const ByDayLineChart = ({
                 },
               },
               {
-                label: "Last 14 days",
+                label: dateRange0Label,
                 data: lastData,
                 fill: false,
                 backgroundColor: theme.palette.info.main,
                 borderColor: theme.palette.info.main,
-                pointRadius: 0,
+                pointRadius: lastData.length <= 2 ? 4 : 0,
                 datalabels: {
                   display: false,
                 },
               },
               {
-                label: "Prior 14 days",
+                label: dateRange1Label,
                 data: priorData,
                 fill: false,
                 backgroundColor: theme.palette.grey[300],
                 borderColor: theme.palette.grey[300],
-                pointRadius: 0,
+                pointRadius: priorData.length <= 2 ? 4 : 0,
                 datalabels: {
                   display: false,
                 },
@@ -330,7 +350,14 @@ export const ByDayLineChart = ({
               {typeLabelMap[type]}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-              {startDate.format("ddd D MMM")} vs {startDate.format("ddd D MMM")}
+              {moment(startDate)
+                .add(tooltipModel?.dataIndex, "days")
+                .format("ddd D MMM")}{" "}
+              vs{" "}
+              {moment(startDate)
+                .subtract(endDate.diff(startDate, "days") + 1, "days")
+                .add(tooltipModel?.dataIndex, "days")
+                .format("ddd D MMM")}
             </Typography>
             <Typography variant="h2" fontWeight={600}>
               {lastData?.[tooltipModel?.dataIndex]?.toLocaleString()}

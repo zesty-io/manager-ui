@@ -33,12 +33,8 @@ export function findValuesForDimensions(
       item.dimensionValues.some((dv: any) => dv.value === filter)
     );
 
-    if (
-      matchDimensions &&
-      metricFilterIndex !== undefined &&
-      item.metricValues[metricFilterIndex]
-    ) {
-      result.push(item.metricValues[metricFilterIndex].value);
+    if (matchDimensions && metricFilterIndex !== undefined) {
+      result.push(item.metricValues[metricFilterIndex]?.value);
     } else if (matchDimensions) {
       result.push(...item.metricValues.map((metric: any) => metric.value));
     }

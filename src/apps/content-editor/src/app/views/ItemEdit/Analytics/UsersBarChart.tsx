@@ -16,13 +16,13 @@ import {
 type Props = {
   usersBySourceReport: any;
   usersByCountryReport: any;
-  startDate: Moment;
-  endDate: Moment;
+  dateRange0Label: string;
+  dateRange1Label: string;
 };
 
 export const UsersBarChart = ({
-  startDate,
-  endDate,
+  dateRange0Label,
+  dateRange1Label,
   usersBySourceReport,
   usersByCountryReport,
 }: Props) => {
@@ -117,7 +117,7 @@ export const UsersBarChart = ({
             ),
             datasets: [
               {
-                label: "Last",
+                label: dateRange0Label,
                 data: lastSet,
                 backgroundColor: theme.palette.info.main,
                 datalabels: {
@@ -136,7 +136,7 @@ export const UsersBarChart = ({
                 },
               },
               {
-                label: "Prior",
+                label: dateRange1Label,
                 data: priorSet,
                 backgroundColor: theme.palette.grey[200],
                 datalabels: {
@@ -208,7 +208,7 @@ export const UsersBarChart = ({
               {topDimensions?.[tooltipModel?.dataIndex]?.[1]?.value}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-              Last 14 Days vs Prev 14 Days
+              {dateRange0Label} vs {dateRange1Label}
             </Typography>
             <Typography variant="h2" fontWeight={600}>
               {numberFormatter.format(lastSet?.[tooltipModel?.dataIndex])}

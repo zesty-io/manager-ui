@@ -7,30 +7,11 @@ import { isEqual } from "lodash";
 import { numberFormatter } from "../../../../../../../utility/numberFormatter";
 import { findValuesForDimensions } from "./utils";
 
-const datasetIndexMap = {
-  "00": {
-    title: "New Users",
-    description:
-      "New users are users who have never visited your website or app before.",
-  },
-  "01": {
-    title: "Returning Users",
-    description:
-      "Returning users are users who have visited your website or app before.",
-  },
-  "10": {
-    title: "Users for the Prior 14 Days",
-    description:
-      "Users are visitors who have initiated at least one session with your website or app within the specified period of time.",
-  },
-  "11": {
-    title: "Users for the Last 14 Days",
-    description:
-      "These are visitors who have initiated at least one session with your website or app within the last 14 days.",
-  },
-};
-
-export const UsersDoughnutChart = ({ data }: any) => {
+export const UsersDoughnutChart = ({
+  data,
+  dateRange1Label,
+  dateRange0Label,
+}: any) => {
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
 
@@ -64,15 +45,49 @@ export const UsersDoughnutChart = ({ data }: any) => {
   };
 
   const newVsReturningUsers = [
-    +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0],
-    +findValuesForDimensions(data?.rows, ["date_range_0", "returning"])?.[0],
+    +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] || 0,
+    +findValuesForDimensions(data?.rows, ["date_range_0", "returning"])?.[0] ||
+      0,
   ];
   const totalUsers = [
-    +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] +
-      +findValuesForDimensions(data?.rows, ["date_range_1", "returning"])?.[0],
-    +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] +
-      +findValuesForDimensions(data?.rows, ["date_range_0", "returning"])?.[0],
+    +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] ||
+      0 +
+        +findValuesForDimensions(data?.rows, [
+          "date_range_1",
+          "returning",
+        ])?.[0] ||
+      0,
+    +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] ||
+      0 +
+        +findValuesForDimensions(data?.rows, [
+          "date_range_0",
+          "returning",
+        ])?.[0] ||
+      0,
   ];
+
+  const datasetIndexMap = {
+    "00": {
+      title: "New Users",
+      description:
+        "New users are users who have never visited your website or app before.",
+    },
+    "01": {
+      title: "Returning Users",
+      description:
+        "Returning users are users who have visited your website or app before.",
+    },
+    "10": {
+      title: `Users for ${dateRange1Label}`,
+      description:
+        "Users are visitors who have initiated at least one session with your website or app within the specified period of time.",
+    },
+    "11": {
+      title: `Users for ${dateRange0Label}`,
+      description:
+        "These are visitors who have initiated at least one session with your website or app within the specified period of time.",
+    },
+  };
 
   return (
     <Box position="relative" height="100%">
@@ -142,7 +157,6 @@ export const UsersDoughnutChart = ({ data }: any) => {
               ctx.fillText(title, xCoor, yCoor - 14);
               ctx.font = "bold 20px Mulish";
               ctx.fillStyle = theme.palette.text.primary;
-              // ADD TOTAL USERS FROM SECONDARY DATASET
               const subtitle = numberFormatter.format(
                 (chart.data.datasets[0].data.reduce(
                   (a: number, b: number) => a + b,

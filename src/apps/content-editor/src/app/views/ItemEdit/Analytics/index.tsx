@@ -14,7 +14,7 @@ import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import { UsersDoughnutChart } from "./UsersDoughnutChart";
 import { ByDayLineChart } from "./ByDayLineChart";
 import { useGetAuditsQuery } from "../../../../../../../shell/services/instance";
-import moment from "moment-timezone";
+import moment, { Moment } from "moment-timezone";
 import { UsersBarChart } from "./UsersBarChart";
 import { numberFormatter } from "../../../../../../../utility/numberFormatter";
 import {
@@ -32,12 +32,61 @@ import {
 } from "./utils";
 import { Metric } from "./Metric";
 
-const getDateRangeFromPreset = (preset: DateFilterValue) => {
+const getDateRangeAndLabelsFromPreset = (
+  preset: DateFilterValue
+): [Moment, Moment, string, string] => {
   switch (preset.value) {
+    case "today":
+      return [moment(), moment(), "Today", "Yesterday"];
+    case "yesterday":
+      return [
+        moment().subtract(1, "days"),
+        moment().subtract(1, "days"),
+        "Yesterday",
+        "Day Before Yesterday",
+      ];
+    case "last_7_days":
+      return [
+        moment().subtract(7, "days"),
+        moment().subtract(1, "days"),
+        "Last 7 Days",
+        "Prior 7 Days",
+      ];
     case "last_14_days":
-      return [moment().subtract(14, "days"), moment().subtract(1, "days")];
+      return [
+        moment().subtract(14, "days"),
+        moment().subtract(1, "days"),
+        "Last 14 Days",
+        "Prior 14 Days",
+      ];
+    case "last_30_days":
+      return [
+        moment().subtract(30, "days"),
+        moment().subtract(1, "days"),
+        "Last 30 Days",
+        "Prior 30 Days",
+      ];
+    case "last_3_months":
+      return [
+        moment().subtract(90, "days"),
+        moment().subtract(1, "days"),
+        "Last 3 Months",
+        "Prior 3 Months",
+      ];
+    case "last_12_months":
+      return [
+        moment().subtract(365, "days"),
+        moment().subtract(1, "days"),
+        "Last 12 Months",
+        "Prior 12 Months",
+      ];
     default:
-      return [moment().subtract(6, "days"), moment().subtract(1, "days")];
+      return [
+        moment().subtract(6, "days"),
+        moment().subtract(1, "days"),
+        "Last 14 Days",
+        "Prior 14 Days",
+      ];
   }
 };
 
@@ -164,7 +213,8 @@ const AnalyticsView = ({ itemPath }: any) => {
     };
   }, [params]);
 
-  const [startDate, endDate] = getDateRangeFromPreset(activeDateFilter);
+  const [startDate, endDate, dateRange0Label, dateRange1Label] =
+    getDateRangeAndLabelsFromPreset(activeDateFilter);
 
   const { data: ga4Data, isFetching } = useGetGa4DataQuery(
     {
@@ -198,7 +248,7 @@ const AnalyticsView = ({ itemPath }: any) => {
             {
               startDate: startDate
                 ?.clone()
-                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
                 ?.format("YYYY-MM-DD"),
               endDate: startDate?.format("YYYY-MM-DD"),
             },
@@ -235,7 +285,7 @@ const AnalyticsView = ({ itemPath }: any) => {
             {
               startDate: startDate
                 ?.clone()
-                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
                 ?.format("YYYY-MM-DD"),
               endDate: startDate?.format("YYYY-MM-DD"),
             },
@@ -272,7 +322,7 @@ const AnalyticsView = ({ itemPath }: any) => {
             {
               startDate: startDate
                 ?.clone()
-                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
                 ?.format("YYYY-MM-DD"),
               endDate: startDate?.format("YYYY-MM-DD"),
             },
@@ -317,7 +367,7 @@ const AnalyticsView = ({ itemPath }: any) => {
             {
               startDate: startDate
                 ?.clone()
-                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
                 ?.format("YYYY-MM-DD"),
               endDate: startDate?.format("YYYY-MM-DD"),
             },
@@ -371,7 +421,7 @@ const AnalyticsView = ({ itemPath }: any) => {
             {
               startDate: startDate
                 ?.clone()
-                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
                 ?.format("YYYY-MM-DD"),
               endDate: startDate?.format("YYYY-MM-DD"),
             },
@@ -486,6 +536,7 @@ const AnalyticsView = ({ itemPath }: any) => {
         clearable={false}
         value={activeDateFilter}
         onChange={handleDateFilterChanged}
+        hideCustomDates
       />
       <Box
         display="flex"
@@ -539,7 +590,11 @@ const AnalyticsView = ({ itemPath }: any) => {
           }
         />
         <Box width="184px" height="100px">
-          <UsersDoughnutChart data={totalUsersReport} />
+          <UsersDoughnutChart
+            data={totalUsersReport}
+            dateRange0Label={dateRange0Label}
+            dateRange1Label={dateRange1Label}
+          />
         </Box>
       </Box>
       <Box display="flex" mt={2.5} gap={2}>
@@ -551,8 +606,8 @@ const AnalyticsView = ({ itemPath }: any) => {
           border={(theme) => `1px solid ${theme.palette.border}`}
         >
           <UsersBarChart
-            startDate={startDate}
-            endDate={endDate}
+            dateRange0Label={dateRange0Label}
+            dateRange1Label={dateRange1Label}
             usersBySourceReport={usersBySourceReport}
             usersByCountryReport={usersByCountryReport}
           />
@@ -569,7 +624,8 @@ const AnalyticsView = ({ itemPath }: any) => {
             auditData={auditData}
             startDate={startDate}
             endDate={endDate}
-            dateLabel={(activeDateFilter.value as string).replace("_", " ")}
+            dateRange0Label={dateRange0Label}
+            dateRange1Label={dateRange1Label}
             data={usersByDayReport}
           />
         </Box>
