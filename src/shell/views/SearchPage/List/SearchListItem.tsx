@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { ContentItem } from "../../../services/types";
 import { LinksContainer } from "../LinksContainer";
 import { Box, Skeleton, Stack, Typography, SvgIcon } from "@mui/material";
 import { Link } from "react-router-dom";

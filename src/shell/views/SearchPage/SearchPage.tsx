@@ -97,37 +97,6 @@ export const SearchPage: FC = () => {
     }
   }, [contents, models, params]);
 
-  // const sortedResults = useMemo(() => {
-  //   const sortBy = params.get("sort") || "";
-  //   const _results = contents ? cloneDeep(contents) : [];
-
-  //   switch (sortBy) {
-  //     case "":
-  //     case "modified":
-  //       return _results?.sort((a, b) => {
-  //         return moment(b.meta.updatedAt).diff(moment(a.meta.updatedAt));
-  //       });
-
-  //     case "created":
-  //       return _results?.sort((a, b) => {
-  //         return moment(b.meta.createdAt).diff(moment(a.meta.createdAt));
-  //       });
-
-  //     case "AtoZ":
-  //       return _results?.sort((a, b) => {
-  //         return a.web?.metaTitle?.localeCompare(b.web?.metaTitle);
-  //       });
-
-  //     case "ZtoA":
-  //       return _results?.sort((a, b) => {
-  //         return b.web?.metaTitle?.localeCompare(a.web?.metaTitle);
-  //       });
-
-  //     default:
-  //       return _results;
-  //   }
-  // }, [contents, params]);
-
   const filteredResults = useMemo(() => {
     let _results = cloneDeep(results);
     const resourceTypeFilter = params.get("resource") || "";
