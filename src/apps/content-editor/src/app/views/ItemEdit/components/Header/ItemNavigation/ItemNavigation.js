@@ -4,7 +4,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemNavigation.less";
 export default function ItemNavigation({ modelZUID, itemZUID, item }) {
-  const slug = window.location.href.split("/").pop();
+  const slug = new URL(window.location).pathname.split("/").pop();
 
   return (
     <nav className={styles.ItemNav}>

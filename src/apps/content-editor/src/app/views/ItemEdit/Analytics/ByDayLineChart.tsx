@@ -7,7 +7,10 @@ import { Button, Box, Paper, Typography, ButtonGroup } from "@mui/material";
 import { isEqual } from "lodash";
 import { ChartEvent } from "chart.js";
 import moment, { Moment } from "moment-timezone";
-import { numberFormatter } from "../../../../../../../utility/numberFormatter";
+import {
+  calculatePercentageDifference,
+  findValuesForDimensions,
+} from "./utils";
 
 type Params = {
   modelZUID: string;
@@ -19,6 +22,7 @@ type Props = {
   startDate: Moment;
   endDate: Moment;
   dateLabel: string;
+  data: any;
 };
 
 function getDatesArray(start: Moment, end: Moment) {
@@ -30,17 +34,21 @@ function getDatesArray(start: Moment, end: Moment) {
   return datesArray;
 }
 
+const typeLabelMap = ["Sessions", "Avg. Duration", "Bounce Rate", "Users"];
+
 export const ByDayLineChart = ({
   auditData,
   startDate,
   endDate,
   dateLabel,
+  data,
 }: Props) => {
   const history = useHistory();
   const { modelZUID, itemZUID } = useParams<Params>();
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
   const [isTooltipEntered, setIsTooltipEntered] = useState(false);
+  const [type, setType] = useState(0);
 
   const itemPublishes = useMemo(
     () =>
@@ -52,7 +60,9 @@ export const ByDayLineChart = ({
         )
         ?.map((item: any) => {
           return {
-            date: moment(item.meta.message.split(" ").pop()).format("L"),
+            date: moment(item.meta.message.split(" ").pop())
+              .add(1, "days")
+              .format("L"),
             version: item.meta.version,
           };
         })
@@ -76,7 +86,11 @@ export const ByDayLineChart = ({
     const datasetIndex = activeElement?.datasetIndex;
     const index = activeElement?.index;
 
-    if (typeof datasetIndex === "number" && typeof index === "number") {
+    if (
+      typeof datasetIndex === "number" &&
+      typeof index === "number" &&
+      datasetIndex === 0
+    ) {
       const model = {
         datasetIndex,
         dataIndex: index,
@@ -90,12 +104,13 @@ export const ByDayLineChart = ({
     }
   };
 
-  const lastData = [12, 19, 3, 5, 2, 3, 9, 12, 19, 3, 5, 2, 3, 9];
-
   const dateChartLabels = useMemo(
     () => getDatesArray(startDate, endDate),
     [startDate, endDate]
   );
+
+  const lastData = findValuesForDimensions(data.rows, ["date_range_0"], type);
+  const priorData = findValuesForDimensions(data.rows, ["date_range_1"], type);
 
   const itemPublishesByDayArray = useMemo(
     () =>
@@ -117,26 +132,42 @@ export const ByDayLineChart = ({
           return null;
         }
       }),
-    [itemPublishes, startDate]
+    [itemPublishes, startDate, lastData]
   );
 
   return (
     <>
       <Box display="flex" alignItems="start" justifyContent="space-between">
         <Typography variant="h5" fontWeight={600}>
-          Sessions By Day
+          {typeLabelMap[type]} By Day
         </Typography>
         <ButtonGroup size="small">
-          <Button variant="contained" color="inherit">
+          <Button
+            variant={type === 0 ? "contained" : "outlined"}
+            color="inherit"
+            onClick={() => setType(0)}
+          >
             Sessions
           </Button>
-          <Button variant="outlined" color="inherit">
+          <Button
+            variant={type === 1 ? "contained" : "outlined"}
+            color="inherit"
+            onClick={() => setType(1)}
+          >
             Avg. Duration
           </Button>
-          <Button variant="outlined" color="inherit">
+          <Button
+            variant={type === 2 ? "contained" : "outlined"}
+            color="inherit"
+            onClick={() => setType(2)}
+          >
             Bounce Rate
           </Button>
-          <Button variant="outlined" color="inherit">
+          <Button
+            variant={type === 3 ? "contained" : "outlined"}
+            color="inherit"
+            onClick={() => setType(3)}
+          >
             Users
           </Button>
         </ButtonGroup>
@@ -168,7 +199,11 @@ export const ByDayLineChart = ({
                     weight: 600,
                   },
                   formatter: (value: any, ctx: any, ...rest) => {
-                    if (value === 0) return "";
+                    if (
+                      value === 0 ||
+                      !itemPublishesByDayArray[ctx.dataIndex]?.version
+                    )
+                      return "";
                     return `v${
                       itemPublishesByDayArray[ctx.dataIndex]?.version
                     }`;
@@ -188,7 +223,7 @@ export const ByDayLineChart = ({
               },
               {
                 label: "Prior 14 days",
-                data: [2, 3, 20, 5, 0, 4, 9, 2, 3, 20, 5, 1, 4, 9],
+                data: priorData,
                 fill: false,
                 backgroundColor: theme.palette.grey[300],
                 borderColor: theme.palette.grey[300],
@@ -201,6 +236,12 @@ export const ByDayLineChart = ({
           }}
           plugins={[ChartDataLabels]}
           options={{
+            layout: {
+              padding: {
+                top: 20,
+                bottom: 20,
+              },
+            },
             maintainAspectRatio: false,
             onHover: handleHover,
             plugins: {
@@ -228,7 +269,7 @@ export const ByDayLineChart = ({
               y: {
                 title: {
                   display: true,
-                  text: "Sessions",
+                  text: typeLabelMap[type],
                   align: "end",
                   font: {
                     size: 12,
@@ -286,14 +327,13 @@ export const ByDayLineChart = ({
         >
           <Box sx={{ p: 2 }}>
             <Typography variant="body1" fontWeight={600}>
-              {tooltipModel?.datasetIndex}
-              {tooltipModel?.dataIndex}
+              {typeLabelMap[type]}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
               {startDate.format("ddd D MMM")} vs {startDate.format("ddd D MMM")}
             </Typography>
             <Typography variant="h2" fontWeight={600}>
-              {numberFormatter.format(6000)}
+              {lastData?.[tooltipModel?.dataIndex]?.toLocaleString()}
             </Typography>
             <Typography
               variant="body3"
@@ -301,9 +341,23 @@ export const ByDayLineChart = ({
               fontWeight={600}
               sx={{ mt: 1 }}
             >
-              {numberFormatter.format(6000) + " "}
-              <Typography variant="body3" color="error.main" fontWeight={600}>
-                - 40%
+              {priorData?.[tooltipModel?.dataIndex]?.toLocaleString() + " "}
+              <Typography
+                variant="body3"
+                color={
+                  calculatePercentageDifference(
+                    +priorData?.[tooltipModel?.dataIndex],
+                    +lastData?.[tooltipModel?.dataIndex]
+                  ).startsWith("-")
+                    ? "error.main"
+                    : "success.main"
+                }
+                fontWeight={600}
+              >
+                {calculatePercentageDifference(
+                  +priorData?.[tooltipModel?.dataIndex],
+                  +lastData?.[tooltipModel?.dataIndex]
+                )}
               </Typography>
             </Typography>
             <Button
@@ -311,6 +365,9 @@ export const ByDayLineChart = ({
               size="small"
               variant="contained"
               color="inherit"
+              disabled={
+                !itemPublishesByDayArray[tooltipModel?.dataIndex]?.version
+              }
               //onClick={() => history.push(`/content/${modelZUID}/${itemZUID}?version=${itemPublishesByDayArray[tooltipModel?.dataIndex]?.version}`)}
               onClick={() =>
                 history.push(`/content/${modelZUID}/${itemZUID}?version=60`)

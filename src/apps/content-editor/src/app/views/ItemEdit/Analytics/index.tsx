@@ -24,18 +24,24 @@ import {
 import { useParams as useQueryParams } from "../../../../../../../shell/hooks/useParams";
 import { DateFilterValue } from "../../../../../../../shell/components/Filters/DateFilter";
 import { useParams } from "react-router-dom";
+import { useGetGa4DataQuery } from "../../../../../../../shell/services/cloudFunctions";
+import {
+  calculatePercentageDifference,
+  convertSecondsToMinutesAndSeconds,
+  findValuesForDimensions,
+} from "./utils";
+import { Metric } from "./Metric";
 
 const getDateRangeFromPreset = (preset: DateFilterValue) => {
   switch (preset.value) {
     case "last_14_days":
-      // 14 and 1 for proper date range
-      return [moment().subtract(13, "days"), moment().subtract(0, "days")];
+      return [moment().subtract(14, "days"), moment().subtract(1, "days")];
     default:
       return [moment().subtract(6, "days"), moment().subtract(1, "days")];
   }
 };
 
-const Analytics = () => {
+const Analytics = ({ item }: any) => {
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -48,7 +54,7 @@ const Analytics = () => {
         }}
       >
         {/* <AuthView /> */}
-        <AnalyticsView />
+        <AnalyticsView itemPath={item.web.path} />
       </Box>
     </ThemeProvider>
   );
@@ -97,25 +103,9 @@ const AuthView = () => {
   );
 };
 
-const AnalyticsView = () => {
+const AnalyticsView = ({ itemPath }: any) => {
   const [params, setParams] = useQueryParams();
   const { itemZUID } = useParams<{ itemZUID: string }>();
-  const instance = useSelector((state: AppState) => state.instance);
-  const { data: auditData } = useGetAuditsQuery({
-    // Start of content item version support in audit
-    start_date: "05/18/2023",
-    end: moment().format("L"),
-    affectedZUID: itemZUID,
-  });
-
-  useEffect(() => {
-    if (
-      !params.get("datePreset") ||
-      (!params.get("from") && !params.get("to"))
-    ) {
-      handleDateFilterChanged({ type: "preset", value: "last_14_days" });
-    }
-  }, []);
 
   const activeDateFilter: DateFilterValue = useMemo(() => {
     const isPreset = Boolean(params.get("datePreset"));
@@ -176,6 +166,263 @@ const AnalyticsView = () => {
 
   const [startDate, endDate] = getDateRangeFromPreset(activeDateFilter);
 
+  const { data: ga4Data, isFetching } = useGetGa4DataQuery(
+    {
+      property: "properties/331638550",
+      requests: [
+        {
+          dimensions: [
+            {
+              name: "pagePath",
+            },
+          ],
+          metrics: [
+            {
+              name: "sessions",
+            },
+            {
+              name: "averageSessionDuration",
+            },
+            {
+              name: "bounceRate",
+            },
+            {
+              name: "conversions",
+            },
+          ],
+          dateRanges: [
+            {
+              startDate: startDate?.format("YYYY-MM-DD"),
+              endDate: endDate?.format("YYYY-MM-DD"),
+            },
+            {
+              startDate: startDate
+                ?.clone()
+                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.format("YYYY-MM-DD"),
+              endDate: startDate?.format("YYYY-MM-DD"),
+            },
+          ],
+          dimensionFilter: {
+            filter: {
+              stringFilter: {
+                matchType: "EXACT",
+                value: itemPath,
+              },
+              fieldName: "pagePath",
+            },
+          },
+        },
+        {
+          dimensions: [
+            {
+              name: "pagePath",
+            },
+            {
+              name: "newVsReturning",
+            },
+          ],
+          metrics: [
+            {
+              name: "totalUsers",
+            },
+          ],
+          dateRanges: [
+            {
+              startDate: startDate?.format("YYYY-MM-DD"),
+              endDate: endDate?.format("YYYY-MM-DD"),
+            },
+            {
+              startDate: startDate
+                ?.clone()
+                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.format("YYYY-MM-DD"),
+              endDate: startDate?.format("YYYY-MM-DD"),
+            },
+          ],
+          dimensionFilter: {
+            filter: {
+              stringFilter: {
+                matchType: "EXACT",
+                value: itemPath,
+              },
+              fieldName: "pagePath",
+            },
+          },
+        },
+        {
+          dimensions: [
+            {
+              name: "pagePath",
+            },
+            {
+              name: "firstUserDefaultChannelGroup",
+            },
+          ],
+          metrics: [
+            {
+              name: "totalUsers",
+            },
+          ],
+          dateRanges: [
+            {
+              startDate: startDate?.format("YYYY-MM-DD"),
+              endDate: endDate?.format("YYYY-MM-DD"),
+            },
+            {
+              startDate: startDate
+                ?.clone()
+                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.format("YYYY-MM-DD"),
+              endDate: startDate?.format("YYYY-MM-DD"),
+            },
+          ],
+          dimensionFilter: {
+            filter: {
+              stringFilter: {
+                matchType: "EXACT",
+                value: itemPath,
+              },
+              fieldName: "pagePath",
+            },
+          },
+          orderBys: [
+            {
+              metric: {
+                metricName: "totalUsers",
+              },
+              desc: true,
+            },
+          ],
+        },
+        {
+          dimensions: [
+            {
+              name: "pagePath",
+            },
+            {
+              name: "country",
+            },
+          ],
+          metrics: [
+            {
+              name: "totalUsers",
+            },
+          ],
+          dateRanges: [
+            {
+              startDate: startDate?.format("YYYY-MM-DD"),
+              endDate: endDate?.format("YYYY-MM-DD"),
+            },
+            {
+              startDate: startDate
+                ?.clone()
+                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.format("YYYY-MM-DD"),
+              endDate: startDate?.format("YYYY-MM-DD"),
+            },
+          ],
+          dimensionFilter: {
+            filter: {
+              stringFilter: {
+                matchType: "EXACT",
+                value: itemPath,
+              },
+              fieldName: "pagePath",
+            },
+          },
+          orderBys: [
+            {
+              metric: {
+                metricName: "totalUsers",
+              },
+              desc: true,
+            },
+          ],
+        },
+        {
+          dimensions: [
+            {
+              name: "pagePath",
+            },
+            {
+              name: "date",
+            },
+          ],
+          metrics: [
+            {
+              name: "sessions",
+            },
+            {
+              name: "averageSessionDuration",
+            },
+            {
+              name: "bounceRate",
+            },
+            {
+              name: "totalUsers",
+            },
+          ],
+          dateRanges: [
+            {
+              startDate: startDate?.format("YYYY-MM-DD"),
+              endDate: endDate?.format("YYYY-MM-DD"),
+            },
+            {
+              startDate: startDate
+                ?.clone()
+                ?.subtract(endDate.diff(startDate, "days"), "days")
+                ?.format("YYYY-MM-DD"),
+              endDate: startDate?.format("YYYY-MM-DD"),
+            },
+          ],
+          dimensionFilter: {
+            filter: {
+              stringFilter: {
+                matchType: "EXACT",
+                value: itemPath,
+              },
+              fieldName: "pagePath",
+            },
+          },
+          orderBys: [
+            {
+              dimension: {
+                dimensionName: "date",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      skip: !startDate || !endDate,
+    }
+  );
+  const [
+    metricsReport,
+    totalUsersReport,
+    usersBySourceReport,
+    usersByCountryReport,
+    usersByDayReport,
+  ] = ga4Data?.[0]?.reports || [];
+
+  const { data: auditData } = useGetAuditsQuery({
+    // Start of content item version support in audit
+    start_date: "05/18/2023",
+    end: moment().format("L"),
+    affectedZUID: itemZUID,
+  });
+
+  useEffect(() => {
+    if (
+      !params.get("datePreset") ||
+      (!params.get("from") && !params.get("to"))
+    ) {
+      handleDateFilterChanged({ type: "preset", value: "last_14_days" });
+    }
+  }, []);
+
   const handleDateFilterChanged = (dateFilter: DateFilterValue) => {
     switch (dateFilter.type) {
       case "daterange": {
@@ -229,6 +476,10 @@ const AnalyticsView = () => {
     }
   };
 
+  if (isFetching) {
+    return <div>loading...</div>;
+  }
+
   return (
     <Box height="100%">
       <DateFilter
@@ -245,15 +496,50 @@ const AnalyticsView = () => {
         mt={2.5}
         border={(theme) => `1px solid ${theme.palette.border}`}
       >
-        <Metric />
+        <Metric
+          title="Sessions"
+          value={
+            findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[0]
+          }
+          priorValue={
+            findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[0]
+          }
+        />
         <Divider orientation="vertical" flexItem />
-        <Metric />
+        <Metric
+          title="Avg. Duration"
+          formatter={convertSecondsToMinutesAndSeconds}
+          value={
+            findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[1]
+          }
+          priorValue={
+            findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[1]
+          }
+        />
         <Divider orientation="vertical" flexItem />
-        <Metric />
+        <Metric
+          inverse
+          title="Bounce Rate"
+          formatter={(value: number) => `${Math.floor(value * 100)}%`}
+          value={
+            findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[2]
+          }
+          priorValue={
+            findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[2]
+          }
+        />
         <Divider orientation="vertical" flexItem />
-        <Metric />
+        <Metric
+          title="Conversions"
+          value={
+            findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[3]
+          }
+          priorValue={
+            findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[3]
+          }
+        />
         <Box width="184px" height="100px">
-          <UsersDoughnutChart />
+          <UsersDoughnutChart data={totalUsersReport} />
         </Box>
       </Box>
       <Box display="flex" mt={2.5} gap={2}>
@@ -265,9 +551,10 @@ const AnalyticsView = () => {
           border={(theme) => `1px solid ${theme.palette.border}`}
         >
           <UsersBarChart
-            auditData={auditData}
             startDate={startDate}
             endDate={endDate}
+            usersBySourceReport={usersBySourceReport}
+            usersByCountryReport={usersByCountryReport}
           />
         </Box>
 
@@ -283,6 +570,7 @@ const AnalyticsView = () => {
             startDate={startDate}
             endDate={endDate}
             dateLabel={(activeDateFilter.value as string).replace("_", " ")}
+            data={usersByDayReport}
           />
         </Box>
       </Box>
@@ -310,25 +598,6 @@ const AnalyticsView = () => {
           </>
         }
       /> */}
-    </Box>
-  );
-};
-
-const Metric = () => {
-  return (
-    <Box py={0.5}>
-      <Typography variant="body1" color="text.secondary">
-        Sessions
-      </Typography>
-      <Typography variant="h2" fontWeight={600} sx={{ mb: 1 }}>
-        {numberFormatter.format(13000)}
-      </Typography>
-      <Typography variant="body3" color="text.disabled">
-        {numberFormatter.format(10000)}{" "}
-        <Typography variant="body3" color="success.main">
-          + 13.74%
-        </Typography>
-      </Typography>
     </Box>
   );
 };

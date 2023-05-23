@@ -23,10 +23,22 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+    getGa4Data: builder.query<any, any>({
+      query: (body) => {
+        return {
+          url: `getGa4Data?zuid=${instanceZUID}`,
+          method: "POST",
+          body,
+        };
+      },
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useRefreshCacheMutation, useAiGenerationMutation } =
-  cloudFunctionsApi;
+export const {
+  useRefreshCacheMutation,
+  useAiGenerationMutation,
+  useGetGa4DataQuery,
+} = cloudFunctionsApi;

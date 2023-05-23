@@ -7,33 +7,25 @@ import { isEqual } from "lodash";
 import { ChartEvent } from "chart.js";
 import { Moment } from "moment-timezone";
 import { numberFormatter } from "../../../../../../../utility/numberFormatter";
+import {
+  calculatePercentageDifference,
+  findTopDimensionsForDateRange,
+  findValuesForDimensions,
+} from "./utils";
 
 type Props = {
-  auditData: any;
+  usersBySourceReport: any;
+  usersByCountryReport: any;
   startDate: Moment;
   endDate: Moment;
 };
 
-const sourceDataIndexMap = [
-  "Organic",
-  "Direct",
-  "Referral",
-  "Organic Social",
-  "Organic Video",
-];
-
-function calculatePercentageDifference(
-  originalValue: number,
-  newValue: number
-) {
-  const difference = newValue - originalValue;
-  const percentageDifference = ((difference / originalValue) * 100).toFixed(2);
-  return `${
-    Math.sign((difference / originalValue) * 100) === 1 ? "+" : ""
-  }${percentageDifference}`;
-}
-
-export const UsersBarChart = ({ startDate, endDate }: Props) => {
+export const UsersBarChart = ({
+  startDate,
+  endDate,
+  usersBySourceReport,
+  usersByCountryReport,
+}: Props) => {
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
   const [type, setType] = useState("Source");
@@ -69,8 +61,29 @@ export const UsersBarChart = ({ startDate, endDate }: Props) => {
     }
   };
 
-  const lastSet = [374, 320, 301, 267, 223];
-  const priorSet = [323, 300, 272, 251, 280];
+  const currentReport =
+    type === "Source" ? usersBySourceReport : usersByCountryReport;
+
+  const topDimensions = findTopDimensionsForDateRange(
+    currentReport.rows,
+    "date_range_0",
+    5
+  );
+
+  const lastSet = topDimensions?.map((dimension: any) => {
+    const dimensionName = dimension?.[1]?.value;
+    return +findValuesForDimensions(currentReport?.rows, [
+      dimensionName,
+      "date_range_0",
+    ]);
+  });
+  const priorSet = topDimensions?.map((dimension: any) => {
+    const dimensionName = dimension?.[1]?.value;
+    return +findValuesForDimensions(currentReport?.rows, [
+      dimensionName,
+      "date_range_1",
+    ]);
+  });
 
   return (
     <>
@@ -99,13 +112,9 @@ export const UsersBarChart = ({ startDate, endDate }: Props) => {
         <Bar
           ref={chartRef}
           data={{
-            labels: [
-              "Organic",
-              "Direct",
-              "Referral",
-              ["Organic", "Social"],
-              ["Organic", "Video"],
-            ],
+            labels: topDimensions?.map((dimension: any) =>
+              dimension?.[1].value.split(" ")
+            ),
             datasets: [
               {
                 label: "Last",
@@ -148,6 +157,13 @@ export const UsersBarChart = ({ startDate, endDate }: Props) => {
           }}
           plugins={[ChartDataLabels]}
           options={{
+            layout: {
+              padding: {
+                top: 20,
+                bottom: 20,
+                right: 20,
+              },
+            },
             maintainAspectRatio: false,
             onHover: handleHover,
             plugins: {
@@ -189,9 +205,7 @@ export const UsersBarChart = ({ startDate, endDate }: Props) => {
         >
           <Box sx={{ p: 2 }}>
             <Typography variant="body1" fontWeight={600}>
-              {/* {tooltipModel?.datasetIndex}
-            {tooltipModel?.dataIndex} */}
-              {sourceDataIndexMap?.[tooltipModel?.dataIndex]}
+              {topDimensions?.[tooltipModel?.dataIndex]?.[1]?.value}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
               Last 14 Days vs Prev 14 Days
@@ -205,8 +219,7 @@ export const UsersBarChart = ({ startDate, endDate }: Props) => {
               fontWeight={600}
               sx={{ mt: 1 }}
             >
-              {numberFormatter.format(priorSet?.[tooltipModel?.dataIndex]) +
-                " "}
+              {priorSet?.[tooltipModel?.dataIndex]?.toLocaleString() + " "}
               {/* @ts-ignore */}
               <Typography
                 variant="body3"
@@ -224,7 +237,6 @@ export const UsersBarChart = ({ startDate, endDate }: Props) => {
                   priorSet?.[tooltipModel?.dataIndex],
                   lastSet?.[tooltipModel?.dataIndex]
                 )}
-                %
               </Typography>
             </Typography>
           </Box>

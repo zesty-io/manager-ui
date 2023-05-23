@@ -5,6 +5,7 @@ import { ChartEvent } from "chart.js";
 import { Box, Paper, Typography } from "@mui/material";
 import { isEqual } from "lodash";
 import { numberFormatter } from "../../../../../../../utility/numberFormatter";
+import { findValuesForDimensions } from "./utils";
 
 const datasetIndexMap = {
   "00": {
@@ -29,7 +30,7 @@ const datasetIndexMap = {
   },
 };
 
-export const UsersDoughnutChart = () => {
+export const UsersDoughnutChart = ({ data }: any) => {
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
 
@@ -62,8 +63,16 @@ export const UsersDoughnutChart = () => {
     }
   };
 
-  const newVsReturningUsers = [500, 3000];
-  const totalUsers = [500, newVsReturningUsers[0] + newVsReturningUsers[1]];
+  const newVsReturningUsers = [
+    +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0],
+    +findValuesForDimensions(data?.rows, ["date_range_0", "returning"])?.[0],
+  ];
+  const totalUsers = [
+    +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] +
+      +findValuesForDimensions(data?.rows, ["date_range_1", "returning"])?.[0],
+    +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] +
+      +findValuesForDimensions(data?.rows, ["date_range_0", "returning"])?.[0],
+  ];
 
   return (
     <Box position="relative" height="100%">
@@ -135,10 +144,10 @@ export const UsersDoughnutChart = () => {
               ctx.fillStyle = theme.palette.text.primary;
               // ADD TOTAL USERS FROM SECONDARY DATASET
               const subtitle = numberFormatter.format(
-                chart.data.datasets[0].data.reduce(
+                (chart.data.datasets[0].data.reduce(
                   (a: number, b: number) => a + b,
                   0
-                ) as number
+                ) as number) || 0
               );
               ctx.fillText(subtitle, xCoor, yCoor + 6);
               ctx.restore();
