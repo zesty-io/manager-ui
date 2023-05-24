@@ -23,10 +23,10 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
-    getGa4Data: builder.query<any, any>({
+    getAnalyticsPropertyDataByQuery: builder.query<any, any>({
       query: (body) => {
         return {
-          url: `getGa4Data`,
+          url: `getPropertyDataByQuery`,
           method: "POST",
           body,
           params: {
@@ -35,10 +35,10 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
-    getGa4Properties: builder.query<any, void>({
+    getAnalyticsProperties: builder.query<any, void>({
       query: () => {
         return {
-          url: `googleAnalyticsPropertyList`,
+          url: `getPropertyList`,
           method: "GET",
           params: {
             zuid: instanceZUID,
@@ -54,6 +54,6 @@ export const cloudFunctionsApi = createApi({
 export const {
   useRefreshCacheMutation,
   useAiGenerationMutation,
-  useGetGa4DataQuery,
-  useGetGa4PropertiesQuery,
+  useGetAnalyticsPropertiesQuery,
+  useGetAnalyticsPropertyDataByQueryQuery,
 } = cloudFunctionsApi;

@@ -3,11 +3,11 @@ import { Box, CircularProgress } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import { AuthView } from "./components/AuthView";
-import { useGetGa4PropertiesQuery } from "../../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPropertiesQuery } from "../../../../../../../shell/services/cloudFunctions";
 import { SinglePageAnalyticsView } from "./views/SinglePageAnalyticsView";
 
 const Analytics = ({ item }: any) => {
-  const { isFetching, isSuccess, refetch } = useGetGa4PropertiesQuery();
+  const { isFetching, isSuccess, refetch } = useGetAnalyticsPropertiesQuery();
 
   const validateAuth = () => {
     refetch();
@@ -34,7 +34,7 @@ const Analytics = ({ item }: any) => {
             color: (theme) => theme.palette.text.primary,
           }}
         >
-          {true ? (
+          {isSuccess ? (
             <SinglePageAnalyticsView itemPath={item.web.path} />
           ) : (
             <AuthView validateAuth={validateAuth} />

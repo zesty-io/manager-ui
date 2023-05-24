@@ -4,13 +4,17 @@ import {
   Box,
   Typography,
   Divider,
-  Paper,
   CircularProgress,
+  Link,
 } from "@mui/material";
-
+import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
+import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import { UsersDoughnutChart } from "../components/UsersDoughnutChart";
 import { ByDayLineChart } from "../components/ByDayLineChart";
-import { useGetAuditsQuery } from "../../../../../../../../shell/services/instance";
+import {
+  useGetAuditsQuery,
+  useGetInstanceSettingsQuery,
+} from "../../../../../../../../shell/services/instance";
 import moment, { Moment } from "moment-timezone";
 import { UsersBarChart } from "../components/UsersBarChart";
 import {
@@ -19,14 +23,18 @@ import {
 } from "../../../../../../../../shell/components/Filters";
 import { useParams as useQueryParams } from "../../../../../../../../shell/hooks/useParams";
 import { DateFilterValue } from "../../../../../../../../shell/components/Filters/DateFilter";
-import { useParams } from "react-router-dom";
-import { useGetGa4DataQuery } from "../../../../../../../../shell/services/cloudFunctions";
+import { useHistory, useParams } from "react-router-dom";
+import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../shell/services/cloudFunctions";
 import {
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
 } from "../utils";
 import { Metric } from "../components/Metric";
-import { useGetGa4PropertiesQuery } from "../../../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPropertiesQuery } from "../../../../../../../../shell/services/cloudFunctions";
+import { PropertiesDialog } from "../components/PropertiesDialog";
+import instanceZUID from "../../../../../../../../utility/instanceZUID";
+import { NotFound } from "../../../../../../../../shell/components/NotFound";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const getDateRangeAndLabelsFromPreset = (
   preset: DateFilterValue
@@ -96,9 +104,29 @@ const getDateRangeAndLabelsFromPreset = (
   }
 };
 
-export const SinglePageAnalyticsView = ({ itemPath }: any) => {
+type Props = {
+  itemPath: string;
+};
+
+export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
+  const [showPropertiesDialog, setShowPropertiesDialog] = useState(false);
   const [params, setParams] = useQueryParams();
-  const { itemZUID } = useParams<{ itemZUID: string }>();
+  const { modelZUID, itemZUID } = useParams<{
+    modelZUID: string;
+    itemZUID: string;
+  }>();
+  const history = useHistory();
+
+  const { data: propertiesList } = useGetAnalyticsPropertiesQuery();
+  const { data: instanceSettings, isFetching: instanceSettingsFetching } =
+    useGetInstanceSettingsQuery();
+  const propertyId = instanceSettings?.find(
+    (setting) => setting.key === "google_property_id"
+  )?.value;
+
+  const propertyData = propertiesList?.find(
+    (property: any) => property.name === propertyId
+  );
 
   const activeDateFilter: DateFilterValue = useMemo(() => {
     const isPreset = Boolean(params.get("datePreset"));
@@ -133,9 +161,14 @@ export const SinglePageAnalyticsView = ({ itemPath }: any) => {
   const [startDate, endDate, dateRange0Label, dateRange1Label] =
     getDateRangeAndLabelsFromPreset(activeDateFilter);
 
-  const { data: ga4Data, isFetching } = useGetGa4DataQuery(
+  const {
+    data: ga4Data,
+    isFetching,
+    isError,
+    refetch,
+  } = useGetAnalyticsPropertyDataByQueryQuery(
     {
-      property: "properties/331638550",
+      property: propertyId,
       requests: [
         {
           dimensions: [
@@ -363,7 +396,7 @@ export const SinglePageAnalyticsView = ({ itemPath }: any) => {
       ],
     },
     {
-      skip: !startDate || !endDate,
+      skip: !startDate || !endDate || !propertyId,
     }
   );
   const [
@@ -372,11 +405,11 @@ export const SinglePageAnalyticsView = ({ itemPath }: any) => {
     usersBySourceReport,
     usersByCountryReport,
     usersByDayReport,
-  ] = ga4Data?.[0]?.reports || [];
+  ] = ga4Data?.reports || [];
 
   const { data: auditData } = useGetAuditsQuery({
     // Start of content item version support in audit
-    start_date: "05/18/2023",
+    start_date: "05/23/2023",
     end: moment().format("L"),
     affectedZUID: itemZUID,
   });
@@ -415,7 +448,7 @@ export const SinglePageAnalyticsView = ({ itemPath }: any) => {
     }
   };
 
-  if (isFetching) {
+  if (isFetching || instanceSettingsFetching) {
     return (
       <Box
         height="100%"
@@ -428,108 +461,9 @@ export const SinglePageAnalyticsView = ({ itemPath }: any) => {
     );
   }
 
-  return (
-    <Box height="100%">
-      <DateFilter
-        clearable={false}
-        value={activeDateFilter}
-        onChange={handleDateFilterChanged}
-        hideCustomDates
-        withDateRange
-      />
-      <Box
-        display="flex"
-        justifyContent={"space-between"}
-        borderRadius={"8px"}
-        gap={2}
-        p={2}
-        mt={2.5}
-        border={(theme) => `1px solid ${theme.palette.border}`}
-      >
-        <Metric
-          title="Sessions"
-          value={
-            findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[0]
-          }
-          priorValue={
-            findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[0]
-          }
-        />
-        <Divider orientation="vertical" flexItem />
-        <Metric
-          title="Avg. Duration"
-          formatter={convertSecondsToMinutesAndSeconds}
-          value={
-            findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[1]
-          }
-          priorValue={
-            findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[1]
-          }
-        />
-        <Divider orientation="vertical" flexItem />
-        <Metric
-          inverse
-          title="Bounce Rate"
-          formatter={(value: number) => `${Math.floor(value * 100)}%`}
-          value={
-            findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[2]
-          }
-          priorValue={
-            findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[2]
-          }
-        />
-        <Divider orientation="vertical" flexItem />
-        <Metric
-          title="Conversions"
-          value={
-            findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[3]
-          }
-          priorValue={
-            findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[3]
-          }
-        />
-        <Box width="184px" height="100px">
-          <UsersDoughnutChart
-            data={totalUsersReport}
-            dateRange0Label={dateRange0Label}
-            dateRange1Label={dateRange1Label}
-          />
-        </Box>
-      </Box>
-      <Box display="flex" mt={2.5} gap={2}>
-        <Box
-          width="40%"
-          height="446px"
-          borderRadius={"8px"}
-          p={2}
-          border={(theme) => `1px solid ${theme.palette.border}`}
-        >
-          <UsersBarChart
-            dateRange0Label={dateRange0Label}
-            dateRange1Label={dateRange1Label}
-            usersBySourceReport={usersBySourceReport}
-            usersByCountryReport={usersByCountryReport}
-          />
-        </Box>
-
-        <Box
-          width="60%"
-          height="446px"
-          borderRadius={"8px"}
-          p={2}
-          border={(theme) => `1px solid ${theme.palette.border}`}
-        >
-          <ByDayLineChart
-            auditData={auditData}
-            startDate={startDate}
-            endDate={endDate}
-            dateRange0Label={dateRange0Label}
-            dateRange1Label={dateRange1Label}
-            data={usersByDayReport}
-          />
-        </Box>
-      </Box>
-      {/* <NotFound
+  if (isError) {
+    return (
+      <NotFound
         title="Unable to Load Analytics Data"
         message="This may be due to a bad internet connection so please try again. If you are still unable to resolve this issue, please contact support."
         button={
@@ -541,18 +475,176 @@ export const SinglePageAnalyticsView = ({ itemPath }: any) => {
               sx={{ mr: 2 }}
               onClick={() =>
                 window.open(
-                  `https://www.zesty.io/instances/${instance.ZUID}/support/`
+                  `https://www.zesty.io/instances/${instanceZUID}/support/`
                 )
               }
             >
               Contact Support
             </Button>
-            <Button startIcon={<RefreshRoundedIcon />} variant="contained">
+            <Button
+              startIcon={<RefreshRoundedIcon />}
+              variant="contained"
+              onClick={() => refetch()}
+            >
               Try Again
             </Button>
           </>
         }
-      /> */}
-    </Box>
+      />
+    );
+  }
+
+  if (!propertyId) {
+    return (
+      <PropertiesDialog
+        onClose={() => history.push(`/content/${modelZUID}/${itemZUID}`)}
+      />
+    );
+  }
+
+  return (
+    <>
+      <Box height="100%">
+        <Box display="flex" justifyContent="space-between">
+          <DateFilter
+            clearable={false}
+            value={activeDateFilter}
+            onChange={handleDateFilterChanged}
+            hideCustomDates
+            withDateRange
+          />
+          <Box display="flex" gap={0.5}>
+            <Link
+              href={`${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${itemPath}`}
+              target="__blank"
+              sx={{
+                maxWidth: "440px",
+                direction: "rtl",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "block",
+              }}
+            >
+              {`${
+                propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri
+              }${itemPath?.slice(0, -1)}`}
+            </Link>
+            <Button
+              onClick={() => setShowPropertiesDialog(true)}
+              size="small"
+              variant="outlined"
+              color="inherit"
+              sx={{
+                height: "22px",
+                width: "38px",
+                minWidth: "unset",
+              }}
+            >
+              <SettingsIcon
+                color="action"
+                sx={{ width: "18px", height: "18px" }}
+              />
+            </Button>
+          </Box>
+        </Box>
+        <Box
+          display="flex"
+          justifyContent={"space-between"}
+          borderRadius={"8px"}
+          gap={2}
+          p={2}
+          mt={2.5}
+          border={(theme) => `1px solid ${theme.palette.border}`}
+        >
+          <Metric
+            title="Sessions"
+            value={
+              findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[0]
+            }
+            priorValue={
+              findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[0]
+            }
+          />
+          <Divider orientation="vertical" flexItem />
+          <Metric
+            title="Avg. Duration"
+            formatter={convertSecondsToMinutesAndSeconds}
+            value={
+              findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[1]
+            }
+            priorValue={
+              findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[1]
+            }
+          />
+          <Divider orientation="vertical" flexItem />
+          <Metric
+            inverse
+            title="Bounce Rate"
+            formatter={(value: number) => `${Math.floor(value * 100)}%`}
+            value={
+              findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[2]
+            }
+            priorValue={
+              findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[2]
+            }
+          />
+          <Divider orientation="vertical" flexItem />
+          <Metric
+            title="Conversions"
+            value={
+              findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[3]
+            }
+            priorValue={
+              findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[3]
+            }
+          />
+          <Box width="184px" height="100px">
+            <UsersDoughnutChart
+              data={totalUsersReport}
+              dateRange0Label={dateRange0Label}
+              dateRange1Label={dateRange1Label}
+            />
+          </Box>
+        </Box>
+        <Box display="flex" mt={2.5} gap={2}>
+          <Box
+            width="40%"
+            height="446px"
+            borderRadius={"8px"}
+            p={2}
+            border={(theme) => `1px solid ${theme.palette.border}`}
+          >
+            <UsersBarChart
+              dateRange0Label={dateRange0Label}
+              dateRange1Label={dateRange1Label}
+              usersBySourceReport={usersBySourceReport}
+              usersByCountryReport={usersByCountryReport}
+            />
+          </Box>
+
+          <Box
+            width="60%"
+            height="446px"
+            borderRadius={"8px"}
+            p={2}
+            border={(theme) => `1px solid ${theme.palette.border}`}
+          >
+            <ByDayLineChart
+              auditData={auditData}
+              startDate={startDate}
+              endDate={endDate}
+              dateRange0Label={dateRange0Label}
+              dateRange1Label={dateRange1Label}
+              data={usersByDayReport}
+            />
+          </Box>
+        </Box>
+      </Box>
+
+      {showPropertiesDialog && (
+        <PropertiesDialog onClose={() => setShowPropertiesDialog(false)} />
+      )}
+    </>
   );
 };

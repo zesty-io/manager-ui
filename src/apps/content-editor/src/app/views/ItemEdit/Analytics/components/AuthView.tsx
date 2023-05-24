@@ -22,6 +22,7 @@ type Props = {
 
 export const AuthView = ({ validateAuth }: Props) => {
   const user = useSelector((state: AppState) => state.user);
+  const instance = useSelector((state: AppState) => state.instance);
   const [showResult, setShowResult] = useState(null);
 
   const receiveMessage = (event: MessageEvent<Message>) => {
@@ -43,7 +44,7 @@ export const AuthView = ({ validateAuth }: Props) => {
     tabWindow?.close();
     tabWindow = window.open(
       // @ts-ignore
-      `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/authenticateGoogleAnalytics?user_id=${user.ID}&account_id=${instanceZUID}`
+      `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/authenticateGoogleAnalytics?user_id=${user.ID}&account_id=${instance.ID}`
     );
   };
 
