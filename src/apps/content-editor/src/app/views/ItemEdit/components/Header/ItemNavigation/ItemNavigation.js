@@ -5,7 +5,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import styles from "./ItemNavigation.less";
 export default function ItemNavigation({ modelZUID, itemZUID, item }) {
   const slug = new URL(window.location).pathname.split("/").pop();
-
+  console.log("testing item", item);
   return (
     <nav className={styles.ItemNav}>
       <AppLink
@@ -39,17 +39,19 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
       >
         SEO
       </AppLink>
-      <AppLink
-        title="Analytics"
-        className={cx(
-          styles.AppLink,
-          styles.buttonText,
-          slug === "analytics" ? styles.Selected : null
-        )}
-        to={`/content/${modelZUID}/${itemZUID}/analytics`}
-      >
-        Analytics
-      </AppLink>
+      {item.web.path && (
+        <AppLink
+          title="Analytics"
+          className={cx(
+            styles.AppLink,
+            styles.buttonText,
+            slug === "analytics" ? styles.Selected : null
+          )}
+          to={`/content/${modelZUID}/${itemZUID}/analytics`}
+        >
+          Analytics
+        </AppLink>
+      )}
       {item.web.path && (
         <AppLink
           title="Head Tags"

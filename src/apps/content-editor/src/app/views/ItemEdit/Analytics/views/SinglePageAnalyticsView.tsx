@@ -513,7 +513,7 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
             hideCustomDates
             withDateRange
           />
-          <Box display="flex" gap={0.5}>
+          <Box display="flex" gap={0.5} alignItems="center">
             <Link
               href={`${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${itemPath}`}
               target="__blank"
