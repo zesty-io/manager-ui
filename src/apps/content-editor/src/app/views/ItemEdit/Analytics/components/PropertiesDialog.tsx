@@ -24,6 +24,7 @@ import {
   useGetInstanceSettingsQuery,
   useUpdateInstanceSettingMutation,
 } from "../../../../../../../../shell/services/instance";
+import { NoSearchResults } from "../../../../../../../../shell/components/NoSearchResults";
 
 type Props = {
   onClose: () => void;
@@ -38,6 +39,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
     (setting) => setting.key === "google_property_id"
   );
   const [search, setSearch] = useState("");
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const filteredData = data?.filter((property: any) =>
     property.displayName.toLowerCase().includes(search.toLowerCase())
@@ -122,6 +124,9 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                   </InputAdornment>
                 ),
               }}
+              inputProps={{
+                ref: inputRef,
+              }}
               placeholder="Search Google Analytics Properties"
               fullWidth
             />
@@ -132,63 +137,93 @@ export const PropertiesDialog = ({ onClose }: Props) => {
         </Stack>
       </DialogTitle>
       <DialogContent>
-        <Typography variant="h6" fontWeight="600">
-          {filteredData?.length} Properties
-        </Typography>
-        <List
-          disablePadding
-          sx={{
-            border: "1px solid",
-            borderColor: "border",
-            borderRadius: "8px",
-            mt: 2,
-          }}
-        >
-          {filteredData?.map((property: any, index: number) => (
-            <ListItem
-              key={property.name}
-              divider={index === filteredData?.length - 1 ? false : true}
+        {filteredData?.length === 0 ? (
+          <Box
+            sx={{
+              height: "99%",
+              border: "1px solid",
+              borderColor: "border",
+              borderRadius: "8px",
+            }}
+          >
+            <NoSearchResults
+              query={search}
+              ignoreFilters
+              hideBackButton
+              onSearchAgain={() => {
+                setSearch("");
+                inputRef?.current?.focus();
+              }}
+            />
+          </Box>
+        ) : (
+          <>
+            <Typography variant="h6" fontWeight="600">
+              {filteredData?.length} Properties
+            </Typography>
+            <List
               disablePadding
               sx={{
-                px: 2,
-                py: 1.5,
+                border: "1px solid",
                 borderColor: "border",
+                borderRadius: "8px",
+                mt: 2,
               }}
-              secondaryAction={
-                <IconButton
-                  edge="end"
-                  size="small"
-                  onClick={() => handlePropertySelection(property)}
-                >
-                  <ArrowForwardIosRoundedIcon fontSize="small" color="action" />
-                </IconButton>
-              }
             >
-              <ListItemText
-                primary={property.displayName}
-                primaryTypographyProps={{
-                  variant: "body2",
-                }}
-                secondary={
-                  <React.Fragment>
-                    {`${property.name.split("/").pop()} •  `}
-                    <Link
-                      href={
-                        property?.dataStreams?.[0]?.webStreamData?.defaultUri
-                      }
-                      target="__blank"
+              {filteredData?.map((property: any, index: number) => (
+                <ListItem
+                  key={property.name}
+                  divider={index === filteredData?.length - 1 ? false : true}
+                  disablePadding
+                  sx={{
+                    px: 2,
+                    py: 1.5,
+                    borderColor: "border",
+                  }}
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      size="small"
+                      onClick={() => handlePropertySelection(property)}
                     >
-                      {property?.dataStreams?.[0]?.webStreamData?.defaultUri}
-                    </Link>
-                  </React.Fragment>
-                }
-                secondaryTypographyProps={{
-                  fontSize: "12px",
-                }}
-              />
-            </ListItem>
-          ))}
-        </List>
+                      <ArrowForwardIosRoundedIcon
+                        fontSize="small"
+                        color="action"
+                      />
+                    </IconButton>
+                  }
+                >
+                  <ListItemText
+                    primary={property.displayName}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                    }}
+                    secondary={
+                      <React.Fragment>
+                        {`${property.name.split("/").pop()} •  `}
+                        <Link
+                          href={
+                            property?.dataStreams?.[0]?.webStreamData
+                              ?.defaultUri
+                          }
+                          target="__blank"
+                        >
+                          {
+                            property?.dataStreams?.[0]?.webStreamData
+                              ?.defaultUri
+                          }
+                        </Link>
+                      </React.Fragment>
+                    }
+                    secondaryTypographyProps={{
+                      fontSize: "12px",
+                    }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

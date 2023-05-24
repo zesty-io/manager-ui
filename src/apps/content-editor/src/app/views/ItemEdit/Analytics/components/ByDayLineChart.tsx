@@ -31,8 +31,6 @@ type Props = {
 function getDatesArray(start: Moment, end: Moment) {
   const diff = end.diff(start, "days");
   const datesArray = Array.from({ length: diff + 1 }, (_, index) => {
-    const currentDate = start.clone().add(index, "days");
-    const format = currentDate.date() === 1 || index === 0 ? "MMM D" : "D";
     return start.clone().add(index, "days").format("YYYY-MM-DD");
   });
 
@@ -335,9 +333,6 @@ export const ByDayLineChart = ({
                 time: {
                   parser: "YYYY-MM-DD",
                   unit: "day",
-                  displayFormats: {
-                    month: "MMM YYYY",
-                  },
                 },
                 ticks: {
                   color: theme.palette.text.disabled,
