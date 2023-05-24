@@ -6,7 +6,7 @@ export function calculatePercentageDifference(
   const percentageDifference = (difference / (originalValue || 1)) * 100;
 
   return `${Math.sign(percentageDifference * 100) === 1 ? "+" : ""}${
-    Number.isNaN(percentageDifference)
+    Number.isNaN(percentageDifference) || percentageDifference === 0
       ? ""
       : `${percentageDifference.toFixed(2)}%`
   }`;

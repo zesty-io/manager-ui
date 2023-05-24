@@ -190,6 +190,26 @@ export const UsersBarChart = ({
               },
             },
             indexAxis: "y",
+            scales: {
+              y: {
+                ticks: {
+                  color: theme.palette.text.secondary,
+                  font: {
+                    size: 12,
+                    family: "Mulish",
+                  },
+                },
+              },
+              x: {
+                ticks: {
+                  color: theme.palette.text.disabled,
+                  font: {
+                    size: 12,
+                    family: "Mulish",
+                  },
+                },
+              },
+            },
           }}
         />
         <Paper

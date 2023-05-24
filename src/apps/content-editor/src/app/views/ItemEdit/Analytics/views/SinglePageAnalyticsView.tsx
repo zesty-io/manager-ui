@@ -560,22 +560,40 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
           <Metric
             title="Sessions"
             value={
-              findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[0]
+              +(
+                findValuesForDimensions(metricsReport?.rows, [
+                  "date_range_0",
+                ])[0] || 0
+              )
             }
             priorValue={
-              findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[0]
+              +(
+                findValuesForDimensions(metricsReport?.rows, [
+                  "date_range_1",
+                ])[0] || 0
+              )
             }
+            description="A session in Google Analytics is a period of time in which a user interacts with your website."
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             title="Avg. Duration"
             formatter={convertSecondsToMinutesAndSeconds}
             value={
-              findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[1]
+              +(
+                findValuesForDimensions(metricsReport?.rows, [
+                  "date_range_0",
+                ])[1] || 0
+              )
             }
             priorValue={
-              findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[1]
+              +(
+                findValuesForDimensions(metricsReport?.rows, [
+                  "date_range_1",
+                ])[1] || 0
+              )
             }
+            description="Session duration is the time frame during which there are users interactions occurring on the website."
           />
           <Divider orientation="vertical" flexItem />
           <Metric
@@ -583,21 +601,39 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
             title="Bounce Rate"
             formatter={(value: number) => `${Math.floor(value * 100)}%`}
             value={
-              findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[2]
+              +(
+                findValuesForDimensions(metricsReport?.rows, [
+                  "date_range_0",
+                ])[2] || 0
+              )
             }
             priorValue={
-              findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[2]
+              +(
+                findValuesForDimensions(metricsReport?.rows, [
+                  "date_range_1",
+                ])[2] || 0
+              )
             }
+            description="Bounce rate is the percentage of people who land on a page and leave without performing a specific action."
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             title="Conversions"
             value={
-              findValuesForDimensions(metricsReport?.rows, ["date_range_0"])[3]
+              +(
+                findValuesForDimensions(metricsReport?.rows, [
+                  "date_range_0",
+                ])[3] || 0
+              )
             }
             priorValue={
-              findValuesForDimensions(metricsReport?.rows, ["date_range_1"])[3]
+              +(
+                findValuesForDimensions(metricsReport?.rows, [
+                  "date_range_1",
+                ])[3] || 0
+              )
             }
+            description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
           />
           <Box width="184px" height="100px">
             <UsersDoughnutChart

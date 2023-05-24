@@ -89,7 +89,6 @@ export const ByDayLineChart = ({
     )[0];
     const datasetIndex = activeElement?.datasetIndex;
     const index = activeElement?.index;
-    console.log("testing", activeElement);
     if (
       typeof datasetIndex === "number" &&
       typeof index === "number" &&
