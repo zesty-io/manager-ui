@@ -30,7 +30,9 @@ export const UploadButton: FC<UploadButton> = ({
   const [params] = useParams();
   const triggerUpload = (params as URLSearchParams).get("triggerUpload");
   const { data: currentGroup, isFetching: groupIsFetching } =
-    useGetGroupDataQuery(currentGroupId, { skip: !currentGroupId });
+    useGetGroupDataQuery(currentGroupId, {
+      skip: !currentGroupId || currentGroupId === currentBinId,
+    });
   const { data: binData, isFetching: binIsFetching } = useGetBinQuery(
     currentBinId,
     { skip: !currentBinId }

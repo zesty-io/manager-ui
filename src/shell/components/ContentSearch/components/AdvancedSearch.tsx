@@ -50,8 +50,13 @@ export interface SearchData {
 interface AdvancedSearch {
   keyword: string;
   onClose: () => void;
+  onSearch?: (searchData: SearchData) => void;
 }
-export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
+export const AdvancedSearch: FC<AdvancedSearch> = ({
+  keyword,
+  onClose,
+  onSearch,
+}) => {
   const history = useHistory();
   const location = useLocation();
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
@@ -207,6 +212,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({ keyword, onClose }) => {
     }
 
     if (keyword) {
+      onSearch && onSearch(searchData);
       onClose();
 
       // Only add the search page on the history stack during initial page visit

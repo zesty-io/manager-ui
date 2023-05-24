@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { DataGridPro, GridValueGetterParams } from "@mui/x-data-grid-pro";
@@ -13,7 +13,11 @@ type Params = {
   itemZUID: string;
 };
 
-export const PublishState = () => {
+type Props = {
+  reloadItem: () => void;
+};
+
+export const PublishState = ({ reloadItem }: Props) => {
   const { modelZUID, itemZUID } = useParams<Params>();
   const { data, isLoading } = instanceApi.useGetItemPublishingsQuery({
     modelZUID,
@@ -101,6 +105,8 @@ export const PublishState = () => {
                     modelZUID,
                     itemZUID,
                     publishingZUID: value.row.ZUID,
+                  }).then(() => {
+                    reloadItem();
                   })
                 }
               >
@@ -117,6 +123,8 @@ export const PublishState = () => {
                     modelZUID,
                     itemZUID,
                     publishingZUID: value.row.ZUID,
+                  }).then(() => {
+                    reloadItem();
                   })
                 }
               >

@@ -351,7 +351,9 @@ export default function ItemEdit() {
                       itemZUID={itemZUID}
                       item={item}
                     />
-                    <PublishState />
+                    <PublishState
+                      reloadItem={() => load(modelZUID, itemZUID)}
+                    />
                   </>
                 )}
               />
