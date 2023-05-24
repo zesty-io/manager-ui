@@ -1,16 +1,33 @@
 import React from "react";
 import { FC, useState } from "react";
-import { Menu, MenuItem } from "@mui/material";
+import {
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  SvgIcon,
+} from "@mui/material";
+import { SvgIconComponent, EditRounded } from "@mui/icons-material";
+import { Database } from "@zesty-io/material";
 
 import { FilterButton } from "../../../components/Filters";
 
-interface ResourceTypeOptions {
-  content: string;
-  schema: string;
+interface ResourceTypeValue {
+  text: string;
+  icon: SvgIconComponent;
 }
+type ResourceTypeOptions = {
+  [key in Exclude<ResourceType, "">]: ResourceTypeValue;
+};
 const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
-  content: "Content Items",
-  schema: "Models",
+  content: {
+    text: "Content Items",
+    icon: EditRounded,
+  },
+  schema: {
+    text: "Models",
+    icon: Database as SvgIconComponent,
+  },
 };
 
 export type ResourceType = "content" | "schema" | "";
@@ -24,15 +41,20 @@ export const ResourceTypeFilter: FC<ResourceTypeFilter> = ({
 }) => {
   const [anchorRef, setAnchorRef] = useState<HTMLElement | null>(null);
 
+  const getButtonText = (): string => {
+    if (Boolean(value) && value in RESOURCE_TYPE_OPTIONS) {
+      return RESOURCE_TYPE_OPTIONS[value as Exclude<ResourceType, "">].text;
+    }
+
+    return "Resource Type";
+  };
+
   return (
     <>
       <FilterButton
         filterId="resourceType"
         isFilterActive={Boolean(value)}
-        buttonText={
-          RESOURCE_TYPE_OPTIONS[value as Exclude<ResourceType, "">] ||
-          "Resource Type"
-        }
+        buttonText={getButtonText()}
         onOpenMenu={(e: React.MouseEvent<HTMLButtonElement>) =>
           setAnchorRef(e.currentTarget)
         }
@@ -49,22 +71,27 @@ export const ResourceTypeFilter: FC<ResourceTypeFilter> = ({
           },
         }}
       >
-        {Object.entries(RESOURCE_TYPE_OPTIONS).map(([filter, text]) => (
-          <MenuItem
-            key={filter}
-            value={filter}
-            selected={value === filter}
-            sx={{
-              height: 40,
-            }}
-            onClick={() => {
-              onChange(filter as ResourceType);
-              setAnchorRef(null);
-            }}
-          >
-            {text}
-          </MenuItem>
-        ))}
+        {Object.entries(RESOURCE_TYPE_OPTIONS).map(
+          ([code, data]: [code: ResourceType, data: ResourceTypeValue]) => (
+            <MenuItem
+              key={code}
+              value={code}
+              selected={value === code}
+              sx={{
+                height: 40,
+              }}
+              onClick={() => {
+                onChange(code as ResourceType);
+                setAnchorRef(null);
+              }}
+            >
+              <ListItemIcon>
+                <SvgIcon component={data.icon} />
+              </ListItemIcon>
+              <ListItemText>{data.text}</ListItemText>
+            </MenuItem>
+          )
+        )}
       </Menu>
     </>
   );
