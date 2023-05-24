@@ -406,3 +406,33 @@ export interface ContentNavItem {
   contentModelZUID?: string;
   parentZUID?: string;
 }
+
+export interface Stylesheet {
+  ZUID: string;
+  status: "live" | "dev";
+  type: string;
+  fileName: string;
+  code: string;
+  lastEditedID: number;
+  template: number;
+  module: number;
+  plugin: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Script {
+  ZUID: string;
+  status: "live" | "dev";
+  type: string;
+  fileName: string;
+  code: string;
+  lastEditedID: number;
+  template: number;
+  module: number;
+  plugin: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}

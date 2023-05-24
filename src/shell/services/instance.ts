@@ -16,6 +16,8 @@ import {
   Web,
   Meta,
   ContentNavItem,
+  Stylesheet,
+  Script,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -36,6 +38,8 @@ export const instanceApi = createApi({
     "WebViews",
     "InstanceSettings",
     "SearchQuery",
+    "Stylesheets",
+    "Scripts",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -384,6 +388,18 @@ export const instanceApi = createApi({
       query: () => `/env/nav`,
       transformResponse: getResponseData,
     }),
+    // https://www.zesty.io/docs/instances/api-reference/web/stylesheets/#Get-Stylesheet(s)
+    getStylesheets: builder.query<Stylesheet[], void>({
+      query: () => `/web/stylesheets`,
+      transformResponse: getResponseData,
+      providesTags: ["Stylesheets"],
+    }),
+    // https://www.zesty.io/docs/instances/api-reference/web/scripts/#Get-Script(s)
+    getScripts: builder.query<Script[], void>({
+      query: () => `/web/scripts`,
+      transformResponse: getResponseData,
+      providesTags: ["Scripts"],
+    }),
   }),
 });
 
@@ -418,4 +434,6 @@ export const {
   useUpdateInstanceSettingMutation,
   useCreateContentItemMutation,
   useGetContentNavItemsQuery,
+  useGetStylesheetsQuery,
+  useGetScriptsQuery,
 } = instanceApi;
