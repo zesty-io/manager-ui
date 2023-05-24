@@ -20,6 +20,7 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
   const history = useHistory();
   const [params, setParams] = useParams();
   const hasFilters =
+    params.get("resource") ||
     params.get("user") ||
     params.get("datePreset") ||
     params.get("from") ||
@@ -83,6 +84,7 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
                   setParams(null, "sort");
                   setParams(null, "datePreset");
                   setParams(null, "user");
+                  setParams(null, "resource");
                 }}
                 color="primary"
                 startIcon={<RestartAltRoundedIcon />}

@@ -1,4 +1,4 @@
-import { FC, useState, useRef, useMemo } from "react";
+import { FC, useState, useRef, useMemo, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import InputAdornment from "@mui/material/InputAdornment";
 import {
@@ -16,32 +16,85 @@ import { useHistory, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import { ScheduleRounded, SearchRounded, Create } from "@mui/icons-material";
+import { ScheduleRounded, SearchRounded } from "@mui/icons-material";
+import { isEmpty } from "lodash";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
-import { ContentItem } from "../../services/types";
 import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import useRecentSearches from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
+import { getContentTitle, getItemIcon } from "./utils";
+import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ElementId = "global-search-autocomplete";
 
+export interface Suggestion {
+  type: "schema" | "content";
+  ZUID: string;
+  title: string;
+  updatedAt: string;
+  url: string;
+  noUrlErrorMessage?: string;
+}
+
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
+  const [open, setOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
+  const [models, setKeyword] = useSearchModelsByKeyword();
+  const languages = useSelector((state: any) => state.languages);
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
+  const theme = useTheme();
 
   const textfieldRef = useRef<HTMLDivElement>();
 
-  const res = useSearchContentQuery({ query: value }, { skip: !value });
+  const { data: contents } = useSearchContentQuery(
+    { query: value },
+    { skip: !value }
+  );
 
-  const suggestions = res.data;
+  const suggestions: Suggestion[] = useMemo(() => {
+    const contentSuggestions: Suggestion[] =
+      contents?.map((content) => {
+        return {
+          type: "content",
+          ZUID: content.meta?.ZUID,
+          title: getContentTitle(content, languages),
+          updatedAt: content.meta?.updatedAt,
+          url: isEmpty(content.meta)
+            ? ""
+            : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
+          noUrlErrorMessage: "Selected item is missing meta data",
+        };
+      }) || [];
+
+    const modelSuggestions: Suggestion[] = models.map((model) => {
+      return {
+        type: "schema",
+        ZUID: model.ZUID,
+        title: model.label,
+        updatedAt: model.updatedAt,
+        url: `/schema/${model.ZUID}`,
+      };
+    });
+
+    const consolidatedResults = [
+      ...contentSuggestions,
+      ...modelSuggestions,
+    ].sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+
+    return consolidatedResults;
+  }, [contents, models]);
+
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
     const _recentSearches =
@@ -54,14 +107,14 @@ const ContentSearch: FC = () => {
     return [value, ..._suggestions, ..._recentSearches, "AdvancedSearchButton"];
   }, [suggestions, recentSearches, value]);
 
+  useEffect(() => {
+    setKeyword(value);
+  }, [value]);
+
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
     textfieldRef.current?.querySelector("input").focus();
   });
-  const languages = useSelector((state: any) => state.languages);
-  const [open, setOpen] = useState(false);
-
-  const theme = useTheme();
 
   const goToSearchPage = (queryTerm: string) => {
     const isOnSearchPage = location.pathname === "/search";
@@ -164,31 +217,31 @@ const ContentSearch: FC = () => {
             setValue(newVal);
           }}
           onChange={(event, newVal) => {
+            /** This is when the user selects any of the suggestions */
+
             // null represents "X" button clicked
             if (!newVal) {
               setValue("");
               return;
             }
+
             // string represents search term entered
             if (typeof newVal === "string") {
               goToSearchPage(newVal);
             } else {
-              // ContentItem represents a suggestion being clicked
-              if (newVal?.meta) {
-                history.push(
-                  `/content/${newVal.meta.contentModelZUID}/${newVal.meta.ZUID}`
-                );
+              if (newVal?.url) {
+                history.push(newVal.url);
               } else {
                 dispatch(
                   notify({
                     kind: "warn",
-                    message: "Selected item is missing meta data",
+                    message: newVal.noUrlErrorMessage,
                   })
                 );
               }
             }
           }}
-          getOptionLabel={(option: ContentItem) => {
+          getOptionLabel={(option: Suggestion) => {
             // do not change the input value when a suggestion is selected
             return value;
           }}
@@ -268,21 +321,12 @@ const ContentSearch: FC = () => {
                 );
               }
             } else {
-              // type of ContentItem represents a suggestion from the search API
-              const getText = () => {
-                const title = option?.web?.metaTitle || "Missing Meta Title";
-                const langCode = languages.find(
-                  (lang: any) => lang.ID === option?.meta?.langID
-                )?.code;
-                const langDisplay = langCode ? `(${langCode}) ` : null;
-                return langDisplay ? `${langDisplay}${title}` : title;
-              };
               return (
                 <GlobalSearchItem
                   {...props}
-                  key={option.meta.ZUID}
-                  icon={Create}
-                  text={getText()}
+                  key={option.ZUID}
+                  icon={getItemIcon(option.type)}
+                  text={option.title}
                 />
               );
             }
