@@ -184,6 +184,9 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                   }}
                 >
                   <ListItemText
+                    sx={{
+                      m: 0,
+                    }}
                     primary={property.displayName}
                     primaryTypographyProps={{
                       variant: "body2",
@@ -207,6 +210,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                     }
                     secondaryTypographyProps={{
                       fontSize: "12px",
+                      lineHeight: "18px",
                     }}
                   />
                   <ListItemIcon
