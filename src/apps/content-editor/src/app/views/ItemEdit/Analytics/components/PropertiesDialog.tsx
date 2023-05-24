@@ -9,7 +9,8 @@ import {
   Typography,
   TextField,
   InputAdornment,
-  ListItem,
+  ListItemButton,
+  ListItemIcon,
   ListItemText,
   List,
   Link,
@@ -171,27 +172,16 @@ export const PropertiesDialog = ({ onClose }: Props) => {
               }}
             >
               {filteredData?.map((property: any, index: number) => (
-                <ListItem
+                <ListItemButton
                   key={property.name}
                   divider={index === filteredData?.length - 1 ? false : true}
-                  disablePadding
+                  disableGutters
+                  onClick={() => handlePropertySelection(property)}
                   sx={{
                     px: 2,
                     py: 1.5,
                     borderColor: "border",
                   }}
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      size="small"
-                      onClick={() => handlePropertySelection(property)}
-                    >
-                      <ArrowForwardIosRoundedIcon
-                        fontSize="small"
-                        color="action"
-                      />
-                    </IconButton>
-                  }
                 >
                   <ListItemText
                     primary={property.displayName}
@@ -219,7 +209,17 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                       fontSize: "12px",
                     }}
                   />
-                </ListItem>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: "unset",
+                    }}
+                  >
+                    <ArrowForwardIosRoundedIcon
+                      fontSize="small"
+                      color="action"
+                    />
+                  </ListItemIcon>
+                </ListItemButton>
               ))}
             </List>
           </>

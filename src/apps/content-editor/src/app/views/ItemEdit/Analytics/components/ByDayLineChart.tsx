@@ -64,7 +64,9 @@ export const ByDayLineChart = ({
         )
         ?.map((item: any) => {
           return {
-            date: moment(item.meta.message.split(" ").pop()).format("L"),
+            date: moment(item.meta.message.split(" ").pop())
+              .subtract(3, "days")
+              .format("L"),
             version: item.meta.version,
           };
         })
@@ -410,7 +412,11 @@ export const ByDayLineChart = ({
               }
               //onClick={() => history.push(`/content/${modelZUID}/${itemZUID}?version=${itemPublishesByDayArray[tooltipModel?.dataIndex]?.version}`)}
               onClick={() =>
-                history.push(`/content/${modelZUID}/${itemZUID}?version=60`)
+                history.push(
+                  `/content/${modelZUID}/${itemZUID}?version=${
+                    itemPublishesByDayArray[tooltipModel?.dataIndex]?.version
+                  }`
+                )
               }
             >
               View Version{" "}
