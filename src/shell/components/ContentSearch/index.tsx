@@ -144,7 +144,7 @@ const ContentSearch: FC = () => {
         collapsedSize="288px"
         orientation="horizontal"
         sx={{
-          zIndex: (theme) => theme.zIndex.appBar - 1,
+          zIndex: 2,
           height: "40px",
           position: "relative",
           "& .MuiCollapse-entered": {
@@ -265,6 +265,11 @@ const ContentSearch: FC = () => {
                     {...props}
                     // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
                     aria-selected={false}
+                    data-cy={
+                      isSearchTerm
+                        ? "global-search-term"
+                        : "global-search-recent-keyword"
+                    }
                     key={isSearchTerm ? "global-search-term" : option}
                     icon={
                       !isSearchTerm || searchTermInRecentSearches
@@ -424,6 +429,7 @@ const ContentSearch: FC = () => {
         <AdvancedSearch
           keyword={value}
           onClose={() => setIsAdvancedSearchOpen(false)}
+          onSearch={(searchData) => addSearchTerm(searchData.keyword)}
         />
       )}
     </>
