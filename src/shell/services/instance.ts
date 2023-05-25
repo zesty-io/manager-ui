@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
@@ -336,8 +337,13 @@ export const instanceApi = createApi({
       ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/#Get-View(s)
-    getWebViews: builder.query<WebView[], void>({
-      query: () => `/web/views`,
+    getWebViews: builder.query<WebView[], void | { status?: "live" | "dev" }>({
+      query: (params) => {
+        return {
+          url: "web/views",
+          params: params || {},
+        };
+      },
       transformResponse: getResponseData,
       providesTags: ["WebViews"],
     }),

@@ -436,3 +436,5 @@ export interface Script {
   createdAt: string;
   updatedAt: string;
 }
+
+export type ResourceType = "schema" | "content" | "code";
