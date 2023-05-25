@@ -23,10 +23,37 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+    getAnalyticsPropertyDataByQuery: builder.query<any, any>({
+      query: (body) => {
+        return {
+          url: `getPropertyDataByQuery`,
+          method: "POST",
+          body,
+          params: {
+            zuid: instanceZUID,
+          },
+        };
+      },
+    }),
+    getAnalyticsProperties: builder.query<any, void>({
+      query: () => {
+        return {
+          url: `getPropertyList`,
+          method: "GET",
+          params: {
+            zuid: instanceZUID,
+          },
+        };
+      },
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useRefreshCacheMutation, useAiGenerationMutation } =
-  cloudFunctionsApi;
+export const {
+  useRefreshCacheMutation,
+  useAiGenerationMutation,
+  useGetAnalyticsPropertiesQuery,
+  useGetAnalyticsPropertyDataByQueryQuery,
+} = cloudFunctionsApi;

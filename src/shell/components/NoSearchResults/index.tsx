@@ -14,16 +14,25 @@ import { useParams } from "../../../shell/hooks/useParams";
 
 type Props = {
   query: string;
+  ignoreFilters?: boolean;
+  hideBackButton?: boolean;
+  onSearchAgain?: () => void;
 };
 
-export const NoSearchResults: FC<Props> = ({ query }) => {
+export const NoSearchResults: FC<Props> = ({
+  query,
+  onSearchAgain,
+  ignoreFilters,
+  hideBackButton,
+}) => {
   const history = useHistory();
   const [params, setParams] = useParams();
   const hasFilters =
-    params.get("user") ||
-    params.get("datePreset") ||
-    params.get("from") ||
-    params.get("to");
+    (params.get("user") ||
+      params.get("datePreset") ||
+      params.get("from") ||
+      params.get("to")) &&
+    !ignoreFilters;
 
   return (
     <Box
@@ -34,8 +43,6 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        borderTop: 1,
-        borderColor: "border",
       }}
     >
       <Box
@@ -91,18 +98,24 @@ export const NoSearchResults: FC<Props> = ({ query }) => {
               </Button>
             ) : (
               <>
-                <Button
-                  startIcon={<ArrowBack />}
-                  onClick={() => history.goBack()}
-                  disabled={history.action === "POP"}
-                  color="inherit"
-                  variant="contained"
-                >
-                  Go Back
-                </Button>
+                {!hideBackButton && (
+                  <Button
+                    startIcon={<ArrowBack />}
+                    onClick={() => history.goBack()}
+                    disabled={history.action === "POP"}
+                    color="inherit"
+                    variant="contained"
+                  >
+                    Go Back
+                  </Button>
+                )}
                 <Button
                   variant="contained"
                   onClick={() => {
+                    if (onSearchAgain) {
+                      onSearchAgain();
+                      return;
+                    }
                     setParams(null, "to");
                     setParams(null, "from");
                     setParams(null, "filetype");

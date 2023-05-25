@@ -2,6 +2,7 @@ export type PresetType =
   | "today"
   | "yesterday"
   | "last_7_days"
+  | "last_14_days"
   | "last_30_days"
   | "last_3_months"
   | "last_12_months";
