@@ -64,9 +64,7 @@ export const ByDayLineChart = ({
         )
         ?.map((item: any) => {
           return {
-            date: moment(item.meta.message.split(" ").pop())
-              .subtract(3, "days")
-              .format("L"),
+            date: moment(item.meta.message.split(" ").pop()).format("L"),
             version: item.meta.version,
           };
         })
