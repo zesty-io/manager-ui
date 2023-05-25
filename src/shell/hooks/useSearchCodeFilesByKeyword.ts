@@ -8,6 +8,11 @@ import {
   useGetScriptsQuery,
 } from "../services/instance";
 
+/**
+ * This hook is used to easily filter code files via a keyword that matches the ff:
+ * - File name
+ * - File ZUID
+ */
 type File = Pick<
   WebView | Script | Stylesheet,
   keyof (WebView | Script | Stylesheet)
@@ -40,10 +45,20 @@ export const useSearchCodeFilesByKeywords: () => UseSearchCodeFilesByKeywords =
     // Filter files based on file name
     const filteredFiles: File[] = useMemo(() => {
       const term = searchTerm?.toLowerCase();
+      const htmlFileTypes = ["templateset", "pageset", "dataset", "snippet"];
 
-      return allFiles?.filter((file) => {
-        return file.fileName?.toLowerCase().includes(term);
-      });
+      /**
+       * Matches the ff:
+       * - File name
+       * - File ZUID
+       * - File type
+       */
+      return allFiles?.filter(
+        (file) =>
+          file.fileName?.toLowerCase().includes(term) ||
+          file.ZUID === term ||
+          (term === ".html" && htmlFileTypes.includes(file.type))
+      );
     }, [allFiles, searchTerm]);
 
     return [filteredFiles, setSearchTerm];
