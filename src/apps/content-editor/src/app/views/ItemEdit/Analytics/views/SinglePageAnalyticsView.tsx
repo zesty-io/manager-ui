@@ -2,10 +2,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Box,
-  Typography,
+  Alert,
   Divider,
   CircularProgress,
   Link,
+  Typography,
 } from "@mui/material";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
@@ -35,6 +36,7 @@ import { PropertiesDialog } from "../components/PropertiesDialog";
 import instanceZUID from "../../../../../../../../utility/instanceZUID";
 import { NotFound } from "../../../../../../../../shell/components/NotFound";
 import SettingsIcon from "@mui/icons-material/Settings";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 
 const getDateRangeAndLabelsFromPreset = (
   preset: DateFilterValue
@@ -504,6 +506,22 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
   return (
     <>
       <Box height="100%">
+        <Box
+          display="flex"
+          px={2}
+          py={1}
+          gap={1.5}
+          borderRadius="8px"
+          bgcolor="grey.100"
+          mb={1.25}
+          alignItems="center"
+        >
+          <WarningRoundedIcon color="action" />
+          <Typography variant="body2" color="grey.700">
+            Early preview to premium GA4 analytics integration. Inquire to your
+            account manager for more details.
+          </Typography>
+        </Box>
         <Box display="flex" justifyContent="space-between">
           <DateFilter
             clearable={false}
