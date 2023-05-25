@@ -45,19 +45,15 @@ export const useSearchCodeFilesByKeywords: () => UseSearchCodeFilesByKeywords =
     // Filter files based on file name
     const filteredFiles: File[] = useMemo(() => {
       const term = searchTerm?.toLowerCase();
-      const htmlFileTypes = ["templateset", "pageset", "dataset", "snippet"];
 
       /**
        * Matches the ff:
        * - File name
        * - File ZUID
-       * - File type
        */
       return allFiles?.filter(
         (file) =>
-          file.fileName?.toLowerCase().includes(term) ||
-          file.ZUID === term ||
-          (term === ".html" && htmlFileTypes.includes(file.type))
+          file.fileName?.toLowerCase().includes(term) || file.ZUID === term
       );
     }, [allFiles, searchTerm]);
 
