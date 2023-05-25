@@ -409,8 +409,7 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
 
   const { data: auditData } = useGetAuditsQuery({
     // Start of content item version support in audit
-    start_date: "05/22/2023",
-    end: moment().format("L"),
+    start_date: "05/25/2023",
     affectedZUID: itemZUID,
   });
 
