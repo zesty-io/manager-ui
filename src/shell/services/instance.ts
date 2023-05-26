@@ -359,6 +359,15 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["InstanceSettings"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/env/settings/#Create-Setting
+    createInstanceSettings: builder.mutation<any, any>({
+      query: (body) => ({
+        url: `/env/settings`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["InstanceSettings"],
+    }),
     // https://www.zesty.io/docs/instances/api-reference/env/settings/#Update-Setting
     updateInstanceSetting: builder.mutation<any, InstanceSetting>({
       query: (body) => ({
@@ -418,4 +427,5 @@ export const {
   useUpdateInstanceSettingMutation,
   useCreateContentItemMutation,
   useGetContentNavItemsQuery,
+  useCreateInstanceSettingsMutation,
 } = instanceApi;

@@ -27,6 +27,10 @@ const PRESET_DATES: PresetDate[] = [
     value: "last_7_days",
   },
   {
+    text: "Last 14 days",
+    value: "last_14_days",
+  },
+  {
     text: "Last 30 days",
     value: "last_30_days",
   },
@@ -72,12 +76,16 @@ interface DateFilterProps {
   onChange: (filter: DateFilterValue) => void;
   withDateRange?: boolean;
   defaultButtonText?: string;
+  clearable?: boolean;
+  hideCustomDates?: boolean;
 }
 export const DateFilter: FC<DateFilterProps> = ({
   onChange,
   value,
   withDateRange = false,
   defaultButtonText = "Last Updated",
+  clearable = true,
+  hideCustomDates = false,
 }) => {
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
@@ -146,6 +154,7 @@ export const DateFilter: FC<DateFilterProps> = ({
   return (
     <>
       <FilterButton
+        clearable={clearable}
         filterId="date"
         isFilterActive={Boolean(activeFilterText !== defaultButtonText)}
         buttonText={activeFilterText}
@@ -193,22 +202,24 @@ export const DateFilter: FC<DateFilterProps> = ({
             );
           })}
           <Divider />
-          {CUSTOM_DATES.map((date) => {
-            const isCustomDateSelected = value.type === date.value;
+          {hideCustomDates
+            ? null
+            : CUSTOM_DATES.map((date) => {
+                const isCustomDateSelected = value.type === date.value;
 
-            return (
-              <MenuItem
-                selected={isCustomDateSelected}
-                key={date.value}
-                onClick={() => handleOpenCalendarModal(date.value)}
-                sx={{
-                  height: ITEM_HEIGHT,
-                }}
-              >
-                <ListItemText>{date.text}</ListItemText>
-              </MenuItem>
-            );
-          })}
+                return (
+                  <MenuItem
+                    selected={isCustomDateSelected}
+                    key={date.value}
+                    onClick={() => handleOpenCalendarModal(date.value)}
+                    sx={{
+                      height: ITEM_HEIGHT,
+                    }}
+                  >
+                    <ListItemText>{date.text}</ListItemText>
+                  </MenuItem>
+                );
+              })}
           {withDateRange && (
             <MenuItem
               selected={value?.type === "daterange"}
