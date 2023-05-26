@@ -39,10 +39,10 @@ const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
   },
 };
 
-export type ResourceCodes = ResourceType & "";
+export type ResourceCodes = ResourceType | "";
 interface ResourceTypeFilter {
   onChange: (value: ResourceType | "") => void;
-  value?: ResourceType;
+  value?: ResourceCodes;
 }
 export const ResourceTypeFilter: FC<ResourceTypeFilter> = ({
   onChange,
@@ -52,7 +52,7 @@ export const ResourceTypeFilter: FC<ResourceTypeFilter> = ({
 
   const getButtonText = (): string => {
     if (Boolean(value) && value in RESOURCE_TYPE_OPTIONS) {
-      return RESOURCE_TYPE_OPTIONS[value as Exclude<ResourceType, "">].text;
+      return RESOURCE_TYPE_OPTIONS[value as ResourceType].text;
     }
 
     return "Resource Type";
