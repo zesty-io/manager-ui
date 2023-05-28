@@ -58,10 +58,7 @@ export const CUSTOM_DATES: CustomDate[] = [
   },
 ];
 
-type ResourceTypeOption = {
-  [key in ResourceType]: string;
-};
-export const RESOURCE_TYPES: ResourceTypeOption = {
+export const RESOURCE_TYPES: Record<ResourceType, string> = {
   content: "Content Items",
   schema: "Models",
   code: "Code Files",
