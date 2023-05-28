@@ -13,7 +13,7 @@ import {
  * - File name
  * - File ZUID
  */
-type File = Pick<
+export type File = Pick<
   WebView | Script | Stylesheet,
   keyof (WebView | Script | Stylesheet)
 >;

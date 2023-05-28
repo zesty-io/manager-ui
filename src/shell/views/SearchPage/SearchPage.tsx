@@ -14,16 +14,20 @@ import { BackButton } from "./BackButton";
 import { Filters } from "./Filters";
 import { getDateFilterFn } from "../../components/Filters/DateFilter";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
-import { ContentItem, ContentModel } from "../../services/types";
+import { ContentItem, ContentModel, ResourceType } from "../../services/types";
+import {
+  useSearchCodeFilesByKeywords,
+  File,
+} from "../../hooks/useSearchCodeFilesByKeyword";
 
 export interface SearchPageItem {
   ZUID: string;
   title: string;
-  type: "schema" | "content";
+  type: ResourceType;
   updatedAt: string;
   createdAt: string;
   createdByUserZUID: string;
-  data: ContentItem | ContentModel;
+  data: ContentItem | ContentModel | File;
 }
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
@@ -32,10 +36,12 @@ export const SearchPage: FC = () => {
     { query, order: "created", dir: "desc" },
     { skip: !query }
   );
-  const [models, setKeyword] = useSearchModelsByKeyword();
+  const [models, setModelKeyword] = useSearchModelsByKeyword();
+  const [files, setFileKeyword] = useSearchCodeFilesByKeywords();
 
   useEffect(() => {
-    setKeyword(query);
+    setModelKeyword(query);
+    setFileKeyword(query);
   }, [query]);
 
   // Combine results from contents and models
@@ -67,7 +73,26 @@ export const SearchPage: FC = () => {
         };
       }) || [];
 
-    const consolidatedResults = [...contentResults, ...modelResults];
+    const fileResults: SearchPageItem[] =
+      files?.map((file) => {
+        return {
+          ZUID: file.ZUID,
+          title: file.fileName,
+          type: "code",
+          updatedAt: file.updatedAt,
+          createdAt: file.createdAt,
+          createdByUserZUID: "",
+          data: file,
+        };
+      }) || [];
+
+    console.log(files);
+
+    const consolidatedResults = [
+      ...contentResults,
+      ...modelResults,
+      ...fileResults,
+    ];
 
     // Sort the results
     switch (sortBy) {
@@ -95,7 +120,7 @@ export const SearchPage: FC = () => {
       default:
         return consolidatedResults;
     }
-  }, [contents, models, params]);
+  }, [contents, models, params, files]);
 
   const filteredResults = useMemo(() => {
     let _results = cloneDeep(results);
