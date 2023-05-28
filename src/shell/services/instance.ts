@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
@@ -16,6 +17,8 @@ import {
   Web,
   Meta,
   ContentNavItem,
+  Stylesheet,
+  Script,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -36,6 +39,8 @@ export const instanceApi = createApi({
     "WebViews",
     "InstanceSettings",
     "SearchQuery",
+    "Stylesheets",
+    "Scripts",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -332,8 +337,13 @@ export const instanceApi = createApi({
       ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/#Get-View(s)
-    getWebViews: builder.query<WebView[], void>({
-      query: () => `/web/views`,
+    getWebViews: builder.query<WebView[], void | { status?: "live" | "dev" }>({
+      query: (params) => {
+        return {
+          url: "web/views",
+          params: params || {},
+        };
+      },
       transformResponse: getResponseData,
       providesTags: ["WebViews"],
     }),
@@ -393,6 +403,18 @@ export const instanceApi = createApi({
       query: () => `/env/nav`,
       transformResponse: getResponseData,
     }),
+    // https://www.zesty.io/docs/instances/api-reference/web/stylesheets/#Get-Stylesheet(s)
+    getStylesheets: builder.query<Stylesheet[], void>({
+      query: () => `/web/stylesheets`,
+      transformResponse: getResponseData,
+      providesTags: ["Stylesheets"],
+    }),
+    // https://www.zesty.io/docs/instances/api-reference/web/scripts/#Get-Script(s)
+    getScripts: builder.query<Script[], void>({
+      query: () => `/web/scripts`,
+      transformResponse: getResponseData,
+      providesTags: ["Scripts"],
+    }),
   }),
 });
 
@@ -427,5 +449,7 @@ export const {
   useUpdateInstanceSettingMutation,
   useCreateContentItemMutation,
   useGetContentNavItemsQuery,
+  useGetStylesheetsQuery,
+  useGetScriptsQuery,
   useCreateInstanceSettingsMutation,
 } = instanceApi;

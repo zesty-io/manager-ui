@@ -10,7 +10,8 @@ import {
 } from "../../../components/Filters/";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { DateFilterValue } from "../../../components/Filters/DateFilter";
-import { ResourceTypeFilter, ResourceType } from "./ResourceTypeFilter";
+import { ResourceTypeFilter } from "./ResourceTypeFilter";
+import { ResourceType } from "../../../services/types";
 
 export const Filters = () => {
   const [params, setParams] = useParams();
