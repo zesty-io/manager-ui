@@ -86,8 +86,6 @@ export const SearchPage: FC = () => {
         };
       }) || [];
 
-    console.log(files);
-
     const consolidatedResults = [
       ...contentResults,
       ...modelResults,
