@@ -238,6 +238,7 @@ export const ByDayLineChart = ({
                 datalabels: {
                   display: false,
                 },
+                borderWidth: 2,
               },
               {
                 label: dateRange1Label,
@@ -249,6 +250,7 @@ export const ByDayLineChart = ({
                 datalabels: {
                   display: false,
                 },
+                borderWidth: 2,
               },
             ],
           }}
@@ -256,7 +258,7 @@ export const ByDayLineChart = ({
           options={{
             layout: {
               padding: {
-                top: 20,
+                top: 16,
                 bottom: 20,
               },
             },
@@ -279,7 +281,7 @@ export const ByDayLineChart = ({
                     size: 12,
                   },
                   color: theme.palette.text.primary,
-                  padding: 14,
+                  padding: 6,
                 },
               },
             },
@@ -306,6 +308,7 @@ export const ByDayLineChart = ({
                       : "transparent";
                   },
                   borderDash: [4, 4],
+                  drawBorder: false,
                 },
                 ticks: {
                   color: theme.palette.text.disabled,
@@ -313,6 +316,7 @@ export const ByDayLineChart = ({
                     size: 12,
                     family: "Mulish",
                   },
+                  padding: 8,
                   callback: function (value, index, values) {
                     switch (type) {
                       case 1:
@@ -328,6 +332,7 @@ export const ByDayLineChart = ({
               x: {
                 grid: {
                   drawOnChartArea: false,
+                  drawTicks: false,
                 },
                 type: "time",
                 time: {
@@ -335,6 +340,7 @@ export const ByDayLineChart = ({
                   unit: "day",
                 },
                 ticks: {
+                  padding: 8,
                   color: theme.palette.text.disabled,
                   font: {
                     size: 12,
