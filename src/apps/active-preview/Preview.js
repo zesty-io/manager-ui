@@ -32,7 +32,7 @@ export function Preview(props) {
 
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const [rotate, setRotate] = useState(false);
   const [instance, setInstance] = useState({});
   const [settings, setSettings] = useState([]);
@@ -235,7 +235,7 @@ export function Preview(props) {
                     </MenuItem>
                   ))}
               </Select>
-              <Button
+              {/* <Button
                 disableElevation
                 variant="contained"
                 onClick={() => setRotate(!rotate)}
@@ -257,7 +257,7 @@ export function Preview(props) {
                     fill: "#10182866",
                   }}
                 />
-              </Button>
+              </Button> */}
             </div>
 
             {/* <div className={styles.Menu}>
