@@ -16,9 +16,7 @@ interface ResourceTypeValue {
   text: string;
   icon: SvgIconComponent;
 }
-type ResourceTypeOptions = {
-  [key in Exclude<ResourceType, "">]: ResourceTypeValue;
-};
+type ResourceTypeOptions = Record<Exclude<ResourceType, "">, ResourceTypeValue>;
 const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
   content: {
     text: "Content Items",
