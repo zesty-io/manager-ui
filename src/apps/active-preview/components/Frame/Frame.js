@@ -83,7 +83,7 @@ export const templates = {
   iphone14: {
     option: (
       <span>
-        iPhone 14 <small>320x568px</small>
+        iPhone 14 <small>437x883</small>
       </span>
     ),
     template: (props) => {
@@ -97,7 +97,12 @@ export const templates = {
             height: "883px",
           }}
         >
-          <div className={styles.screen}>{props.partial()}</div>
+          <div
+            className={styles.screen}
+            style={{ width: "389px", height: "842px", margin: "21px 0 0 24px" }}
+          >
+            {props.partial()}
+          </div>
         </div>
       );
     },
@@ -127,7 +132,7 @@ export const templates = {
   ipad: {
     option: (
       <span>
-        ipad <small>1158x1494</small>
+        iPad Pro <small>1158x1494</small>
       </span>
     ),
     template: (props) => {
