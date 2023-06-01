@@ -101,7 +101,16 @@ export const templates = {
             className={styles.screen}
             style={{ width: "389px", height: "842px", margin: "21px 0 0 24px" }}
           >
-            {props.partial()}
+            <div
+              style={{
+                height: "100%",
+                width: "100%",
+                borderRadius: "47px 47px 47px 47px",
+                overflow: "hidden",
+              }}
+            >
+              {props.partial()}
+            </div>
           </div>
         </div>
       );
