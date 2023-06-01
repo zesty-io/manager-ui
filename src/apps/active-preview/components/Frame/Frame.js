@@ -2,9 +2,12 @@ import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
 
 import iphone14 from "../../../../../public/images/iphone-14.png";
+import iphone14cam from "../../../../../public/images/iphone-14-camera.png";
 import iphone14pro from "../../../../../public/images/iphone-14-pro.png";
+import iphone14proCam from "../../../../../public/images/iphone-14-pro-camera.png";
 import ipad from "../../../../../public/images/ipad.png";
 import pixel7 from "../../../../../public/images/pixel-7.png";
+import pixel7cam from "../../../../../public/images/pixel-7-camera.png";
 
 import styles from "./Frame.less";
 export function Frame(props) {
@@ -99,14 +102,24 @@ export const templates = {
         >
           <div
             className={styles.screen}
-            style={{ width: "389px", height: "842px", margin: "21px 0 0 24px" }}
+            style={{
+              width: "389px",
+              height: "842px",
+              margin: "21px 0 0 24px",
+            }}
           >
-            <div
+            <img
+              className={styles.camera}
+              src={iphone14cam}
               style={{
-                height: "100%",
-                width: "100%",
-                borderRadius: "47px 47px 47px 47px",
-                overflow: "hidden",
+                left: "108px",
+                top: "-2px",
+              }}
+            />
+            <div
+              className={styles.webContent}
+              style={{
+                borderRadius: "47px",
               }}
             >
               {props.partial()}
@@ -141,12 +154,18 @@ export const templates = {
               height: "845px",
             }}
           >
-            <div
+            <img
+              className={styles.camera}
+              src={iphone14proCam}
               style={{
-                height: "100%",
-                width: "100%",
+                left: "132px",
+                top: "11px",
+              }}
+            />
+            <div
+              className={styles.webContent}
+              style={{
                 borderRadius: "53px",
-                overflow: "hidden",
               }}
             >
               {props.partial()}
@@ -184,11 +203,9 @@ export const templates = {
             }}
           >
             <div
+              className={styles.webContent}
               style={{
-                height: "100%",
-                width: "100%",
                 borderRadius: "22px",
-                overflow: "hidden",
               }}
             >
               {props.partial()}
@@ -223,12 +240,18 @@ export const templates = {
               width: "617px",
             }}
           >
-            <div
+            <img
+              className={styles.camera}
+              src={pixel7cam}
               style={{
-                height: "100%",
-                width: "100%",
+                left: "293px",
+                top: "12px",
+              }}
+            />
+            <div
+              className={styles.webContent}
+              style={{
                 borderRadius: "25px",
-                overflow: "hidden",
               }}
             >
               {props.partial()}
