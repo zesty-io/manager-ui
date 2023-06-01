@@ -102,8 +102,22 @@ export const templates = {
         >
           <div
             className={styles.screen}
-            style={{ width: "389px", height: "842px", margin: "21px 0 0 24px" }}
+            style={{
+              width: "389px",
+              height: "842px",
+              margin: "21px 0 0 24px",
+              position: "relative",
+            }}
           >
+            <img
+              src={iphone14cam}
+              style={{
+                zIndex: 1,
+                position: "absolute",
+                left: "108px",
+                top: "-2px",
+              }}
+            />
             <div
               style={{
                 height: "100%",
@@ -142,8 +156,18 @@ export const templates = {
               margin: "19px 0 0 22px",
               width: "390px",
               height: "845px",
+              position: "relative",
             }}
           >
+            <img
+              src={iphone14proCam}
+              style={{
+                zIndex: 1,
+                position: "absolute",
+                left: "132px",
+                top: "11px",
+              }}
+            />
             <div
               style={{
                 height: "100%",
@@ -224,8 +248,18 @@ export const templates = {
               margin: "25px 0 0 13px",
               height: "1322px",
               width: "617px",
+              position: "relative",
             }}
           >
+            <img
+              src={pixel7cam}
+              style={{
+                zIndex: 1,
+                position: "absolute",
+                left: "293px",
+                top: "12px",
+              }}
+            />
             <div
               style={{
                 height: "100%",
