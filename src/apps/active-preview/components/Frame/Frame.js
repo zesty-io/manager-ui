@@ -29,7 +29,7 @@ export function Frame(props) {
           onLoad={() => setFrameLoading(false)}
         />
       ) : (
-        <div className={styles.center}>
+        <div className={props.device === "ipad" ? "" : styles.center}>
           {templates[props.device].template({
             orientation: props.rotate ? "landscape" : "portrait",
             partial: () => {
@@ -171,6 +171,7 @@ export const templates = {
             backgroundRepeat: "no-repeat",
             width: "1158px",
             height: "1494px",
+            margin: "auto", // centers the ipad preview
           }}
         >
           <div
@@ -179,7 +180,7 @@ export const templates = {
               width: "1027px",
               height: "1367px",
               overflow: "hidden",
-              margin: "50px 0 0 46px",
+              padding: "50px 0 0 46px",
             }}
           >
             <div
@@ -217,9 +218,9 @@ export const templates = {
           <div
             className={styles.screen}
             style={{
-              margin: "25px 0 0 14px",
+              margin: "25px 0 0 13px",
               height: "1322px",
-              width: "616px",
+              width: "617px",
             }}
           >
             <div
