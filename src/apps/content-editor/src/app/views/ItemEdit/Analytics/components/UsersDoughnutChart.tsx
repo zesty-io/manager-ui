@@ -139,7 +139,7 @@ export const UsersDoughnutChart = ({
                   size: 12,
                 },
                 color: theme.palette.text.secondary,
-                padding: 14,
+                padding: 8,
               },
             },
           },
@@ -153,13 +153,13 @@ export const UsersDoughnutChart = ({
               ctx.save();
               ctx.textAlign = "center";
               ctx.textBaseline = "middle";
-              ctx.font = "bold 12px Mulish";
+              ctx.font = "600 12px Mulish";
               ctx.fillStyle = theme.palette.text.secondary;
               const xCoor = chart.getDatasetMeta(0).data[0].x;
               const yCoor = chart.getDatasetMeta(0).data[0].y;
               const title = "Users";
               ctx.fillText(title, xCoor, yCoor - 14);
-              ctx.font = "bold 20px Mulish";
+              ctx.font = "600 20px Mulish";
               ctx.fillStyle = theme.palette.text.primary;
               const subtitle = numberFormatter.format(
                 (chart.data.datasets[0].data.reduce(
