@@ -2,9 +2,12 @@ import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
 
 import iphone14 from "../../../../../public/images/iphone-14.png";
+import iphone14cam from "../../../../../public/images/iphone-14-camera.png";
 import iphone14pro from "../../../../../public/images/iphone-14-pro.png";
+import iphone14proCam from "../../../../../public/images/iphone-14-pro-camera.png";
 import ipad from "../../../../../public/images/ipad.png";
 import pixel7 from "../../../../../public/images/pixel-7.png";
+import pixel7cam from "../../../../../public/images/pixel-7-camera.png";
 
 import styles from "./Frame.less";
 export function Frame(props) {
