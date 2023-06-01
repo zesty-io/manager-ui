@@ -56,3 +56,12 @@ export const CUSTOM_DATES: CustomDate[] = [
     value: "daterange",
   },
 ];
+
+interface ResourceType {
+  content: string;
+  schema: string;
+}
+export const RESOURCE_TYPES: ResourceType = {
+  content: "Content Items",
+  schema: "Models",
+};

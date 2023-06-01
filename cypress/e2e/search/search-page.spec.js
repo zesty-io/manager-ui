@@ -7,7 +7,7 @@ describe("Global Search: Search Page", () => {
       }
     );
 
-    cy.getBySelector("ContentList").should("exist");
+    cy.getBySelector("SearchPageList").should("exist");
   });
 
   it("Shows the no results screen", () => {

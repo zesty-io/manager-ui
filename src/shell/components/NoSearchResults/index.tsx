@@ -28,7 +28,8 @@ export const NoSearchResults: FC<Props> = ({
   const history = useHistory();
   const [params, setParams] = useParams();
   const hasFilters =
-    (params.get("user") ||
+    (params.get("resource") ||
+      params.get("user") ||
       params.get("datePreset") ||
       params.get("from") ||
       params.get("to")) &&
@@ -90,6 +91,7 @@ export const NoSearchResults: FC<Props> = ({
                   setParams(null, "sort");
                   setParams(null, "datePreset");
                   setParams(null, "user");
+                  setParams(null, "resource");
                 }}
                 color="primary"
                 startIcon={<RestartAltRoundedIcon />}
