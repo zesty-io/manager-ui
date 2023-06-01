@@ -106,24 +106,20 @@ export const templates = {
               width: "389px",
               height: "842px",
               margin: "21px 0 0 24px",
-              position: "relative",
             }}
           >
             <img
+              className={styles.camera}
               src={iphone14cam}
               style={{
-                zIndex: 1,
-                position: "absolute",
                 left: "108px",
                 top: "-2px",
               }}
             />
             <div
+              className={styles.webContent}
               style={{
-                height: "100%",
-                width: "100%",
-                borderRadius: "47px 47px 47px 47px",
-                overflow: "hidden",
+                borderRadius: "47px",
               }}
             >
               {props.partial()}
@@ -156,24 +152,20 @@ export const templates = {
               margin: "19px 0 0 22px",
               width: "390px",
               height: "845px",
-              position: "relative",
             }}
           >
             <img
+              className={styles.camera}
               src={iphone14proCam}
               style={{
-                zIndex: 1,
-                position: "absolute",
                 left: "132px",
                 top: "11px",
               }}
             />
             <div
+              className={styles.webContent}
               style={{
-                height: "100%",
-                width: "100%",
                 borderRadius: "53px",
-                overflow: "hidden",
               }}
             >
               {props.partial()}
@@ -211,11 +203,9 @@ export const templates = {
             }}
           >
             <div
+              className={styles.webContent}
               style={{
-                height: "100%",
-                width: "100%",
                 borderRadius: "22px",
-                overflow: "hidden",
               }}
             >
               {props.partial()}
@@ -248,24 +238,20 @@ export const templates = {
               margin: "25px 0 0 13px",
               height: "1322px",
               width: "617px",
-              position: "relative",
             }}
           >
             <img
+              className={styles.camera}
               src={pixel7cam}
               style={{
-                zIndex: 1,
-                position: "absolute",
                 left: "293px",
                 top: "12px",
               }}
             />
             <div
+              className={styles.webContent}
               style={{
-                height: "100%",
-                width: "100%",
                 borderRadius: "25px",
-                overflow: "hidden",
               }}
             >
               {props.partial()}
