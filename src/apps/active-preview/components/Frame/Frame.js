@@ -219,7 +219,7 @@ export const templates = {
             style={{
               margin: "25px 0 0 14px",
               height: "1322px",
-              width: "613px",
+              width: "616px",
             }}
           >
             <div
