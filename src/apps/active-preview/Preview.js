@@ -235,7 +235,7 @@ export function Preview(props) {
                     </MenuItem>
                   ))}
               </Select>
-              {/* <Button
+              <Button
                 disableElevation
                 variant="contained"
                 onClick={() => setRotate(!rotate)}
@@ -257,7 +257,7 @@ export function Preview(props) {
                     fill: "#10182866",
                   }}
                 />
-              </Button> */}
+              </Button>
             </div>
 
             {/* <div className={styles.Menu}>
