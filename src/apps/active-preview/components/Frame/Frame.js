@@ -189,7 +189,9 @@ export const templates = {
             backgroundRepeat: "no-repeat",
             width: "1158px",
             height: "1494px",
-            margin: "auto", // centers the ipad preview
+            // Ensures ipad preview is not cut off regardless of screensize
+            margin: "auto",
+            marginLeft: "200px",
           }}
         >
           <div
