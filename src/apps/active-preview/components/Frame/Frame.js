@@ -34,13 +34,12 @@ export function Frame(props) {
       ) : (
         <div className={props.device === "ipad" ? "" : styles.center}>
           {templates[props.device].template({
-            orientation: props.rotate ? "landscape" : "portrait",
+            orientation: props.rotate ? "portrait" : "landscape",
             partial: () => {
               return (
                 <div
+                  className={cx(styles.iframeContainer, styles[props.device])}
                   style={{
-                    height: "100%",
-                    width: "100%",
                     overflow: "hidden",
                     position: "relative",
                   }}
@@ -92,7 +91,7 @@ export const templates = {
     template: (props) => {
       return (
         <div
-          className={props.orientation}
+          className={styles[props.orientation]}
           style={{
             backgroundImage: `url('${iphone14}')`,
             backgroundRepeat: "no-repeat",

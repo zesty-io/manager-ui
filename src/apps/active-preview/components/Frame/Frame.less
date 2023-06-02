@@ -14,6 +14,31 @@
   height: "100%";
 }
 
+.portrait {
+  transform: rotate(270deg);
+
+  .iframeContainer {
+    transform: rotate(90deg);
+    width: 842px;
+    height: 389px;
+
+    &.iphone14 {
+      margin-left: -227px;
+      margin-top: 226px;
+    }
+  }
+}
+
+.landscape {
+  transform: rotate(0deg);
+
+  .iframeContainer {
+    transform: rotate(0deg);
+    height: 100%;
+    width: 100%;
+  }
+}
+
 .screen {
   width: 100%;
   height: 100%;
