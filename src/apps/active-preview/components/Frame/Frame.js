@@ -137,7 +137,7 @@ export const templates = {
     template: (props) => {
       return (
         <div
-          className={props.orientation}
+          className={styles[props.orientation]}
           style={{
             backgroundImage: `url('${iphone14pro}')`,
             backgroundRepeat: "no-repeat",
@@ -183,7 +183,7 @@ export const templates = {
     template: (props) => {
       return (
         <div
-          className={props.orientation}
+          className={styles[props.orientation]}
           style={{
             backgroundImage: `url('${ipad}')`,
             backgroundRepeat: "no-repeat",
@@ -223,7 +223,7 @@ export const templates = {
     template: (props) => {
       return (
         <div
-          className={props.orientation}
+          className={styles[props.orientation]}
           style={{
             backgroundImage: `url('${pixel7}')`,
             backgroundRepeat: "no-repeat",
