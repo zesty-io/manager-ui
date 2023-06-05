@@ -158,7 +158,9 @@ export const CompareDialog = ({ onClose }: Props) => {
           {debouncedSearch &&
           !isFetching &&
           searchedContentItemPublishings?.length
-            ? `${searchedContentItemPublishings?.length} Search Results`
+            ? `${
+                searchedContentItemPublishings?.slice(0, 10)?.length
+              } Search Results`
             : "Recent Publishes"}
         </Typography>
       </DialogTitle>
