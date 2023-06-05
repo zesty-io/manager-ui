@@ -15,14 +15,13 @@ import { Notice } from "@zesty-io/core/Notice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faEye } from "@fortawesome/free-solid-svg-icons";
 
-import { Meta } from "./components/Meta";
+// import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
 import { Frame, templates } from "./components/Frame";
 
 import api from "./api";
 
 import styles from "./Preview.less";
-import "./device.min.css";
 export function Preview(props) {
   const ZUID = window.location.host.split(".")[0];
   if (!ZUID) {
@@ -33,7 +32,7 @@ export function Preview(props) {
 
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const [rotate, setRotate] = useState(false);
   const [instance, setInstance] = useState({});
   const [settings, setSettings] = useState([]);
@@ -236,7 +235,7 @@ export function Preview(props) {
                     </MenuItem>
                   ))}
               </Select>
-              <Button
+              {/* <Button
                 disableElevation
                 variant="contained"
                 onClick={() => setRotate(!rotate)}
@@ -258,7 +257,7 @@ export function Preview(props) {
                     fill: "#10182866",
                   }}
                 />
-              </Button>
+              </Button> */}
             </div>
 
             {/* <div className={styles.Menu}>
