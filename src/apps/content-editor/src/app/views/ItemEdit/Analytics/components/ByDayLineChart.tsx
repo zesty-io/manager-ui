@@ -118,7 +118,10 @@ export const ByDayLineChart = ({
   const lastData = useMemo(() => {
     const result = findValuesForDimensions(data.rows, ["date_range_0"], type);
     const diff = (endDate.diff(startDate, "days") + 1) * 2 - result.length - 1;
-    const zeroPadding = diff ? new Array(Math.abs(diff)).fill(0) : [];
+    const zeroPadding = diff > 0 ? new Array(Math.abs(diff)).fill(0) : [];
+    if (diff < 0) {
+      return [result.pop()];
+    }
     return [...zeroPadding, ...result].slice(endDate.diff(startDate, "days"));
   }, [data, type]);
 
@@ -127,7 +130,10 @@ export const ByDayLineChart = ({
       ? findValuesForDimensions(compareData.rows, [], type)
       : findValuesForDimensions(data.rows, ["date_range_1"], type);
     const diff = (endDate.diff(startDate, "days") + 1) * 2 - result.length - 1;
-    const zeroPadding = diff ? new Array(Math.abs(diff)).fill(0) : [];
+    const zeroPadding = diff > 0 ? new Array(Math.abs(diff)).fill(0) : [];
+    if (result.length === 1 || result.length === 2) {
+      return [result[0]];
+    }
     return shouldCompare
       ? [...zeroPadding, ...result].slice(endDate.diff(startDate, "days"))
       : [...zeroPadding, ...result].slice(

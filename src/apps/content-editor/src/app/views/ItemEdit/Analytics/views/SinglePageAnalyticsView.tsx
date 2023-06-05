@@ -308,8 +308,6 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
     );
   }
 
-  console.log("testing", compareGa4Data);
-
   return (
     <>
       <Box height="100%">
