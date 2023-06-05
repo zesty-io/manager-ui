@@ -1,3 +1,5 @@
+import { Moment } from "moment-timezone";
+
 export function calculatePercentageDifference(
   originalValue: number,
   newValue: number
@@ -58,3 +60,260 @@ export function findTopDimensionsForDateRange(
 
   return sortedData.slice(0, topN).map((item) => item.dimensionValues);
 }
+
+export const generateReportRequests = (
+  propertyId: string,
+  itemPath: string,
+  startDate: Moment,
+  endDate: Moment,
+  withPrior = true
+) => {
+  return {
+    property: propertyId,
+    requests: [
+      {
+        dimensions: [
+          {
+            name: "pagePath",
+          },
+        ],
+        metrics: [
+          {
+            name: "sessions",
+          },
+          {
+            name: "averageSessionDuration",
+          },
+          {
+            name: "bounceRate",
+          },
+          {
+            name: "conversions",
+          },
+        ],
+        dateRanges: [
+          {
+            startDate: startDate?.format("YYYY-MM-DD"),
+            endDate: endDate?.format("YYYY-MM-DD"),
+          },
+          ...(withPrior
+            ? [
+                {
+                  startDate: startDate
+                    ?.clone()
+                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
+                    ?.format("YYYY-MM-DD"),
+                  endDate: startDate?.format("YYYY-MM-DD"),
+                },
+              ]
+            : []),
+        ],
+        dimensionFilter: {
+          filter: {
+            stringFilter: {
+              matchType: "EXACT",
+              value: itemPath,
+            },
+            fieldName: "pagePath",
+          },
+        },
+      },
+      {
+        dimensions: [
+          {
+            name: "pagePath",
+          },
+          {
+            name: "newVsReturning",
+          },
+        ],
+        metrics: [
+          {
+            name: "totalUsers",
+          },
+        ],
+        dateRanges: [
+          {
+            startDate: startDate?.format("YYYY-MM-DD"),
+            endDate: endDate?.format("YYYY-MM-DD"),
+          },
+          ...(withPrior
+            ? [
+                {
+                  startDate: startDate
+                    ?.clone()
+                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
+                    ?.format("YYYY-MM-DD"),
+                  endDate: startDate?.format("YYYY-MM-DD"),
+                },
+              ]
+            : []),
+        ],
+        dimensionFilter: {
+          filter: {
+            stringFilter: {
+              matchType: "EXACT",
+              value: itemPath,
+            },
+            fieldName: "pagePath",
+          },
+        },
+      },
+      {
+        dimensions: [
+          {
+            name: "pagePath",
+          },
+          {
+            name: "firstUserDefaultChannelGroup",
+          },
+        ],
+        metrics: [
+          {
+            name: "totalUsers",
+          },
+        ],
+        dateRanges: [
+          {
+            startDate: startDate?.format("YYYY-MM-DD"),
+            endDate: endDate?.format("YYYY-MM-DD"),
+          },
+          ...(withPrior
+            ? [
+                {
+                  startDate: startDate
+                    ?.clone()
+                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
+                    ?.format("YYYY-MM-DD"),
+                  endDate: startDate?.format("YYYY-MM-DD"),
+                },
+              ]
+            : []),
+        ],
+        dimensionFilter: {
+          filter: {
+            stringFilter: {
+              matchType: "EXACT",
+              value: itemPath,
+            },
+            fieldName: "pagePath",
+          },
+        },
+        orderBys: [
+          {
+            metric: {
+              metricName: "totalUsers",
+            },
+            desc: true,
+          },
+        ],
+      },
+      {
+        dimensions: [
+          {
+            name: "pagePath",
+          },
+          {
+            name: "country",
+          },
+        ],
+        metrics: [
+          {
+            name: "totalUsers",
+          },
+        ],
+        dateRanges: [
+          {
+            startDate: startDate?.format("YYYY-MM-DD"),
+            endDate: endDate?.format("YYYY-MM-DD"),
+          },
+          ...(withPrior
+            ? [
+                {
+                  startDate: startDate
+                    ?.clone()
+                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
+                    ?.format("YYYY-MM-DD"),
+                  endDate: startDate?.format("YYYY-MM-DD"),
+                },
+              ]
+            : []),
+        ],
+        dimensionFilter: {
+          filter: {
+            stringFilter: {
+              matchType: "EXACT",
+              value: itemPath,
+            },
+            fieldName: "pagePath",
+          },
+        },
+        orderBys: [
+          {
+            metric: {
+              metricName: "totalUsers",
+            },
+            desc: true,
+          },
+        ],
+      },
+      {
+        dimensions: [
+          {
+            name: "pagePath",
+          },
+          {
+            name: "date",
+          },
+        ],
+        metrics: [
+          {
+            name: "sessions",
+          },
+          {
+            name: "averageSessionDuration",
+          },
+          {
+            name: "bounceRate",
+          },
+          {
+            name: "totalUsers",
+          },
+        ],
+        dateRanges: [
+          {
+            startDate: startDate?.format("YYYY-MM-DD"),
+            endDate: endDate?.format("YYYY-MM-DD"),
+          },
+          ...(withPrior
+            ? [
+                {
+                  startDate: startDate
+                    ?.clone()
+                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
+                    ?.format("YYYY-MM-DD"),
+                  endDate: startDate?.format("YYYY-MM-DD"),
+                },
+              ]
+            : []),
+        ],
+        dimensionFilter: {
+          filter: {
+            stringFilter: {
+              matchType: "EXACT",
+              value: itemPath,
+            },
+            fieldName: "pagePath",
+          },
+        },
+        orderBys: [
+          {
+            dimension: {
+              dimensionName: "date",
+            },
+          },
+        ],
+      },
+    ],
+  };
+};

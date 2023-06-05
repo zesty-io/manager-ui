@@ -35,7 +35,7 @@ const Analytics = ({ item }: any) => {
           }}
         >
           {isSuccess ? (
-            <SinglePageAnalyticsView itemPath={item.web.path} />
+            <SinglePageAnalyticsView item={item} />
           ) : (
             <AuthView validateAuth={validateAuth} />
           )}

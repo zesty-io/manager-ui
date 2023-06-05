@@ -26,6 +26,8 @@ type Props = {
   dateRange0Label: string;
   dateRange1Label: string;
   data: any;
+  compareData: any;
+  shouldCompare: boolean;
 };
 
 function getDatesArray(start: Moment, end: Moment) {
@@ -46,6 +48,8 @@ export const ByDayLineChart = ({
   dateRange0Label,
   dateRange1Label,
   data,
+  compareData,
+  shouldCompare,
 }: Props) => {
   const history = useHistory();
   const { modelZUID, itemZUID } = useParams<Params>();
@@ -89,9 +93,9 @@ export const ByDayLineChart = ({
     const index = activeElement?.index;
     if (
       typeof datasetIndex === "number" &&
-      typeof index === "number" &&
-      datasetIndex === 0 &&
-      itemPublishesByDayArray[index]?.version
+      typeof index === "number"
+      // datasetIndex === 0 &&
+      // itemPublishesByDayArray[index]?.version
     ) {
       const model = {
         datasetIndex,
@@ -113,22 +117,24 @@ export const ByDayLineChart = ({
 
   const lastData = useMemo(() => {
     const result = findValuesForDimensions(data.rows, ["date_range_0"], type);
-    const diff = (endDate.diff(startDate, "days") + 1) * 2 - result.length - 2;
+    const diff = (endDate.diff(startDate, "days") + 1) * 2 - result.length - 1;
     const zeroPadding = diff ? new Array(Math.abs(diff)).fill(0) : [];
-    return [...zeroPadding, ...result].slice(
-      endDate.diff(startDate, "days") - 1
-    );
+    return [...zeroPadding, ...result].slice(endDate.diff(startDate, "days"));
   }, [data, type]);
 
   const priorData = useMemo(() => {
-    const result = findValuesForDimensions(data.rows, ["date_range_1"], type);
-    const diff = (endDate.diff(startDate, "days") + 1) * 2 - result.length - 2;
+    const result = shouldCompare
+      ? findValuesForDimensions(compareData.rows, [], type)
+      : findValuesForDimensions(data.rows, ["date_range_1"], type);
+    const diff = (endDate.diff(startDate, "days") + 1) * 2 - result.length - 1;
     const zeroPadding = diff ? new Array(Math.abs(diff)).fill(0) : [];
-    return [...zeroPadding, ...result].slice(
-      0,
-      endDate.diff(startDate, "days") + 1
-    );
-  }, [data, type]);
+    return shouldCompare
+      ? [...zeroPadding, ...result].slice(endDate.diff(startDate, "days"))
+      : [...zeroPadding, ...result].slice(
+          0,
+          endDate.diff(startDate, "days") + 1
+        );
+  }, [data, type, shouldCompare]);
 
   const itemPublishesByDayArray = useMemo(
     () =>
@@ -357,6 +363,7 @@ export const ByDayLineChart = ({
             position: "absolute",
             top: tooltipModel?.y,
             left: tooltipModel?.x,
+            width: 258,
             zIndex: theme.zIndex.tooltip,
           }}
           onMouseLeave={() => {
@@ -369,14 +376,18 @@ export const ByDayLineChart = ({
               {typeLabelMap[type]}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-              {moment(startDate)
-                .add(tooltipModel?.dataIndex, "days")
-                .format("ddd D MMM")}{" "}
+              {shouldCompare
+                ? dateRange0Label
+                : moment(startDate)
+                    .add(tooltipModel?.dataIndex, "days")
+                    .format("ddd D MMM")}{" "}
               vs{" "}
-              {moment(startDate)
-                .subtract(endDate.diff(startDate, "days") + 1, "days")
-                .add(tooltipModel?.dataIndex, "days")
-                .format("ddd D MMM")}
+              {shouldCompare
+                ? dateRange1Label
+                : moment(startDate)
+                    .subtract(endDate.diff(startDate, "days") + 1, "days")
+                    .add(tooltipModel?.dataIndex, "days")
+                    .format("ddd D MMM")}
             </Typography>
             <Typography variant="h2" fontWeight={600}>
               {lastData?.[tooltipModel?.dataIndex]?.toLocaleString()}
@@ -406,26 +417,25 @@ export const ByDayLineChart = ({
                 )}
               </Typography>
             </Typography>
-            <Button
-              sx={{ display: "block", mt: 1.5 }}
-              size="small"
-              variant="contained"
-              color="inherit"
-              disabled={
-                !itemPublishesByDayArray[tooltipModel?.dataIndex]?.version
-              }
-              //onClick={() => history.push(`/content/${modelZUID}/${itemZUID}?version=${itemPublishesByDayArray[tooltipModel?.dataIndex]?.version}`)}
-              onClick={() =>
-                history.push(
-                  `/content/${modelZUID}/${itemZUID}?version=${
-                    itemPublishesByDayArray[tooltipModel?.dataIndex]?.version
-                  }`
-                )
-              }
-            >
-              View Version{" "}
-              {itemPublishesByDayArray[tooltipModel?.dataIndex]?.version}
-            </Button>
+            {itemPublishesByDayArray[tooltipModel?.dataIndex]?.version ? (
+              <Button
+                sx={{ display: "block", mt: 1.5 }}
+                size="small"
+                variant="contained"
+                color="inherit"
+                //onClick={() => history.push(`/content/${modelZUID}/${itemZUID}?version=${itemPublishesByDayArray[tooltipModel?.dataIndex]?.version}`)}
+                onClick={() =>
+                  history.push(
+                    `/content/${modelZUID}/${itemZUID}?version=${
+                      itemPublishesByDayArray[tooltipModel?.dataIndex]?.version
+                    }`
+                  )
+                }
+              >
+                View Version{" "}
+                {itemPublishesByDayArray[tooltipModel?.dataIndex]?.version}
+              </Button>
+            ) : null}
           </Box>
         </Paper>
       </Box>

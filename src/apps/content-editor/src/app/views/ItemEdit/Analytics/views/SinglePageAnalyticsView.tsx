@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Box,
-  Alert,
+  ButtonGroup,
   Divider,
   CircularProgress,
   Link,
@@ -12,8 +12,10 @@ import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import { UsersDoughnutChart } from "../components/UsersDoughnutChart";
 import { ByDayLineChart } from "../components/ByDayLineChart";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {
   useGetAuditsQuery,
+  useGetContentItemQuery,
   useGetInstanceSettingsQuery,
 } from "../../../../../../../../shell/services/instance";
 import moment, { Moment } from "moment-timezone";
@@ -29,6 +31,7 @@ import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../..
 import {
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
+  generateReportRequests,
 } from "../utils";
 import { Metric } from "../components/Metric";
 import { useGetAnalyticsPropertiesQuery } from "../../../../../../../../shell/services/cloudFunctions";
@@ -37,6 +40,8 @@ import instanceZUID from "../../../../../../../../utility/instanceZUID";
 import { NotFound } from "../../../../../../../../shell/components/NotFound";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
+import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
+import { CompareDialog } from "../components/CompareDialog";
 
 const getDateRangeAndLabelsFromPreset = (
   preset: DateFilterValue
@@ -107,26 +112,31 @@ const getDateRangeAndLabelsFromPreset = (
 };
 
 type Props = {
-  itemPath: string;
+  item: any;
 };
 
-export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
+export const SinglePageAnalyticsView = ({ item }: Props) => {
   const [showPropertiesDialog, setShowPropertiesDialog] = useState(false);
+  const [showCompareDialog, setShowCompareDialog] = useState(false);
   const [params, setParams] = useQueryParams();
+  const compareItemZUID = params.get("compare");
+  const { data: compareItem } = useGetContentItemQuery(compareItemZUID, {
+    skip: !compareItemZUID,
+  });
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
   }>();
   const history = useHistory();
 
-  const { data: propertiesList } = useGetAnalyticsPropertiesQuery();
+  const { data } = useGetAnalyticsPropertiesQuery();
   const { data: instanceSettings, isFetching: instanceSettingsFetching } =
     useGetInstanceSettingsQuery();
   const propertyId = instanceSettings?.find(
     (setting) => setting.key === "google_property_id"
   )?.value;
 
-  const propertyData = propertiesList?.find(
+  const propertyData = data?.properties?.find(
     (property: any) => property.name === propertyId
   );
 
@@ -169,234 +179,7 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
     isError,
     refetch,
   } = useGetAnalyticsPropertyDataByQueryQuery(
-    {
-      property: propertyId,
-      requests: [
-        {
-          dimensions: [
-            {
-              name: "pagePath",
-            },
-          ],
-          metrics: [
-            {
-              name: "sessions",
-            },
-            {
-              name: "averageSessionDuration",
-            },
-            {
-              name: "bounceRate",
-            },
-            {
-              name: "conversions",
-            },
-          ],
-          dateRanges: [
-            {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
-            },
-            {
-              startDate: startDate
-                ?.clone()
-                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                ?.format("YYYY-MM-DD"),
-              endDate: startDate?.format("YYYY-MM-DD"),
-            },
-          ],
-          dimensionFilter: {
-            filter: {
-              stringFilter: {
-                matchType: "EXACT",
-                value: itemPath,
-              },
-              fieldName: "pagePath",
-            },
-          },
-        },
-        {
-          dimensions: [
-            {
-              name: "pagePath",
-            },
-            {
-              name: "newVsReturning",
-            },
-          ],
-          metrics: [
-            {
-              name: "totalUsers",
-            },
-          ],
-          dateRanges: [
-            {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
-            },
-            {
-              startDate: startDate
-                ?.clone()
-                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                ?.format("YYYY-MM-DD"),
-              endDate: startDate?.format("YYYY-MM-DD"),
-            },
-          ],
-          dimensionFilter: {
-            filter: {
-              stringFilter: {
-                matchType: "EXACT",
-                value: itemPath,
-              },
-              fieldName: "pagePath",
-            },
-          },
-        },
-        {
-          dimensions: [
-            {
-              name: "pagePath",
-            },
-            {
-              name: "firstUserDefaultChannelGroup",
-            },
-          ],
-          metrics: [
-            {
-              name: "totalUsers",
-            },
-          ],
-          dateRanges: [
-            {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
-            },
-            {
-              startDate: startDate
-                ?.clone()
-                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                ?.format("YYYY-MM-DD"),
-              endDate: startDate?.format("YYYY-MM-DD"),
-            },
-          ],
-          dimensionFilter: {
-            filter: {
-              stringFilter: {
-                matchType: "EXACT",
-                value: itemPath,
-              },
-              fieldName: "pagePath",
-            },
-          },
-          orderBys: [
-            {
-              metric: {
-                metricName: "totalUsers",
-              },
-              desc: true,
-            },
-          ],
-        },
-        {
-          dimensions: [
-            {
-              name: "pagePath",
-            },
-            {
-              name: "country",
-            },
-          ],
-          metrics: [
-            {
-              name: "totalUsers",
-            },
-          ],
-          dateRanges: [
-            {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
-            },
-            {
-              startDate: startDate
-                ?.clone()
-                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                ?.format("YYYY-MM-DD"),
-              endDate: startDate?.format("YYYY-MM-DD"),
-            },
-          ],
-          dimensionFilter: {
-            filter: {
-              stringFilter: {
-                matchType: "EXACT",
-                value: itemPath,
-              },
-              fieldName: "pagePath",
-            },
-          },
-          orderBys: [
-            {
-              metric: {
-                metricName: "totalUsers",
-              },
-              desc: true,
-            },
-          ],
-        },
-        {
-          dimensions: [
-            {
-              name: "pagePath",
-            },
-            {
-              name: "date",
-            },
-          ],
-          metrics: [
-            {
-              name: "sessions",
-            },
-            {
-              name: "averageSessionDuration",
-            },
-            {
-              name: "bounceRate",
-            },
-            {
-              name: "totalUsers",
-            },
-          ],
-          dateRanges: [
-            {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
-            },
-            {
-              startDate: startDate
-                ?.clone()
-                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                ?.format("YYYY-MM-DD"),
-              endDate: startDate?.format("YYYY-MM-DD"),
-            },
-          ],
-          dimensionFilter: {
-            filter: {
-              stringFilter: {
-                matchType: "EXACT",
-                value: itemPath,
-              },
-              fieldName: "pagePath",
-            },
-          },
-          orderBys: [
-            {
-              dimension: {
-                dimensionName: "date",
-              },
-            },
-          ],
-        },
-      ],
-    },
+    generateReportRequests(propertyId, item.web.path, startDate, endDate),
     {
       skip: !startDate || !endDate || !propertyId,
     }
@@ -408,6 +191,28 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
     usersByCountryReport,
     usersByDayReport,
   ] = ga4Data?.reports || [];
+
+  const { data: compareGa4Data, isFetching: isFetchingCompare } =
+    useGetAnalyticsPropertyDataByQueryQuery(
+      generateReportRequests(
+        propertyId,
+        compareItem?.web?.path,
+        startDate,
+        endDate,
+        false
+      ),
+      {
+        skip: !startDate || !endDate || !propertyId || !compareItem?.web?.path,
+      }
+    );
+
+  const [
+    comparedMetricsReport,
+    comparedTotalUsersReport,
+    comparedUsersBySourceReport,
+    comparedUsersByCountryReport,
+    comparedUsersByDayReport,
+  ] = compareGa4Data?.reports || [];
 
   const { data: auditData } = useGetAuditsQuery({
     // Start of content item version support in audit
@@ -449,7 +254,7 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
     }
   };
 
-  if (isFetching || instanceSettingsFetching) {
+  if (isFetching || instanceSettingsFetching || isFetchingCompare) {
     return (
       <Box
         height="100%"
@@ -503,6 +308,8 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
     );
   }
 
+  console.log("testing", compareGa4Data);
+
   return (
     <>
       <Box height="100%">
@@ -523,16 +330,49 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
           </Typography>
         </Box>
         <Box display="flex" justifyContent="space-between">
-          <DateFilter
-            clearable={false}
-            value={activeDateFilter}
-            onChange={handleDateFilterChanged}
-            hideCustomDates
-            withDateRange
-          />
+          <Box display="flex" gap={1.5}>
+            <DateFilter
+              clearable={false}
+              value={activeDateFilter}
+              onChange={handleDateFilterChanged}
+              hideCustomDates
+              withDateRange
+            />
+            {compareItemZUID ? (
+              <ButtonGroup variant="contained" sx={{ height: "28px" }}>
+                <Button
+                  size="small"
+                  startIcon={
+                    <CompareArrowsRoundedIcon
+                      sx={{ width: "20px", height: "20px" }}
+                    />
+                  }
+                  onClick={() => setShowCompareDialog(true)}
+                >
+                  {compareItem?.web?.metaTitle ||
+                    compareItem?.web?.path ||
+                    compareItemZUID}
+                </Button>
+                <Button size="small" onClick={() => setParams(null, "compare")}>
+                  <CloseRoundedIcon fontSize="small" />
+                </Button>
+              </ButtonGroup>
+            ) : (
+              <Button
+                variant="outlined"
+                size="small"
+                color="inherit"
+                startIcon={<CompareArrowsRoundedIcon color="action" />}
+                sx={{ height: "28px" }}
+                onClick={() => setShowCompareDialog(true)}
+              >
+                Compare Page
+              </Button>
+            )}
+          </Box>
           <Box display="flex" gap={0.5} alignItems="center">
             <Link
-              href={`${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${itemPath}`}
+              href={`${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${item.web.path}`}
               target="__blank"
               sx={{
                 maxWidth: "440px",
@@ -545,7 +385,7 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
             >
               {`${
                 propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri
-              }${itemPath?.slice(0, -1)}`}
+              }${item.web.path?.slice(0, -1)}`}
             </Link>
             <Button
               onClick={() => setShowPropertiesDialog(true)}
@@ -584,11 +424,13 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
               )
             }
             priorValue={
-              +(
-                findValuesForDimensions(metricsReport?.rows, [
-                  "date_range_1",
-                ])[0] || 0
-              )
+              compareItemZUID
+                ? +comparedMetricsReport?.rows[0]?.metricValues?.[0]?.value || 0
+                : +(
+                    findValuesForDimensions(metricsReport?.rows, [
+                      "date_range_1",
+                    ])[0] || 0
+                  )
             }
             description="A session in Google Analytics is a period of time in which a user interacts with your website."
           />
@@ -604,11 +446,13 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
               )
             }
             priorValue={
-              +(
-                findValuesForDimensions(metricsReport?.rows, [
-                  "date_range_1",
-                ])[1] || 0
-              )
+              compareItemZUID
+                ? +comparedMetricsReport?.rows[0]?.metricValues?.[1]?.value || 0
+                : +(
+                    findValuesForDimensions(metricsReport?.rows, [
+                      "date_range_1",
+                    ])[1] || 0
+                  )
             }
             description="Session duration is the time frame during which there are users interactions occurring on the website."
           />
@@ -625,11 +469,13 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
               )
             }
             priorValue={
-              +(
-                findValuesForDimensions(metricsReport?.rows, [
-                  "date_range_1",
-                ])[2] || 0
-              )
+              compareItemZUID
+                ? +comparedMetricsReport?.rows[0]?.metricValues?.[2]?.value || 0
+                : +(
+                    findValuesForDimensions(metricsReport?.rows, [
+                      "date_range_1",
+                    ])[2] || 0
+                  )
             }
             description="Bounce rate is the percentage of people who land on a page and leave without performing a specific action."
           />
@@ -644,19 +490,31 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
               )
             }
             priorValue={
-              +(
-                findValuesForDimensions(metricsReport?.rows, [
-                  "date_range_1",
-                ])[3] || 0
-              )
+              compareItemZUID
+                ? +comparedMetricsReport?.rows[0]?.metricValues?.[3]?.value || 0
+                : +(
+                    findValuesForDimensions(metricsReport?.rows, [
+                      "date_range_1",
+                    ])[3] || 0
+                  )
             }
             description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
           />
           <Box width="184px" height="100px">
             <UsersDoughnutChart
               data={totalUsersReport}
-              dateRange0Label={dateRange0Label}
-              dateRange1Label={dateRange1Label}
+              dateRange0Label={
+                compareItemZUID
+                  ? item?.web?.metaTitle || item?.web?.path
+                  : dateRange0Label
+              }
+              dateRange1Label={
+                compareItemZUID
+                  ? compareItem?.web?.metaTitle || item?.web?.path
+                  : dateRange1Label
+              }
+              compareData={comparedTotalUsersReport}
+              shouldCompare={!!compareItemZUID}
             />
           </Box>
         </Box>
@@ -669,10 +527,21 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
             border={(theme) => `1px solid ${theme.palette.border}`}
           >
             <UsersBarChart
-              dateRange0Label={dateRange0Label}
-              dateRange1Label={dateRange1Label}
+              dateRange0Label={
+                compareItemZUID
+                  ? item?.web?.metaTitle || item?.web?.path
+                  : dateRange0Label
+              }
+              dateRange1Label={
+                compareItemZUID
+                  ? compareItem?.web?.metaTitle || item?.web?.path
+                  : dateRange1Label
+              }
               usersBySourceReport={usersBySourceReport}
               usersByCountryReport={usersByCountryReport}
+              comparedUsersBySourceReport={comparedUsersBySourceReport}
+              comparedUsersByCountryReport={comparedUsersByCountryReport}
+              shouldCompare={!!compareItemZUID}
             />
           </Box>
 
@@ -687,9 +556,19 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
               auditData={auditData}
               startDate={startDate}
               endDate={endDate}
-              dateRange0Label={dateRange0Label}
-              dateRange1Label={dateRange1Label}
+              dateRange0Label={
+                compareItemZUID
+                  ? item?.web?.metaTitle || item?.web?.path
+                  : dateRange0Label
+              }
+              dateRange1Label={
+                compareItemZUID
+                  ? compareItem?.web?.metaTitle || item?.web?.path
+                  : dateRange1Label
+              }
               data={usersByDayReport}
+              compareData={comparedUsersByDayReport}
+              shouldCompare={!!compareItemZUID}
             />
           </Box>
         </Box>
@@ -697,6 +576,9 @@ export const SinglePageAnalyticsView = ({ itemPath }: Props) => {
 
       {showPropertiesDialog && (
         <PropertiesDialog onClose={() => setShowPropertiesDialog(false)} />
+      )}
+      {showCompareDialog && (
+        <CompareDialog onClose={() => setShowCompareDialog(false)} />
       )}
     </>
   );

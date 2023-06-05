@@ -11,6 +11,8 @@ export const UsersDoughnutChart = ({
   data,
   dateRange1Label,
   dateRange0Label,
+  shouldCompare,
+  compareData,
 }: any) => {
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
@@ -50,13 +52,17 @@ export const UsersDoughnutChart = ({
       0,
   ];
   const totalUsers = [
-    +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] ||
-      0 +
-        +findValuesForDimensions(data?.rows, [
-          "date_range_1",
-          "returning",
-        ])?.[0] ||
-      0,
+    shouldCompare
+      ? +findValuesForDimensions(compareData?.rows, ["new"])?.[0] ||
+        0 + +findValuesForDimensions(compareData?.rows, ["returning"])?.[0] ||
+        0
+      : +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] ||
+        0 +
+          +findValuesForDimensions(data?.rows, [
+            "date_range_1",
+            "returning",
+          ])?.[0] ||
+        0,
     +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] ||
       0 +
         +findValuesForDimensions(data?.rows, [

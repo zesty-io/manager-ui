@@ -42,7 +42,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
   const [search, setSearch] = useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const filteredData = data?.filter((property: any) =>
+  const filteredData = data?.properties?.filter((property: any) =>
     property.displayName.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -73,7 +73,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
       }}
       PaperProps={{
         sx: {
-          maxWidth: "640px",
+          minWidth: "800px",
           height: "100%",
           maxHeight: "min(100%, 1000px)",
           m: 0,
@@ -87,7 +87,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
           alignItems="flex-start"
           sx={{ mb: 1 }}
         >
-          <Box>
+          <Box width="640px">
             <Box
               sx={{
                 backgroundColor: "blue.50",
@@ -136,6 +136,9 @@ export const PropertiesDialog = ({ onClose }: Props) => {
             <CloseRoundedIcon fontSize="small" />
           </IconButton>
         </Stack>
+        <Typography variant="h6" fontWeight="600" mt={2}>
+          {filteredData?.length} Properties
+        </Typography>
       </DialogTitle>
       <DialogContent>
         {filteredData?.length === 0 ? (
@@ -159,16 +162,12 @@ export const PropertiesDialog = ({ onClose }: Props) => {
           </Box>
         ) : (
           <>
-            <Typography variant="h6" fontWeight="600">
-              {filteredData?.length} Properties
-            </Typography>
             <List
               disablePadding
               sx={{
                 border: "1px solid",
                 borderColor: "border",
                 borderRadius: "8px",
-                mt: 2,
               }}
             >
               {filteredData?.map((property: any, index: number) => (

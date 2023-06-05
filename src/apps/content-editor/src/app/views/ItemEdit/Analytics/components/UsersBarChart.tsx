@@ -14,8 +14,11 @@ import {
 type Props = {
   usersBySourceReport: any;
   usersByCountryReport: any;
+  comparedUsersBySourceReport: any;
+  comparedUsersByCountryReport: any;
   dateRange0Label: string;
   dateRange1Label: string;
+  shouldCompare: boolean;
 };
 
 export const UsersBarChart = ({
@@ -23,6 +26,9 @@ export const UsersBarChart = ({
   dateRange1Label,
   usersBySourceReport,
   usersByCountryReport,
+  comparedUsersBySourceReport,
+  comparedUsersByCountryReport,
+  shouldCompare,
 }: Props) => {
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
@@ -61,6 +67,10 @@ export const UsersBarChart = ({
 
   const currentReport =
     type === "Source" ? usersBySourceReport : usersByCountryReport;
+  const currentComparedReport =
+    type === "Source"
+      ? comparedUsersBySourceReport
+      : comparedUsersByCountryReport;
 
   const topDimensions = findTopDimensionsForDateRange(
     currentReport.rows,
@@ -77,10 +87,12 @@ export const UsersBarChart = ({
   });
   const priorSet = topDimensions?.map((dimension: any) => {
     const dimensionName = dimension?.[1]?.value;
-    return +findValuesForDimensions(currentReport?.rows, [
-      dimensionName,
-      "date_range_1",
-    ]);
+    return shouldCompare
+      ? +findValuesForDimensions(currentComparedReport?.rows, [dimensionName])
+      : +findValuesForDimensions(currentReport?.rows, [
+          dimensionName,
+          "date_range_1",
+        ]);
   });
 
   return (
