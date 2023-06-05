@@ -34,7 +34,7 @@ export function Frame(props) {
       ) : (
         <div className={props.device === "ipad" ? "" : styles.center}>
           {templates[props.device].template({
-            orientation: props.rotate ? "portrait" : "landscape",
+            orientation: props.rotate ? "landscape" : "portrait",
             partial: () => {
               return (
                 <div
