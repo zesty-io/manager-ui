@@ -1,5 +1,13 @@
-import { Fragment, useState, useEffect, useRef } from "react";
+import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
+
+import iphone14 from "../../../../../public/images/iphone-14.png";
+import iphone14cam from "../../../../../public/images/iphone-14-camera.png";
+import iphone14pro from "../../../../../public/images/iphone-14-pro.png";
+import iphone14proCam from "../../../../../public/images/iphone-14-pro-camera.png";
+import ipad from "../../../../../public/images/ipad.png";
+import pixel7 from "../../../../../public/images/pixel-7.png";
+import pixel7cam from "../../../../../public/images/pixel-7-camera.png";
 
 import styles from "./Frame.less";
 export function Frame(props) {
@@ -24,7 +32,7 @@ export function Frame(props) {
           onLoad={() => setFrameLoading(false)}
         />
       ) : (
-        <div className={styles.center}>
+        <div className={props.device === "ipad" ? "" : styles.center}>
           {templates[props.device].template({
             orientation: props.rotate ? "landscape" : "portrait",
             partial: () => {
@@ -75,157 +83,182 @@ export const templates = {
    * 2) alter markup to match mobile device
    * 3) change object key and name references to new model
    */
-  Iphone5: {
+  iphone14: {
     option: (
       <span>
-        iPhone 5 <small>320x568px</small>
+        iPhone 14 <small>437x883</small>
       </span>
     ),
     template: (props) => {
       return (
-        <div className={`marvel-device iphone5s silver ${props.orientation}`}>
-          <div className="top-bar"></div>
-          <div className="sleep"></div>
-          <div className="volume"></div>
-          <div className="camera"></div>
-          <div className="sensor"></div>
-          <div className="speaker"></div>
-          <div className="screen">{props.partial()}</div>
-          <div className="home"></div>
-          <div className="bottom-bar"></div>
+        <div
+          className={props.orientation}
+          style={{
+            backgroundImage: `url('${iphone14}')`,
+            backgroundRepeat: "no-repeat",
+            width: "437px",
+            height: "883px",
+          }}
+        >
+          <div
+            className={styles.screen}
+            style={{
+              width: "389px",
+              height: "842px",
+              margin: "21px 0 0 24px",
+            }}
+          >
+            <img
+              className={styles.camera}
+              src={iphone14cam}
+              style={{
+                left: "108px",
+                top: "-2px",
+              }}
+            />
+            <div
+              className={styles.webContent}
+              style={{
+                borderRadius: "47px",
+              }}
+            >
+              {props.partial()}
+            </div>
+          </div>
         </div>
       );
     },
   },
-  Iphone8: {
+  iphone14pro: {
     option: (
       <span>
-        iPhone 8 <small>375x667px</small>
+        iPhone 14 Pro <small>434x883</small>
       </span>
     ),
-    template: (props) => (
-      <div className={`marvel-device iphone8 black ${props.orientation}`}>
-        <div className="top-bar"></div>
-        <div className="sleep"></div>
-        <div className="volume"></div>
-        <div className="camera"></div>
-        <div className="sensor"></div>
-        <div className="speaker"></div>
-        <div className="screen">{props.partial()}</div>
-        <div className="home"></div>
-        <div className="bottom-bar"></div>
-      </div>
-    ),
-  },
-  IphoneX: {
-    option: (
-      <span>
-        iPhone X <small>375x812px</small>
-      </span>
-    ),
-    template: (props) => (
-      <div className={`marvel-device iphone-x ${props.orientation}`}>
-        <div className="notch">
-          <div className="camera"></div>
-          <div className="speaker"></div>
+    template: (props) => {
+      return (
+        <div
+          className={props.orientation}
+          style={{
+            backgroundImage: `url('${iphone14pro}')`,
+            backgroundRepeat: "no-repeat",
+            width: "434px",
+            height: "883px",
+          }}
+        >
+          <div
+            className={styles.screen}
+            style={{
+              margin: "19px 0 0 22px",
+              width: "390px",
+              height: "845px",
+            }}
+          >
+            <img
+              className={styles.camera}
+              src={iphone14proCam}
+              style={{
+                left: "132px",
+                top: "11px",
+              }}
+            />
+            <div
+              className={styles.webContent}
+              style={{
+                borderRadius: "53px",
+              }}
+            >
+              {props.partial()}
+            </div>
+          </div>
         </div>
-        <div className="top-bar"></div>
-        <div className="sleep"></div>
-        <div className="bottom-bar"></div>
-        <div className="volume"></div>
-        <div className="overflow">
-          <div className="shadow shadow--tr"></div>
-          <div className="shadow shadow--tl"></div>
-          <div className="shadow shadow--br"></div>
-          <div className="shadow shadow--bl"></div>
+      );
+    },
+  },
+  ipad: {
+    option: (
+      <span>
+        iPad Pro <small>1158x1494</small>
+      </span>
+    ),
+    template: (props) => {
+      return (
+        <div
+          className={props.orientation}
+          style={{
+            backgroundImage: `url('${ipad}')`,
+            backgroundRepeat: "no-repeat",
+            width: "1158px",
+            height: "1494px",
+            margin: "auto", // centers the ipad preview
+          }}
+        >
+          <div
+            className={styles.screen}
+            style={{
+              width: "1027px",
+              height: "1367px",
+              overflow: "hidden",
+              padding: "50px 0 0 46px",
+            }}
+          >
+            <div
+              className={styles.webContent}
+              style={{
+                borderRadius: "22px",
+              }}
+            >
+              {props.partial()}
+            </div>
+          </div>
         </div>
-        <div className="inner-shadow"></div>
-        <div className="screen">{props.partial()}</div>
-      </div>
-    ),
+      );
+    },
   },
-  iPadMini: {
+  pixel7: {
     option: (
       <span>
-        iPad Mini <small>576x768px</small>
+        Pixel 7 <small>648x1373</small>
       </span>
     ),
-    template: (props) => (
-      <div className={`marvel-device ipad silver ${props.orientation}`}>
-        <div className="camera"></div>
-        <div className="screen">{props.partial()}</div>
-        <div className="home"></div>
-      </div>
-    ),
-  },
-  Note8: {
-    option: (
-      <span>
-        Note 8 <small>400x822px</small>
-      </span>
-    ),
-    template: (props) => (
-      <div className={`marvel-device note8 ${props.orientation}`}>
-        <div className="inner"></div>
-        <div className="overflow">
-          <div className="shadow"></div>
+    template: (props) => {
+      return (
+        <div
+          className={props.orientation}
+          style={{
+            backgroundImage: `url('${pixel7}')`,
+            backgroundRepeat: "no-repeat",
+            width: "648px",
+            height: "1373px",
+          }}
+        >
+          <div
+            className={styles.screen}
+            style={{
+              margin: "25px 0 0 13px",
+              height: "1322px",
+              width: "617px",
+            }}
+          >
+            <img
+              className={styles.camera}
+              src={pixel7cam}
+              style={{
+                left: "293px",
+                top: "12px",
+              }}
+            />
+            <div
+              className={styles.webContent}
+              style={{
+                borderRadius: "25px",
+              }}
+            >
+              {props.partial()}
+            </div>
+          </div>
         </div>
-        <div className="speaker"></div>
-        <div className="sensors"></div>
-        <div className="more-sensors"></div>
-        <div className="sleep"></div>
-        <div className="volume"></div>
-        <div className="camera"></div>
-        <div className="screen">{props.partial()}</div>
-      </div>
-    ),
-  },
-  Nexus5: {
-    option: (
-      <span>
-        Nexus 5 <small>320x568px</small>
-      </span>
-    ),
-    template: (props) => (
-      <div className={`marvel-device nexus5 ${props.orientation}`}>
-        <div className="top-bar"></div>
-        <div className="sleep"></div>
-        <div className="volume"></div>
-        <div className="camera"></div>
-        <div className="screen">{props.partial()}</div>
-      </div>
-    ),
-  },
-  HTCOne: {
-    option: (
-      <span>
-        HTCOne <small>320x568px</small>
-      </span>
-    ),
-    template: (props) => (
-      <div className={`marvel-device htc-one ${props.orientation}`}>
-        <div className="top-bar"></div>
-        <div className="camera"></div>
-        <div className="sensor"></div>
-        <div className="speaker"></div>
-        <div className="screen">{props.partial()}</div>
-      </div>
-    ),
-  },
-  Lumina920: {
-    option: (
-      <span>
-        Lumina 920 <small>320x553px</small>
-      </span>
-    ),
-    template: (props) => (
-      <div className={`marvel-device lumia920 black ${props.orientation}`}>
-        <div className="top-bar"></div>
-        <div className="volume"></div>
-        <div className="camera"></div>
-        <div className="speaker"></div>
-        <div className="screen">{props.partial()}</div>
-      </div>
-    ),
+      );
+    },
   },
 };

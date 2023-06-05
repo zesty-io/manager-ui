@@ -21,9 +21,7 @@ interface ResourceTypeValue {
   text: string;
   icon: SvgIconComponent;
 }
-type ResourceTypeOptions = {
-  [key in ResourceType]: ResourceTypeValue;
-};
+type ResourceTypeOptions = Record<Exclude<ResourceType, "">, ResourceTypeValue>;
 const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
   content: {
     text: "Content Items",
@@ -41,7 +39,7 @@ const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
 
 export type ResourceCodes = ResourceType | "";
 interface ResourceTypeFilter {
-  onChange: (value: ResourceType | "") => void;
+  onChange: (value: ResourceCodes) => void;
   value?: ResourceCodes;
 }
 export const ResourceTypeFilter: FC<ResourceTypeFilter> = ({

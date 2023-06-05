@@ -161,7 +161,7 @@ export const UsersBarChart = ({
           options={{
             layout: {
               padding: {
-                top: 20,
+                top: 16,
                 bottom: 20,
                 right: 20,
               },
@@ -185,28 +185,46 @@ export const UsersBarChart = ({
                     size: 12,
                   },
                   color: theme.palette.text.primary,
-                  padding: 14,
+                  padding: 6,
                 },
               },
             },
             indexAxis: "y",
             scales: {
               y: {
+                grid: {
+                  drawOnChartArea: false,
+                  drawTicks: false,
+                  drawBorder: false,
+                },
                 ticks: {
                   color: theme.palette.text.secondary,
                   font: {
                     size: 12,
                     family: "Mulish",
                   },
+                  padding: 8,
                 },
               },
               x: {
+                grid: {
+                  drawOnChartArea: true,
+                  color: function (context) {
+                    return context.tick.value % 1 === 0
+                      ? theme.palette.grey[300]
+                      : "transparent";
+                  },
+                  borderDash: [4, 4],
+                  drawTicks: false,
+                  drawBorder: false,
+                },
                 ticks: {
                   color: theme.palette.text.disabled,
                   font: {
                     size: 12,
                     family: "Mulish",
                   },
+                  padding: 8,
                 },
               },
             },

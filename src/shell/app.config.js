@@ -117,7 +117,7 @@ module.exports = {
     URL_MANAGER: ".manager.dev.zesty.io:8080",
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
-    URL_PREVIEW_PROTOCOL: "https://",
+    URL_PREVIEW_PROTOCOL: "http://",
     URL_ACCOUNTS: "https://accounts.dev.zesty.io:9001",
     URL_MARKETPLACE:
       "https://kfg6bckb-dev.webengine.zesty.io/marketplace/apps/",

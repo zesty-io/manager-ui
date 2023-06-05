@@ -27,7 +27,7 @@ export const MetaKeywords = memo(function MetaKeywords({
         }
         value={meta_keywords || ""}
         placeholder="comma, separated, keywords"
-        maxLength="250"
+        maxLength="255"
         rows={6}
         multiline
         onChange={(evt) => onChange(evt.target.value, "metaKeywords")}
