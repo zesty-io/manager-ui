@@ -29,6 +29,10 @@ import { getContentTitle, getItemIcon } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
 import { ResourceType } from "../../services/types";
+import {
+  useSearchBinFilesQuery,
+  useGetBinsQuery,
+} from "../../services/mediaManager";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ElementId = "global-search-autocomplete";
@@ -48,8 +52,10 @@ const ContentSearch: FC = () => {
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const [files, setFileKeyword] = useSearchCodeFilesByKeywords();
+  const [codeFiles, setFileKeyword] = useSearchCodeFilesByKeywords();
   const languages = useSelector((state: any) => state.languages);
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -61,6 +67,20 @@ const ContentSearch: FC = () => {
     { query: value },
     { skip: !value }
   );
+
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
+  const {
+    data: mediaFiles,
+    isFetching: isFilesFetching,
+    isUninitialized: isFilesUninitialized,
+  } = useSearchBinFilesQuery(
+    { binIds: bins?.map((bin) => bin.id), term: value },
+    {
+      skip: !bins?.length,
+    }
+  );
+
+  console.log("media", mediaFiles);
 
   const suggestions: Suggestion[] = useMemo(() => {
     const contentSuggestions: Suggestion[] =
@@ -89,7 +109,7 @@ const ContentSearch: FC = () => {
       }) || [];
 
     const codeFileSuggestions: Suggestion[] =
-      files?.map((file) => {
+      codeFiles?.map((file) => {
         return {
           type: "code",
           ZUID: file.ZUID,
@@ -99,17 +119,29 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
+    const mediaFileSuggestions: Suggestion[] =
+      mediaFiles?.map((file) => {
+        return {
+          type: "media",
+          ZUID: file.id,
+          title: file.filename,
+          updatedAt: file.updated_at,
+          url: `/media?fileId=${file.id}`,
+        };
+      }) || [];
+
     const consolidatedResults = [
       ...contentSuggestions,
       ...modelSuggestions,
       ...codeFileSuggestions,
+      ...mediaFileSuggestions,
     ].sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
 
     return consolidatedResults;
-  }, [contents, models, files]);
+  }, [contents, models, codeFiles, mediaFiles]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
