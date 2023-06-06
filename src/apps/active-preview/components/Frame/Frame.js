@@ -32,13 +32,18 @@ export function Frame(props) {
           onLoad={() => setFrameLoading(false)}
         />
       ) : (
-        <div className={props.device === "ipad" ? "" : styles.center}>
+        // <div className={props.device === "ipad" ? "" : styles.center}>
+        <>
           {templates[props.device].template({
-            orientation: props.rotate ? "landscape" : "portrait",
+            isLandscape: props.rotate,
             partial: () => {
               return (
                 <div
-                  className={cx(styles.iframeContainer, styles[props.device])}
+                  className={cx(
+                    styles.iframeContainer,
+                    props.rotate ? styles.landscape : styles.portrait,
+                    styles[props.device]
+                  )}
                   style={{
                     overflow: "hidden",
                     position: "relative",
@@ -60,7 +65,8 @@ export function Frame(props) {
               );
             },
           })}
-        </div>
+        </>
+        // </div>
       )}
     </Fragment>
   );
@@ -91,12 +97,15 @@ export const templates = {
     template: (props) => {
       return (
         <div
-          className={styles[props.orientation]}
           style={{
             backgroundImage: `url('${iphone14}')`,
             backgroundRepeat: "no-repeat",
-            width: "437px",
+            width: props.isLandscape ? "883px" : "437px",
             height: "883px",
+            margin: "auto",
+            transform: props.isLandscape
+              ? "rotate(270deg) translateX(40%)"
+              : "rotate(0deg)",
           }}
         >
           <div
@@ -104,15 +113,15 @@ export const templates = {
             style={{
               width: "389px",
               height: "842px",
-              margin: "21px 0 0 24px",
+              padding: "21px 0 0 24px",
             }}
           >
             <img
               className={styles.camera}
               src={iphone14cam}
               style={{
-                left: "108px",
-                top: "-2px",
+                left: "132px",
+                top: "19px",
               }}
             />
             <div
@@ -137,18 +146,21 @@ export const templates = {
     template: (props) => {
       return (
         <div
-          className={styles[props.orientation]}
           style={{
             backgroundImage: `url('${iphone14pro}')`,
             backgroundRepeat: "no-repeat",
-            width: "434px",
+            width: props.isLandscape ? "883px" : "434px",
             height: "883px",
+            margin: "auto",
+            transform: props.isLandscape
+              ? "rotate(270deg) translateX(40%)"
+              : "rotate(0deg)",
           }}
         >
           <div
             className={styles.screen}
             style={{
-              margin: "19px 0 0 22px",
+              padding: "19px 0 0 22px",
               width: "390px",
               height: "845px",
             }}
@@ -157,8 +169,8 @@ export const templates = {
               className={styles.camera}
               src={iphone14proCam}
               style={{
-                left: "132px",
-                top: "11px",
+                left: "154px",
+                top: "30px",
               }}
             />
             <div
@@ -183,15 +195,15 @@ export const templates = {
     template: (props) => {
       return (
         <div
-          className={styles[props.orientation]}
           style={{
             backgroundImage: `url('${ipad}')`,
             backgroundRepeat: "no-repeat",
-            width: "1158px",
+            width: props.isLandscape ? "1494px" : "1158px",
             height: "1494px",
-            // Ensures ipad preview is not cut off regardless of screensize
             margin: "auto",
-            marginLeft: "200px",
+            transform: props.isLandscape
+              ? "rotate(270deg) translateX(20%)"
+              : "rotate(0deg)",
           }}
         >
           <div
@@ -225,18 +237,21 @@ export const templates = {
     template: (props) => {
       return (
         <div
-          className={styles[props.orientation]}
           style={{
             backgroundImage: `url('${pixel7}')`,
             backgroundRepeat: "no-repeat",
-            width: "648px",
+            width: props.isLandscape ? "1373px" : "648px",
             height: "1373px",
+            margin: "auto",
+            transform: props.isLandscape
+              ? "rotate(270deg) translateX(40%)"
+              : "rotate(0deg)",
           }}
         >
           <div
             className={styles.screen}
             style={{
-              margin: "25px 0 0 13px",
+              padding: "25px 0 0 13px",
               height: "1322px",
               width: "617px",
             }}
@@ -245,8 +260,8 @@ export const templates = {
               className={styles.camera}
               src={pixel7cam}
               style={{
-                left: "293px",
-                top: "12px",
+                left: "306px",
+                top: "37px",
               }}
             />
             <div

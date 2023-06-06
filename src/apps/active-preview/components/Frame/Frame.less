@@ -7,17 +7,14 @@
   overflow: auto;
 }
 
-.center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: "100%";
-}
+.iframeContainer {
+  &.portrait {
+    transform: rotate(0deg);
+    height: 100%;
+    width: 100%;
+  }
 
-.landscape {
-  transform: rotate(270deg);
-
-  .iframeContainer {
+  &.landscape {
     transform: rotate(90deg);
 
     &.iphone14 {
@@ -47,16 +44,6 @@
       margin-left: -353px;
       margin-top: 353px;
     }
-  }
-}
-
-.portrait {
-  transform: rotate(0deg);
-
-  .iframeContainer {
-    transform: rotate(0deg);
-    height: 100%;
-    width: 100%;
   }
 }
 
