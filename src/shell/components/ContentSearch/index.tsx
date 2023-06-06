@@ -80,8 +80,6 @@ const ContentSearch: FC = () => {
     }
   );
 
-  console.log("media", mediaFiles);
-
   const suggestions: Suggestion[] = useMemo(() => {
     const contentSuggestions: Suggestion[] =
       contents?.map((content) => {
