@@ -76,7 +76,7 @@ const ContentSearch: FC = () => {
   } = useSearchBinFilesQuery(
     { binIds: bins?.map((bin) => bin.id), term: value },
     {
-      skip: !bins?.length,
+      skip: !bins?.length || !value,
     }
   );
 
