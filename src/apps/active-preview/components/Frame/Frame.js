@@ -32,7 +32,6 @@ export function Frame(props) {
           onLoad={() => setFrameLoading(false)}
         />
       ) : (
-        // <div className={props.device === "ipad" ? "" : styles.center}>
         <>
           {templates[props.device].template({
             isLandscape: props.rotate,
@@ -66,7 +65,6 @@ export function Frame(props) {
             },
           })}
         </>
-        // </div>
       )}
     </Fragment>
   );
@@ -100,12 +98,14 @@ export const templates = {
           style={{
             backgroundImage: `url('${iphone14}')`,
             backgroundRepeat: "no-repeat",
+            // Width needs to be the same as the height on landscape so that device image is not cut off
             width: props.isLandscape ? "883px" : "437px",
             height: "883px",
             margin: "auto",
             transform: props.isLandscape
-              ? "rotate(270deg) translateX(40%)"
+              ? "rotate(-90deg) translateX(40%)"
               : "rotate(0deg)",
+            transition: "transform 200ms",
           }}
         >
           <div
@@ -149,12 +149,14 @@ export const templates = {
           style={{
             backgroundImage: `url('${iphone14pro}')`,
             backgroundRepeat: "no-repeat",
+            // Width needs to be the same as the height on landscape so that device image is not cut off
             width: props.isLandscape ? "883px" : "434px",
             height: "883px",
             margin: "auto",
             transform: props.isLandscape
-              ? "rotate(270deg) translateX(40%)"
+              ? "rotate(-90deg) translateX(40%)"
               : "rotate(0deg)",
+            transition: "transform 200ms",
           }}
         >
           <div
@@ -198,12 +200,14 @@ export const templates = {
           style={{
             backgroundImage: `url('${ipad}')`,
             backgroundRepeat: "no-repeat",
+            // Width needs to be the same as the height on landscape so that device image is not cut off
             width: props.isLandscape ? "1494px" : "1158px",
             height: "1494px",
             margin: "auto",
             transform: props.isLandscape
-              ? "rotate(270deg) translateX(20%)"
+              ? "rotate(-90deg) translateX(20%)"
               : "rotate(0deg)",
+            transition: "transform 200ms",
           }}
         >
           <div
@@ -240,12 +244,14 @@ export const templates = {
           style={{
             backgroundImage: `url('${pixel7}')`,
             backgroundRepeat: "no-repeat",
+            // Width needs to be the same as the height on landscape so that device image is not cut off
             width: props.isLandscape ? "1373px" : "648px",
             height: "1373px",
             margin: "auto",
             transform: props.isLandscape
-              ? "rotate(270deg) translateX(40%)"
+              ? "rotate(-90deg) translateX(40%)"
               : "rotate(0deg)",
+            transition: "transform 200ms",
           }}
         >
           <div
