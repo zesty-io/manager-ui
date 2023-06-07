@@ -303,7 +303,9 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
   if (!propertyId) {
     return (
       <PropertiesDialog
-        onClose={() => history.push(`/content/${modelZUID}/${itemZUID}`)}
+        onClose={(shouldNavAway = false) =>
+          shouldNavAway && history.push(`/content/${modelZUID}/${itemZUID}`)
+        }
       />
     );
   }
