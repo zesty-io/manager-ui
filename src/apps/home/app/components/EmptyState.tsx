@@ -41,7 +41,7 @@ export const EmptyState = () => {
               variant="outlined"
               size="small"
               startIcon={<AddIcon />}
-              onClick={() => history.push("/schema/new")}
+              onClick={() => history.push("/schema?triggerCreate=true")}
             >
               Model
             </Button>
