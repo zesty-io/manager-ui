@@ -1,7 +1,7 @@
 import { FC, useMemo, useEffect } from "react";
 
 import { useParams } from "../../../shell/hooks/useParams";
-import { Typography, Box, Stack } from "@mui/material";
+import { Typography, Box, Stack, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import moment from "moment-timezone";
@@ -67,7 +67,7 @@ export const SearchPage: FC = () => {
     setCodeFileKeyword(query);
   }, [query]);
 
-  // Combine results from contents and models
+  // Combine results from contents, models, code files and media files
   const results: SearchPageItem[] = useMemo(() => {
     const sortBy = params.get("sort") || "";
     const contentResults: SearchPageItem[] =
@@ -283,7 +283,11 @@ export const SearchPage: FC = () => {
           }}
         >
           <Typography variant="h6" color="text.primary">
-            {filteredResults?.length} results for "{query}"
+            {isLoading ? (
+              <Skeleton variant="text" width={200} />
+            ) : (
+              `${filteredResults?.length} results for "${query}"`
+            )}
           </Typography>
           <BackButton />
         </Box>
