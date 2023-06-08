@@ -44,23 +44,23 @@ export const SearchPage: FC = () => {
   const query = params.get("q") || "";
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const { data: contents, isLoading } = useSearchContentQuery(
-    { query, order: "created", dir: "desc" },
-    { skip: !query }
-  );
+  const { data: contents, isFetching: isFetchingContent } =
+    useSearchContentQuery(
+      { query, order: "created", dir: "desc" },
+      { skip: !query }
+    );
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
-  const {
-    data: mediaFiles,
-    isFetching: isFilesFetching,
-    isUninitialized: isFilesUninitialized,
-  } = useSearchBinFilesQuery(
-    { binIds: bins?.map((bin) => bin.id), term: query },
-    {
-      skip: !bins?.length || !query,
-    }
-  );
+  const { data: mediaFiles, isFetching: isFetchingMedia } =
+    useSearchBinFilesQuery(
+      { binIds: bins?.map((bin) => bin.id), term: query },
+      {
+        skip: !bins?.length || !query,
+      }
+    );
+
+  const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
     setModelKeyword(query);
@@ -234,6 +234,29 @@ export const SearchPage: FC = () => {
     return _results;
   }, [results, params]);
 
+  const renderBody = () => {
+    if (!isLoading && !filteredResults?.length) {
+      return <NoSearchResults query={query} />;
+    }
+
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          px: 3,
+          py: 0,
+          gap: 2,
+          backgroundColor: "grey.50",
+          height: "100%",
+        }}
+      >
+        <SearchPageList results={filteredResults} loading={isLoading} />
+      </Box>
+    );
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Stack
@@ -273,26 +296,7 @@ export const SearchPage: FC = () => {
         >
           <Filters />
         </Box>
-        {!isLoading && !filteredResults?.length && (
-          <NoSearchResults query={query} />
-        )}
-        {isLoading ||
-          (Boolean(filteredResults?.length) && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                px: 3,
-                py: 0,
-                gap: 2,
-                backgroundColor: "grey.50",
-                height: "100%",
-              }}
-            >
-              <SearchPageList results={filteredResults} loading={isLoading} />
-            </Box>
-          ))}
+        {renderBody()}
       </Stack>
     </ThemeProvider>
   );

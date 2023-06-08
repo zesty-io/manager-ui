@@ -25,7 +25,7 @@ export const SearchPageList: FC<SearchPageList> = ({
   loading,
 }) => {
   const results = loading
-    ? new Array(5) // arbitrary length array of junk data
+    ? new Array(10) // arbitrary length array of junk data
     : backendResults;
   const Row = useCallback(
     ({ index, style }) => {
