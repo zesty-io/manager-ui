@@ -6,6 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import moment from "moment-timezone";
 import { cloneDeep } from "lodash";
+import { useSelector } from "react-redux";
 
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
@@ -14,11 +15,20 @@ import { BackButton } from "./BackButton";
 import { Filters } from "./Filters";
 import { getDateFilterFn } from "../../components/Filters/DateFilter";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
-import { ContentItem, ContentModel, ResourceType } from "../../services/types";
+import {
+  ContentItem,
+  ContentModel,
+  ResourceType,
+  File as MediaFile,
+} from "../../services/types";
 import {
   useSearchCodeFilesByKeywords,
   File,
 } from "../../hooks/useSearchCodeFilesByKeyword";
+import {
+  useSearchBinFilesQuery,
+  useGetBinsQuery,
+} from "../../services/mediaManager";
 
 export interface SearchPageItem {
   ZUID: string;
@@ -27,21 +37,34 @@ export interface SearchPageItem {
   updatedAt: string;
   createdAt: string;
   createdByUserZUID: string;
-  data: ContentItem | ContentModel | File;
+  data: ContentItem | ContentModel | File | MediaFile;
 }
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q") || "";
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: contents, isLoading } = useSearchContentQuery(
     { query, order: "created", dir: "desc" },
     { skip: !query }
   );
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const [files, setFileKeyword] = useSearchCodeFilesByKeywords();
+  const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
+  const {
+    data: mediaFiles,
+    isFetching: isFilesFetching,
+    isUninitialized: isFilesUninitialized,
+  } = useSearchBinFilesQuery(
+    { binIds: bins?.map((bin) => bin.id), term: query },
+    {
+      skip: !bins?.length || !query,
+    }
+  );
 
   useEffect(() => {
     setModelKeyword(query);
-    setFileKeyword(query);
+    setCodeFileKeyword(query);
   }, [query]);
 
   // Combine results from contents and models
@@ -74,7 +97,7 @@ export const SearchPage: FC = () => {
       }) || [];
 
     const fileResults: SearchPageItem[] =
-      files?.map((file) => {
+      codeFiles?.map((file) => {
         return {
           ZUID: file.ZUID,
           title: file.fileName,
@@ -86,10 +109,24 @@ export const SearchPage: FC = () => {
         };
       }) || [];
 
+    const mediaResults: SearchPageItem[] =
+      mediaFiles?.map((file) => {
+        return {
+          ZUID: file.id,
+          title: file.filename,
+          type: "media",
+          updatedAt: file.updated_at,
+          createdAt: file.created_at,
+          createdByUserZUID: file.created_by ?? "",
+          data: file,
+        };
+      }) || [];
+
     const consolidatedResults = [
       ...contentResults,
       ...modelResults,
       ...fileResults,
+      ...mediaResults,
     ];
 
     // Sort the results
@@ -118,7 +155,7 @@ export const SearchPage: FC = () => {
       default:
         return consolidatedResults;
     }
-  }, [contents, models, params, files]);
+  }, [contents, models, params, codeFiles, mediaFiles]);
 
   const filteredResults = useMemo(() => {
     let _results = cloneDeep(results);

@@ -69,11 +69,7 @@ const ContentSearch: FC = () => {
   );
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
-  const {
-    data: mediaFiles,
-    isFetching: isFilesFetching,
-    isUninitialized: isFilesUninitialized,
-  } = useSearchBinFilesQuery(
+  const { data: mediaFiles } = useSearchBinFilesQuery(
     { binIds: bins?.map((bin) => bin.id), term: value },
     {
       skip: !bins?.length || !value,

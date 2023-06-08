@@ -3,12 +3,17 @@ import Stack from "@mui/material/Stack";
 import { FixedSizeList } from "react-window";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
-import { ContentItem, ContentModel } from "../../../services/types";
+import {
+  ContentItem,
+  ContentModel,
+  File as MediaFile,
+} from "../../../services/types";
 import { SearchPageItem } from "../SearchPage";
 import { File } from "../../../hooks/useSearchCodeFilesByKeyword";
 import { Content } from "./Content";
 import { Model } from "./Model";
 import { Code } from "./Code";
+import { Media } from "./Media";
 
 type SearchPageList = {
   results: SearchPageItem[];
@@ -51,6 +56,15 @@ export const SearchPageList: FC<SearchPageList> = ({
               <Code
                 key={result.ZUID}
                 data={result.data as File}
+                style={style}
+              />
+            );
+
+          case "media":
+            return (
+              <Media
+                key={result.ZUID}
+                data={result.data as MediaFile}
                 style={style}
               />
             );
