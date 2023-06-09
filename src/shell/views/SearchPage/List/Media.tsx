@@ -11,7 +11,8 @@ interface Media {
   style: any;
 }
 export const Media: FC<Media> = ({ data, style, loading = false }) => {
-  const chips = "Media • Lorem ipsum";
+  const chips = `Media • ${moment(data.created_at)?.fromNow()}`;
+
   return (
     <SearchListItem
       title={data.filename}
