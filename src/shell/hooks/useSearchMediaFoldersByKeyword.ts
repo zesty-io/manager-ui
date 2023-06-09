@@ -8,6 +8,9 @@ import {
   useGetBinsQuery,
 } from "../services/mediaManager";
 
+/**
+ * This hook is used to easily filter media folders by keyword
+ */
 type UseSearchMediaFoldersByKeyword = [Group[], (searchTerm: string) => void];
 export const useSearchMediaFoldersByKeyword: () => UseSearchMediaFoldersByKeyword =
   () => {
@@ -21,8 +24,6 @@ export const useSearchMediaFoldersByKeyword: () => UseSearchMediaFoldersByKeywor
         skip: !bins?.length,
       }
     );
-
-    // console.log(folders?.flat(Infinity));
 
     // Filter folders by folder name
     const filteredFolders: Group[] = useMemo(() => {
