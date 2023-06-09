@@ -149,8 +149,6 @@ export const SearchPage: FC = () => {
         };
       }) || [];
 
-    console.log(contentResults);
-
     const consolidatedResults = [
       ...contentResults,
       ...modelResults,
