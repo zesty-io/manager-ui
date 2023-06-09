@@ -20,6 +20,7 @@ import {
   ContentModel,
   ResourceType,
   File as MediaFile,
+  Group,
 } from "../../services/types";
 import {
   useSearchCodeFilesByKeywords,
@@ -29,6 +30,7 @@ import {
   useSearchBinFilesQuery,
   useGetBinsQuery,
 } from "../../services/mediaManager";
+import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
 
 export interface SearchPageItem {
   ZUID: string;
@@ -37,7 +39,8 @@ export interface SearchPageItem {
   updatedAt: string;
   createdAt: string;
   createdByUserZUID: string;
-  data: ContentItem | ContentModel | File | MediaFile;
+  data: ContentItem | ContentModel | File | MediaFile | Group;
+  subType?: "folder" | "item";
 }
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
@@ -51,6 +54,8 @@ export const SearchPage: FC = () => {
     );
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
+  const [mediaFolders, setMediaFolderKeyword] =
+    useSearchMediaFoldersByKeyword();
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMedia } =
     useSearchBinFilesQuery(
@@ -65,9 +70,10 @@ export const SearchPage: FC = () => {
   useEffect(() => {
     setModelKeyword(query);
     setCodeFileKeyword(query);
+    setMediaFolderKeyword(query);
   }, [query]);
 
-  // Combine results from contents, models, code files and media files
+  // Combine results from contents, models, code files, media files and media folders
   const results: SearchPageItem[] = useMemo(() => {
     const sortBy = params.get("sort") || "";
     const contentResults: SearchPageItem[] =
@@ -109,7 +115,7 @@ export const SearchPage: FC = () => {
         };
       }) || [];
 
-    const mediaResults: SearchPageItem[] =
+    const mediaFileResults: SearchPageItem[] =
       mediaFiles?.map((file) => {
         return {
           ZUID: file.id,
@@ -119,6 +125,21 @@ export const SearchPage: FC = () => {
           createdAt: file.created_at,
           createdByUserZUID: file.created_by ?? "",
           data: file,
+          subType: "item",
+        };
+      }) || [];
+
+    const mediaFolderResults: SearchPageItem[] =
+      mediaFolders?.map((folder) => {
+        return {
+          ZUID: folder.id,
+          title: folder.name,
+          type: "media",
+          updatedAt: "",
+          createdAt: "",
+          createdByUserZUID: "",
+          data: folder,
+          subType: "folder",
         };
       }) || [];
 
@@ -126,7 +147,8 @@ export const SearchPage: FC = () => {
       ...contentResults,
       ...modelResults,
       ...fileResults,
-      ...mediaResults,
+      ...mediaFileResults,
+      ...mediaFolderResults,
     ];
 
     // Sort the results
@@ -155,7 +177,7 @@ export const SearchPage: FC = () => {
       default:
         return consolidatedResults;
     }
-  }, [contents, models, params, codeFiles, mediaFiles]);
+  }, [contents, models, params, codeFiles, mediaFiles, mediaFolders]);
 
   const filteredResults = useMemo(() => {
     let _results = cloneDeep(results);

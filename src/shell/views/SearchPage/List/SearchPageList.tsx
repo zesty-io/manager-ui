@@ -7,6 +7,7 @@ import {
   ContentItem,
   ContentModel,
   File as MediaFile,
+  Group,
 } from "../../../services/types";
 import { SearchPageItem } from "../SearchPage";
 import { File } from "../../../hooks/useSearchCodeFilesByKeyword";
@@ -61,11 +62,22 @@ export const SearchPageList: FC<SearchPageList> = ({
             );
 
           case "media":
+            let data: MediaFile | Group;
+
+            if (result.subType === "item") {
+              data = result.data as MediaFile;
+            }
+
+            if (result.subType === "folder") {
+              data = result.data as Group;
+            }
+
             return (
               <Media
                 key={result.ZUID}
-                data={result.data as MediaFile}
+                data={data}
                 style={style}
+                subType={result.subType}
               />
             );
 

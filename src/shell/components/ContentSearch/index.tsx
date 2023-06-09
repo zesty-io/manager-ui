@@ -141,8 +141,6 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
-    console.log("media folders", mediaFolders);
-
     const consolidatedResults = [
       ...contentSuggestions,
       ...modelSuggestions,
