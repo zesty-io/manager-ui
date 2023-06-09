@@ -5,6 +5,7 @@ import {
   SvgIconComponent,
   CodeRounded,
   ImageRounded,
+  FolderRounded,
 } from "@mui/icons-material";
 import { ContentItem, ResourceType } from "../../services/types";
 
@@ -25,7 +26,7 @@ export const getContentTitle = (
   return langDisplay ? `${langDisplay}${title}` : title;
 };
 
-export const getItemIcon = (type: ResourceType) => {
+export const getItemIcon = (type: ResourceType, subType?: string) => {
   let icon;
 
   switch (type) {
@@ -42,7 +43,14 @@ export const getItemIcon = (type: ResourceType) => {
       break;
 
     case "media":
-      icon = ImageRounded;
+      if (subType === "item") {
+        icon = ImageRounded;
+      }
+
+      if (subType === "folder") {
+        icon = FolderRounded;
+      }
+
       break;
 
     default:

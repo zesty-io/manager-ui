@@ -33,6 +33,7 @@ import {
   useSearchBinFilesQuery,
   useGetBinsQuery,
 } from "../../services/mediaManager";
+import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ElementId = "global-search-autocomplete";
@@ -44,6 +45,7 @@ export interface Suggestion {
   updatedAt: string;
   url: string;
   noUrlErrorMessage?: string;
+  subType?: string;
 }
 
 const ContentSearch: FC = () => {
@@ -53,6 +55,8 @@ const ContentSearch: FC = () => {
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [codeFiles, setFileKeyword] = useSearchCodeFilesByKeywords();
+  const [mediaFolders, setMediaFolderKeyword] =
+    useSearchMediaFoldersByKeyword();
   const languages = useSelector((state: any) => state.languages);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -117,6 +121,7 @@ const ContentSearch: FC = () => {
       mediaFiles?.map((file) => {
         return {
           type: "media",
+          subType: "item",
           ZUID: file.id,
           title: file.filename,
           updatedAt: file.updated_at,
@@ -124,18 +129,33 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
+    const mediaFolderSuggestions: Suggestion[] =
+      mediaFolders?.map((folder) => {
+        return {
+          type: "media",
+          subType: "folder",
+          ZUID: folder.id,
+          title: folder.name,
+          updatedAt: "",
+          url: `/media/folder/${folder.id}`,
+        };
+      }) || [];
+
+    console.log("media folders", mediaFolders);
+
     const consolidatedResults = [
       ...contentSuggestions,
       ...modelSuggestions,
       ...codeFileSuggestions,
       ...mediaFileSuggestions,
+      ...mediaFolderSuggestions,
     ].sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
 
     return consolidatedResults;
-  }, [contents, models, codeFiles, mediaFiles]);
+  }, [contents, models, codeFiles, mediaFiles, mediaFolders]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
@@ -152,6 +172,7 @@ const ContentSearch: FC = () => {
   useEffect(() => {
     setModelKeyword(value);
     setFileKeyword(value);
+    setMediaFolderKeyword(value);
   }, [value]);
 
   //@ts-ignore TODO fix typing for useMetaKey
@@ -373,7 +394,7 @@ const ContentSearch: FC = () => {
                 <GlobalSearchItem
                   {...props}
                   key={option.ZUID}
-                  icon={getItemIcon(option.type)}
+                  icon={getItemIcon(option.type, option.subType ?? "")}
                   text={option.title}
                 />
               );
