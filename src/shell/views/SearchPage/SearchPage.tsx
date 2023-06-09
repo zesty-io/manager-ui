@@ -5,7 +5,7 @@ import { Typography, Box, Stack, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import moment from "moment-timezone";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 import { useSelector } from "react-redux";
 
 import { NoSearchResults } from "../../components/NoSearchResults";
@@ -47,11 +47,14 @@ export const SearchPage: FC = () => {
   const query = params.get("q") || "";
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const { data: contents, isFetching: isFetchingContent } =
-    useSearchContentQuery(
-      { query, order: "created", dir: "desc" },
-      { skip: !query }
-    );
+  const {
+    data: contents,
+    isFetching: isFetchingContent,
+    isError: isContentFetchingFailed,
+  } = useSearchContentQuery(
+    { query, order: "created", dir: "desc" },
+    { skip: !query }
+  );
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
@@ -76,18 +79,21 @@ export const SearchPage: FC = () => {
   // Combine results from contents, models, code files, media files and media folders
   const results: SearchPageItem[] = useMemo(() => {
     const sortBy = params.get("sort") || "";
+    // Content data needs to be reset to [] when api call fails
     const contentResults: SearchPageItem[] =
-      contents?.map((content) => {
-        return {
-          ZUID: content.meta?.ZUID,
-          title: content.web?.metaTitle,
-          type: "content",
-          updatedAt: content.meta?.updatedAt,
-          createdAt: content.meta?.createdAt,
-          createdByUserZUID: content.web?.createdByUserZUID,
-          data: content,
-        };
-      }) || [];
+      isContentFetchingFailed || isEmpty(contents)
+        ? []
+        : contents?.map((content) => {
+            return {
+              ZUID: content.meta?.ZUID,
+              title: content.web?.metaTitle,
+              type: "content",
+              updatedAt: content.meta?.updatedAt,
+              createdAt: content.meta?.createdAt,
+              createdByUserZUID: content.web?.createdByUserZUID,
+              data: content,
+            };
+          });
 
     const modelResults: SearchPageItem[] =
       models?.map((model) => {
@@ -143,6 +149,8 @@ export const SearchPage: FC = () => {
         };
       }) || [];
 
+    console.log(contentResults);
+
     const consolidatedResults = [
       ...contentResults,
       ...modelResults,
@@ -177,7 +185,15 @@ export const SearchPage: FC = () => {
       default:
         return consolidatedResults;
     }
-  }, [contents, models, params, codeFiles, mediaFiles, mediaFolders]);
+  }, [
+    contents,
+    models,
+    params,
+    codeFiles,
+    mediaFiles,
+    mediaFolders,
+    isContentFetchingFailed,
+  ]);
 
   const filteredResults = useMemo(() => {
     let _results = cloneDeep(results);
