@@ -67,10 +67,8 @@ const ContentSearch: FC = () => {
 
   const textfieldRef = useRef<HTMLDivElement>();
 
-  const { data: contents } = useSearchContentQuery(
-    { query: value },
-    { skip: !value }
-  );
+  const { data: contents, isError: isContentFetchingFailed } =
+    useSearchContentQuery({ query: value }, { skip: !value });
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles } = useSearchBinFilesQuery(
@@ -81,19 +79,22 @@ const ContentSearch: FC = () => {
   );
 
   const suggestions: Suggestion[] = useMemo(() => {
+    // Content data needs to be reset to [] when api call fails
     const contentSuggestions: Suggestion[] =
-      contents?.map((content) => {
-        return {
-          type: "content",
-          ZUID: content.meta?.ZUID,
-          title: getContentTitle(content, languages),
-          updatedAt: content.meta?.updatedAt,
-          url: isEmpty(content.meta)
-            ? ""
-            : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
-          noUrlErrorMessage: "Selected item is missing meta data",
-        };
-      }) || [];
+      isContentFetchingFailed || isEmpty(contents)
+        ? []
+        : contents?.map((content) => {
+            return {
+              type: "content",
+              ZUID: content.meta?.ZUID,
+              title: getContentTitle(content, languages),
+              updatedAt: content.meta?.updatedAt,
+              url: isEmpty(content.meta)
+                ? ""
+                : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
+              noUrlErrorMessage: "Selected item is missing meta data",
+            };
+          });
 
     const modelSuggestions: Suggestion[] =
       models?.map((model) => {
@@ -153,7 +154,14 @@ const ContentSearch: FC = () => {
     );
 
     return consolidatedResults;
-  }, [contents, models, codeFiles, mediaFiles, mediaFolders]);
+  }, [
+    contents,
+    models,
+    codeFiles,
+    mediaFiles,
+    mediaFolders,
+    isContentFetchingFailed,
+  ]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
