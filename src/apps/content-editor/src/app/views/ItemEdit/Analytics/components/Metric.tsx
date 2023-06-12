@@ -30,7 +30,9 @@ export const Metric = ({
             value={formatter ? formatter(value) : value?.toLocaleString()}
             description={description}
           />
-        ) : null
+        ) : (
+          ""
+        )
       }
       followCursor
       components={{ Tooltip: Box }}

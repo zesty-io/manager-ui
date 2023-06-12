@@ -292,13 +292,23 @@ export const ByDayLineChart = ({
             </Box>
             <Box display="flex" flexDirection="column" gap={4.25}>
               {new Array(6).fill(0).map((_, i) => (
-                <Skeleton variant="rectangular" width="40px" height="20px" />
+                <Skeleton
+                  key={i}
+                  variant="rectangular"
+                  width="40px"
+                  height="20px"
+                />
               ))}
             </Box>
           </Box>
           <Box display="flex" justifyContent="space-between" ml={8} mt={2}>
             {new Array(9).fill(0).map((_, i) => (
-              <Skeleton variant="rectangular" width="8px" height="18px" />
+              <Skeleton
+                key={i}
+                variant="rectangular"
+                width="8px"
+                height="18px"
+              />
             ))}
           </Box>
         </Box>
