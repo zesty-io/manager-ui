@@ -29,7 +29,7 @@ export function findValuesForDimensions(
 ): string[] {
   const result: string[] = [];
 
-  data.forEach((item) => {
+  data?.forEach((item) => {
     // Check if all dimensions exist in dimensionValues
     const matchDimensions = dimensionFilters.every((filter) =>
       item.dimensionValues.some((dv: any) => dv.value === filter)
@@ -50,15 +50,15 @@ export function findTopDimensionsForDateRange(
   dateRange: string,
   topN: number
 ) {
-  const dateRangeData = data.filter((item) =>
+  const dateRangeData = data?.filter((item) =>
     item.dimensionValues.some((dimension: any) => dimension.value === dateRange)
   );
 
-  const sortedData = dateRangeData.sort(
+  const sortedData = dateRangeData?.sort(
     (a, b) => Number(b.metricValues[0].value) - Number(a.metricValues[0].value)
   );
 
-  return sortedData.slice(0, topN).map((item) => item.dimensionValues);
+  return sortedData?.slice(0, topN).map((item) => item.dimensionValues);
 }
 
 export const generateReportRequests = (
