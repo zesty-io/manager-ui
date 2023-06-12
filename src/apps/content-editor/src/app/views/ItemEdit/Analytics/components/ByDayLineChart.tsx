@@ -152,6 +152,13 @@ export const ByDayLineChart = ({
         );
   }, [data, type, shouldCompare]);
 
+  const spansMoreThanOneYear = useMemo(() => {
+    let firstDate = moment(dateChartLabels[0]);
+    let lastDate = moment(dateChartLabels[dateChartLabels.length - 1]);
+
+    return firstDate.year() !== lastDate.year();
+  }, [dateChartLabels]);
+
   const itemPublishesByDayArray = useMemo(
     () =>
       new Array(endDate.diff(startDate, "days") + 1).fill(0).map((_, i) => {
@@ -443,6 +450,9 @@ export const ByDayLineChart = ({
                   time: {
                     parser: "YYYY-MM-DD",
                     unit: "day",
+                    displayFormats: {
+                      day: spansMoreThanOneYear ? "MMM DD YYYY" : "MMM DD",
+                    },
                   },
                   ticks: {
                     padding: 8,
@@ -451,6 +461,10 @@ export const ByDayLineChart = ({
                       size: 12,
                       family: "Mulish",
                     },
+                    maxTicksLimit: 5,
+                    maxRotation: 0,
+                    minRotation: 0,
+                    autoSkip: true,
                   },
                 },
               },
