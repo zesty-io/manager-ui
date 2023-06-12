@@ -5,8 +5,10 @@ import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 import { ContentItem, ContentModel } from "../../../services/types";
 import { SearchPageItem } from "../SearchPage";
+import { File } from "../../../hooks/useSearchCodeFilesByKeyword";
 import { Content } from "./Content";
 import { Model } from "./Model";
+import { Code } from "./Code";
 
 type SearchPageList = {
   results: SearchPageItem[];
@@ -43,6 +45,16 @@ export const SearchPageList: FC<SearchPageList> = ({
                 style={style}
               />
             );
+
+          case "code":
+            return (
+              <Code
+                key={result.ZUID}
+                data={result.data as File}
+                style={style}
+              />
+            );
+
           default:
             break;
         }

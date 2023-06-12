@@ -1,7 +1,7 @@
 import { isEmpty } from "lodash";
 import { Database } from "@zesty-io/material";
-import { Create, SvgIconComponent } from "@mui/icons-material";
-import { ContentItem } from "../../services/types";
+import { Create, SvgIconComponent, CodeRounded } from "@mui/icons-material";
+import { ContentItem, ResourceType } from "../../services/types";
 
 export const getContentTitle = (
   content: ContentItem,
@@ -20,7 +20,7 @@ export const getContentTitle = (
   return langDisplay ? `${langDisplay}${title}` : title;
 };
 
-export const getItemIcon = (type: "schema" | "content") => {
+export const getItemIcon = (type: ResourceType) => {
   let icon;
 
   switch (type) {
@@ -30,6 +30,10 @@ export const getItemIcon = (type: "schema" | "content") => {
 
     case "schema":
       icon = Database as SvgIconComponent;
+      break;
+
+    case "code":
+      icon = CodeRounded;
       break;
 
     default:

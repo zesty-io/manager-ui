@@ -15,9 +15,9 @@ import {
   useDeleteContentModelMutation,
   useUpdateContentModelMutation,
 } from "../../../../../shell/services/instance";
-import { ContentModel } from "../../../../../shell/services/types";
+import { ContentModel, WebView } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 import { useHistory } from "react-router";
 
@@ -30,6 +30,10 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const files = useSelector((state: any) => state.files) as Record<
+    string,
+    WebView
+  >;
 
   const [deleteModel, { isLoading, isSuccess, error }] =
     useDeleteContentModelMutation();
@@ -52,6 +56,21 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
       );
     }
   }, [error]);
+
+  const handleModelDelete = () => {
+    const fileToDelete = Object.values(files).find(
+      (file: WebView) => file.contentModelZUID === model.ZUID
+    );
+    if (fileToDelete) {
+      dispatch({
+        type: "DELETE_FILE_SUCCESS",
+        payload: {
+          fileZUID: fileToDelete.ZUID,
+        },
+      });
+    }
+    deleteModel(model.ZUID);
+  };
 
   return (
     <Dialog open onClose={onClose} fullWidth maxWidth="xs">
@@ -97,7 +116,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
         </Button>
         <LoadingButton
           disabled={deleteConfirmation !== model.label}
-          onClick={() => deleteModel(model.ZUID)}
+          onClick={handleModelDelete}
           loading={isLoading}
           variant="contained"
           color="error"

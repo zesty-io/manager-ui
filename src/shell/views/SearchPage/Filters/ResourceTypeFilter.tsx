@@ -7,8 +7,13 @@ import {
   ListItemText,
   SvgIcon,
 } from "@mui/material";
-import { SvgIconComponent, EditRounded } from "@mui/icons-material";
+import {
+  SvgIconComponent,
+  EditRounded,
+  CodeRounded,
+} from "@mui/icons-material";
 import { Database } from "@zesty-io/material";
+import { ResourceType } from "../../../services/types";
 
 import { FilterButton } from "../../../components/Filters";
 
@@ -26,12 +31,16 @@ const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
     text: "Models",
     icon: Database as SvgIconComponent,
   },
+  code: {
+    text: "Code Files",
+    icon: CodeRounded,
+  },
 };
 
-export type ResourceType = "content" | "schema" | "";
+export type ResourceCodes = ResourceType | "";
 interface ResourceTypeFilter {
-  onChange: (value: ResourceType | "") => void;
-  value?: ResourceType;
+  onChange: (value: ResourceCodes) => void;
+  value?: ResourceCodes;
 }
 export const ResourceTypeFilter: FC<ResourceTypeFilter> = ({
   onChange,
@@ -41,7 +50,7 @@ export const ResourceTypeFilter: FC<ResourceTypeFilter> = ({
 
   const getButtonText = (): string => {
     if (Boolean(value) && value in RESOURCE_TYPE_OPTIONS) {
-      return RESOURCE_TYPE_OPTIONS[value as Exclude<ResourceType, "">].text;
+      return RESOURCE_TYPE_OPTIONS[value as ResourceType].text;
     }
 
     return "Resource Type";

@@ -27,12 +27,14 @@ import useRecentSearches from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
 import { getContentTitle, getItemIcon } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
+import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
+import { ResourceType } from "../../services/types";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ElementId = "global-search-autocomplete";
 
 export interface Suggestion {
-  type: "schema" | "content";
+  type: ResourceType;
   ZUID: string;
   title: string;
   updatedAt: string;
@@ -45,7 +47,8 @@ const ContentSearch: FC = () => {
   const [open, setOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
-  const [models, setKeyword] = useSearchModelsByKeyword();
+  const [models, setModelKeyword] = useSearchModelsByKeyword();
+  const [files, setFileKeyword] = useSearchCodeFilesByKeywords();
   const languages = useSelector((state: any) => state.languages);
   const history = useHistory();
   const location = useLocation();
@@ -74,26 +77,39 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
-    const modelSuggestions: Suggestion[] = models.map((model) => {
-      return {
-        type: "schema",
-        ZUID: model.ZUID,
-        title: model.label,
-        updatedAt: model.updatedAt,
-        url: `/schema/${model.ZUID}`,
-      };
-    });
+    const modelSuggestions: Suggestion[] =
+      models?.map((model) => {
+        return {
+          type: "schema",
+          ZUID: model.ZUID,
+          title: model.label,
+          updatedAt: model.updatedAt,
+          url: `/schema/${model.ZUID}`,
+        };
+      }) || [];
+
+    const codeFileSuggestions: Suggestion[] =
+      files?.map((file) => {
+        return {
+          type: "code",
+          ZUID: file.ZUID,
+          title: file.fileName?.split("/").pop(), // Removes the file path from the file name
+          updatedAt: file.updatedAt,
+          url: `/code/file/views/${file.ZUID}`,
+        };
+      }) || [];
 
     const consolidatedResults = [
       ...contentSuggestions,
       ...modelSuggestions,
+      ...codeFileSuggestions,
     ].sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
 
     return consolidatedResults;
-  }, [contents, models]);
+  }, [contents, models, files]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
@@ -108,7 +124,8 @@ const ContentSearch: FC = () => {
   }, [suggestions, recentSearches, value]);
 
   useEffect(() => {
-    setKeyword(value);
+    setModelKeyword(value);
+    setFileKeyword(value);
   }, [value]);
 
   //@ts-ignore TODO fix typing for useMetaKey

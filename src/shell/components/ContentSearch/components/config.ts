@@ -2,6 +2,7 @@ import {
   PresetType,
   DateFilterModalType,
 } from "../../../components/Filters/DateFilter/types";
+import { ResourceType } from "../../../services/types";
 
 interface PresetDate {
   text: string;
@@ -57,11 +58,8 @@ export const CUSTOM_DATES: CustomDate[] = [
   },
 ];
 
-interface ResourceType {
-  content: string;
-  schema: string;
-}
-export const RESOURCE_TYPES: ResourceType = {
+export const RESOURCE_TYPES: Record<ResourceType, string> = {
   content: "Content Items",
   schema: "Models",
+  code: "Code Files",
 };
