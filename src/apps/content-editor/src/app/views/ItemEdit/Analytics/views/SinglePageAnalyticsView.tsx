@@ -7,6 +7,7 @@ import {
   CircularProgress,
   Link,
   Typography,
+  Skeleton,
 } from "@mui/material";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
@@ -99,6 +100,17 @@ const getDateRangeAndLabelsFromPreset = (
           moment().subtract(1, "days"),
           "Last 12 Months",
           "Prior 12 Months",
+        ];
+      case "this_week":
+        return [moment().startOf("week"), moment(), "This Week", "Last Week"];
+      case "this_year":
+        return [moment().startOf("year"), moment(), "This Year", "Last Year"];
+      case "quarter_to_date":
+        return [
+          moment().startOf("quarter"),
+          moment(),
+          "This Quarter",
+          "Last Quarter",
         ];
       default:
         return [
@@ -254,18 +266,7 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
     }
   };
 
-  if (isFetching || instanceSettingsFetching || isFetchingCompare) {
-    return (
-      <Box
-        height="100%"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
+  const isLoading = isFetching || instanceSettingsFetching || isFetchingCompare;
 
   if (isError) {
     return (
@@ -300,10 +301,12 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
     );
   }
 
-  if (!propertyId) {
+  if (!instanceSettingsFetching && !propertyId) {
     return (
       <PropertiesDialog
-        onClose={() => history.push(`/content/${modelZUID}/${itemZUID}`)}
+        onClose={(shouldNavAway = false) =>
+          shouldNavAway && history.push(`/content/${modelZUID}/${itemZUID}`)
+        }
       />
     );
   }
@@ -329,14 +332,34 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
         </Box>
         <Box display="flex" justifyContent="space-between">
           <Box display="flex" gap={1.5}>
-            <DateFilter
-              clearable={false}
-              value={activeDateFilter}
-              onChange={handleDateFilterChanged}
-              hideCustomDates
-              withDateRange
-            />
-            {compareItemZUID ? (
+            {isLoading ? (
+              <Skeleton variant="rectangular" width="137px" height="28px" />
+            ) : (
+              <DateFilter
+                clearable={false}
+                value={activeDateFilter}
+                onChange={handleDateFilterChanged}
+                hideCustomDates
+                withDateRange
+                extraPresets={[
+                  {
+                    text: "This Week (Sun - Today)",
+                    value: "this_week",
+                  },
+                  {
+                    text: "This Year (Jan - Today)",
+                    value: "this_year",
+                  },
+                  {
+                    text: "Quarter to Date",
+                    value: "quarter_to_date",
+                  },
+                ]}
+              />
+            )}
+            {isLoading ? (
+              <Skeleton variant="rectangular" width="137px" height="28px" />
+            ) : compareItemZUID ? (
               <ButtonGroup variant="contained" sx={{ height: "28px" }}>
                 <Button
                   size="small"
@@ -369,38 +392,46 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
             )}
           </Box>
           <Box display="flex" gap={0.5} alignItems="center">
-            <Link
-              href={`${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${item.web.path}`}
-              target="__blank"
-              sx={{
-                maxWidth: "440px",
-                direction: "rtl",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: "block",
-              }}
-            >
-              {`${
-                propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri
-              }${item.web.path?.slice(0, -1)}`}
-            </Link>
-            <Button
-              onClick={() => setShowPropertiesDialog(true)}
-              size="small"
-              variant="outlined"
-              color="inherit"
-              sx={{
-                height: "22px",
-                width: "38px",
-                minWidth: "unset",
-              }}
-            >
-              <SettingsIcon
-                color="action"
-                sx={{ width: "18px", height: "18px" }}
-              />
-            </Button>
+            {isLoading ? (
+              <Skeleton variant="rectangular" width="410px" height="8px" />
+            ) : (
+              <Link
+                href={`${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${item.web.path}`}
+                target="__blank"
+                sx={{
+                  maxWidth: "440px",
+                  direction: "rtl",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "block",
+                }}
+              >
+                {`${
+                  propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri
+                }${item.web.path?.slice(0, -1)}`}
+              </Link>
+            )}
+            {isLoading ? (
+              <Skeleton variant="rectangular" width="38px" height="22px" />
+            ) : (
+              <Button
+                onClick={() => setShowPropertiesDialog(true)}
+                size="small"
+                variant="outlined"
+                color="inherit"
+                sx={{
+                  height: "22px",
+                  width: "38px",
+                  minWidth: "unset",
+                }}
+              >
+                <SettingsIcon
+                  color="action"
+                  sx={{ width: "18px", height: "18px" }}
+                />
+              </Button>
+            )}
           </Box>
         </Box>
         <Box
@@ -413,6 +444,7 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
           border={(theme) => `1px solid ${theme.palette.border}`}
         >
           <Metric
+            loading={isLoading}
             title="Sessions"
             value={
               +(
@@ -434,6 +466,7 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
           />
           <Divider orientation="vertical" flexItem />
           <Metric
+            loading={isLoading}
             title="Avg. Duration"
             formatter={convertSecondsToMinutesAndSeconds}
             value={
@@ -456,6 +489,7 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
           />
           <Divider orientation="vertical" flexItem />
           <Metric
+            loading={isLoading}
             inverse
             title="Bounce Rate"
             formatter={(value: number) => `${Math.floor(value * 100)}%`}
@@ -479,6 +513,7 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
           />
           <Divider orientation="vertical" flexItem />
           <Metric
+            loading={isLoading}
             title="Conversions"
             value={
               +(
@@ -500,6 +535,7 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
           />
           <Box width="184px" height="100px">
             <UsersDoughnutChart
+              loading={isLoading}
               data={totalUsersReport}
               dateRange0Label={
                 compareItemZUID
@@ -525,6 +561,7 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
             border={(theme) => `1px solid ${theme.palette.border}`}
           >
             <UsersBarChart
+              loading={isLoading}
               dateRange0Label={
                 compareItemZUID
                   ? item?.web?.metaTitle || item?.web?.path
@@ -551,6 +588,7 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
             border={(theme) => `1px solid ${theme.palette.border}`}
           >
             <ByDayLineChart
+              loading={isLoading}
               auditData={auditData}
               startDate={startDate}
               endDate={endDate}
