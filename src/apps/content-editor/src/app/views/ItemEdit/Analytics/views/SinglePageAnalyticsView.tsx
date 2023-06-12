@@ -101,6 +101,17 @@ const getDateRangeAndLabelsFromPreset = (
           "Last 12 Months",
           "Prior 12 Months",
         ];
+      case "this_week":
+        return [moment().startOf("week"), moment(), "This Week", "Last Week"];
+      case "this_year":
+        return [moment().startOf("year"), moment(), "This Year", "Last Year"];
+      case "quarter_to_date":
+        return [
+          moment().startOf("quarter"),
+          moment(),
+          "This Quarter",
+          "Last Quarter",
+        ];
       default:
         return [
           moment().subtract(14, "days"),
@@ -330,6 +341,20 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
                 onChange={handleDateFilterChanged}
                 hideCustomDates
                 withDateRange
+                extraPresets={[
+                  {
+                    text: "This Week (Sun - Today)",
+                    value: "this_week",
+                  },
+                  {
+                    text: "This Year (Jan - Today)",
+                    value: "this_year",
+                  },
+                  {
+                    text: "Quarter to Date",
+                    value: "quarter_to_date",
+                  },
+                ]}
               />
             )}
             {isLoading ? (
