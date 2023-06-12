@@ -7,11 +7,44 @@
   overflow: auto;
 }
 
-.center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: "100%";
+.iframeContainer {
+  &.portrait {
+    transform: rotate(0deg);
+    height: 100%;
+    width: 100%;
+  }
+
+  &.landscape {
+    transform: rotate(90deg);
+
+    &.iphone14 {
+      width: 842px;
+      height: 389px;
+      margin-left: -227px;
+      margin-top: 226px;
+    }
+
+    &.iphone14pro {
+      width: 845px;
+      height: 390px;
+      margin-left: -227px;
+      margin-top: 227px;
+    }
+
+    &.ipad {
+      width: 1367px;
+      height: 1027px;
+      margin-left: -170px;
+      margin-top: 170px;
+    }
+
+    &.pixel7 {
+      width: 1322px;
+      height: 617px;
+      margin-left: -353px;
+      margin-top: 353px;
+    }
+  }
 }
 
 .screen {
