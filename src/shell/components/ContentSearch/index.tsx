@@ -131,8 +131,8 @@ const ContentSearch: FC = () => {
 
     return [
       value,
-      ..._suggestions,
       "SearchAccelerator",
+      ..._suggestions,
       ..._recentSearches,
       "AdvancedSearchButton",
     ];
@@ -361,8 +361,11 @@ const ContentSearch: FC = () => {
                 );
               }
 
-              // Renders the search accelerators
-              if (option === "SearchAccelerator") {
+              // Renders the search accelerators when no search accelerator is active
+              if (
+                option === "SearchAccelerator" &&
+                !Boolean(searchAccelerator)
+              ) {
                 return (
                   <SearchAccelerator
                     onAcceleratorClick={(type) => setSearchAccelerator(type)}
