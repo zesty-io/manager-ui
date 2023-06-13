@@ -19,6 +19,7 @@ export const SearchAccelerator = () => {
       <ListItem
         sx={{
           gap: 1,
+          pt: 0.5,
         }}
       >
         {Object.entries(SEARCH_ACCELERATORS)?.map(([key, value]) => (
