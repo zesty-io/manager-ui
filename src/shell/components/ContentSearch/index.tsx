@@ -429,7 +429,7 @@ const ContentSearch: FC = () => {
                   ...params.InputProps,
                   startAdornment: (
                     <InputAdornment position="start" sx={{ marginRight: 0 }}>
-                      {Boolean(searchAccelerator) ? (
+                      {Boolean(searchAccelerator) && open ? (
                         <Chip
                           variant="filled"
                           label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
