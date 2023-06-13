@@ -49,6 +49,9 @@ export interface Suggestion {
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
+  const [searchAccerator, setSearchAccerator] = useState<ResourceType | null>(
+    null
+  );
   const [open, setOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
@@ -182,8 +185,7 @@ const ContentSearch: FC = () => {
       >
         <Autocomplete
           value={value}
-          // open={open}
-          open
+          open={open}
           onOpen={() => {
             setOpen(true);
           }}
@@ -358,7 +360,11 @@ const ContentSearch: FC = () => {
 
               // Renders the search accelerators
               if (option === "SearchAccelerator") {
-                return <SearchAccelerator />;
+                return (
+                  <SearchAccelerator
+                    onAcceleratorClick={(type) => setSearchAccerator(type)}
+                  />
+                );
               }
             } else {
               return (

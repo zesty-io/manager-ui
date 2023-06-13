@@ -1,9 +1,15 @@
-import React from "react";
+import { FC } from "react";
 import { ListItem, ListSubheader, Button, SvgIcon } from "@mui/material";
 
 import { SEARCH_ACCELERATORS } from "./config";
+import { ResourceType } from "../../../services/types";
 
-export const SearchAccelerator = () => {
+interface SearchAcceleratorProps {
+  onAcceleratorClick: (type: ResourceType) => void;
+}
+export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
+  onAcceleratorClick,
+}) => {
   return (
     <>
       <ListSubheader
@@ -24,6 +30,7 @@ export const SearchAccelerator = () => {
       >
         {Object.entries(SEARCH_ACCELERATORS)?.map(([key, value]) => (
           <Button
+            key={key}
             variant="contained"
             size="small"
             sx={{
@@ -34,6 +41,7 @@ export const SearchAccelerator = () => {
               fontWeight: 400,
             }}
             startIcon={<SvgIcon component={value.icon} />}
+            onClick={() => onAcceleratorClick(key as ResourceType)}
           >
             {value.text}
           </Button>
