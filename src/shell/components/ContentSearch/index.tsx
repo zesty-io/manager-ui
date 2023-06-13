@@ -29,8 +29,13 @@ import { getContentTitle, getItemIcon } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
 import { ResourceType } from "../../services/types";
+import { SearchAccelerator } from "./components/SearchAccelerator";
 
-const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
+const AdditionalDropdownOptions = [
+  "RecentSearches",
+  "AdvancedSearchButton",
+  "SearchAccelerator",
+];
 const ElementId = "global-search-autocomplete";
 
 export interface Suggestion {
@@ -120,7 +125,13 @@ const ContentSearch: FC = () => {
     const _suggestions =
       suggestions?.length && value ? suggestions?.slice(0, 5) : [];
 
-    return [value, ..._suggestions, ..._recentSearches, "AdvancedSearchButton"];
+    return [
+      value,
+      ..._suggestions,
+      "SearchAccelerator",
+      ..._recentSearches,
+      "AdvancedSearchButton",
+    ];
   }, [suggestions, recentSearches, value]);
 
   useEffect(() => {
@@ -171,7 +182,8 @@ const ContentSearch: FC = () => {
       >
         <Autocomplete
           value={value}
-          open={open}
+          // open={open}
+          open
           onOpen={() => {
             setOpen(true);
           }}
@@ -302,6 +314,7 @@ const ContentSearch: FC = () => {
               }
 
               // Renders the recent searches component
+              // This only renders the subheader, actual data is being set on the suggestions array
               if (option === "RecentSearches") {
                 return (
                   <ListSubheader
@@ -341,6 +354,11 @@ const ContentSearch: FC = () => {
                     </Button>
                   </ListItem>
                 );
+              }
+
+              // Renders the search accelerators
+              if (option === "SearchAccelerator") {
+                return <SearchAccelerator />;
               }
             } else {
               return (

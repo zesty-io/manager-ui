@@ -1,4 +1,11 @@
 import {
+  SvgIconComponent,
+  EditRounded,
+  CodeRounded,
+} from "@mui/icons-material";
+import { Database } from "@zesty-io/material";
+
+import {
   PresetType,
   DateFilterModalType,
 } from "../../../components/Filters/DateFilter/types";
@@ -62,4 +69,23 @@ export const RESOURCE_TYPES: Record<ResourceType, string> = {
   content: "Content Items",
   schema: "Models",
   code: "Code Files",
+};
+
+interface SearchAccelerator {
+  icon: SvgIconComponent;
+  text: string;
+}
+export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
+  content: {
+    icon: EditRounded,
+    text: "Content",
+  },
+  schema: {
+    icon: Database as SvgIconComponent,
+    text: "Schema",
+  },
+  code: {
+    icon: CodeRounded,
+    text: "Code",
+  },
 };
