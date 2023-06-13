@@ -6,23 +6,52 @@ import {
   SvgIcon,
   ListItemSecondaryAction,
   IconButton,
+  Chip,
 } from "@mui/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
+import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+
+import { ResourceType } from "../../../services/types";
+import { SEARCH_ACCELERATORS } from "./config";
 
 type GlobalSearchItemProps = HTMLAttributes<HTMLLIElement> & {
   text: string;
   icon: SvgIconComponent;
   isRemovable?: boolean;
   onRemove?: (keyword: string) => void;
+  searchAccelerator?: ResourceType | null;
+  isSearchTerm?: boolean;
 };
 export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
   text,
   icon,
   isRemovable = false,
   onRemove,
+  searchAccelerator,
+  isSearchTerm = false,
   ...props
 }) => {
+  const renderStartAdornment = () => {
+    if (Boolean(searchAccelerator) && isSearchTerm) {
+      return (
+        <Chip
+          variant="filled"
+          color="primary"
+          size="small"
+          label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
+        />
+      );
+    }
+
+    return (
+      <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
+        <SvgIcon component={icon} fontSize="small" />
+      </ListItemIcon>
+    );
+  };
+
   return (
     <ListItem
       {...props}
@@ -49,6 +78,17 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
       <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
         <SvgIcon component={icon} fontSize="small" />
       </ListItemIcon>
+      {Boolean(searchAccelerator) && isSearchTerm && (
+        <Chip
+          variant="filled"
+          color="primary"
+          size="small"
+          label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
+          sx={{
+            mr: 1,
+          }}
+        />
+      )}
       <ListItemText
         primary={text}
         primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}

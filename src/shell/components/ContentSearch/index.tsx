@@ -51,9 +51,8 @@ export interface Suggestion {
 
 const ContentSearch: FC = () => {
   const [value, setValue] = useState("");
-  const [searchAccerator, setSearchAccerator] = useState<ResourceType | null>(
-    null
-  );
+  const [searchAccelerator, setSearchAccelerator] =
+    useState<ResourceType | null>(null);
   const [open, setOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
@@ -313,6 +312,8 @@ const ContentSearch: FC = () => {
                     text={option}
                     isRemovable={!isSearchTerm || searchTermInRecentSearches}
                     onRemove={deleteSearchTerm}
+                    searchAccelerator={searchAccelerator}
+                    isSearchTerm={isSearchTerm}
                   />
                 );
               }
@@ -364,7 +365,7 @@ const ContentSearch: FC = () => {
               if (option === "SearchAccelerator") {
                 return (
                   <SearchAccelerator
-                    onAcceleratorClick={(type) => setSearchAccerator(type)}
+                    onAcceleratorClick={(type) => setSearchAccelerator(type)}
                   />
                 );
               }
@@ -424,13 +425,13 @@ const ContentSearch: FC = () => {
                   ...params.InputProps,
                   startAdornment: (
                     <InputAdornment position="start" sx={{ marginRight: 0 }}>
-                      {Boolean(searchAccerator) ? (
+                      {Boolean(searchAccelerator) ? (
                         <Chip
                           variant="filled"
-                          label={`in: ${SEARCH_ACCELERATORS[searchAccerator]?.text}`}
+                          label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
                           color="primary"
                           size="small"
-                          onDelete={() => setSearchAccerator(null)}
+                          onDelete={() => setSearchAccelerator(null)}
                         />
                       ) : (
                         <SearchIcon fontSize="small" color="action" />
