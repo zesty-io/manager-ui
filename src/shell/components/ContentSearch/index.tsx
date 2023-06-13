@@ -11,6 +11,7 @@ import {
   Collapse,
   IconButton,
   ListSubheader,
+  Chip,
 } from "@mui/material";
 import { useHistory, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,6 +31,7 @@ import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
 import { ResourceType } from "../../services/types";
 import { SearchAccelerator } from "./components/SearchAccelerator";
+import { SEARCH_ACCELERATORS } from "./components/config";
 
 const AdditionalDropdownOptions = [
   "RecentSearches",
@@ -422,7 +424,17 @@ const ContentSearch: FC = () => {
                   ...params.InputProps,
                   startAdornment: (
                     <InputAdornment position="start" sx={{ marginRight: 0 }}>
-                      <SearchIcon fontSize="small" color="action" />
+                      {Boolean(searchAccerator) ? (
+                        <Chip
+                          variant="filled"
+                          label={`in: ${SEARCH_ACCELERATORS[searchAccerator]?.text}`}
+                          color="primary"
+                          size="small"
+                          onDelete={() => setSearchAccerator(null)}
+                        />
+                      ) : (
+                        <SearchIcon fontSize="small" color="action" />
+                      )}
                     </InputAdornment>
                   ),
                   endAdornment: (
