@@ -368,6 +368,7 @@ const ContentSearch: FC = () => {
               ) {
                 return (
                   <SearchAccelerator
+                    key="SearchAccelerator"
                     onAcceleratorClick={(type) => setSearchAccelerator(type)}
                   />
                 );
