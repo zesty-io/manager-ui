@@ -50,6 +50,7 @@ export const MediaRules = ({
       display="flex"
       flexDirection="column"
       height="100%"
+      minHeight={428}
     >
       <Box
         display="flex"
