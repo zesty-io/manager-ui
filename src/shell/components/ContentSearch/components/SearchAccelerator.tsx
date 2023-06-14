@@ -32,6 +32,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
               cursor: "pointer",
             },
           }}
+          onClick={() => onAcceleratorClick(mainApp as ResourceType)}
         >
           <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
             <ManageSearchRoundedIcon fontSize="small" />
