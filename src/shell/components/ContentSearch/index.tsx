@@ -480,6 +480,11 @@ const ContentSearch: FC = () => {
               />
             );
           }}
+          ListboxProps={{
+            style: {
+              paddingTop: value ? "8px" : "0px",
+            },
+          }}
         />
       </Collapse>
 

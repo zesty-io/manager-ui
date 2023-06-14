@@ -33,25 +33,6 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
   isSearchTerm = false,
   ...props
 }) => {
-  const renderStartAdornment = () => {
-    if (Boolean(searchAccelerator) && isSearchTerm) {
-      return (
-        <Chip
-          variant="filled"
-          color="primary"
-          size="small"
-          label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
-        />
-      );
-    }
-
-    return (
-      <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
-        <SvgIcon component={icon} fontSize="small" />
-      </ListItemIcon>
-    );
-  };
-
   return (
     <ListItem
       {...props}
