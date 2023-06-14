@@ -34,6 +34,7 @@ import { SearchAccelerator } from "./components/SearchAccelerator";
 import { SEARCH_ACCELERATORS } from "./components/config";
 
 const AdditionalDropdownOptions = [
+  "RecentModifiedItemsHeader",
   "RecentSearches",
   "AdvancedSearchButton",
   "SearchAccelerator",
@@ -66,10 +67,7 @@ const ContentSearch: FC = () => {
 
   const textfieldRef = useRef<HTMLDivElement>();
 
-  const { data: contents } = useSearchContentQuery(
-    { query: value },
-    { skip: !value }
-  );
+  const { data: contents } = useSearchContentQuery({ query: value });
 
   const suggestions: Suggestion[] = useMemo(() => {
     const contentSuggestions: Suggestion[] =
@@ -143,12 +141,19 @@ const ContentSearch: FC = () => {
       recentSearches?.length && !value
         ? ["RecentSearches", ...recentSearches.slice(0, 5)]
         : [];
+    // Shows the suggestions when either a value is entered or a search accelerator is activated
     const _suggestions =
-      suggestions?.length && value ? suggestions?.slice(0, 5) : [];
+      suggestions?.length && (Boolean(value) || Boolean(searchAccelerator))
+        ? suggestions?.slice(0, 5)
+        : [];
 
+    /** Note: The order of items in this array control the order of how the
+     * options will be rendered in the autocomplate dropdown
+     */
     return [
       value,
       "SearchAccelerator",
+      "RecentModifiedItemsHeader",
       ..._suggestions,
       ..._recentSearches,
       "AdvancedSearchButton",
@@ -388,6 +393,38 @@ const ContentSearch: FC = () => {
                     key="SearchAccelerator"
                     onAcceleratorClick={(type) => setSearchAccelerator(type)}
                   />
+                );
+              }
+
+              // Renders the recently modified items list subheader when an
+              // accelerator is active and there is no user input
+              if (
+                option === "RecentModifiedItemsHeader" &&
+                Boolean(searchAccelerator) &&
+                !Boolean(value)
+              ) {
+                const types: Record<ResourceType, string> = {
+                  code: "Code Files",
+                  content: "Content Items",
+                  schema: "Models in Schema",
+                };
+
+                return (
+                  <ListSubheader
+                    sx={{
+                      px: 1.5,
+                      pb: 0.5,
+                      pt: 0,
+                      mt: 1,
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      lineHeight: "18px",
+                      letterSpacing: "0.15px",
+                    }}
+                    key={option}
+                  >
+                    Recent Modified {types[searchAccelerator]}
+                  </ListSubheader>
                 );
               }
             } else {
