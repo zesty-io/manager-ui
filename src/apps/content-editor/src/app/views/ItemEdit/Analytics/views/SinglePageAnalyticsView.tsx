@@ -416,6 +416,7 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
               <Skeleton variant="rectangular" width="38px" height="22px" />
             ) : (
               <Button
+                data-cy="analytics-settings"
                 onClick={() => setShowPropertiesDialog(true)}
                 size="small"
                 variant="outlined"
