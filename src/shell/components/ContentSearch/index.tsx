@@ -108,17 +108,34 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
-    const consolidatedResults = [
+    let consolidatedResults = [
       ...contentSuggestions,
       ...modelSuggestions,
       ...codeFileSuggestions,
-    ].sort(
+    ];
+
+    // Only show related suggestions when a search accelerator is active
+    switch (searchAccelerator) {
+      case "code":
+        consolidatedResults = [...codeFileSuggestions];
+        break;
+
+      case "content":
+        consolidatedResults = [...contentSuggestions];
+        break;
+
+      case "schema":
+        consolidatedResults = [...modelSuggestions];
+
+      default:
+        break;
+    }
+
+    return consolidatedResults.sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
-
-    return consolidatedResults;
-  }, [contents, models, files]);
+  }, [contents, models, files, searchAccelerator]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
