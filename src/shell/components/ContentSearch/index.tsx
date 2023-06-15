@@ -32,6 +32,7 @@ import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKe
 import { ResourceType } from "../../services/types";
 import { SearchAccelerator } from "./components/SearchAccelerator";
 import { SEARCH_ACCELERATORS } from "./components/config";
+import { useGetActiveApp } from "../../hooks/useGetActiveApp";
 
 const AdditionalDropdownOptions = [
   "RecentModifiedItemsHeader",
@@ -60,8 +61,8 @@ const ContentSearch: FC = () => {
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [files, setFileKeyword] = useSearchCodeFilesByKeywords();
   const languages = useSelector((state: any) => state.languages);
+  const { mainApp } = useGetActiveApp();
   const history = useHistory();
-  const location = useLocation();
   const dispatch = useDispatch();
   const theme = useTheme();
 
@@ -170,8 +171,13 @@ const ContentSearch: FC = () => {
     textfieldRef.current?.querySelector("input").focus();
   });
 
-  const goToSearchPage = (queryTerm: string) => {
-    const isOnSearchPage = location.pathname === "/search";
+  const goToSearchPage = (queryTerm: string, resourceType?: ResourceType) => {
+    const isOnSearchPage = mainApp === "search";
+    const searchParams = new URLSearchParams({
+      q: queryTerm,
+      ...(Boolean(resourceType) && { resource: resourceType }),
+    });
+    const url = `/search?${searchParams.toString()}`;
 
     setOpen(false);
     addSearchTerm(queryTerm);
@@ -185,9 +191,9 @@ const ContentSearch: FC = () => {
     // Only add the search page on the history stack during initial page visit
     // Makes sure clicking close on the search page brings the user back to the previous page
     if (isOnSearchPage) {
-      history.replace(`/search?q=${queryTerm}`);
+      history.replace(url);
     } else {
-      history.push(`/search?q=${queryTerm}`);
+      history.push(url);
     }
   };
 
@@ -473,7 +479,7 @@ const ContentSearch: FC = () => {
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    goToSearchPage(value);
+                    goToSearchPage(value, searchAccelerator);
                   }
                 }}
                 inputProps={{
