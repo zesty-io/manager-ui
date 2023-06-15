@@ -13,7 +13,7 @@ import {
   ListSubheader,
   Chip,
 } from "@mui/material";
-import { useHistory, useLocation } from "react-router";
+import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
