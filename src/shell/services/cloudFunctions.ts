@@ -46,6 +46,17 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+    disconnectGoogleAnalytics: builder.mutation<void, void>({
+      query: () => {
+        return {
+          url: `disconnectGoogleAnalytics`,
+          method: "DELETE",
+          params: {
+            zuid: instanceZUID,
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -56,4 +67,5 @@ export const {
   useAiGenerationMutation,
   useGetAnalyticsPropertiesQuery,
   useGetAnalyticsPropertyDataByQueryQuery,
+  useDisconnectGoogleAnalyticsMutation,
 } = cloudFunctionsApi;
