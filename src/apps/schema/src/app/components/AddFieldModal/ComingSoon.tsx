@@ -9,10 +9,7 @@ export const ComingSoon = () => {
       height="100%"
       justifyContent="center"
       alignItems="center"
-      position="absolute"
-      top={0}
-      left={0}
-      right={0}
+      minHeight={428}
     >
       <Box
         display="flex"
