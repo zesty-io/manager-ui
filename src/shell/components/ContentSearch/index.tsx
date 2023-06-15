@@ -478,7 +478,7 @@ const ContentSearch: FC = () => {
                     },
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") {
+                  if (e.key === "Enter" && Boolean(value)) {
                     goToSearchPage(value, searchAccelerator);
                   }
                 }}
