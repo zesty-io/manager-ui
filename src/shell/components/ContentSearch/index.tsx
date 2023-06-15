@@ -212,8 +212,12 @@ const ContentSearch: FC = () => {
           onOpen={() => {
             setOpen(true);
           }}
-          onClose={() => {
-            setOpen(false);
+          onClose={(_, reason) => {
+            // Prevents autocomplete dropdown from closing when
+            // user clicks the input field multiple times
+            if (reason !== "toggleInput") {
+              setOpen(false);
+            }
           }}
           PaperComponent={(props) => {
             return (
