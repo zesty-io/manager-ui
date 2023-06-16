@@ -39,6 +39,7 @@ import {
 } from "../../services/mediaManager";
 import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
 import { RecentSearchItem } from "./components/RecentSearchItem";
+import { KeywordSearchItem } from "./components/KeywordSearchItem";
 
 const AdditionalDropdownOptions = [
   "RecentModifiedItemsHeader",
@@ -388,42 +389,33 @@ const ContentSearch: FC = () => {
             if (typeof option === "string") {
               // Renders the global search term & recent items
               if (!AdditionalDropdownOptions.includes(option)) {
-                // Means that this option is the top row global search term which is whatever the user has typed
-                // If it's not a search term then it's rendered as a recent search term that was saved
+                // Checks if this is the keyword search term
                 const isSearchTerm = props.id === `${ElementId}-option-0`;
 
-                // Determines if the user-typed top row global search term already exists in the recent searches
-                const searchTermInRecentSearches =
-                  isSearchTerm && recentSearches.includes(option);
+                if (isSearchTerm) {
+                  if (!Boolean(value)) {
+                    return;
+                  }
 
-                // Hides the top row global search term if no value is present
-                // Also, hides the recent item when a search accelerator is active.
-                if (
-                  (isSearchTerm && !value) ||
-                  (!isSearchTerm && searchAccelerator)
-                ) {
-                  return;
-                }
+                  return (
+                    <KeywordSearchItem
+                      {...props}
+                      // HACK: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
+                      aria-selected={false}
+                      key={option}
+                      onItemClick={() =>
+                        goToSearchPage(option, searchAccelerator)
+                      }
+                      text={option}
+                      searchAccelerator={searchAccelerator}
+                      recentSearches={recentSearches}
+                    />
+                  );
+                } else {
+                  if (Boolean(searchAccelerator)) {
+                    return;
+                  }
 
-                // Splits the text and the accelerator when the saved term is
-                // formatted like `[in:schema] beach`.
-                const { resourceType, text } = splitTextAndAccelerator(option);
-
-                const dataCy = isSearchTerm
-                  ? "global-search-term"
-                  : "global-search-recent-keyword";
-                const key = isSearchTerm ? "global-search-term" : option;
-                const icon =
-                  !isSearchTerm || searchTermInRecentSearches
-                    ? ScheduleRounded
-                    : SearchRounded;
-                const accelerator = isSearchTerm
-                  ? searchAccelerator
-                  : (resourceType as ResourceType);
-                const itemText = isSearchTerm ? option : text;
-                const isRemovable = !isSearchTerm || searchTermInRecentSearches;
-
-                if (!isSearchTerm) {
                   return (
                     <RecentSearchItem
                       {...props}
@@ -438,22 +430,6 @@ const ContentSearch: FC = () => {
                     />
                   );
                 }
-
-                return (
-                  <GlobalSearchItem
-                    {...props}
-                    // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
-                    aria-selected={false}
-                    data-cy={dataCy}
-                    key={key}
-                    icon={icon}
-                    onClick={() => goToSearchPage(option, accelerator)}
-                    text={itemText}
-                    isRemovable={isRemovable}
-                    onRemove={deleteSearchTerm}
-                    searchAccelerator={accelerator}
-                  />
-                );
               }
 
               // Renders the recent searches component
