@@ -11,6 +11,7 @@ import {
   SvgIconComponent,
   EditRounded,
   CodeRounded,
+  ImageRounded,
 } from "@mui/icons-material";
 import { Database } from "@zesty-io/material";
 import { ResourceType } from "../../../services/types";
@@ -34,6 +35,10 @@ const RESOURCE_TYPE_OPTIONS: ResourceTypeOptions = {
   code: {
     text: "Code Files",
     icon: CodeRounded,
+  },
+  media: {
+    text: "Media",
+    icon: ImageRounded,
   },
 };
 
