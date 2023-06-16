@@ -173,10 +173,20 @@ const ContentSearch: FC = () => {
 
       case "schema":
         consolidatedResults = [...modelSuggestions];
+        break;
+
+      case "media":
+        consolidatedResults = [
+          ...mediaFileSuggestions,
+          ...mediaFolderSuggestions,
+        ];
+        break;
 
       default:
         break;
     }
+
+    console.log(searchAccelerator, consolidatedResults);
 
     return consolidatedResults.sort(
       (a, b) =>
