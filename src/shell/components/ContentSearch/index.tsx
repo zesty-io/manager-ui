@@ -263,6 +263,11 @@ const ContentSearch: FC = () => {
       setValue(queryTerm);
     }
 
+    if (resourceType !== searchAccelerator) {
+      // Makes sure that the search accelerator is updated if the user has clicked on a recent search item
+      setSearchAccelerator(resourceType);
+    }
+
     // Only add the search page on the history stack during initial page visit
     // Makes sure clicking close on the search page brings the user back to the previous page
     if (isOnSearchPage) {
@@ -435,7 +440,7 @@ const ContentSearch: FC = () => {
               // Renders the recent searches component
               // This only renders the subheader, actual data is being set on the suggestions array
               // and rendering of the list is done above
-              if (option === "RecentSearches") {
+              if (option === "RecentSearches" && !searchAccelerator) {
                 return (
                   <ListSubheader
                     sx={{
