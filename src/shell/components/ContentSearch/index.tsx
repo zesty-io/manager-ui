@@ -38,6 +38,7 @@ import {
   useGetBinsQuery,
 } from "../../services/mediaManager";
 import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
+import { RecentSearchItem } from "./components/RecentSearchItem";
 
 const AdditionalDropdownOptions = [
   "RecentModifiedItemsHeader",
@@ -237,6 +238,7 @@ const ContentSearch: FC = () => {
   });
 
   const goToSearchPage = (queryTerm: string, resourceType?: ResourceType) => {
+    // TODO: Set search accelerator if exists
     const isOnSearchPage = mainApp === "search";
     const searchParams = new URLSearchParams({
       q: queryTerm,
@@ -395,7 +397,11 @@ const ContentSearch: FC = () => {
                   isSearchTerm && recentSearches.includes(option);
 
                 // Hides the top row global search term if no value is present
-                if (isSearchTerm && !value) {
+                // Also, hides the recent item when a search accelerator is active.
+                if (
+                  (isSearchTerm && !value) ||
+                  (!isSearchTerm && searchAccelerator)
+                ) {
                   return;
                 }
 
@@ -416,6 +422,22 @@ const ContentSearch: FC = () => {
                   : (resourceType as ResourceType);
                 const itemText = isSearchTerm ? option : text;
                 const isRemovable = !isSearchTerm || searchTermInRecentSearches;
+
+                if (!isSearchTerm) {
+                  return (
+                    <RecentSearchItem
+                      {...props}
+                      // HACK: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
+                      aria-selected={false}
+                      key={option}
+                      onItemClick={(term, resourceType) =>
+                        goToSearchPage(term, resourceType)
+                      }
+                      onRemove={deleteSearchTerm}
+                      text={option}
+                    />
+                  );
+                }
 
                 return (
                   <GlobalSearchItem
