@@ -2,6 +2,7 @@ import {
   SvgIconComponent,
   EditRounded,
   CodeRounded,
+  ImageRounded,
 } from "@mui/icons-material";
 import { Database } from "@zesty-io/material";
 
@@ -88,5 +89,9 @@ export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
   code: {
     icon: CodeRounded,
     text: "Code",
+  },
+  media: {
+    icon: ImageRounded,
+    text: "Media",
   },
 };
