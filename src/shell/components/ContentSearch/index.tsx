@@ -378,7 +378,8 @@ const ContentSearch: FC = () => {
             if (typeof option === "string") {
               // Renders the global search term & recent items
               if (!AdditionalDropdownOptions.includes(option)) {
-                // Means that this option is the top row global search term typed by the user
+                // Means that this option is the top row global search term which is whatever the user has typed
+                // If it's not a search term then it's rendered as a recent search term that was saved
                 const isSearchTerm = props.id === `${ElementId}-option-0`;
 
                 // Determines if the user-typed top row global search term already exists in the recent searches
