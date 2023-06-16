@@ -387,7 +387,7 @@ const ContentSearch: FC = () => {
           renderOption={(props, option) => {
             // TODO: Maybe extract into some kind of template object for readability
             if (typeof option === "string") {
-              // Renders the global search term & recent items
+              // Renders the keyword search term & recent items
               if (!AdditionalDropdownOptions.includes(option)) {
                 // Checks if this is the keyword search term
                 const isSearchTerm = props.id === `${ElementId}-option-0`;
