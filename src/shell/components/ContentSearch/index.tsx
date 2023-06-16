@@ -615,6 +615,7 @@ const ContentSearch: FC = () => {
           keyword={value}
           onClose={() => setIsAdvancedSearchOpen(false)}
           onSearch={(searchData) => addSearchTerm(searchData.keyword)}
+          searchAccelerator={searchAccelerator}
         />
       )}
     </>
