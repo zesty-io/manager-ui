@@ -29,6 +29,20 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
   searchAccelerator,
   ...props
 }) => {
+  const onRequestRemove = () => {
+    if (!onRemove) {
+      return;
+    }
+
+    // Makes sure that we're removing the exact option containing the
+    // search accelerator if it was saved with it.
+    if (searchAccelerator) {
+      onRemove(`[in:${searchAccelerator}] ${text}`);
+    } else {
+      onRemove(text);
+    }
+  };
+
   return (
     <ListItem
       {...props}
@@ -75,19 +89,7 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
           <IconButton
             data-cy="RemoveRecentSearchKeyword"
             size="small"
-            onClick={() => {
-              if (!onRemove) {
-                return;
-              }
-
-              // Makes sure that we're removing the exact option containing the
-              // search accelerator if it was saved with it.
-              if (searchAccelerator) {
-                onRemove(`[in:${searchAccelerator}] ${text}`);
-              } else {
-                onRemove(text);
-              }
-            }}
+            onClick={onRequestRemove}
           >
             <CloseIcon fontSize="small" />
           </IconButton>
