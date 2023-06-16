@@ -186,8 +186,6 @@ const ContentSearch: FC = () => {
         break;
     }
 
-    console.log(searchAccelerator, consolidatedResults);
-
     return consolidatedResults.sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -378,8 +376,9 @@ const ContentSearch: FC = () => {
           }}
           renderOption={(props, option) => {
             if (typeof option === "string") {
+              // Renders the global search term & recent items
               if (!AdditionalDropdownOptions.includes(option)) {
-                // Means that this option is the top row global search term typed by the userf
+                // Means that this option is the top row global search term typed by the user
                 const isSearchTerm = props.id === `${ElementId}-option-0`;
 
                 // Determines if the user-typed top row global search term already exists in the recent searches
@@ -407,7 +406,7 @@ const ContentSearch: FC = () => {
                         ? ScheduleRounded
                         : SearchRounded
                     }
-                    onClick={() => goToSearchPage(option)}
+                    onClick={() => goToSearchPage(option, searchAccelerator)}
                     text={option}
                     isRemovable={!isSearchTerm || searchTermInRecentSearches}
                     onRemove={deleteSearchTerm}
@@ -419,6 +418,7 @@ const ContentSearch: FC = () => {
 
               // Renders the recent searches component
               // This only renders the subheader, actual data is being set on the suggestions array
+              // and rendering of the list is done above
               if (option === "RecentSearches") {
                 return (
                   <ListSubheader
