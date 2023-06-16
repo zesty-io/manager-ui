@@ -26,7 +26,7 @@ import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import useRecentSearches from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
-import { getContentTitle, getItemIcon } from "./utils";
+import { getContentTitle, getItemIcon, splitTextAndAccelerator } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
 import { ResourceType } from "../../services/types";
@@ -244,8 +244,15 @@ const ContentSearch: FC = () => {
     });
     const url = `/search?${searchParams.toString()}`;
 
+    if (Boolean(resourceType)) {
+      // If the user has selected a search accelerator, also save it in
+      // the format of `[in:RESOURCE_TYPE]`
+      addSearchTerm(`[in:${resourceType}] ${queryTerm}`);
+    } else {
+      addSearchTerm(queryTerm);
+    }
+
     setOpen(false);
-    addSearchTerm(queryTerm);
     textfieldRef.current?.querySelector("input").blur();
 
     if (queryTerm !== value) {
@@ -375,6 +382,7 @@ const ContentSearch: FC = () => {
             return value;
           }}
           renderOption={(props, option) => {
+            // TODO: Maybe extract into some kind of template object for readability
             if (typeof option === "string") {
               // Renders the global search term & recent items
               if (!AdditionalDropdownOptions.includes(option)) {
@@ -391,28 +399,37 @@ const ContentSearch: FC = () => {
                   return;
                 }
 
+                // Splits the text and the accelerator when the saved term is
+                // formatted like `[in:schema] beach`.
+                const { resourceType, text } = splitTextAndAccelerator(option);
+
+                const dataCy = isSearchTerm
+                  ? "global-search-term"
+                  : "global-search-recent-keyword";
+                const key = isSearchTerm ? "global-search-term" : option;
+                const icon =
+                  !isSearchTerm || searchTermInRecentSearches
+                    ? ScheduleRounded
+                    : SearchRounded;
+                const accelerator = isSearchTerm
+                  ? searchAccelerator
+                  : (resourceType as ResourceType);
+                const itemText = isSearchTerm ? option : text;
+                const isRemovable = !isSearchTerm || searchTermInRecentSearches;
+
                 return (
                   <GlobalSearchItem
                     {...props}
                     // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
                     aria-selected={false}
-                    data-cy={
-                      isSearchTerm
-                        ? "global-search-term"
-                        : "global-search-recent-keyword"
-                    }
-                    key={isSearchTerm ? "global-search-term" : option}
-                    icon={
-                      !isSearchTerm || searchTermInRecentSearches
-                        ? ScheduleRounded
-                        : SearchRounded
-                    }
-                    onClick={() => goToSearchPage(option, searchAccelerator)}
-                    text={option}
-                    isRemovable={!isSearchTerm || searchTermInRecentSearches}
+                    data-cy={dataCy}
+                    key={key}
+                    icon={icon}
+                    onClick={() => goToSearchPage(option, accelerator)}
+                    text={itemText}
+                    isRemovable={isRemovable}
                     onRemove={deleteSearchTerm}
-                    searchAccelerator={searchAccelerator}
-                    isSearchTerm={isSearchTerm}
+                    searchAccelerator={accelerator}
                   />
                 );
               }

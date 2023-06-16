@@ -10,8 +10,6 @@ import {
 } from "@mui/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
-import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 import { ResourceType } from "../../../services/types";
 import { SEARCH_ACCELERATORS } from "./config";
@@ -22,7 +20,6 @@ type GlobalSearchItemProps = HTMLAttributes<HTMLLIElement> & {
   isRemovable?: boolean;
   onRemove?: (keyword: string) => void;
   searchAccelerator?: ResourceType | null;
-  isSearchTerm?: boolean;
 };
 export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
   text,
@@ -30,7 +27,6 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
   isRemovable = false,
   onRemove,
   searchAccelerator,
-  isSearchTerm = false,
   ...props
 }) => {
   return (
@@ -59,7 +55,7 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
       <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
         <SvgIcon component={icon} fontSize="small" />
       </ListItemIcon>
-      {Boolean(searchAccelerator) && isSearchTerm && (
+      {Boolean(searchAccelerator) && (
         <Chip
           variant="filled"
           color="primary"
@@ -79,7 +75,19 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
           <IconButton
             data-cy="RemoveRecentSearchKeyword"
             size="small"
-            onClick={() => onRemove && onRemove(text)}
+            onClick={() => {
+              if (!onRemove) {
+                return;
+              }
+
+              // Makes sure that we're removing the exact option containing the
+              // search accelerator if it was saved with it.
+              if (searchAccelerator) {
+                onRemove(`[in:${searchAccelerator}] ${text}`);
+              } else {
+                onRemove(text);
+              }
+            }}
           >
             <CloseIcon fontSize="small" />
           </IconButton>
