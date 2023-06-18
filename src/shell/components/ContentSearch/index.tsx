@@ -36,6 +36,7 @@ import { useGetActiveApp } from "../../hooks/useGetActiveApp";
 import {
   useSearchBinFilesQuery,
   useGetBinsQuery,
+  useGetAllBinFilesQuery,
 } from "../../services/mediaManager";
 import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
 import { RecentSearchItem } from "./components/RecentSearchItem";
@@ -90,6 +91,11 @@ const ContentSearch: FC = () => {
       skip: !bins?.length || !value,
     }
   );
+  const { data: allMediaFiles, isFetching: isFetchingAllMediaFiles } =
+    useGetAllBinFilesQuery(
+      bins?.map((bin) => bin.id),
+      { skip: !bins?.length }
+    );
 
   const suggestions: Suggestion[] = useMemo(() => {
     // Content data needs to be reset to [] when api call fails
@@ -131,8 +137,11 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
+    // Need to show get all the media files when the media accelerator is active and there's no user input
+    const mediaSource =
+      searchAccelerator === "media" && !value ? allMediaFiles : mediaFiles;
     const mediaFileSuggestions: Suggestion[] =
-      mediaFiles?.map((file) => {
+      mediaSource?.map((file) => {
         return {
           type: "media",
           subType: "item",
@@ -200,6 +209,7 @@ const ContentSearch: FC = () => {
     mediaFolders,
     isContentFetchingFailed,
     searchAccelerator,
+    allMediaFiles,
   ]);
 
   const options = useMemo(() => {
@@ -239,7 +249,6 @@ const ContentSearch: FC = () => {
   });
 
   const goToSearchPage = (queryTerm: string, resourceType?: ResourceType) => {
-    // TODO: Set search accelerator if exists
     const isOnSearchPage = mainApp === "search";
     const searchParams = new URLSearchParams({
       q: queryTerm,
