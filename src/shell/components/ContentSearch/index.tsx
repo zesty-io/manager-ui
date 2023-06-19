@@ -12,12 +12,12 @@ import {
   IconButton,
   ListSubheader,
   Chip,
+  Skeleton,
 } from "@mui/material";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import { ScheduleRounded, SearchRounded } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
@@ -81,21 +81,30 @@ const ContentSearch: FC = () => {
 
   const textfieldRef = useRef<HTMLDivElement>();
 
-  const { data: contents, isFetching: isContentFetchingFailed } =
-    useSearchContentQuery({ query: value });
+  const {
+    data: contents,
+    isError: isContentFetchingFailed,
+    isFetching: isFetchingContentSearchResults,
+  } = useSearchContentQuery({ query: value });
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
-  const { data: mediaFiles } = useSearchBinFilesQuery(
-    { binIds: bins?.map((bin) => bin.id), term: value },
-    {
-      skip: !bins?.length || !value,
-    }
-  );
+  const { data: mediaFiles, isFetching: isFetchingMediaSearchResults } =
+    useSearchBinFilesQuery(
+      { binIds: bins?.map((bin) => bin.id), term: value },
+      {
+        skip: !bins?.length || !value,
+      }
+    );
   const { data: allMediaFiles, isFetching: isFetchingAllMediaFiles } =
     useGetAllBinFilesQuery(
       bins?.map((bin) => bin.id),
       { skip: !bins?.length }
     );
+
+  const isLoading =
+    isFetchingAllMediaFiles ||
+    isFetchingMediaSearchResults ||
+    isFetchingContentSearchResults;
 
   const suggestions: Suggestion[] = useMemo(() => {
     // Content data needs to be reset to [] when api call fails
@@ -137,7 +146,7 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
-    // Need to show get all the media files when the media accelerator is active and there's no user input
+    // Need to show all the media files when the media accelerator is active and there's no user input
     const mediaSource =
       searchAccelerator === "media" && !value ? allMediaFiles : mediaFiles;
     const mediaFileSuggestions: Suggestion[] =
@@ -219,10 +228,23 @@ const ContentSearch: FC = () => {
         ? ["RecentSearches", ...recentSearches.slice(0, 5)]
         : [];
     // Shows the suggestions when either a value is entered or a search accelerator is activated
-    const _suggestions =
+    let _suggestions =
       suggestions?.length && (Boolean(value) || Boolean(searchAccelerator))
         ? suggestions?.slice(0, 5)
         : [];
+
+    // These are just dummy data to render 5 skeleton loaders when there are ongoing api calls
+    if (isLoading) {
+      _suggestions = [...new Array(5)].map((index) => {
+        return {
+          type: "media",
+          ZUID: index,
+          title: "",
+          updatedAt: "",
+          url: "",
+        };
+      });
+    }
 
     /** Note: The order of items in this array control the order of how the
      * options will be rendered in the autocomplate dropdown
@@ -383,6 +405,7 @@ const ContentSearch: FC = () => {
               goToSearchPage(newVal);
             } else {
               if (newVal?.url) {
+                console.log("suggestion clicked");
                 history.push(newVal.url);
               } else {
                 dispatch(
@@ -536,6 +559,23 @@ const ContentSearch: FC = () => {
                 );
               }
             } else {
+              // Renders the dummy data as skeleton loaders when an api call is ongoing
+              if (isLoading) {
+                return (
+                  <ListItem
+                    {...props}
+                    sx={{
+                      height: 32,
+                    }}
+                    key={option.ZUID}
+                    onClick={() => {}}
+                  >
+                    <Skeleton width="100%" />
+                  </ListItem>
+                );
+              }
+
+              // Renders the suggestion items
               return (
                 <GlobalSearchItem
                   {...props}
