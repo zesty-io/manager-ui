@@ -27,6 +27,7 @@ import { CSVImport } from "./views/CSVImport";
 import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
+import AnalyticsDashboard from "./views/AnalyticsDashboard";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 let customTheme = createTheme(legacyTheme, {
@@ -153,7 +154,11 @@ export default function ContentEditor() {
               >
                 <div className={styles.ContentWrap}>
                   <Switch>
-                    <Route exact path="/content" component={Dashboard} />
+                    <Route
+                      exact
+                      path="/content"
+                      component={AnalyticsDashboard}
+                    />
                     <Route
                       exact
                       path="/content/link/new"
