@@ -16,9 +16,9 @@ import {
 } from "@mui/material";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import { isEmpty } from "lodash";
+import { theme } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
@@ -60,7 +60,7 @@ export interface Suggestion {
   subType?: string;
 }
 
-const ContentSearch: FC = () => {
+export const GlobalSearch: FC = () => {
   const [value, setValue] = useState("");
   const [searchAccelerator, setSearchAccelerator] =
     useState<ResourceType | null>(null);
@@ -77,7 +77,6 @@ const ContentSearch: FC = () => {
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const history = useHistory();
   const dispatch = useDispatch();
-  const theme = useTheme();
 
   const textfieldRef = useRef<HTMLDivElement>();
 
@@ -676,7 +675,7 @@ const ContentSearch: FC = () => {
                     },
                     boxSizing: "border-box",
                     width: "100%",
-                    backgroundColor: (theme) => theme.palette.background.paper,
+                    backgroundColor: "background.paper",
                   },
                 }}
               />
@@ -701,5 +700,3 @@ const ContentSearch: FC = () => {
     </>
   );
 };
-
-export default ContentSearch;
