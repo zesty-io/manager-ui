@@ -517,10 +517,11 @@ export const GlobalSearch: FC = () => {
                 );
               }
 
-              // Renders the search accelerators when no search accelerator is active
+              // Renders the search accelerators when no search accelerator is active & there is no search term
               if (
                 option === "SearchAccelerator" &&
-                !Boolean(searchAccelerator)
+                !Boolean(searchAccelerator) &&
+                !Boolean(value)
               ) {
                 return (
                   <SearchAccelerator
