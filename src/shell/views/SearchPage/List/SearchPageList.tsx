@@ -95,7 +95,7 @@ export const SearchPageList: FC<SearchPageList> = ({
         );
       }
     },
-    [backendResults]
+    [backendResults, loading]
   );
 
   return (
