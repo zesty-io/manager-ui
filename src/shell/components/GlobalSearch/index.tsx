@@ -42,6 +42,7 @@ import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFolder
 import { RecentSearchItem } from "./components/RecentSearchItem";
 import { KeywordSearchItem } from "./components/KeywordSearchItem";
 
+// List of dropdown options that are NOT suggestions
 const AdditionalDropdownOptions = [
   "RecentModifiedItemsHeader",
   "RecentSearches",
@@ -49,6 +50,8 @@ const AdditionalDropdownOptions = [
   "SearchAccelerator",
 ];
 const ElementId = "global-search-autocomplete";
+const fullWidth = "500px"; // Component size when opened
+const collapsedWidth = "288px"; // Component size when collapsed/closed
 
 export interface Suggestion {
   type: ResourceType;
@@ -311,14 +314,14 @@ export const GlobalSearch: FC = () => {
     <>
       <Collapse
         in
-        collapsedSize="288px"
+        collapsedSize={collapsedWidth}
         orientation="horizontal"
         sx={{
           zIndex: 2,
           height: "40px",
           position: "relative",
           "& .MuiCollapse-entered": {
-            width: "500px",
+            width: fullWidth,
           },
         }}
       >
@@ -361,11 +364,13 @@ export const GlobalSearch: FC = () => {
                   ...props.style,
                   // default z-index is too high, we want it to be BELOW the side nav close button
                   zIndex: theme.zIndex.appBar - 1,
+                  width: fullWidth,
                 }}
               />
             );
           }}
           id={ElementId}
+          openOnFocus
           freeSolo
           selectOnFocus
           clearOnBlur
@@ -375,7 +380,7 @@ export const GlobalSearch: FC = () => {
           filterOptions={(x) => x}
           sx={{
             height: "40px",
-            width: open ? "500px" : "288px",
+            width: open ? fullWidth : collapsedWidth,
             "& .MuiOutlinedInput-root": {
               py: "2px",
             },
@@ -597,7 +602,7 @@ export const GlobalSearch: FC = () => {
                 sx={{
                   height: "40px",
                   "& .Mui-focused": {
-                    width: "500px",
+                    width: fullWidth,
                   },
                   "&:hover .MuiButtonBase-root.MuiAutocomplete-clearIndicator":
                     {
