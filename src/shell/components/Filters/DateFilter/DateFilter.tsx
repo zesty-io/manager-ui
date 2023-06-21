@@ -78,6 +78,7 @@ interface DateFilterProps {
   defaultButtonText?: string;
   clearable?: boolean;
   hideCustomDates?: boolean;
+  extraPresets?: PresetDate[];
 }
 export const DateFilter: FC<DateFilterProps> = ({
   onChange,
@@ -86,6 +87,7 @@ export const DateFilter: FC<DateFilterProps> = ({
   defaultButtonText = "Last Updated",
   clearable = true,
   hideCustomDates = false,
+  extraPresets = [],
 }) => {
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
@@ -97,7 +99,9 @@ export const DateFilter: FC<DateFilterProps> = ({
   const activeFilterText = useMemo(() => {
     switch (value?.type) {
       case "preset":
-        const match = PRESET_DATES.find((date) => date.value === value?.value);
+        const match = [...PRESET_DATES, ...extraPresets].find(
+          (date) => date.value === value?.value
+        );
         return match?.text;
 
       case "on":
@@ -220,6 +224,32 @@ export const DateFilter: FC<DateFilterProps> = ({
                   </MenuItem>
                 );
               })}
+          {extraPresets.length
+            ? extraPresets.map((date, index) => {
+                const isPresetSelected =
+                  value.type && value.value
+                    ? value.type === "preset" && value.value === date.value
+                    : index === 0;
+
+                return (
+                  <MenuItem
+                    selected={isPresetSelected}
+                    key={date.value}
+                    onClick={() => {
+                      handleFilterSelect({
+                        type: "preset",
+                        value: date.value,
+                      });
+                    }}
+                    sx={{
+                      height: ITEM_HEIGHT,
+                    }}
+                  >
+                    <ListItemText>{date.text}</ListItemText>
+                  </MenuItem>
+                );
+              })
+            : null}
           {withDateRange && (
             <MenuItem
               selected={value?.type === "daterange"}
