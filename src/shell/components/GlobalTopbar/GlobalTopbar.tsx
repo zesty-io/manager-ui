@@ -1,4 +1,4 @@
-import GlobalSearch from "../global-search";
+import { GlobalSearch } from "../GlobalSearch";
 import GlobalTabs from "../global-tabs";
 import { GlobalNotifications } from "../global-notifications";
 
@@ -27,9 +27,7 @@ export function GlobalTopbar() {
             minWidth: 288,
           }}
         >
-          <ThemeProvider theme={legacyTheme}>
-            <GlobalSearch />
-          </ThemeProvider>
+          <GlobalSearch />
         </Box>
         <Box
           sx={{
