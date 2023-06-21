@@ -91,6 +91,11 @@ describe("Global Search: Search Bar", () => {
 
     // Verify that user is navigated to search page with correct search param
     cy.location("pathname").should("equal", "/search");
-    cy.location("search").should("equal", `?q=${encodeURI(SEARCH_TERM)}`);
+    cy.location("search").should(
+      "equal",
+      `?q=${SEARCH_TERM.replaceAll(/\s/g, "+")}`
+    );
   });
+
+  it.skip("shows the search accelerators when search bar is opened", () => {});
 });
