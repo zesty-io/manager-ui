@@ -26,7 +26,7 @@ import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import useRecentSearches from "../../hooks/useRecentSearches";
 import { GlobalSearchItem } from "./components/GlobalSearchItem";
-import { getContentTitle, getItemIcon, splitTextAndAccelerator } from "./utils";
+import { getContentTitle, getItemIcon } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
 import { ResourceType } from "../../services/types";
