@@ -632,6 +632,7 @@ export const GlobalSearch: FC = () => {
                     <InputAdornment position="start" sx={{ marginRight: 0 }}>
                       {Boolean(searchAccelerator) && open ? (
                         <Chip
+                          data-cy={`active-global-search-accelerator-${searchAccelerator}`}
                           variant="filled"
                           label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
                           color="primary"

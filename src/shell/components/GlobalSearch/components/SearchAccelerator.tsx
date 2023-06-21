@@ -60,6 +60,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
         I'm looking for...
       </ListSubheader>
       <ListItem
+        data-cy="global-search-accelerators"
         sx={{
           gap: 1,
           pt: 0.5,
@@ -67,6 +68,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
       >
         {Object.entries(SEARCH_ACCELERATORS)?.map(([key, value]) => (
           <Button
+            data-cy={`global-search-accelerator-${key}`}
             key={key}
             variant="contained"
             size="small"
