@@ -64,7 +64,7 @@ export interface Suggestion {
 }
 
 export const GlobalSearch: FC = () => {
-  const [value, setValue] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [searchAccelerator, setSearchAccelerator] =
     useState<ResourceType | null>(null);
   const [open, setOpen] = useState(false);
@@ -87,14 +87,14 @@ export const GlobalSearch: FC = () => {
     data: contents,
     isError: isContentFetchingFailed,
     isFetching: isFetchingContentSearchResults,
-  } = useSearchContentQuery({ query: value });
+  } = useSearchContentQuery({ query: searchKeyword });
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMediaSearchResults } =
     useSearchBinFilesQuery(
-      { binIds: bins?.map((bin) => bin.id), term: value },
+      { binIds: bins?.map((bin) => bin.id), term: searchKeyword },
       {
-        skip: !bins?.length || !value,
+        skip: !bins?.length || !searchKeyword,
       }
     );
   const { data: allMediaFiles, isFetching: isFetchingAllMediaFiles } =
@@ -150,7 +150,9 @@ export const GlobalSearch: FC = () => {
 
     // Need to show all the media files when the media accelerator is active and there's no user input
     const mediaSource =
-      searchAccelerator === "media" && !value ? allMediaFiles : mediaFiles;
+      searchAccelerator === "media" && !searchKeyword
+        ? allMediaFiles
+        : mediaFiles;
     const mediaFileSuggestions: Suggestion[] =
       mediaSource?.map((file) => {
         return {
@@ -226,17 +228,18 @@ export const GlobalSearch: FC = () => {
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
     const _recentSearches =
-      recentSearches?.length && !value
+      recentSearches?.length && !searchKeyword
         ? ["RecentSearches", ...recentSearches.slice(0, 5)]
         : [];
-    // Shows the suggestions when either a value is entered or a search accelerator is activated
+    // Shows the suggestions when either a search keyword is entered or a search accelerator is activated
     let _suggestions =
-      suggestions?.length && (Boolean(value) || Boolean(searchAccelerator))
+      suggestions?.length &&
+      (Boolean(searchKeyword) || Boolean(searchAccelerator))
         ? suggestions?.slice(0, 5)
         : [];
 
     // These are just dummy data to render 5 skeleton loaders when there are ongoing api calls
-    if (isLoading && Boolean(value)) {
+    if (isLoading && Boolean(searchKeyword)) {
       _suggestions = [...new Array(5)].map((index) => {
         return {
           type: "media",
@@ -252,20 +255,20 @@ export const GlobalSearch: FC = () => {
      * options will be rendered in the autocomplate dropdown
      */
     return [
-      value,
+      searchKeyword,
       "SearchAccelerator",
       "RecentModifiedItemsHeader",
       ..._suggestions,
       ..._recentSearches,
       "AdvancedSearchButton",
     ];
-  }, [suggestions, recentSearches, value]);
+  }, [suggestions, recentSearches, searchKeyword]);
 
   useEffect(() => {
-    setModelKeyword(value);
-    setFileKeyword(value);
-    setMediaFolderKeyword(value);
-  }, [value]);
+    setModelKeyword(searchKeyword);
+    setFileKeyword(searchKeyword);
+    setMediaFolderKeyword(searchKeyword);
+  }, [searchKeyword]);
 
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
@@ -291,9 +294,9 @@ export const GlobalSearch: FC = () => {
     setOpen(false);
     textfieldRef.current?.querySelector("input").blur();
 
-    if (queryTerm !== value) {
-      // Makes sure that the textfield value gets updated if the user has clicked on a recent search item
-      setValue(queryTerm);
+    if (queryTerm !== searchKeyword) {
+      // Makes sure that the textfield search keyword gets updated if the user has clicked on a recent search item
+      setSearchKeyword(queryTerm);
     }
 
     if (resourceType !== searchAccelerator) {
@@ -326,7 +329,7 @@ export const GlobalSearch: FC = () => {
         }}
       >
         <Autocomplete
-          value={value}
+          value={searchKeyword}
           open={open}
           onOpen={() => {
             setOpen(true);
@@ -389,18 +392,18 @@ export const GlobalSearch: FC = () => {
               gap: "10px",
             },
             "&.Mui-focused .MuiAutocomplete-clearIndicator": {
-              visibility: value ? "visible" : "hidden",
+              visibility: searchKeyword ? "visible" : "hidden",
             },
           }}
           onInputChange={(event, newVal) => {
-            setValue(newVal);
+            setSearchKeyword(newVal);
           }}
           onChange={(event, newVal) => {
             /** This is when the user selects any of the suggestions */
 
             // null represents "X" button clicked
             if (!newVal) {
-              setValue("");
+              setSearchKeyword("");
               return;
             }
 
@@ -422,8 +425,8 @@ export const GlobalSearch: FC = () => {
             }
           }}
           getOptionLabel={(option: Suggestion) => {
-            // do not change the input value when a suggestion is selected
-            return value;
+            // do not change the input search keyword when a suggestion is selected
+            return searchKeyword;
           }}
           renderOption={(props, option) => {
             // TODO: Maybe extract into some kind of template object for readability
@@ -434,7 +437,7 @@ export const GlobalSearch: FC = () => {
                 const isSearchTerm = props.id === `${ElementId}-option-0`;
 
                 if (isSearchTerm) {
-                  if (!Boolean(value)) {
+                  if (!Boolean(searchKeyword)) {
                     return;
                   }
 
@@ -521,7 +524,7 @@ export const GlobalSearch: FC = () => {
               if (
                 option === "SearchAccelerator" &&
                 !Boolean(searchAccelerator) &&
-                !Boolean(value)
+                !Boolean(searchKeyword)
               ) {
                 return (
                   <SearchAccelerator
@@ -536,7 +539,7 @@ export const GlobalSearch: FC = () => {
               if (
                 option === "RecentModifiedItemsHeader" &&
                 Boolean(searchAccelerator) &&
-                !Boolean(value)
+                !Boolean(searchKeyword)
               ) {
                 const types: Record<ResourceType, string> = {
                   code: "Code Files",
@@ -607,10 +610,10 @@ export const GlobalSearch: FC = () => {
                   },
                   "&:hover .MuiButtonBase-root.MuiAutocomplete-clearIndicator":
                     {
-                      visibility: value ? "visible" : "hidden",
+                      visibility: searchKeyword ? "visible" : "hidden",
                     },
                   "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
-                    visibility: value ? "visible" : "hidden",
+                    visibility: searchKeyword ? "visible" : "hidden",
                   },
                   ".MuiAutocomplete-endAdornment": {
                     position: "initial",
@@ -621,8 +624,8 @@ export const GlobalSearch: FC = () => {
                     },
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && Boolean(value)) {
-                    goToSearchPage(value, searchAccelerator);
+                  if (e.key === "Enter" && Boolean(searchKeyword)) {
+                    goToSearchPage(searchKeyword, searchAccelerator);
                   }
                 }}
                 inputProps={{
@@ -690,7 +693,7 @@ export const GlobalSearch: FC = () => {
           }}
           ListboxProps={{
             style: {
-              paddingTop: value ? "8px" : "0px",
+              paddingTop: searchKeyword ? "8px" : "0px",
             },
           }}
         />
@@ -698,7 +701,7 @@ export const GlobalSearch: FC = () => {
 
       {isAdvancedSearchOpen && (
         <AdvancedSearch
-          keyword={value}
+          keyword={searchKeyword}
           onClose={() => setIsAdvancedSearchOpen(false)}
           onSearch={(searchData) => addSearchTerm(searchData.keyword)}
           searchAccelerator={searchAccelerator}
