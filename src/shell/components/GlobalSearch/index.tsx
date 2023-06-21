@@ -233,7 +233,7 @@ export const GlobalSearch: FC = () => {
         : [];
 
     // These are just dummy data to render 5 skeleton loaders when there are ongoing api calls
-    if (isLoading) {
+    if (isLoading && Boolean(value)) {
       _suggestions = [...new Array(5)].map((index) => {
         return {
           type: "media",
