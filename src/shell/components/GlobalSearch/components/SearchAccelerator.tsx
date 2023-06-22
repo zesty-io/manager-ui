@@ -55,6 +55,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
           lineHeight: "18px",
           letterSpacing: "0.15px",
           pt: isValidApp ? 0 : 1,
+          px: 1.5,
         }}
       >
         Search in ...
@@ -64,6 +65,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
         sx={{
           gap: 1,
           pt: 0.5,
+          px: 1.5,
         }}
       >
         {Object.entries(SEARCH_ACCELERATORS)?.map(([key, value]) => (
