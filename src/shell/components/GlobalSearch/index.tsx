@@ -602,7 +602,11 @@ export const GlobalSearch: FC = () => {
                 fullWidth
                 data-cy="global-search-textfield"
                 variant="outlined"
-                placeholder={`Search Instance ${shortcutHelpText}`}
+                placeholder={
+                  Boolean(searchAccelerator)
+                    ? ""
+                    : `Search Instance ${shortcutHelpText}`
+                }
                 sx={{
                   height: "40px",
                   "& .Mui-focused": {
