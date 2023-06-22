@@ -57,7 +57,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
           pt: isValidApp ? 0 : 1,
         }}
       >
-        I'm looking for...
+        Search in ...
       </ListSubheader>
       <ListItem
         data-cy="global-search-accelerators"
