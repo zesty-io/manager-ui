@@ -313,7 +313,7 @@ export const ByDayLineChart = ({
           </Box>
         </Box>
       ) : (
-        <Box position="relative" height="100%">
+        <Box position="relative" height="387px">
           <Line
             ref={chartRef}
             data={{
@@ -381,9 +381,9 @@ export const ByDayLineChart = ({
               layout: {
                 padding: {
                   top: 16,
-                  bottom: 20,
                 },
               },
+              responsive: true,
               maintainAspectRatio: false,
               onHover: handleHover,
               plugins: {
@@ -482,7 +482,7 @@ export const ByDayLineChart = ({
           />
           <Paper
             sx={{
-              visibility: tooltipModel ? "visible" : "hidden",
+              display: tooltipModel ? "block" : "none",
               position: "absolute",
               top: tooltipModel?.y,
               left: tooltipModel?.x,
