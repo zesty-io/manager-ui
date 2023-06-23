@@ -133,7 +133,7 @@ export const ByDayLineChart = ({
       return [result.pop()];
     }
     return [...zeroPadding, ...result].slice(endDate.diff(startDate, "days"));
-  }, [data, type, compareData]);
+  }, [data, type]);
 
   const priorData = useMemo(() => {
     const result = shouldCompare
