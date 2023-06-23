@@ -18,6 +18,7 @@ interface SearchAcceleratorProps {
 }
 export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
   onAcceleratorClick,
+  ...props
 }) => {
   const { mainApp } = useGetActiveApp();
   const isValidApp = Boolean(SEARCH_ACCELERATORS[mainApp as ResourceType]);
@@ -26,10 +27,15 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
     <>
       {isValidApp && (
         <ListItem
+          {...props}
+          key="SearchAcceleratorSuggestion"
           sx={{
             height: "36px",
-            "&:hover": {
-              cursor: "pointer",
+            "&.Mui-focused": {
+              borderLeft: "4px solid",
+              borderColor: "primary.main",
+              backgroundColor: "action.hover",
+              pl: 1.5,
             },
           }}
           onClick={() => onAcceleratorClick(mainApp as ResourceType)}

@@ -409,10 +409,13 @@ export const GlobalSearch: FC = () => {
 
             // string represents search term entered
             if (typeof newVal === "string") {
+              if (AdditionalDropdownOptions.includes(newVal)) {
+                return;
+              }
+
               goToSearchPage(newVal);
             } else {
               if (newVal?.url) {
-                console.log("suggestion clicked");
                 history.push(newVal.url);
               } else {
                 dispatch(
@@ -528,6 +531,7 @@ export const GlobalSearch: FC = () => {
               ) {
                 return (
                   <SearchAccelerator
+                    {...props}
                     key="SearchAccelerator"
                     onAcceleratorClick={(type) => setSearchAccelerator(type)}
                   />
