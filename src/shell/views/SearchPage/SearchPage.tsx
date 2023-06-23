@@ -271,7 +271,7 @@ export const SearchPage: FC = () => {
   }, [results, params]);
 
   const renderBody = () => {
-    if (!isLoading && !filteredResults?.length) {
+    if ((!isLoading && !filteredResults?.length) || !query) {
       return <NoSearchResults query={query} />;
     }
 
@@ -322,7 +322,7 @@ export const SearchPage: FC = () => {
             {isLoading ? (
               <Skeleton variant="text" width={200} />
             ) : (
-              `${filteredResults?.length} results for "${query}"`
+              `${query ? filteredResults?.length : "0"} results for "${query}"`
             )}
           </Typography>
           <BackButton />
