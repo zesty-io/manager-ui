@@ -44,7 +44,7 @@ export interface SearchPageItem {
 }
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
-  const query = params.get("q") || "";
+  const keyword = params.get("q") || "";
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const {
@@ -52,8 +52,8 @@ export const SearchPage: FC = () => {
     isFetching: isFetchingContent,
     isError: isContentFetchingFailed,
   } = useSearchContentQuery(
-    { query, order: "created", dir: "desc" },
-    { skip: !query }
+    { query: keyword, order: "created", dir: "desc" },
+    { skip: !keyword }
   );
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
@@ -62,19 +62,19 @@ export const SearchPage: FC = () => {
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMedia } =
     useSearchBinFilesQuery(
-      { binIds: bins?.map((bin) => bin.id), term: query },
+      { binIds: bins?.map((bin) => bin.id), term: keyword },
       {
-        skip: !bins?.length || !query,
+        skip: !bins?.length || !keyword,
       }
     );
 
   const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
-    setModelKeyword(query);
-    setCodeFileKeyword(query);
-    setMediaFolderKeyword(query);
-  }, [query]);
+    setModelKeyword(keyword);
+    setCodeFileKeyword(keyword);
+    setMediaFolderKeyword(keyword);
+  }, [keyword]);
 
   // Combine results from contents, models, code files, media files and media folders
   const results: SearchPageItem[] = useMemo(() => {
@@ -271,8 +271,8 @@ export const SearchPage: FC = () => {
   }, [results, params]);
 
   const renderBody = () => {
-    if ((!isLoading && !filteredResults?.length) || !query) {
-      return <NoSearchResults query={query} />;
+    if ((!isLoading && !filteredResults?.length) || !keyword) {
+      return <NoSearchResults query={keyword} />;
     }
 
     return (
@@ -322,7 +322,9 @@ export const SearchPage: FC = () => {
             {isLoading ? (
               <Skeleton variant="text" width={200} />
             ) : (
-              `${query ? filteredResults?.length : "0"} results for "${query}"`
+              `${
+                keyword ? filteredResults?.length : "0"
+              } results for "${keyword}"`
             )}
           </Typography>
           <BackButton />
