@@ -635,6 +635,15 @@ export const GlobalSearch: FC = () => {
                   if (e.key === "Enter" && Boolean(searchKeyword)) {
                     goToSearchPage(searchKeyword, searchAccelerator);
                   }
+
+                  // Remove the selected search accelerator when the user presses backspace and there's no search keyword
+                  if (
+                    e.key === "Backspace" &&
+                    !Boolean(searchKeyword) &&
+                    Boolean(searchAccelerator)
+                  ) {
+                    setSearchAccelerator(null);
+                  }
                 }}
                 inputProps={{
                   ...params.inputProps,
