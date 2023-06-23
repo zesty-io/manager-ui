@@ -133,7 +133,7 @@ export const ByDayLineChart = ({
       return [result.pop()];
     }
     return [...zeroPadding, ...result].slice(endDate.diff(startDate, "days"));
-  }, [data, type]);
+  }, [data, type, compareData]);
 
   const priorData = useMemo(() => {
     const result = shouldCompare
@@ -150,7 +150,7 @@ export const ByDayLineChart = ({
           0,
           endDate.diff(startDate, "days") + 1
         );
-  }, [data, type, shouldCompare]);
+  }, [data, type, shouldCompare, compareData]);
 
   const spansMoreThanOneYear = useMemo(() => {
     let firstDate = moment(dateChartLabels[0]);
