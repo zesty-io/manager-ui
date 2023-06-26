@@ -211,7 +211,7 @@ export const UsersBarChart = ({
       ) : (
         <Box
           position="relative"
-          height="100%"
+          height="387px"
           onMouseLeave={() => setTooltipModel(null)}
         >
           <Bar
@@ -269,6 +269,7 @@ export const UsersBarChart = ({
                   right: 20,
                 },
               },
+              responsive: true,
               maintainAspectRatio: false,
               onHover: handleHover,
               plugins: {
@@ -335,7 +336,7 @@ export const UsersBarChart = ({
           />
           <Paper
             sx={{
-              visibility: tooltipModel ? "visible" : "hidden",
+              display: tooltipModel ? "block" : "none",
               position: "absolute",
               top: tooltipModel?.y,
               left: tooltipModel?.x,
