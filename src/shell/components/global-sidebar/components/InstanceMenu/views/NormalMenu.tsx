@@ -129,7 +129,7 @@ export const NormalMenu: FC<NormalMenuProps> = ({
             target="_blank"
             rel="noopener"
           >
-            {domain.replace(/http:\/\/|https:\/\//gm, "")}
+            {domain?.replace(/http:\/\/|https:\/\//gm, "")}
           </Link>
         </Stack>
       </Stack>
