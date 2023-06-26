@@ -28,21 +28,21 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import PersonRemoveRoundedIcon from "@mui/icons-material/PersonRemoveRounded";
-import googleIcon from "../../../../../../../../../public/images/googleIcon.svg";
+import googleIcon from "../../../../../../public/images/googleIcon.svg";
 import {
   useDisconnectGoogleAnalyticsMutation,
   useGetAnalyticsPropertiesQuery,
-} from "../../../../../../../../shell/services/cloudFunctions";
+} from "../../../../../shell/services/cloudFunctions";
 import {
   useCreateInstanceSettingsMutation,
   useGetInstanceSettingsQuery,
   useUpdateInstanceSettingMutation,
-} from "../../../../../../../../shell/services/instance";
-import { NoSearchResults } from "../../../../../../../../shell/components/NoSearchResults";
-import googleAnalyticsIcon from "../../../../../../../../../public/images/googleAnalyticsIcon.svg";
+} from "../../../../../shell/services/instance";
+import { NoSearchResults } from "../../../../../shell/components/NoSearchResults";
+import googleAnalyticsIcon from "../../../../../../public/images/googleAnalyticsIcon.svg";
 import { useSelector } from "react-redux";
-import { AppState } from "../../../../../../../../shell/store/types";
-import { AnalyticsDialog } from "./AnalyticsDialog";
+import { AppState } from "../../../../../shell/store/types";
+import { AnalyticsDialog } from "../views/ItemEdit/Analytics/components/AnalyticsDialog";
 import { LoadingButton } from "@mui/lab";
 import { set } from "js-cookie";
 

@@ -11,12 +11,32 @@ import moment from "moment-timezone";
 import { useHistory } from "react-router";
 import { useState } from "react";
 import { CreateContentItemDialog } from "../../../../../../shell/components/CreateContentItemDialog";
+import { AnalyticsDateFilter } from "../../components/AnalyticsDateFilter";
+import { useSelector } from "react-redux";
+import { AppState } from "../../../../../../shell/store/types";
+import { AnalyticsPropertySelector } from "../../components/AnalyticsPropertySelector";
 
 const AnalyticsDashboard = () => {
+  const instance = useSelector((state: AppState) => state.instance);
+
+  console.log("test instance", instance);
   return (
     <ThemeProvider theme={theme}>
-      <Box color={theme.palette.text.primary} boxSizing="border-box">
+      <Box
+        color={theme.palette.text.primary}
+        bgcolor={theme.palette.grey[50]}
+        boxSizing="border-box"
+      >
         <AnalyticsDashboardHeader />
+        <Box px={2}>
+          <Box display="flex" py={2} justifyContent="space-between">
+            <AnalyticsDateFilter showSkeleton={true} />
+            <Typography variant="h6" fontWeight="600" maxWidth={304} noWrap>
+              {instance.name}
+            </Typography>
+            <AnalyticsPropertySelector />
+          </Box>
+        </Box>
       </Box>
     </ThemeProvider>
   );
@@ -56,6 +76,7 @@ const AnalyticsDashboardHeader = () => {
         justifyContent="space-between"
         p={2}
         borderBottom={`1px inset ${theme.palette.border}`}
+        bgcolor={theme.palette.background.paper}
       >
         <Typography variant="h5" fontWeight="600">
           Dashboard

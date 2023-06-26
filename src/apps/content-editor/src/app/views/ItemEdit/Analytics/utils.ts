@@ -1,4 +1,4 @@
-import { Moment } from "moment-timezone";
+import moment, { Moment } from "moment-timezone";
 
 export function calculatePercentageDifference(
   originalValue: number,
@@ -316,4 +316,85 @@ export const generateReportRequests = (
       },
     ],
   };
+};
+
+export const getDateRangeAndLabelsFromParams = (
+  params: URLSearchParams
+): [Moment, Moment, string, string] => {
+  const preset = params.get("datePreset");
+  const from = params.get("from");
+  const to = params.get("to");
+  if (from && to) {
+    return [
+      moment(from, "YYYY-MM-DD"),
+      moment(to, "YYYY-MM-DD"),
+      moment(from).format("ddd D MMM"),
+      moment(to).format("ddd D MMM"),
+    ];
+  } else {
+    switch (preset) {
+      case "today":
+        return [moment(), moment(), "Today", "Yesterday"];
+      case "yesterday":
+        return [
+          moment().subtract(1, "days"),
+          moment().subtract(1, "days"),
+          "Yesterday",
+          "Day Before Yesterday",
+        ];
+      case "last_7_days":
+        return [
+          moment().subtract(7, "days"),
+          moment().subtract(1, "days"),
+          "Last 7 Days",
+          "Prior 7 Days",
+        ];
+      case "last_14_days":
+        return [
+          moment().subtract(14, "days"),
+          moment().subtract(1, "days"),
+          "Last 14 Days",
+          "Prior 14 Days",
+        ];
+      case "last_30_days":
+        return [
+          moment().subtract(30, "days"),
+          moment().subtract(1, "days"),
+          "Last 30 Days",
+          "Prior 30 Days",
+        ];
+      case "last_3_months":
+        return [
+          moment().subtract(90, "days"),
+          moment().subtract(1, "days"),
+          "Last 3 Months",
+          "Prior 3 Months",
+        ];
+      case "last_12_months":
+        return [
+          moment().subtract(365, "days"),
+          moment().subtract(1, "days"),
+          "Last 12 Months",
+          "Prior 12 Months",
+        ];
+      case "this_week":
+        return [moment().startOf("week"), moment(), "This Week", "Last Week"];
+      case "this_year":
+        return [moment().startOf("year"), moment(), "This Year", "Last Year"];
+      case "quarter_to_date":
+        return [
+          moment().startOf("quarter"),
+          moment(),
+          "This Quarter",
+          "Last Quarter",
+        ];
+      default:
+        return [
+          moment().subtract(14, "days"),
+          moment().subtract(1, "days"),
+          "Last 14 Days",
+          "Prior 14 Days",
+        ];
+    }
+  }
 };
