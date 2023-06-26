@@ -1,13 +1,17 @@
 "use strict";
 
 import { useStore } from "react-redux";
+import moment from "moment-timezone";
 
-export function useDomain() {
+import { Domain } from "../services/types";
+
+type UseDomain = () => string;
+export const useDomain: UseDomain = () => {
   const store = useStore();
   const state = store.getState();
 
   // Let WebEngine figure out https & www settings
-  const format = (domain) => `http://${domain}`;
+  const format = (domain: string) => `http://${domain}`;
 
   if (Array.isArray(state.instance.domains) && state.instance.domains.length) {
     /**
@@ -17,11 +21,13 @@ export function useDomain() {
      */
 
     const prodDomains = state.instance.domains
-      .filter((domain) => domain.branch !== "dev")
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      .filter((domain: Domain) => domain.branch !== "dev")
+      .sort((a: Domain, b: Domain) =>
+        moment(b.updatedAt).diff(moment(a.updatedAt))
+      );
 
     const customDomain = prodDomains.find(
-      (domain) => !domain.domain.includes(".zesty.dev")
+      (domain: Domain) => !domain.domain.includes(".zesty.dev")
     );
 
     if (customDomain) {
@@ -33,12 +39,12 @@ export function useDomain() {
         return format(prodDomains[0].domain);
       } else {
         // No domain has been pointed at 'live' branch
-        return null;
+        return "";
       }
     }
   } else {
     // No domains are configured.
     // Most likely an older instance before .zesty.dev domains were auto created
-    return null;
+    return "";
   }
-}
+};
