@@ -34,7 +34,7 @@ import {
   findValuesForDimensions,
   generateReportRequests,
   getDateRangeAndLabelsFromParams,
-} from "../utils";
+} from "../../../AnalyticsDashboard/utils";
 import { Metric } from "../components/Metric";
 import { useGetAnalyticsPropertiesQuery } from "../../../../../../../../shell/services/cloudFunctions";
 import { PropertiesDialog } from "../../../../components/PropertiesDialog";
@@ -242,18 +242,22 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
             title="Sessions"
             value={
               +(
-                findValuesForDimensions(metricsReport?.rows, [
-                  "date_range_0",
-                ])[0] || 0
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_0"],
+                  0
+                ) || 0
               )
             }
             priorValue={
               compareItemZUID
                 ? +comparedMetricsReport?.rows[0]?.metricValues?.[0]?.value || 0
                 : +(
-                    findValuesForDimensions(metricsReport?.rows, [
-                      "date_range_1",
-                    ])[0] || 0
+                    findValuesForDimensions(
+                      metricsReport?.rows,
+                      ["date_range_1"],
+                      0
+                    ) || 0
                   )
             }
             description="A session in Google Analytics is a period of time in which a user interacts with your website."
@@ -265,18 +269,22 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
             formatter={convertSecondsToMinutesAndSeconds}
             value={
               +(
-                findValuesForDimensions(metricsReport?.rows, [
-                  "date_range_0",
-                ])[1] || 0
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_0"],
+                  1
+                ) || 0
               )
             }
             priorValue={
               compareItemZUID
                 ? +comparedMetricsReport?.rows[0]?.metricValues?.[1]?.value || 0
                 : +(
-                    findValuesForDimensions(metricsReport?.rows, [
-                      "date_range_1",
-                    ])[1] || 0
+                    findValuesForDimensions(
+                      metricsReport?.rows,
+                      ["date_range_1"],
+                      1
+                    ) || 0
                   )
             }
             description="Session duration is the time frame during which there are users interactions occurring on the website."
@@ -289,18 +297,22 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
             formatter={(value: number) => `${Math.floor(value * 100)}%`}
             value={
               +(
-                findValuesForDimensions(metricsReport?.rows, [
-                  "date_range_0",
-                ])[2] || 0
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_0"],
+                  2
+                ) || 0
               )
             }
             priorValue={
               compareItemZUID
                 ? +comparedMetricsReport?.rows[0]?.metricValues?.[2]?.value || 0
                 : +(
-                    findValuesForDimensions(metricsReport?.rows, [
-                      "date_range_1",
-                    ])[2] || 0
+                    findValuesForDimensions(
+                      metricsReport?.rows,
+                      ["date_range_1"],
+                      2
+                    ) || 0
                   )
             }
             description="Bounce rate is the percentage of people who land on a page and leave without performing a specific action."
@@ -311,18 +323,22 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
             title="Conversions"
             value={
               +(
-                findValuesForDimensions(metricsReport?.rows, [
-                  "date_range_0",
-                ])[3] || 0
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_0"],
+                  3
+                ) || 0
               )
             }
             priorValue={
               compareItemZUID
                 ? +comparedMetricsReport?.rows[0]?.metricValues?.[3]?.value || 0
                 : +(
-                    findValuesForDimensions(metricsReport?.rows, [
-                      "date_range_1",
-                    ])[3] || 0
+                    findValuesForDimensions(
+                      metricsReport?.rows,
+                      ["date_range_1"],
+                      3
+                    ) || 0
                   )
             }
             description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."

@@ -6,6 +6,7 @@ import {
   useGetAllPublishingsQuery,
   useGetAuditsQuery,
   useGetContentModelQuery,
+  useGetInstanceSettingsQuery,
 } from "../../../../../../shell/services/instance";
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
@@ -15,11 +16,159 @@ import { AnalyticsDateFilter } from "../../components/AnalyticsDateFilter";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { AnalyticsPropertySelector } from "../../components/AnalyticsPropertySelector";
+import { Metric } from "../ItemEdit/Analytics/components/Metric";
+import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../shell/services/cloudFunctions";
+import {
+  findValuesForDimensions,
+  getDateRangeAndLabelsFromParams,
+} from "./utils";
+import { ByDayLineChart } from "./ByDayLineChart";
+import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
 
 const AnalyticsDashboard = () => {
+  const [params, setParams] = useQueryParams();
   const instance = useSelector((state: AppState) => state.instance);
+  const { data: instanceSettings, isFetching: instanceSettingsFetching } =
+    useGetInstanceSettingsQuery();
+  const propertyId = instanceSettings?.find(
+    (setting) => setting.key === "google_property_id"
+  )?.value;
 
-  console.log("test instance", instance);
+  const [startDate, endDate, dateRange0Label, dateRange1Label] =
+    getDateRangeAndLabelsFromParams(params);
+
+  const {
+    data: ga4Data,
+    isFetching,
+    isError,
+    refetch,
+  } = useGetAnalyticsPropertyDataByQueryQuery(
+    {
+      property: propertyId,
+      requests: [
+        {
+          // query for overall session, duration, bounce and conversion
+          metrics: [
+            {
+              name: "sessions",
+            },
+            {
+              name: "averageSessionDuration",
+            },
+            {
+              name: "bounceRate",
+            },
+            {
+              name: "conversions",
+            },
+          ],
+          dateRanges: [
+            {
+              startDate: "2023-05-15",
+              endDate: "2023-05-30",
+            },
+            {
+              startDate: "2023-05-01",
+              endDate: "2023-05-15",
+            },
+          ],
+        },
+        {
+          // query for daily and total sessions
+          dimensions: [
+            {
+              name: "date",
+            },
+          ],
+          metrics: [
+            {
+              name: "sessions",
+            },
+          ],
+          dateRanges: [
+            {
+              startDate: startDate?.format("YYYY-MM-DD"),
+              endDate: endDate?.format("YYYY-MM-DD"),
+            },
+            {
+              startDate: startDate
+                ?.clone()
+                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
+                ?.format("YYYY-MM-DD"),
+              endDate: startDate?.format("YYYY-MM-DD"),
+            },
+          ],
+          orderBys: [
+            {
+              dimension: {
+                dimensionName: "date",
+              },
+            },
+          ],
+        },
+        {
+          // query user traffic default channel
+
+          dimensions: [
+            {
+              name: "firstUserDefaultChannelGroup",
+            },
+          ],
+          metrics: [
+            {
+              name: "sessions",
+            },
+          ],
+          dateRanges: [
+            {
+              startDate: "2023-05-15",
+              endDate: "2023-05-30",
+            },
+            {
+              startDate: "2023-05-01",
+              endDate: "2023-05-15",
+            },
+          ],
+          metricAggregations: ["TOTAL"],
+        },
+        {
+          // query for new vs returning
+          dimensions: [
+            {
+              name: "newVsReturning",
+            },
+          ],
+          metrics: [
+            {
+              name: "totalUsers",
+            },
+          ],
+          dateRanges: [
+            {
+              startDate: "2023-05-15",
+              endDate: "2023-05-30",
+            },
+            {
+              startDate: "2023-05-01",
+              endDate: "2023-05-15",
+            },
+          ],
+          metricAggregations: ["TOTAL"],
+        },
+      ],
+    },
+    { skip: !propertyId }
+  );
+
+  const [
+    metricsReport,
+    dailySessionsReport,
+    userTrafficReport,
+    newVsReturningReport,
+  ] = ga4Data?.reports || [];
+
+  console.log("testing", metricsReport, dailySessionsReport);
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -30,11 +179,50 @@ const AnalyticsDashboard = () => {
         <AnalyticsDashboardHeader />
         <Box px={2}>
           <Box display="flex" py={2} justifyContent="space-between">
-            <AnalyticsDateFilter showSkeleton={true} />
+            <AnalyticsDateFilter showSkeleton={false} />
             <Typography variant="h6" fontWeight="600" maxWidth={304} noWrap>
               {instance.name}
             </Typography>
             <AnalyticsPropertySelector />
+          </Box>
+          <Box
+            borderRadius={"8px"}
+            gap={2}
+            p={2}
+            border={(theme) => `1px solid ${theme.palette.border}`}
+            bgcolor="background.paper"
+            display="flex"
+          >
+            <Metric
+              title="Total Sessions"
+              value={
+                +(
+                  findValuesForDimensions(
+                    metricsReport?.rows,
+                    ["date_range_0"],
+                    0
+                  ) || 0
+                )
+              }
+              priorValue={
+                +(
+                  findValuesForDimensions(
+                    metricsReport?.rows,
+                    ["date_range_1"],
+                    0
+                  ) || 0
+                )
+              }
+              description="A session in Google Analytics is a period of time in which a user interacts with your website."
+            />
+            <ByDayLineChart
+              startDate={startDate}
+              endDate={endDate}
+              dateRange0Label={dateRange0Label}
+              dateRange1Label={dateRange1Label}
+              data={dailySessionsReport}
+              loading={isFetching}
+            />
           </Box>
         </Box>
       </Box>

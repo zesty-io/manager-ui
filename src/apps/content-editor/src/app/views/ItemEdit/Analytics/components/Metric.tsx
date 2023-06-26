@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { Box, Paper, Typography, Tooltip, Skeleton } from "@mui/material";
 import { numberFormatter } from "../../../../../../../../utility/numberFormatter";
-import { calculatePercentageDifference } from "../utils";
+import { calculatePercentageDifference } from "../../../AnalyticsDashboard/utils";
 type Props = {
   title: string;
   value: number;

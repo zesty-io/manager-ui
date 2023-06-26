@@ -20,7 +20,7 @@ import {
   calculatePercentageDifference,
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
-} from "../utils";
+} from "../../../AnalyticsDashboard/utils";
 
 type Params = {
   modelZUID: string;

@@ -16,7 +16,7 @@ import {
   calculatePercentageDifference,
   findTopDimensionsForDateRange,
   findValuesForDimensions,
-} from "../utils";
+} from "../../../AnalyticsDashboard/utils";
 
 type Props = {
   usersBySourceReport: any;
