@@ -270,29 +270,6 @@ export const SearchPage: FC = () => {
     return _results;
   }, [results, params]);
 
-  const renderBody = () => {
-    if ((!isLoading && !filteredResults?.length) || !keyword) {
-      return <NoSearchResults query={keyword} />;
-    }
-
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          px: 3,
-          py: 0,
-          gap: 2,
-          backgroundColor: "grey.50",
-          height: "100%",
-        }}
-      >
-        <SearchPageList results={filteredResults} loading={isLoading} />
-      </Box>
-    );
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <Stack
@@ -338,7 +315,24 @@ export const SearchPage: FC = () => {
         >
           <Filters />
         </Box>
-        {renderBody()}
+        {!isLoading && !filteredResults?.length ? (
+          <NoSearchResults query={keyword} />
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              px: 3,
+              py: 0,
+              gap: 2,
+              backgroundColor: "grey.50",
+              height: "100%",
+            }}
+          >
+            <SearchPageList results={filteredResults} loading={isLoading} />
+          </Box>
+        )}
       </Stack>
     </ThemeProvider>
   );

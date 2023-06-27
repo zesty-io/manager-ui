@@ -28,14 +28,15 @@ const Analytics = ({ item }: any) => {
         <Box
           px={3}
           py={2}
-          height="100%"
           sx={{
             boxSizing: "border-box",
             color: (theme) => theme.palette.text.primary,
           }}
+          height="calc(100% - 65px)"
+          overflow="auto"
         >
           {isSuccess ? (
-            <SinglePageAnalyticsView itemPath={item.web.path} />
+            <SinglePageAnalyticsView item={item} />
           ) : (
             <AuthView validateAuth={validateAuth} />
           )}

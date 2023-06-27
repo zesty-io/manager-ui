@@ -558,11 +558,23 @@ export const FieldForm = ({
         sx={{
           p: 2.5,
           position: "relative",
-          minHeight: "486px",
         }}
       >
         {activeTab === "details" && (
-          <Grid data-cy="DetailsTab" container spacing={2.5} maxWidth="480px">
+          <Grid
+            data-cy="DetailsTab"
+            container
+            spacing={2.5}
+            maxWidth="480px"
+            minHeight={448}
+            mt={-2.5} //Offset grid item default top padding
+            ml={0}
+            sx={{
+              "&.MuiGrid-container .MuiGrid-item": {
+                pl: 0,
+              },
+            }}
+          >
             {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
               // Only show tooltip field when updating a field that already has a tooltip value
               const hideTooltipField =

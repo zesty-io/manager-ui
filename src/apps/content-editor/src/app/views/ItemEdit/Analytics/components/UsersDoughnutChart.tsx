@@ -2,7 +2,7 @@ import { theme } from "@zesty-io/material";
 import { useRef, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { ChartEvent } from "chart.js";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography, Skeleton } from "@mui/material";
 import { isEqual } from "lodash";
 import { numberFormatter } from "../../../../../../../../utility/numberFormatter";
 import { findValuesForDimensions } from "../utils";
@@ -11,6 +11,9 @@ export const UsersDoughnutChart = ({
   data,
   dateRange1Label,
   dateRange0Label,
+  shouldCompare,
+  compareData,
+  loading,
 }: any) => {
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
@@ -50,13 +53,17 @@ export const UsersDoughnutChart = ({
       0,
   ];
   const totalUsers = [
-    +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] ||
-      0 +
-        +findValuesForDimensions(data?.rows, [
-          "date_range_1",
-          "returning",
-        ])?.[0] ||
-      0,
+    shouldCompare
+      ? +findValuesForDimensions(compareData?.rows, ["new"])?.[0] ||
+        0 + +findValuesForDimensions(compareData?.rows, ["returning"])?.[0] ||
+        0
+      : +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] ||
+        0 +
+          +findValuesForDimensions(data?.rows, [
+            "date_range_1",
+            "returning",
+          ])?.[0] ||
+        0,
     +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] ||
       0 +
         +findValuesForDimensions(data?.rows, [
@@ -95,84 +102,111 @@ export const UsersDoughnutChart = ({
       height="100%"
       onMouseLeave={() => setTooltipModel(null)}
     >
-      <Doughnut
-        ref={chartRef}
-        data={{
-          labels: ["New", "Returning"],
-          datasets: [
-            {
-              label: "New vs Returning Users",
-              data: newVsReturningUsers,
-              backgroundColor: [
-                theme.palette.info.light,
-                theme.palette.info.main,
-              ],
-              borderWidth: 0,
-            },
-            {
-              label: "Total Users",
-              data: totalUsers,
-              backgroundColor: [
-                theme.palette.grey[200],
-                theme.palette.grey[500],
-              ],
-              borderWidth: 0,
-            },
-          ],
-        }}
-        options={{
-          maintainAspectRatio: false,
-          onHover: handleHover,
-          plugins: {
-            tooltip: {
-              enabled: false,
-            },
-            legend: {
-              display: true,
-              position: "right",
-              labels: {
-                usePointStyle: true,
-                pointStyle: "circle",
-                boxWidth: 8,
-                font: {
-                  family: "Mulish",
-                  size: 12,
+      {loading ? (
+        <Box
+          display="flex"
+          gap={1}
+          height="100%"
+          alignItems="center"
+          width="184px"
+        >
+          <Skeleton variant="circular" height="100px" width="100px" />
+          <Box display="flex" flexDirection="column" gap={1}>
+            <Box display="flex" gap={0.5} alignItems="center">
+              <Skeleton variant="circular" width={12} height={12} />
+              <Skeleton variant="rectangular" height={18} width={56} />
+            </Box>
+            <Box display="flex" gap={0.5} alignItems="center">
+              <Skeleton
+                variant="circular"
+                width={12}
+                height={12}
+                sx={{ bgcolor: "grey.200" }}
+              />
+              <Skeleton variant="rectangular" height={18} width={56} />
+            </Box>
+          </Box>
+        </Box>
+      ) : (
+        <Doughnut
+          ref={chartRef}
+          data={{
+            labels: ["New", "Returning"],
+            datasets: [
+              {
+                label: "New vs Returning Users",
+                data: newVsReturningUsers,
+                backgroundColor: [
+                  theme.palette.info.light,
+                  theme.palette.info.main,
+                ],
+                borderWidth: 0,
+              },
+              {
+                label: "Total Users",
+                data: totalUsers,
+                backgroundColor: [
+                  theme.palette.grey[200],
+                  theme.palette.grey[500],
+                ],
+                borderWidth: 0,
+              },
+            ],
+          }}
+          options={{
+            maintainAspectRatio: false,
+            onHover: handleHover,
+            plugins: {
+              tooltip: {
+                enabled: false,
+              },
+              legend: {
+                display: true,
+                position: "right",
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: "circle",
+                  boxWidth: 8,
+                  font: {
+                    family: "Mulish",
+                    size: 12,
+                  },
+                  color: theme.palette.text.secondary,
+                  padding: 8,
                 },
-                color: theme.palette.text.secondary,
-                padding: 8,
               },
             },
-          },
-          cutout: "65%",
-        }}
-        plugins={[
-          {
-            id: "users-chart",
-            beforeDatasetsDraw: (chart) => {
-              const ctx = chart.ctx;
-              ctx.save();
-              ctx.textAlign = "center";
-              ctx.textBaseline = "middle";
-              ctx.font = "600 12px Mulish";
-              ctx.fillStyle = theme.palette.text.secondary;
-              const xCoor = chart.getDatasetMeta(0).data[0].x;
-              const yCoor = chart.getDatasetMeta(0).data[0].y;
-              const title = "Users";
-              ctx.fillText(title, xCoor, yCoor - 14);
-              ctx.font = "600 20px Mulish";
-              ctx.fillStyle = theme.palette.text.primary;
-              const subtitle = numberFormatter.format(
-                (chart.data.datasets[0].data.reduce(
-                  (a: number, b: number) => a + b,
-                  0
-                ) as number) || 0
-              );
-              ctx.fillText(subtitle, xCoor, yCoor + 6);
-              ctx.restore();
+            cutout: "65%",
+          }}
+          plugins={[
+            {
+              id: "users-chart",
+              beforeDatasetsDraw: (chart) => {
+                const ctx = chart.ctx;
+                ctx.save();
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.font = "600 12px Mulish";
+                ctx.fillStyle = theme.palette.text.secondary;
+                const xCoor = chart.getDatasetMeta(0).data[0].x;
+                const yCoor = chart.getDatasetMeta(0).data[0].y;
+                const title = "Users";
+                ctx.fillText(title, xCoor, yCoor - 14);
+                ctx.font = "600 20px Mulish";
+                ctx.fillStyle = theme.palette.text.primary;
+                const subtitle = numberFormatter.format(
+                  (chart.data.datasets[0].data.reduce(
+                    (a: number, b: number) => a + b,
+                    0
+                  ) as number) || 0
+                );
+                ctx.fillText(subtitle, xCoor, yCoor + 6);
+                ctx.restore();
+              },
             },
-          },
-        ]}
-      />
+          ]}
+        />
+      )}
       <Paper
         sx={{
           visibility: tooltipModel ? "visible" : "hidden",

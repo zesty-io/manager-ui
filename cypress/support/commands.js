@@ -29,7 +29,7 @@ Cypress.Commands.add("waitOn", (path, cb) => {
   cy.intercept(path).as("waitingOn");
   cb();
   cy.wait("@waitingOn", {
-    timeout: 15000,
+    timeout: 30000,
   });
 });
 

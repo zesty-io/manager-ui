@@ -7,7 +7,6 @@ import contentAnalytics from "../../../../../../../../../public/images/contentAn
 import googleIcon from "../../../../../../../../../public/images/googleIcon.svg";
 import { AnalyticsDialog } from "./AnalyticsDialog";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
-import instanceZUID from "../../../../../../../../utility/instanceZUID";
 
 let tabWindow: Window;
 

@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { Box, Paper, Typography, Tooltip } from "@mui/material";
+import { Box, Paper, Typography, Tooltip, Skeleton } from "@mui/material";
 import { numberFormatter } from "../../../../../../../../utility/numberFormatter";
 import { calculatePercentageDifference } from "../utils";
 type Props = {
@@ -9,6 +9,7 @@ type Props = {
   description: string;
   formatter?: (value: number) => string;
   inverse?: boolean;
+  loading?: boolean;
 };
 
 export const Metric = ({
@@ -18,45 +19,72 @@ export const Metric = ({
   description,
   formatter,
   inverse,
+  loading = false,
 }: Props) => {
   return (
     <Tooltip
       title={
-        <TooltipBody
-          title={title}
-          value={formatter ? formatter(value) : value?.toLocaleString()}
-          description={description}
-        />
+        !loading ? (
+          <TooltipBody
+            title={title}
+            value={formatter ? formatter(value) : value?.toLocaleString()}
+            description={description}
+          />
+        ) : (
+          ""
+        )
       }
       followCursor
       components={{ Tooltip: Box }}
     >
-      <Box py={0.5}>
-        <Typography variant="body1" color="text.secondary">
-          {title}
-        </Typography>
-        <Typography variant="h2" fontWeight={600} sx={{ mb: 1 }}>
-          {formatter ? formatter(value) : numberFormatter.format(value)}
-        </Typography>
-        <Typography variant="body3" color="text.disabled">
-          {formatter
-            ? formatter(priorValue)
-            : numberFormatter.format(priorValue)}{" "}
-          <Typography
-            variant="body3"
-            color={
-              calculatePercentageDifference(priorValue, value).startsWith("-")
-                ? inverse
-                  ? "success.main"
-                  : "error.main"
-                : inverse
-                ? "error.main"
-                : "success.main"
-            }
-          >
-            {calculatePercentageDifference(priorValue, value)}
+      <Box py={0.5} width="100%">
+        {loading ? (
+          <Skeleton
+            variant="rectangular"
+            width="80%"
+            height={24}
+            sx={{ bgcolor: "grey.200" }}
+          />
+        ) : (
+          <Typography variant="body1" color="text.secondary">
+            {title}
           </Typography>
-        </Typography>
+        )}
+        {loading ? (
+          <Skeleton variant="rectangular" width="100%" height={40} />
+        ) : (
+          <Typography variant="h2" fontWeight={600} sx={{ mb: 1 }}>
+            {formatter ? formatter(value) : numberFormatter.format(value)}
+          </Typography>
+        )}
+        {loading ? (
+          <Skeleton
+            variant="rectangular"
+            width="100%"
+            height={18}
+            sx={{ mt: 1 }}
+          />
+        ) : (
+          <Typography variant="body3" color="text.disabled">
+            {formatter
+              ? formatter(priorValue)
+              : numberFormatter.format(priorValue)}{" "}
+            <Typography
+              variant="body3"
+              color={
+                calculatePercentageDifference(priorValue, value).startsWith("-")
+                  ? inverse
+                    ? "success.main"
+                    : "error.main"
+                  : inverse
+                  ? "error.main"
+                  : "success.main"
+              }
+            >
+              {calculatePercentageDifference(priorValue, value)}
+            </Typography>
+          </Typography>
+        )}
       </Box>
     </Tooltip>
   );

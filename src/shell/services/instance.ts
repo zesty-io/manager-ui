@@ -56,6 +56,18 @@ export const instanceApi = createApi({
         { type: "ItemPublishing", id: id.itemZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/items/publishings/#Get-All-Items-Publishings
+    getAllPublishings: builder.query<Publishing[], void>({
+      query: () => ({
+        url: `content/items/publishings`,
+        params: {
+          limit: 10000,
+        },
+      }),
+      transformResponse: getResponseData,
+      // TODO: Remove once all item publishing mutations are using rtk query
+      keepUnusedDataFor: 0.0001,
+    }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Delete-Item-Publishing
     deleteItemPublishing: builder.mutation<
       any,
@@ -423,6 +435,7 @@ export const instanceApi = createApi({
 export const {
   useGetAuditsQuery,
   useGetItemPublishingsQuery,
+  useGetAllPublishingsQuery,
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
   useGetContentModelQuery,
