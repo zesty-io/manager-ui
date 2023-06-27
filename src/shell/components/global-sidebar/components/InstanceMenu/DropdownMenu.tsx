@@ -159,17 +159,22 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
         </Stack>
         <Divider />
         <MenuList
-          onMouseOver={(evt) => {
+          onMouseEnter={(evt) => {
             setInstanceSwitcherAnchorEl(evt.currentTarget);
           }}
           data-cy="InstanceSwitcher"
         >
           <MenuItem>
-            <ListItemIcon>
-              <ManageSearchRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>Switch Instance</ListItemText>
-            <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
+            <>
+              <ListItemIcon>
+                <ManageSearchRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Switch Instance</ListItemText>
+              <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
+              {Boolean(instanceSwitcherAnchorEl) && (
+                <InstancesListMenu anchorEl={instanceSwitcherAnchorEl} />
+              )}
+            </>
           </MenuItem>
         </MenuList>
         <Divider />
@@ -254,7 +259,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemText>Teams</ListItemText>
           </MenuItem>
           <MenuItem
-            onMouseOver={() => setIsDomainsSwitcherOpen(true)}
+            onMouseEnter={() => setIsDomainsSwitcherOpen(true)}
             data-cy="DomainSwitcher"
           >
             <ListItemIcon>
@@ -326,9 +331,6 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
           </MenuItem>
         </MenuList>
       </Menu>
-      {Boolean(instanceSwitcherAnchorEl) && (
-        <InstancesListMenu anchorEl={instanceSwitcherAnchorEl} />
-      )}
     </>
   );
 };
