@@ -158,13 +158,13 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
           </Stack>
         </Stack>
         <Divider />
-        <MenuList
-          onMouseEnter={(evt) => {
-            setInstanceSwitcherAnchorEl(evt.currentTarget);
-          }}
-          data-cy="InstanceSwitcher"
-        >
-          <MenuItem>
+        <MenuList>
+          <MenuItem
+            onMouseEnter={(evt) => {
+              setInstanceSwitcherAnchorEl(evt.currentTarget);
+            }}
+            data-cy="InstanceSwitcher"
+          >
             <>
               <ListItemIcon>
                 <ManageSearchRoundedIcon />
