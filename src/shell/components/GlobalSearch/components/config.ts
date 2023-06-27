@@ -86,12 +86,12 @@ export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
     icon: Database as SvgIconComponent,
     text: "Schema",
   },
-  code: {
-    icon: CodeRounded,
-    text: "Code",
-  },
   media: {
     icon: ImageRounded,
     text: "Media",
+  },
+  code: {
+    icon: CodeRounded,
+    text: "Code",
   },
 };
