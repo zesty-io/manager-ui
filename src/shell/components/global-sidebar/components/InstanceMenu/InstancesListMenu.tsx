@@ -22,6 +22,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { cloneDeep } from "lodash";
 import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
+import { theme } from "@zesty-io/material";
 
 import { AppState } from "../../../../store/types";
 import { User, Instance } from "../../../../services/types";
@@ -136,7 +137,7 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
       anchorEl={anchorEl}
       placement="right-start"
       sx={{
-        zIndex: 1300,
+        zIndex: theme.zIndex.modal,
       }}
       popperOptions={{
         modifiers: [
