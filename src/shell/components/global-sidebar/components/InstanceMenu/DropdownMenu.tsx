@@ -163,6 +163,9 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             onMouseEnter={(evt) => {
               setInstanceSwitcherAnchorEl(evt.currentTarget);
             }}
+            onMouseLeave={() => {
+              setInstanceSwitcherAnchorEl(null);
+            }}
             data-cy="InstanceSwitcher"
           >
             <>
