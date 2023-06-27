@@ -1,6 +1,4 @@
 import { FC, useMemo, useEffect } from "react";
-
-import { useParams } from "../../../shell/hooks/useParams";
 import { Typography, Box, Stack, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
@@ -8,6 +6,7 @@ import moment from "moment-timezone";
 import { cloneDeep, isEmpty } from "lodash";
 import { useSelector } from "react-redux";
 
+import { useParams } from "../../../shell/hooks/useParams";
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
 import { SearchPageList } from "./List/SearchPageList";
