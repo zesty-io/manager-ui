@@ -60,7 +60,7 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
           fontWeight: 600,
           lineHeight: "18px",
           letterSpacing: "0.15px",
-          pt: isValidApp ? 0 : 1,
+          pt: 1,
           px: 1.5,
         }}
       >
