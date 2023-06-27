@@ -185,6 +185,7 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
           /**
            * HACK: Compute min-height depending on how many data are to be rendered (36px each) + search box (72px) + margin top & bottom (16px).
            * Virtualized list won't render when using %-based heights.
+           * Maxes out at 540px.
            */
           height: `min(${16 + 72 + 36 * listData?.length}px, 540px)`,
           width: 340,
