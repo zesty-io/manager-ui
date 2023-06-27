@@ -53,7 +53,8 @@ interface DropdownMenuProps {
   onClose: () => void;
 }
 export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
-  const [view, setView] = useState<View>("normal");
+  const [instanceSwitcherAnchorEl, setInstanceSwitcherAnchorEl] =
+    useState<HTMLElement | null>(null);
   const [isInstanceSwitcherOpen, setIsInstanceSwitcherOpen] = useState(false);
   const [isDomainsSwitcherOpen, setIsDomainsSwitcherOpen] = useState(false);
   const dispatch = useDispatch();
@@ -158,8 +159,8 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
         </Stack>
         <Divider />
         <MenuList
-          onMouseOver={() => {
-            setIsInstanceSwitcherOpen(true);
+          onMouseOver={(evt) => {
+            setInstanceSwitcherAnchorEl(evt.currentTarget);
           }}
           data-cy="InstanceSwitcher"
         >
@@ -325,7 +326,9 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
           </MenuItem>
         </MenuList>
       </Menu>
-      <InstancesListMenu open={isInstanceSwitcherOpen} />
+      {Boolean(instanceSwitcherAnchorEl) && (
+        <InstancesListMenu anchorEl={instanceSwitcherAnchorEl} />
+      )}
     </>
   );
 };

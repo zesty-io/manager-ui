@@ -35,9 +35,9 @@ interface ListRowData {
   headerText?: string;
 }
 interface InstancesMenuProps {
-  open: boolean;
+  anchorEl: HTMLElement;
 }
-export const InstancesListMenu: FC<InstancesMenuProps> = ({ open }) => {
+export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
   const [filter, setFilter] = useState("");
   const searchField = useRef<HTMLInputElement | null>(null);
   const user: User = useSelector((state: AppState) => state.user);
@@ -133,7 +133,8 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ open }) => {
 
   return (
     <Menu
-      open={open}
+      open
+      anchorEl={anchorEl}
       PaperProps={{
         sx: {
           pt: 0,
@@ -149,6 +150,10 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ open }) => {
           p: 0,
           height: 591,
         },
+      }}
+      anchorOrigin={{
+        vertical: -20,
+        horizontal: 332,
       }}
     >
       <Stack flexDirection="column" height="inherit">
