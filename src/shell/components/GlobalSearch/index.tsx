@@ -330,7 +330,8 @@ export const GlobalSearch: FC = () => {
       >
         <Autocomplete
           value={searchKeyword}
-          open={open}
+          // open={open}
+          open
           onOpen={() => {
             setOpen(true);
           }}
