@@ -13,6 +13,7 @@ import {
   Box,
   Tooltip,
   Skeleton,
+  Menu,
 } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import StarIcon from "@mui/icons-material/Star";
@@ -22,11 +23,11 @@ import { cloneDeep } from "lodash";
 import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
-import { View } from "../DropdownMenu";
-import { AppState } from "../../../../../store/types";
-import { User, Instance } from "../../../../../services/types";
-import { useGetInstancesQuery } from "../../../../../services/accounts";
-import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
+import { View } from "./DropdownMenu";
+import { AppState } from "../../../../store/types";
+import { User, Instance } from "../../../../services/types";
+import { useGetInstancesQuery } from "../../../../services/accounts";
+import noSearchResults from "../../../../../../public/images/noSearchResults.svg";
 
 interface ListRowData {
   type: "header" | "data" | "skeleton";
@@ -34,9 +35,9 @@ interface ListRowData {
   headerText?: string;
 }
 interface InstancesMenuProps {
-  onChangeView: (view: View) => void;
+  open: boolean;
 }
-export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
+export const InstancesListMenu: FC<InstancesMenuProps> = ({ open }) => {
   const [filter, setFilter] = useState("");
   const searchField = useRef<HTMLInputElement | null>(null);
   const user: User = useSelector((state: AppState) => state.user);
@@ -131,85 +132,98 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ onChangeView }) => {
   };
 
   return (
-    <Stack flexDirection="column" height="inherit">
-      <ListSubheader
-        sx={{
-          p: 2,
-          borderBottom: "1px solid",
-          borderColor: "border",
-          height: 72,
-        }}
-        onKeyDown={(e: React.KeyboardEvent) => {
-          const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
-
-          if (!allowedKeys.includes(e.key)) {
-            e.stopPropagation();
-          }
-        }}
-      >
-        <TextField
-          autoFocus
-          fullWidth
-          placeholder="Search Instances"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <IconButton size="small" onClick={() => onChangeView("normal")}>
-                <ArrowBackRoundedIcon fontSize="small" />
-              </IconButton>
-            ),
+    <Menu
+      open={open}
+      PaperProps={{
+        sx: {
+          pt: 0,
+          mt: 1.5,
+          width: 340,
+          borderRadius: "8px",
+          elevation: 8,
+          overflow: "hidden",
+        },
+      }}
+      MenuListProps={{
+        sx: {
+          p: 0,
+          height: 591,
+        },
+      }}
+    >
+      <Stack flexDirection="column" height="inherit">
+        <ListSubheader
+          sx={{
+            p: 2,
+            borderBottom: "1px solid",
+            borderColor: "border",
+            height: 72,
           }}
-          inputRef={searchField}
-        />
-      </ListSubheader>
-      {filter && !filteredInstances?.length ? (
-        <Stack
-          px={2}
-          justifyContent="center"
-          alignItems="center"
-          textAlign="center"
-          height={445}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
+
+            if (!allowedKeys.includes(e.key)) {
+              e.stopPropagation();
+            }
+          }}
         >
-          <img
-            src={noSearchResults}
-            alt="No Search Results"
-            width={88}
-            height={80}
+          <TextField
+            autoFocus
+            fullWidth
+            placeholder="Search Instances"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            inputRef={searchField}
           />
-          <Typography variant="h5" fontWeight={600}>
-            Your search “{filter}” could not find any results
-          </Typography>
-          <Typography variant="body2" color="text.secondary" pb={3}>
-            Try adjusting tour search. We suggest check all words are spelled
-            correctly or try using different keywords.
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={handleResetFilter}
-            startIcon={<SearchRoundedIcon />}
+        </ListSubheader>
+        {filter && !filteredInstances?.length ? (
+          <Stack
+            px={2}
+            justifyContent="center"
+            alignItems="center"
+            textAlign="center"
+            height={445}
           >
-            Search Again
-          </Button>
-        </Stack>
-      ) : (
-        <Box height="100%">
-          <AutoSizer>
-            {({ height, width }) => (
-              <FixedSizeList
-                height={height}
-                width={width}
-                itemCount={listData?.length}
-                itemSize={36}
-                itemData={listData}
-              >
-                {Row}
-              </FixedSizeList>
-            )}
-          </AutoSizer>
-        </Box>
-      )}
-    </Stack>
+            <img
+              src={noSearchResults}
+              alt="No Search Results"
+              width={88}
+              height={80}
+            />
+            <Typography variant="h5" fontWeight={600}>
+              Your search “{filter}” could not find any results
+            </Typography>
+            <Typography variant="body2" color="text.secondary" pb={3}>
+              Try adjusting tour search. We suggest check all words are spelled
+              correctly or try using different keywords.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={handleResetFilter}
+              startIcon={<SearchRoundedIcon />}
+            >
+              Search Again
+            </Button>
+          </Stack>
+        ) : (
+          <Box height="100%">
+            <AutoSizer>
+              {({ height, width }) => (
+                <FixedSizeList
+                  height={height}
+                  width={width}
+                  itemCount={listData?.length}
+                  itemSize={36}
+                  itemData={listData}
+                >
+                  {Row}
+                </FixedSizeList>
+              )}
+            </AutoSizer>
+          </Box>
+        )}
+      </Stack>
+    </Menu>
   );
 };
 
