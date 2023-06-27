@@ -15,6 +15,8 @@ import {
   Popper,
   Paper,
   MenuList,
+  Divider,
+  ListItem,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
@@ -180,7 +182,11 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
       <Paper
         elevation={8}
         sx={{
-          height: 540, // Need to figure out how to make this dynamic
+          /**
+           * HACK: Compute min-height depending on how many data are to be rendered (36px each) + search box (72px) + margin top & bottom (16px).
+           * Virtualized list won't render when using %-based heights.
+           */
+          height: `min(${16 + 72 + 36 * listData?.length}px, 540px)`,
           width: 340,
           borderRadius: "8px",
         }}
@@ -303,7 +309,6 @@ const Row = ({ index, data, style }: ListRowProps) => {
       <MenuItem
         disableRipple
         sx={{
-          // mt: 1,
           borderTop: isAll ? 1 : 0,
           borderColor: "border",
           "&:hover": { cursor: "default", backgroundColor: "transparent" },
