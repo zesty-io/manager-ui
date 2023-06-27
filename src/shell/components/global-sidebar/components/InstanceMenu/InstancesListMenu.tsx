@@ -157,7 +157,9 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
            * Virtualized list won't render when using %-based heights.
            * Maxes out at 540px.
            */
-          height: `min(${16 + 72 + 36 * listData?.length}px, 540px)`,
+          height: filteredInstances?.length
+            ? `min(${16 + 72 + 36 * listData?.length}px, 540px)`
+            : 445,
           width: 340,
           borderRadius: "8px",
         }}
