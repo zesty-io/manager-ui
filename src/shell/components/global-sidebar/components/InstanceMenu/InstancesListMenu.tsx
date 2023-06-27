@@ -2,7 +2,6 @@ import { FC, useMemo, useState, useRef, CSSProperties } from "react";
 import { useSelector } from "react-redux";
 import {
   TextField,
-  IconButton,
   ListSubheader,
   MenuItem,
   ListItemIcon,
@@ -13,11 +12,10 @@ import {
   Box,
   Tooltip,
   Skeleton,
-  Menu,
   Popper,
   Paper,
+  MenuList,
 } from "@mui/material";
-import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import StarIcon from "@mui/icons-material/Star";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -25,7 +23,6 @@ import { cloneDeep } from "lodash";
 import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
-import { View } from "./DropdownMenu";
 import { AppState } from "../../../../store/types";
 import { User, Instance } from "../../../../services/types";
 import { useGetInstancesQuery } from "../../../../services/accounts";
@@ -169,6 +166,16 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
       sx={{
         zIndex: 1300,
       }}
+      popperOptions={{
+        modifiers: [
+          {
+            name: "offset",
+            options: {
+              offset: [-16, -8],
+            },
+          },
+        ],
+      }}
     >
       <Paper
         elevation={8}
@@ -176,8 +183,6 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
           height: 540, // Need to figure out how to make this dynamic
           width: 340,
           borderRadius: "8px",
-          marginLeft: "-8px",
-          marginTop: "-8px",
         }}
       >
         <Stack flexDirection="column" height="inherit">
@@ -236,7 +241,16 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
               </Button>
             </Stack>
           ) : (
-            <Box height="100%">
+            <Box
+              height="100%"
+              sx={{
+                ".MuiList-root": {
+                  marginTop: "8px",
+                  marginBottom: "8px",
+                  padding: 0,
+                },
+              }}
+            >
               <AutoSizer>
                 {({ height, width }) => (
                   <FixedSizeList
@@ -245,6 +259,7 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
                     itemCount={listData?.length}
                     itemSize={36}
                     itemData={listData}
+                    innerElementType={MenuList}
                   >
                     {Row}
                   </FixedSizeList>
@@ -288,7 +303,7 @@ const Row = ({ index, data, style }: ListRowProps) => {
       <MenuItem
         disableRipple
         sx={{
-          mt: 1,
+          // mt: 1,
           borderTop: isAll ? 1 : 0,
           borderColor: "border",
           "&:hover": { cursor: "default", backgroundColor: "transparent" },
