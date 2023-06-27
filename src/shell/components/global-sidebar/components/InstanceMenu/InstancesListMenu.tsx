@@ -15,8 +15,6 @@ import {
   Popper,
   Paper,
   MenuList,
-  Divider,
-  ListItem,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
@@ -133,34 +131,6 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
   };
 
   return (
-    // <Menu
-    //   open
-    //   hideBackdrop
-    //   anchorEl={anchorEl}
-    //   PaperProps={{
-    //     sx: {
-    //       pt: 0,
-    //       mt: 1.5,
-    //       width: 340,
-    //       borderRadius: "8px",
-    //       elevation: 8,
-    //       overflow: "hidden",
-    //     },
-    //     onMouseLeave: () => {
-    //       console.log("Mouse leave");
-    //     },
-    //   }}
-    //   MenuListProps={{
-    //     sx: {
-    //       p: 0,
-    //       height: 591,
-    //     },
-    //   }}
-    //   anchorOrigin={{
-    //     vertical: -20,
-    //     horizontal: 332,
-    //   }}
-    // >
     <Popper
       open
       anchorEl={anchorEl}
@@ -277,7 +247,6 @@ export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
         </Stack>
       </Paper>
     </Popper>
-    // </Menu>
   );
 };
 
