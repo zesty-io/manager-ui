@@ -163,10 +163,17 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             onMouseEnter={(evt) => {
               setInstanceSwitcherAnchorEl(evt.currentTarget);
             }}
-            onMouseLeave={() => {
+            onMouseLeave={(evt) => {
               setInstanceSwitcherAnchorEl(null);
             }}
             data-cy="InstanceSwitcher"
+            sx={{
+              "&.MuiMenuItem-root": {
+                backgroundColor: Boolean(instanceSwitcherAnchorEl)
+                  ? "action.hover"
+                  : "background.paper",
+              },
+            }}
           >
             <>
               <ListItemIcon>
@@ -179,9 +186,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
               )}
             </>
           </MenuItem>
-        </MenuList>
-        <Divider />
-        <MenuList>
+          <Divider />
           <MenuItem
             onClick={() => {
               onClose();
@@ -234,9 +239,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             </ListItemIcon>
             <ListItemText>Refresh CDN Cache</ListItemText>
           </MenuItem>
-        </MenuList>
-        <Divider />
-        <MenuList>
+          <Divider />
           <MenuItem
             onClick={() =>
               handleOpenUrl(
