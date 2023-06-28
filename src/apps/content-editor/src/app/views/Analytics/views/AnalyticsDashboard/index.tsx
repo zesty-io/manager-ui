@@ -7,27 +7,31 @@ import {
   useGetAuditsQuery,
   useGetContentModelQuery,
   useGetInstanceSettingsQuery,
-} from "../../../../../../shell/services/instance";
+} from "../../../../../../../../shell/services/instance";
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
 import { useState } from "react";
-import { CreateContentItemDialog } from "../../../../../../shell/components/CreateContentItemDialog";
+import { CreateContentItemDialog } from "../../../../../../../../shell/components/CreateContentItemDialog";
 import { AnalyticsDateFilter } from "../../components/AnalyticsDateFilter";
 import { useSelector } from "react-redux";
-import { AppState } from "../../../../../../shell/store/types";
-import { AnalyticsPropertySelector } from "../../components/AnalyticsPropertySelector";
-import { Metric } from "../ItemEdit/Analytics/components/Metric";
-import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../shell/services/cloudFunctions";
+import { AppState } from "../../../../../../../../shell/store/types";
+import { Metric } from "../../components/Metric";
+import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../shell/services/cloudFunctions";
 import {
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
   getDateRangeAndLabelsFromParams,
-} from "./utils";
+} from "../../utils";
 import { ByDayLineChart } from "./ByDayLineChart";
-import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
+import { useParams as useQueryParams } from "../../../../../../../../shell/hooks/useParams";
 import { UsersDoughnutChart } from "./UsersDoughutChart";
+import { AnalyticsPropertySelector } from "../../components/AnalyticsPropertySelector";
 
-const AnalyticsDashboard = () => {
+type Props = {
+  loading: boolean;
+};
+
+const AnalyticsDashboard = ({ loading }: Props) => {
   const [params, setParams] = useQueryParams();
   const instance = useSelector((state: AppState) => state.instance);
   const { data: instanceSettings, isFetching: instanceSettingsFetching } =
@@ -176,6 +180,8 @@ const AnalyticsDashboard = () => {
     newVsReturningReport,
   ] = ga4Data?.reports || [];
 
+  const isLoading = isFetching || instanceSettingsFetching || loading;
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -186,7 +192,7 @@ const AnalyticsDashboard = () => {
         <AnalyticsDashboardHeader />
         <Box px={2}>
           <Box display="flex" py={2} justifyContent="space-between">
-            <AnalyticsDateFilter showSkeleton={false} />
+            <AnalyticsDateFilter showSkeleton={isLoading} />
             <Typography variant="h6" fontWeight="600" maxWidth={304} noWrap>
               {instance.name}
             </Typography>
@@ -204,6 +210,7 @@ const AnalyticsDashboard = () => {
             >
               <Box minWidth="120px">
                 <Metric
+                  loading={isLoading}
                   title="Total Sessions"
                   value={
                     +(
@@ -266,6 +273,7 @@ const AnalyticsDashboard = () => {
             border={(theme) => `1px solid ${theme.palette.border}`}
           >
             <Metric
+              loading={isLoading}
               title="Sessions"
               value={
                 +(
@@ -289,6 +297,7 @@ const AnalyticsDashboard = () => {
             />
             <Divider orientation="vertical" flexItem />
             <Metric
+              loading={isLoading}
               title="Avg. Duration"
               formatter={convertSecondsToMinutesAndSeconds}
               value={
@@ -313,6 +322,7 @@ const AnalyticsDashboard = () => {
             />
             <Divider orientation="vertical" flexItem />
             <Metric
+              loading={isLoading}
               inverse
               title="Bounce Rate"
               formatter={(value: number) => `${Math.floor(value * 100)}%`}
@@ -338,6 +348,7 @@ const AnalyticsDashboard = () => {
             />
             <Divider orientation="vertical" flexItem />
             <Metric
+              loading={isLoading}
               title="Conversions"
               value={
                 +(

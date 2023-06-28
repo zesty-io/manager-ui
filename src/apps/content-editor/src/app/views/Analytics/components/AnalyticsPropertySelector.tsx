@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Box, Button, Link, Skeleton } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useGetAnalyticsPropertiesQuery } from "../../../../../shell/services/cloudFunctions";
-import { useGetInstanceSettingsQuery } from "../../../../../shell/services/instance";
+import { useGetAnalyticsPropertiesQuery } from "../../../../../../../shell/services/cloudFunctions";
+import { useGetInstanceSettingsQuery } from "../../../../../../../shell/services/instance";
 import { PropertiesDialog } from "./PropertiesDialog";
 
 type Props = {

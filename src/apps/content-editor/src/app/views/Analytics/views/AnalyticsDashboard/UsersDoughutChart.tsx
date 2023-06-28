@@ -7,7 +7,7 @@ import { isEqual } from "lodash";
 import {
   calculatePercentageDifference,
   findValuesForDimensions,
-} from "./utils";
+} from "../../utils";
 
 const SOURCE_LEGEND = [
   {

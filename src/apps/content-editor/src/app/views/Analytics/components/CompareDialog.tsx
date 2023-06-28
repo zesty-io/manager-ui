@@ -22,17 +22,17 @@ import {
   useGetAllPublishingsQuery,
   useGetContentItemQuery,
   useGetContentModelQuery,
-} from "../../../../../../../../shell/services/instance";
-import { NoSearchResults } from "../../../../../../../../shell/components/NoSearchResults";
+} from "../../../../../../../shell/services/instance";
+import { NoSearchResults } from "../../../../../../../shell/components/NoSearchResults";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
 import moment from "moment-timezone";
 import { useSelector } from "react-redux";
-import { User } from "../../../../../../../../shell/services/types";
-import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
-import { modelIconMap } from "../../../../../../../schema/src/app/utils";
-import { useSearchContentQuery } from "../../../../../../../../shell/services/instance";
+import { User } from "../../../../../../../shell/services/types";
+import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
+import { modelIconMap } from "../../../../../../schema/src/app/utils";
+import { useSearchContentQuery } from "../../../../../../../shell/services/instance";
 import { debounce, uniqBy } from "lodash";
-import { useParams } from "../../../../../../../../shell/hooks/useParams";
+import { useParams } from "../../../../../../../shell/hooks/useParams";
 
 type Props = {
   onClose: () => void;

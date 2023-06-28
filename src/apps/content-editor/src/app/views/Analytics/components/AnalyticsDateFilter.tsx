@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from "react";
-import { DateFilterValue } from "../../../../../shell/components/Filters/DateFilter";
-import { useParams as useQueryParams } from "../../../../../shell/hooks/useParams";
+import { DateFilterValue } from "../../../../../../../shell/components/Filters/DateFilter";
+import { useParams as useQueryParams } from "../../../../../../../shell/hooks/useParams";
 import {
   DateFilter,
   DateRangeFilterValue,
-} from "../../../../../shell/components/Filters";
+} from "../../../../../../../shell/components/Filters";
 import { Skeleton } from "@mui/lab";
 
 type Props = {

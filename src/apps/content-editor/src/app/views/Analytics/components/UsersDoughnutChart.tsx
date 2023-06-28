@@ -4,8 +4,8 @@ import { Doughnut } from "react-chartjs-2";
 import { ChartEvent } from "chart.js";
 import { Box, Paper, Typography, Skeleton } from "@mui/material";
 import { isEqual } from "lodash";
-import { numberFormatter } from "../../../../../../../../utility/numberFormatter";
-import { findValuesForDimensions } from "../../../AnalyticsDashboard/utils";
+import { numberFormatter } from "../../../../../../../utility/numberFormatter";
+import { findValuesForDimensions } from "../utils";
 
 export const UsersDoughnutChart = ({
   data,

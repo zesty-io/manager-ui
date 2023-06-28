@@ -1,11 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Button,
   Box,
   ButtonGroup,
   Divider,
-  CircularProgress,
-  Link,
   Typography,
   Skeleton,
 } from "@mui/material";
@@ -18,40 +16,35 @@ import {
   useGetAuditsQuery,
   useGetContentItemQuery,
   useGetInstanceSettingsQuery,
-} from "../../../../../../../../shell/services/instance";
-import moment, { Moment } from "moment-timezone";
+} from "../../../../../../../shell/services/instance";
 import { UsersBarChart } from "../components/UsersBarChart";
-import {
-  DateFilter,
-  DateRangeFilterValue,
-} from "../../../../../../../../shell/components/Filters";
-import { useParams as useQueryParams } from "../../../../../../../../shell/hooks/useParams";
-import { DateFilterValue } from "../../../../../../../../shell/components/Filters/DateFilter";
+import { useParams as useQueryParams } from "../../../../../../../shell/hooks/useParams";
 import { useHistory, useParams } from "react-router-dom";
-import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../shell/services/cloudFunctions";
 import {
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
   generateReportRequests,
   getDateRangeAndLabelsFromParams,
-} from "../../../AnalyticsDashboard/utils";
+} from "../utils";
 import { Metric } from "../components/Metric";
-import { useGetAnalyticsPropertiesQuery } from "../../../../../../../../shell/services/cloudFunctions";
-import { PropertiesDialog } from "../../../../components/PropertiesDialog";
-import instanceZUID from "../../../../../../../../utility/instanceZUID";
-import { NotFound } from "../../../../../../../../shell/components/NotFound";
-import SettingsIcon from "@mui/icons-material/Settings";
+import { useGetAnalyticsPropertiesQuery } from "../../../../../../../shell/services/cloudFunctions";
+import instanceZUID from "../../../../../../../utility/instanceZUID";
+import { NotFound } from "../../../../../../../shell/components/NotFound";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
 import { CompareDialog } from "../components/CompareDialog";
-import { AnalyticsDateFilter } from "../../../../components/AnalyticsDateFilter";
-import { AnalyticsPropertySelector } from "../../../../components/AnalyticsPropertySelector";
+import { AnalyticsDateFilter } from "../components/AnalyticsDateFilter";
+import { ContentItem } from "../../../../../../../shell/services/types";
+import { PropertiesDialog } from "../components/PropertiesDialog";
+import { AnalyticsPropertySelector } from "../components/AnalyticsPropertySelector";
 
 type Props = {
-  item: any;
+  item: ContentItem;
+  loading: boolean;
 };
 
-export const SinglePageAnalyticsView = ({ item }: Props) => {
+export const SinglePageAnalyticsView = ({ item, loading }: Props) => {
   const [showCompareDialog, setShowCompareDialog] = useState(false);
   const [params, setParams] = useQueryParams();
   const compareItemZUID = params.get("compare");
@@ -125,7 +118,8 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
     affectedZUID: itemZUID,
   });
 
-  const isLoading = isFetching || instanceSettingsFetching || isFetchingCompare;
+  const isLoading =
+    isFetching || instanceSettingsFetching || isFetchingCompare || loading;
 
   if (isError) {
     return (

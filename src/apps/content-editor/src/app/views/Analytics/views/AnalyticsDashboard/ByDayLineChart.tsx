@@ -18,7 +18,7 @@ import lineChartSkeleton from "../../../../../../../../../public/images/lineChar
 import {
   calculatePercentageDifference,
   findValuesForDimensions,
-} from "./utils";
+} from "../../utils";
 
 type Params = {
   modelZUID: string;

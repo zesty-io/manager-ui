@@ -15,12 +15,12 @@ import { isEqual, last } from "lodash";
 import { ChartEvent } from "chart.js";
 import moment, { Moment } from "moment-timezone";
 import "chartjs-adapter-moment";
-import lineChartSkeleton from "../../../../../../../../../public/images/lineChartSkeleton.svg";
+import lineChartSkeleton from "../../../../../../../../public/images/lineChartSkeleton.svg";
 import {
   calculatePercentageDifference,
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
-} from "../../../AnalyticsDashboard/utils";
+} from "../utils";
 
 type Params = {
   modelZUID: string;

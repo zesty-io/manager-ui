@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux";
-import { AppState } from "../../../../../../../../shell/store/types";
+import { AppState } from "../../../../../../../shell/store/types";
 import { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import googleAnalyticsIcon from "../../../../../../../../../public/images/googleAnalyticsIcon.svg";
-import contentAnalytics from "../../../../../../../../../public/images/contentAnalytics.svg";
-import googleIcon from "../../../../../../../../../public/images/googleIcon.svg";
+import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
+import contentAnalytics from "../../../../../../../../public/images/contentAnalytics.svg";
+import googleIcon from "../../../../../../../../public/images/googleIcon.svg";
 import { AnalyticsDialog } from "./AnalyticsDialog";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 
