@@ -368,7 +368,6 @@ export const UsersBarChart = ({
                 sx={{ mt: 1 }}
               >
                 {priorSet?.[tooltipModel?.dataIndex]?.toLocaleString() + " "}
-                {/* @ts-ignore */}
                 <Typography
                   variant="body3"
                   color={

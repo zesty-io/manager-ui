@@ -24,6 +24,7 @@ import {
 } from "./utils";
 import { ByDayLineChart } from "./ByDayLineChart";
 import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
+import { UsersDoughnutChart } from "./UsersDoughutChart";
 
 const AnalyticsDashboard = () => {
   const [params, setParams] = useQueryParams();
@@ -64,12 +65,15 @@ const AnalyticsDashboard = () => {
           ],
           dateRanges: [
             {
-              startDate: "2023-05-15",
-              endDate: "2023-05-30",
+              startDate: startDate?.format("YYYY-MM-DD"),
+              endDate: endDate?.format("YYYY-MM-DD"),
             },
             {
-              startDate: "2023-05-01",
-              endDate: "2023-05-15",
+              startDate: startDate
+                ?.clone()
+                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
+                ?.format("YYYY-MM-DD"),
+              endDate: startDate?.format("YYYY-MM-DD"),
             },
           ],
         },
@@ -108,7 +112,6 @@ const AnalyticsDashboard = () => {
         },
         {
           // query user traffic default channel
-
           dimensions: [
             {
               name: "firstUserDefaultChannelGroup",
@@ -121,12 +124,15 @@ const AnalyticsDashboard = () => {
           ],
           dateRanges: [
             {
-              startDate: "2023-05-15",
-              endDate: "2023-05-30",
+              startDate: startDate?.format("YYYY-MM-DD"),
+              endDate: endDate?.format("YYYY-MM-DD"),
             },
             {
-              startDate: "2023-05-01",
-              endDate: "2023-05-15",
+              startDate: startDate
+                ?.clone()
+                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
+                ?.format("YYYY-MM-DD"),
+              endDate: startDate?.format("YYYY-MM-DD"),
             },
           ],
           metricAggregations: ["TOTAL"],
@@ -145,15 +151,17 @@ const AnalyticsDashboard = () => {
           ],
           dateRanges: [
             {
-              startDate: "2023-05-15",
-              endDate: "2023-05-30",
+              startDate: startDate?.format("YYYY-MM-DD"),
+              endDate: endDate?.format("YYYY-MM-DD"),
             },
             {
-              startDate: "2023-05-01",
-              endDate: "2023-05-15",
+              startDate: startDate
+                ?.clone()
+                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
+                ?.format("YYYY-MM-DD"),
+              endDate: startDate?.format("YYYY-MM-DD"),
             },
           ],
-          metricAggregations: ["TOTAL"],
         },
       ],
     },
@@ -163,11 +171,9 @@ const AnalyticsDashboard = () => {
   const [
     metricsReport,
     dailySessionsReport,
-    userTrafficReport,
+    userSourcesReport,
     newVsReturningReport,
   ] = ga4Data?.reports || [];
-
-  console.log("testing", metricsReport, dailySessionsReport);
 
   return (
     <ThemeProvider theme={theme}>
@@ -185,44 +191,68 @@ const AnalyticsDashboard = () => {
             </Typography>
             <AnalyticsPropertySelector />
           </Box>
-          <Box
-            borderRadius={"8px"}
-            gap={2}
-            p={2}
-            border={(theme) => `1px solid ${theme.palette.border}`}
-            bgcolor="background.paper"
-            display="flex"
-          >
-            <Metric
-              title="Total Sessions"
-              value={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_0"],
-                    0
-                  ) || 0
-                )
-              }
-              priorValue={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_1"],
-                    0
-                  ) || 0
-                )
-              }
-              description="A session in Google Analytics is a period of time in which a user interacts with your website."
-            />
-            <ByDayLineChart
-              startDate={startDate}
-              endDate={endDate}
-              dateRange0Label={dateRange0Label}
-              dateRange1Label={dateRange1Label}
-              data={dailySessionsReport}
-              loading={isFetching}
-            />
+          <Box display="flex" gap={2}>
+            <Box
+              borderRadius={"8px"}
+              gap={2}
+              p={2}
+              border={(theme) => `1px solid ${theme.palette.border}`}
+              bgcolor="background.paper"
+              display="flex"
+              width="55%"
+            >
+              <Box minWidth="120px">
+                <Metric
+                  title="Total Sessions"
+                  value={
+                    +(
+                      findValuesForDimensions(
+                        metricsReport?.rows,
+                        ["date_range_0"],
+                        0
+                      ) || 0
+                    )
+                  }
+                  priorValue={
+                    +(
+                      findValuesForDimensions(
+                        metricsReport?.rows,
+                        ["date_range_1"],
+                        0
+                      ) || 0
+                    )
+                  }
+                  description="A session in Google Analytics is a period of time in which a user interacts with your website."
+                />
+              </Box>
+              <ByDayLineChart
+                startDate={startDate}
+                endDate={endDate}
+                dateRange0Label={dateRange0Label}
+                dateRange1Label={dateRange1Label}
+                data={dailySessionsReport}
+                loading={isFetching}
+              />
+            </Box>
+            <Box
+              borderRadius={"8px"}
+              gap={2}
+              p={2}
+              border={(theme) => `1px solid ${theme.palette.border}`}
+              bgcolor="background.paper"
+              display="flex"
+              width="55%"
+            >
+              <UsersDoughnutChart
+                startDate={startDate}
+                endDate={endDate}
+                dateRange0Label={dateRange0Label}
+                dateRange1Label={dateRange1Label}
+                usersData={newVsReturningReport}
+                sourceData={userSourcesReport}
+                loading={isFetching}
+              />
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -233,7 +263,6 @@ const AnalyticsDashboard = () => {
 export default AnalyticsDashboard;
 
 const AnalyticsDashboardHeader = () => {
-  const { data: publishings } = useGetAllPublishingsQuery();
   const { data: audit } = useGetAuditsQuery({
     start_date: moment().utc().subtract(1, "month").format("YYYY-MM-DD"),
     end_date: moment().utc().format("YYYY-MM-DD"),

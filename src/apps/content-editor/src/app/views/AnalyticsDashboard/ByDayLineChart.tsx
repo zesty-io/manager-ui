@@ -125,7 +125,7 @@ export const ByDayLineChart = ({
   }, [dateChartLabels]);
 
   return (
-    <Box position="relative" height="102px">
+    <Box position="relative" height="106px" width="100%" minWidth="0">
       <Line
         ref={chartRef}
         data={{
@@ -160,11 +160,9 @@ export const ByDayLineChart = ({
         plugins={[ChartDataLabels]}
         options={{
           layout: {
-            padding: {
-              top: 16,
-              bottom: 20,
-            },
+            padding: 0,
           },
+          responsive: true,
           maintainAspectRatio: false,
           onHover: handleHover,
           plugins: {
@@ -206,7 +204,7 @@ export const ByDayLineChart = ({
                 },
               },
               ticks: {
-                padding: 8,
+                padding: 0,
                 color: theme.palette.text.disabled,
                 font: {
                   size: 12,
@@ -223,7 +221,7 @@ export const ByDayLineChart = ({
       />
       <Paper
         sx={{
-          visibility: tooltipModel ? "visible" : "hidden",
+          display: tooltipModel ? "block" : "none",
           position: "absolute",
           top: tooltipModel?.y,
           left: tooltipModel?.x,
