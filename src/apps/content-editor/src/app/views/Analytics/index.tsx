@@ -22,8 +22,6 @@ const Analytics = ({ item }: Props) => {
   return (
     <ThemeProvider theme={theme}>
       <Box
-        px={3}
-        py={2}
         sx={{
           boxSizing: "border-box",
           color: (theme) => theme.palette.text.primary,
@@ -33,12 +31,16 @@ const Analytics = ({ item }: Props) => {
       >
         {!isError ? (
           item ? (
-            <SinglePageAnalyticsView item={item} loading={isFetching} />
+            <Box px={3} py={2}>
+              <SinglePageAnalyticsView item={item} loading={isFetching} />
+            </Box>
           ) : (
             <AnalyticsDashboard loading={isFetching} />
           )
         ) : (
-          <AuthView validateAuth={validateAuth} />
+          <Box px={3} height="100%">
+            <AuthView validateAuth={validateAuth} />
+          </Box>
         )}
       </Box>
     </ThemeProvider>

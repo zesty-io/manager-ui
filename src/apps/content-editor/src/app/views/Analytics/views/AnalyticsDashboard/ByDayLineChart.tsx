@@ -188,6 +188,7 @@ export const ByDayLineChart = ({
           scales: {
             y: {
               display: false,
+              beginAtZero: true,
             },
             x: {
               grid: {

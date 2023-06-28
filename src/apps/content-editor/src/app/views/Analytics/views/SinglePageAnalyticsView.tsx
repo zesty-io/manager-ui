@@ -154,7 +154,7 @@ export const SinglePageAnalyticsView = ({ item, loading }: Props) => {
     );
   }
 
-  if (!instanceSettingsFetching && !propertyId) {
+  if (!instanceSettingsFetching && !propertyId && !loading) {
     return (
       <PropertiesDialog
         onClose={(shouldNavAway = false) =>
