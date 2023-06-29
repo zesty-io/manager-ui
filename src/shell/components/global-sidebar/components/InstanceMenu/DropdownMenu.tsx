@@ -108,8 +108,6 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
 
       setIsInstanceZuidCopied(true);
     } catch (error) {
-      console.error("Failed to copy instance ZUID", error);
-
       dispatch(
         notify({
           message: "Failed to copy instance ZUID",
