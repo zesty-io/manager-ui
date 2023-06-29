@@ -44,7 +44,7 @@ const CHIP_TITLE = {
 };
 
 interface GlobalDomainsMenuProps {
-  onCloseDropdownMenu: () => void;
+  onCloseDropdownMenu?: () => void;
   onChangeView?: (view: string) => void;
   withBackButton?: boolean;
 }
@@ -74,7 +74,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
   }, [isError]);
 
   const handleOpenUrl = (url: string) => {
-    onCloseDropdownMenu();
+    onCloseDropdownMenu && onCloseDropdownMenu();
     window.open(url, "_blank", "noopener");
   };
 
