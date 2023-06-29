@@ -24,10 +24,10 @@ import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { theme } from "@zesty-io/material";
 
-import { AppState } from "../../../../store/types";
-import { User, Instance } from "../../../../services/types";
-import { useGetInstancesQuery } from "../../../../services/accounts";
-import noSearchResults from "../../../../../../public/images/noSearchResults.svg";
+import { AppState } from "../../../../../store/types";
+import { User, Instance } from "../../../../../services/types";
+import { useGetInstancesQuery } from "../../../../../services/accounts";
+import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 
 interface ListRowData {
   type: "header" | "data" | "skeleton";

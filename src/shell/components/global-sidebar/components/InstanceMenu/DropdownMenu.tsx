@@ -29,7 +29,7 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 
 import { InstanceAvatar } from "../InstanceAvatar";
-import { InstancesListMenu } from "./InstancesListMenu";
+import { InstancesListMenu } from "./Flyouts/InstancesList";
 import { GlobalDomainsMenu } from "../../../GlobalDomainsMenu";
 import { useGetInstanceQuery } from "../../../../services/accounts";
 import { useRefreshCacheMutation } from "../../../../services/cloudFunctions";
