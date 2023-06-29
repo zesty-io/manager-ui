@@ -37,23 +37,23 @@ export const Metric = ({
       followCursor
       components={{ Tooltip: Box }}
     >
-      <Box py={0.5} width="100%">
+      <Box width="100%">
         {loading ? (
           <Skeleton
             variant="rectangular"
             width="80%"
-            height={24}
+            height={18}
             sx={{ bgcolor: "grey.200" }}
           />
         ) : (
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body3" color="text.secondary" fontWeight={600}>
             {title}
           </Typography>
         )}
         {loading ? (
-          <Skeleton variant="rectangular" width="100%" height={40} />
+          <Skeleton variant="rectangular" width="100%" height={32} />
         ) : (
-          <Typography variant="h2" fontWeight={600} sx={{ mb: 1 }}>
+          <Typography variant="h4" fontWeight={600} sx={{ mb: 0.5 }}>
             {formatter ? formatter(value) : numberFormatter.format(value)}
           </Typography>
         )}
