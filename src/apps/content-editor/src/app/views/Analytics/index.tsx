@@ -26,7 +26,7 @@ const Analytics = ({ item }: Props) => {
           boxSizing: "border-box",
           color: (theme) => theme.palette.text.primary,
         }}
-        height="calc(100% - 65px)"
+        height={item ? "calc(100% - 65px)" : "100%"}
         overflow="auto"
       >
         {!isError ? (

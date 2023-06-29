@@ -26,6 +26,7 @@ import { ByDayLineChart } from "./ByDayLineChart";
 import { useParams as useQueryParams } from "../../../../../../../../shell/hooks/useParams";
 import { UsersDoughnutChart } from "./UsersDoughutChart";
 import { AnalyticsPropertySelector } from "../../components/AnalyticsPropertySelector";
+import { ItemsTable } from "./ItemsTable";
 
 type Props = {
   loading: boolean;
@@ -369,6 +370,15 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 )
               }
               description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
+            />
+          </Box>
+          <Box mt={2}>
+            <ItemsTable
+              propertyId={propertyId}
+              startDate={startDate}
+              endDate={endDate}
+              dateRange0Label={dateRange0Label}
+              dateRange1Label={dateRange1Label}
             />
           </Box>
         </Box>
