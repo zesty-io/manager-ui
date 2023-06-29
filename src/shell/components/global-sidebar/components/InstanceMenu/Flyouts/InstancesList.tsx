@@ -34,10 +34,10 @@ interface ListRowData {
   data?: Instance;
   headerText?: string;
 }
-interface InstancesMenuProps {
+interface InstancesListProps {
   anchorEl: HTMLElement;
 }
-export const InstancesListMenu: FC<InstancesMenuProps> = ({ anchorEl }) => {
+export const InstancesList: FC<InstancesListProps> = ({ anchorEl }) => {
   const [filter, setFilter] = useState("");
   const searchField = useRef<HTMLInputElement | null>(null);
   const user: User = useSelector((state: AppState) => state.user);
