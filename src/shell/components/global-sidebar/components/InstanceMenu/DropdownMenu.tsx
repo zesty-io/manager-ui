@@ -10,6 +10,8 @@ import {
   MenuList,
   Link,
   Menu,
+  Popper,
+  Paper,
 } from "@mui/material";
 import { keyframes } from "@mui/system";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
@@ -27,10 +29,11 @@ import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
+import { theme } from "@zesty-io/material";
 
 import { InstanceAvatar } from "../InstanceAvatar";
 import { InstancesList } from "./Flyouts/InstancesList";
-import { DomainsList } from "./Flyouts/DomainsList";
+import { GlobalDomainsMenu } from "../../../GlobalDomainsMenu";
 import { useGetInstanceQuery } from "../../../../services/accounts";
 import { useRefreshCacheMutation } from "../../../../services/cloudFunctions";
 import { useDomain } from "../../../../hooks/use-domain";
@@ -55,8 +58,8 @@ interface DropdownMenuProps {
 export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
   const [instanceSwitcherAnchorEl, setInstanceSwitcherAnchorEl] =
     useState<HTMLElement | null>(null);
-  const [isInstanceSwitcherOpen, setIsInstanceSwitcherOpen] = useState(false);
-  const [isDomainsSwitcherOpen, setIsDomainsSwitcherOpen] = useState(false);
+  const [domainSwitcherAnchorEl, setDomainSwitcherAnchorEl] =
+    useState<HTMLElement | null>(null);
   const dispatch = useDispatch();
   const [isInstanceZuidCopied, setIsInstanceZuidCopied] = useState(false);
   const { data: instance } = useGetInstanceQuery();
@@ -160,13 +163,13 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
         <Divider />
         <MenuList>
           <MenuItem
+            data-cy="InstanceSwitcher"
             onMouseEnter={(evt) => {
               setInstanceSwitcherAnchorEl(evt.currentTarget);
             }}
             onMouseLeave={(evt) => {
               setInstanceSwitcherAnchorEl(null);
             }}
-            data-cy="InstanceSwitcher"
             sx={{
               "&.MuiMenuItem-root": {
                 backgroundColor: Boolean(instanceSwitcherAnchorEl)
@@ -265,14 +268,50 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemText>Teams</ListItemText>
           </MenuItem>
           <MenuItem
-            onMouseEnter={() => setIsDomainsSwitcherOpen(true)}
             data-cy="DomainSwitcher"
+            onMouseEnter={(evt) => {
+              setDomainSwitcherAnchorEl(evt.currentTarget);
+            }}
+            onMouseLeave={(evt) => {
+              setDomainSwitcherAnchorEl(null);
+            }}
+            sx={{
+              "&.MuiMenuItem-root": {
+                backgroundColor: Boolean(domainSwitcherAnchorEl)
+                  ? "action.hover"
+                  : "background.paper",
+              },
+            }}
           >
             <ListItemIcon>
               <LanguageRoundedIcon />
             </ListItemIcon>
             <ListItemText>Domains</ListItemText>
             <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
+            {Boolean(domainSwitcherAnchorEl) && (
+              <Popper
+                open
+                anchorEl={domainSwitcherAnchorEl}
+                placement="right-start"
+                sx={{
+                  zIndex: theme.zIndex.modal,
+                }}
+                popperOptions={{
+                  modifiers: [
+                    {
+                      name: "offset",
+                      options: {
+                        offset: [-16, -8],
+                      },
+                    },
+                  ],
+                }}
+              >
+                <Paper elevation={8}>
+                  <GlobalDomainsMenu withBackButton={false} />
+                </Paper>
+              </Popper>
+            )}
           </MenuItem>
           <MenuItem
             onClick={() =>
