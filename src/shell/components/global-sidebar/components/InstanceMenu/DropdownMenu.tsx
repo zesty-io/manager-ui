@@ -29,6 +29,7 @@ import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
+import { theme } from "@zesty-io/material";
 
 import { InstanceAvatar } from "../InstanceAvatar";
 import { InstancesList } from "./Flyouts/InstancesList";
@@ -57,6 +58,8 @@ interface DropdownMenuProps {
 }
 export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
   const [instanceSwitcherAnchorEl, setInstanceSwitcherAnchorEl] =
+    useState<HTMLElement | null>(null);
+  const [domainSwitcherAnchorEl, setDomainSwitcherAnchorEl] =
     useState<HTMLElement | null>(null);
   const dispatch = useDispatch();
   const [isInstanceZuidCopied, setIsInstanceZuidCopied] = useState(false);
@@ -270,7 +273,8 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
                 <ListItemIcon>
                   <LanguageRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>Domains New</ListItemText>
+                <ListItemText>Domains</ListItemText>
+                <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
               </>
             }
             PopperProps={{
@@ -283,6 +287,11 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
                     },
                   },
                 ],
+              },
+            }}
+            PaperProps={{
+              sx: {
+                borderRadius: "8px",
               },
             }}
           >
