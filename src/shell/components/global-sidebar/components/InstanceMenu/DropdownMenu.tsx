@@ -29,7 +29,6 @@ import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
-import { theme } from "@zesty-io/material";
 
 import { InstanceAvatar } from "../InstanceAvatar";
 import { InstancesList } from "./Flyouts/InstancesList";
@@ -40,6 +39,7 @@ import { useDomain } from "../../../../hooks/use-domain";
 import { notify } from "../../../../store/notifications";
 import instanceZUID from "../../../../../utility/instanceZUID";
 import { actions } from "../../../../store/ui";
+import { CascadingMenuItem } from "../../../CascadingMenuItem";
 
 export const rotateAnimation = keyframes`
   from {
@@ -57,8 +57,6 @@ interface DropdownMenuProps {
 }
 export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
   const [instanceSwitcherAnchorEl, setInstanceSwitcherAnchorEl] =
-    useState<HTMLElement | null>(null);
-  const [domainSwitcherAnchorEl, setDomainSwitcherAnchorEl] =
     useState<HTMLElement | null>(null);
   const dispatch = useDispatch();
   const [isInstanceZuidCopied, setIsInstanceZuidCopied] = useState(false);
@@ -265,52 +263,31 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             </ListItemIcon>
             <ListItemText>Teams</ListItemText>
           </MenuItem>
-          <MenuItem
+          <CascadingMenuItem
             data-cy="DomainSwitcher"
-            onMouseEnter={(evt) => {
-              setDomainSwitcherAnchorEl(evt.currentTarget);
-            }}
-            onMouseLeave={(evt) => {
-              setDomainSwitcherAnchorEl(null);
-            }}
-            sx={{
-              "&.MuiMenuItem-root": {
-                backgroundColor: Boolean(domainSwitcherAnchorEl)
-                  ? "action.hover"
-                  : "background.paper",
+            MenuItemComponent={
+              <>
+                <ListItemIcon>
+                  <LanguageRoundedIcon />
+                </ListItemIcon>
+                <ListItemText>Domains New</ListItemText>
+              </>
+            }
+            PopperProps={{
+              popperOptions: {
+                modifiers: [
+                  {
+                    name: "offset",
+                    options: {
+                      offset: [-16, -8],
+                    },
+                  },
+                ],
               },
             }}
           >
-            <ListItemIcon>
-              <LanguageRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>Domains</ListItemText>
-            <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
-            {Boolean(domainSwitcherAnchorEl) && (
-              <Popper
-                open
-                anchorEl={domainSwitcherAnchorEl}
-                placement="right-start"
-                sx={{
-                  zIndex: theme.zIndex.modal,
-                }}
-                popperOptions={{
-                  modifiers: [
-                    {
-                      name: "offset",
-                      options: {
-                        offset: [-16, -8],
-                      },
-                    },
-                  ],
-                }}
-              >
-                <Paper elevation={8}>
-                  <GlobalDomainsMenu withBackButton={false} />
-                </Paper>
-              </Popper>
-            )}
-          </MenuItem>
+            <GlobalDomainsMenu withBackButton={false} />
+          </CascadingMenuItem>
           <MenuItem
             onClick={() =>
               handleOpenUrl(
