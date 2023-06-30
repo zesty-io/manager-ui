@@ -161,33 +161,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
         </Stack>
         <Divider />
         <MenuList>
-          <MenuItem
-            data-cy="InstanceSwitcher"
-            onMouseEnter={(evt) => {
-              setInstanceSwitcherAnchorEl(evt.currentTarget);
-            }}
-            onMouseLeave={(evt) => {
-              setInstanceSwitcherAnchorEl(null);
-            }}
-            sx={{
-              "&.MuiMenuItem-root": {
-                backgroundColor: Boolean(instanceSwitcherAnchorEl)
-                  ? "action.hover"
-                  : "background.paper",
-              },
-            }}
-          >
-            <>
-              <ListItemIcon>
-                <ManageSearchRoundedIcon />
-              </ListItemIcon>
-              <ListItemText>Switch Instance</ListItemText>
-              <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
-              {Boolean(instanceSwitcherAnchorEl) && (
-                <InstancesList anchorEl={instanceSwitcherAnchorEl} />
-              )}
-            </>
-          </MenuItem>
+          <InstancesList />
           <Divider />
           <MenuItem
             onClick={() => {

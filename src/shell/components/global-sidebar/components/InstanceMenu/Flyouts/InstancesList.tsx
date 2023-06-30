@@ -23,21 +23,21 @@ import { cloneDeep } from "lodash";
 import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { theme } from "@zesty-io/material";
+import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 
 import { AppState } from "../../../../../store/types";
 import { User, Instance } from "../../../../../services/types";
 import { useGetInstancesQuery } from "../../../../../services/accounts";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
+import { CascadingMenuItem } from "../../../../CascadingMenuItem";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 
 interface ListRowData {
   type: "header" | "data" | "skeleton";
   data?: Instance;
   headerText?: string;
 }
-interface InstancesListProps {
-  anchorEl: HTMLElement;
-}
-export const InstancesList: FC<InstancesListProps> = ({ anchorEl }) => {
+export const InstancesList = () => {
   const [filter, setFilter] = useState("");
   const searchField = useRef<HTMLInputElement | null>(null);
   const user: User = useSelector((state: AppState) => state.user);
@@ -132,27 +132,31 @@ export const InstancesList: FC<InstancesListProps> = ({ anchorEl }) => {
   };
 
   return (
-    <Popper
-      open
-      anchorEl={anchorEl}
-      placement="right-start"
-      sx={{
-        zIndex: theme.zIndex.modal,
-      }}
-      popperOptions={{
-        modifiers: [
-          {
-            name: "offset",
-            options: {
-              offset: [-16, -8],
+    <CascadingMenuItem
+      data-cy="InstanceSwitcher"
+      MenuItemComponent={
+        <>
+          <ListItemIcon>
+            <ManageSearchRoundedIcon />
+          </ListItemIcon>
+          <ListItemText>Switch Instance</ListItemText>
+          <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
+        </>
+      }
+      PopperProps={{
+        popperOptions: {
+          modifiers: [
+            {
+              name: "offset",
+              options: {
+                offset: [-16, -8],
+              },
             },
-          },
-        ],
+          ],
+        },
       }}
-    >
-      <Paper
-        elevation={8}
-        sx={{
+      PaperProps={{
+        sx: {
           /**
            * HACK: Compute min-height depending on how many data are to be rendered (36px each) + search box (72px) + margin top & bottom (16px).
            * Virtualized list won't render when using %-based heights.
@@ -163,93 +167,93 @@ export const InstancesList: FC<InstancesListProps> = ({ anchorEl }) => {
             : 445,
           width: 340,
           borderRadius: "8px",
-        }}
-      >
-        <Stack flexDirection="column" height="inherit">
-          <ListSubheader
-            sx={{
-              p: 2,
-              borderBottom: "1px solid",
-              borderColor: "border",
-              height: 72,
-              borderRadius: "8px 8px 0px 0px",
-            }}
-            onKeyDown={(e: React.KeyboardEvent) => {
-              const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
+        },
+      }}
+    >
+      <Stack flexDirection="column" height="inherit">
+        <ListSubheader
+          sx={{
+            p: 2,
+            borderBottom: "1px solid",
+            borderColor: "border",
+            height: 72,
+            borderRadius: "8px 8px 0px 0px",
+          }}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
 
-              if (!allowedKeys.includes(e.key)) {
-                e.stopPropagation();
-              }
+            if (!allowedKeys.includes(e.key)) {
+              e.stopPropagation();
+            }
+          }}
+        >
+          <TextField
+            autoFocus
+            fullWidth
+            placeholder="Search Instances"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            inputRef={searchField}
+          />
+        </ListSubheader>
+        {filter && !filteredInstances?.length ? (
+          <Stack
+            px={2}
+            justifyContent="center"
+            alignItems="center"
+            textAlign="center"
+            height={445}
+          >
+            <img
+              src={noSearchResults}
+              alt="No Search Results"
+              width={88}
+              height={80}
+            />
+            <Typography variant="h5" fontWeight={600}>
+              Your search “{filter}” could not find any results
+            </Typography>
+            <Typography variant="body2" color="text.secondary" pb={3}>
+              Try adjusting tour search. We suggest check all words are spelled
+              correctly or try using different keywords.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={handleResetFilter}
+              startIcon={<SearchRoundedIcon />}
+            >
+              Search Again
+            </Button>
+          </Stack>
+        ) : (
+          <Box
+            height="100%"
+            sx={{
+              ".MuiList-root": {
+                marginTop: "8px",
+                marginBottom: "8px",
+                padding: 0,
+              },
             }}
           >
-            <TextField
-              autoFocus
-              fullWidth
-              placeholder="Search Instances"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              inputRef={searchField}
-            />
-          </ListSubheader>
-          {filter && !filteredInstances?.length ? (
-            <Stack
-              px={2}
-              justifyContent="center"
-              alignItems="center"
-              textAlign="center"
-              height={445}
-            >
-              <img
-                src={noSearchResults}
-                alt="No Search Results"
-                width={88}
-                height={80}
-              />
-              <Typography variant="h5" fontWeight={600}>
-                Your search “{filter}” could not find any results
-              </Typography>
-              <Typography variant="body2" color="text.secondary" pb={3}>
-                Try adjusting tour search. We suggest check all words are
-                spelled correctly or try using different keywords.
-              </Typography>
-              <Button
-                variant="contained"
-                onClick={handleResetFilter}
-                startIcon={<SearchRoundedIcon />}
-              >
-                Search Again
-              </Button>
-            </Stack>
-          ) : (
-            <Box
-              height="100%"
-              sx={{
-                ".MuiList-root": {
-                  marginTop: "8px",
-                  marginBottom: "8px",
-                  padding: 0,
-                },
-              }}
-            >
-              <AutoSizer>
-                {({ height, width }) => (
-                  <FixedSizeList
-                    height={height}
-                    width={width}
-                    itemCount={listData?.length}
-                    itemSize={36}
-                    itemData={listData}
-                    innerElementType={MenuList}
-                  >
-                    {Row}
-                  </FixedSizeList>
-                )}
-              </AutoSizer>
-            </Box>
-          )}
-        </Stack>
-      </Paper>
-    </Popper>
+            <AutoSizer>
+              {({ height, width }) => (
+                <FixedSizeList
+                  height={height}
+                  width={width}
+                  itemCount={listData?.length}
+                  itemSize={36}
+                  itemData={listData}
+                  innerElementType={MenuList}
+                >
+                  {Row}
+                </FixedSizeList>
+              )}
+            </AutoSizer>
+          </Box>
+        )}
+      </Stack>
+    </CascadingMenuItem>
   );
 };
 
