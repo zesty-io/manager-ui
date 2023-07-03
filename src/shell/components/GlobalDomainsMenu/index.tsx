@@ -13,6 +13,7 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
+  Skeleton,
 } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
@@ -54,7 +55,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
   withBackButton = true,
 }) => {
   const dispatch = useDispatch();
-  const { data: domains } = useGetDomainsQuery();
+  const { data: domains, isLoading: isLoadingDomains } = useGetDomainsQuery();
   const { data: instance } = useGetInstanceQuery();
   const [refreshCache, { isSuccess, isLoading, isError }] =
     useRefreshCacheMutation();
@@ -160,29 +161,37 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
           </Tooltip>
           <Chip size="small" label="Stage" />
         </MenuItem>
-        {domains?.map((domain) => (
-          <MenuItem
-            key={domain.ZUID}
-            onClick={() => handleOpenUrl(`https://${domain.domain}`)}
-          >
-            <ListItemIcon>
-              <LanguageRoundedIcon />
-            </ListItemIcon>
-            <Tooltip
-              title={domain.domain}
-              enterDelay={500}
-              enterNextDelay={500}
-            >
-              <ListItemText primaryTypographyProps={{ noWrap: true }}>
-                {domain.domain}
-              </ListItemText>
-            </Tooltip>
-            <Chip
-              size="small"
-              label={CHIP_TITLE[domain.branch as keyof typeof CHIP_TITLE] || ""}
-            />
-          </MenuItem>
-        ))}
+        {isLoadingDomains
+          ? [...Array(5)].map((_, index) => (
+              <MenuItem key={index}>
+                <Skeleton width="100%" height={24} />
+              </MenuItem>
+            ))
+          : domains?.map((domain) => (
+              <MenuItem
+                key={domain.ZUID}
+                onClick={() => handleOpenUrl(`https://${domain.domain}`)}
+              >
+                <ListItemIcon>
+                  <LanguageRoundedIcon />
+                </ListItemIcon>
+                <Tooltip
+                  title={domain.domain}
+                  enterDelay={500}
+                  enterNextDelay={500}
+                >
+                  <ListItemText primaryTypographyProps={{ noWrap: true }}>
+                    {domain.domain}
+                  </ListItemText>
+                </Tooltip>
+                <Chip
+                  size="small"
+                  label={
+                    CHIP_TITLE[domain.branch as keyof typeof CHIP_TITLE] || ""
+                  }
+                />
+              </MenuItem>
+            ))}
       </MenuList>
     </Stack>
   );
