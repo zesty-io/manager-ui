@@ -79,7 +79,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
   };
 
   return (
-    <Stack height="inherit">
+    <Stack height="inherit" data-cy="DomainsList">
       <Stack direction="row" gap={1.5} p={2}>
         {withBackButton && (
           <IconButton size="small" onClick={() => onChangeView("normal")}>

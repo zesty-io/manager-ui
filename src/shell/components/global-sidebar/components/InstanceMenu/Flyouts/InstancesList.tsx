@@ -170,7 +170,7 @@ export const InstancesList = () => {
         },
       }}
     >
-      <Stack flexDirection="column" height="inherit">
+      <Stack flexDirection="column" height="inherit" data-cy="InstancesList">
         <ListSubheader
           sx={{
             p: 2,

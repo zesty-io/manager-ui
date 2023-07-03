@@ -122,6 +122,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
     <>
       <Menu
         open
+        data-cy="InstanceMenu"
         anchorEl={anchorEl}
         onClose={onClose}
         PaperProps={{
@@ -241,7 +242,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <ListItemText>Teams</ListItemText>
           </MenuItem>
           <CascadingMenuItem
-            data-cy="DomainSwitcher"
+            data-cy="DomainSwitcherMenuItem"
             MenuItemComponent={
               <>
                 <ListItemIcon>

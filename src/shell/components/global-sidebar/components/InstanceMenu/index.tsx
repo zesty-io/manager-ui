@@ -28,6 +28,7 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
         }}
       >
         <Stack
+          data-cy="InstanceMenuButton"
           direction="row"
           height={36}
           width="100%"
