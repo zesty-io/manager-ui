@@ -1,4 +1,4 @@
-import { FC, useMemo, useState, useRef, CSSProperties } from "react";
+import { useMemo, useState, useRef, CSSProperties } from "react";
 import { useSelector } from "react-redux";
 import {
   TextField,
@@ -12,8 +12,6 @@ import {
   Box,
   Tooltip,
   Skeleton,
-  Popper,
-  Paper,
   MenuList,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
@@ -22,7 +20,6 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { cloneDeep } from "lodash";
 import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { theme } from "@zesty-io/material";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 
 import { AppState } from "../../../../../store/types";
