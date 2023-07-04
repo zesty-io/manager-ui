@@ -1,12 +1,15 @@
 "use strict";
 
+import { useStore } from "react-redux";
 import moment from "moment-timezone";
 
-import { useGetDomainsQuery } from "../services/accounts";
+import { Domain } from "../services/types";
 
 type UseDomain = () => string;
 export const useDomain: UseDomain = () => {
-  const { data: domains } = useGetDomainsQuery();
+  const store = useStore();
+  const state = store.getState();
+  const { domains }: { domains: Domain[] } = state.instance;
 
   // Let WebEngine figure out https & www settings
   const format = (domain: string) => `http://${domain}`;
