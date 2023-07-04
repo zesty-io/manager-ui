@@ -556,7 +556,6 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
         <Box display="flex" mt={2.5} gap={2}>
           <Box
             width="40%"
-            height="446px"
             borderRadius={"8px"}
             p={2}
             border={(theme) => `1px solid ${theme.palette.border}`}
@@ -583,7 +582,6 @@ export const SinglePageAnalyticsView = ({ item }: Props) => {
 
           <Box
             width="60%"
-            height="446px"
             borderRadius={"8px"}
             p={2}
             border={(theme) => `1px solid ${theme.palette.border}`}
