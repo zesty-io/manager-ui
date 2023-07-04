@@ -1,33 +1,29 @@
 "use strict";
 
-import { useStore } from "react-redux";
 import moment from "moment-timezone";
 
-import { Domain } from "../services/types";
+import { useGetDomainsQuery } from "../services/accounts";
 
 type UseDomain = () => string;
 export const useDomain: UseDomain = () => {
-  const store = useStore();
-  const state = store.getState();
+  const { data: domains } = useGetDomainsQuery();
 
   // Let WebEngine figure out https & www settings
   const format = (domain: string) => `http://${domain}`;
 
-  if (Array.isArray(state.instance.domains) && state.instance.domains.length) {
+  if (Array.isArray(domains) && domains.length) {
     /**
      * By default when an instance is created it gets a .zesty.dev domain
      * linked to the 'dev' branch. We look for a domain record which is neither.
      * That is most likely the primary domain.
      */
 
-    const prodDomains = state.instance.domains
-      .filter((domain: Domain) => domain.branch !== "dev")
-      .sort((a: Domain, b: Domain) =>
-        moment(b.updatedAt).diff(moment(a.updatedAt))
-      );
+    const prodDomains = domains
+      .filter((domain) => domain.branch !== "dev")
+      .sort((a, b) => moment(b.updatedAt).diff(moment(a.updatedAt)));
 
     const customDomain = prodDomains.find(
-      (domain: Domain) => !domain.domain.includes(".zesty.dev")
+      (domain) => !domain.domain.includes(".zesty.dev")
     );
 
     if (customDomain) {
