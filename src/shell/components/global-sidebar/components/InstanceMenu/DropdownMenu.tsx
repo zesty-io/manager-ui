@@ -10,12 +10,9 @@ import {
   MenuList,
   Link,
   Menu,
-  Popper,
-  Paper,
 } from "@mui/material";
 import { keyframes } from "@mui/system";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
-import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
@@ -29,7 +26,7 @@ import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
-import { theme } from "@zesty-io/material";
+import { Rect } from "@popperjs/core";
 
 import { InstanceAvatar } from "../InstanceAvatar";
 import { InstancesList } from "./Flyouts/InstancesList";
@@ -57,10 +54,6 @@ interface DropdownMenuProps {
   onClose: () => void;
 }
 export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
-  const [instanceSwitcherAnchorEl, setInstanceSwitcherAnchorEl] =
-    useState<HTMLElement | null>(null);
-  const [domainSwitcherAnchorEl, setDomainSwitcherAnchorEl] =
-    useState<HTMLElement | null>(null);
   const dispatch = useDispatch();
   const [isInstanceZuidCopied, setIsInstanceZuidCopied] = useState(false);
   const { data: instance } = useGetInstanceQuery();
@@ -261,6 +254,10 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
                       offset: [-16, -8],
                     },
                   },
+                  {
+                    name: "flip",
+                    enabled: false,
+                  },
                 ],
               },
             }}
@@ -268,6 +265,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
               sx: {
                 borderRadius: "8px",
                 width: 340,
+                mb: 2,
               },
             }}
           >
