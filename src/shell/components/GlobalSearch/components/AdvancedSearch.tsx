@@ -16,9 +16,11 @@ import {
   MenuItem,
   Tooltip,
   Divider,
+  IconButton,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import CloseIcon from "@mui/icons-material/Close";
 import moment from "moment";
 import { upperFirst } from "lodash";
 import { useHistory, useLocation } from "react-router";
@@ -250,10 +252,19 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
         }}
       >
         <DialogTitle component="div">
-          <Typography variant="h5" fontWeight={600} mb={1}>
-            Advanced Search
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography variant="h5" fontWeight={600}>
+              Advanced Search
+            </Typography>
+            <IconButton size="small" onClick={onClose}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Stack>
+          <Typography variant="body2" color="text.secondary" mt={1}>
             As you and your team work together in Zesty, you'll create a
             searchable archive of content, models, and code files. Use the form
             below to find what you are looking for.
