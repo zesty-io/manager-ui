@@ -321,7 +321,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 renderInput={(params: any) => (
                   <TextField
                     {...params}
-                    placeholder="Select"
+                    placeholder="Anyone"
                     sx={{ height: "40px" }}
                     InputProps={{
                       ...params.InputProps,
@@ -333,6 +333,11 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                         "&.MuiAutocomplete-inputRoot .MuiAutocomplete-input": {
                           pl: 0,
                         },
+                        // TODO: Check with Zosh if the font color needs to be changed or not
+                        // "&.MuiAutocomplete-inputRoot .MuiAutocomplete-input::placeholder":
+                        //   {
+                        //     color: "text.primary",
+                        //   },
                       },
                     }}
                   />
@@ -366,15 +371,6 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 displayEmpty
                 fullWidth
                 value={searchData.resourceType || ""}
-                sx={{
-                  "& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input.MuiOutlinedInput-input":
-                    {
-                      color:
-                        searchData.resourceType === null
-                          ? "text.disabled"
-                          : "text.primary",
-                    },
-                }}
                 onChange={(e) => {
                   const { value } = e.target;
 
@@ -383,9 +379,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                   });
                 }}
               >
-                <MenuItem value="" disabled sx={{ display: "none" }}>
-                  Select
-                </MenuItem>
+                <MenuItem value="">Any Type</MenuItem>
                 {Object.entries(RESOURCE_TYPES).map(([value, text]) => (
                   <MenuItem key={value} value={value}>
                     {text}
@@ -395,7 +389,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </Box>
             <Box>
               <InputLabel>
-                Date Modified
+                Date
                 <Tooltip
                   placement="top"
                   title="Select the date range for which you want to see results for."
@@ -411,37 +405,30 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 displayEmpty
                 fullWidth
                 value={setDateSelectValue(searchData.date)}
-                sx={{
-                  "& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input.MuiOutlinedInput-input":
-                    {
-                      color:
-                        searchData.date === null
-                          ? "text.disabled"
-                          : "text.primary",
-                    },
-                }}
                 onChange={(e) => {
                   const { value } = e.target;
 
-                  if (
-                    PRESET_DATES.map((d) => d.value).includes(
-                      value as PresetType
-                    )
-                  ) {
-                    updateSearchData({
-                      date: {
-                        type: "preset",
-                        value: value as PresetType,
-                      },
-                    });
+                  if (value === "") {
+                    updateSearchData({ date: null });
                   } else {
-                    setCalendarModalType(value as DateFilterModalType);
+                    if (
+                      PRESET_DATES.map((d) => d.value).includes(
+                        value as PresetType
+                      )
+                    ) {
+                      updateSearchData({
+                        date: {
+                          type: "preset",
+                          value: value as PresetType,
+                        },
+                      });
+                    } else {
+                      setCalendarModalType(value as DateFilterModalType);
+                    }
                   }
                 }}
               >
-                <MenuItem value="" disabled sx={{ display: "none" }}>
-                  Select
-                </MenuItem>
+                <MenuItem value="">Any Time</MenuItem>
                 {PRESET_DATES.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.text}
