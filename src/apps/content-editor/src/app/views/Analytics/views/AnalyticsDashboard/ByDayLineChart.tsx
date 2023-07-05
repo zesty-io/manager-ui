@@ -14,7 +14,7 @@ import { isEqual, last } from "lodash";
 import { ChartEvent } from "chart.js";
 import moment, { Moment } from "moment-timezone";
 import "chartjs-adapter-moment";
-import lineChartSkeleton from "../../../../../../../../../public/images/lineChartSkeleton.svg";
+import lineChartSkeleton2 from "../../../../../../../../../public/images/lineChartSkeleton2.svg";
 import {
   calculatePercentageDifference,
   findValuesForDimensions,
@@ -49,7 +49,7 @@ export const ByDayLineChart = ({
   dateRange0Label,
   dateRange1Label,
   data,
-  loading = false,
+  loading = true,
 }: Props) => {
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
@@ -123,6 +123,14 @@ export const ByDayLineChart = ({
 
     return firstDate.year() !== lastDate.year();
   }, [dateChartLabels]);
+
+  if (loading) {
+    return (
+      <Box height="106px" width="100%" minWidth="0">
+        <img src={lineChartSkeleton2} height="100%" width="100%" />
+      </Box>
+    );
+  }
 
   return (
     <Box position="relative" height="106px" width="100%" minWidth="0">

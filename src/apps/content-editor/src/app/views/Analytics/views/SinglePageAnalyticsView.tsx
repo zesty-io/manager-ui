@@ -154,16 +154,6 @@ export const SinglePageAnalyticsView = ({ item, loading }: Props) => {
     );
   }
 
-  if (!instanceSettingsFetching && !propertyId && !loading) {
-    return (
-      <PropertiesDialog
-        onClose={(shouldNavAway = false) =>
-          shouldNavAway && history.push(`/content/${modelZUID}/${itemZUID}`)
-        }
-      />
-    );
-  }
-
   return (
     <>
       <Box height="100%">

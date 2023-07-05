@@ -107,7 +107,6 @@ export interface Meta {
   zid: number;
   masterZUID: string;
   contentModelZUID: string;
-  contentModelName?: any;
   sort: number;
   listed: boolean;
   version: number;

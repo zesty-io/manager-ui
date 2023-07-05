@@ -3,10 +3,10 @@ import { Box, Paper, Typography, Tooltip, Skeleton } from "@mui/material";
 import { numberFormatter } from "../../../../../../../utility/numberFormatter";
 import { calculatePercentageDifference } from "../utils";
 type Props = {
-  title: string;
+  title?: string;
   value: number;
   priorValue: number;
-  description: string;
+  description?: string;
   formatter?: (value: number) => string;
   inverse?: boolean;
   loading?: boolean;
@@ -24,7 +24,7 @@ export const Metric = ({
   return (
     <Tooltip
       title={
-        !loading ? (
+        !loading && description ? (
           <TooltipBody
             title={title}
             value={formatter ? formatter(value) : value?.toLocaleString()}
@@ -38,7 +38,7 @@ export const Metric = ({
       components={{ Tooltip: Box }}
     >
       <Box width="100%">
-        {loading ? (
+        {!title ? null : loading ? (
           <Skeleton
             variant="rectangular"
             width="80%"

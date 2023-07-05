@@ -61,6 +61,26 @@ export function findTopDimensionsForDateRange(
   return sortedData?.slice(0, topN).map((item) => item.dimensionValues);
 }
 
+export function findTopDimensions(
+  data: any[],
+  dateRanges: string[],
+  topN: number
+) {
+  const dateRangeData = data?.filter((item) =>
+    dateRanges.every((dateRange) =>
+      item.dimensionValues.some(
+        (dimension: any) => dimension.value === dateRange
+      )
+    )
+  );
+
+  const sortedData = dateRangeData?.sort(
+    (a, b) => Number(b.metricValues[0].value) - Number(a.metricValues[0].value)
+  );
+
+  return sortedData?.slice(0, topN).map((item) => item.dimensionValues);
+}
+
 export const generateReportRequests = (
   propertyId: string,
   itemPath: string,

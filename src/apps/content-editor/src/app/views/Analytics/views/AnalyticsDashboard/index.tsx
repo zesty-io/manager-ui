@@ -1,4 +1,11 @@
-import { Button, Box, Typography, Tooltip, Divider } from "@mui/material";
+import {
+  Button,
+  Box,
+  Typography,
+  Tooltip,
+  Divider,
+  Skeleton,
+} from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import { AddRounded } from "@mui/icons-material";
@@ -27,6 +34,10 @@ import { useParams as useQueryParams } from "../../../../../../../../shell/hooks
 import { UsersDoughnutChart } from "./UsersDoughutChart";
 import { AnalyticsPropertySelector } from "../../components/AnalyticsPropertySelector";
 import { ItemsTable } from "./ItemsTable";
+import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
+import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import instanceZUID from "../../../../../../../../utility/instanceZUID";
+import { NotFound } from "../../../../../../../../shell/components/NotFound";
 
 type Props = {
   loading: boolean;
@@ -64,6 +75,9 @@ const AnalyticsDashboard = ({ loading }: Props) => {
             },
             {
               name: "bounceRate",
+            },
+            {
+              name: "eventCount",
             },
             {
               name: "conversions",
@@ -183,12 +197,46 @@ const AnalyticsDashboard = ({ loading }: Props) => {
 
   const isLoading = isFetching || instanceSettingsFetching || loading;
 
+  if (isError) {
+    return (
+      <NotFound
+        title="Unable to Load Analytics Data"
+        message="This may be due to a bad internet connection so please try again. If you are still unable to resolve this issue, please contact support."
+        button={
+          <>
+            <Button
+              startIcon={<SupportAgentRoundedIcon color="action" />}
+              variant="contained"
+              color="inherit"
+              sx={{ mr: 2 }}
+              onClick={() =>
+                window.open(
+                  `https://www.zesty.io/instances/${instanceZUID}/support/`
+                )
+              }
+            >
+              Contact Support
+            </Button>
+            <Button
+              startIcon={<RefreshRoundedIcon />}
+              variant="contained"
+              onClick={() => refetch()}
+            >
+              Try Again
+            </Button>
+          </>
+        }
+      />
+    );
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Box
         color={theme.palette.text.primary}
         bgcolor={theme.palette.grey[50]}
         boxSizing="border-box"
+        pb={8}
       >
         <AnalyticsDashboardHeader />
         <Box px={2}>
@@ -210,29 +258,50 @@ const AnalyticsDashboard = ({ loading }: Props) => {
               width="55%"
             >
               <Box minWidth="120px">
-                <Metric
-                  loading={isLoading}
-                  title="Total Sessions"
-                  value={
-                    +(
-                      findValuesForDimensions(
-                        metricsReport?.rows,
-                        ["date_range_0"],
-                        0
-                      ) || 0
-                    )
-                  }
-                  priorValue={
-                    +(
-                      findValuesForDimensions(
-                        metricsReport?.rows,
-                        ["date_range_1"],
-                        0
-                      ) || 0
-                    )
-                  }
-                  description="A session in Google Analytics is a period of time in which a user interacts with your website."
-                />
+                {isLoading ? (
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height="32px"
+                    sx={{ bgcolor: "grey.200" }}
+                  />
+                ) : (
+                  <>
+                    <Typography variant="body2" fontWeight="600">
+                      Total Sessions
+                    </Typography>
+                    <Typography
+                      variant="body3"
+                      fontWeight="600"
+                      color="text.secondary"
+                    >
+                      {dateRange0Label}
+                    </Typography>
+                  </>
+                )}
+                <Box mt={2}>
+                  <Metric
+                    loading={isLoading}
+                    value={
+                      +(
+                        findValuesForDimensions(
+                          metricsReport?.rows,
+                          ["date_range_0"],
+                          0
+                        ) || 0
+                      )
+                    }
+                    priorValue={
+                      +(
+                        findValuesForDimensions(
+                          metricsReport?.rows,
+                          ["date_range_1"],
+                          0
+                        ) || 0
+                      )
+                    }
+                  />
+                </Box>
               </Box>
               <ByDayLineChart
                 startDate={startDate}
@@ -240,7 +309,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 dateRange0Label={dateRange0Label}
                 dateRange1Label={dateRange1Label}
                 data={dailySessionsReport}
-                loading={isFetching}
+                loading={isLoading}
               />
             </Box>
             <Box
@@ -259,7 +328,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 dateRange1Label={dateRange1Label}
                 usersData={newVsReturningReport}
                 sourceData={userSourcesReport}
-                loading={isFetching}
+                loading={isLoading}
               />
             </Box>
           </Box>
@@ -350,7 +419,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
             <Divider orientation="vertical" flexItem />
             <Metric
               loading={isLoading}
-              title="Conversions"
+              title="Events"
               value={
                 +(
                   findValuesForDimensions(
@@ -366,6 +435,30 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                     metricsReport?.rows,
                     ["date_range_1"],
                     3
+                  ) || 0
+                )
+              }
+              description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
+            />
+            <Divider orientation="vertical" flexItem />
+            <Metric
+              loading={isLoading}
+              title="Conversions"
+              value={
+                +(
+                  findValuesForDimensions(
+                    metricsReport?.rows,
+                    ["date_range_0"],
+                    4
+                  ) || 0
+                )
+              }
+              priorValue={
+                +(
+                  findValuesForDimensions(
+                    metricsReport?.rows,
+                    ["date_range_1"],
+                    4
                   ) || 0
                 )
               }
@@ -416,6 +509,9 @@ const AnalyticsDashboardHeader = () => {
   return (
     <>
       <Box
+        position="sticky"
+        top={0}
+        zIndex={1}
         display="flex"
         justifyContent="space-between"
         p={2}

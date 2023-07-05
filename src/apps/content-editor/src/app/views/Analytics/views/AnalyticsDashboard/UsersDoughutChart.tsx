@@ -157,7 +157,7 @@ export const UsersDoughnutChart = ({
     return result;
   }, [sourceData]);
 
-  if (loading) return null;
+  // if (loading) return null;
 
   return (
     <>
@@ -173,13 +173,17 @@ export const UsersDoughnutChart = ({
             labels: SOURCE_LEGEND.map((item) => item.label),
             datasets: [
               {
-                data: dataset,
+                data: !loading ? dataset : [30, 20, 20, 8, 7],
                 backgroundColor: [
-                  theme.palette.blue[500],
-                  theme.palette.green[500],
-                  theme.palette.pink[500],
-                  theme.palette.yellow[300],
-                  theme.palette.purple[500],
+                  !loading ? theme.palette.blue[500] : theme.palette.grey[50],
+                  !loading ? theme.palette.green[500] : theme.palette.grey[100],
+                  !loading ? theme.palette.pink[500] : theme.palette.grey[200],
+                  !loading
+                    ? theme.palette.yellow[300]
+                    : theme.palette.grey[300],
+                  !loading
+                    ? theme.palette.purple[500]
+                    : theme.palette.grey[400],
                   theme.palette.grey[400],
                 ],
                 borderWidth: 0,
@@ -210,63 +214,99 @@ export const UsersDoughnutChart = ({
           left="27px"
           width="56px"
         >
-          <Typography fontSize={14} fontWeight={700} lineHeight="18px">
-            {(
-              +findValuesForDimensions(
-                usersData?.rows,
-                ["new", "date_range_0"],
-                0
-              ) || 0
-            )?.toLocaleString()}
-          </Typography>
-          <Typography
-            fontWeight={600}
-            fontSize={10}
-            lineHeight="12px"
-            color="text.secondary"
-          >
-            {Math.floor(
-              ((+findValuesForDimensions(
-                usersData?.rows,
-                ["new", "date_range_0"],
-                0
-              ) || 0) /
-                ((+findValuesForDimensions(
-                  usersData?.rows,
-                  ["new", "date_range_0"],
-                  0
-                ) || 0) +
-                  (+findValuesForDimensions(
+          {loading ? (
+            <Box>
+              <Skeleton
+                variant="rectangular"
+                height="16px"
+                width="100%"
+                sx={{ mt: 2, mb: 1 }}
+              />
+              <Skeleton variant="rectangular" height="16px" width="100%" />
+            </Box>
+          ) : (
+            <>
+              <Typography fontSize={14} fontWeight={700} lineHeight="18px">
+                {(
+                  +findValuesForDimensions(
+                    usersData?.rows,
+                    ["new", "date_range_0"],
+                    0
+                  ) || 0
+                )?.toLocaleString()}
+              </Typography>
+
+              <Typography
+                fontWeight={600}
+                fontSize={10}
+                lineHeight="12px"
+                color="text.secondary"
+              >
+                {isNaN(
+                  Math.floor(
+                    ((+findValuesForDimensions(
+                      usersData?.rows,
+                      ["new", "date_range_0"],
+                      0
+                    ) || 0) /
+                      ((+findValuesForDimensions(
+                        usersData?.rows,
+                        ["new", "date_range_0"],
+                        0
+                      ) || 0) +
+                        (+findValuesForDimensions(
+                          usersData?.rows,
+                          ["returning", "date_range_0"],
+                          0
+                        ) || 0))) *
+                      100
+                  )
+                )
+                  ? 0
+                  : Math.floor(
+                      ((+findValuesForDimensions(
+                        usersData?.rows,
+                        ["new", "date_range_0"],
+                        0
+                      ) || 0) /
+                        ((+findValuesForDimensions(
+                          usersData?.rows,
+                          ["new", "date_range_0"],
+                          0
+                        ) || 0) +
+                          (+findValuesForDimensions(
+                            usersData?.rows,
+                            ["returning", "date_range_0"],
+                            0
+                          ) || 0))) *
+                        100
+                    )}
+                % New
+              </Typography>
+              <Divider
+                sx={{
+                  my: "3px",
+                }}
+              />
+              <Typography fontSize={14} fontWeight={700} lineHeight="18px">
+                {(
+                  +findValuesForDimensions(
                     usersData?.rows,
                     ["returning", "date_range_0"],
                     0
-                  ) || 0))) *
-                100
-            )}
-            % New
-          </Typography>
-          <Divider
-            sx={{
-              my: "3px",
-            }}
-          />
-          <Typography fontSize={14} fontWeight={700} lineHeight="18px">
-            {(
-              +findValuesForDimensions(
-                usersData?.rows,
-                ["returning", "date_range_0"],
-                0
-              ) || 0
-            )?.toLocaleString()}
-          </Typography>
-          <Typography
-            fontWeight={600}
-            fontSize={10}
-            lineHeight="12px"
-            color="text.secondary"
-          >
-            Returning
-          </Typography>
+                  ) || 0
+                )?.toLocaleString()}
+              </Typography>
+              <Typography
+                fontWeight={600}
+                fontSize={10}
+                lineHeight="12px"
+                color="text.secondary"
+              >
+                Returning
+              </Typography>
+            </>
+          )}
         </Box>
         <Paper
           sx={{
@@ -319,61 +359,78 @@ export const UsersDoughnutChart = ({
           </Box>
         </Paper>
       </Box>
-      <Box>
-        <Typography variant="h3" fontWeight={600}>
-          {(
-            (+findValuesForDimensions(
-              usersData?.rows,
-              ["new", "date_range_0"],
-              0
-            ) || 0) +
-              +findValuesForDimensions(
+      <Box width="100%">
+        {loading ? (
+          <Skeleton
+            variant="rectangular"
+            height="21px"
+            sx={{ bgcolor: "grey.200" }}
+            width="60%"
+          />
+        ) : (
+          <Typography variant="h3" fontWeight={600}>
+            {(
+              (+findValuesForDimensions(
                 usersData?.rows,
-                ["returning", "date_range_0"],
+                ["new", "date_range_0"],
                 0
-              ) || 0
-          )?.toLocaleString()}
-          <Typography display="inline" fontWeight={600}>
-            {" "}
-            users
+              ) || 0) +
+                +findValuesForDimensions(
+                  usersData?.rows,
+                  ["returning", "date_range_0"],
+                  0
+                ) || 0
+            )?.toLocaleString()}
+            <Typography display="inline" fontWeight={600}>
+              {" "}
+              users
+            </Typography>
           </Typography>
-        </Typography>
-        <Typography
-          sx={{ mb: 1 }}
-          fontSize={10}
-          color="text.secondary"
-          fontWeight={600}
-          lineHeight="12px"
-        >
-          Lorem ipsum
-        </Typography>
-        <Box display="flex" flexWrap="wrap">
-          {SOURCE_LEGEND.map((item, index) => (
-            <Box
-              key={index}
-              display="flex"
-              alignItems="center"
-              gap={0.5}
-              mr={1}
-            >
+        )}
+        {loading ? (
+          <Skeleton variant="rectangular" height="36px" sx={{ mb: 1 }} />
+        ) : (
+          <Typography
+            sx={{ mb: 1 }}
+            fontSize={10}
+            color="text.secondary"
+            fontWeight={600}
+            lineHeight="12px"
+          >
+            Lorem ipsum
+          </Typography>
+        )}
+        {loading ? (
+          <Skeleton variant="rectangular" height="16px" width="50%" />
+        ) : (
+          <Box display="flex" flexWrap="wrap">
+            {SOURCE_LEGEND.map((item, index) => (
               <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  backgroundColor: item.color,
-                }}
-              />
-              <Typography
-                variant="body3"
-                fontWeight={600}
-                color="text.secondary"
+                key={index}
+                display="flex"
+                alignItems="center"
+                gap={0.5}
+                mr={1}
               >
-                {item.label}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    backgroundColor: item.color,
+                  }}
+                />
+                <Typography
+                  variant="body3"
+                  fontWeight={600}
+                  color="text.secondary"
+                >
+                  {item.label}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        )}
       </Box>
     </>
   );
