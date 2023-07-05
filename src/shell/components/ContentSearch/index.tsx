@@ -29,6 +29,11 @@ import { getContentTitle, getItemIcon } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
 import { ResourceType } from "../../services/types";
+import {
+  useSearchBinFilesQuery,
+  useGetBinsQuery,
+} from "../../services/mediaManager";
+import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
 
 const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
 const ElementId = "global-search-autocomplete";
@@ -40,6 +45,7 @@ export interface Suggestion {
   updatedAt: string;
   url: string;
   noUrlErrorMessage?: string;
+  subType?: string;
 }
 
 const ContentSearch: FC = () => {
@@ -48,8 +54,12 @@ const ContentSearch: FC = () => {
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const [files, setFileKeyword] = useSearchCodeFilesByKeywords();
+  const [codeFiles, setFileKeyword] = useSearchCodeFilesByKeywords();
+  const [mediaFolders, setMediaFolderKeyword] =
+    useSearchMediaFoldersByKeyword();
   const languages = useSelector((state: any) => state.languages);
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -57,25 +67,34 @@ const ContentSearch: FC = () => {
 
   const textfieldRef = useRef<HTMLDivElement>();
 
-  const { data: contents } = useSearchContentQuery(
-    { query: value },
-    { skip: !value }
+  const { data: contents, isError: isContentFetchingFailed } =
+    useSearchContentQuery({ query: value }, { skip: !value });
+
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
+  const { data: mediaFiles } = useSearchBinFilesQuery(
+    { binIds: bins?.map((bin) => bin.id), term: value },
+    {
+      skip: !bins?.length || !value,
+    }
   );
 
   const suggestions: Suggestion[] = useMemo(() => {
+    // Content data needs to be reset to [] when api call fails
     const contentSuggestions: Suggestion[] =
-      contents?.map((content) => {
-        return {
-          type: "content",
-          ZUID: content.meta?.ZUID,
-          title: getContentTitle(content, languages),
-          updatedAt: content.meta?.updatedAt,
-          url: isEmpty(content.meta)
-            ? ""
-            : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
-          noUrlErrorMessage: "Selected item is missing meta data",
-        };
-      }) || [];
+      isContentFetchingFailed || isEmpty(contents)
+        ? []
+        : contents?.map((content) => {
+            return {
+              type: "content",
+              ZUID: content.meta?.ZUID,
+              title: getContentTitle(content, languages),
+              updatedAt: content.meta?.updatedAt,
+              url: isEmpty(content.meta)
+                ? ""
+                : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
+              noUrlErrorMessage: "Selected item is missing meta data",
+            };
+          });
 
     const modelSuggestions: Suggestion[] =
       models?.map((model) => {
@@ -89,7 +108,7 @@ const ContentSearch: FC = () => {
       }) || [];
 
     const codeFileSuggestions: Suggestion[] =
-      files?.map((file) => {
+      codeFiles?.map((file) => {
         return {
           type: "code",
           ZUID: file.ZUID,
@@ -99,17 +118,50 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
+    const mediaFileSuggestions: Suggestion[] =
+      mediaFiles?.map((file) => {
+        return {
+          type: "media",
+          subType: "item",
+          ZUID: file.id,
+          title: file.filename,
+          updatedAt: file.updated_at,
+          url: `/media?fileId=${file.id}`,
+        };
+      }) || [];
+
+    const mediaFolderSuggestions: Suggestion[] =
+      mediaFolders?.map((folder) => {
+        return {
+          type: "media",
+          subType: "folder",
+          ZUID: folder.id,
+          title: folder.name,
+          updatedAt: "",
+          url: `/media/folder/${folder.id}`,
+        };
+      }) || [];
+
     const consolidatedResults = [
       ...contentSuggestions,
       ...modelSuggestions,
       ...codeFileSuggestions,
+      ...mediaFileSuggestions,
+      ...mediaFolderSuggestions,
     ].sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
 
     return consolidatedResults;
-  }, [contents, models, files]);
+  }, [
+    contents,
+    models,
+    codeFiles,
+    mediaFiles,
+    mediaFolders,
+    isContentFetchingFailed,
+  ]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
@@ -126,6 +178,7 @@ const ContentSearch: FC = () => {
   useEffect(() => {
     setModelKeyword(value);
     setFileKeyword(value);
+    setMediaFolderKeyword(value);
   }, [value]);
 
   //@ts-ignore TODO fix typing for useMetaKey
@@ -347,7 +400,7 @@ const ContentSearch: FC = () => {
                 <GlobalSearchItem
                   {...props}
                   key={option.ZUID}
-                  icon={getItemIcon(option.type)}
+                  icon={getItemIcon(option.type, option.subType ?? "")}
                   text={option.title}
                 />
               );
