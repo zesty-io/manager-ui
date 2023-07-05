@@ -220,6 +220,11 @@ export default connect((state) => {
                 open
                 fullScreen
                 sx={{ my: 2.5, mx: 10 }}
+                PaperProps={{
+                  style: {
+                    overflow: "hidden",
+                  },
+                }}
                 onClose={() => setImageModal()}
               >
                 <IconButton
