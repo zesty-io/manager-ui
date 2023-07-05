@@ -26,7 +26,6 @@ import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import WebhookRoundedIcon from "@mui/icons-material/WebhookRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
-import { Rect } from "@popperjs/core";
 
 import { InstanceAvatar } from "../InstanceAvatar";
 import { InstancesList } from "./Flyouts/InstancesList";
@@ -141,16 +140,18 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ anchorEl, onClose }) => {
             <Typography variant="body2" fontWeight={600}>
               {instance?.name}
             </Typography>
-            <Link
-              variant="body2"
-              fontWeight={600}
-              color="info.dark"
-              href={domain}
-              target="_blank"
-              rel="noopener"
-            >
-              {domain.replace(/http:\/\/|https:\/\//gm, "")}
-            </Link>
+            {Boolean(domain) && (
+              <Link
+                variant="body2"
+                fontWeight={600}
+                color="info.dark"
+                href={domain}
+                target="_blank"
+                rel="noopener"
+              >
+                {domain.replace(/http:\/\/|https:\/\//gm, "")}
+              </Link>
+            )}
           </Stack>
         </Stack>
         <Divider />
