@@ -121,16 +121,18 @@ export const NormalMenu: FC<NormalMenuProps> = ({
           <Typography variant="body2" fontWeight={600}>
             {instance?.name}
           </Typography>
-          <Link
-            variant="body2"
-            fontWeight={600}
-            color="info.dark"
-            href={domain}
-            target="_blank"
-            rel="noopener"
-          >
-            {domain.replace(/http:\/\/|https:\/\//gm, "")}
-          </Link>
+          {Boolean(domain) && (
+            <Link
+              variant="body2"
+              fontWeight={600}
+              color="info.dark"
+              href={domain}
+              target="_blank"
+              rel="noopener"
+            >
+              {domain.replace(/http:\/\/|https:\/\//gm, "")}
+            </Link>
+          )}
         </Stack>
       </Stack>
       <Divider />
