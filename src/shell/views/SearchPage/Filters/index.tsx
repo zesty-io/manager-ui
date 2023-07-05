@@ -148,7 +148,7 @@ export const Filters = () => {
       <UserFilter
         value={params.get("user") || ""}
         onChange={(value) => setParams(value, "user")}
-        defaultButtonText="People"
+        defaultButtonText="Created By"
         options={userOptions}
       />
       <DateFilter

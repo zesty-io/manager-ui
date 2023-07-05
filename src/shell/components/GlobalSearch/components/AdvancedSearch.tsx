@@ -282,7 +282,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </Box>
             <Box>
               <InputLabel>
-                Created or Modified By
+                Created By
                 <Tooltip
                   placement="top"
                   title="Select a user from all users on the instance."
