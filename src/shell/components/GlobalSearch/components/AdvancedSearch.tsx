@@ -221,7 +221,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       searchParams.set("resource", resourceType);
     }
 
-    if (keyword) {
+    if (keyword || user) {
       onSearch && onSearch(searchData);
       onClose();
 
@@ -470,7 +470,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 variant="contained"
                 startIcon={<SearchIcon />}
                 onClick={handleSearchClicked}
-                disabled={!searchData.keyword}
+                disabled={!searchData.keyword && !searchData.user}
               >
                 Search
               </Button>

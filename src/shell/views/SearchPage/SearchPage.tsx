@@ -50,10 +50,7 @@ export const SearchPage: FC = () => {
     data: contents,
     isFetching: isFetchingContent,
     isError: isContentFetchingFailed,
-  } = useSearchContentQuery(
-    { query: keyword, order: "created", dir: "desc" },
-    { skip: !keyword }
-  );
+  } = useSearchContentQuery({ query: keyword, order: "created", dir: "desc" });
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
@@ -93,6 +90,7 @@ export const SearchPage: FC = () => {
               data: content,
             };
           });
+    console.log(contentResults);
 
     const modelResults: SearchPageItem[] =
       models?.map((model) => {
@@ -298,9 +296,9 @@ export const SearchPage: FC = () => {
             {isLoading ? (
               <Skeleton variant="text" width={200} />
             ) : (
-              `${
-                keyword ? filteredResults?.length : "0"
-              } results for "${keyword}"`
+              `${filteredResults?.length} results ${
+                Boolean(keyword) ? `for "${keyword}"` : ""
+              }`
             )}
           </Typography>
           <BackButton />
