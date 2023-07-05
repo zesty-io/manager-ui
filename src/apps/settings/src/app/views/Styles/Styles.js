@@ -23,6 +23,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import styles from "./Styles.less";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
+import { MemoryRouter } from "react-router";
 
 export default connect((state) => {
   return {
@@ -294,6 +295,11 @@ export default connect((state) => {
                   open
                   fullScreen
                   sx={{ my: 2.5, mx: 10 }}
+                  PaperProps={{
+                    style: {
+                      overflow: "hidden",
+                    },
+                  }}
                   onClose={() => setImageModal()}
                 >
                   <IconButton

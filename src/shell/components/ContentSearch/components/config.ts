@@ -62,4 +62,5 @@ export const RESOURCE_TYPES: Record<ResourceType, string> = {
   content: "Content Items",
   schema: "Models",
   code: "Code Files",
+  media: "Media",
 };
