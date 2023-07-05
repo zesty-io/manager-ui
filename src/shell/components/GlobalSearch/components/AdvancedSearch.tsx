@@ -83,12 +83,14 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
   );
 
   const userOptions = useMemo(() => {
-    return users?.map((user) => ({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      ZUID: user.ZUID,
-      email: user.email,
-    }));
+    return users
+      ?.map((user) => ({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        ZUID: user.ZUID,
+        email: user.email,
+      }))
+      .sort((a, b) => a.firstName.localeCompare(b.firstName));
   }, [users]);
 
   useEffect(() => {
