@@ -109,7 +109,7 @@ describe("Global Search: Search Bar", () => {
     cy.getBySelector("global-search-textfield")
       .find("input")
       .should("exist")
-      .type("somerandomstring");
+      .click();
 
     // Verify that search accelerators are present
     cy.getBySelector("global-search-accelerators").should("exist");
@@ -127,7 +127,7 @@ describe("Global Search: Search Bar", () => {
     cy.getBySelector("global-search-textfield")
       .find("input")
       .should("exist")
-      .type("somerandomstring");
+      .click();
 
     // Select an accelerator
     cy.getBySelector("global-search-accelerator-content")
@@ -150,7 +150,7 @@ describe("Global Search: Search Bar", () => {
     cy.getBySelector("global-search-textfield")
       .find("input")
       .should("exist")
-      .type("somerandomstring");
+      .click();
 
     // Select an accelerator
     cy.getBySelector("global-search-accelerator-schema")
@@ -173,7 +173,7 @@ describe("Global Search: Search Bar", () => {
     cy.getBySelector("global-search-textfield")
       .find("input")
       .should("exist")
-      .type("somerandomstring");
+      .click();
 
     // Select an accelerator
     cy.getBySelector("global-search-accelerator-code").should("exist").click();
