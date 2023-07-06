@@ -438,3 +438,13 @@ export interface Script {
 }
 
 export type ResourceType = "schema" | "content" | "code" | "media";
+
+export interface Language {
+  ID: number;
+  active: boolean;
+  code: string;
+  createdAt: string;
+  default: boolean;
+  name: string;
+  updatedAt: string;
+}

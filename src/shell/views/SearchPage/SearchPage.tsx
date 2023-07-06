@@ -90,7 +90,6 @@ export const SearchPage: FC = () => {
               data: content,
             };
           });
-    console.log(contentResults);
 
     const modelResults: SearchPageItem[] =
       models?.map((model) => {

@@ -36,6 +36,7 @@ import { DateFilterModal } from "../../../components/Filters/DateFilter/DateFilt
 import { DateRangeFilterModal } from "../../../components/Filters/DateFilter/DateRangeFilterModal";
 import { PRESET_DATES, CUSTOM_DATES, RESOURCE_TYPES } from "./config";
 import { ResourceType } from "../../../services/types";
+import { useGetLangsQuery } from "../../../services/instance";
 
 interface User {
   firstName: string;
@@ -48,6 +49,7 @@ export interface SearchData {
   user: User | null;
   date: DateFilterValue | null;
   resourceType: ResourceType | null;
+  language: string | null;
 }
 interface AdvancedSearch {
   keyword: string;
@@ -66,6 +68,8 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
+  //TODO: verify with Markel if should I be using active or enabled here
+  const { data: langs } = useGetLangsQuery("active");
   const [searchData, updateSearchData] = useReducer(
     (state: SearchData, payload: Partial<SearchData>) => {
       return {
@@ -78,6 +82,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       user: null,
       date: null,
       resourceType: null,
+      language: null,
     }
   );
   const isCustomDate = CUSTOM_DATES.map((d) => d.value).includes(
@@ -180,7 +185,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
 
   const handleSearchClicked = () => {
     const isOnSearchPage = location.pathname === "/search";
-    const { keyword, user, date, resourceType } = searchData;
+    const { keyword, user, date, resourceType, language } = searchData;
     const searchParams = new URLSearchParams();
 
     if (keyword) {
@@ -189,6 +194,10 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
 
     if (user) {
       searchParams.set("user", user.ZUID);
+    }
+
+    if (language) {
+      searchParams.set("lang", language);
     }
 
     if (date) {
@@ -333,11 +342,6 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                         "&.MuiAutocomplete-inputRoot .MuiAutocomplete-input": {
                           pl: 0,
                         },
-                        // TODO: Check with Zosh if the font color needs to be changed or not
-                        // "&.MuiAutocomplete-inputRoot .MuiAutocomplete-input::placeholder":
-                        //   {
-                        //     color: "text.primary",
-                        //   },
                       },
                     }}
                   />
@@ -443,6 +447,40 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 ))}
               </Select>
             </Box>
+            <Box>
+              <InputLabel>
+                Language
+                <Tooltip
+                  placement="top"
+                  title="Select the language for which you want to see results for."
+                >
+                  <InfoRoundedIcon
+                    sx={{ ml: 1, width: "12px", height: "12px" }}
+                    color="action"
+                  />
+                </Tooltip>
+              </InputLabel>
+              <Select
+                data-cy="AdvanceSearchLanguage"
+                displayEmpty
+                fullWidth
+                value={searchData.language ?? ""}
+                onChange={(evt) => {
+                  const { value } = evt.target;
+
+                  updateSearchData({
+                    language: Boolean(value) ? value : null,
+                  });
+                }}
+              >
+                <MenuItem value="">Any Language</MenuItem>
+                {langs?.map((lang) => (
+                  <MenuItem key={lang.code} value={lang.code}>
+                    {lang.code}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -456,6 +494,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                   user: null,
                   date: null,
                   resourceType: null,
+                  language: null,
                 });
               }}
             >

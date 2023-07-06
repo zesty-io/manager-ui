@@ -12,6 +12,7 @@ import { useGetUsersQuery } from "../../../services/accounts";
 import { DateFilterValue } from "../../../components/Filters/DateFilter";
 import { ResourceTypeFilter } from "./ResourceTypeFilter";
 import { ResourceType } from "../../../services/types";
+import { LanguageFilter } from "./LanguageFilter";
 
 export const Filters = () => {
   const [params, setParams] = useParams();
@@ -156,6 +157,10 @@ export const Filters = () => {
         defaultButtonText="Date Modified"
         onChange={(value) => handleDateFilterChanged(value)}
         value={activeDateFilter}
+      />
+      <LanguageFilter
+        value={params.get("lang") || ""}
+        onChange={(value) => setParams(value, "lang")}
       />
     </Stack>
   );
