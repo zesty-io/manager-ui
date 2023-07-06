@@ -8,7 +8,10 @@ import { useSelector } from "react-redux";
 
 import { useParams } from "../../../shell/hooks/useParams";
 import { NoSearchResults } from "../../components/NoSearchResults";
-import { useSearchContentQuery } from "../../services/instance";
+import {
+  useSearchContentQuery,
+  useGetLangsQuery,
+} from "../../services/instance";
 import { SearchPageList } from "./List/SearchPageList";
 import { BackButton } from "./BackButton";
 import { Filters } from "./Filters";
@@ -40,6 +43,7 @@ export interface SearchPageItem {
   createdByUserZUID: string;
   data: ContentItem | ContentModel | File | MediaFile | Group;
   subType?: "folder" | "item";
+  langID?: number;
 }
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
@@ -63,7 +67,8 @@ export const SearchPage: FC = () => {
         skip: !bins?.length || !keyword,
       }
     );
-
+  //TODO: verify with Markel if should I be using active or enabled here
+  const { data: langs } = useGetLangsQuery("active");
   const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
@@ -88,6 +93,7 @@ export const SearchPage: FC = () => {
               createdAt: content.meta?.createdAt,
               createdByUserZUID: content.web?.createdByUserZUID,
               data: content,
+              langID: content.meta?.langID,
             };
           });
 
@@ -193,6 +199,7 @@ export const SearchPage: FC = () => {
     let _results = cloneDeep(results);
     const resourceTypeFilter = params.get("resource") || "";
     const userFilter = params.get("user") || "";
+    const languageFilter = params.get("lang") || "";
     const dateFilter = {
       preset: params.get("datePreset") || "",
       from: params.get("from") || "",
@@ -223,6 +230,15 @@ export const SearchPage: FC = () => {
       _results = _results.filter(
         (result) => result.type === resourceTypeFilter
       );
+    }
+
+    // Filter by language
+    if (languageFilter) {
+      // Determine the ID of the lang code selected
+      const selectedLangID =
+        langs.find((lang) => lang.code === languageFilter)?.ID ?? 0;
+
+      _results = _results.filter((result) => result.langID === selectedLangID);
     }
 
     // Determine the date filter function to use
