@@ -33,7 +33,7 @@ import { ByDayLineChart } from "./ByDayLineChart";
 import { useParams as useQueryParams } from "../../../../../../../../shell/hooks/useParams";
 import { UsersDoughnutChart } from "./UsersDoughutChart";
 import { AnalyticsPropertySelector } from "../../components/AnalyticsPropertySelector";
-import { ItemsTable } from "./ItemsTable";
+import { ItemsTable } from "./ItemsTable/ItemsTable";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import instanceZUID from "../../../../../../../../utility/instanceZUID";

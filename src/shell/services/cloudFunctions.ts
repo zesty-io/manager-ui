@@ -46,6 +46,33 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+    getAnalyticsPagePathsByFilter: builder.query<
+      string[],
+      {
+        filter: "popular" | "gainer" | "loser";
+        startDate: string;
+        endDate: string;
+        propertyId: string;
+        limit: number;
+        order: "asc" | "desc";
+      }
+    >({
+      query: ({ filter, startDate, endDate, propertyId, limit, order }) => {
+        return {
+          url: `getPagePathByFilter`,
+          method: "GET",
+          params: {
+            q: filter,
+            date_start: startDate,
+            date_end: endDate,
+            property_id: propertyId,
+            limit,
+            order,
+            zuid: instanceZUID,
+          },
+        };
+      },
+    }),
     disconnectGoogleAnalytics: builder.mutation<void, void>({
       query: () => {
         return {
@@ -67,5 +94,6 @@ export const {
   useAiGenerationMutation,
   useGetAnalyticsPropertiesQuery,
   useGetAnalyticsPropertyDataByQueryQuery,
+  useGetAnalyticsPagePathsByFilterQuery,
   useDisconnectGoogleAnalyticsMutation,
 } = cloudFunctionsApi;

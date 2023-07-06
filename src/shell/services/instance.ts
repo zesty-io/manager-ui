@@ -120,6 +120,28 @@ export const instanceApi = createApi({
       query: (ZUID) => `search/items?q=${ZUID}&order=created&dir=DESC&limit=1`,
       transformResponse: (response: { data: any[] }) => response?.data?.[0],
     }),
+    getContentItems: builder.query<any, any[]>({
+      async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
+        try {
+          console.log("testing args", args);
+          const requests = args.map(
+            (itemZUID) =>
+              `search/items?q=${itemZUID}&order=created&dir=DESC&limit=1`
+          );
+          const responses = await batchApiRequests(requests, fetchWithBQ);
+          return {
+            data: {
+              success: responses.success?.map(
+                (response) => response?.data?.data?.[0]
+              ),
+              error: responses.error,
+            },
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Get-All-Items
     getContentModelItems: builder.query<ContentItem[], string>({
       query: (ZUID) => ({
@@ -438,6 +460,7 @@ export const {
   useGetAllPublishingsQuery,
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
+  useGetContentItemsQuery,
   useGetContentModelQuery,
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
