@@ -61,7 +61,7 @@ export default connect((state) => {
       props.dispatch(fetchUsers());
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
-      props.dispatch(fetchLangauges("enabled"));
+      props.dispatch(fetchLangauges());
       props.dispatch(fetchSettings());
       // Used in Publish Plan and Content sections
       props.dispatch(fetchItemPublishings());
