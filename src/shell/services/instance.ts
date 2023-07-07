@@ -123,7 +123,6 @@ export const instanceApi = createApi({
     getContentItems: builder.query<any, any[]>({
       async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
         try {
-          console.log("testing args", args);
           const requests = args.map(
             (itemZUID) =>
               `search/items?q=${itemZUID}&order=created&dir=DESC&limit=1`

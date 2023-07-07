@@ -27,6 +27,7 @@ import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../..
 import {
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
+  generateDateRangesForReport,
   getDateRangeAndLabelsFromParams,
 } from "../../utils";
 import { ByDayLineChart } from "./ByDayLineChart";
@@ -83,19 +84,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
               name: "conversions",
             },
           ],
-          dateRanges: [
-            {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
-            },
-            {
-              startDate: startDate
-                ?.clone()
-                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                ?.format("YYYY-MM-DD"),
-              endDate: startDate?.format("YYYY-MM-DD"),
-            },
-          ],
+          dateRanges: generateDateRangesForReport(startDate, endDate),
         },
         {
           // query for daily and total sessions
@@ -109,19 +98,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
               name: "sessions",
             },
           ],
-          dateRanges: [
-            {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
-            },
-            {
-              startDate: startDate
-                ?.clone()
-                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                ?.format("YYYY-MM-DD"),
-              endDate: startDate?.format("YYYY-MM-DD"),
-            },
-          ],
+          dateRanges: generateDateRangesForReport(startDate, endDate),
           orderBys: [
             {
               dimension: {
@@ -142,19 +119,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
               name: "sessions",
             },
           ],
-          dateRanges: [
-            {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
-            },
-            {
-              startDate: startDate
-                ?.clone()
-                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                ?.format("YYYY-MM-DD"),
-              endDate: startDate?.format("YYYY-MM-DD"),
-            },
-          ],
+          dateRanges: generateDateRangesForReport(startDate, endDate),
           metricAggregations: ["TOTAL"],
         },
         {
@@ -169,19 +134,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
               name: "totalUsers",
             },
           ],
-          dateRanges: [
-            {
-              startDate: startDate?.format("YYYY-MM-DD"),
-              endDate: endDate?.format("YYYY-MM-DD"),
-            },
-            {
-              startDate: startDate
-                ?.clone()
-                ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                ?.format("YYYY-MM-DD"),
-              endDate: startDate?.format("YYYY-MM-DD"),
-            },
-          ],
+          dateRanges: generateDateRangesForReport(startDate, endDate),
         },
       ],
     },
@@ -470,8 +423,6 @@ const AnalyticsDashboard = ({ loading }: Props) => {
               propertyId={propertyId}
               startDate={startDate}
               endDate={endDate}
-              dateRange0Label={dateRange0Label}
-              dateRange1Label={dateRange1Label}
             />
           </Box>
         </Box>

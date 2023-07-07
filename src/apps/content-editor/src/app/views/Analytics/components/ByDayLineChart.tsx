@@ -20,6 +20,7 @@ import {
   calculatePercentageDifference,
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
+  padArray,
 } from "../utils";
 
 type Params = {
@@ -127,26 +128,27 @@ export const ByDayLineChart = ({
 
   const lastData = useMemo(() => {
     const result = findValuesForDimensions(data?.rows, ["date_range_0"], type);
-    const diff = (endDate.diff(startDate, "days") + 1) * 2 - result?.length - 1;
-    const zeroPadding = diff > 0 ? new Array(Math.abs(diff)).fill(0) : [];
     if (result.length === 1 || result.length === 2) {
       return [result.pop()];
     }
-    return [...zeroPadding, ...result].slice(endDate.diff(startDate, "days"));
+    return padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
+      endDate.diff(startDate, "days") + 1
+    );
   }, [data, type]);
 
   const priorData = useMemo(() => {
     const result = shouldCompare
       ? findValuesForDimensions(compareData?.rows, [], type)
       : findValuesForDimensions(data?.rows, ["date_range_1"], type);
-    const diff = (endDate.diff(startDate, "days") + 1) * 2 - result?.length - 1;
-    const zeroPadding = diff > 0 ? new Array(Math.abs(diff)).fill(0) : [];
+
     if (result?.length === 1 || result?.length === 2) {
       return [result[0]];
     }
     return shouldCompare
-      ? [...zeroPadding, ...result].slice(endDate.diff(startDate, "days"))
-      : [...zeroPadding, ...result].slice(
+      ? padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
+          endDate.diff(startDate, "days") + 1
+        )
+      : padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
           0,
           endDate.diff(startDate, "days") + 1
         );

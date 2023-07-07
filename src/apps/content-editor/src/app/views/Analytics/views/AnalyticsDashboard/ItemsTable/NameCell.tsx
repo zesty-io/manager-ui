@@ -152,59 +152,65 @@ export const NameCell = ({
             <Typography variant="body3" fontWeight={600} color="text.secondary">
               {model?.label}
             </Typography>
-            <Box display="flex" alignItems="center">
-              <Box
-                display="flex"
-                alignItems="center"
-                gap={0.25}
-                px={0.5}
-                py={0.25}
-                bgcolor={SOURCE_DETAIL_MAP[topSource]?.bgcolor || "yellow.50"}
-                sx={{
-                  borderRadius: "4px 0 0 4px",
-                }}
-              >
-                <SvgIcon
-                  component={
-                    SOURCE_DETAIL_MAP[topSource]?.icon || LanguageRounded
+            {topSource && (
+              <Box display="flex" alignItems="center">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={0.25}
+                  px={0.5}
+                  py={0.25}
+                  bgcolor={SOURCE_DETAIL_MAP[topSource]?.bgcolor || "yellow.50"}
+                  sx={{
+                    borderRadius: "4px 0 0 4px",
+                  }}
+                >
+                  <SvgIcon
+                    component={
+                      SOURCE_DETAIL_MAP[topSource]?.icon || LanguageRounded
+                    }
+                    sx={{
+                      width: "8px",
+                      height: "8px",
+                      color:
+                        SOURCE_DETAIL_MAP[topSource]?.color || "warning.main",
+                    }}
+                  />
+                  <Typography
+                    fontSize="10px"
+                    fontWeight={600}
+                    lineHeight="12px"
+                    color={
+                      SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"
+                    }
+                  >
+                    {startCase(topSource)}
+                  </Typography>
+                </Box>
+                <Box
+                  px={0.5}
+                  py={0.25}
+                  bgcolor={
+                    SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"
                   }
                   sx={{
-                    width: "8px",
-                    height: "8px",
-                    color:
-                      SOURCE_DETAIL_MAP[topSource]?.color || "warning.main",
+                    borderRadius: "0 4px 4px 0",
                   }}
-                />
-                <Typography
-                  fontSize="10px"
-                  fontWeight={600}
-                  lineHeight="12px"
-                  color={SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"}
                 >
-                  {startCase(topSource)}
-                </Typography>
+                  <Typography
+                    fontSize="8px"
+                    fontWeight={600}
+                    lineHeight="12px"
+                    color="common.white"
+                  >
+                    {isNaN(Math.floor((topSourceValue / screenPageViews) * 100))
+                      ? 0
+                      : Math.floor((topSourceValue / screenPageViews) * 100)}
+                    %
+                  </Typography>
+                </Box>
               </Box>
-              <Box
-                px={0.5}
-                py={0.25}
-                bgcolor={SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"}
-                sx={{
-                  borderRadius: "0 4px 4px 0",
-                }}
-              >
-                <Typography
-                  fontSize="8px"
-                  fontWeight={600}
-                  lineHeight="12px"
-                  color="common.white"
-                >
-                  {isNaN(Math.floor((topSourceValue / screenPageViews) * 100))
-                    ? 0
-                    : Math.floor((topSourceValue / screenPageViews) * 100)}
-                  %
-                </Typography>
-              </Box>
-            </Box>
+            )}
           </Box>
         </Box>
       </Box>

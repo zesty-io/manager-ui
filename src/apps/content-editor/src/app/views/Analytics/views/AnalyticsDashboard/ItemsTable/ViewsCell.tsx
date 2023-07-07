@@ -9,14 +9,14 @@ import { useHistory } from "react-router";
 
 export const ViewsCell = ({
   path,
-  totalSessions,
-  totalPriorSessions,
-  sessionsByDay,
+  screenPageViews,
+  priorScreenPageViews,
+  screenPageViewsByDay,
 }: {
   path?: string;
-  totalSessions: number;
-  totalPriorSessions: number;
-  sessionsByDay: string[];
+  screenPageViews?: number;
+  priorScreenPageViews?: number;
+  screenPageViewsByDay: string[];
 }) => {
   const history = useHistory();
   const { data: item } = useSearchContentQuery({
@@ -26,11 +26,12 @@ export const ViewsCell = ({
   const foundItem = item?.[0]?.web?.path === path ? item?.[0] : null;
   if (!path) return <Skeleton width="100%" />;
 
-  const paddedSessionsByDay = !sessionsByDay.length
+  const paddedSessionsByDay = !screenPageViewsByDay.length
     ? [0, 0]
-    : sessionsByDay?.map((session) => +session)?.length === 1
-    ? [0, +sessionsByDay[0]]
-    : sessionsByDay?.map((session) => +session);
+    : screenPageViewsByDay?.map((view) => +view)?.length === 1
+    ? [0, +screenPageViewsByDay[0]]
+    : screenPageViewsByDay?.map((view) => +view);
+
   return (
     <Box
       display="flex"
@@ -44,7 +45,7 @@ export const ViewsCell = ({
     >
       <Box>
         <Typography variant="body1" textAlign="right">
-          {numberFormatter.format(totalSessions)}
+          {numberFormatter.format(screenPageViews)}
         </Typography>
         <Box height="28px" width="73px">
           <Line
@@ -104,15 +105,15 @@ export const ViewsCell = ({
         variant="body3"
         color={
           calculatePercentageDifference(
-            totalPriorSessions,
-            totalSessions
+            priorScreenPageViews,
+            screenPageViews
           ).startsWith("-")
             ? "error.main"
             : "success.main"
         }
         fontWeight={600}
       >
-        {calculatePercentageDifference(totalPriorSessions, totalSessions)}
+        {calculatePercentageDifference(priorScreenPageViews, screenPageViews)}
       </Typography>
     </Box>
   );

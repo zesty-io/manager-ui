@@ -29,7 +29,7 @@ export const StatsCell = ({
       }
     >
       <Typography variant="body1" fontSize="12px">
-        {numberFormatter.format(users + 400)} users
+        {numberFormatter.format(users)} users
       </Typography>
       <Typography variant="body1" fontSize="12px">
         {Math.floor(
