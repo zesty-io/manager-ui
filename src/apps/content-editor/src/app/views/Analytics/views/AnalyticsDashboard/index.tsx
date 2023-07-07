@@ -194,7 +194,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
         <AnalyticsDashboardHeader />
         <Box px={2}>
           <Box display="flex" py={2} justifyContent="space-between">
-            <AnalyticsDateFilter showSkeleton={isLoading} />
+            <AnalyticsDateFilter />
             <Typography variant="h6" fontWeight="600" maxWidth={304} noWrap>
               {instance.name}
             </Typography>

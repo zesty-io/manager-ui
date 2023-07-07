@@ -8,7 +8,7 @@ import {
 import { Skeleton } from "@mui/lab";
 
 type Props = {
-  showSkeleton: boolean;
+  showSkeleton?: boolean;
 };
 
 export const AnalyticsDateFilter = ({ showSkeleton }: Props) => {

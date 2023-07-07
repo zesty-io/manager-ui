@@ -175,7 +175,7 @@ export const SinglePageAnalyticsView = ({ item, loading }: Props) => {
         </Box>
         <Box display="flex" justifyContent="space-between">
           <Box display="flex" gap={1.5}>
-            <AnalyticsDateFilter showSkeleton={isLoading} />
+            <AnalyticsDateFilter />
             {isLoading ? (
               <Skeleton variant="rectangular" width="137px" height="28px" />
             ) : compareItemZUID ? (
