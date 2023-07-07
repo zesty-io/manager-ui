@@ -236,7 +236,7 @@ export const SearchPage: FC = () => {
     if (languageFilter) {
       // Determine the ID of the lang code selected
       const selectedLangID =
-        langs.find((lang) => lang.code === languageFilter)?.ID ?? 0;
+        langs?.find((lang) => lang.code === languageFilter)?.ID ?? 0;
 
       _results = _results.filter((result) => result.langID === selectedLangID);
     }
