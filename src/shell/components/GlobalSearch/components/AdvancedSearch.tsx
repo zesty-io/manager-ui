@@ -126,7 +126,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
         type: "after",
         value: from,
       };
-    } else if (to === from) {
+    } else if (to && from && to === from) {
       date = {
         type: "on",
         value: to,
@@ -139,6 +139,8 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
           to,
         },
       };
+    } else {
+      date = null;
     }
 
     updateSearchData({
