@@ -67,7 +67,6 @@ export const SearchPage: FC = () => {
         skip: !bins?.length || !keyword,
       }
     );
-  //TODO: verify with Markel if should I be using active or enabled here
   const { data: langs } = useGetLangsQuery({});
   const isLoading = isFetchingContent || isFetchingMedia;
 

@@ -13,7 +13,6 @@ export const LanguageFilter: FC<LanguageFilterProps> = ({
   value,
 }) => {
   const [anchorRef, setAnchorRef] = useState<HTMLElement | null>(null);
-  //TODO: verify with Markel if should I be using active or enabled here
   const { data: langs } = useGetLangsQuery({});
 
   return (
