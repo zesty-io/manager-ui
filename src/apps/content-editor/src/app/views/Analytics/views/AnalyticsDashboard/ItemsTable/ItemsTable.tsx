@@ -13,7 +13,7 @@ import {
   useGetAnalyticsPropertiesQuery,
   useGetAnalyticsPropertyDataByQueryQuery,
 } from "../../../../../../../../../shell/services/cloudFunctions";
-import { Moment } from "moment-timezone";
+import moment, { Moment } from "moment-timezone";
 import {
   findTopDimensions,
   findTopDimensionsForDateRange,
@@ -27,6 +27,7 @@ import { ViewsCell } from "./ViewsCell";
 import { uniqBy } from "lodash";
 import {
   useGetAllPublishingsQuery,
+  useGetAuditsQuery,
   useGetContentItemsQuery,
 } from "../../../../../../../../../shell/services/instance";
 import { ContentItem } from "../../../../../../../../../shell/services/types";
@@ -141,6 +142,13 @@ export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
           endDate={endDate}
         />
       )}
+      {selectedTab === 4 && (
+        <RecentEditsWrapper
+          propertyId={propertyId}
+          startDate={startDate}
+          endDate={endDate}
+        />
+      )}
     </>
   );
 };
@@ -240,6 +248,43 @@ const LatestPublishesWrapper = ({ propertyId, startDate, endDate }: Props) => {
     isUninitialized,
   } = useGetContentItemsQuery(latestUniqueItemPublishings, {
     skip: !latestUniqueItemPublishings?.length,
+  });
+
+  const paths =
+    items?.success
+      ?.map((item: ContentItem) => item?.web?.path)
+      ?.filter((path: string) => path) || [];
+
+  return (
+    <ItemsTableContent
+      propertyId={propertyId}
+      startDate={startDate}
+      endDate={endDate}
+      paths={paths}
+      showSkeleton={isFetching || isUninitialized}
+    />
+  );
+};
+
+const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
+  const { data: auditData } = useGetAuditsQuery({
+    start_date: moment().utc().subtract(1, "month").format("YYYY-MM-DD"),
+    end_date: moment().utc().format("YYYY-MM-DD"),
+  });
+
+  const itemEdits = auditData
+    ?.filter(
+      (item: any) => item.action === 2 && item.resourceType === "content"
+    )
+    ?.slice(0, 10)
+    ?.map((item: any) => item.affectedZUID);
+
+  const {
+    data: items,
+    isFetching,
+    isUninitialized,
+  } = useGetContentItemsQuery(itemEdits, {
+    skip: !itemEdits?.length,
   });
 
   const paths =
