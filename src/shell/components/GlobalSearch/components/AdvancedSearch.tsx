@@ -37,6 +37,7 @@ import { DateRangeFilterModal } from "../../../components/Filters/DateFilter/Dat
 import { PRESET_DATES, CUSTOM_DATES, RESOURCE_TYPES } from "./config";
 import { ResourceType } from "../../../services/types";
 import { useGetLangsQuery } from "../../../services/instance";
+import { useParams } from "../../../hooks/useParams";
 
 interface User {
   firstName: string;
@@ -66,6 +67,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
   const history = useHistory();
   const location = useLocation();
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
+  const [params, setParams] = useParams();
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
   //TODO: verify with Markel if should I be using active or enabled here
@@ -99,6 +101,55 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       }))
       .sort((a, b) => a.firstName.localeCompare(b.firstName));
   }, [users]);
+
+  useEffect(() => {
+    const user = params.get("user")
+      ? userOptions.find((u) => u.ZUID === params.get("user"))
+      : null;
+    const datePreset = params.get("datePreset");
+    const to = params.get("to");
+    const from = params.get("from");
+    let date: DateFilterValue;
+
+    // Get proper date value
+    if (datePreset) {
+      date = {
+        type: "preset",
+        value: datePreset as PresetType,
+      };
+    } else if (to && !from) {
+      date = {
+        type: "before",
+        value: to,
+      };
+    } else if (!to && from) {
+      date = {
+        type: "after",
+        value: from,
+      };
+    } else if (to === from) {
+      date = {
+        type: "on",
+        value: to,
+      };
+    } else if (to && from) {
+      date = {
+        type: "daterange",
+        value: {
+          from,
+          to,
+        },
+      };
+    }
+
+    updateSearchData({
+      keyword: params.get("q"),
+      user,
+      date,
+      resourceType: params.get("resource") as ResourceType,
+      language: params.get("lang"),
+    });
+  }, [params]);
 
   useEffect(() => {
     if (keyword) {
