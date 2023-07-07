@@ -1,4 +1,4 @@
-import { FC, useState, useRef, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import InputAdornment from "@mui/material/InputAdornment";
 import {
@@ -41,6 +41,7 @@ import {
 import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
 import { RecentSearchItem } from "./components/RecentSearchItem";
 import { KeywordSearchItem } from "./components/KeywordSearchItem";
+import { useParams } from "../../hooks/useParams";
 
 // List of dropdown options that are NOT suggestions
 const AdditionalDropdownOptions = [
@@ -63,7 +64,7 @@ export interface Suggestion {
   subType?: string;
 }
 
-export const GlobalSearch: FC = () => {
+export const GlobalSearch = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchAccelerator, setSearchAccelerator] =
     useState<ResourceType | null>(null);
@@ -80,7 +81,7 @@ export const GlobalSearch: FC = () => {
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const history = useHistory();
   const dispatch = useDispatch();
-
+  const [params, setParams] = useParams();
   const textfieldRef = useRef<HTMLDivElement>();
 
   const {
@@ -269,6 +270,14 @@ export const GlobalSearch: FC = () => {
     setFileKeyword(searchKeyword);
     setMediaFolderKeyword(searchKeyword);
   }, [searchKeyword]);
+
+  useEffect(() => {
+    // Makes sure that the search keyword is retained when the user refreshes
+    // the page while on the search page
+    if (!!params.get("q") && searchKeyword !== params.get("q")) {
+      setSearchKeyword(params.get("q"));
+    }
+  }, [params]);
 
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
