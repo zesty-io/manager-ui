@@ -16,7 +16,6 @@ import {
 import moment, { Moment } from "moment-timezone";
 import {
   findTopDimensions,
-  findTopDimensionsForDateRange,
   findValuesForDimensions,
   generateDateRangesForReport,
   padArray,
@@ -188,11 +187,9 @@ const MostPopularWrapper = ({ propertyId, startDate, endDate }: Props) => {
       }
     );
   const paths =
-    findTopDimensionsForDateRange(
-      pathsData?.reports?.[0]?.rows,
-      "date_range_0",
-      10
-    )?.map((row, index) => row[0].value) || [];
+    findTopDimensions(pathsData?.reports?.[0]?.rows, ["date_range_0"], 10)?.map(
+      (row, index) => row[0].value
+    ) || [];
 
   return (
     <ItemsTableContent

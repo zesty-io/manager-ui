@@ -14,7 +14,7 @@ import { isEqual } from "lodash";
 import { ChartEvent } from "chart.js";
 import {
   calculatePercentageDifference,
-  findTopDimensionsForDateRange,
+  findTopDimensions,
   findValuesForDimensions,
 } from "../utils";
 
@@ -81,9 +81,9 @@ export const UsersBarChart = ({
       ? comparedUsersBySourceReport
       : comparedUsersByCountryReport;
 
-  const topDimensions = findTopDimensionsForDateRange(
+  const topDimensions = findTopDimensions(
     currentReport?.rows,
-    "date_range_0",
+    ["date_range_0"],
     5
   );
 

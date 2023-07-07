@@ -45,22 +45,6 @@ export function findValuesForDimensions(
   return result;
 }
 
-export function findTopDimensionsForDateRange(
-  data: any[],
-  dateRange: string,
-  topN: number
-) {
-  const dateRangeData = data?.filter((item) =>
-    item.dimensionValues.some((dimension: any) => dimension.value === dateRange)
-  );
-
-  const sortedData = dateRangeData?.sort(
-    (a, b) => Number(b.metricValues[0].value) - Number(a.metricValues[0].value)
-  );
-
-  return sortedData?.slice(0, topN).map((item) => item.dimensionValues);
-}
-
 export function findTopDimensions(
   data: any[],
   dateRanges: string[],
