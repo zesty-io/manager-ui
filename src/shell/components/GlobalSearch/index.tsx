@@ -678,7 +678,10 @@ export const GlobalSearch: FC = () => {
                           data-cy="GlobalSearchFilterButton"
                           size="small"
                           sx={{ marginRight: 1 }}
-                          onClick={() => setIsAdvancedSearchOpen(true)}
+                          onClick={(evt) => {
+                            evt.stopPropagation();
+                            setIsAdvancedSearchOpen(true);
+                          }}
                         >
                           <TuneRoundedIcon fontSize="small" color="action" />
                         </IconButton>
