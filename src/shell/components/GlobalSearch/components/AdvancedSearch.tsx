@@ -71,7 +71,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
   //TODO: verify with Markel if should I be using active or enabled here
-  const { data: langs } = useGetLangsQuery("active");
+  const { data: langs } = useGetLangsQuery({});
   const [searchData, updateSearchData] = useReducer(
     (state: SearchData, payload: Partial<SearchData>) => {
       return {

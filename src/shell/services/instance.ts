@@ -430,8 +430,12 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["Scripts"],
     }),
-    getLangs: builder.query<Language[], "enabled" | "active" | "all">({
-      query: (type: string) => `/env/langs?type=${type}`,
+    getLangs: builder.query<Language[], { type?: "active" | "all" }>({
+      query: (params) => {
+        const searchParams = new URLSearchParams(params);
+
+        return `/env/langs${searchParams.toString()}`;
+      },
       transformResponse: getResponseData,
       providesTags: ["Languages"],
     }),

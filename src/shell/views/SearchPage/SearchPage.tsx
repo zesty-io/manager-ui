@@ -68,7 +68,7 @@ export const SearchPage: FC = () => {
       }
     );
   //TODO: verify with Markel if should I be using active or enabled here
-  const { data: langs } = useGetLangsQuery("active");
+  const { data: langs } = useGetLangsQuery({});
   const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
