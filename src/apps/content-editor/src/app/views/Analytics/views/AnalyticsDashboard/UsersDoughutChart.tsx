@@ -417,7 +417,7 @@ export const UsersDoughnutChart = ({
         )}
         {loading ? (
           <Skeleton variant="rectangular" height="36px" sx={{ mb: 1 }} />
-        ) : (
+        ) : topSourceIncreased?.source && topSourceIncreased?.percentage ? (
           <Typography
             sx={{ mb: 1 }}
             fontSize={10}
@@ -430,7 +430,7 @@ export const UsersDoughnutChart = ({
             {dateRange0Label?.startsWith("Last") ? "in the" : ""}{" "}
             {dateRange0Label?.toLowerCase()}
           </Typography>
-        )}
+        ) : null}
         {loading ? (
           <Skeleton variant="rectangular" height="16px" width="50%" />
         ) : (
@@ -460,23 +460,25 @@ export const UsersDoughnutChart = ({
                 </Typography>
               </Box>
             ))}
-            <Box key={5} display="flex" alignItems="center" gap={0.5} mr={1}>
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  backgroundColor: SOURCE_LEGEND_COLORS[5],
-                }}
-              />
-              <Typography
-                variant="body3"
-                fontWeight={600}
-                color="text.secondary"
-              >
-                Other
-              </Typography>
-            </Box>
+            {topSources?.length ? (
+              <Box key={5} display="flex" alignItems="center" gap={0.5} mr={1}>
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    backgroundColor: SOURCE_LEGEND_COLORS[5],
+                  }}
+                />
+                <Typography
+                  variant="body3"
+                  fontWeight={600}
+                  color="text.secondary"
+                >
+                  Other
+                </Typography>
+              </Box>
+            ) : null}
           </Box>
         )}
       </Box>
