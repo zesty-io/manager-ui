@@ -436,4 +436,4 @@ export interface Script {
   updatedAt: string;
 }
 
-export type ResourceType = "schema" | "content" | "code";
+export type ResourceType = "schema" | "content" | "code" | "media";

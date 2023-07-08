@@ -3,12 +3,18 @@ import Stack from "@mui/material/Stack";
 import { FixedSizeList } from "react-window";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
-import { ContentItem, ContentModel } from "../../../services/types";
+import {
+  ContentItem,
+  ContentModel,
+  File as MediaFile,
+  Group,
+} from "../../../services/types";
 import { SearchPageItem } from "../SearchPage";
 import { File } from "../../../hooks/useSearchCodeFilesByKeyword";
 import { Content } from "./Content";
 import { Model } from "./Model";
 import { Code } from "./Code";
+import { Media } from "./Media";
 
 type SearchPageList = {
   results: SearchPageItem[];
@@ -20,7 +26,7 @@ export const SearchPageList: FC<SearchPageList> = ({
   loading,
 }) => {
   const results = loading
-    ? new Array(5) // arbitrary length array of junk data
+    ? new Array(10) // arbitrary length array of junk data
     : backendResults;
   const Row = useCallback(
     ({ index, style }) => {
@@ -55,6 +61,26 @@ export const SearchPageList: FC<SearchPageList> = ({
               />
             );
 
+          case "media":
+            let data: MediaFile | Group;
+
+            if (result.subType === "item") {
+              data = result.data as MediaFile;
+            }
+
+            if (result.subType === "folder") {
+              data = result.data as Group;
+            }
+
+            return (
+              <Media
+                key={result.ZUID}
+                data={data}
+                style={style}
+                subType={result.subType}
+              />
+            );
+
           default:
             break;
         }
@@ -69,7 +95,7 @@ export const SearchPageList: FC<SearchPageList> = ({
         );
       }
     },
-    [backendResults]
+    [backendResults, loading]
   );
 
   return (

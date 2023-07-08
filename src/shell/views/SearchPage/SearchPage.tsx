@@ -1,11 +1,12 @@
 import { FC, useMemo, useEffect } from "react";
 
 import { useParams } from "../../../shell/hooks/useParams";
-import { Typography, Box, Stack } from "@mui/material";
+import { Typography, Box, Stack, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import moment from "moment-timezone";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
+import { useSelector } from "react-redux";
 
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
@@ -14,11 +15,22 @@ import { BackButton } from "./BackButton";
 import { Filters } from "./Filters";
 import { getDateFilterFn } from "../../components/Filters/DateFilter";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
-import { ContentItem, ContentModel, ResourceType } from "../../services/types";
+import {
+  ContentItem,
+  ContentModel,
+  ResourceType,
+  File as MediaFile,
+  Group,
+} from "../../services/types";
 import {
   useSearchCodeFilesByKeywords,
   File,
 } from "../../hooks/useSearchCodeFilesByKeyword";
+import {
+  useSearchBinFilesQuery,
+  useGetBinsQuery,
+} from "../../services/mediaManager";
+import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
 
 export interface SearchPageItem {
   ZUID: string;
@@ -27,38 +39,61 @@ export interface SearchPageItem {
   updatedAt: string;
   createdAt: string;
   createdByUserZUID: string;
-  data: ContentItem | ContentModel | File;
+  data: ContentItem | ContentModel | File | MediaFile | Group;
+  subType?: "folder" | "item";
 }
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q") || "";
-  const { data: contents, isLoading } = useSearchContentQuery(
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const {
+    data: contents,
+    isFetching: isFetchingContent,
+    isError: isContentFetchingFailed,
+  } = useSearchContentQuery(
     { query, order: "created", dir: "desc" },
     { skip: !query }
   );
   const [models, setModelKeyword] = useSearchModelsByKeyword();
-  const [files, setFileKeyword] = useSearchCodeFilesByKeywords();
+  const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
+  const [mediaFolders, setMediaFolderKeyword] =
+    useSearchMediaFoldersByKeyword();
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
+  const { data: mediaFiles, isFetching: isFetchingMedia } =
+    useSearchBinFilesQuery(
+      { binIds: bins?.map((bin) => bin.id), term: query },
+      {
+        skip: !bins?.length || !query,
+      }
+    );
+
+  const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
     setModelKeyword(query);
-    setFileKeyword(query);
+    setCodeFileKeyword(query);
+    setMediaFolderKeyword(query);
   }, [query]);
 
-  // Combine results from contents and models
+  // Combine results from contents, models, code files, media files and media folders
   const results: SearchPageItem[] = useMemo(() => {
     const sortBy = params.get("sort") || "";
+    // Content data needs to be reset to [] when api call fails
     const contentResults: SearchPageItem[] =
-      contents?.map((content) => {
-        return {
-          ZUID: content.meta?.ZUID,
-          title: content.web?.metaTitle,
-          type: "content",
-          updatedAt: content.meta?.updatedAt,
-          createdAt: content.meta?.createdAt,
-          createdByUserZUID: content.web?.createdByUserZUID,
-          data: content,
-        };
-      }) || [];
+      isContentFetchingFailed || isEmpty(contents)
+        ? []
+        : contents?.map((content) => {
+            return {
+              ZUID: content.meta?.ZUID,
+              title: content.web?.metaTitle,
+              type: "content",
+              updatedAt: content.meta?.updatedAt,
+              createdAt: content.meta?.createdAt,
+              createdByUserZUID: content.web?.createdByUserZUID,
+              data: content,
+            };
+          });
 
     const modelResults: SearchPageItem[] =
       models?.map((model) => {
@@ -74,7 +109,7 @@ export const SearchPage: FC = () => {
       }) || [];
 
     const fileResults: SearchPageItem[] =
-      files?.map((file) => {
+      codeFiles?.map((file) => {
         return {
           ZUID: file.ZUID,
           title: file.fileName,
@@ -86,10 +121,40 @@ export const SearchPage: FC = () => {
         };
       }) || [];
 
+    const mediaFileResults: SearchPageItem[] =
+      mediaFiles?.map((file) => {
+        return {
+          ZUID: file.id,
+          title: file.filename,
+          type: "media",
+          updatedAt: file.updated_at,
+          createdAt: file.created_at,
+          createdByUserZUID: file.created_by ?? "",
+          data: file,
+          subType: "item",
+        };
+      }) || [];
+
+    const mediaFolderResults: SearchPageItem[] =
+      mediaFolders?.map((folder) => {
+        return {
+          ZUID: folder.id,
+          title: folder.name,
+          type: "media",
+          updatedAt: "",
+          createdAt: "",
+          createdByUserZUID: "",
+          data: folder,
+          subType: "folder",
+        };
+      }) || [];
+
     const consolidatedResults = [
       ...contentResults,
       ...modelResults,
       ...fileResults,
+      ...mediaFileResults,
+      ...mediaFolderResults,
     ];
 
     // Sort the results
@@ -118,7 +183,15 @@ export const SearchPage: FC = () => {
       default:
         return consolidatedResults;
     }
-  }, [contents, models, params, files]);
+  }, [
+    contents,
+    models,
+    params,
+    codeFiles,
+    mediaFiles,
+    mediaFolders,
+    isContentFetchingFailed,
+  ]);
 
   const filteredResults = useMemo(() => {
     let _results = cloneDeep(results);
@@ -223,7 +296,11 @@ export const SearchPage: FC = () => {
           }}
         >
           <Typography variant="h6" color="text.primary">
-            {filteredResults?.length} results for "{query}"
+            {isLoading ? (
+              <Skeleton variant="text" width={200} />
+            ) : (
+              `${filteredResults?.length} results for "${query}"`
+            )}
           </Typography>
           <BackButton />
         </Box>
@@ -236,26 +313,24 @@ export const SearchPage: FC = () => {
         >
           <Filters />
         </Box>
-        {!isLoading && !filteredResults?.length && (
+        {!isLoading && !filteredResults?.length ? (
           <NoSearchResults query={query} />
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              px: 3,
+              py: 0,
+              gap: 2,
+              backgroundColor: "grey.50",
+              height: "100%",
+            }}
+          >
+            <SearchPageList results={filteredResults} loading={isLoading} />
+          </Box>
         )}
-        {isLoading ||
-          (Boolean(filteredResults?.length) && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                px: 3,
-                py: 0,
-                gap: 2,
-                backgroundColor: "grey.50",
-                height: "100%",
-              }}
-            >
-              <SearchPageList results={filteredResults} loading={isLoading} />
-            </Box>
-          ))}
       </Stack>
     </ThemeProvider>
   );

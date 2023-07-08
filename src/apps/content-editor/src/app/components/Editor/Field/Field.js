@@ -237,6 +237,7 @@ export default function Field({
           PaperProps={{
             style: {
               borderRadius: "4px",
+              overflow: "hidden",
             },
           }}
           onClose={() => setImageModal()}
@@ -492,6 +493,7 @@ export default function Field({
                 PaperProps={{
                   style: {
                     borderRadius: "4px",
+                    overflow: "hidden",
                   },
                 }}
                 onClose={() => setImageModal()}

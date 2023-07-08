@@ -2,7 +2,10 @@ import React, { FC, useState } from "react";
 import { Stack, Typography, ListItem, Skeleton } from "@mui/material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 
-import { useGetInstanceQuery } from "../../../../services/accounts";
+import {
+  useGetInstanceQuery,
+  useGetDomainsQuery,
+} from "../../../../services/accounts";
 import { DropdownMenu } from "./DropdownMenu";
 import { InstanceAvatar } from "../InstanceAvatar";
 
@@ -13,6 +16,7 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { data: instance, isLoading: isLoadingInstance } =
     useGetInstanceQuery();
+  const { data } = useGetDomainsQuery();
 
   return (
     <>
@@ -28,6 +32,7 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
         }}
       >
         <Stack
+          data-cy="InstanceMenuButton"
           direction="row"
           height={36}
           width="100%"
