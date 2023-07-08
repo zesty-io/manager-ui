@@ -269,10 +269,11 @@ const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
     end_date: moment().utc().format("YYYY-MM-DD"),
   });
 
-  const itemEdits = auditData
-    ?.filter(
-      (item: any) => item.action === 2 && item.resourceType === "content"
-    )
+  const itemEdits = auditData?.filter(
+    (item: any) => item.action === 2 && item.resourceType === "content"
+  );
+
+  const itemZUIDs = uniqBy(itemEdits, "affectedZUID")
     ?.slice(0, 10)
     ?.map((item: any) => item.affectedZUID);
 
@@ -280,8 +281,8 @@ const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
     data: items,
     isFetching,
     isUninitialized,
-  } = useGetContentItemsQuery(itemEdits, {
-    skip: !itemEdits?.length,
+  } = useGetContentItemsQuery(itemZUIDs, {
+    skip: !itemZUIDs?.length,
   });
 
   const paths =

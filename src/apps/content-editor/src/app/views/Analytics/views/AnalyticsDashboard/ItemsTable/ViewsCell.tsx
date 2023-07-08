@@ -6,6 +6,7 @@ import { numberFormatter } from "../../../../../../../../../utility/numberFormat
 import { theme } from "@zesty-io/material";
 import { Line } from "react-chartjs-2";
 import { useHistory } from "react-router";
+import lineChartSkeleton3 from "../../../../../../../../../../public/images/lineChartSkeleton3.svg";
 
 export const ViewsCell = ({
   path,
@@ -19,12 +20,23 @@ export const ViewsCell = ({
   screenPageViewsByDay: string[];
 }) => {
   const history = useHistory();
-  const { data: item } = useSearchContentQuery({
+  const { data: item, isFetching } = useSearchContentQuery({
     query: path,
     limit: 1,
   });
   const foundItem = item?.[0]?.web?.path === path ? item?.[0] : null;
-  if (!path) return <Skeleton width="100%" />;
+  if (isFetching || !path)
+    return (
+      <Box width="100%" textAlign="right">
+        <Skeleton
+          height="12px"
+          width="100%"
+          variant="rectangular"
+          sx={{ mb: 1 }}
+        />
+        <img src={lineChartSkeleton3} height="13px" width="73px" />
+      </Box>
+    );
 
   const paddedSessionsByDay = !screenPageViewsByDay.length
     ? [0, 0]

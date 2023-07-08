@@ -86,8 +86,52 @@ export const NameCell = ({
     }
   );
 
+  const getImage = () => {
+    const ogImage = Object.keys(foundItem.data)?.find(
+      (value) =>
+        value === "ogimage" ||
+        value === "ogImage" ||
+        value === "og_image" ||
+        value === "og:image"
+    );
+    if (ogImage) {
+      return foundItem?.data?.[ogImage];
+    } else {
+      return Object.values(foundItem.data)?.find(
+        (value) => typeof value === "string" && value.startsWith("3-")
+      );
+    }
+  };
+
   if (isFetching || !path) {
-    return <Skeleton width="100%" />;
+    return (
+      <Box
+        display="flex"
+        height="40px"
+        width="100%"
+        alignItems="center"
+        gap={1}
+      >
+        <Skeleton
+          variant="rectangular"
+          width="40px"
+          height="40px"
+          sx={{ minWidth: "40px" }}
+        />
+        <Box width="100%">
+          <Skeleton
+            variant="rectangular"
+            width="100%"
+            height="12px"
+            sx={{
+              bgcolor: "grey.200",
+              mb: 1,
+            }}
+          />
+          <Skeleton variant="rectangular" width="80%" height="12px" />
+        </Box>
+      </Box>
+    );
   } else if (foundItem) {
     return (
       <Box
@@ -102,17 +146,32 @@ export const NameCell = ({
           )
         }
       >
-        <Box height="40px" width="40px" bgcolor="info.main" borderRadius="4px">
+        <Box
+          height="40px"
+          width="40px"
+          bgcolor={
+            Object.values(foundItem.data)?.some(
+              (value) => typeof value === "string" && value.startsWith("3-")
+            )
+              ? "transparent"
+              : "info.main"
+          }
+          borderRadius="4px"
+        >
           {Object.values(foundItem.data)?.some(
             (value) => typeof value === "string" && value.startsWith("3-")
           ) && (
             <img
-              // @ts-ignore
-              src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${Object.values(
-                foundItem.data
-              )?.find(
-                (value) => typeof value === "string" && value.startsWith("3-")
-              )}/getimage/?w=${40}&h=${40}&type=fit`}
+              width="100%"
+              height="100%"
+              style={{
+                objectFit: "contain",
+                minWidth: "40px",
+              }}
+              src={`${
+                // @ts-ignore
+                CONFIG.SERVICE_MEDIA_RESOLVER
+              }/resolve/${getImage()}/getimage/?w=${40}&h=${40}&type=fit`}
               alt=""
             />
           )}

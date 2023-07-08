@@ -14,12 +14,23 @@ export const StatsCell = ({
   avgSessionDuration: number;
 }) => {
   const history = useHistory();
-  const { data: item } = useSearchContentQuery({
+  const { data: item, isFetching } = useSearchContentQuery({
     query: path,
     limit: 1,
   });
   const foundItem = item?.[0]?.web?.path === path ? item?.[0] : null;
-  if (!path) return <Skeleton width="100%" />;
+  if (isFetching || !path)
+    return (
+      <Box width="100%">
+        <Skeleton
+          height="12px"
+          width="100%"
+          variant="rectangular"
+          sx={{ mb: 0.5 }}
+        />
+        <Skeleton height="12px" width="100%" variant="rectangular" />
+      </Box>
+    );
   return (
     <Box
       onClick={() =>
