@@ -6,6 +6,7 @@ import {
   SvgIcon,
   ListItemIcon,
   ListItemText,
+  Typography,
 } from "@mui/material";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 
@@ -54,18 +55,13 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
           />
         </ListItem>
       )}
-      <ListSubheader
-        sx={{
-          fontSize: "12px",
-          fontWeight: 600,
-          lineHeight: "18px",
-          letterSpacing: "0.15px",
-          pt: 1,
-          px: 1.5,
-        }}
+      <Typography
+        variant="body3"
+        color="text.secondary"
+        sx={{ pt: 1, px: 1.5, fontWeight: 600 }}
       >
-        Search in ...
-      </ListSubheader>
+        Search in...
+      </Typography>
       <ListItem
         data-cy="global-search-accelerators"
         sx={{
