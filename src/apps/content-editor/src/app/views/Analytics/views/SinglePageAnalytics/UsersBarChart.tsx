@@ -16,7 +16,7 @@ import {
   calculatePercentageDifference,
   findTopDimensions,
   findValuesForDimensions,
-} from "../utils";
+} from "../../utils";
 
 type Props = {
   usersBySourceReport: any;

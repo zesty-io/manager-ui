@@ -9,42 +9,41 @@ import {
 } from "@mui/material";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
-import { UsersDoughnutChart } from "../components/UsersDoughnutChart";
-import { ByDayLineChart } from "../components/ByDayLineChart";
+import { UsersDoughnutChart } from "./UsersDoughnutChart";
+import { ByDayLineChart } from "./ByDayLineChart";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {
   useGetAuditsQuery,
   useGetContentItemQuery,
   useGetInstanceSettingsQuery,
-} from "../../../../../../../shell/services/instance";
-import { UsersBarChart } from "../components/UsersBarChart";
-import { useParams as useQueryParams } from "../../../../../../../shell/hooks/useParams";
+} from "../../../../../../../../shell/services/instance";
+import { UsersBarChart } from "./UsersBarChart";
+import { useParams as useQueryParams } from "../../../../../../../../shell/hooks/useParams";
 import { useHistory, useParams } from "react-router-dom";
-import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../shell/services/cloudFunctions";
 import {
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
   generateReportRequests,
   getDateRangeAndLabelsFromParams,
-} from "../utils";
-import { Metric } from "../components/Metric";
-import { useGetAnalyticsPropertiesQuery } from "../../../../../../../shell/services/cloudFunctions";
-import instanceZUID from "../../../../../../../utility/instanceZUID";
-import { NotFound } from "../../../../../../../shell/components/NotFound";
+} from "../../utils";
+import { Metric } from "../../components/Metric";
+import { useGetAnalyticsPropertiesQuery } from "../../../../../../../../shell/services/cloudFunctions";
+import instanceZUID from "../../../../../../../../utility/instanceZUID";
+import { NotFound } from "../../../../../../../../shell/components/NotFound";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
-import { CompareDialog } from "../components/CompareDialog";
-import { AnalyticsDateFilter } from "../components/AnalyticsDateFilter";
-import { ContentItem } from "../../../../../../../shell/services/types";
-import { PropertiesDialog } from "../components/PropertiesDialog";
-import { AnalyticsPropertySelector } from "../components/AnalyticsPropertySelector";
+import { CompareDialog } from "../../components/CompareDialog";
+import { AnalyticsDateFilter } from "../../components/AnalyticsDateFilter";
+import { ContentItem } from "../../../../../../../../shell/services/types";
+import { AnalyticsPropertySelector } from "../../components/AnalyticsPropertySelector";
 
 type Props = {
   item: ContentItem;
   loading: boolean;
 };
 
-export const SinglePageAnalyticsView = ({ item, loading }: Props) => {
+export const SinglePageAnalytics = ({ item, loading }: Props) => {
   const [showCompareDialog, setShowCompareDialog] = useState(false);
   const [params, setParams] = useQueryParams();
   const compareItemZUID = params.get("compare");
@@ -407,3 +406,5 @@ export const SinglePageAnalyticsView = ({ item, loading }: Props) => {
     </>
   );
 };
+
+export default SinglePageAnalytics;

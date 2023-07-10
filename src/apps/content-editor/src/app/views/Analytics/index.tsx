@@ -4,7 +4,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import { AuthView } from "./components/AuthView";
 import { useGetAnalyticsPropertiesQuery } from "../../../../../../shell/services/cloudFunctions";
-import { SinglePageAnalyticsView } from "./views/SinglePageAnalyticsView";
+import SinglePageAnalytics from "./views/SinglePageAnalytics";
 import AnalyticsDashboard from "./views/AnalyticsDashboard";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useGetInstanceSettingsQuery } from "../../../../../../shell/services/instance";
@@ -42,7 +42,7 @@ const Analytics = ({ item }: Props) => {
           <>
             {item ? (
               <Box px={3} py={2}>
-                <SinglePageAnalyticsView item={item} loading={isFetching} />
+                <SinglePageAnalytics item={item} loading={isFetching} />
               </Box>
             ) : (
               <AnalyticsDashboard loading={isFetching} />
