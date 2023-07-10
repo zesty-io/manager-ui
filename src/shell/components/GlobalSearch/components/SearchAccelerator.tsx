@@ -80,7 +80,6 @@ export const SearchAccelerator: FC<SearchAcceleratorProps> = ({
               height: "24px",
               letterSpacing: "0.16px",
               lineHeight: "18px",
-              fontSize: "13px",
               fontWeight: 400,
             }}
             startIcon={<SvgIcon component={value.icon} />}
