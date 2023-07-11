@@ -28,6 +28,7 @@ export const DomainSwitcher = () => {
           sx: {
             p: 0,
             mt: 0.75,
+            width: 340,
           },
         }}
         anchorOrigin={{
