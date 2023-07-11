@@ -3,23 +3,20 @@ import { useSearchContentQuery } from "../../../../../../../../../shell/services
 import moment from "moment-timezone";
 import { numberFormatter } from "../../../../../../../../../utility/numberFormatter";
 import { useHistory } from "react-router";
+import { ContentItem } from "../../../../../../../../../shell/services/types";
 
 export const StatsCell = ({
-  path,
+  item,
   users,
   avgSessionDuration,
 }: {
-  path?: string;
+  item: ContentItem;
   users: number;
   avgSessionDuration: number;
 }) => {
   const history = useHistory();
-  const { data: item, isFetching } = useSearchContentQuery({
-    query: path,
-    limit: 1,
-  });
-  const foundItem = item?.[0]?.web?.path === path ? item?.[0] : null;
-  if (isFetching || !path)
+
+  if (!item)
     return (
       <Box width="100%">
         <Skeleton
@@ -34,9 +31,7 @@ export const StatsCell = ({
   return (
     <Box
       onClick={() =>
-        history.push(
-          `/content/${foundItem.meta.contentModelZUID}/${foundItem.meta.ZUID}`
-        )
+        history.push(`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`)
       }
     >
       <Typography variant="body1" fontSize="12px">

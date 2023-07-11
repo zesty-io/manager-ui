@@ -7,25 +7,21 @@ import { theme } from "@zesty-io/material";
 import { Line } from "react-chartjs-2";
 import { useHistory } from "react-router";
 import lineChartSkeleton3 from "../../../../../../../../../../public/images/lineChartSkeleton3.svg";
+import { ContentItem } from "../../../../../../../../../shell/services/types";
 
 export const ViewsCell = ({
-  path,
+  item,
   screenPageViews,
   priorScreenPageViews,
   screenPageViewsByDay,
 }: {
-  path?: string;
+  item?: ContentItem;
   screenPageViews?: number;
   priorScreenPageViews?: number;
   screenPageViewsByDay: string[];
 }) => {
   const history = useHistory();
-  const { data: item, isFetching } = useSearchContentQuery({
-    query: path,
-    limit: 1,
-  });
-  const foundItem = item?.[0]?.web?.path === path ? item?.[0] : null;
-  if (isFetching || !path)
+  if (!item)
     return (
       <Box width="100%" textAlign="right">
         <Skeleton
@@ -50,9 +46,7 @@ export const ViewsCell = ({
       gap={1.5}
       alignItems="center"
       onClick={() =>
-        history.push(
-          `/content/${foundItem.meta.contentModelZUID}/${foundItem.meta.ZUID}`
-        )
+        history.push(`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`)
       }
     >
       <Box>

@@ -12,11 +12,13 @@ import {
 } from "@mui/icons-material";
 import moment from "moment-timezone";
 import {
+  useGetAllPublishingsQuery,
   useGetContentModelQuery,
   useSearchContentQuery,
 } from "../../../../../../../../../shell/services/instance";
 import { useGetUsersQuery } from "../../../../../../../../../shell/services/accounts";
 import { startCase } from "lodash";
+import { ContentItem } from "../../../../../../../../../shell/services/types";
 
 const SOURCE_DETAIL_MAP = {
   "(direct)": {
@@ -57,37 +59,37 @@ const SOURCE_DETAIL_MAP = {
 } as const;
 
 export const NameCell = ({
-  path,
+  item,
   screenPageViews,
   topSource,
   topSourceValue,
   externalLink,
 }: {
-  path?: string;
+  item: ContentItem;
   screenPageViews?: number;
   topSource: keyof typeof SOURCE_DETAIL_MAP;
   topSourceValue: number;
   externalLink?: string;
 }) => {
   const history = useHistory();
-  const { data: item, isFetching } = useSearchContentQuery({
-    query: path,
-    limit: 1,
-  });
-  const foundItem = item?.[0]?.web?.path === path ? item?.[0] : null;
-  const { data: users } = useGetUsersQuery();
-  const foundUser = users?.find(
-    (user) => user.ZUID === foundItem?.web?.createdByUserZUID
+  const { data: publishings, isFetching: isPublishingFetching } =
+    useGetAllPublishingsQuery();
+  const foundPublishing = publishings?.find(
+    (publishing) => publishing.itemZUID === item?.meta?.ZUID
   );
-  const { data: model } = useGetContentModelQuery(
-    foundItem?.meta?.contentModelZUID,
+  const { data: users, isFetching: isUsersFetching } = useGetUsersQuery();
+  const foundUser = users?.find(
+    (user) => user.ZUID === foundPublishing?.publishedByUserZUID
+  );
+  const { data: model, isFetching: isModelsFetching } = useGetContentModelQuery(
+    item?.meta?.contentModelZUID,
     {
-      skip: !foundItem?.meta?.contentModelZUID,
+      skip: !item?.meta?.contentModelZUID,
     }
   );
 
   const getImage = () => {
-    const ogImage = Object.keys(foundItem.data)?.find(
+    const ogImage = Object.keys(item.data)?.find(
       (value) =>
         value === "ogimage" ||
         value === "ogImage" ||
@@ -95,15 +97,15 @@ export const NameCell = ({
         value === "og:image"
     );
     if (ogImage) {
-      return foundItem?.data?.[ogImage];
+      return item?.data?.[ogImage];
     } else {
-      return Object.values(foundItem.data)?.find(
+      return Object.values(item.data)?.find(
         (value) => typeof value === "string" && value.startsWith("3-")
       );
     }
   };
 
-  if (isFetching || !path) {
+  if (!item || isPublishingFetching || isUsersFetching || isModelsFetching) {
     return (
       <Box
         display="flex"
@@ -132,7 +134,7 @@ export const NameCell = ({
         </Box>
       </Box>
     );
-  } else if (foundItem) {
+  } else if (item) {
     return (
       <Box
         display="flex"
@@ -142,7 +144,7 @@ export const NameCell = ({
         gap={1}
         onClick={() =>
           history.push(
-            `/content/${foundItem.meta.contentModelZUID}/${foundItem.meta.ZUID}`
+            `/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`
           )
         }
       >
@@ -150,7 +152,7 @@ export const NameCell = ({
           height="40px"
           width="40px"
           bgcolor={
-            Object.values(foundItem.data)?.some(
+            Object.values(item.data)?.some(
               (value) => typeof value === "string" && value.startsWith("3-")
             )
               ? "transparent"
@@ -158,7 +160,7 @@ export const NameCell = ({
           }
           borderRadius="4px"
         >
-          {Object.values(foundItem.data)?.some(
+          {Object.values(item.data)?.some(
             (value) => typeof value === "string" && value.startsWith("3-")
           ) && (
             <img
@@ -185,7 +187,7 @@ export const NameCell = ({
               noWrap
               maxWidth="420px"
             >
-              {foundItem.web.metaTitle || foundItem.web.metaLinkText}
+              {item.web.metaTitle || item.web.metaLinkText}
             </Typography>
             <OpenInNewRounded
               onClick={(e) => {
@@ -201,7 +203,7 @@ export const NameCell = ({
           </Box>
           <Box display="flex" gap={1.5}>
             <Typography variant="body3" fontWeight={600} color="text.secondary">
-              {moment(foundItem.meta.createdAt).format("MMM D")}
+              {moment(foundPublishing?.publishAt).format("MMM D")}
             </Typography>
             <Typography variant="body3" fontWeight={600} color="text.secondary">
               {foundUser

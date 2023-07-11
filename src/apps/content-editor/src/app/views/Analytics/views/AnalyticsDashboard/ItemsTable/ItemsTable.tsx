@@ -153,51 +153,67 @@ export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
 };
 
 const MostPopularWrapper = ({ propertyId, startDate, endDate }: Props) => {
-  const { data: pathsData, isFetching } =
-    useGetAnalyticsPropertyDataByQueryQuery(
-      {
-        property: propertyId,
-        requests: [
-          {
-            dimensions: [
-              {
-                name: "pagePath",
+  const { data: pathsData } = useGetAnalyticsPropertyDataByQueryQuery(
+    {
+      property: propertyId,
+      requests: [
+        {
+          dimensions: [
+            {
+              name: "pagePath",
+            },
+          ],
+          metrics: [
+            {
+              name: "screenPageViews",
+            },
+          ],
+          dateRanges: generateDateRangesForReport(startDate, endDate),
+          limit: "20",
+          orderBys: [
+            {
+              metric: {
+                metricName: "screenPageViews",
               },
-            ],
-            metrics: [
-              {
-                name: "screenPageViews",
-              },
-            ],
-            dateRanges: generateDateRangesForReport(startDate, endDate),
-            limit: "10",
-            orderBys: [
-              {
-                metric: {
-                  metricName: "screenPageViews",
-                },
-                desc: true,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        skip: !propertyId,
-      }
-    );
-  const paths =
-    findTopDimensions(pathsData?.reports?.[0]?.rows, ["date_range_0"], 10)?.map(
-      (row, index) => row[0].value
-    ) || [];
+              desc: true,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      skip: !propertyId,
+    }
+  );
+
+  const topPaths = findTopDimensions(
+    pathsData?.reports?.[0]?.rows,
+    ["date_range_0"],
+    20
+  )?.map((row, index) => row[0].value);
+
+  const {
+    data: items,
+    isFetching,
+    isUninitialized,
+  } = useGetContentItemsQuery(topPaths, {
+    skip: !pathsData,
+  });
+
+  const sortedItems = topPaths
+    ?.map((path) =>
+      items?.success?.find((item: ContentItem) => item?.web?.path === path)
+    )
+    ?.filter((i) => i)
+    ?.slice(0, 10);
 
   return (
     <ItemsTableContent
       propertyId={propertyId}
       startDate={startDate}
       endDate={endDate}
-      paths={paths}
-      showSkeleton={isFetching}
+      items={sortedItems}
+      showSkeleton={isFetching || isUninitialized}
     />
   );
 };
@@ -208,13 +224,13 @@ const GainersLosersWrapper = ({
   endDate,
   isLosers,
 }: Props & { isLosers: boolean }) => {
-  const { data: paths, isFetching } = useGetAnalyticsPagePathsByFilterQuery(
+  const { data: pagePaths } = useGetAnalyticsPagePathsByFilterQuery(
     {
       filter: isLosers ? "loser" : "gainer",
       propertyId: propertyId?.split("/")?.pop(),
       startDate: startDate?.format("YYYY-MM-DD"),
       endDate: endDate?.format("YYYY-MM-DD"),
-      limit: 10,
+      limit: 20,
       order: isLosers ? "asc" : "desc",
     },
     {
@@ -222,13 +238,28 @@ const GainersLosersWrapper = ({
     }
   );
 
+  const {
+    data: items,
+    isFetching,
+    isUninitialized,
+  } = useGetContentItemsQuery(pagePaths, {
+    skip: !pagePaths?.length,
+  });
+
+  const sortedItems = pagePaths
+    ?.map((path: string) =>
+      items?.success?.find((item: ContentItem) => path === item?.web?.path)
+    )
+    ?.filter((i: ContentItem) => i)
+    ?.slice(0, 10);
+
   return (
     <ItemsTableContent
       propertyId={propertyId}
       startDate={startDate}
       endDate={endDate}
-      paths={paths}
-      showSkeleton={isFetching}
+      items={sortedItems}
+      showSkeleton={isFetching || isUninitialized}
     />
   );
 };
@@ -236,7 +267,11 @@ const GainersLosersWrapper = ({
 const LatestPublishesWrapper = ({ propertyId, startDate, endDate }: Props) => {
   const { data: publishings } = useGetAllPublishingsQuery();
   const latestUniqueItemPublishings = uniqBy(publishings, "itemZUID")
-    ?.slice(0, 10)
+    ?.sort(
+      (a, b) =>
+        new Date(b?.publishAt).getTime() - new Date(a?.publishAt).getTime()
+    )
+    ?.slice(0, 20)
     ?.map((publishing) => publishing.itemZUID);
 
   const {
@@ -247,17 +282,22 @@ const LatestPublishesWrapper = ({ propertyId, startDate, endDate }: Props) => {
     skip: !latestUniqueItemPublishings?.length,
   });
 
-  const paths =
-    items?.success
-      ?.map((item: ContentItem) => item?.web?.path)
-      ?.filter((path: string) => path) || [];
+  const sortedItems =
+    latestUniqueItemPublishings
+      ?.map((itemZUID) =>
+        items?.success?.find(
+          (item: ContentItem) => itemZUID === item?.meta?.ZUID
+        )
+      )
+      ?.filter((i) => i)
+      ?.slice(0, 10) || [];
 
   return (
     <ItemsTableContent
       propertyId={propertyId}
       startDate={startDate}
       endDate={endDate}
-      paths={paths}
+      items={sortedItems}
       showSkeleton={isFetching || isUninitialized}
     />
   );
@@ -274,7 +314,7 @@ const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
   );
 
   const itemZUIDs = uniqBy(itemEdits, "affectedZUID")
-    ?.slice(0, 10)
+    ?.slice(0, 20)
     ?.map((item: any) => item.affectedZUID);
 
   const {
@@ -285,24 +325,23 @@ const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
     skip: !itemZUIDs?.length,
   });
 
-  const paths =
-    items?.success
-      ?.map((item: ContentItem) => item?.web?.path)
-      ?.filter((path: string) => path) || [];
+  const filteredItems = items?.success
+    ?.filter((item: ContentItem) => item)
+    ?.slice(0, 10);
 
   return (
     <ItemsTableContent
       propertyId={propertyId}
       startDate={startDate}
       endDate={endDate}
-      paths={paths}
+      items={filteredItems}
       showSkeleton={isFetching || isUninitialized}
     />
   );
 };
 
 type ItemsTableContentProps = {
-  paths: string[];
+  items?: ContentItem[];
   showSkeleton?: boolean;
 } & Props;
 
@@ -310,7 +349,7 @@ export const ItemsTableContent = ({
   propertyId,
   startDate,
   endDate,
-  paths,
+  items,
   showSkeleton,
 }: ItemsTableContentProps) => {
   const { data: propertiesData } = useGetAnalyticsPropertiesQuery();
@@ -342,12 +381,12 @@ export const ItemsTableContent = ({
           dateRanges: generateDateRangesForReport(startDate, endDate),
           dimensionFilter: {
             orGroup: {
-              expressions: paths?.map((path) => ({
+              expressions: items?.map((item) => ({
                 filter: {
                   fieldName: "pagePath",
                   stringFilter: {
                     matchType: "EXACT",
-                    value: path,
+                    value: item?.web?.path,
                   },
                 },
               })),
@@ -372,12 +411,12 @@ export const ItemsTableContent = ({
           dateRanges: generateDateRangesForReport(startDate, endDate),
           dimensionFilter: {
             orGroup: {
-              expressions: paths?.map((path) => ({
+              expressions: items?.map((item) => ({
                 filter: {
                   fieldName: "pagePath",
                   stringFilter: {
                     matchType: "EXACT",
-                    value: path,
+                    value: item?.web?.path,
                   },
                 },
               })),
@@ -413,12 +452,12 @@ export const ItemsTableContent = ({
           ],
           dimensionFilter: {
             orGroup: {
-              expressions: paths?.map((path) => ({
+              expressions: items?.map((item) => ({
                 filter: {
                   fieldName: "pagePath",
                   stringFilter: {
                     matchType: "EXACT",
-                    value: path,
+                    value: item?.web?.path,
                   },
                 },
               })),
@@ -428,65 +467,72 @@ export const ItemsTableContent = ({
       ],
     },
     {
-      skip: !paths?.length,
+      skip: !items?.length,
     }
   );
 
   const [mainReport, screenPageViewsReport, sourceReport] = data?.reports || [];
 
   const rows =
-    paths?.map((path, index) => ({
+    items?.map((item, index) => ({
       id: index,
-      path,
       users: +(
         findValuesForDimensions(
           mainReport?.rows,
-          ["date_range_0", path],
+          ["date_range_0", item?.web?.path],
           0
         )?.[0] || 0
       ),
       avgSessionDuration: +(
         findValuesForDimensions(
           mainReport?.rows,
-          ["date_range_0", path],
+          ["date_range_0", item?.web?.path],
           1
         )?.[0] || 0
       ),
       screenPageViews: +(
         findValuesForDimensions(
           mainReport?.rows,
-          ["date_range_0", path],
+          ["date_range_0", item?.web?.path],
           2
         )?.[0] || 0
       ),
       priorScreenPageViews: +(
         findValuesForDimensions(
           mainReport?.rows,
-          ["date_range_1", path],
+          ["date_range_1", item?.web?.path],
           2
         )?.[0] || 0
       ),
       screenPageViewsByDay: padArray(
         findValuesForDimensions(
           screenPageViewsReport?.rows,
-          ["date_range_0", path],
+          ["date_range_0", item?.web?.path],
           0
         ),
         (endDate.diff(startDate, "days") + 1) * 2
       )?.slice(endDate.diff(startDate, "days") + 1),
-      topSource: findTopDimensions(sourceReport?.rows, [path], 1)?.[0]?.[1]
-        ?.value,
+      topSource: findTopDimensions(
+        sourceReport?.rows,
+        [item?.web?.path],
+        1
+      )?.[0]?.[1]?.value,
       topSourceValue: +(
         findValuesForDimensions(
           sourceReport?.rows,
           [
-            path,
-            findTopDimensions(sourceReport?.rows, [path], 1)?.[0]?.[1]?.value,
+            item?.web?.path,
+            findTopDimensions(
+              sourceReport?.rows,
+              [item?.web?.path],
+              1
+            )?.[0]?.[1]?.value,
           ],
           0
         )?.[0] || 0
       ),
-      externalLink: `${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${path}`,
+      externalLink: `${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${item?.web?.path}`,
+      item,
     })) || [];
 
   return (
