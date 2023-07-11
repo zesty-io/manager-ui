@@ -292,12 +292,13 @@ export const GlobalSearch = () => {
     });
     const url = `/search?${searchParams.toString()}`;
 
-    if (Boolean(resourceType)) {
+    // Do not save term as a recent keyword if it's empty
+    if (!!queryTerm.trim()) {
       // If the user has selected a search accelerator, also save it in
       // the format of `[in:RESOURCE_TYPE]`
-      addSearchTerm(`[in:${resourceType}] ${queryTerm}`);
-    } else {
-      addSearchTerm(queryTerm);
+      addSearchTerm(
+        !!resourceType ? `[in:${resourceType}] ${queryTerm}` : queryTerm
+      );
     }
 
     setOpen(false);
