@@ -98,7 +98,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
         ZUID: user.ZUID,
         email: user.email,
       }))
-      .sort((a, b) => a.firstName.localeCompare(b.firstName));
+      .sort((a, b) => a.firstName?.localeCompare(b.firstName));
   }, [users]);
 
   useEffect(() => {
