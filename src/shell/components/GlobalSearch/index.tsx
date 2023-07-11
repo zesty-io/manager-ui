@@ -42,6 +42,7 @@ import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFolder
 import { RecentSearchItem } from "./components/RecentSearchItem";
 import { KeywordSearchItem } from "./components/KeywordSearchItem";
 import { useParams } from "../../hooks/useParams";
+import { withCursorPosition } from "../../components/withCursorPosition";
 
 // List of dropdown options that are NOT suggestions
 const AdditionalDropdownOptions = [
@@ -53,6 +54,13 @@ const AdditionalDropdownOptions = [
 const ElementId = "global-search-autocomplete";
 const fullWidth = "500px"; // Component size when opened
 const collapsedWidth = "288px"; // Component size when collapsed/closed
+const TextFieldWithCursorPosition = withCursorPosition(TextField);
+const acceleratorKeywords: ResourceType[] = [
+  "code",
+  "content",
+  "schema",
+  "media",
+];
 
 export interface Suggestion {
   type: ResourceType;
@@ -407,6 +415,21 @@ export const GlobalSearch = () => {
           }}
           onInputChange={(event, newVal) => {
             setSearchKeyword(newVal);
+            // const { value } = e.target;
+            // Get the value on `in:value`
+            const typedAccelerator = newVal?.match(/(?<=in:).*?(?=\s)/g)?.length
+              ? (newVal?.match(/(?<=in:).*?(?=\s)/g)[0] as ResourceType)
+              : "";
+
+            // Check if it's a valid resource type, eg. code, schema etc.
+            if (
+              !!newVal &&
+              !!typedAccelerator &&
+              acceleratorKeywords.includes(typedAccelerator)
+            ) {
+              setSearchAccelerator(typedAccelerator);
+              // TODO: Remove that text on the text field
+            }
           }}
           onChange={(event, newVal) => {
             /** This is when the user selects any of the suggestions */
@@ -610,7 +633,7 @@ export const GlobalSearch = () => {
           }}
           renderInput={(params: any) => {
             return (
-              <TextField
+              <TextFieldWithCursorPosition
                 {...params}
                 ref={textfieldRef}
                 fullWidth
@@ -641,7 +664,25 @@ export const GlobalSearch = () => {
                       pr: "0px",
                     },
                 }}
-                onKeyDown={(e) => {
+                // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                //   const { value } = e.target;
+                //   // Get the value on `in:value`
+                //   const typedAccelerator = value?.match(/(?<=in:).*?(?=\s)/g)
+                //     ?.length
+                //     ? (value?.match(/(?<=in:).*?(?=\s)/g)[0] as ResourceType)
+                //     : "";
+                //
+                //   // Check if it's a valid resource type, eg. code, schema etc.
+                //   if (
+                //     !!value &&
+                //     !!typedAccelerator &&
+                //     acceleratorKeywords.includes(typedAccelerator)
+                //   ) {
+                //     setSearchAccelerator(typedAccelerator);
+                //     // Remove that text on the text field
+                //   }
+                // }}
+                onKeyDown={(e: React.KeyboardEvent) => {
                   if (e.key === "Enter" && Boolean(searchKeyword)) {
                     goToSearchPage(searchKeyword, searchAccelerator);
                   }
