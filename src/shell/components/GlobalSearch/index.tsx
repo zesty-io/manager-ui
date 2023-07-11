@@ -733,7 +733,11 @@ export const GlobalSearch = () => {
         <AdvancedSearch
           keyword={searchKeyword}
           onClose={() => setIsAdvancedSearchOpen(false)}
-          onSearch={(searchData) => addSearchTerm(searchData.keyword)}
+          onSearch={(searchData) => {
+            if (!!searchData.keyword?.trim()) {
+              addSearchTerm(searchData.keyword);
+            }
+          }}
           searchAccelerator={searchAccelerator}
         />
       )}
