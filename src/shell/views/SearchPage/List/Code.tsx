@@ -30,7 +30,7 @@ export const Code: FC<Code> = ({
       return `Code File • ${time} by ${name}`;
     }
 
-    return "Code File • No actions found";
+    return `Code File • ${moment(data?.createdAt)?.fromNow()}`;
   }, [fileAudit]);
 
   const loading = loadingFileAudit || parentIsLoading;

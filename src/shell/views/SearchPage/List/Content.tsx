@@ -79,7 +79,7 @@ export const Content: FC<Content> = ({
     firstName || lastName ? `${firstName} ${lastName}` : "Unknown User";
   const userDateChip = auditData?.[0]
     ? `${dateInfo} by ${userInfo}`
-    : "No actions found";
+    : moment(data?.web?.createdAt)?.fromNow();
   const chips = [titleChip, appChip, userDateChip].join(" • ");
 
   // Create url if meta data exists
