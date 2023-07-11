@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useMemo } from "react";
 import { Menu, MenuItem } from "@mui/material";
 
 import { FilterButton } from "../../../components/Filters";
@@ -14,6 +14,14 @@ export const LanguageFilter: FC<LanguageFilterProps> = ({
 }) => {
   const [anchorRef, setAnchorRef] = useState<HTMLElement | null>(null);
   const { data: langs } = useGetLangsQuery({});
+
+  const sortedLangs = useMemo(() => {
+    if (langs?.length) {
+      return [...langs]?.sort((a, b) => a.code?.localeCompare(b.code));
+    }
+
+    return [];
+  }, [langs]);
 
   return (
     <>
@@ -37,7 +45,7 @@ export const LanguageFilter: FC<LanguageFilterProps> = ({
             },
           }}
         >
-          {langs?.map((lang) => (
+          {sortedLangs?.map((lang) => (
             <MenuItem
               key={lang.code}
               value={lang.code}

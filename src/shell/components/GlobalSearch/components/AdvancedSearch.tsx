@@ -101,6 +101,14 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       .sort((a, b) => a.firstName?.localeCompare(b.firstName));
   }, [users]);
 
+  const sortedLangs = useMemo(() => {
+    if (langs?.length) {
+      return [...langs]?.sort((a, b) => a.code?.localeCompare(b.code));
+    }
+
+    return [];
+  }, [langs]);
+
   useEffect(() => {
     const user = params.get("user")
       ? userOptions.find((u) => u.ZUID === params.get("user"))
@@ -526,7 +534,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 }}
               >
                 <MenuItem value="">Any Language</MenuItem>
-                {langs?.map((lang) => (
+                {sortedLangs?.map((lang) => (
                   <MenuItem key={lang.code} value={lang.code}>
                     {lang.code}
                   </MenuItem>
