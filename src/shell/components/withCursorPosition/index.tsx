@@ -12,7 +12,7 @@ export const withCursorPosition =
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setCursorPosition(e.target.selectionStart);
 
-      props.onChange(e);
+      props.onChange && props.onChange(e);
     };
 
     return (
