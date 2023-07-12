@@ -293,14 +293,6 @@ export const GlobalSearch = () => {
     setMediaFolderKeyword(apiQueryTerm);
   }, [apiQueryTerm]);
 
-  useEffect(() => {
-    // Makes sure that the search keyword is retained when the user refreshes
-    // the page while on the search page
-    if (!!params.get("q") && searchKeyword !== params.get("q")) {
-      setSearchKeyword(params.get("q"));
-    }
-  }, [params]);
-
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
     textfieldRef.current?.querySelector("input").focus();
