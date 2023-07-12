@@ -314,9 +314,19 @@ export const GlobalSearch = () => {
 
   const goToSearchPage = (queryTerm: string, resourceType?: ResourceType) => {
     const isOnSearchPage = mainApp === "search";
+    const typedAccelerator = getTypedSearchAccelerator(queryTerm);
+
+    const q =
+      !!typedAccelerator &&
+      acceleratorKeywords.includes(typedAccelerator) &&
+      !resourceType
+        ? queryTerm.replace(/in:[A-Za-z]*/g, "").trim()
+        : queryTerm;
+    const resource =
+      resourceType ?? typedAccelerator.split(":")[1].toLowerCase();
     const searchParams = new URLSearchParams({
-      q: queryTerm,
-      ...(Boolean(resourceType) && { resource: resourceType }),
+      q,
+      ...(!!resource && { resource }),
     });
     const url = `/search?${searchParams.toString()}`;
 
