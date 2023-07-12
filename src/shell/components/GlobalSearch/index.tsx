@@ -55,13 +55,7 @@ const ElementId = "global-search-autocomplete";
 const fullWidth = "500px"; // Component size when opened
 const collapsedWidth = "288px"; // Component size when collapsed/closed
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
-type AcceleratorKeywords = "in:Code" | "in:Content" | "in:Schema" | "in:Media";
-const acceleratorKeywords: AcceleratorKeywords[] = [
-  "in:Code",
-  "in:Content",
-  "in:Schema",
-  "in:Media",
-];
+const typedAcceleratorRegex = /\bin:(Media|Code|Schema|Content)\b/g;
 
 export interface Suggestion {
   type: ResourceType;
@@ -98,7 +92,7 @@ export const GlobalSearch = () => {
   const apiQueryTerm = useMemo(() => {
     if (!!typedSearchAccelerator && !!searchKeyword) {
       // Remove the accelerator from the keyword
-      return searchKeyword.replace(/in:[A-Za-z]*/g, "")?.trim();
+      return searchKeyword.replace(typedAcceleratorRegex, "")?.trim();
     }
 
     return searchKeyword;
@@ -299,9 +293,9 @@ export const GlobalSearch = () => {
   });
 
   const getTypedSearchAccelerator = (source: string) => {
-    const match = source?.match(/in:[A-Za-z]*/g);
+    const match = source?.match(typedAcceleratorRegex);
 
-    return match?.length ? (match[0] as AcceleratorKeywords) : null;
+    return match?.length ? match[0] : null;
   };
 
   const goToSearchPage = (queryTerm: string, resourceType?: ResourceType) => {
@@ -309,10 +303,8 @@ export const GlobalSearch = () => {
     const typedAccelerator = getTypedSearchAccelerator(queryTerm);
 
     const q =
-      !!typedAccelerator &&
-      acceleratorKeywords.includes(typedAccelerator) &&
-      !resourceType
-        ? queryTerm.replace(/in:[A-Za-z]*/g, "").trim()
+      !!typedAccelerator && !resourceType
+        ? queryTerm.replace(typedAcceleratorRegex, "").trim()
         : queryTerm;
     const resource =
       resourceType ?? typedAccelerator.split(":")[1].toLowerCase();
@@ -439,7 +431,7 @@ export const GlobalSearch = () => {
             let keyword = newVal;
             const typedAccelerator = getTypedSearchAccelerator(newVal);
 
-            if (!!newVal && acceleratorKeywords.includes(typedAccelerator)) {
+            if (!!newVal && !!typedAccelerator) {
               const resourceType = typedAccelerator
                 .split(":")[1]
                 .toLowerCase() as ResourceType;

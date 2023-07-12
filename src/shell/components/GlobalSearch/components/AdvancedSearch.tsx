@@ -39,14 +39,6 @@ import { ResourceType } from "../../../services/types";
 import { useGetLangsQuery } from "../../../services/instance";
 import { useParams } from "../../../hooks/useParams";
 
-type AcceleratorKeyword = "in:Code" | "in:Content" | "in:Schema" | "in:Media";
-const acceleratorKeywords: AcceleratorKeyword[] = [
-  "in:Code",
-  "in:Content",
-  "in:Schema",
-  "in:Media",
-];
-
 interface User {
   firstName: string;
   lastName: string;
@@ -171,20 +163,18 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
   useEffect(() => {
     if (keyword) {
       let _keyword = keyword;
-      const match = keyword.match(/in:[A-Za-z]*/g);
+      const regex = /\bin:(Media|Code|Schema|Content)\b/g;
+      const match = keyword.match(regex);
       const typedAccelerator = match?.length ? match[0] : null;
 
-      if (
-        !!keyword &&
-        acceleratorKeywords.includes(typedAccelerator as AcceleratorKeyword)
-      ) {
+      if (!!keyword && !!typedAccelerator) {
         updateSearchData({
           resourceType: typedAccelerator
             .split(":")[1]
             .toLowerCase() as ResourceType,
         });
 
-        _keyword = keyword.replace(/in:[A-Za-z]*/g, "").trim();
+        _keyword = keyword.replace(regex, "").trim();
       }
 
       updateSearchData({ keyword: _keyword });
