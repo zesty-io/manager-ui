@@ -236,7 +236,7 @@ const GainersLosersWrapper = ({
 const LatestPublishesWrapper = ({ propertyId, startDate, endDate }: Props) => {
   const { data: publishings } = useGetAllPublishingsQuery();
   const latestUniqueItemPublishings = uniqBy(publishings, "itemZUID")
-    ?.slice(0, 10)
+    ?.slice(0, 20)
     ?.map((publishing) => publishing.itemZUID);
 
   const {
@@ -247,17 +247,21 @@ const LatestPublishesWrapper = ({ propertyId, startDate, endDate }: Props) => {
     skip: !latestUniqueItemPublishings?.length,
   });
 
-  const paths =
-    items?.success
-      ?.map((item: ContentItem) => item?.web?.path)
-      ?.filter((path: string) => path) || [];
+  const sortedPaths = latestUniqueItemPublishings
+    ?.map(
+      (itemZUID) =>
+        items?.success?.find(
+          (item: ContentItem) => itemZUID === item?.meta?.ZUID
+        )?.web?.path
+    )
+    ?.filter((i) => i);
 
   return (
     <ItemsTableContent
       propertyId={propertyId}
       startDate={startDate}
       endDate={endDate}
-      paths={paths}
+      paths={sortedPaths}
       showSkeleton={isFetching || isUninitialized}
     />
   );
@@ -274,7 +278,7 @@ const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
   );
 
   const itemZUIDs = uniqBy(itemEdits, "affectedZUID")
-    ?.slice(0, 10)
+    ?.slice(0, 20)
     ?.map((item: any) => item.affectedZUID);
 
   const {
@@ -285,17 +289,21 @@ const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
     skip: !itemZUIDs?.length,
   });
 
-  const paths =
-    items?.success
-      ?.map((item: ContentItem) => item?.web?.path)
-      ?.filter((path: string) => path) || [];
+  const sortedPaths = itemZUIDs
+    ?.map(
+      (itemZUID) =>
+        items?.success?.find(
+          (item: ContentItem) => itemZUID === item?.meta?.ZUID
+        )?.web?.path
+    )
+    ?.filter((i) => i);
 
   return (
     <ItemsTableContent
       propertyId={propertyId}
       startDate={startDate}
       endDate={endDate}
-      paths={paths}
+      paths={sortedPaths}
       showSkeleton={isFetching || isUninitialized}
     />
   );

@@ -9,14 +9,17 @@ import {
   Twitter,
   YouTube,
   OpenInNewRounded,
+  WarningRounded,
 } from "@mui/icons-material";
 import moment from "moment-timezone";
 import {
+  useGetAllPublishingsQuery,
   useGetContentModelQuery,
   useSearchContentQuery,
 } from "../../../../../../../../../shell/services/instance";
 import { useGetUsersQuery } from "../../../../../../../../../shell/services/accounts";
 import { startCase } from "lodash";
+import { useState } from "react";
 
 const SOURCE_DETAIL_MAP = {
   "(direct)": {
@@ -70,24 +73,35 @@ export const NameCell = ({
   externalLink?: string;
 }) => {
   const history = useHistory();
-  const { data: item, isFetching } = useSearchContentQuery({
+  const { data: item, isFetching: isItemFetching } = useSearchContentQuery({
     query: path,
     limit: 1,
   });
   const foundItem = item?.[0]?.web?.path === path ? item?.[0] : null;
-  const { data: users } = useGetUsersQuery();
-  const foundUser = users?.find(
-    (user) => user.ZUID === foundItem?.web?.createdByUserZUID
+  const { data: publishings, isFetching: isPublishingFetching } =
+    useGetAllPublishingsQuery();
+  const foundPublishing = publishings?.find(
+    (publishing) => publishing.itemZUID === foundItem?.meta?.ZUID
   );
-  const { data: model } = useGetContentModelQuery(
+  const { data: users, isFetching: isUsersFetching } = useGetUsersQuery();
+  const foundUser = users?.find(
+    (user) => user.ZUID === foundPublishing?.publishedByUserZUID
+  );
+  const { data: model, isFetching: isModelsFetching } = useGetContentModelQuery(
     foundItem?.meta?.contentModelZUID,
     {
       skip: !foundItem?.meta?.contentModelZUID,
     }
   );
 
+  const isFetching =
+    isItemFetching ||
+    isPublishingFetching ||
+    isUsersFetching ||
+    isModelsFetching;
+
   const getImage = () => {
-    const ogImage = Object.keys(foundItem.data)?.find(
+    const ogImage = Object.keys(foundItem?.data)?.find(
       (value) =>
         value === "ogimage" ||
         value === "ogImage" ||
@@ -97,7 +111,7 @@ export const NameCell = ({
     if (ogImage) {
       return foundItem?.data?.[ogImage];
     } else {
-      return Object.values(foundItem.data)?.find(
+      return Object.values(foundItem?.data)?.find(
         (value) => typeof value === "string" && value.startsWith("3-")
       );
     }
@@ -132,7 +146,7 @@ export const NameCell = ({
         </Box>
       </Box>
     );
-  } else if (foundItem) {
+  } else {
     return (
       <Box
         display="flex"
@@ -140,17 +154,21 @@ export const NameCell = ({
         width="100%"
         alignItems="center"
         gap={1}
-        onClick={() =>
-          history.push(
-            `/content/${foundItem.meta.contentModelZUID}/${foundItem.meta.ZUID}`
-          )
-        }
+        onClick={() => {
+          if (foundItem) {
+            history.push(
+              `/content/${foundItem?.meta?.contentModelZUID}/${foundItem?.meta?.ZUID}`
+            );
+          } else {
+            window.open(externalLink);
+          }
+        }}
       >
         <Box
           height="40px"
           width="40px"
           bgcolor={
-            Object.values(foundItem.data)?.some(
+            Object.values(foundItem?.data || {})?.some(
               (value) => typeof value === "string" && value.startsWith("3-")
             )
               ? "transparent"
@@ -158,7 +176,7 @@ export const NameCell = ({
           }
           borderRadius="4px"
         >
-          {Object.values(foundItem.data)?.some(
+          {Object.values(foundItem?.data || {})?.some(
             (value) => typeof value === "string" && value.startsWith("3-")
           ) && (
             <img
@@ -185,7 +203,9 @@ export const NameCell = ({
               noWrap
               maxWidth="420px"
             >
-              {foundItem.web.metaTitle || foundItem.web.metaLinkText}
+              {foundItem?.web?.metaTitle ||
+                foundItem?.web?.metaLinkText ||
+                path}
             </Typography>
             <OpenInNewRounded
               onClick={(e) => {
@@ -199,82 +219,109 @@ export const NameCell = ({
               }}
             />
           </Box>
-          <Box display="flex" gap={1.5}>
-            <Typography variant="body3" fontWeight={600} color="text.secondary">
-              {moment(foundItem.meta.createdAt).format("MMM D")}
-            </Typography>
-            <Typography variant="body3" fontWeight={600} color="text.secondary">
-              {foundUser
-                ? `${foundUser.firstName} ${foundUser.lastName}`
-                : "Unknown User"}
-            </Typography>
-            <Typography variant="body3" fontWeight={600} color="text.secondary">
-              {model?.label}
-            </Typography>
-            {topSource && (
-              <Box display="flex" alignItems="center">
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  gap={0.25}
-                  px={0.5}
-                  py={0.25}
-                  bgcolor={SOURCE_DETAIL_MAP[topSource]?.bgcolor || "yellow.50"}
-                  sx={{
-                    borderRadius: "4px 0 0 4px",
-                  }}
-                >
-                  <SvgIcon
-                    component={
-                      SOURCE_DETAIL_MAP[topSource]?.icon || LanguageRounded
+          {foundItem ? (
+            <Box display="flex" gap={1.5}>
+              <Typography
+                variant="body3"
+                fontWeight={600}
+                color="text.secondary"
+              >
+                {moment(foundPublishing?.publishAt).format("MMM D")}
+              </Typography>
+              <Typography
+                variant="body3"
+                fontWeight={600}
+                color="text.secondary"
+              >
+                {foundUser
+                  ? `${foundUser.firstName} ${foundUser.lastName}`
+                  : "Unknown User"}
+              </Typography>
+              <Typography
+                variant="body3"
+                fontWeight={600}
+                color="text.secondary"
+              >
+                {model?.label}
+              </Typography>
+              {topSource && (
+                <Box display="flex" alignItems="center">
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    gap={0.25}
+                    px={0.5}
+                    py={0.25}
+                    bgcolor={
+                      SOURCE_DETAIL_MAP[topSource]?.bgcolor || "yellow.50"
                     }
                     sx={{
-                      width: "8px",
-                      height: "8px",
-                      color:
-                        SOURCE_DETAIL_MAP[topSource]?.color || "warning.main",
+                      borderRadius: "4px 0 0 4px",
                     }}
-                  />
-                  <Typography
-                    fontSize="10px"
-                    fontWeight={600}
-                    lineHeight="12px"
-                    color={
+                  >
+                    <SvgIcon
+                      component={
+                        SOURCE_DETAIL_MAP[topSource]?.icon || LanguageRounded
+                      }
+                      sx={{
+                        width: "8px",
+                        height: "8px",
+                        color:
+                          SOURCE_DETAIL_MAP[topSource]?.color || "warning.main",
+                      }}
+                    />
+                    <Typography
+                      fontSize="10px"
+                      fontWeight={600}
+                      lineHeight="12px"
+                      color={
+                        SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"
+                      }
+                    >
+                      {startCase(topSource)}
+                    </Typography>
+                  </Box>
+                  <Box
+                    px={0.5}
+                    py={0.25}
+                    bgcolor={
                       SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"
                     }
+                    sx={{
+                      borderRadius: "0 4px 4px 0",
+                    }}
                   >
-                    {startCase(topSource)}
-                  </Typography>
+                    <Typography
+                      fontSize="8px"
+                      fontWeight={600}
+                      lineHeight="12px"
+                      color="common.white"
+                    >
+                      {isNaN(
+                        Math.floor((topSourceValue / screenPageViews) * 100)
+                      )
+                        ? 0
+                        : Math.floor((topSourceValue / screenPageViews) * 100)}
+                      %
+                    </Typography>
+                  </Box>
                 </Box>
-                <Box
-                  px={0.5}
-                  py={0.25}
-                  bgcolor={
-                    SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"
-                  }
-                  sx={{
-                    borderRadius: "0 4px 4px 0",
-                  }}
-                >
-                  <Typography
-                    fontSize="8px"
-                    fontWeight={600}
-                    lineHeight="12px"
-                    color="common.white"
-                  >
-                    {isNaN(Math.floor((topSourceValue / screenPageViews) * 100))
-                      ? 0
-                      : Math.floor((topSourceValue / screenPageViews) * 100)}
-                    %
-                  </Typography>
-                </Box>
-              </Box>
-            )}
-          </Box>
+              )}
+            </Box>
+          ) : (
+            <Box display="flex" gap={0.5} alignItems="center">
+              <WarningRounded sx={{ width: 12, height: 12 }} color="warning" />
+              <Typography
+                variant="body3"
+                fontWeight={600}
+                color="text.secondary"
+              >
+                This item does not exist in your instance
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Box>
     );
-  } else {
-    return null;
   }
 };

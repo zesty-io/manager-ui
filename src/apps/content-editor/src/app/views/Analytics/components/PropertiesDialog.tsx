@@ -43,7 +43,6 @@ import googleAnalyticsIcon from "../../../../../../../../public/images/googleAna
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../shell/store/types";
 import { LoadingButton } from "@mui/lab";
-import { set } from "js-cookie";
 import { AnalyticsDialog } from "./AnalyticsDialog";
 
 type Message = {
