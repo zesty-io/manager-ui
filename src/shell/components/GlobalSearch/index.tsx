@@ -55,11 +55,12 @@ const ElementId = "global-search-autocomplete";
 const fullWidth = "500px"; // Component size when opened
 const collapsedWidth = "288px"; // Component size when collapsed/closed
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
-const acceleratorKeywords: ResourceType[] = [
-  "code",
-  "content",
-  "schema",
-  "media",
+type AcceleratorKeywords = "in:Code" | "in:Content" | "in:Schema" | "in:Media";
+const acceleratorKeywords: AcceleratorKeywords[] = [
+  "in:Code",
+  "in:Content",
+  "in:Schema",
+  "in:Media",
 ];
 
 export interface Suggestion {
@@ -74,7 +75,9 @@ export interface Suggestion {
 
 export const GlobalSearch = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [searchAccelerator, setSearchAccelerator] =
+  const [chipSearchAccelerator, setChipSearchAccelerator] =
+    useState<ResourceType | null>(null);
+  const [typedSearchAccelerator, setTypedSearchAccelerator] =
     useState<ResourceType | null>(null);
   const [open, setOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
@@ -92,18 +95,27 @@ export const GlobalSearch = () => {
   const [params, setParams] = useParams();
   const textfieldRef = useRef<HTMLDivElement>();
 
+  const apiQueryTerm = useMemo(() => {
+    if (!!typedSearchAccelerator && !!searchKeyword) {
+      // Remove the accelerator from the keyword
+      return searchKeyword.replace(/in:[A-Za-z]*/g, "")?.trim();
+    }
+
+    return searchKeyword;
+  }, [searchKeyword]);
+
   const {
     data: contents,
     isError: isContentFetchingFailed,
     isFetching: isFetchingContentSearchResults,
-  } = useSearchContentQuery({ query: searchKeyword });
+  } = useSearchContentQuery({ query: apiQueryTerm });
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMediaSearchResults } =
     useSearchBinFilesQuery(
-      { binIds: bins?.map((bin) => bin.id), term: searchKeyword },
+      { binIds: bins?.map((bin) => bin.id), term: apiQueryTerm },
       {
-        skip: !bins?.length || !searchKeyword,
+        skip: !bins?.length || !apiQueryTerm,
       }
     );
   const { data: allMediaFiles, isFetching: isFetchingAllMediaFiles } =
@@ -159,7 +171,7 @@ export const GlobalSearch = () => {
 
     // Need to show all the media files when the media accelerator is active and there's no user input
     const mediaSource =
-      searchAccelerator === "media" && !searchKeyword
+      chipSearchAccelerator === "media" && !searchKeyword
         ? allMediaFiles
         : mediaFiles;
     const mediaFileSuggestions: Suggestion[] =
@@ -194,8 +206,10 @@ export const GlobalSearch = () => {
       ...mediaFolderSuggestions,
     ];
 
+    const activeAccelerator = chipSearchAccelerator ?? typedSearchAccelerator;
+
     // Only show related suggestions when a search accelerator is active
-    switch (searchAccelerator) {
+    switch (activeAccelerator) {
       case "code":
         consolidatedResults = [...codeFileSuggestions];
         break;
@@ -230,7 +244,7 @@ export const GlobalSearch = () => {
     mediaFiles,
     mediaFolders,
     isContentFetchingFailed,
-    searchAccelerator,
+    chipSearchAccelerator,
     allMediaFiles,
   ]);
 
@@ -243,7 +257,7 @@ export const GlobalSearch = () => {
     // Shows the suggestions when either a search keyword is entered or a search accelerator is activated
     let _suggestions =
       suggestions?.length &&
-      (Boolean(searchKeyword) || Boolean(searchAccelerator))
+      (Boolean(searchKeyword) || Boolean(chipSearchAccelerator))
         ? suggestions?.slice(0, 5)
         : [];
 
@@ -274,10 +288,10 @@ export const GlobalSearch = () => {
   }, [suggestions, recentSearches, searchKeyword]);
 
   useEffect(() => {
-    setModelKeyword(searchKeyword);
-    setFileKeyword(searchKeyword);
-    setMediaFolderKeyword(searchKeyword);
-  }, [searchKeyword]);
+    setModelKeyword(apiQueryTerm);
+    setFileKeyword(apiQueryTerm);
+    setMediaFolderKeyword(apiQueryTerm);
+  }, [apiQueryTerm]);
 
   useEffect(() => {
     // Makes sure that the search keyword is retained when the user refreshes
@@ -291,6 +305,12 @@ export const GlobalSearch = () => {
   const shortcutHelpText = useMetaKey("k", () => {
     textfieldRef.current?.querySelector("input").focus();
   });
+
+  const getTypedSearchAccelerator = (source: string) => {
+    const match = source?.match(/in:[A-Za-z]*/g);
+
+    return match?.length ? (match[0] as AcceleratorKeywords) : null;
+  };
 
   const goToSearchPage = (queryTerm: string, resourceType?: ResourceType) => {
     const isOnSearchPage = mainApp === "search";
@@ -317,9 +337,9 @@ export const GlobalSearch = () => {
       setSearchKeyword(queryTerm);
     }
 
-    if (resourceType !== searchAccelerator) {
+    if (resourceType !== chipSearchAccelerator) {
       // Makes sure that the search accelerator is updated if the user has clicked on a recent search item
-      setSearchAccelerator(resourceType);
+      setChipSearchAccelerator(resourceType);
     }
 
     // Only add the search page on the history stack during initial page visit
@@ -413,25 +433,20 @@ export const GlobalSearch = () => {
               visibility: searchKeyword ? "visible" : "hidden",
             },
           }}
-          onInputChange={(event, newVal) => {
-            setSearchKeyword(newVal);
-            // const { value } = e.target;
-            // Get the value on `in:value`
-            const typedAccelerator = newVal?.match(/(?<=in:).*?(?=\s)/g)?.length
-              ? (newVal?.match(/(?<=in:).*?(?=\s)/g)[0] as ResourceType)
-              : "";
+          onInputChange={(_, newVal) => {
+            let keyword = newVal;
+            const typedAccelerator = getTypedSearchAccelerator(newVal);
 
-            // Check if it's a valid resource type, eg. code, schema etc.
-            if (
-              !!newVal &&
-              !!typedAccelerator &&
-              acceleratorKeywords.includes(typedAccelerator)
-            ) {
-              setSearchAccelerator(typedAccelerator);
-              // TODO: Remove that text on the text field
+            if (!!newVal && acceleratorKeywords.includes(typedAccelerator)) {
+              const resourceType = typedAccelerator
+                .split(":")[1]
+                .toLowerCase() as ResourceType;
+              setTypedSearchAccelerator(resourceType);
             }
+
+            setSearchKeyword(keyword);
           }}
-          onChange={(event, newVal) => {
+          onChange={(_, newVal) => {
             /** This is when the user selects any of the suggestions */
 
             // null represents "X" button clicked
@@ -484,15 +499,15 @@ export const GlobalSearch = () => {
                       aria-selected={false}
                       key={option}
                       onItemClick={() =>
-                        goToSearchPage(option, searchAccelerator)
+                        goToSearchPage(option, chipSearchAccelerator)
                       }
                       text={option}
-                      searchAccelerator={searchAccelerator}
+                      searchAccelerator={chipSearchAccelerator}
                       recentSearches={recentSearches}
                     />
                   );
                 } else {
-                  if (Boolean(searchAccelerator)) {
+                  if (Boolean(chipSearchAccelerator)) {
                     return;
                   }
 
@@ -515,7 +530,7 @@ export const GlobalSearch = () => {
               // Renders the recent searches component
               // This only renders the subheader, actual data is being set on the suggestions array
               // and rendering of the list is done above
-              if (option === "RecentSearches" && !searchAccelerator) {
+              if (option === "RecentSearches" && !chipSearchAccelerator) {
                 return (
                   <ListSubheader
                     sx={{
@@ -559,14 +574,16 @@ export const GlobalSearch = () => {
               // Renders the search accelerators when no search accelerator is active & there is no search term
               if (
                 option === "SearchAccelerator" &&
-                !Boolean(searchAccelerator) &&
+                !Boolean(chipSearchAccelerator) &&
                 !Boolean(searchKeyword)
               ) {
                 return (
                   <SearchAccelerator
                     {...props}
                     key="SearchAccelerator"
-                    onAcceleratorClick={(type) => setSearchAccelerator(type)}
+                    onAcceleratorClick={(type) =>
+                      setChipSearchAccelerator(type)
+                    }
                   />
                 );
               }
@@ -575,7 +592,7 @@ export const GlobalSearch = () => {
               // accelerator is active and there is no user input
               if (
                 option === "RecentModifiedItemsHeader" &&
-                Boolean(searchAccelerator) &&
+                Boolean(chipSearchAccelerator) &&
                 !Boolean(searchKeyword)
               ) {
                 const types: Record<ResourceType, string> = {
@@ -599,7 +616,7 @@ export const GlobalSearch = () => {
                     }}
                     key={option}
                   >
-                    Recent Modified {types[searchAccelerator]}
+                    Recent Modified {types[chipSearchAccelerator]}
                   </ListSubheader>
                 );
               }
@@ -640,7 +657,7 @@ export const GlobalSearch = () => {
                 data-cy="global-search-textfield"
                 variant="outlined"
                 placeholder={
-                  Boolean(searchAccelerator)
+                  Boolean(chipSearchAccelerator)
                     ? ""
                     : `Search Instance ${shortcutHelpText}`
                 }
@@ -664,36 +681,18 @@ export const GlobalSearch = () => {
                       pr: "0px",
                     },
                 }}
-                // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                //   const { value } = e.target;
-                //   // Get the value on `in:value`
-                //   const typedAccelerator = value?.match(/(?<=in:).*?(?=\s)/g)
-                //     ?.length
-                //     ? (value?.match(/(?<=in:).*?(?=\s)/g)[0] as ResourceType)
-                //     : "";
-                //
-                //   // Check if it's a valid resource type, eg. code, schema etc.
-                //   if (
-                //     !!value &&
-                //     !!typedAccelerator &&
-                //     acceleratorKeywords.includes(typedAccelerator)
-                //   ) {
-                //     setSearchAccelerator(typedAccelerator);
-                //     // Remove that text on the text field
-                //   }
-                // }}
                 onKeyDown={(e: React.KeyboardEvent) => {
                   if (e.key === "Enter" && Boolean(searchKeyword)) {
-                    goToSearchPage(searchKeyword, searchAccelerator);
+                    goToSearchPage(searchKeyword, chipSearchAccelerator);
                   }
 
                   // Remove the selected search accelerator when the user presses backspace and there's no search keyword
                   if (
                     e.key === "Backspace" &&
                     !Boolean(searchKeyword) &&
-                    Boolean(searchAccelerator)
+                    Boolean(chipSearchAccelerator)
                   ) {
-                    setSearchAccelerator(null);
+                    setChipSearchAccelerator(null);
                   }
                 }}
                 inputProps={{
@@ -707,14 +706,14 @@ export const GlobalSearch = () => {
                   ...params.InputProps,
                   startAdornment: (
                     <InputAdornment position="start" sx={{ marginRight: 0 }}>
-                      {Boolean(searchAccelerator) && open ? (
+                      {Boolean(chipSearchAccelerator) && open ? (
                         <Chip
-                          data-cy={`active-global-search-accelerator-${searchAccelerator}`}
+                          data-cy={`active-global-search-accelerator-${chipSearchAccelerator}`}
                           variant="filled"
-                          label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
+                          label={`in: ${SEARCH_ACCELERATORS[chipSearchAccelerator]?.text}`}
                           color="primary"
                           size="small"
-                          onDelete={() => setSearchAccelerator(null)}
+                          onDelete={() => setChipSearchAccelerator(null)}
                         />
                       ) : (
                         <SearchIcon fontSize="small" color="action" />
@@ -779,7 +778,7 @@ export const GlobalSearch = () => {
               addSearchTerm(searchData.keyword);
             }
           }}
-          searchAccelerator={searchAccelerator}
+          searchAccelerator={chipSearchAccelerator}
         />
       )}
     </>
