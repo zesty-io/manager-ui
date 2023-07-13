@@ -20,6 +20,7 @@ import {
 import { useGetUsersQuery } from "../../../../../../../../../shell/services/accounts";
 import { startCase } from "lodash";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const SOURCE_DETAIL_MAP = {
   "(direct)": {
@@ -93,6 +94,14 @@ export const NameCell = ({
       skip: !foundItem?.meta?.contentModelZUID,
     }
   );
+  const languages = useSelector((state: any) => state.languages);
+  const langCode = languages.find(
+    (lang: any) => lang.ID === foundItem?.meta?.langID
+  )?.code;
+  const langDisplay = langCode ? `(${langCode}) ` : "";
+
+  const hasSiblings =
+    foundItem?.siblings && Object.keys(foundItem?.siblings).length > 1;
 
   const isFetching =
     isItemFetching ||
@@ -195,6 +204,7 @@ export const NameCell = ({
               noWrap
               maxWidth="420px"
             >
+              {hasSiblings ? langDisplay : ""}
               {foundItem?.web?.metaTitle ||
                 foundItem?.web?.metaLinkText ||
                 path}
