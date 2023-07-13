@@ -9,11 +9,10 @@ import {
 } from "@mui/icons-material";
 import { DataGridPro, GridRenderCellParams } from "@mui/x-data-grid-pro";
 import {
-  useGetAnalyticsPagePathsByFilterQuery,
   useGetAnalyticsPropertiesQuery,
   useGetAnalyticsPropertyDataByQueryQuery,
 } from "../../../../../../../../../shell/services/cloudFunctions";
-import moment, { Moment } from "moment-timezone";
+import { Moment } from "moment-timezone";
 import {
   findTopDimensions,
   findValuesForDimensions,
@@ -23,13 +22,10 @@ import {
 import { NameCell } from "./NameCell";
 import { StatsCell } from "./StatsCell";
 import { ViewsCell } from "./ViewsCell";
-import { uniqBy } from "lodash";
-import {
-  useGetAllPublishingsQuery,
-  useGetAuditsQuery,
-  useGetContentItemsQuery,
-} from "../../../../../../../../../shell/services/instance";
-import { ContentItem } from "../../../../../../../../../shell/services/types";
+import { MostPopularWrapper } from "./MostPopularWrapper";
+import { GainersLosersWrapper } from "./GainersLosersWrapper";
+import { LatestPublishesWrapper } from "./LatestPublishesWrapper";
+import { RecentEditsWrapper } from "./RecentEditsWrapper";
 
 const tableTabs = [
   {
@@ -153,164 +149,6 @@ export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
         />
       )}
     </>
-  );
-};
-
-const MostPopularWrapper = ({ propertyId, startDate, endDate }: Props) => {
-  const { data: pathsData, isFetching } =
-    useGetAnalyticsPropertyDataByQueryQuery(
-      {
-        property: propertyId,
-        requests: [
-          {
-            dimensions: [
-              {
-                name: "pagePath",
-              },
-            ],
-            metrics: [
-              {
-                name: "screenPageViews",
-              },
-            ],
-            dateRanges: generateDateRangesForReport(startDate, endDate),
-            limit: "10",
-            orderBys: [
-              {
-                metric: {
-                  metricName: "screenPageViews",
-                },
-                desc: true,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        skip: !propertyId,
-      }
-    );
-  const paths =
-    findTopDimensions(pathsData?.reports?.[0]?.rows, ["date_range_0"], 10)?.map(
-      (row, index) => row[0].value
-    ) || [];
-
-  return (
-    <ItemsTableContent
-      propertyId={propertyId}
-      startDate={startDate}
-      endDate={endDate}
-      paths={paths}
-      showSkeleton={isFetching}
-    />
-  );
-};
-
-const GainersLosersWrapper = ({
-  propertyId,
-  startDate,
-  endDate,
-  isLosers,
-}: Props & { isLosers: boolean }) => {
-  const { data: paths, isFetching } = useGetAnalyticsPagePathsByFilterQuery(
-    {
-      filter: isLosers ? "loser" : "gainer",
-      propertyId: propertyId?.split("/")?.pop(),
-      startDate: startDate?.format("YYYY-MM-DD"),
-      endDate: endDate?.format("YYYY-MM-DD"),
-      limit: 10,
-      order: isLosers ? "asc" : "desc",
-    },
-    {
-      skip: !propertyId,
-    }
-  );
-
-  return (
-    <ItemsTableContent
-      propertyId={propertyId}
-      startDate={startDate}
-      endDate={endDate}
-      paths={paths}
-      showSkeleton={isFetching}
-    />
-  );
-};
-
-const LatestPublishesWrapper = ({ propertyId, startDate, endDate }: Props) => {
-  const { data: publishings } = useGetAllPublishingsQuery();
-  const latestUniqueItemPublishings = uniqBy(publishings, "itemZUID")
-    ?.slice(0, 20)
-    ?.map((publishing) => publishing.itemZUID);
-
-  const {
-    data: items,
-    isFetching,
-    isUninitialized,
-  } = useGetContentItemsQuery(latestUniqueItemPublishings, {
-    skip: !latestUniqueItemPublishings?.length,
-  });
-
-  const sortedPaths = latestUniqueItemPublishings
-    ?.map(
-      (itemZUID) =>
-        items?.success?.find(
-          (item: ContentItem) => itemZUID === item?.meta?.ZUID
-        )?.web?.path
-    )
-    ?.filter((i) => i);
-
-  return (
-    <ItemsTableContent
-      propertyId={propertyId}
-      startDate={startDate}
-      endDate={endDate}
-      paths={sortedPaths}
-      showSkeleton={isFetching || isUninitialized}
-    />
-  );
-};
-
-const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
-  const { data: auditData } = useGetAuditsQuery({
-    start_date: moment().utc().subtract(1, "month").format("YYYY-MM-DD"),
-    end_date: moment().utc().format("YYYY-MM-DD"),
-  });
-
-  const itemEdits = auditData?.filter(
-    (item: any) => item.action === 2 && item.resourceType === "content"
-  );
-
-  const itemZUIDs = uniqBy(itemEdits, "affectedZUID")
-    ?.slice(0, 20)
-    ?.map((item: any) => item.affectedZUID);
-
-  const {
-    data: items,
-    isFetching,
-    isUninitialized,
-  } = useGetContentItemsQuery(itemZUIDs, {
-    skip: !itemZUIDs?.length,
-  });
-
-  const sortedPaths = itemZUIDs
-    ?.map(
-      (itemZUID) =>
-        items?.success?.find(
-          (item: ContentItem) => itemZUID === item?.meta?.ZUID
-        )?.web?.path
-    )
-    ?.filter((i) => i);
-
-  return (
-    <ItemsTableContent
-      propertyId={propertyId}
-      startDate={startDate}
-      endDate={endDate}
-      paths={sortedPaths}
-      showSkeleton={isFetching || isUninitialized}
-      isRecentEdits
-    />
   );
 };
 
@@ -506,7 +344,7 @@ export const ItemsTableContent = ({
 
   return (
     <>
-      <Box height="578px">
+      <Box height="718px">
         <DataGridPro
           rows={
             isFetching || showSkeleton
