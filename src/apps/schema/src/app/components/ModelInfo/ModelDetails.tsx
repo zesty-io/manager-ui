@@ -1,5 +1,8 @@
 import { Box, Tooltip, Typography, Button } from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+
 import {
   useGetContentModelsQuery,
   useGetContentNavItemsQuery,
@@ -9,6 +12,8 @@ import { useState } from "react";
 import { RenameModelDialogue } from "../RenameModelDialogue";
 import { UpdateDescriptionModelDialogue } from "../UpdateDescriptionModelDialogue";
 import { UpdateParentModelDialogue } from "../UpdateParentModelDialogue";
+import { DeleteModelDialogue } from "../DeleteModelDialogue";
+import { DuplicateModelDialogue } from "../DuplicateModelDialogue";
 
 type Params = {
   id: string;
@@ -27,7 +32,12 @@ export const ModelDetails = () => {
     (navItem) => navItem.ZUID === model?.parentZUID
   );
   const [showDialogue, setShowDialogue] = useState<
-    "rename" | "updateDescription" | "updateParent" | null
+    | "rename"
+    | "updateDescription"
+    | "updateParent"
+    | "duplicate"
+    | "delete"
+    | null
   >(null);
   const [isCopied, setIsCopied] = useState("");
 
@@ -266,6 +276,26 @@ export const ModelDetails = () => {
             </Button>
           </Box>
         </Box>
+        <Box display="flex" alignItems="center" pt={2} gap={2}>
+          <Button
+            size="large"
+            color="inherit"
+            variant="outlined"
+            startIcon={<ContentCopyRoundedIcon color="action" />}
+            onClick={() => setShowDialogue("duplicate")}
+          >
+            Duplicate Model
+          </Button>
+          <Button
+            size="large"
+            color="error"
+            variant="outlined"
+            startIcon={<DeleteRoundedIcon />}
+            onClick={() => setShowDialogue("delete")}
+          >
+            Delete Model
+          </Button>
+        </Box>
       </Box>
       {showDialogue === "rename" && (
         <RenameModelDialogue
@@ -283,6 +313,18 @@ export const ModelDetails = () => {
         <UpdateParentModelDialogue
           onClose={() => setShowDialogue(null)}
           model={model}
+        />
+      )}
+      {showDialogue === "duplicate" && (
+        <DuplicateModelDialogue
+          model={model}
+          onClose={() => setShowDialogue(null)}
+        />
+      )}
+      {showDialogue === "delete" && (
+        <DeleteModelDialogue
+          model={model}
+          onClose={() => setShowDialogue(null)}
         />
       )}
     </>
