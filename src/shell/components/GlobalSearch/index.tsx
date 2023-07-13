@@ -11,13 +11,14 @@ import {
   Collapse,
   IconButton,
   ListSubheader,
+  Chip,
+  Skeleton,
 } from "@mui/material";
-import { useHistory, useLocation } from "react-router";
+import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { useTheme } from "@mui/material/styles";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import { ScheduleRounded, SearchRounded } from "@mui/icons-material";
 import { isEmpty } from "lodash";
+import { theme } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
@@ -29,14 +30,28 @@ import { getContentTitle, getItemIcon } from "./utils";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import { useSearchCodeFilesByKeywords } from "../../hooks/useSearchCodeFilesByKeyword";
 import { ResourceType } from "../../services/types";
+import { SearchAccelerator } from "./components/SearchAccelerator";
+import { SEARCH_ACCELERATORS } from "./components/config";
+import { useGetActiveApp } from "../../hooks/useGetActiveApp";
 import {
   useSearchBinFilesQuery,
   useGetBinsQuery,
+  useGetAllBinFilesQuery,
 } from "../../services/mediaManager";
 import { useSearchMediaFoldersByKeyword } from "../../hooks/useSearchMediaFoldersByKeyword";
+import { RecentSearchItem } from "./components/RecentSearchItem";
+import { KeywordSearchItem } from "./components/KeywordSearchItem";
 
-const AdditionalDropdownOptions = ["RecentSearches", "AdvancedSearchButton"];
+// List of dropdown options that are NOT suggestions
+const AdditionalDropdownOptions = [
+  "RecentModifiedItemsHeader",
+  "RecentSearches",
+  "AdvancedSearchButton",
+  "SearchAccelerator",
+];
 const ElementId = "global-search-autocomplete";
+const fullWidth = "500px"; // Component size when opened
+const collapsedWidth = "288px"; // Component size when collapsed/closed
 
 export interface Suggestion {
   type: ResourceType;
@@ -48,8 +63,10 @@ export interface Suggestion {
   subType?: string;
 }
 
-const ContentSearch: FC = () => {
-  const [value, setValue] = useState("");
+export const GlobalSearch: FC = () => {
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchAccelerator, setSearchAccelerator] =
+    useState<ResourceType | null>(null);
   const [open, setOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [recentSearches, addSearchTerm, deleteSearchTerm] = useRecentSearches();
@@ -58,25 +75,38 @@ const ContentSearch: FC = () => {
   const [mediaFolders, setMediaFolderKeyword] =
     useSearchMediaFoldersByKeyword();
   const languages = useSelector((state: any) => state.languages);
+  const { mainApp } = useGetActiveApp();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const history = useHistory();
-  const location = useLocation();
   const dispatch = useDispatch();
-  const theme = useTheme();
 
   const textfieldRef = useRef<HTMLDivElement>();
 
-  const { data: contents, isError: isContentFetchingFailed } =
-    useSearchContentQuery({ query: value }, { skip: !value });
+  const {
+    data: contents,
+    isError: isContentFetchingFailed,
+    isFetching: isFetchingContentSearchResults,
+  } = useSearchContentQuery({ query: searchKeyword });
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
-  const { data: mediaFiles } = useSearchBinFilesQuery(
-    { binIds: bins?.map((bin) => bin.id), term: value },
-    {
-      skip: !bins?.length || !value,
-    }
-  );
+  const { data: mediaFiles, isFetching: isFetchingMediaSearchResults } =
+    useSearchBinFilesQuery(
+      { binIds: bins?.map((bin) => bin.id), term: searchKeyword },
+      {
+        skip: !bins?.length || !searchKeyword,
+      }
+    );
+  const { data: allMediaFiles, isFetching: isFetchingAllMediaFiles } =
+    useGetAllBinFilesQuery(
+      bins?.map((bin) => bin.id),
+      { skip: !bins?.length }
+    );
+
+  const isLoading =
+    isFetchingAllMediaFiles ||
+    isFetchingMediaSearchResults ||
+    isFetchingContentSearchResults;
 
   const suggestions: Suggestion[] = useMemo(() => {
     // Content data needs to be reset to [] when api call fails
@@ -118,8 +148,13 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
+    // Need to show all the media files when the media accelerator is active and there's no user input
+    const mediaSource =
+      searchAccelerator === "media" && !searchKeyword
+        ? allMediaFiles
+        : mediaFiles;
     const mediaFileSuggestions: Suggestion[] =
-      mediaFiles?.map((file) => {
+      mediaSource?.map((file) => {
         return {
           type: "media",
           subType: "item",
@@ -142,18 +177,43 @@ const ContentSearch: FC = () => {
         };
       }) || [];
 
-    const consolidatedResults = [
+    let consolidatedResults = [
       ...contentSuggestions,
       ...modelSuggestions,
       ...codeFileSuggestions,
       ...mediaFileSuggestions,
       ...mediaFolderSuggestions,
-    ].sort(
+    ];
+
+    // Only show related suggestions when a search accelerator is active
+    switch (searchAccelerator) {
+      case "code":
+        consolidatedResults = [...codeFileSuggestions];
+        break;
+
+      case "content":
+        consolidatedResults = [...contentSuggestions];
+        break;
+
+      case "schema":
+        consolidatedResults = [...modelSuggestions];
+        break;
+
+      case "media":
+        consolidatedResults = [
+          ...mediaFileSuggestions,
+          ...mediaFolderSuggestions,
+        ];
+        break;
+
+      default:
+        break;
+    }
+
+    return consolidatedResults.sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
-
-    return consolidatedResults;
   }, [
     contents,
     models,
@@ -161,49 +221,95 @@ const ContentSearch: FC = () => {
     mediaFiles,
     mediaFolders,
     isContentFetchingFailed,
+    searchAccelerator,
+    allMediaFiles,
   ]);
 
   const options = useMemo(() => {
     // Only show the first 5 recent searches when user has not typed in a query
     const _recentSearches =
-      recentSearches?.length && !value
+      recentSearches?.length && !searchKeyword
         ? ["RecentSearches", ...recentSearches.slice(0, 5)]
         : [];
-    const _suggestions =
-      suggestions?.length && value ? suggestions?.slice(0, 5) : [];
+    // Shows the suggestions when either a search keyword is entered or a search accelerator is activated
+    let _suggestions =
+      suggestions?.length &&
+      (Boolean(searchKeyword) || Boolean(searchAccelerator))
+        ? suggestions?.slice(0, 5)
+        : [];
 
-    return [value, ..._suggestions, ..._recentSearches, "AdvancedSearchButton"];
-  }, [suggestions, recentSearches, value]);
+    // These are just dummy data to render 5 skeleton loaders when there are ongoing api calls
+    if (isLoading && Boolean(searchKeyword)) {
+      _suggestions = [...new Array(5)].map((index) => {
+        return {
+          type: "media",
+          ZUID: index,
+          title: "",
+          updatedAt: "",
+          url: "",
+        };
+      });
+    }
+
+    /** Note: The order of items in this array control the order of how the
+     * options will be rendered in the autocomplate dropdown
+     */
+    return [
+      searchKeyword,
+      "SearchAccelerator",
+      "RecentModifiedItemsHeader",
+      ..._suggestions,
+      ..._recentSearches,
+      "AdvancedSearchButton",
+    ];
+  }, [suggestions, recentSearches, searchKeyword]);
 
   useEffect(() => {
-    setModelKeyword(value);
-    setFileKeyword(value);
-    setMediaFolderKeyword(value);
-  }, [value]);
+    setModelKeyword(searchKeyword);
+    setFileKeyword(searchKeyword);
+    setMediaFolderKeyword(searchKeyword);
+  }, [searchKeyword]);
 
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
     textfieldRef.current?.querySelector("input").focus();
   });
 
-  const goToSearchPage = (queryTerm: string) => {
-    const isOnSearchPage = location.pathname === "/search";
+  const goToSearchPage = (queryTerm: string, resourceType?: ResourceType) => {
+    const isOnSearchPage = mainApp === "search";
+    const searchParams = new URLSearchParams({
+      q: queryTerm,
+      ...(Boolean(resourceType) && { resource: resourceType }),
+    });
+    const url = `/search?${searchParams.toString()}`;
+
+    if (Boolean(resourceType)) {
+      // If the user has selected a search accelerator, also save it in
+      // the format of `[in:RESOURCE_TYPE]`
+      addSearchTerm(`[in:${resourceType}] ${queryTerm}`);
+    } else {
+      addSearchTerm(queryTerm);
+    }
 
     setOpen(false);
-    addSearchTerm(queryTerm);
     textfieldRef.current?.querySelector("input").blur();
 
-    if (queryTerm !== value) {
-      // Makes sure that the textfield value gets updated if the user has clicked on a recent search item
-      setValue(queryTerm);
+    if (queryTerm !== searchKeyword) {
+      // Makes sure that the textfield search keyword gets updated if the user has clicked on a recent search item
+      setSearchKeyword(queryTerm);
+    }
+
+    if (resourceType !== searchAccelerator) {
+      // Makes sure that the search accelerator is updated if the user has clicked on a recent search item
+      setSearchAccelerator(resourceType);
     }
 
     // Only add the search page on the history stack during initial page visit
     // Makes sure clicking close on the search page brings the user back to the previous page
     if (isOnSearchPage) {
-      history.replace(`/search?q=${queryTerm}`);
+      history.replace(url);
     } else {
-      history.push(`/search?q=${queryTerm}`);
+      history.push(url);
     }
   };
 
@@ -211,25 +317,29 @@ const ContentSearch: FC = () => {
     <>
       <Collapse
         in
-        collapsedSize="288px"
+        collapsedSize={collapsedWidth}
         orientation="horizontal"
         sx={{
           zIndex: 2,
           height: "40px",
           position: "relative",
           "& .MuiCollapse-entered": {
-            width: "500px",
+            width: fullWidth,
           },
         }}
       >
         <Autocomplete
-          value={value}
+          value={searchKeyword}
           open={open}
           onOpen={() => {
             setOpen(true);
           }}
-          onClose={() => {
-            setOpen(false);
+          onClose={(_, reason) => {
+            // Prevents autocomplete dropdown from closing when
+            // user clicks the input field multiple times
+            if (reason !== "toggleInput") {
+              setOpen(false);
+            }
           }}
           PaperComponent={(props) => {
             return (
@@ -257,11 +367,13 @@ const ContentSearch: FC = () => {
                   ...props.style,
                   // default z-index is too high, we want it to be BELOW the side nav close button
                   zIndex: theme.zIndex.appBar - 1,
+                  width: fullWidth,
                 }}
               />
             );
           }}
           id={ElementId}
+          openOnFocus
           freeSolo
           selectOnFocus
           clearOnBlur
@@ -271,7 +383,7 @@ const ContentSearch: FC = () => {
           filterOptions={(x) => x}
           sx={{
             height: "40px",
-            width: open ? "500px" : "288px",
+            width: open ? fullWidth : collapsedWidth,
             "& .MuiOutlinedInput-root": {
               py: "2px",
             },
@@ -280,23 +392,27 @@ const ContentSearch: FC = () => {
               gap: "10px",
             },
             "&.Mui-focused .MuiAutocomplete-clearIndicator": {
-              visibility: value ? "visible" : "hidden",
+              visibility: searchKeyword ? "visible" : "hidden",
             },
           }}
           onInputChange={(event, newVal) => {
-            setValue(newVal);
+            setSearchKeyword(newVal);
           }}
           onChange={(event, newVal) => {
             /** This is when the user selects any of the suggestions */
 
             // null represents "X" button clicked
             if (!newVal) {
-              setValue("");
+              setSearchKeyword("");
               return;
             }
 
             // string represents search term entered
             if (typeof newVal === "string") {
+              if (AdditionalDropdownOptions.includes(newVal)) {
+                return;
+              }
+
               goToSearchPage(newVal);
             } else {
               if (newVal?.url) {
@@ -312,50 +428,61 @@ const ContentSearch: FC = () => {
             }
           }}
           getOptionLabel={(option: Suggestion) => {
-            // do not change the input value when a suggestion is selected
-            return value;
+            // do not change the input search keyword when a suggestion is selected
+            return searchKeyword;
           }}
           renderOption={(props, option) => {
+            // TODO: Maybe extract into some kind of template object for readability
             if (typeof option === "string") {
+              // Renders the keyword search term & recent items
               if (!AdditionalDropdownOptions.includes(option)) {
-                // Means that this option is the top row global search term typed by the userf
+                // Checks if this is the keyword search term
                 const isSearchTerm = props.id === `${ElementId}-option-0`;
 
-                // Determines if the user-typed top row global search term already exists in the recent searches
-                const searchTermInRecentSearches =
-                  isSearchTerm && recentSearches.includes(option);
+                if (isSearchTerm) {
+                  if (!Boolean(searchKeyword)) {
+                    return;
+                  }
 
-                // Hides the top row global search term if no value is present
-                if (isSearchTerm && !value) {
-                  return;
+                  return (
+                    <KeywordSearchItem
+                      {...props}
+                      // HACK: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
+                      aria-selected={false}
+                      key={option}
+                      onItemClick={() =>
+                        goToSearchPage(option, searchAccelerator)
+                      }
+                      text={option}
+                      searchAccelerator={searchAccelerator}
+                      recentSearches={recentSearches}
+                    />
+                  );
+                } else {
+                  if (Boolean(searchAccelerator)) {
+                    return;
+                  }
+
+                  return (
+                    <RecentSearchItem
+                      {...props}
+                      // HACK: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
+                      aria-selected={false}
+                      key={option}
+                      onItemClick={(term, resourceType) =>
+                        goToSearchPage(term, resourceType)
+                      }
+                      onRemove={deleteSearchTerm}
+                      text={option}
+                    />
+                  );
                 }
-
-                return (
-                  <GlobalSearchItem
-                    {...props}
-                    // Hacky: aria-selected is required for accessibility but the underlying component is not setting it correctly for the top row
-                    aria-selected={false}
-                    data-cy={
-                      isSearchTerm
-                        ? "global-search-term"
-                        : "global-search-recent-keyword"
-                    }
-                    key={isSearchTerm ? "global-search-term" : option}
-                    icon={
-                      !isSearchTerm || searchTermInRecentSearches
-                        ? ScheduleRounded
-                        : SearchRounded
-                    }
-                    onClick={() => goToSearchPage(option)}
-                    text={option}
-                    isRemovable={!isSearchTerm || searchTermInRecentSearches}
-                    onRemove={deleteSearchTerm}
-                  />
-                );
               }
 
               // Renders the recent searches component
-              if (option === "RecentSearches") {
+              // This only renders the subheader, actual data is being set on the suggestions array
+              // and rendering of the list is done above
+              if (option === "RecentSearches" && !searchAccelerator) {
                 return (
                   <ListSubheader
                     sx={{
@@ -395,7 +522,72 @@ const ContentSearch: FC = () => {
                   </ListItem>
                 );
               }
+
+              // Renders the search accelerators when no search accelerator is active & there is no search term
+              if (
+                option === "SearchAccelerator" &&
+                !Boolean(searchAccelerator) &&
+                !Boolean(searchKeyword)
+              ) {
+                return (
+                  <SearchAccelerator
+                    {...props}
+                    key="SearchAccelerator"
+                    onAcceleratorClick={(type) => setSearchAccelerator(type)}
+                  />
+                );
+              }
+
+              // Renders the recently modified items list subheader when an
+              // accelerator is active and there is no user input
+              if (
+                option === "RecentModifiedItemsHeader" &&
+                Boolean(searchAccelerator) &&
+                !Boolean(searchKeyword)
+              ) {
+                const types: Record<ResourceType, string> = {
+                  code: "Code Files",
+                  content: "Content Items",
+                  schema: "Models in Schema",
+                  media: "Media Items",
+                };
+
+                return (
+                  <ListSubheader
+                    sx={{
+                      px: 1.5,
+                      pb: 0.5,
+                      pt: 0,
+                      mt: 1,
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      lineHeight: "18px",
+                      letterSpacing: "0.15px",
+                    }}
+                    key={option}
+                  >
+                    Recent Modified {types[searchAccelerator]}
+                  </ListSubheader>
+                );
+              }
             } else {
+              // Renders the dummy data as skeleton loaders when an api call is ongoing
+              if (isLoading) {
+                return (
+                  <ListItem
+                    {...props}
+                    sx={{
+                      height: 32,
+                    }}
+                    key={option.ZUID}
+                    onClick={() => {}}
+                  >
+                    <Skeleton width="100%" />
+                  </ListItem>
+                );
+              }
+
+              // Renders the suggestion items
               return (
                 <GlobalSearchItem
                   {...props}
@@ -414,18 +606,22 @@ const ContentSearch: FC = () => {
                 fullWidth
                 data-cy="global-search-textfield"
                 variant="outlined"
-                placeholder={`Search Instance ${shortcutHelpText}`}
+                placeholder={
+                  Boolean(searchAccelerator)
+                    ? ""
+                    : `Search Instance ${shortcutHelpText}`
+                }
                 sx={{
                   height: "40px",
                   "& .Mui-focused": {
-                    width: "500px",
+                    width: fullWidth,
                   },
                   "&:hover .MuiButtonBase-root.MuiAutocomplete-clearIndicator":
                     {
-                      visibility: value ? "visible" : "hidden",
+                      visibility: searchKeyword ? "visible" : "hidden",
                     },
                   "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
-                    visibility: value ? "visible" : "hidden",
+                    visibility: searchKeyword ? "visible" : "hidden",
                   },
                   ".MuiAutocomplete-endAdornment": {
                     position: "initial",
@@ -436,8 +632,17 @@ const ContentSearch: FC = () => {
                     },
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    goToSearchPage(value);
+                  if (e.key === "Enter" && Boolean(searchKeyword)) {
+                    goToSearchPage(searchKeyword, searchAccelerator);
+                  }
+
+                  // Remove the selected search accelerator when the user presses backspace and there's no search keyword
+                  if (
+                    e.key === "Backspace" &&
+                    !Boolean(searchKeyword) &&
+                    Boolean(searchAccelerator)
+                  ) {
+                    setSearchAccelerator(null);
                   }
                 }}
                 inputProps={{
@@ -451,7 +656,18 @@ const ContentSearch: FC = () => {
                   ...params.InputProps,
                   startAdornment: (
                     <InputAdornment position="start" sx={{ marginRight: 0 }}>
-                      <SearchIcon fontSize="small" color="action" />
+                      {Boolean(searchAccelerator) && open ? (
+                        <Chip
+                          data-cy={`active-global-search-accelerator-${searchAccelerator}`}
+                          variant="filled"
+                          label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
+                          color="primary"
+                          size="small"
+                          onDelete={() => setSearchAccelerator(null)}
+                        />
+                      ) : (
+                        <SearchIcon fontSize="small" color="action" />
+                      )}
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -486,24 +702,28 @@ const ContentSearch: FC = () => {
                     },
                     boxSizing: "border-box",
                     width: "100%",
-                    backgroundColor: (theme) => theme.palette.background.paper,
+                    backgroundColor: "background.paper",
                   },
                 }}
               />
             );
+          }}
+          ListboxProps={{
+            style: {
+              paddingTop: searchKeyword ? "8px" : "0px",
+            },
           }}
         />
       </Collapse>
 
       {isAdvancedSearchOpen && (
         <AdvancedSearch
-          keyword={value}
+          keyword={searchKeyword}
           onClose={() => setIsAdvancedSearchOpen(false)}
           onSearch={(searchData) => addSearchTerm(searchData.keyword)}
+          searchAccelerator={searchAccelerator}
         />
       )}
     </>
   );
 };
-
-export default ContentSearch;
