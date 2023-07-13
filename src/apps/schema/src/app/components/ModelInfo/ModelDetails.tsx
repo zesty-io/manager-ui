@@ -114,7 +114,11 @@ export const ModelDetails = () => {
             </Tooltip>
           </Box>
           <Box flex={1} py={2}>
-            <Typography>{model?.description}</Typography>
+            {!!model?.description ? (
+              <Typography>{model.description}</Typography>
+            ) : (
+              <Typography color="text.disabled">None</Typography>
+            )}
           </Box>
           <Box py={1.5}>
             <Button
@@ -197,7 +201,11 @@ export const ModelDetails = () => {
             </Tooltip>
           </Box>
           <Box flex={1} py={2}>
-            <Typography>{parentModel?.label}</Typography>
+            {!!parentModel?.label ? (
+              <Typography>{parentModel.label}</Typography>
+            ) : (
+              <Typography color="text.disabled">None</Typography>
+            )}
           </Box>
           <Box display="flex" py={1.5}>
             <Button
