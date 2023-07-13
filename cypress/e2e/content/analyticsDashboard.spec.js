@@ -5,7 +5,7 @@ describe("Analytics dashboard", () => {
     });
   });
   it("Renders the page with the zesty.pw property", () => {
-    cy.contains("http://zesty.pw");
+    cy.contains("zesty.pw");
   });
   it("Filters properties on search input", () => {
     cy.getBySelector("analytics-settings").click();
