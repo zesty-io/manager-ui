@@ -163,7 +163,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
   useEffect(() => {
     if (keyword) {
       let _keyword = keyword;
-      const regex = /\bin:(Media|Code|Schema|Content)\b/g;
+      const regex = /\bin:(media|code|schema|content)\b/gi;
       const match = keyword.match(regex);
       const typedAccelerator = match?.length ? match[0] : null;
 

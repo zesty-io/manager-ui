@@ -55,7 +55,7 @@ const ElementId = "global-search-autocomplete";
 const fullWidth = "500px"; // Component size when opened
 const collapsedWidth = "288px"; // Component size when collapsed/closed
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
-const typedAcceleratorRegex = /\bin:(Media|Code|Schema|Content)\b/g;
+const typedAcceleratorRegex = /\bin:(media|code|schema|content)\b/gi;
 
 export interface Suggestion {
   type: ResourceType;
