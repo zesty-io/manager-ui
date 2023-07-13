@@ -510,6 +510,7 @@ export const ItemsTableContent = ({
           columns={columns}
           hideFooter
           disableColumnMenu
+          disableSelectionOnClick
           sx={{
             ".MuiDataGrid-virtualScrollerContent": {
               backgroundColor: "background.paper",

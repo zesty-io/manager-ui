@@ -164,18 +164,7 @@ export const NameCell = ({
           }
         }}
       >
-        <Box
-          height="40px"
-          width="40px"
-          bgcolor={
-            Object.values(foundItem?.data || {})?.some(
-              (value) => typeof value === "string" && value.startsWith("3-")
-            )
-              ? "transparent"
-              : "info.main"
-          }
-          borderRadius="4px"
-        >
+        <Box height="40px" width="40px" bgcolor="info.main" borderRadius="4px">
           {Object.values(foundItem?.data || {})?.some(
             (value) => typeof value === "string" && value.startsWith("3-")
           ) && (
@@ -183,14 +172,17 @@ export const NameCell = ({
               width="100%"
               height="100%"
               style={{
-                objectFit: "contain",
+                objectFit: "cover",
                 minWidth: "40px",
+                borderRadius: "4px",
               }}
               src={`${
                 // @ts-ignore
                 CONFIG.SERVICE_MEDIA_RESOLVER
-              }/resolve/${getImage()}/getimage/?w=${40}&h=${40}&type=fit`}
-              alt=""
+              }/resolve/${getImage()}/getimage/?w=${200}&h=${200}&type=fit`}
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+              }}
             />
           )}
         </Box>
