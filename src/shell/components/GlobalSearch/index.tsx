@@ -436,6 +436,8 @@ export const GlobalSearch = () => {
                 .split(":")[1]
                 .toLowerCase() as ResourceType;
               setTypedSearchAccelerator(resourceType);
+            } else {
+              setTypedSearchAccelerator(null);
             }
 
             setSearchKeyword(keyword);
