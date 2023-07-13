@@ -307,7 +307,7 @@ export const GlobalSearch = () => {
         ? queryTerm.replace(typedAcceleratorRegex, "").trim()
         : queryTerm;
     const resource =
-      resourceType ?? typedAccelerator.split(":")[1].toLowerCase();
+      resourceType ?? typedAccelerator?.split(":")[1].toLowerCase();
     const searchParams = new URLSearchParams({
       q,
       ...(!!resource && { resource }),
