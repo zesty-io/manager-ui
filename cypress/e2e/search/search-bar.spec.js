@@ -91,6 +91,27 @@ describe("Global Search: Search Bar", () => {
 
     // Verify that user is navigated to search page with correct search param
     cy.location("pathname").should("equal", "/search");
-    cy.location("search").should("equal", `?q=${encodeURI(SEARCH_TERM)}`);
+    cy.location("search").should(
+      "equal",
+      `?q=${SEARCH_TERM.replaceAll(/\s/g, "+")}`
+    );
+  });
+
+  it("shows the search accelerators when search bar is opened", () => {
+    cy.waitOn(
+      "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1/search/items*",
+      () => {
+        cy.visit("/");
+      }
+    );
+
+    // Activate the global search bar
+    cy.getBySelector("global-search-textfield")
+      .find("input")
+      .should("exist")
+      .click();
+
+    // Verify that search accelerators are present
+    cy.getBySelector("global-search-accelerators").should("exist");
   });
 });

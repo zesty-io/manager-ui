@@ -136,12 +136,11 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
         >
           <img src={youtubeIcon} alt="youtube" />
         </IconButton>
-        <IconButton size="small">
-          <img
-            src={slackIcon}
-            alt="slack"
-            onClick={() => handleOpenUrl("https://www.zesty.io/chat/")}
-          />
+        <IconButton
+          size="small"
+          onClick={() => handleOpenUrl("https://www.zesty.io/chat/")}
+        >
+          <img src={slackIcon} alt="slack" />
         </IconButton>
       </Stack>
     </Menu>

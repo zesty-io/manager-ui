@@ -16,9 +16,11 @@ import {
   MenuItem,
   Tooltip,
   Divider,
+  IconButton,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import CloseIcon from "@mui/icons-material/Close";
 import moment from "moment";
 import { upperFirst } from "lodash";
 import { useHistory, useLocation } from "react-router";
@@ -33,8 +35,10 @@ import {
 import { DateFilterModal } from "../../../components/Filters/DateFilter/DateFilterModal";
 import { DateRangeFilterModal } from "../../../components/Filters/DateFilter/DateRangeFilterModal";
 import { PRESET_DATES, CUSTOM_DATES, RESOURCE_TYPES } from "./config";
+import { ResourceType } from "../../../services/types";
+import { useGetLangsQuery } from "../../../services/instance";
+import { useParams } from "../../../hooks/useParams";
 
-type ResourceType = "content" | "schema" | null;
 interface User {
   firstName: string;
   lastName: string;
@@ -45,23 +49,28 @@ export interface SearchData {
   keyword: string;
   user: User | null;
   date: DateFilterValue | null;
-  resourceType: ResourceType;
+  resourceType: ResourceType | null;
+  language: string | null;
 }
 interface AdvancedSearch {
   keyword: string;
   onClose: () => void;
   onSearch?: (searchData: SearchData) => void;
+  searchAccelerator?: ResourceType | null;
 }
 export const AdvancedSearch: FC<AdvancedSearch> = ({
   keyword,
   onClose,
   onSearch,
+  searchAccelerator = null,
 }) => {
   const history = useHistory();
   const location = useLocation();
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
+  const [params, setParams] = useParams();
   const [calendarModalType, setCalendarModalType] =
     useState<DateFilterModalType>("");
+  const { data: langs } = useGetLangsQuery({});
   const [searchData, updateSearchData] = useReducer(
     (state: SearchData, payload: Partial<SearchData>) => {
       return {
@@ -74,6 +83,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       user: null,
       date: null,
       resourceType: null,
+      language: null,
     }
   );
   const isCustomDate = CUSTOM_DATES.map((d) => d.value).includes(
@@ -81,19 +91,103 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
   );
 
   const userOptions = useMemo(() => {
-    return users?.map((user) => ({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      ZUID: user.ZUID,
-      email: user.email,
-    }));
+    return users
+      ?.map((user) => ({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        ZUID: user.ZUID,
+        email: user.email,
+      }))
+      .sort((a, b) => a.firstName?.localeCompare(b.firstName));
   }, [users]);
+
+  const sortedLangs = useMemo(() => {
+    if (langs?.length) {
+      return [...langs]?.sort((a, b) => a.code?.localeCompare(b.code));
+    }
+
+    return [];
+  }, [langs]);
+
+  useEffect(() => {
+    const user = params.get("user")
+      ? userOptions.find((u) => u.ZUID === params.get("user"))
+      : null;
+    const datePreset = params.get("datePreset");
+    const to = params.get("to");
+    const from = params.get("from");
+    let date: DateFilterValue;
+
+    // Get proper date value
+    if (datePreset) {
+      date = {
+        type: "preset",
+        value: datePreset as PresetType,
+      };
+    } else if (to && !from) {
+      date = {
+        type: "before",
+        value: to,
+      };
+    } else if (!to && from) {
+      date = {
+        type: "after",
+        value: from,
+      };
+    } else if (to && from && to === from) {
+      date = {
+        type: "on",
+        value: to,
+      };
+    } else if (to && from) {
+      date = {
+        type: "daterange",
+        value: {
+          from,
+          to,
+        },
+      };
+    } else {
+      date = null;
+    }
+
+    updateSearchData({
+      keyword: params.get("q"),
+      user,
+      date,
+      resourceType: params.get("resource") as ResourceType,
+      language: params.get("lang"),
+    });
+  }, [params]);
 
   useEffect(() => {
     if (keyword) {
-      updateSearchData({ keyword });
+      let _keyword = keyword;
+      const regex = /\bin:(media|code|schema|content)\b/gi;
+      const match = keyword.match(regex);
+      const typedAccelerator = match?.length ? match[0] : null;
+
+      if (!!keyword && !!typedAccelerator) {
+        updateSearchData({
+          resourceType: typedAccelerator
+            .split(":")[1]
+            .toLowerCase() as ResourceType,
+        });
+
+        _keyword = keyword.replace(regex, "").trim();
+      }
+
+      updateSearchData({ keyword: _keyword });
     }
   }, [keyword]);
+
+  useEffect(() => {
+    // Automatically set the resource type value when the user has already set
+    // a search accelerator on the search box input field
+    if (Boolean(searchAccelerator)) {
+      updateSearchData({ resourceType: searchAccelerator });
+    }
+  }, [searchAccelerator]);
 
   const handleSetSelectedDate = ({
     type,
@@ -166,7 +260,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
 
   const handleSearchClicked = () => {
     const isOnSearchPage = location.pathname === "/search";
-    const { keyword, user, date, resourceType } = searchData;
+    const { keyword, user, date, resourceType, language } = searchData;
     const searchParams = new URLSearchParams();
 
     if (keyword) {
@@ -175,6 +269,10 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
 
     if (user) {
       searchParams.set("user", user.ZUID);
+    }
+
+    if (language) {
+      searchParams.set("lang", language);
     }
 
     if (date) {
@@ -211,7 +309,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       searchParams.set("resource", resourceType);
     }
 
-    if (keyword) {
+    if (keyword || user) {
       onSearch && onSearch(searchData);
       onClose();
 
@@ -238,10 +336,19 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
         }}
       >
         <DialogTitle component="div">
-          <Typography variant="h5" fontWeight={600} mb={1}>
-            Advanced Search
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography variant="h5" fontWeight={600}>
+              Advanced Search
+            </Typography>
+            <IconButton size="small" onClick={onClose}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Stack>
+          <Typography variant="body2" color="text.secondary" mt={1}>
             As you and your team work together in Zesty, you'll create a
             searchable archive of content, models, and code files. Use the form
             below to find what you are looking for.
@@ -272,7 +379,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </Box>
             <Box>
               <InputLabel>
-                Created or Modified By
+                Created By
                 <Tooltip
                   placement="top"
                   title="Select a user from all users on the instance."
@@ -298,7 +405,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 renderInput={(params: any) => (
                   <TextField
                     {...params}
-                    placeholder="Select"
+                    placeholder="Anyone"
                     sx={{ height: "40px" }}
                     InputProps={{
                       ...params.InputProps,
@@ -343,15 +450,6 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 displayEmpty
                 fullWidth
                 value={searchData.resourceType || ""}
-                sx={{
-                  "& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input.MuiOutlinedInput-input":
-                    {
-                      color:
-                        searchData.resourceType === null
-                          ? "text.disabled"
-                          : "text.primary",
-                    },
-                }}
                 onChange={(e) => {
                   const { value } = e.target;
 
@@ -360,9 +458,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                   });
                 }}
               >
-                <MenuItem value="" disabled sx={{ display: "none" }}>
-                  Select
-                </MenuItem>
+                <MenuItem value="">Any Type</MenuItem>
                 {Object.entries(RESOURCE_TYPES).map(([value, text]) => (
                   <MenuItem key={value} value={value}>
                     {text}
@@ -372,7 +468,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </Box>
             <Box>
               <InputLabel>
-                Date Modified
+                Date
                 <Tooltip
                   placement="top"
                   title="Select the date range for which you want to see results for."
@@ -388,37 +484,30 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 displayEmpty
                 fullWidth
                 value={setDateSelectValue(searchData.date)}
-                sx={{
-                  "& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input.MuiOutlinedInput-input":
-                    {
-                      color:
-                        searchData.date === null
-                          ? "text.disabled"
-                          : "text.primary",
-                    },
-                }}
                 onChange={(e) => {
                   const { value } = e.target;
 
-                  if (
-                    PRESET_DATES.map((d) => d.value).includes(
-                      value as PresetType
-                    )
-                  ) {
-                    updateSearchData({
-                      date: {
-                        type: "preset",
-                        value: value as PresetType,
-                      },
-                    });
+                  if (value === "") {
+                    updateSearchData({ date: null });
                   } else {
-                    setCalendarModalType(value as DateFilterModalType);
+                    if (
+                      PRESET_DATES.map((d) => d.value).includes(
+                        value as PresetType
+                      )
+                    ) {
+                      updateSearchData({
+                        date: {
+                          type: "preset",
+                          value: value as PresetType,
+                        },
+                      });
+                    } else {
+                      setCalendarModalType(value as DateFilterModalType);
+                    }
                   }
                 }}
               >
-                <MenuItem value="" disabled sx={{ display: "none" }}>
-                  Select
-                </MenuItem>
+                <MenuItem value="">Any Time</MenuItem>
                 {PRESET_DATES.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.text}
@@ -429,6 +518,40 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 {CUSTOM_DATES.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.text}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+            <Box>
+              <InputLabel>
+                Language
+                <Tooltip
+                  placement="top"
+                  title="Select the language for which you want to see results for."
+                >
+                  <InfoRoundedIcon
+                    sx={{ ml: 1, width: "12px", height: "12px" }}
+                    color="action"
+                  />
+                </Tooltip>
+              </InputLabel>
+              <Select
+                data-cy="AdvanceSearchLanguage"
+                displayEmpty
+                fullWidth
+                value={searchData.language ?? ""}
+                onChange={(evt) => {
+                  const { value } = evt.target;
+
+                  updateSearchData({
+                    language: Boolean(value) ? value : null,
+                  });
+                }}
+              >
+                <MenuItem value="">Any Language</MenuItem>
+                {sortedLangs?.map((lang) => (
+                  <MenuItem key={lang.code} value={lang.code}>
+                    {lang.code}
                   </MenuItem>
                 ))}
               </Select>
@@ -446,6 +569,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                   user: null,
                   date: null,
                   resourceType: null,
+                  language: null,
                 });
               }}
             >
@@ -460,7 +584,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 variant="contained"
                 startIcon={<SearchIcon />}
                 onClick={handleSearchClicked}
-                disabled={!searchData.keyword}
+                disabled={!searchData.keyword && !searchData.user}
               >
                 Search
               </Button>

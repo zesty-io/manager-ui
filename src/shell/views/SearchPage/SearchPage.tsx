@@ -1,6 +1,4 @@
 import { FC, useMemo, useEffect } from "react";
-
-import { useParams } from "../../../shell/hooks/useParams";
 import { Typography, Box, Stack, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
@@ -8,8 +6,12 @@ import moment from "moment-timezone";
 import { cloneDeep, isEmpty } from "lodash";
 import { useSelector } from "react-redux";
 
+import { useParams } from "../../../shell/hooks/useParams";
 import { NoSearchResults } from "../../components/NoSearchResults";
-import { useSearchContentQuery } from "../../services/instance";
+import {
+  useSearchContentQuery,
+  useGetLangsQuery,
+} from "../../services/instance";
 import { SearchPageList } from "./List/SearchPageList";
 import { BackButton } from "./BackButton";
 import { Filters } from "./Filters";
@@ -41,20 +43,18 @@ export interface SearchPageItem {
   createdByUserZUID: string;
   data: ContentItem | ContentModel | File | MediaFile | Group;
   subType?: "folder" | "item";
+  langID?: number;
 }
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
-  const query = params.get("q") || "";
+  const keyword = params.get("q") || "";
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const {
     data: contents,
     isFetching: isFetchingContent,
     isError: isContentFetchingFailed,
-  } = useSearchContentQuery(
-    { query, order: "created", dir: "desc" },
-    { skip: !query }
-  );
+  } = useSearchContentQuery({ query: keyword, order: "created", dir: "desc" });
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
@@ -62,19 +62,19 @@ export const SearchPage: FC = () => {
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMedia } =
     useSearchBinFilesQuery(
-      { binIds: bins?.map((bin) => bin.id), term: query },
+      { binIds: bins?.map((bin) => bin.id), term: keyword },
       {
-        skip: !bins?.length || !query,
+        skip: !bins?.length || !keyword,
       }
     );
-
+  const { data: langs } = useGetLangsQuery({});
   const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
-    setModelKeyword(query);
-    setCodeFileKeyword(query);
-    setMediaFolderKeyword(query);
-  }, [query]);
+    setModelKeyword(keyword);
+    setCodeFileKeyword(keyword);
+    setMediaFolderKeyword(keyword);
+  }, [keyword]);
 
   // Combine results from contents, models, code files, media files and media folders
   const results: SearchPageItem[] = useMemo(() => {
@@ -92,6 +92,7 @@ export const SearchPage: FC = () => {
               createdAt: content.meta?.createdAt,
               createdByUserZUID: content.web?.createdByUserZUID,
               data: content,
+              langID: content.meta?.langID,
             };
           });
 
@@ -197,6 +198,7 @@ export const SearchPage: FC = () => {
     let _results = cloneDeep(results);
     const resourceTypeFilter = params.get("resource") || "";
     const userFilter = params.get("user") || "";
+    const languageFilter = params.get("lang") || "";
     const dateFilter = {
       preset: params.get("datePreset") || "",
       from: params.get("from") || "",
@@ -227,6 +229,15 @@ export const SearchPage: FC = () => {
       _results = _results.filter(
         (result) => result.type === resourceTypeFilter
       );
+    }
+
+    // Filter by language
+    if (languageFilter) {
+      // Determine the ID of the lang code selected
+      const selectedLangID =
+        langs?.find((lang) => lang.code === languageFilter)?.ID ?? 0;
+
+      _results = _results.filter((result) => result.langID === selectedLangID);
     }
 
     // Determine the date filter function to use
@@ -299,7 +310,9 @@ export const SearchPage: FC = () => {
             {isLoading ? (
               <Skeleton variant="text" width={200} />
             ) : (
-              `${filteredResults?.length} results for "${query}"`
+              `${filteredResults?.length} results ${
+                Boolean(keyword) ? `for "${keyword}"` : ""
+              }`
             )}
           </Typography>
           <BackButton />
@@ -314,7 +327,7 @@ export const SearchPage: FC = () => {
           <Filters />
         </Box>
         {!isLoading && !filteredResults?.length ? (
-          <NoSearchResults query={query} />
+          <NoSearchResults query={keyword} />
         ) : (
           <Box
             sx={{

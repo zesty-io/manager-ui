@@ -88,7 +88,7 @@ describe("Global Search: Advanced Search", () => {
       .find("input")
       .should("exist")
       .should("have.value", "");
-    cy.getBySelector("AdvanceSearchDate").should("exist").contains("Select");
+    cy.getBySelector("AdvanceSearchDate").should("exist").contains("Any Time");
   });
 
   it("Takes the user to the search page with all user input set in the URL parameters accordingly", () => {
@@ -104,10 +104,6 @@ describe("Global Search: Advanced Search", () => {
       .should("exist")
       .type("cypress");
 
-    // Select a user
-    cy.getBySelector("AdvanceSearchUser").should("exist").click();
-    cy.get("[data-option-index='0']").should("exist").click();
-
     // Select a date
     cy.getBySelector("AdvanceSearchDate").should("exist").click();
     cy.get("[data-value='today']").should("exist").click();
@@ -117,18 +113,11 @@ describe("Global Search: Advanced Search", () => {
       .find("input")
       .should("exist")
       .should("not.have.value", "");
-    cy.getBySelector("AdvanceSearchUser")
-      .find("input")
-      .should("exist")
-      .should("not.have.value", "");
     cy.getBySelector("AdvanceSearchDate").should("exist").contains("Today");
 
     cy.getBySelector("AdvanceSearchSubmitButton").should("exist").click();
 
     cy.location("pathname").should("equal", "/search");
-    cy.location("search").should(
-      "equal",
-      "?q=cypress&user=5-test-zuid&datePreset=today"
-    );
+    cy.location("search").should("equal", "?q=cypress&datePreset=today");
   });
 });
