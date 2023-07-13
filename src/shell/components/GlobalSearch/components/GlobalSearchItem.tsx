@@ -6,23 +6,43 @@ import {
   SvgIcon,
   ListItemSecondaryAction,
   IconButton,
+  Chip,
 } from "@mui/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
+
+import { ResourceType } from "../../../services/types";
+import { SEARCH_ACCELERATORS } from "./config";
 
 type GlobalSearchItemProps = HTMLAttributes<HTMLLIElement> & {
   text: string;
   icon: SvgIconComponent;
   isRemovable?: boolean;
   onRemove?: (keyword: string) => void;
+  searchAccelerator?: ResourceType | null;
 };
 export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
   text,
   icon,
   isRemovable = false,
   onRemove,
+  searchAccelerator,
   ...props
 }) => {
+  const onRequestRemove = () => {
+    if (!onRemove) {
+      return;
+    }
+
+    // Makes sure that we're removing the exact option containing the
+    // search accelerator if it was saved with it.
+    if (searchAccelerator) {
+      onRemove(`[in:${searchAccelerator}] ${text}`);
+    } else {
+      onRemove(text);
+    }
+  };
+
   return (
     <ListItem
       {...props}
@@ -49,6 +69,17 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
       <ListItemIcon sx={{ width: "32px", minWidth: "32px" }}>
         <SvgIcon component={icon} fontSize="small" />
       </ListItemIcon>
+      {Boolean(searchAccelerator) && (
+        <Chip
+          variant="filled"
+          color="primary"
+          size="small"
+          label={`in: ${SEARCH_ACCELERATORS[searchAccelerator]?.text}`}
+          sx={{
+            mr: 1,
+          }}
+        />
+      )}
       <ListItemText
         primary={text}
         primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
@@ -58,7 +89,7 @@ export const GlobalSearchItem: FC<GlobalSearchItemProps> = ({
           <IconButton
             data-cy="RemoveRecentSearchKeyword"
             size="small"
-            onClick={() => onRemove && onRemove(text)}
+            onClick={onRequestRemove}
           >
             <CloseIcon fontSize="small" />
           </IconButton>

@@ -59,3 +59,28 @@ export const getItemIcon = (type: ResourceType, subType?: string) => {
 
   return icon;
 };
+
+export const splitTextAndAccelerator = (
+  source: string
+): { text: string; resourceType: string | null } => {
+  // Matches any string with the format `[in:TEXT HERE]`
+  const acceleratorRegex = /\[in:.*?\]/g;
+  // Matches anything in between `[in:` and `]`
+  const resourceRegex = /(?<=\[in:).*?(?=\])/g;
+
+  /**
+   * Remove the accelerator.
+   * Example: `[in:schema] Fancy yachts` -> output: Fancy yachts
+   */
+  const text = source.replace(acceleratorRegex, "").trim();
+
+  /**
+   * Get the resource type inside the accelerator.
+   * Example: `[in:schema] Fancy yachts` -> output: schema
+   */
+  const resourceType = source.match(resourceRegex)?.length
+    ? source.match(resourceRegex)[0]
+    : null;
+
+  return { text, resourceType };
+};

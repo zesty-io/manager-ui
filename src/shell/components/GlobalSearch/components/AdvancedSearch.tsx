@@ -33,8 +33,8 @@ import {
 import { DateFilterModal } from "../../../components/Filters/DateFilter/DateFilterModal";
 import { DateRangeFilterModal } from "../../../components/Filters/DateFilter/DateRangeFilterModal";
 import { PRESET_DATES, CUSTOM_DATES, RESOURCE_TYPES } from "./config";
+import { ResourceType } from "../../../services/types";
 
-type ResourceType = "content" | "schema" | null;
 interface User {
   firstName: string;
   lastName: string;
@@ -45,17 +45,19 @@ export interface SearchData {
   keyword: string;
   user: User | null;
   date: DateFilterValue | null;
-  resourceType: ResourceType;
+  resourceType: ResourceType | null;
 }
 interface AdvancedSearch {
   keyword: string;
   onClose: () => void;
   onSearch?: (searchData: SearchData) => void;
+  searchAccelerator?: ResourceType | null;
 }
 export const AdvancedSearch: FC<AdvancedSearch> = ({
   keyword,
   onClose,
   onSearch,
+  searchAccelerator = null,
 }) => {
   const history = useHistory();
   const location = useLocation();
@@ -94,6 +96,14 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
       updateSearchData({ keyword });
     }
   }, [keyword]);
+
+  useEffect(() => {
+    // Automatically set the resource type value when the user has already set
+    // a search accelerator on the search box input field
+    if (Boolean(searchAccelerator)) {
+      updateSearchData({ resourceType: searchAccelerator });
+    }
+  }, [searchAccelerator]);
 
   const handleSetSelectedDate = ({
     type,

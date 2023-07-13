@@ -1,6 +1,4 @@
 import { FC, useMemo, useEffect } from "react";
-
-import { useParams } from "../../../shell/hooks/useParams";
 import { Typography, Box, Stack, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
@@ -8,6 +6,7 @@ import moment from "moment-timezone";
 import { cloneDeep, isEmpty } from "lodash";
 import { useSelector } from "react-redux";
 
+import { useParams } from "../../../shell/hooks/useParams";
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
 import { SearchPageList } from "./List/SearchPageList";
@@ -44,7 +43,7 @@ export interface SearchPageItem {
 }
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
-  const query = params.get("q") || "";
+  const keyword = params.get("q") || "";
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const {
@@ -52,8 +51,8 @@ export const SearchPage: FC = () => {
     isFetching: isFetchingContent,
     isError: isContentFetchingFailed,
   } = useSearchContentQuery(
-    { query, order: "created", dir: "desc" },
-    { skip: !query }
+    { query: keyword, order: "created", dir: "desc" },
+    { skip: !keyword }
   );
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
@@ -62,19 +61,19 @@ export const SearchPage: FC = () => {
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMedia } =
     useSearchBinFilesQuery(
-      { binIds: bins?.map((bin) => bin.id), term: query },
+      { binIds: bins?.map((bin) => bin.id), term: keyword },
       {
-        skip: !bins?.length || !query,
+        skip: !bins?.length || !keyword,
       }
     );
 
   const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
-    setModelKeyword(query);
-    setCodeFileKeyword(query);
-    setMediaFolderKeyword(query);
-  }, [query]);
+    setModelKeyword(keyword);
+    setCodeFileKeyword(keyword);
+    setMediaFolderKeyword(keyword);
+  }, [keyword]);
 
   // Combine results from contents, models, code files, media files and media folders
   const results: SearchPageItem[] = useMemo(() => {
@@ -299,7 +298,9 @@ export const SearchPage: FC = () => {
             {isLoading ? (
               <Skeleton variant="text" width={200} />
             ) : (
-              `${filteredResults?.length} results for "${query}"`
+              `${
+                keyword ? filteredResults?.length : "0"
+              } results for "${keyword}"`
             )}
           </Typography>
           <BackButton />
@@ -314,7 +315,7 @@ export const SearchPage: FC = () => {
           <Filters />
         </Box>
         {!isLoading && !filteredResults?.length ? (
-          <NoSearchResults query={query} />
+          <NoSearchResults query={keyword} />
         ) : (
           <Box
             sx={{

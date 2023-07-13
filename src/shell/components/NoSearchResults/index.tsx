@@ -124,7 +124,6 @@ export const NoSearchResults: FC<Props> = ({
                     setParams(null, "sort");
                     setParams(null, "datePreset");
                     setParams(null, "user");
-                    setParams(null, "q");
                     const searchField: HTMLInputElement =
                       document.querySelector(
                         "[data-cy=global-search-textfield] input"
