@@ -11,7 +11,7 @@ import {
   Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
+import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
@@ -301,7 +301,7 @@ export const Header = ({
                   sx={{ height: "fit-content" }}
                   aria-label="Open folder menu"
                 >
-                  <ArrowDropDownRoundedIcon fontSize="small" />
+                  <MoreHorizRoundedIcon fontSize="small" />
                 </IconButton>
               ) : null}
               <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
