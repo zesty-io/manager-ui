@@ -10,6 +10,7 @@ type Props = {
   formatter?: (value: number) => string;
   inverse?: boolean;
   loading?: boolean;
+  valueProps?: { [key: string]: any };
 };
 
 export const Metric = ({
@@ -20,6 +21,7 @@ export const Metric = ({
   formatter,
   inverse,
   loading = false,
+  valueProps,
 }: Props) => {
   return (
     <Tooltip
@@ -53,7 +55,11 @@ export const Metric = ({
         {loading ? (
           <Skeleton variant="rectangular" width="100%" height={32} />
         ) : (
-          <Typography variant="h4" fontWeight={600} sx={{ mb: 0.5 }}>
+          <Typography
+            variant="h4"
+            fontWeight={600}
+            sx={{ mb: 0.5, ...valueProps }}
+          >
             {formatter ? formatter(value) : numberFormatter.format(value)}
           </Typography>
         )}

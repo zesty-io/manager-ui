@@ -189,10 +189,12 @@ const AnalyticsDashboard = ({ loading }: Props) => {
         color={theme.palette.text.primary}
         bgcolor={theme.palette.grey[50]}
         boxSizing="border-box"
-        pb={8}
+        display="flex"
+        flexDirection="column"
+        height="100%"
       >
         <AnalyticsDashboardHeader />
-        <Box px={2}>
+        <Box pb={8} px={2} overflow="auto" height="100%">
           <Box display="flex" py={2} justifyContent="space-between">
             <AnalyticsDateFilter />
             <Typography variant="h6" fontWeight="600" maxWidth={304} noWrap>
@@ -235,6 +237,9 @@ const AnalyticsDashboard = ({ loading }: Props) => {
                 <Box mt={2}>
                   <Metric
                     loading={isLoading}
+                    valueProps={{
+                      variant: "h3",
+                    }}
                     value={
                       +(
                         findValuesForDimensions(
@@ -460,9 +465,6 @@ const AnalyticsDashboardHeader = () => {
   return (
     <>
       <Box
-        position="sticky"
-        top={0}
-        zIndex={1}
         display="flex"
         justifyContent="space-between"
         p={2}

@@ -453,7 +453,7 @@ export const UsersDoughnutChart = ({
                 />
                 <Typography
                   variant="body3"
-                  fontWeight={600}
+                  fontSize={10}
                   color="text.secondary"
                 >
                   {item}
@@ -472,8 +472,8 @@ export const UsersDoughnutChart = ({
                 />
                 <Typography
                   variant="body3"
-                  fontWeight={600}
                   color="text.secondary"
+                  fontSize={10}
                 >
                   Other
                 </Typography>

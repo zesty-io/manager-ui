@@ -248,7 +248,7 @@ export const NameCell = ({
                       SOURCE_DETAIL_MAP[topSource]?.bgcolor || "yellow.50"
                     }
                     sx={{
-                      borderRadius: "4px 0 0 4px",
+                      borderRadius: "2px 0 0 2px",
                     }}
                   >
                     <SvgIcon
@@ -280,7 +280,7 @@ export const NameCell = ({
                       SOURCE_DETAIL_MAP[topSource]?.color || "warning.main"
                     }
                     sx={{
-                      borderRadius: "0 4px 4px 0",
+                      borderRadius: "0 2px 2px 0",
                     }}
                   >
                     <Typography

@@ -103,6 +103,10 @@ export const ItemsTable = ({ propertyId, startDate, endDate }: Props) => {
               <SvgIcon
                 component={tab.icon}
                 color={selectedTab !== index ? "action" : undefined}
+                sx={{
+                  height: 18,
+                  width: 18,
+                }}
               />
             }
             onClick={() => setSelectedTab(index)}
@@ -305,6 +309,7 @@ const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
       endDate={endDate}
       paths={sortedPaths}
       showSkeleton={isFetching || isUninitialized}
+      isRecentEdits
     />
   );
 };
@@ -312,6 +317,7 @@ const RecentEditsWrapper = ({ propertyId, startDate, endDate }: Props) => {
 type ItemsTableContentProps = {
   paths: string[];
   showSkeleton?: boolean;
+  isRecentEdits?: boolean;
 } & Props;
 
 export const ItemsTableContent = ({
@@ -320,6 +326,7 @@ export const ItemsTableContent = ({
   endDate,
   paths,
   showSkeleton,
+  isRecentEdits,
 }: ItemsTableContentProps) => {
   const { data: propertiesData } = useGetAnalyticsPropertiesQuery();
   const propertyData = propertiesData?.properties?.find(
@@ -507,10 +514,11 @@ export const ItemsTableContent = ({
               : rows
           }
           // @ts-expect-error - missing types for headerAlign and align on DataGridPro
-          columns={columns}
+          columns={isRecentEdits ? columns?.slice(0, 1) : columns}
           hideFooter
           disableColumnMenu
           disableSelectionOnClick
+          rowHeight={66}
           sx={{
             ".MuiDataGrid-virtualScrollerContent": {
               backgroundColor: "background.paper",

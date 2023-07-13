@@ -10,6 +10,18 @@ type Props = {
   path?: string;
 };
 
+const removeProtocolAndSubdomain = (url: string): string => {
+  const urlObj = new URL(url);
+  const parts = urlObj.hostname.split(".");
+
+  // Removes the subdomain
+  if (parts.length > 2) {
+    parts.shift();
+  }
+
+  return parts.join(".");
+};
+
 export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
   const [showPropertiesDialog, setShowPropertiesDialog] = useState(false);
   const { data: instanceSettings, isFetching: instanceSettingsFetching } =
@@ -44,11 +56,13 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "block",
+            fontSize: "14px",
+            fontWeight: "500",
           }}
         >
-          {`${propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri}${
-            path?.slice(0, -1) || ""
-          }`}
+          {`${removeProtocolAndSubdomain(
+            propertyData?.dataStreams?.[0]?.webStreamData?.defaultUri
+          )}${path?.slice(0, -1) || ""}`}
         </Link>
 
         <Button

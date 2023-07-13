@@ -185,7 +185,7 @@ export const ByDayLineChart = ({
               labels: {
                 usePointStyle: true,
                 pointStyle: "circle",
-                boxWidth: 8,
+                boxWidth: 4.5,
                 font: {
                   family: "Mulish",
                   size: 12,
@@ -210,7 +210,7 @@ export const ByDayLineChart = ({
                 parser: "YYYY-MM-DD",
                 unit: "day",
                 displayFormats: {
-                  day: spansMoreThanOneYear ? "MMM DD YYYY" : "MMM DD",
+                  day: spansMoreThanOneYear ? "MMM D YYYY" : "MMM D",
                 },
               },
               ticks: {
