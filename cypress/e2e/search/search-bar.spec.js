@@ -101,7 +101,7 @@ describe("Global Search: Search Bar", () => {
     cy.waitOn(
       "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1/search/items*",
       () => {
-        cy.visit("/search?q=cypress");
+        cy.visit("/");
       }
     );
 

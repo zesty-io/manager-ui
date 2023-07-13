@@ -30,7 +30,7 @@ export const Model: FC<Model> = ({
       } ${audit?.lastName}`;
     }
 
-    return "Schema • No actions found";
+    return `Schema • ${moment(data?.createdAt)?.fromNow()}`;
   }, [modelAudit]);
 
   const loading = loadingModelAudit || parentIsLoading;
