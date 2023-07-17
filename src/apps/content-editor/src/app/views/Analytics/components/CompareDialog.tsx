@@ -158,9 +158,7 @@ export const CompareDialog = ({ onClose }: Props) => {
           {debouncedSearch &&
           !isFetching &&
           searchedContentItemPublishings?.length
-            ? `${
-                searchedContentItemPublishings?.slice(0, 10)?.length
-              } Search Results`
+            ? "Search Results"
             : "Recent Publishes"}
         </Typography>
       </DialogTitle>
@@ -213,7 +211,7 @@ export const CompareDialog = ({ onClose }: Props) => {
                       />
                     ))
                 : uniqueItemPublishings
-                    ?.slice(0, 10)
+                    ?.slice(0, 20)
                     ?.map((publishing: any, index: number) => (
                       <PublishingItem
                         publishing={publishing}
@@ -270,12 +268,14 @@ const PublishingItem = ({ publishing, divider, onClick }: any) => {
   const userInfo =
     firstName || lastName ? `${firstName} ${lastName}` : "Unknown User";
 
+  if (!showSkeleton && !itemData?.web?.path) return null;
+
   return (
     <ListItemButton
       key={publishing.ZUID}
       divider={divider}
       disableGutters
-      disabled={!showSkeleton && !itemData.web.path}
+      disabled={showSkeleton}
       onClick={() => {
         if (!showSkeleton) onClick(publishing.itemZUID);
       }}
