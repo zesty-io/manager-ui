@@ -15,18 +15,27 @@ export function fetchUsers() {
   return (dispatch, getStore) => {
     return request(
       `${CONFIG.API_ACCOUNTS}/instances/${getStore().instance.ZUID}/users`
-    ).then((res) => {
-      if (res.status === 200) {
-        dispatch({
-          type: users.actions.fetchUsersSuccess,
-          payload: {
-            data: res.data,
-          },
-        });
-      } else {
-        throw res;
-      }
-      return res;
-    });
+    )
+      .then((res) => {
+        if (res.status === 200) {
+          dispatch({
+            type: users.actions.fetchUsersSuccess,
+            payload: {
+              data: res.data,
+            },
+          });
+        } else {
+          throw res;
+        }
+        return res;
+      })
+      .catch((error) => {
+        dispatch(
+          notify({
+            message: `There was an issue fetching the users: ${error}`,
+            kind: "error",
+          })
+        );
+      });
   };
 }
