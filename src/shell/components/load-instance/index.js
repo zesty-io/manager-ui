@@ -45,9 +45,7 @@ export default connect((state) => {
           CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
         })
         .catch((res) => {
-          if (res.status === 403) {
-            setError("You do not have permission to access to this instance");
-          }
+          setError(res.message);
         });
 
       Promise.all([
