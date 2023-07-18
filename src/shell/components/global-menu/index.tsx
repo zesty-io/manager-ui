@@ -37,6 +37,7 @@ export default memo(function GlobalMenu() {
     release: RocketLaunchIcon,
     apps: ExtensionIcon,
   };
+  const activeBgColor = "rgba(255, 93, 10, 0.08)";
 
   const MenuItemIcon = ({ product }: { product: Products }) => {
     const SpecificIcon = icons[product];
@@ -52,13 +53,7 @@ export default memo(function GlobalMenu() {
   };
 
   return (
-    <Box
-      component="menu"
-      width="100%"
-      px={1}
-      boxSizing="border-box"
-      overflow="auto"
-    >
+    <Box component="menu" width="100%" boxSizing="border-box" overflow="auto">
       {products.map((product) => {
         // Covert dashes to spaces
         // Uppercase first letter of word
@@ -66,6 +61,7 @@ export default memo(function GlobalMenu() {
           .split("-")
           .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
           .join(" ");
+        const isActive = slug === product;
 
         return (
           <Link
@@ -78,25 +74,22 @@ export default memo(function GlobalMenu() {
           >
             <ListItem
               sx={{
-                px: 1.5,
+                pr: 1.5,
+                pl: isActive ? 1.25 : 1.5,
                 py: 0.75,
-                mb: 0.5,
                 height: "36px",
-                borderRadius: "4px",
-                backgroundColor: slug === product ? "grey.800" : "transparent",
+                backgroundColor: isActive ? activeBgColor : "transparent",
+                borderLeft: isActive ? "2px solid" : "none",
+                borderColor: "primary.main",
+                svg: {
+                  color: isActive ? "primary.main" : "grey.400",
+                },
                 "&:hover": {
-                  backgroundColor: slug === product ? "grey.800" : "grey.900",
-                  svg: {
-                    color: "primary.main",
-                  },
-                  "& .menu-item-text": {
-                    color: "common.white",
-                  },
+                  backgroundColor: isActive ? "grey.800" : activeBgColor,
                 },
               }}
             >
               <MenuItemIcon product={product} />
-
               {openNav && (
                 <ListItemText
                   className="menu-item-text"
@@ -105,7 +98,8 @@ export default memo(function GlobalMenu() {
                     variant: "body3",
                   }}
                   sx={{
-                    color: slug === product ? "common.white" : "grey.500",
+                    color: isActive ? "primary.main" : "grey.400",
+                    fontWeight: 600,
                   }}
                 >
                   {name}
