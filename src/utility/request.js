@@ -75,6 +75,11 @@ export function request(url, opts = {}) {
 
       // if (res.status === 422) {}
 
+      // Client error
+      if (res.status >= 400 && res.status < 500) {
+        throw new Error(`Encountered an error: (${res.status}) ${res.error}`);
+      }
+
       if (res.status === 500) {
         // Throw on 500 to trigger callers catch statement
         throw new Error(`500:RequestError: ${res.url}`);

@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { request } from "utility/request";
+import { notify } from "./notifications";
 
 export const users = createSlice({
   name: "users",
@@ -25,14 +26,17 @@ export function fetchUsers() {
             },
           });
         } else {
-          throw res;
+          throw new Error(
+            `${res.status}:Encountered an issue fetching users: ${res.error}`
+          );
         }
+
         return res;
       })
       .catch((error) => {
         dispatch(
           notify({
-            message: `There was an issue fetching the users: ${error}`,
+            message: error.message,
             kind: "error",
           })
         );
