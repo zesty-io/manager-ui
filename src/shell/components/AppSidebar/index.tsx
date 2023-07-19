@@ -24,27 +24,35 @@ export const AppSideBar: FC<Readonly<Props>> = ({
   return (
     <ThemeProvider theme={theme}>
       <Stack
-        gap={1.5}
-        pt={1.5}
         sx={{
           backgroundColor: isLightMode ? "common.white" : "grey.900",
+          height: "inherit",
         }}
         {...props}
       >
-        {!!headerTitle && (
-          <Typography
-            variant="h6"
-            color="text.primary"
-            fontWeight={700}
-            lineHeight="24px"
-            fontSize={18}
-            px={1.5}
-          >
-            {headerTitle}
-          </Typography>
-        )}
-        {!!HeaderSubComponent && <Box>{HeaderSubComponent}</Box>}
-        {children}
+        <Box py={1.5}>
+          {!!headerTitle && (
+            <Typography
+              variant="h6"
+              color="text.primary"
+              fontWeight={700}
+              lineHeight="24px"
+              fontSize={18}
+              px={1.5}
+            >
+              {headerTitle}
+            </Typography>
+          )}
+          {!!HeaderSubComponent && <Box>{HeaderSubComponent}</Box>}
+        </Box>
+        <Box
+          height="100%"
+          sx={{
+            overflowY: "auto",
+          }}
+        >
+          {children}
+        </Box>
       </Stack>
     </ThemeProvider>
   );

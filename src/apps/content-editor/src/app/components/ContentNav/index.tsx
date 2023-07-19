@@ -98,6 +98,7 @@ export const ContentNav = () => {
 
               return (
                 <ListItem
+                  key={menu.name}
                   disablePadding
                   selected={isActive}
                   sx={{
@@ -117,7 +118,13 @@ export const ContentNav = () => {
                     <ListItemIcon sx={{ minWidth: 32 }}>
                       <SvgIcon component={menu.icon} />
                     </ListItemIcon>
-                    <ListItemText>{menu.name}</ListItemText>
+                    <ListItemText
+                      primary={menu.name}
+                      primaryTypographyProps={{
+                        variant: "body3",
+                        fontWeight: 600,
+                      }}
+                    />
                   </ListItemButton>
                 </ListItem>
               );
@@ -125,6 +132,13 @@ export const ContentNav = () => {
           </List>
         </Stack>
       }
-    />
+    >
+      {/* TODO: Remove dummy data */}
+      <List disablePadding>
+        {[...new Array(50)].map((_, index) => (
+          <ListItemButton key={index}>Menu Item {index}</ListItemButton>
+        ))}
+      </List>
+    </AppSideBar>
   );
 };
