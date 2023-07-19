@@ -13,6 +13,7 @@ import { fetchNav } from "../store/navContent";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ContentNav } from "./components/Nav";
+import { ContentNav as ContentNavV2 } from "./components/ContentNav";
 
 import { Dashboard } from "./views/Dashboard";
 import { ItemList } from "./views/ItemList";
@@ -138,12 +139,13 @@ export default function ContentEditor() {
                   : ""
               )}
             >
-              <ContentNav
-                data-cy="contentNav"
-                dispatch={dispatch}
-                models={contentModels}
-                nav={navContent}
-              />
+              <ContentNavV2 />
+              {/* <ContentNav */}
+              {/*   data-cy="contentNav" */}
+              {/*   dispatch={dispatch} */}
+              {/*   models={contentModels} */}
+              {/*   nav={navContent} */}
+              {/* /> */}
 
               <div
                 className={cx(
