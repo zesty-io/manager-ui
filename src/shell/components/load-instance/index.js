@@ -41,11 +41,17 @@ export default connect((state) => {
       props
         .dispatch(fetchInstance())
         .then((res) => {
-          document.title = `Manager - ${res.data.name} - Zesty`;
-          CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
+          if (res.status === 403) {
+            setError("You do not have permission to access to this instance");
+          } else {
+            document.title = `Manager - ${res.data.name} - Zesty`;
+            CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
+          }
         })
-        .catch((res) => {
-          setError(res.message);
+        .catch((error) => {
+          console.error(error);
+          // Show a generic error message for anything else other than 403s
+          setError("Failed to load the instance");
         });
 
       Promise.all([
