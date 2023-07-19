@@ -45,9 +45,7 @@ export default connect((state) => {
           CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
         })
         .catch((res) => {
-          if (res.status === 403) {
-            setError("You do not have permission to access to this instance");
-          }
+          setError(res.message);
         });
 
       Promise.all([
@@ -61,7 +59,7 @@ export default connect((state) => {
       props.dispatch(fetchUsers());
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
-      props.dispatch(fetchLangauges("enabled"));
+      props.dispatch(fetchLangauges());
       props.dispatch(fetchSettings());
       // Used in Publish Plan and Content sections
       props.dispatch(fetchItemPublishings());

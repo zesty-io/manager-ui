@@ -978,6 +978,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 right: 0,
                 top: 0,
                 bottom: 0,
+                zIndex: 1,
                 "&:hover": {
                   backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
                   "& .MuiCheckbox-root": {

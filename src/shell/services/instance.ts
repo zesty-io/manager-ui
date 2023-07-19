@@ -19,6 +19,7 @@ import {
   ContentNavItem,
   Stylesheet,
   Script,
+  Language,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -41,6 +42,7 @@ export const instanceApi = createApi({
     "SearchQuery",
     "Stylesheets",
     "Scripts",
+    "Languages",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -213,6 +215,7 @@ export const instanceApi = createApi({
     getLangsMapping: builder.query<any, void>({
       query: () => `env/langs/all`,
       transformResponse: getResponseData,
+      providesTags: ["Languages"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/web/headtags/#Get-HeadTag(s)
     getHeadTags: builder.query<HeadTag[], void>({
@@ -450,6 +453,15 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["Scripts"],
     }),
+    getLangs: builder.query<Language[], { type?: "active" | "all" }>({
+      query: (params) => {
+        const searchParams = new URLSearchParams(params);
+
+        return `/env/langs${searchParams.toString()}`;
+      },
+      transformResponse: getResponseData,
+      providesTags: ["Languages"],
+    }),
   }),
 });
 
@@ -489,4 +501,5 @@ export const {
   useGetStylesheetsQuery,
   useGetScriptsQuery,
   useCreateInstanceSettingsMutation,
+  useGetLangsQuery,
 } = instanceApi;

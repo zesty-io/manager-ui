@@ -8,7 +8,10 @@ import { useSelector } from "react-redux";
 
 import { useParams } from "../../../shell/hooks/useParams";
 import { NoSearchResults } from "../../components/NoSearchResults";
-import { useSearchContentQuery } from "../../services/instance";
+import {
+  useSearchContentQuery,
+  useGetLangsQuery,
+} from "../../services/instance";
 import { SearchPageList } from "./List/SearchPageList";
 import { BackButton } from "./BackButton";
 import { Filters } from "./Filters";
@@ -40,6 +43,7 @@ export interface SearchPageItem {
   createdByUserZUID: string;
   data: ContentItem | ContentModel | File | MediaFile | Group;
   subType?: "folder" | "item";
+  langID?: number;
 }
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
@@ -50,10 +54,7 @@ export const SearchPage: FC = () => {
     data: contents,
     isFetching: isFetchingContent,
     isError: isContentFetchingFailed,
-  } = useSearchContentQuery(
-    { query: keyword, order: "created", dir: "desc" },
-    { skip: !keyword }
-  );
+  } = useSearchContentQuery({ query: keyword, order: "created", dir: "desc" });
   const [models, setModelKeyword] = useSearchModelsByKeyword();
   const [codeFiles, setCodeFileKeyword] = useSearchCodeFilesByKeywords();
   const [mediaFolders, setMediaFolderKeyword] =
@@ -66,7 +67,7 @@ export const SearchPage: FC = () => {
         skip: !bins?.length || !keyword,
       }
     );
-
+  const { data: langs } = useGetLangsQuery({});
   const isLoading = isFetchingContent || isFetchingMedia;
 
   useEffect(() => {
@@ -91,6 +92,7 @@ export const SearchPage: FC = () => {
               createdAt: content.meta?.createdAt,
               createdByUserZUID: content.web?.createdByUserZUID,
               data: content,
+              langID: content.meta?.langID,
             };
           });
 
@@ -196,6 +198,7 @@ export const SearchPage: FC = () => {
     let _results = cloneDeep(results);
     const resourceTypeFilter = params.get("resource") || "";
     const userFilter = params.get("user") || "";
+    const languageFilter = params.get("lang") || "";
     const dateFilter = {
       preset: params.get("datePreset") || "",
       from: params.get("from") || "",
@@ -226,6 +229,15 @@ export const SearchPage: FC = () => {
       _results = _results.filter(
         (result) => result.type === resourceTypeFilter
       );
+    }
+
+    // Filter by language
+    if (languageFilter) {
+      // Determine the ID of the lang code selected
+      const selectedLangID =
+        langs?.find((lang) => lang.code === languageFilter)?.ID ?? 0;
+
+      _results = _results.filter((result) => result.langID === selectedLangID);
     }
 
     // Determine the date filter function to use
@@ -298,9 +310,9 @@ export const SearchPage: FC = () => {
             {isLoading ? (
               <Skeleton variant="text" width={200} />
             ) : (
-              `${
-                keyword ? filteredResults?.length : "0"
-              } results for "${keyword}"`
+              `${filteredResults?.length} results ${
+                Boolean(keyword) ? `for "${keyword}"` : ""
+              }`
             )}
           </Typography>
           <BackButton />

@@ -15,9 +15,6 @@ import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
 import { ContentLinks } from "./Widgets/ContentLinks";
 import { ContentInfo } from "./Widgets/ContentInfo";
 
-import { Release } from "./Widgets/Release";
-
-import styles from "./Actions.less";
 export function Actions(props) {
   if (!props.item.meta || !props.item.web) {
     console.error("Actions:missing item");
@@ -29,7 +26,6 @@ export function Actions(props) {
   const canUpdate = usePermission("UPDATE");
   const domain = useDomain();
 
-  const { type } = props.model;
   const { publishing, scheduling, siblings } = props.item;
   const { listed, sort, updatedAt, version } = props.item.meta;
   const { path, metaTitle, metaLinkText } = props.item.web;
@@ -107,7 +103,6 @@ export function Actions(props) {
           itemZUID={props.itemZUID}
           modelZUID={props.modelZUID}
           metaTitle={metaTitle}
-          modelType={type}
         />
       )}
     </Fragment>
