@@ -99,6 +99,12 @@ export function fetchModel(modelZUID) {
             type: "FETCH_MODEL_SUCCESS",
             payload: res.data,
           });
+        } else if (res.status === 404) {
+          /*
+            Do nothing; this most likely means the model existed at one point
+            and was deleted. This action may be improved in the future if
+            the ability to fetch deleted items is added to the api
+          */
         } else {
           dispatch(
             notify({
@@ -106,8 +112,8 @@ export function fetchModel(modelZUID) {
               message: `Failed to fetch models`,
             })
           );
-          if (res.error || res.status === 404) {
-            throw new Error(res.error);
+          if (res.error || res.message) {
+            throw new Error(res.error || res.message);
           }
         }
       },

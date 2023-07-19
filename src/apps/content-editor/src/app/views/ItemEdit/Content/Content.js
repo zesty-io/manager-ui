@@ -51,6 +51,7 @@ export default function Content(props) {
             dispatch={props.dispatch}
             isDirty={props.item.dirty}
             onSave={props.onSave}
+            modelZUID={props.modelZUID}
           />
         </div>
 
