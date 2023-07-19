@@ -73,10 +73,13 @@ export const ContentNav = () => {
               sx={{
                 borderLeft: "2px solid",
                 borderColor: "primary.main",
-                height: 36,
               }}
             >
-              <ListItemButton>
+              <ListItemButton
+                sx={{
+                  height: 36,
+                }}
+              >
                 <ListItemIcon>
                   <BackupTableRoundedIcon />
                 </ListItemIcon>
@@ -89,10 +92,13 @@ export const ContentNav = () => {
                 svg: {
                   color: "grey.400",
                 },
-                height: 36,
               }}
             >
-              <ListItemButton>
+              <ListItemButton
+                sx={{
+                  height: 36,
+                }}
+              >
                 <ListItemIcon>
                   <ScheduleRoundedIcon />
                 </ListItemIcon>
