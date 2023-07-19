@@ -10,15 +10,42 @@ import {
   Button,
   InputAdornment,
   ListItemButton,
+  SvgIcon,
 } from "@mui/material";
+import {
+  SvgIconComponent,
+  BackupTableRounded,
+  ScheduleRounded,
+} from "@mui/icons-material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
+import { useLocation } from "react-router-dom";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
 
+interface SubMenu {
+  name: string;
+  icon: SvgIconComponent;
+  path: string;
+}
+const SubMenus: Readonly<SubMenu[]> = [
+  {
+    name: "Dashboard",
+    icon: BackupTableRounded,
+    path: "/content",
+  },
+  {
+    name: "Releases",
+    icon: ScheduleRounded,
+    path: "/release",
+  },
+] as const;
+
 export const ContentNav = () => {
+  const location = useLocation();
+
   return (
     <AppSideBar
       data-cy="contentNav"
@@ -66,45 +93,36 @@ export const ContentNav = () => {
               px: 1.5,
             }}
           />
-          <List>
-            <ListItem
-              disablePadding
-              selected
-              sx={{
-                borderLeft: "2px solid",
-                borderColor: "primary.main",
-              }}
-            >
-              <ListItemButton
-                sx={{
-                  height: 36,
-                }}
-              >
-                <ListItemIcon>
-                  <BackupTableRoundedIcon />
-                </ListItemIcon>
-                <ListItemText>Dashboard</ListItemText>
-              </ListItemButton>
-            </ListItem>
-            <ListItem
-              disablePadding
-              sx={{
-                svg: {
-                  color: "grey.400",
-                },
-              }}
-            >
-              <ListItemButton
-                sx={{
-                  height: 36,
-                }}
-              >
-                <ListItemIcon>
-                  <ScheduleRoundedIcon />
-                </ListItemIcon>
-                <ListItemText>Releases</ListItemText>
-              </ListItemButton>
-            </ListItem>
+          <List disablePadding>
+            {SubMenus.map((menu) => {
+              const isActive = location.pathname === menu.path;
+
+              return (
+                <ListItem
+                  disablePadding
+                  selected={isActive}
+                  sx={{
+                    borderLeft: isActive ? "2px solid" : "none",
+                    borderColor: "primary.main",
+                  }}
+                >
+                  <ListItemButton
+                    sx={{
+                      height: 36,
+                      pl: isActive ? 1.25 : 1.5,
+                      pr: 1.5,
+                      py: 0.75,
+                    }}
+                    onClick={() => console.log(menu.path)}
+                  >
+                    <ListItemIcon sx={{ minWidth: 32 }}>
+                      <SvgIcon component={menu.icon} />
+                    </ListItemIcon>
+                    <ListItemText>{menu.name}</ListItemText>
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
           </List>
         </Stack>
       }
