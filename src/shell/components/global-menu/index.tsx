@@ -85,7 +85,7 @@ export default memo(function GlobalMenu() {
                   color: isActive ? "primary.main" : "grey.400",
                 },
                 "&:hover": {
-                  backgroundColor: isActive ? "grey.800" : activeBgColor,
+                  backgroundColor: activeBgColor,
                 },
               }}
             >
