@@ -19,9 +19,7 @@ import {
 } from "@mui/icons-material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
-import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
-import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
 
@@ -45,6 +43,7 @@ const SubMenus: Readonly<SubMenu[]> = [
 
 export const ContentNav = () => {
   const location = useLocation();
+  const history = useHistory();
 
   return (
     <AppSideBar
@@ -113,7 +112,7 @@ export const ContentNav = () => {
                       pr: 1.5,
                       py: 0.75,
                     }}
-                    onClick={() => console.log(menu.path)}
+                    onClick={() => history.push(menu.path)}
                   >
                     <ListItemIcon sx={{ minWidth: 32 }}>
                       <SvgIcon component={menu.icon} />
