@@ -1,5 +1,5 @@
 import { Box, ThemeProvider, CircularProgress } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import { useState } from "react";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -56,6 +56,8 @@ export const HomeApp = () => {
     isAMonthOld;
 
   const [dateRange, setDateRange] = useState(30);
+  const theme = getTheme();
+
   return (
     <ThemeProvider theme={theme}>
       <Box

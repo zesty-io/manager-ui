@@ -1,10 +1,12 @@
 import { Redirect, Route, Switch, useHistory } from "react-router";
 import { Box, ThemeProvider } from "@mui/material";
 import { Sidebar } from "./components/Sidebar";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import CustomApp from "./view/CustomApp";
 
 export const MarketplaceApp = () => {
+  const theme = getTheme();
+
   return (
     <ThemeProvider theme={theme}>
       <Box

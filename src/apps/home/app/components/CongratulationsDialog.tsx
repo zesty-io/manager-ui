@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import { ResourcesCard } from "./ResourcesCard";
 
 interface Props {
@@ -15,6 +15,8 @@ interface Props {
 }
 
 export const CongratulationsDialog = ({ onClose }: Props) => {
+  const theme = getTheme();
+
   return (
     <ThemeProvider theme={theme}>
       <Dialog open onClose={onClose} fullWidth maxWidth={"xs"}>

@@ -1,5 +1,5 @@
 import { Box, ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import { Sidebar } from "./components/Sidebar";
 import { Redirect, Route, Switch } from "react-router";
 import { Model } from "./views/Model";
@@ -8,6 +8,8 @@ import { SearchModels } from "./views/SearchModels";
 import { SchemaCreateWizard } from "./components/SchemaCreateWizard";
 
 export const SchemaApp = () => {
+  const theme = getTheme();
+
   return (
     <ThemeProvider theme={theme}>
       <Box

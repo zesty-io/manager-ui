@@ -18,7 +18,7 @@ import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import { isEmpty } from "lodash";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";
@@ -88,6 +88,7 @@ export const GlobalSearch = () => {
   const dispatch = useDispatch();
   const [params, setParams] = useParams();
   const textfieldRef = useRef<HTMLDivElement>();
+  const theme = getTheme();
 
   const apiQueryTerm = useMemo(() => {
     if (!!typedSearchAccelerator && !!searchKeyword) {

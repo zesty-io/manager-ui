@@ -1,4 +1,4 @@
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import { useRef, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
@@ -42,6 +42,7 @@ export const UsersBarChart = ({
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
   const [type, setType] = useState("Source");
+  const theme = getTheme();
 
   const handleHover = (event: ChartEvent, chartElement: Array<any>) => {
     if (chartElement.length === 0) {

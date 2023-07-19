@@ -15,7 +15,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
 import Favicon from "../favicon";
@@ -47,6 +47,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
   const is15DaysFromCreation =
     instance?.createdAt &&
     moment().diff(moment(instance?.createdAt), "days") <= 15;
+  const theme = getTheme();
 
   return (
     <>

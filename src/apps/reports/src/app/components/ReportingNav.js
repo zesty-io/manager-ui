@@ -1,5 +1,5 @@
 import { useHistory, useLocation } from "react-router";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import {
   Box,
   ListItem,
@@ -17,6 +17,7 @@ import InsightsIcon from "@mui/icons-material/Insights";
 export function ReportingNav() {
   const location = useLocation();
   const history = useHistory();
+  const theme = getTheme();
 
   const tree = [
     {

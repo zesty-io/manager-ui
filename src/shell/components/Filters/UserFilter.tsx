@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import { cloneDeep } from "lodash";
 
 import { FilterButton } from "./FilterButton";
@@ -32,6 +32,7 @@ export const UserFilter: FC<UserFilterProps> = ({
   defaultButtonText = "Created By",
   options,
 }) => {
+  const theme = getTheme();
   const [filter, setFilter] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null

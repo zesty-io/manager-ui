@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, CircularProgress } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import { AuthView } from "./components/AuthView";
 import { useGetAnalyticsPropertiesQuery } from "../../../../../../../shell/services/cloudFunctions";
 import { SinglePageAnalyticsView } from "./views/SinglePageAnalyticsView";
@@ -12,6 +12,8 @@ const Analytics = ({ item }: any) => {
   const validateAuth = () => {
     refetch();
   };
+
+  const theme = getTheme();
 
   return (
     <ThemeProvider theme={theme}>

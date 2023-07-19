@@ -1,12 +1,14 @@
 import { Route, Switch, Redirect } from "react-router";
 import { Box } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import { Home } from "./views/Home";
 import { ResourceDetails } from "./views/ResourceDetails";
 import { UserDetails } from "./views/UserDetails";
 
 export const ActivityLog = () => {
+  const theme = getTheme();
+
   return (
     <ThemeProvider theme={theme}>
       <Box

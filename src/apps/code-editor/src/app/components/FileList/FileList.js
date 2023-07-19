@@ -6,7 +6,7 @@ import { Nav } from "@zesty-io/core/Nav";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import { Box } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 
 import { CreateFile } from "./components/CreateFile";
 import { OrderFiles } from "./components/OrderFiles";
@@ -35,6 +35,7 @@ export const FileList = memo(function FileList(props) {
 
   let { pathname } = useLocation();
   let hashPath = `/${pathname}`;
+  const theme = getTheme();
 
   useEffect(() => {
     setShownFiles(props.navCode.tree.sort(byLabel));

@@ -1,5 +1,5 @@
 import { Box, ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Redirect, Route, Switch, useHistory } from "react-router";
@@ -39,6 +39,7 @@ export const MediaApp = ({
   const dispatch = useDispatch();
   const [isFileModalError, setIsFileModalError] = useState<boolean>(false);
   const fileId = new URLSearchParams(location.search).get("fileId");
+  const theme = getTheme();
 
   useEffect(() => {
     if (lockedToGroupId) {

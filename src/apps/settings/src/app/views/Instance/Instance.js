@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 
 import {
   Divider,
@@ -42,6 +42,7 @@ export default connect((state) => {
   const [fields, setFields] = useState([]);
   const [fieldValues, setFieldValues] = useState({});
   const [dirtyFields, setDirtyFields] = useState([]);
+  const theme = getTheme();
 
   // Set Fields and Field Values from store/URL
   useEffect(() => {

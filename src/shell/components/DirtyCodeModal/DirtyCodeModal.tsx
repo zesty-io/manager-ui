@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { theme } from "@zesty-io/material";
+import { getTheme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 
 export type DirtyCodeModal = {
@@ -25,6 +25,8 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
   onSave,
   onDiscard,
 }) => {
+  const theme = getTheme();
+
   return (
     <ThemeProvider theme={theme}>
       <ConfirmDialog
