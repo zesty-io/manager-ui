@@ -20,8 +20,16 @@ import {
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocation, useHistory } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCaretDown,
+  faCaretLeft,
+  faEyeSlash,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
+import { Nav } from "../../../../../../shell/components/NavTree";
+import { NavData } from "../../../store/types";
 
 interface SubMenu {
   name: string;
@@ -41,9 +49,24 @@ const SubMenus: Readonly<SubMenu[]> = [
   },
 ] as const;
 
-export const ContentNav = () => {
+interface Props {
+  navData: NavData;
+}
+export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
   const location = useLocation();
   const history = useHistory();
+
+  // console.log(navData);
+  const actions = [
+    <FontAwesomeIcon
+      title="Hide from nav"
+      icon={faEyeSlash}
+      onClick={(path) => {
+        // dispatch(hideNavItem(path));
+        console.log("hide", path);
+      }}
+    />,
+  ];
 
   return (
     <AppSideBar
@@ -133,12 +156,13 @@ export const ContentNav = () => {
         </Stack>
       }
     >
-      {/* TODO: Remove dummy data */}
-      <List disablePadding>
-        {[...new Array(50)].map((_, index) => (
-          <ListItemButton key={index}>Menu Item {index}</ListItemButton>
-        ))}
-      </List>
+      <Nav
+        id="MainNavigation"
+        activePath={location.pathname}
+        onCollapseNode={(path) => console.log("collapse", path)}
+        tree={navData.nav}
+        actions={actions}
+      />
     </AppSideBar>
   );
 };

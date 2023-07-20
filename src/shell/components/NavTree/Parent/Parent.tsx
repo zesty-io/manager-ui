@@ -8,7 +8,7 @@ import { TreeItem } from "../Nav/Nav";
 interface Props {
   lightMode: boolean;
   activePath: string;
-  onCollapseNode: () => void;
+  onCollapseNode: (path: string) => void;
   treeData: TreeItem;
   actions: any;
   depth?: number;
@@ -36,7 +36,7 @@ export const Parent: FC<Readonly<Props>> = ({
           // render the item and then it's children
           <React.Fragment>
             <Node
-              {...props}
+              treeData={treeData}
               lightMode={lightMode}
               depth={_depth}
               activePath={activePath}
@@ -60,7 +60,7 @@ export const Parent: FC<Readonly<Props>> = ({
           </React.Fragment>
         ) : (
           <Node
-            {...props}
+            treeData={treeData}
             lightMode={lightMode}
             depth={_depth}
             activePath={activePath}

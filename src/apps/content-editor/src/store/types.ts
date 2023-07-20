@@ -1,23 +1,28 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
-export interface TreeItem {
+interface TreeItemBase {
   ZUID: string;
   children: TreeItem[];
   contentModelZUID: string;
-  icon: JSX.Element | IconDefinition;
   label: string;
   path: string;
   sort: number;
-  type:
-    | "pageset"
-    | "dataset"
-    | "item"
-    | "internal"
-    | "external"
-    | "templateset";
   hidden?: boolean;
   closed?: boolean;
 }
+type WithMuiIcons = TreeItemBase & {
+  type: "pageset" | "templateset" | "dataset" | "item";
+  icon: JSX.Element;
+};
+type WithFAIcons = TreeItemBase & {
+  type: "internal" | "external";
+  icon: IconDefinition;
+};
+type WithLegacyIcon = TreeItemBase & {
+  type: "directory";
+  icon: string;
+};
+export type TreeItem = WithMuiIcons | WithFAIcons | WithLegacyIcon;
 
 export interface NavData {
   nav: TreeItem[];

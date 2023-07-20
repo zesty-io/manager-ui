@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
@@ -13,45 +13,56 @@ interface Props {
   activePath: string;
   depth: number;
   treeData: TreeItem;
-  onCollapseNode: () => void;
+  onCollapseNode: (path: string) => void;
   actions: any;
 }
-export const Node = (props: any) => {
+export const Node: FC<Readonly<Props>> = ({
+  lightMode,
+  activePath,
+  onCollapseNode,
+  treeData,
+  actions,
+  depth,
+}) => {
+  const isActive = activePath.includes(treeData.path);
+
   return (
     <li
       className={cx(
         styles.item,
-        props.lightMode == "true" ? null : styles.Dark,
-        styles[`depth${props.depth}`],
-        props.selected.includes(props.path) ? styles.selected : null
+        lightMode ? null : styles.Dark,
+        styles[`depth${depth}`],
+        isActive ? styles.selected : null
       )}
     >
-      {props.type === "directory" ? (
+      {treeData.type === "directory" ? (
         <span className={styles.directory}>
-          {props.icon && <i className={props.icon} />}
-          <span>{props.label}</span>
+          {treeData.icon && <i className={treeData.icon} />}
+          <span>{treeData.label}</span>
         </span>
       ) : (
         <>
-          <Link to={props.path}>
-            {props.icon ? (
-              props.icon?.iconName ? (
-                <FontAwesomeIcon icon={props.icon} />
+          <Link to={treeData.path}>
+            {treeData.type === "internal" || treeData.type === "external" ? (
+              treeData.icon?.iconName ? (
+                <FontAwesomeIcon icon={treeData.icon} />
               ) : (
-                props.icon
+                treeData.icon
               )
             ) : null}
-            <span>{props.label}</span>
+            <span>{treeData.label}</span>
           </Link>
 
           {/* Only linkable nodes can have actions */}
           <span className={styles.actions}>
-            {React.Children.map(props.actions, (action, index) => {
+            {React.Children.map(actions, (action, index) => {
               // Run consumer provided function to determine
               // whether action is available
-              const isAvailable = action.props.available
-                ? action.props.available(props)
-                : true;
+              // const isAvailable = action.props.available
+              //   ? action.props.available(props)
+              //   : true;
+              const isAvailable = true;
+              console.log(action.props.available);
 
               // Filter out props which will not translate to the DOM
               const { showIcon, available, ...filteredProps } = action.props;
@@ -66,7 +77,7 @@ export const Node = (props: any) => {
                     action.props.showIcon ? null : styles.hide,
                     action.props.className
                   ),
-                  onClick: () => action.props.onClick(props),
+                  onClick: () => action.props.onClick(treeData.path),
                 })
               );
             })}
@@ -74,13 +85,13 @@ export const Node = (props: any) => {
         </>
       )}
 
-      {props.collapseNode &&
-        Array.isArray(props.children) &&
-        Boolean(props.children.length) && (
+      {onCollapseNode &&
+        Array.isArray(treeData.children) &&
+        Boolean(treeData.children.length) && (
           <FontAwesomeIcon
-            icon={props.closed ? faCaretLeft : faCaretDown}
+            icon={treeData.closed ? faCaretLeft : faCaretDown}
             className={styles.collapse}
-            onClick={() => props.collapseNode(props)}
+            onClick={() => onCollapseNode(treeData.path)}
           />
         )}
     </li>

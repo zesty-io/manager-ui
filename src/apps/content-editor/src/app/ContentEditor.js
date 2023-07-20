@@ -139,13 +139,13 @@ export default function ContentEditor() {
                   : ""
               )}
             >
-              <ContentNavV2 />
-              {/* <ContentNav */}
-              {/*   data-cy="contentNav" */}
-              {/*   dispatch={dispatch} */}
-              {/*   models={contentModels} */}
-              {/*   nav={navContent} */}
-              {/* /> */}
+              <ContentNavV2 navData={navContent} />
+              {/* <ContentNav
+                data-cy="contentNav"
+                dispatch={dispatch}
+                models={contentModels}
+                nav={navContent}
+              /> */}
 
               <div
                 className={cx(
