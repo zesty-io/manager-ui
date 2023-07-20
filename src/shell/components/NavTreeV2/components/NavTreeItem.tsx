@@ -66,9 +66,9 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
                 height: 20,
                 padding: 0.25,
                 borderRadius: 0.5,
-                backgroundColor: "primary.main",
+                backgroundColor: "primary.dark",
                 "&:hover": {
-                  backgroundColor: "primary.main",
+                  backgroundColor: "primary.dark",
                 },
                 "& svg.MuiSvgIcon-root": {
                   color: "common.white",

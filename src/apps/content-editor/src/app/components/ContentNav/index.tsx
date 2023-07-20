@@ -102,6 +102,10 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
                 height: 24,
                 minWidth: 0,
                 p: 0,
+                backgroundColor: "primary.dark",
+                "&:hover": {
+                  backgroundColor: "primary.dark",
+                },
               }}
             >
               <AddRoundedIcon fontSize="small" />
