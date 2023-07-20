@@ -170,6 +170,9 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
             alignItems="center"
             px={1.5}
             pb={1.5}
+            sx={{
+              color: "text.secondary",
+            }}
           >
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography variant="body2" textTransform="uppercase">
@@ -179,7 +182,9 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
                 placement="right-start"
                 title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
               >
-                <InfoRoundedIcon sx={{ width: 12, height: 12 }} />
+                <InfoRoundedIcon
+                  sx={{ width: 12, height: 12, color: "action.active" }}
+                />
               </Tooltip>
             </Stack>
             <Stack direction="row" gap={1}>
@@ -191,7 +196,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
                   borderRadius: 0.5,
                 }}
               >
-                <ReorderRoundedIcon sx={{ width: 16, height: 16 }} />
+                <ReorderRoundedIcon sx={{ fontSize: 16 }} />
               </IconButton>
               <IconButton
                 sx={{
@@ -201,7 +206,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
                   borderRadius: 0.5,
                 }}
               >
-                <AddRoundedIcon sx={{ width: 16, height: 16 }} />
+                <AddRoundedIcon sx={{ fontSize: 16 }} />
               </IconButton>
             </Stack>
           </Stack>

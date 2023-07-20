@@ -30,34 +30,71 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
               display: "none",
             },
             "&:hover .treeActions": {
-              display: "block",
+              display: "flex",
             },
           }}
         >
-          <Stack direction="row">
-            {!!icon && <SvgIcon component={icon} />}
-            <Typography>{name}</Typography>
+          <Stack direction="row" alignItems="center" gap={1}>
+            {!!icon && <SvgIcon component={icon} sx={{ fontSize: 16 }} />}
+            <Typography variant="body2">{name}</Typography>
           </Stack>
-          <Box className="treeActions">
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={0.5}
+            className="treeActions"
+          >
             <IconButton
+              sx={{
+                width: 20,
+                height: 20,
+                padding: 0.25,
+                borderRadius: 0.5,
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 onHideItem(other.nodeId);
               }}
             >
-              <VisibilityRoundedIcon />
+              <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
             </IconButton>
             <IconButton
+              sx={{
+                width: 20,
+                height: 20,
+                padding: 0.25,
+                borderRadius: 0.5,
+                backgroundColor: "primary.main",
+                "&:hover": {
+                  backgroundColor: "primary.main",
+                },
+                "& svg.MuiSvgIcon-root": {
+                  color: "common.white",
+                },
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 onAddContent(other.nodeId);
               }}
             >
-              <AddRoundedIcon />
+              <AddRoundedIcon sx={{ fontSize: 16 }} />
             </IconButton>
-          </Box>
+          </Stack>
         </Stack>
       }
+      sx={{
+        "& .MuiTreeItem-content": {
+          py: 0.5,
+          pl: 1,
+        },
+        "& .MuiTreeItem-content .MuiTreeItem-iconContainer": {
+          width: 20,
+          height: 20,
+          svg: {
+            fontSize: 20,
+          },
+        },
+      }}
       {...other}
     />
   );
