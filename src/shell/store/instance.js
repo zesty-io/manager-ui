@@ -32,17 +32,14 @@ export function fetchInstance() {
     });
 
     return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`).then((res) => {
-      if (res.status === 403) {
-        throw new Error(
-          "You do not have permission to access to this instance"
-        );
+      if (res.status === 200) {
+        dispatch({
+          type: "FETCHING_INSTANCE_SUCCESS",
+          payload: {
+            data: res.data,
+          },
+        });
       }
-      dispatch({
-        type: "FETCHING_INSTANCE_SUCCESS",
-        payload: {
-          data: res.data,
-        },
-      });
 
       return res;
     });

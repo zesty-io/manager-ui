@@ -38,15 +38,14 @@ export default connect((state) => {
   memo(function LoadInstance(props) {
     const [error, setError] = useState("");
     useEffect(() => {
-      props
-        .dispatch(fetchInstance())
-        .then((res) => {
-          document.title = `Manager - ${res.data.name} - Zesty`;
-          CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
-        })
-        .catch((res) => {
-          setError(res.message);
-        });
+      props.dispatch(fetchInstance()).then((res) => {
+        if (res.status !== 200) {
+          setError("You do not have permission to access this instance");
+        } else {
+          document.title = `Manager - ${res.data?.name} - Zesty`;
+          CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data?.randomHashID}${CONFIG.URL_PREVIEW}`;
+        }
+      });
 
       Promise.all([
         props.dispatch(fetchUser(props.user.ZUID)),
