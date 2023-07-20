@@ -39,7 +39,7 @@ export default connect((state) => {
     const [error, setError] = useState("");
     useEffect(() => {
       props.dispatch(fetchInstance()).then((res) => {
-        if (res.status === 403) {
+        if (res.status !== 200) {
           setError("You do not have permission to access this instance");
         } else {
           document.title = `Manager - ${res.data?.name} - Zesty`;

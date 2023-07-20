@@ -32,7 +32,7 @@ export function fetchInstance() {
     });
 
     return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`).then((res) => {
-      if (res.status !== 403) {
+      if (res.status === 200) {
         dispatch({
           type: "FETCHING_INSTANCE_SUCCESS",
           payload: {
