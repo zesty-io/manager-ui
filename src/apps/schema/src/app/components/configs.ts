@@ -216,7 +216,7 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       type: "datetime",
       name: "Date & Time",
       shortDescription: "Track dates along with specific times",
-      description: `This field is for when you want the input to be a data and time. You can customize whether a user can enter a time, day, month, or year or all 4. 
+      description: `This field is for when you want the input to be a data and time. You can customize whether a user can enter a time, day, month, or year or all 4.
 
       Zesty automatically tracks dates and times for date created, date published, and date modified so no additional fields need to be created for these.`,
       commonUses: [
@@ -334,7 +334,7 @@ const COMMON_FIELDS: InputField[] = [
   {
     name: "label",
     type: "input",
-    label: "Label",
+    label: "Display Label",
     required: true,
     fullWidth: true,
     maxLength: 200,

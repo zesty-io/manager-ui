@@ -20,12 +20,11 @@ import {
   useGetWebViewsQuery,
 } from "../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import PostAddRoundedIcon from "@mui/icons-material/PostAddRounded";
 import moment from "moment";
 import SplitscreenRoundedIcon from "@mui/icons-material/SplitscreenRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
+import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
@@ -114,7 +113,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 sx={{ height: "fit-content" }}
                 data-cy="model-header-menu"
               >
-                <ArrowDropDownRoundedIcon fontSize="small" />
+                <MoreHorizRoundedIcon fontSize="small" />
               </IconButton>
               <Menu
                 anchorEl={anchorEl}

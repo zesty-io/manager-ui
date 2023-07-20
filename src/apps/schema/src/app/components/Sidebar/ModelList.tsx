@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import AddIcon from "@mui/icons-material/Add";
+import moment from "moment";
+
 import { ContentModel } from "../../../../../../shell/services/types";
 import { useHistory, useLocation } from "react-router";
 import { useMemo, useState } from "react";
@@ -45,10 +47,15 @@ export const ModelList = ({ title, models, type }: Props) => {
   const sortedModels = useMemo(() => {
     if (!sort) return [...models].reverse();
     return [...models].sort((a, b) => {
-      if (sort === "asc") {
-        return a.label.localeCompare(b.label);
-      } else {
-        return b.label.localeCompare(a.label);
+      switch (sort) {
+        case "asc":
+          return a.label.localeCompare(b.label);
+
+        case "desc":
+          return b.label.localeCompare(a.label);
+
+        case "modified":
+          return moment(b.updatedAt).diff(moment(a.updatedAt));
       }
     });
   }, [sort, models]);
@@ -146,6 +153,14 @@ export const ModelList = ({ title, models, type }: Props) => {
             }}
           >
             Last Created
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              setSort("modified");
+            }}
+          >
+            Last Modified
           </MenuItem>
         </Menu>
       </Box>
