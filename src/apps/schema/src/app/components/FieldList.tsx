@@ -215,7 +215,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               borderBottom="1px solid"
               borderColor="grey.200"
             >
-              <Typography variant="h6" mb={1}>
+              <Typography variant="h6" mb={1} fontWeight={600}>
                 System Fields
               </Typography>
               <Typography variant="body2" color="text.secondary">
