@@ -156,11 +156,31 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
         </Stack>
       }
     >
+      <Typography>Main Nav</Typography>
       <Nav
+        mode="dark"
         id="MainNavigation"
         activePath={location.pathname}
         onCollapseNode={(path) => console.log("collapse", path)}
         tree={navData.nav}
+        actions={actions}
+      />
+      <Typography>Headless</Typography>
+      <Nav
+        mode="dark"
+        id="MainNavigation"
+        activePath={location.pathname}
+        onCollapseNode={(path) => console.log("collapse", path)}
+        tree={navData.headless}
+        actions={actions}
+      />
+      <Typography>Hidden</Typography>
+      <Nav
+        mode="dark"
+        id="MainNavigation"
+        activePath={location.pathname}
+        onCollapseNode={(path) => console.log("collapse", path)}
+        tree={navData.hidden}
         actions={actions}
       />
     </AppSideBar>
