@@ -41,6 +41,7 @@ interface Props {
   className?: string;
 }
 
+// TODO: Make tree data generic
 export const Nav: FC<Readonly<Props>> = ({
   mode = "light",
   activePath,

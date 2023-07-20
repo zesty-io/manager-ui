@@ -58,11 +58,9 @@ export const Node: FC<Readonly<Props>> = ({
             {React.Children.map(actions, (action, index) => {
               // Run consumer provided function to determine
               // whether action is available
-              // const isAvailable = action.props.available
-              //   ? action.props.available(props)
-              //   : true;
-              const isAvailable = true;
-              console.log(action.props.available);
+              const isAvailable = action.props.available
+                ? action.props.available(treeData)
+                : true;
 
               // Filter out props which will not translate to the DOM
               const { showIcon, available, ...filteredProps } = action.props;
