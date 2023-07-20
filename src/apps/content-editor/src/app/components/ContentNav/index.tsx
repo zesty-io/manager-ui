@@ -11,6 +11,9 @@ import {
   InputAdornment,
   ListItemButton,
   SvgIcon,
+  Tooltip,
+  IconButton,
+  Box,
 } from "@mui/material";
 import {
   SvgIconComponent,
@@ -19,6 +22,8 @@ import {
 } from "@mui/icons-material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
 import { useLocation, useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -30,6 +35,7 @@ import {
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
 import { Nav } from "../../../../../../shell/components/NavTree";
 import { NavData } from "../../../store/types";
+import { NavTree } from "../../../../../../shell/components/NavTreeV2";
 
 interface SubMenu {
   name: string;
@@ -156,7 +162,52 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
         </Stack>
       }
     >
-      <Typography>Main Nav</Typography>
+      <NavTree
+        HeaderComponent={
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            px={1.5}
+            pb={1.5}
+          >
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <Typography variant="body2" textTransform="uppercase">
+                Pages
+              </Typography>
+              <Tooltip
+                placement="right-start"
+                title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
+              >
+                <InfoRoundedIcon sx={{ width: 12, height: 12 }} />
+              </Tooltip>
+            </Stack>
+            <Stack direction="row" gap={1}>
+              <IconButton
+                sx={{
+                  width: 20,
+                  height: 20,
+                  padding: 0.25,
+                  borderRadius: 0.5,
+                }}
+              >
+                <ReorderRoundedIcon sx={{ width: 16, height: 16 }} />
+              </IconButton>
+              <IconButton
+                sx={{
+                  width: 20,
+                  height: 20,
+                  padding: 0.25,
+                  borderRadius: 0.5,
+                }}
+              >
+                <AddRoundedIcon sx={{ width: 16, height: 16 }} />
+              </IconButton>
+            </Stack>
+          </Stack>
+        }
+      />
+      {/* <Typography>Main Nav</Typography>
       <Nav
         mode="dark"
         id="MainNavigation"
@@ -182,7 +233,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
         onCollapseNode={(path) => console.log("collapse", path)}
         tree={navData.hidden}
         actions={actions}
-      />
+      /> */}
     </AppSideBar>
   );
 };
