@@ -45,6 +45,7 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
             className="treeActions"
           >
             <IconButton
+              data-cy="tree-item-hide"
               sx={{
                 width: 20,
                 height: 20,
@@ -59,6 +60,7 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
               <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
             </IconButton>
             <IconButton
+              data-cy="tree-item-add-new-content"
               sx={{
                 width: 20,
                 height: 20,
@@ -87,6 +89,16 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
           py: 0.5,
           pl: 1,
         },
+        "& .MuiTreeItem-content.Mui-selected .MuiTreeItem-label .treeActions [data-cy='tree-item-hide'] svg":
+          {
+            // Makes sure that the hide icon color does not change when tree item is selected
+            color: "action.active",
+          },
+        "& .MuiTreeItem-content.Mui-selected .MuiTreeItem-label .treeActions [data-cy='tree-item-add-new-content'] svg":
+          {
+            // Makes sure that the add new content icon color does not change when tree item is selected
+            color: "common.white",
+          },
         "& .MuiTreeItem-content .MuiTreeItem-iconContainer": {
           width: 20,
           height: 20,
