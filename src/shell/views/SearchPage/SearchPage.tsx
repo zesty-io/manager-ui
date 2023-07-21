@@ -1,7 +1,7 @@
 import { FC, useMemo, useEffect } from "react";
 import { Typography, Box, Stack, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-import { getTheme } from "@zesty-io/material";
+import { lightTheme as theme } from "@zesty-io/material";
 import moment from "moment-timezone";
 import { cloneDeep, isEmpty } from "lodash";
 import { useSelector } from "react-redux";
@@ -46,7 +46,6 @@ export interface SearchPageItem {
   langID?: number;
 }
 export const SearchPage: FC = () => {
-  const theme = getTheme();
   const [params, setParams] = useParams();
   const keyword = params.get("q") || "";
   const instanceId = useSelector((state: any) => state.instance.ID);

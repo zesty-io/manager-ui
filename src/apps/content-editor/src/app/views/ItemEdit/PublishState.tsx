@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import moment from "moment";
 import { DataGridPro, GridValueGetterParams } from "@mui/x-data-grid-pro";
 import { Box, Button, Chip } from "@mui/material";
-import { getTheme } from "@zesty-io/material";
+import { lightTheme as theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { instanceApi } from "../../../../../../shell/services/instance";
@@ -24,7 +24,6 @@ export const PublishState = ({ reloadItem }: Props) => {
     itemZUID,
   });
   const [deletePublishing] = instanceApi.useDeleteItemPublishingMutation();
-  const theme = getTheme();
 
   const columns = useMemo(
     () => [

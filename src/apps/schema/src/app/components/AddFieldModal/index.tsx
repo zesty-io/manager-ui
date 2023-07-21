@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useLocation } from "react-router";
 import { Dialog } from "@mui/material";
-import { getTheme } from "@zesty-io/material";
+import { lightTheme as theme } from "@zesty-io/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
@@ -18,7 +18,6 @@ interface Props {
   sortIndex?: number | null;
 }
 export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
-  const theme = getTheme();
   const [viewMode, setViewMode] = useState<ViewMode>(mode);
   const [selectedField, setSelectedField] = useState({
     fieldType: "",

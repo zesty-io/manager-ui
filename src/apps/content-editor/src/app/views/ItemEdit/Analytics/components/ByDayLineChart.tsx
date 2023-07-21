@@ -1,4 +1,4 @@
-import { getTheme } from "@zesty-io/material";
+import { lightTheme as theme } from "@zesty-io/material";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
@@ -67,7 +67,6 @@ export const ByDayLineChart = ({
   const [tooltipModel, setTooltipModel] = useState(null);
   const [isTooltipEntered, setIsTooltipEntered] = useState(false);
   const [type, setType] = useState(0);
-  const theme = getTheme();
 
   const itemPublishes = useMemo(
     () =>

@@ -1,4 +1,4 @@
-import { getTheme } from "@zesty-io/material";
+import { lightTheme as theme } from "@zesty-io/material";
 import { useRef, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { ChartEvent } from "chart.js";
@@ -17,7 +17,6 @@ export const UsersDoughnutChart = ({
 }: any) => {
   const chartRef = useRef(null);
   const [tooltipModel, setTooltipModel] = useState(null);
-  const theme = getTheme();
 
   const handleHover = (event: ChartEvent, chartElement: Array<any>) => {
     if (chartElement.length === 0) {

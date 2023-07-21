@@ -1,12 +1,10 @@
 import { FC } from "react";
 import { Box } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
-import { getTheme } from "@zesty-io/material";
+import { lightTheme as theme } from "@zesty-io/material";
 import zestyLogo from "../../../public/images/zestyLogo.svg";
 
 export const Staging: FC = (props) => {
-  const theme = getTheme();
-
   return (
     <ThemeProvider theme={theme}>
       <Box

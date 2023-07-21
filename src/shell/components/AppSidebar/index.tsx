@@ -6,8 +6,8 @@ import {
   PaletteMode,
   CssBaseline,
 } from "@mui/material";
-import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
-import { getTheme } from "@zesty-io/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { darkTheme, lightTheme } from "@zesty-io/material";
 
 interface Props {
   mode?: PaletteMode;
@@ -22,7 +22,7 @@ export const AppSideBar: FC<Readonly<Props>> = ({
   ...props
 }) => {
   const theme = useMemo(() => {
-    return getTheme(mode);
+    return mode === "light" ? lightTheme : darkTheme;
   }, [mode]);
 
   const isLightMode = mode === "light";

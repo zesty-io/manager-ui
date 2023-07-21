@@ -7,7 +7,7 @@ import {
   Paper,
   PaperProps,
 } from "@mui/material";
-import { getTheme } from "@zesty-io/material";
+import { lightTheme as theme } from "@zesty-io/material";
 
 type CascadingMenuItemProps = MenuItemProps & {
   MenuItemComponent: React.ReactNode;
@@ -23,7 +23,6 @@ export const CascadingMenuItem: FC<CascadingMenuItemProps> = ({
   ...props
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const theme = getTheme();
 
   return (
     <MenuItem

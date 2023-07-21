@@ -2,7 +2,7 @@ import { GlobalSearch } from "../GlobalSearch";
 import GlobalTabs from "../global-tabs";
 import { GlobalNotifications } from "../global-notifications";
 
-import { getTheme, legacyTheme } from "@zesty-io/material";
+import { lightTheme as theme, legacyTheme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
@@ -10,8 +10,6 @@ import Box from "@mui/material/Box";
 import { DomainSwitcher } from "./DomainSwitcher";
 
 export function GlobalTopbar() {
-  const theme = getTheme();
-
   return (
     <ThemeProvider theme={theme}>
       <Stack

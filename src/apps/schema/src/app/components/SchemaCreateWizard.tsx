@@ -12,7 +12,7 @@ import {
   DialogActions,
   CircularProgress,
 } from "@mui/material";
-import { getTheme } from "@zesty-io/material";
+import { lightTheme as theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import winnerPanel from "../../../../../../public/images/winnerPanel.svg";
@@ -59,7 +59,6 @@ const templates = [
 ];
 
 export const SchemaCreateWizard = () => {
-  const theme = getTheme();
   const history = useHistory();
   const instance = useSelector((state: AppState) => state.instance);
   const models = useSelector((state: AppState) => state.models);

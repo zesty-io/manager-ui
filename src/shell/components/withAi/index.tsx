@@ -1,5 +1,5 @@
 import { Popover, IconButton } from "@mui/material";
-import { Brain, getTheme } from "@zesty-io/material";
+import { Brain, lightTheme as theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { ComponentType, MouseEvent, useState } from "react";
 import { AIGenerator } from "./AIGenerator";
@@ -25,7 +25,6 @@ const paragraphFormat = (text: string) => {
 };
 
 export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
-  const theme = getTheme();
   const instanceCreatedAt = useSelector(
     (state: AppState) => state.instance.createdAt
   );
