@@ -1,14 +1,7 @@
 import React, { FC } from "react";
 import { TreeView } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import {
-  HomeMiniRounded,
-  ScheduleRounded,
-  BackupRounded,
-  SvgIconComponent,
-} from "@mui/icons-material";
-import { Stack, Typography } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
+import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 
 import { NavTreeItem } from "./components/NavTreeItem";
 
@@ -41,9 +34,7 @@ export const NavTree: FC<Readonly<Props>> = ({
       {HeaderComponent}
       <TreeView
         defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
-        defaultExpandIcon={
-          <ArrowDropDownRoundedIcon sx={{ transform: "rotate(-90deg)" }} />
-        }
+        defaultExpandIcon={<ArrowRightRoundedIcon />}
         onNodeSelect={(evt: any, nodeIds: string[]) =>
           console.log("node selected", evt, nodeIds)
         }
@@ -64,58 +55,6 @@ export const NavTree: FC<Readonly<Props>> = ({
             />
           );
         })}
-        {/* <NavTreeItem
-          name="Homepage"
-          onHideItem={() => {}}
-          onAddContent={() => {}}
-          nodeId="1"
-          icon={HomeMiniRounded}
-        >
-          <NavTreeItem
-            name="Nested Homepage"
-            onHideItem={() => {}}
-            onAddContent={() => {}}
-            nodeId="2"
-            icon={HomeMiniRounded}
-          ></NavTreeItem>
-        </NavTreeItem>
-        <NavTreeItem
-          name="Wow Something here"
-          onHideItem={() => {}}
-          onAddContent={() => {}}
-          nodeId="3"
-          icon={ScheduleRounded}
-        ></NavTreeItem>
-        <NavTreeItem
-          name="Beach photos!!"
-          onHideItem={() => {}}
-          onAddContent={() => {}}
-          nodeId="4"
-          icon={BackupRounded}
-        >
-          <NavTreeItem
-            name="Summer"
-            onHideItem={() => {}}
-            onAddContent={() => {}}
-            nodeId="summer12312"
-            icon={HomeMiniRounded}
-          >
-            <NavTreeItem
-              name="Spoodermun"
-              onHideItem={() => {}}
-              onAddContent={() => {}}
-              nodeId="56sppod"
-              icon={ScheduleRounded}
-            ></NavTreeItem>
-          </NavTreeItem>
-          <NavTreeItem
-            name="Loki snap!"
-            onHideItem={() => {}}
-            onAddContent={() => {}}
-            nodeId="loki"
-            icon={ScheduleRounded}
-          ></NavTreeItem>
-        </NavTreeItem> */}
       </TreeView>
     </>
   );

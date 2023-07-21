@@ -7,6 +7,7 @@ import {
   IconButton,
   SvgIcon,
   Button,
+  Tooltip,
 } from "@mui/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
@@ -48,16 +49,18 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
             },
           }}
         >
-          <Stack direction="row" alignItems="center" gap={1}>
-            <Box component={labelIcon} sx={{ fontSize: 16 }} />
-            {/* {labelIcon} */}
-            <Typography variant="body2">{labelName}</Typography>
-          </Stack>
+          <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
+          <Tooltip title={labelName} enterDelay={3000} enterNextDelay={3000}>
+            <Typography variant="body2" noWrap width="100%">
+              {labelName}
+            </Typography>
+          </Tooltip>
           <Stack
             direction="row"
             alignItems="center"
             gap={0.5}
             className="treeActions"
+            width="44px"
           >
             <IconButton
               data-cy="tree-item-hide"
