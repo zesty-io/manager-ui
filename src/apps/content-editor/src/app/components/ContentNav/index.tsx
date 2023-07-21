@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import {
   Stack,
   Typography,
@@ -24,25 +24,33 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
+import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
+import HomeIcon from "@mui/icons-material/Home";
+import { FileTable } from "@zesty-io/material";
 import { useLocation, useHistory } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCaretDown,
-  faCaretLeft,
-  faEyeSlash,
-} from "@fortawesome/free-solid-svg-icons";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
 import { Nav } from "../../../../../../shell/components/NavTree";
-import { NavData } from "../../../store/types";
-import { NavTree } from "../../../../../../shell/components/NavTreeV2";
+import {
+  NavTree,
+  TreeItem,
+} from "../../../../../../shell/components/NavTreeV2";
+import { modelIconMap } from "../../../../../schema/src/app/utils";
 
+interface NavData {
+  nav: TreeItem[];
+  headless: TreeItem[];
+  hidden: TreeItem[];
+  raw: TreeItem[];
+}
 interface SubMenu {
   name: string;
   icon: SvgIconComponent;
   path: string;
 }
-const SubMenus: Readonly<SubMenu[]> = [
+const SUB_MENUS: Readonly<SubMenu[]> = [
   {
     name: "Dashboard",
     icon: BackupTableRounded,
@@ -54,6 +62,15 @@ const SubMenus: Readonly<SubMenu[]> = [
     path: "/release",
   },
 ] as const;
+const ICONS: Record<string, any> = {
+  templateset: DescriptionRoundedIcon,
+  pageset: FormatListBulletedRoundedIcon,
+  dataset: FileTable,
+  external: LinkRoundedIcon,
+  internal: LinkRoundedIcon,
+  item: DescriptionRoundedIcon,
+  homepage: HomeIcon,
+} as const;
 
 interface Props {
   navData: NavData;
@@ -73,6 +90,28 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
   //     }}
   //   />,
   // ];
+
+  // console.log(navData.nav);
+
+  const pages: TreeItem[] = useMemo(() => {
+    return navData?.nav?.map((item) => {
+      return {
+        type: item.type,
+        icon: item.icon,
+        ZUID: item.ZUID,
+        children: item.children,
+        contentModelZUID: item.contentModelZUID,
+        label: item.label,
+        path: item.path,
+        sort: item.sort,
+        // hidden?: boolean,
+        // closed?: boolean,
+        // actions?: React.ReactNode[],
+      };
+    });
+  }, [navData]);
+
+  console.log(pages);
 
   return (
     <AppSideBar
@@ -126,7 +165,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
             }}
           />
           <List disablePadding>
-            {SubMenus.map((menu) => {
+            {SUB_MENUS.map((menu) => {
               const isActive = location.pathname === menu.path;
 
               return (
@@ -167,6 +206,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
       }
     >
       <NavTree
+        tree={pages}
         HeaderComponent={
           <Stack
             direction="row"

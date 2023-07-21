@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { TreeItem, TreeItemProps } from "@mui/lab";
 import {
   Stack,
@@ -11,22 +11,29 @@ import {
 import { SvgIconComponent } from "@mui/icons-material";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import HomeIcon from "@mui/icons-material/Home";
+
+import { TreeItem as TreeItemType } from "../index";
 
 interface Props {
-  name: string;
-  icon: SvgIconComponent;
+  labelName: string;
+  labelIcon?: any;
   onHideItem: (path: string) => void;
   onAddContent: (path: string) => void;
+  nodeId: string;
+  nestedItems?: TreeItemType[];
 }
-export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
-  name,
+export const NavTreeItem: FC<Readonly<Props>> = ({
+  labelName,
   onHideItem,
   onAddContent,
-  icon,
-  ...other
+  labelIcon,
+  nodeId,
+  nestedItems,
 }) => {
   return (
     <TreeItem
+      nodeId={nodeId}
       label={
         <Stack
           direction="row"
@@ -42,8 +49,9 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
           }}
         >
           <Stack direction="row" alignItems="center" gap={1}>
-            {!!icon && <SvgIcon component={icon} sx={{ fontSize: 16 }} />}
-            <Typography variant="body2">{name}</Typography>
+            <Box component={labelIcon} sx={{ fontSize: 16 }} />
+            {/* {labelIcon} */}
+            <Typography variant="body2">{labelName}</Typography>
           </Stack>
           <Stack
             direction="row"
@@ -59,7 +67,7 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
               size="xSmall"
               onClick={(e) => {
                 e.stopPropagation();
-                onHideItem(other.nodeId);
+                onHideItem(nodeId);
               }}
             >
               <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
@@ -79,7 +87,7 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
               size="xSmall"
               onClick={(e) => {
                 e.stopPropagation();
-                onAddContent(other.nodeId);
+                onAddContent(nodeId);
               }}
             >
               <AddRoundedIcon sx={{ fontSize: 16 }} />
@@ -122,7 +130,21 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
             },
         },
       }}
-      {...other}
-    />
+    >
+      {!!nestedItems?.length &&
+        nestedItems?.map((item) => {
+          return (
+            <NavTreeItem
+              key={item.ZUID}
+              labelName={item.label}
+              nodeId={item.ZUID}
+              labelIcon={item.icon}
+              onHideItem={() => {}}
+              onAddContent={() => {}}
+              nestedItems={item.children}
+            />
+          );
+        })}
+    </TreeItem>
   );
 };

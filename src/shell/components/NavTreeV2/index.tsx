@@ -1,20 +1,41 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { TreeView } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import {
   HomeMiniRounded,
   ScheduleRounded,
   BackupRounded,
+  SvgIconComponent,
 } from "@mui/icons-material";
 import { Stack, Typography } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
 
 import { NavTreeItem } from "./components/NavTreeItem";
 
+export interface TreeItem {
+  type: string;
+  icon: any;
+  ZUID: string;
+  children: TreeItem[];
+  contentModelZUID: string;
+  label: string;
+  path: string;
+  sort: number;
+  hidden?: boolean;
+  closed?: boolean;
+  actions?: React.ReactNode[];
+}
+
 interface Props {
   HeaderComponent: React.ReactNode;
+  tree: TreeItem[];
   actions?: any[];
 }
-export const NavTree: FC<Readonly<Props>> = ({ HeaderComponent, actions }) => {
+export const NavTree: FC<Readonly<Props>> = ({
+  HeaderComponent,
+  tree,
+  actions,
+}) => {
   return (
     <>
       {HeaderComponent}
@@ -23,7 +44,6 @@ export const NavTree: FC<Readonly<Props>> = ({ HeaderComponent, actions }) => {
         defaultExpandIcon={
           <ArrowDropDownRoundedIcon sx={{ transform: "rotate(-90deg)" }} />
         }
-        sx={{ height: "100%", flexGrow: 1, overflowY: "auto" }}
         onNodeSelect={(evt: any, nodeIds: string[]) =>
           console.log("node selected", evt, nodeIds)
         }
@@ -31,7 +51,20 @@ export const NavTree: FC<Readonly<Props>> = ({ HeaderComponent, actions }) => {
           console.log(evt, nodeIds);
         }}
       >
-        <NavTreeItem
+        {tree?.map((item) => {
+          return (
+            <NavTreeItem
+              key={item.ZUID}
+              labelName={item.label}
+              nodeId={item.ZUID}
+              labelIcon={item.icon}
+              onHideItem={() => {}}
+              onAddContent={() => {}}
+              nestedItems={item.children}
+            />
+          );
+        })}
+        {/* <NavTreeItem
           name="Homepage"
           onHideItem={() => {}}
           onAddContent={() => {}}
@@ -82,7 +115,7 @@ export const NavTree: FC<Readonly<Props>> = ({ HeaderComponent, actions }) => {
             nodeId="loki"
             icon={ScheduleRounded}
           ></NavTreeItem>
-        </NavTreeItem>
+        </NavTreeItem> */}
       </TreeView>
     </>
   );

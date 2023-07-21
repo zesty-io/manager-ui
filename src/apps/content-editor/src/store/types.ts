@@ -23,10 +23,3 @@ type WithLegacyIcon = TreeItemBase & {
   icon: string;
 };
 export type TreeItem = WithMuiIcons | WithFAIcons | WithLegacyIcon;
-
-export interface NavData {
-  nav: TreeItem[];
-  headless: TreeItem[];
-  hidden: TreeItem[];
-  raw: TreeItem[];
-}

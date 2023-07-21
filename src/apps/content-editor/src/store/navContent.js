@@ -11,22 +11,38 @@ import {
 import { SvgIcon } from "@mui/material";
 import { modelIconMap } from "../../../schema/src/app/utils";
 
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
+import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
+import HomeIcon from "@mui/icons-material/Home";
+import { FileTable } from "@zesty-io/material";
+
 const svgIconStyle = {
   width: "12px",
   height: "12px",
 };
 
 const ICONS = {
-  templateset: (
-    <SvgIcon component={modelIconMap["templateset"]} sx={svgIconStyle} />
-  ),
-  pageset: <SvgIcon component={modelIconMap["pageset"]} sx={svgIconStyle} />,
-  dataset: <SvgIcon component={modelIconMap["dataset"]} sx={svgIconStyle} />,
-  external: faExternalLinkSquareAlt,
-  internal: faLink,
-  item: <SvgIcon component={modelIconMap["templateset"]} sx={svgIconStyle} />,
-  homepage: faHome,
+  templateset: DescriptionRoundedIcon,
+  pageset: FormatListBulletedRoundedIcon,
+  dataset: FileTable,
+  external: LinkRoundedIcon,
+  internal: LinkRoundedIcon,
+  item: DescriptionRoundedIcon,
+  homepage: HomeIcon,
 };
+
+// const ICONS = {
+//   templateset: (
+//     <SvgIcon component={modelIconMap["templateset"]} sx={svgIconStyle} />
+//   ),
+//   pageset: <SvgIcon component={modelIconMap["pageset"]} sx={svgIconStyle} />,
+//   dataset: <SvgIcon component={modelIconMap["dataset"]} sx={svgIconStyle} />,
+//   external: faExternalLinkSquareAlt,
+//   internal: faLink,
+//   item: <SvgIcon component={modelIconMap["templateset"]} sx={svgIconStyle} />,
+//   homepage: faHome,
+// };
 
 export function navContent(
   state = { nav: [], headless: [], hidden: [], raw: [] },
