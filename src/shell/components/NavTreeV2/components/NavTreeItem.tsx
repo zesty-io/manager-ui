@@ -66,7 +66,6 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
             </IconButton>
             <IconButton
               data-cy="tree-item-add-new-content"
-              color="primary"
               sx={{
                 borderRadius: 0.5,
                 backgroundColor: "primary.dark",
@@ -92,6 +91,12 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
         "& .MuiTreeItem-content": {
           py: 0.5,
           pl: 1,
+          borderRadius: 0,
+        },
+        "& .MuiTreeItem-content.Mui-selected": {
+          borderLeft: "2px solid",
+          borderColor: "primary.main",
+          pl: 0.75,
         },
         "& .MuiTreeItem-content.Mui-selected .MuiTreeItem-label .treeActions [data-cy='tree-item-hide'] svg":
           {
