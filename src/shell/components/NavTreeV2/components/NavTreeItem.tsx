@@ -1,5 +1,5 @@
-import { FC, useMemo } from "react";
-import { TreeItem, TreeItemProps } from "@mui/lab";
+import React, { FC, cloneElement } from "react";
+import { TreeItem } from "@mui/lab";
 import {
   Stack,
   Box,
@@ -9,10 +9,8 @@ import {
   Button,
   Tooltip,
 } from "@mui/material";
-import { SvgIconComponent } from "@mui/icons-material";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import HomeIcon from "@mui/icons-material/Home";
 
 import { TreeItem as TreeItemType } from "../index";
 
@@ -23,6 +21,7 @@ interface Props {
   onAddContent: (path: string) => void;
   nodeId: string;
   nestedItems?: TreeItemType[];
+  actions?: React.ReactNode[];
 }
 export const NavTreeItem: FC<Readonly<Props>> = ({
   labelName,
@@ -31,6 +30,7 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
   labelIcon,
   nodeId,
   nestedItems,
+  actions,
 }) => {
   return (
     <TreeItem
@@ -62,39 +62,9 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
             className="treeActions"
             width="44px"
           >
-            <IconButton
-              data-cy="tree-item-hide"
-              sx={{
-                borderRadius: 0.5,
-              }}
-              size="xSmall"
-              onClick={(e) => {
-                e.stopPropagation();
-                onHideItem(nodeId);
-              }}
-            >
-              <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
-            </IconButton>
-            <IconButton
-              data-cy="tree-item-add-new-content"
-              sx={{
-                borderRadius: 0.5,
-                backgroundColor: "primary.dark",
-                "&:hover": {
-                  backgroundColor: "primary.dark",
-                },
-                "& svg.MuiSvgIcon-root": {
-                  color: "common.white",
-                },
-              }}
-              size="xSmall"
-              onClick={(e) => {
-                e.stopPropagation();
-                onAddContent(nodeId);
-              }}
-            >
-              <AddRoundedIcon sx={{ fontSize: 16 }} />
-            </IconButton>
+            {actions?.map((action) => {
+              return action;
+            })}
           </Stack>
         </Stack>
       }

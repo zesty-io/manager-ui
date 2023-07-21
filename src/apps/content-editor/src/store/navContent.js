@@ -16,6 +16,7 @@ import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBullete
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import HomeIcon from "@mui/icons-material/Home";
 import { FileTable } from "@zesty-io/material";
+import DocumentScannerRounded from "@mui/icons-material/DocumentScannerRounded";
 
 const svgIconStyle = {
   width: "12px",
@@ -27,7 +28,7 @@ const ICONS = {
   pageset: FormatListBulletedRoundedIcon,
   dataset: FileTable,
   external: LinkRoundedIcon,
-  internal: LinkRoundedIcon,
+  internal: DocumentScannerRounded,
   item: DescriptionRoundedIcon,
   homepage: HomeIcon,
 };

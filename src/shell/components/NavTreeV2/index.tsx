@@ -16,19 +16,14 @@ export interface TreeItem {
   sort: number;
   hidden?: boolean;
   closed?: boolean;
-  actions?: React.ReactNode[];
+  actions?: JSX.Element[];
 }
 
 interface Props {
   HeaderComponent: React.ReactNode;
   tree: TreeItem[];
-  actions?: any[];
 }
-export const NavTree: FC<Readonly<Props>> = ({
-  HeaderComponent,
-  tree,
-  actions,
-}) => {
+export const NavTree: FC<Readonly<Props>> = ({ HeaderComponent, tree }) => {
   return (
     <>
       {HeaderComponent}
@@ -52,6 +47,7 @@ export const NavTree: FC<Readonly<Props>> = ({
               onHideItem={() => {}}
               onAddContent={() => {}}
               nestedItems={item.children}
+              actions={item.actions ?? []}
             />
           );
         })}

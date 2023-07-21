@@ -29,6 +29,7 @@ import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBullete
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import HomeIcon from "@mui/icons-material/Home";
 import { FileTable } from "@zesty-io/material";
+import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import { useLocation, useHistory } from "react-router-dom";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
@@ -79,22 +80,92 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
   const location = useLocation();
   const history = useHistory();
 
-  // console.log(navData);
-  // const actions = [
-  //   <FontAwesomeIcon
-  //     title="Hide from nav"
-  //     icon={faEyeSlash}
-  //     onClick={(path) => {
-  //       // dispatch(hideNavItem(path));
-  //       console.log("hide", path);
-  //     }}
-  //   />,
-  // ];
+  const actions: JSX.Element[] = useMemo(() => {
+    return [
+      <IconButton
+        data-cy="tree-item-hide"
+        sx={{
+          borderRadius: 0.5,
+        }}
+        size="xSmall"
+        onClick={(e) => {
+          e.stopPropagation();
+          // onHideItem(nodeId);
+        }}
+      >
+        <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
+      </IconButton>,
+      <IconButton
+        data-cy="tree-item-add-new-content"
+        sx={{
+          borderRadius: 0.5,
+          backgroundColor: "primary.dark",
+          "&:hover": {
+            backgroundColor: "primary.dark",
+          },
+          "& svg.MuiSvgIcon-root": {
+            color: "common.white",
+          },
+        }}
+        size="xSmall"
+        onClick={(e) => {
+          e.stopPropagation();
+          // onAddContent(nodeId);
+        }}
+      >
+        <AddRoundedIcon sx={{ fontSize: 16 }} />
+      </IconButton>,
+    ];
+  }, []);
 
   // console.log(navData.nav);
 
   const pages: TreeItem[] = useMemo(() => {
+    // TODO: Add actions during tree creation
     return navData?.nav?.map((item) => {
+      // const actions = [
+      //   <IconButton
+      //     data-cy="tree-item-hide"
+      //     sx={{
+      //       borderRadius: 0.5,
+      //     }}
+      //     size="xSmall"
+      //     onClick={(e) => {
+      //       e.stopPropagation();
+      //       // onHideItem(nodeId);
+      //       console.log("hide item:", item.path);
+      //     }}
+      //   >
+      //     <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
+      //   </IconButton>,
+      // ];
+
+      // if (item.type === "pageset" || item.type === "dataset") {
+      //   actions.push(
+      //     <IconButton
+      //       data-cy="tree-item-add-new-content"
+      //       sx={{
+      //         borderRadius: 0.5,
+      //         backgroundColor: "primary.dark",
+      //         "&:hover": {
+      //           backgroundColor: "primary.dark",
+      //         },
+      //         "& svg.MuiSvgIcon-root": {
+      //           color: "common.white",
+      //         },
+      //       }}
+      //       size="xSmall"
+      //       onClick={(e) => {
+      //         e.stopPropagation();
+      //         // onAddContent(nodeId);
+      //         console.log("add new item:", item.path);
+      //       }}
+      //     >
+      //       <AddRoundedIcon sx={{ fontSize: 16 }} />
+      //     </IconButton>
+      //   );
+      // }
+
       return {
         type: item.type,
         icon: item.icon,
@@ -106,7 +177,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
         sort: item.sort,
         // hidden?: boolean,
         // closed?: boolean,
-        // actions?: React.ReactNode[],
+        // actions,
       };
     });
   }, [navData]);
@@ -256,33 +327,6 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
           </Stack>
         }
       />
-      {/* <Typography>Main Nav</Typography>
-      <Nav
-        mode="dark"
-        id="MainNavigation"
-        activePath={location.pathname}
-        onCollapseNode={(path) => console.log("collapse", path)}
-        tree={navData.nav}
-        actions={actions}
-      />
-      <Typography>Headless</Typography>
-      <Nav
-        mode="dark"
-        id="MainNavigation"
-        activePath={location.pathname}
-        onCollapseNode={(path) => console.log("collapse", path)}
-        tree={navData.headless}
-        actions={actions}
-      />
-      <Typography>Hidden</Typography>
-      <Nav
-        mode="dark"
-        id="MainNavigation"
-        activePath={location.pathname}
-        onCollapseNode={(path) => console.log("collapse", path)}
-        tree={navData.hidden}
-        actions={actions}
-      /> */}
     </AppSideBar>
   );
 };
