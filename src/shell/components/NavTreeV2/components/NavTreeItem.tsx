@@ -92,28 +92,34 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
           py: 0.5,
           pl: 1,
           borderRadius: 0,
+
+          ".MuiTreeItem-iconContainer": {
+            width: 20,
+            height: 20,
+            svg: {
+              fontSize: 20,
+            },
+          },
         },
         "& .MuiTreeItem-content.Mui-selected": {
           borderLeft: "2px solid",
           borderColor: "primary.main",
           pl: 0.75,
-        },
-        "& .MuiTreeItem-content.Mui-selected .MuiTreeItem-label .treeActions [data-cy='tree-item-hide'] svg":
-          {
+
+          ".MuiTreeItem-iconContainer svg": {
+            color: "primary.main",
+          },
+
+          ".MuiTreeItem-label .treeActions [data-cy='tree-item-hide'] svg": {
             // Makes sure that the hide icon color does not change when tree item is selected
             color: "action.active",
           },
-        "& .MuiTreeItem-content.Mui-selected .MuiTreeItem-label .treeActions [data-cy='tree-item-add-new-content'] svg":
-          {
-            // Makes sure that the add new content icon color does not change when tree item is selected
-            color: "common.white",
-          },
-        "& .MuiTreeItem-content .MuiTreeItem-iconContainer": {
-          width: 20,
-          height: 20,
-          svg: {
-            fontSize: 20,
-          },
+
+          ".MuiTreeItem-label .treeActions [data-cy='tree-item-add-new-content'] svg":
+            {
+              // Makes sure that the add new content icon color does not change when tree item is selected
+              color: "common.white",
+            },
         },
       }}
       {...other}
