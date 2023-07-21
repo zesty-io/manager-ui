@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import { TreeView } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
+import { MenuListDropDown } from "@zesty-io/material";
 
 import { NavTreeItem } from "./components/NavTreeItem";
 
@@ -28,8 +29,10 @@ export const NavTree: FC<Readonly<Props>> = ({ HeaderComponent, tree }) => {
     <>
       {HeaderComponent}
       <TreeView
-        defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
-        defaultExpandIcon={<ArrowRightRoundedIcon />}
+        defaultCollapseIcon={<MenuListDropDown />}
+        defaultExpandIcon={
+          <MenuListDropDown sx={{ transform: "rotate(-90deg)" }} />
+        }
         onNodeSelect={(evt: any, nodeIds: string[]) =>
           console.log("node selected", evt, nodeIds)
         }
