@@ -1,4 +1,4 @@
-import React, { FC, cloneElement } from "react";
+import React, { FC, useMemo, useState } from "react";
 import { TreeItem } from "@mui/lab";
 import {
   Stack,
@@ -22,6 +22,7 @@ interface Props {
   nodeId: string;
   nestedItems?: TreeItemType[];
   actions?: React.ReactNode[];
+  depth?: number;
 }
 export const NavTreeItem: FC<Readonly<Props>> = ({
   labelName,
@@ -31,7 +32,11 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
   nodeId,
   nestedItems,
   actions,
+  depth = 0,
 }) => {
+  const currentDepth = depth + 1;
+  const depthPadding = currentDepth * 1;
+
   return (
     <TreeItem
       nodeId={nodeId}
@@ -102,6 +107,13 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
               color: "common.white",
             },
         },
+        "& .MuiCollapse-root.MuiTreeItem-group": {
+          // This makes sure that the whole row is highlighted while still maintaining tree item depth
+          marginLeft: 0,
+          ".MuiTreeItem-content .MuiTreeItem-iconContainer": {
+            paddingLeft: depthPadding,
+          },
+        },
       }}
     >
       {!!nestedItems?.length &&
@@ -115,6 +127,7 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
               onHideItem={() => {}}
               onAddContent={() => {}}
               nestedItems={item.children}
+              depth={currentDepth}
             />
           );
         })}
