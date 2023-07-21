@@ -1,6 +1,13 @@
 import { FC } from "react";
 import { TreeItem, TreeItemProps } from "@mui/lab";
-import { Stack, Box, Typography, IconButton, SvgIcon } from "@mui/material";
+import {
+  Stack,
+  Box,
+  Typography,
+  IconButton,
+  SvgIcon,
+  Button,
+} from "@mui/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -47,11 +54,9 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
             <IconButton
               data-cy="tree-item-hide"
               sx={{
-                width: 20,
-                height: 20,
-                padding: 0.25,
                 borderRadius: 0.5,
               }}
+              size="xSmall"
               onClick={(e) => {
                 e.stopPropagation();
                 onHideItem(other.nodeId);
@@ -61,10 +66,8 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
             </IconButton>
             <IconButton
               data-cy="tree-item-add-new-content"
+              color="primary"
               sx={{
-                width: 20,
-                height: 20,
-                padding: 0.25,
                 borderRadius: 0.5,
                 backgroundColor: "primary.dark",
                 "&:hover": {
@@ -74,6 +77,7 @@ export const NavTreeItem: FC<Readonly<Props & TreeItemProps>> = ({
                   color: "common.white",
                 },
               }}
+              size="xSmall"
               onClick={(e) => {
                 e.stopPropagation();
                 onAddContent(other.nodeId);

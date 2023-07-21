@@ -63,16 +63,16 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
   const history = useHistory();
 
   // console.log(navData);
-  const actions = [
-    <FontAwesomeIcon
-      title="Hide from nav"
-      icon={faEyeSlash}
-      onClick={(path) => {
-        // dispatch(hideNavItem(path));
-        console.log("hide", path);
-      }}
-    />,
-  ];
+  // const actions = [
+  //   <FontAwesomeIcon
+  //     title="Hide from nav"
+  //     icon={faEyeSlash}
+  //     onClick={(path) => {
+  //       // dispatch(hideNavItem(path));
+  //       console.log("hide", path);
+  //     }}
+  //   />,
+  // ];
 
   return (
     <AppSideBar

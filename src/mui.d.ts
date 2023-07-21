@@ -4,6 +4,7 @@ import {
   PaletteOptions,
   TypographyVariantsOptions,
 } from "@mui/material/styles";
+import { IconButtonPropsSizeOverrides } from "@mui/material/IconButton";
 
 declare module "@mui/material/Typography" {
   export interface TypographyPropsVariantOverrides {
@@ -21,5 +22,11 @@ declare module "@mui/material/styles" {
     green: Color;
     purple: Color;
     yellow: Color;
+  }
+}
+
+declare module "@mui/material/IconButton" {
+  interface IconButtonPropsSizeOverrides {
+    xSmall: true;
   }
 }
