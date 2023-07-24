@@ -87,7 +87,17 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
   const { data: rawNavData, isError: navItemsFailed } =
     useGetContentNavItemsQuery();
   const [expandedNavItems] = useLocalStorage("zesty:navContent:open", []);
-  const [hiddenNavItems] = useLocalStorage("zesty:navContent:hidden");
+  const [hiddenNavItems] = useLocalStorage("zesty:navContent:hidden", []);
+
+  const hiddenZUIDs = useMemo(() => {
+    if (!!hiddenNavItems?.length) {
+      return hiddenNavItems.reduce((acc, curr: TreeItem) => {
+        return [...acc, curr.ZUID];
+      }, []);
+    }
+
+    return [];
+  }, [hiddenNavItems]);
 
   const granularRoles: string[] = useMemo(() => {
     if (!!currentUserRoles?.length) {
@@ -138,7 +148,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
       // Sort nav by user defined value
       filteredNavData = filteredNavData.sort((a, b) => a?.sort - b?.sort);
 
-      // Set path and icon, and initiate empty children array
+      // Set path, actions and icon, and initiate empty children array
       const mappedTree: TreeItem[] = filteredNavData.map((navItem) => {
         let path = "";
 
@@ -157,6 +167,47 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
             break;
         }
 
+        let actions = [
+          <IconButton
+            data-cy="tree-item-hide"
+            sx={{
+              borderRadius: 0.5,
+            }}
+            size="xSmall"
+            onClick={(e) => {
+              e.stopPropagation();
+              // onHideItem(nodeId);
+            }}
+          >
+            <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
+          </IconButton>,
+        ];
+
+        if (navItem.type === "dataset" || navItem.type === "pageset") {
+          actions.push(
+            <IconButton
+              data-cy="tree-item-add-new-content"
+              sx={{
+                borderRadius: 0.5,
+                backgroundColor: "primary.dark",
+                "&:hover": {
+                  backgroundColor: "primary.dark",
+                },
+                "& svg.MuiSvgIcon-root": {
+                  color: "common.white",
+                },
+              }}
+              size="xSmall"
+              onClick={(e) => {
+                e.stopPropagation();
+                // onAddContent(nodeId);
+              }}
+            >
+              <AddRoundedIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          );
+        }
+
         return {
           ...navItem,
           icon:
@@ -164,6 +215,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
               ? ICONS["homepage"]
               : ICONS[navItem.type],
           path,
+          actions,
           children: [],
         };
       });
@@ -194,11 +246,30 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
         }
       });
 
+      // Split the nav tree into categories
       const nav: TreeItem[] = [];
       const headless: TreeItem[] = [];
       const hidden: TreeItem[] = [];
 
-      console.log("new", tree.length);
+      tree.forEach((item) => {
+        if (hiddenZUIDs.includes(item.ZUID)) {
+          return hidden.push(item);
+        }
+
+        if (item.type === "dataset") {
+          return headless.push(item);
+        }
+
+        if (!item.parentZUID) {
+          return nav.push(item);
+        }
+      });
+
+      return {
+        nav,
+        headless,
+        hidden,
+      };
     }
 
     return {
@@ -208,43 +279,43 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
     };
   }, [granularRoles, rawNavData]);
 
-  const actions: JSX.Element[] = useMemo(() => {
-    return [
-      <IconButton
-        data-cy="tree-item-hide"
-        sx={{
-          borderRadius: 0.5,
-        }}
-        size="xSmall"
-        onClick={(e) => {
-          e.stopPropagation();
-          // onHideItem(nodeId);
-        }}
-      >
-        <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
-      </IconButton>,
-      <IconButton
-        data-cy="tree-item-add-new-content"
-        sx={{
-          borderRadius: 0.5,
-          backgroundColor: "primary.dark",
-          "&:hover": {
-            backgroundColor: "primary.dark",
-          },
-          "& svg.MuiSvgIcon-root": {
-            color: "common.white",
-          },
-        }}
-        size="xSmall"
-        onClick={(e) => {
-          e.stopPropagation();
-          // onAddContent(nodeId);
-        }}
-      >
-        <AddRoundedIcon sx={{ fontSize: 16 }} />
-      </IconButton>,
-    ];
-  }, []);
+  // const actions: JSX.Element[] = useMemo(() => {
+  //   return [
+  //     <IconButton
+  //       data-cy="tree-item-hide"
+  //       sx={{
+  //         borderRadius: 0.5,
+  //       }}
+  //       size="xSmall"
+  //       onClick={(e) => {
+  //         e.stopPropagation();
+  //         // onHideItem(nodeId);
+  //       }}
+  //     >
+  //       <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
+  //     </IconButton>,
+  //     <IconButton
+  //       data-cy="tree-item-add-new-content"
+  //       sx={{
+  //         borderRadius: 0.5,
+  //         backgroundColor: "primary.dark",
+  //         "&:hover": {
+  //           backgroundColor: "primary.dark",
+  //         },
+  //         "& svg.MuiSvgIcon-root": {
+  //           color: "common.white",
+  //         },
+  //       }}
+  //       size="xSmall"
+  //       onClick={(e) => {
+  //         e.stopPropagation();
+  //         // onAddContent(nodeId);
+  //       }}
+  //     >
+  //       <AddRoundedIcon sx={{ fontSize: 16 }} />
+  //     </IconButton>,
+  //   ];
+  // }, []);
 
   // console.log(navData.nav);
 
@@ -407,7 +478,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
       }
     >
       <NavTree
-        tree={pages}
+        tree={navTree.nav}
         expandedItems={expandedNavItems}
         HeaderComponent={
           <Stack

@@ -11,8 +11,6 @@ export type TreeItem = {
   icon: any;
   children: TreeItem[];
   path: string;
-  hidden?: boolean;
-  closed?: boolean;
   actions?: JSX.Element[];
 } & ContentNavItem;
 

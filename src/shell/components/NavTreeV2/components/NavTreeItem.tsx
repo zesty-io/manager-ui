@@ -128,6 +128,7 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
               onAddContent={() => {}}
               nestedItems={item.children}
               depth={currentDepth}
+              actions={item.actions ?? []}
             />
           );
         })}
