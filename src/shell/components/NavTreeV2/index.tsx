@@ -23,12 +23,18 @@ export interface TreeItem {
 interface Props {
   HeaderComponent: React.ReactNode;
   tree: TreeItem[];
+  expandedItems?: string[];
 }
-export const NavTree: FC<Readonly<Props>> = ({ HeaderComponent, tree }) => {
+export const NavTree: FC<Readonly<Props>> = ({
+  HeaderComponent,
+  tree,
+  expandedItems,
+}) => {
   return (
     <>
       {HeaderComponent}
       <TreeView
+        // expanded={expandedItems}
         defaultCollapseIcon={<MenuListDropDown />}
         defaultExpandIcon={
           <MenuListDropDown sx={{ transform: "rotate(-90deg)" }} />

@@ -29,8 +29,10 @@ import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBullete
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import HomeIcon from "@mui/icons-material/Home";
 import { FileTable } from "@zesty-io/material";
+import DocumentScannerRounded from "@mui/icons-material/DocumentScannerRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import { useLocation, useHistory } from "react-router-dom";
+import { useLocalStorage } from "react-use";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
 import { Nav } from "../../../../../../shell/components/NavTree";
@@ -39,12 +41,13 @@ import {
   TreeItem,
 } from "../../../../../../shell/components/NavTreeV2";
 import { modelIconMap } from "../../../../../schema/src/app/utils";
+import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
+import { useGetContentNavItemsQuery } from "../../../../../../shell/services/instance";
 
 interface NavData {
   nav: TreeItem[];
   headless: TreeItem[];
   hidden: TreeItem[];
-  raw: TreeItem[];
 }
 interface SubMenu {
   name: string;
@@ -63,10 +66,10 @@ const SUB_MENUS: Readonly<SubMenu[]> = [
     path: "/release",
   },
 ] as const;
-const ICONS: Record<string, any> = {
+const ICONS: Record<string, SvgIconComponent> = {
   templateset: DescriptionRoundedIcon,
   pageset: FormatListBulletedRoundedIcon,
-  dataset: FileTable,
+  dataset: FileTable as SvgIconComponent,
   external: LinkRoundedIcon,
   internal: LinkRoundedIcon,
   item: DescriptionRoundedIcon,
@@ -79,6 +82,100 @@ interface Props {
 export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
   const location = useLocation();
   const history = useHistory();
+  const { data: currentUserRoles, isError: currentUserRolesFailed } =
+    useGetCurrentUserRolesQuery();
+  const { data: rawNavData, isError: navItemsFailed } =
+    useGetContentNavItemsQuery();
+  const [expandedNavItems] = useLocalStorage("zesty:navContent:open", []);
+  const [hiddenNavItems] = useLocalStorage("zesty:navContent:hidden");
+
+  const granularRoles: string[] = useMemo(() => {
+    if (!!currentUserRoles?.length) {
+      // Get all the resource ZUIDs from all the user's granular roles
+      return currentUserRoles.reduce(
+        (granularResourceZUIDs: string[], role) => {
+          if (role?.granularRoles?.length) {
+            const resourceZUIDs: string[] = role?.granularRoles?.reduce(
+              (acc: string[], curr) => {
+                return [...acc, curr.resourceZUID];
+              },
+              []
+            );
+
+            if (!!resourceZUIDs.length) {
+              return (granularResourceZUIDs = [
+                ...granularResourceZUIDs,
+                ...resourceZUIDs,
+              ]);
+            }
+          }
+
+          return granularResourceZUIDs;
+        },
+        []
+      );
+    }
+
+    return [];
+  }, [currentUserRoles]);
+
+  const navTree: NavData = useMemo(() => {
+    if (!!rawNavData?.length) {
+      let filteredNavData = [...rawNavData];
+
+      if (!!granularRoles?.length) {
+        // Filter nav based on user's granular role access
+        filteredNavData = filteredNavData.filter((navItem) => {
+          return granularRoles.includes(navItem.ZUID);
+        });
+      }
+
+      // Sort nav alphabetically
+      filteredNavData = filteredNavData.sort((a, b) =>
+        a?.label?.localeCompare(b?.label)
+      );
+
+      // Sort nav by user defined value
+      filteredNavData = filteredNavData.sort((a, b) => a?.sort - b?.sort);
+
+      // Set path and icon
+      filteredNavData = filteredNavData.map((navItem) => {
+        let path = "";
+
+        switch (navItem.type) {
+          case "item":
+            path = `/content/${navItem.contentModelZUID}/${navItem.ZUID}`;
+            break;
+
+          case "internal":
+          case "external":
+            path = `/content/link/${navItem.ZUID}`;
+            break;
+
+          default:
+            path = `/content/${navItem.ZUID}`;
+            break;
+        }
+
+        return {
+          ...navItem,
+          icon:
+            navItem?.label?.toLowerCase() === "homepage"
+              ? ICONS["homepage"]
+              : ICONS[navItem.type],
+          path,
+        };
+      });
+
+      console.log(filteredNavData);
+    }
+
+    return {
+      nav: [],
+      headless: [],
+      hidden: [],
+    };
+  }, [granularRoles, rawNavData]);
 
   const actions: JSX.Element[] = useMemo(() => {
     return [
@@ -182,8 +279,6 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
     });
   }, [navData]);
 
-  console.log(pages);
-
   return (
     <AppSideBar
       data-cy="contentNav"
@@ -278,6 +373,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
     >
       <NavTree
         tree={pages}
+        expandedItems={expandedNavItems}
         HeaderComponent={
           <Stack
             direction="row"
