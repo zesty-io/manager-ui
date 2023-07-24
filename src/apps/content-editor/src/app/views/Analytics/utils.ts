@@ -1,4 +1,4 @@
-import { Moment } from "moment-timezone";
+import moment, { Moment } from "moment-timezone";
 
 export function calculatePercentageDifference(
   originalValue: number,
@@ -9,7 +9,7 @@ export function calculatePercentageDifference(
 
   return `${Math.sign(percentageDifference * 100) === 1 ? "+" : ""}${
     Number.isNaN(percentageDifference) || percentageDifference === 0
-      ? ""
+      ? "+0%"
       : `${percentageDifference.toFixed(2)}%`
   }`;
 }
@@ -45,13 +45,17 @@ export function findValuesForDimensions(
   return result;
 }
 
-export function findTopDimensionsForDateRange(
+export function findTopDimensions(
   data: any[],
-  dateRange: string,
+  dateRanges: string[],
   topN: number
 ) {
   const dateRangeData = data?.filter((item) =>
-    item.dimensionValues.some((dimension: any) => dimension.value === dateRange)
+    dateRanges.every((dateRange) =>
+      item.dimensionValues.some(
+        (dimension: any) => dimension.value === dateRange
+      )
+    )
   );
 
   const sortedData = dateRangeData?.sort(
@@ -92,21 +96,14 @@ export const generateReportRequests = (
           },
         ],
         dateRanges: [
-          {
-            startDate: startDate?.format("YYYY-MM-DD"),
-            endDate: endDate?.format("YYYY-MM-DD"),
-          },
           ...(withPrior
-            ? [
+            ? generateDateRangesForReport(startDate, endDate)
+            : [
                 {
-                  startDate: startDate
-                    ?.clone()
-                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                    ?.format("YYYY-MM-DD"),
-                  endDate: startDate?.format("YYYY-MM-DD"),
+                  startDate: startDate?.format("YYYY-MM-DD"),
+                  endDate: endDate?.format("YYYY-MM-DD"),
                 },
-              ]
-            : []),
+              ]),
         ],
         dimensionFilter: {
           filter: {
@@ -133,21 +130,14 @@ export const generateReportRequests = (
           },
         ],
         dateRanges: [
-          {
-            startDate: startDate?.format("YYYY-MM-DD"),
-            endDate: endDate?.format("YYYY-MM-DD"),
-          },
           ...(withPrior
-            ? [
+            ? generateDateRangesForReport(startDate, endDate)
+            : [
                 {
-                  startDate: startDate
-                    ?.clone()
-                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                    ?.format("YYYY-MM-DD"),
-                  endDate: startDate?.format("YYYY-MM-DD"),
+                  startDate: startDate?.format("YYYY-MM-DD"),
+                  endDate: endDate?.format("YYYY-MM-DD"),
                 },
-              ]
-            : []),
+              ]),
         ],
         dimensionFilter: {
           filter: {
@@ -174,21 +164,14 @@ export const generateReportRequests = (
           },
         ],
         dateRanges: [
-          {
-            startDate: startDate?.format("YYYY-MM-DD"),
-            endDate: endDate?.format("YYYY-MM-DD"),
-          },
           ...(withPrior
-            ? [
+            ? generateDateRangesForReport(startDate, endDate)
+            : [
                 {
-                  startDate: startDate
-                    ?.clone()
-                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                    ?.format("YYYY-MM-DD"),
-                  endDate: startDate?.format("YYYY-MM-DD"),
+                  startDate: startDate?.format("YYYY-MM-DD"),
+                  endDate: endDate?.format("YYYY-MM-DD"),
                 },
-              ]
-            : []),
+              ]),
         ],
         dimensionFilter: {
           filter: {
@@ -223,21 +206,14 @@ export const generateReportRequests = (
           },
         ],
         dateRanges: [
-          {
-            startDate: startDate?.format("YYYY-MM-DD"),
-            endDate: endDate?.format("YYYY-MM-DD"),
-          },
           ...(withPrior
-            ? [
+            ? generateDateRangesForReport(startDate, endDate)
+            : [
                 {
-                  startDate: startDate
-                    ?.clone()
-                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                    ?.format("YYYY-MM-DD"),
-                  endDate: startDate?.format("YYYY-MM-DD"),
+                  startDate: startDate?.format("YYYY-MM-DD"),
+                  endDate: endDate?.format("YYYY-MM-DD"),
                 },
-              ]
-            : []),
+              ]),
         ],
         dimensionFilter: {
           filter: {
@@ -281,21 +257,14 @@ export const generateReportRequests = (
           },
         ],
         dateRanges: [
-          {
-            startDate: startDate?.format("YYYY-MM-DD"),
-            endDate: endDate?.format("YYYY-MM-DD"),
-          },
           ...(withPrior
-            ? [
+            ? generateDateRangesForReport(startDate, endDate)
+            : [
                 {
-                  startDate: startDate
-                    ?.clone()
-                    ?.subtract(endDate.diff(startDate, "days") || 1, "days")
-                    ?.format("YYYY-MM-DD"),
-                  endDate: startDate?.format("YYYY-MM-DD"),
+                  startDate: startDate?.format("YYYY-MM-DD"),
+                  endDate: endDate?.format("YYYY-MM-DD"),
                 },
-              ]
-            : []),
+              ]),
         ],
         dimensionFilter: {
           filter: {
@@ -316,4 +285,126 @@ export const generateReportRequests = (
       },
     ],
   };
+};
+
+export const getDateRangeAndLabelsFromParams = (
+  params: URLSearchParams
+): [Moment, Moment, string, string] => {
+  const preset = params.get("datePreset");
+  const from = params.get("from");
+  const to = params.get("to");
+  if (from && to) {
+    return [
+      moment(from, "YYYY-MM-DD"),
+      moment(to, "YYYY-MM-DD"),
+      moment(from).format("ddd D MMM"),
+      moment(to).format("ddd D MMM"),
+    ];
+  } else {
+    switch (preset) {
+      case "today":
+        return [moment(), moment(), "Today", "Yesterday"];
+      case "yesterday":
+        return [
+          moment().subtract(1, "days"),
+          moment().subtract(1, "days"),
+          "Yesterday",
+          "Day Before Yesterday",
+        ];
+      case "last_7_days":
+        return [
+          moment().subtract(7, "days"),
+          moment().subtract(1, "days"),
+          "Last 7 Days",
+          "Prior 7 Days",
+        ];
+      case "last_14_days":
+        return [
+          moment().subtract(14, "days"),
+          moment().subtract(1, "days"),
+          "Last 14 Days",
+          "Prior 14 Days",
+        ];
+      case "last_30_days":
+        return [
+          moment().subtract(30, "days"),
+          moment().subtract(1, "days"),
+          "Last 30 Days",
+          "Prior 30 Days",
+        ];
+      case "last_3_months":
+        return [
+          moment().subtract(90, "days"),
+          moment().subtract(1, "days"),
+          "Last 3 Months",
+          "Prior 3 Months",
+        ];
+      case "last_12_months":
+        return [
+          moment().subtract(365, "days"),
+          moment().subtract(1, "days"),
+          "Last 12 Months",
+          "Prior 12 Months",
+        ];
+      case "this_week":
+        return [
+          moment().startOf("week"),
+          moment().subtract(1, "days"),
+          "This Week",
+          "Last Week",
+        ];
+      case "this_year":
+        return [
+          moment().startOf("year"),
+          moment().subtract(1, "days"),
+          "This Year",
+          "Last Year",
+        ];
+      case "quarter_to_date":
+        return [
+          moment().startOf("quarter"),
+          moment().subtract(1, "days"),
+          "This Quarter",
+          "Last Quarter",
+        ];
+      default:
+        return [
+          moment().subtract(14, "days"),
+          moment().subtract(1, "days"),
+          "Last 14 Days",
+          "Prior 14 Days",
+        ];
+    }
+  }
+};
+
+export const generateDateRangesForReport = (
+  startDate: Moment,
+  endDate: Moment
+) => {
+  return [
+    {
+      startDate: startDate?.format("YYYY-MM-DD"),
+      endDate: endDate?.format("YYYY-MM-DD"),
+    },
+    {
+      startDate: startDate
+        ?.clone()
+        ?.subtract(endDate.diff(startDate, "days") + 1 || 1, "days")
+        ?.format("YYYY-MM-DD"),
+      endDate: startDate?.clone?.()?.subtract(1, "days")?.format("YYYY-MM-DD"),
+    },
+  ];
+};
+
+export const padArray = (
+  arr: any[],
+  desiredLength: number,
+  padValue = 0
+): any[] => {
+  let newArr = [...arr]; // create a copy of the array
+  while (newArr.length < desiredLength) {
+    newArr.unshift(padValue);
+  }
+  return newArr;
 };

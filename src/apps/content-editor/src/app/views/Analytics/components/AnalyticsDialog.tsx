@@ -6,7 +6,7 @@ import {
   DialogActions,
   Typography,
 } from "@mui/material";
-import googleAnalyticsIcon from "../../../../../../../../../public/images/googleAnalyticsIcon.svg";
+import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
 
 type Props = {
   title: string;

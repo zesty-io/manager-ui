@@ -5,7 +5,7 @@ import { ChartEvent } from "chart.js";
 import { Box, Paper, Typography, Skeleton } from "@mui/material";
 import { isEqual } from "lodash";
 import { numberFormatter } from "../../../../../../../../utility/numberFormatter";
-import { findValuesForDimensions } from "../utils";
+import { findValuesForDimensions } from "../../utils";
 
 export const UsersDoughnutChart = ({
   data,
