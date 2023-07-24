@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useMemo, useEffect } from "react";
 import {
   Stack,
   Typography,
@@ -138,8 +138,8 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
       // Sort nav by user defined value
       filteredNavData = filteredNavData.sort((a, b) => a?.sort - b?.sort);
 
-      // Set path and icon
-      filteredNavData = filteredNavData.map((navItem) => {
+      // Set path and icon, and initiate empty children array
+      const mappedTree: TreeItem[] = filteredNavData.map((navItem) => {
         let path = "";
 
         switch (navItem.type) {
@@ -164,10 +164,41 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
               ? ICONS["homepage"]
               : ICONS[navItem.type],
           path,
+          children: [],
         };
       });
 
-      console.log(filteredNavData);
+      // Convert nav item array to zuid:treeItem map
+      const zuidTreeItemMap = mappedTree.reduce(
+        (acc: { [key: string]: TreeItem }, curr) => {
+          // exclude dashboard widgets
+          if (curr.label?.toLowerCase() === "dashboard widgets") {
+            return acc;
+          }
+
+          acc[curr.ZUID] = { ...curr };
+
+          return acc;
+        },
+        {}
+      );
+
+      const tree: TreeItem[] = [];
+
+      // Place children inside their respective parents
+      Object.values(zuidTreeItemMap).forEach((item) => {
+        if (!!item.parentZUID && !!zuidTreeItemMap[item.parentZUID]) {
+          zuidTreeItemMap[item.parentZUID].children.push(item);
+        } else {
+          tree.push(item);
+        }
+      });
+
+      const nav: TreeItem[] = [];
+      const headless: TreeItem[] = [];
+      const hidden: TreeItem[] = [];
+
+      console.log("new", tree.length);
     }
 
     return {
@@ -278,6 +309,10 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
       };
     });
   }, [navData]);
+
+  useEffect(() => {
+    // TODO: Add notify handling here
+  }, [navItemsFailed, currentUserRolesFailed]);
 
   return (
     <AppSideBar

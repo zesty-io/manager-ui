@@ -5,20 +5,16 @@ import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { MenuListDropDown } from "@zesty-io/material";
 
 import { NavTreeItem } from "./components/NavTreeItem";
+import { ContentNavItem } from "../../services/types";
 
-export interface TreeItem {
-  type: string;
+export type TreeItem = {
   icon: any;
-  ZUID: string;
   children: TreeItem[];
-  contentModelZUID: string;
-  label: string;
   path: string;
-  sort: number;
   hidden?: boolean;
   closed?: boolean;
   actions?: JSX.Element[];
-}
+} & ContentNavItem;
 
 interface Props {
   HeaderComponent: React.ReactNode;
