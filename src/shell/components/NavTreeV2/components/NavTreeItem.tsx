@@ -65,7 +65,12 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
             alignItems="center"
             gap={0.5}
             className="treeActions"
-            width="44px"
+            // calculate width based on number of actions + padding between each action
+            width={
+              !isNaN(actions?.length)
+                ? actions?.length * 20 + (actions?.length - 1) * 4
+                : 0
+            }
           >
             {actions?.map((action) => {
               return action;
