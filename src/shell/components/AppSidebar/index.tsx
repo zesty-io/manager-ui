@@ -12,6 +12,7 @@ import {
   Typography,
   PaletteMode,
   CssBaseline,
+  ScopedCssBaseline,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { darkTheme, theme } from "@zesty-io/material";
@@ -38,7 +39,6 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
         return {
           scrollDown() {
             const div = childrenContainerRef.current;
-            console.log(div?.scrollHeight);
             div.scrollTop = div?.scrollHeight;
           },
         };
@@ -50,7 +50,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
 
     return (
       <ThemeProvider theme={themeMode}>
-        <CssBaseline>
+        <ScopedCssBaseline component={Box} sx={{ height: "inherit" }}>
           <Stack
             sx={{
               backgroundColor: isLightMode ? "common.white" : "grey.900",
@@ -84,7 +84,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
               {children}
             </Box>
           </Stack>
-        </CssBaseline>
+        </ScopedCssBaseline>
       </ThemeProvider>
     );
   }
