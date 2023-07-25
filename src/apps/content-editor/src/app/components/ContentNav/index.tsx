@@ -31,19 +31,16 @@ import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBullete
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import HomeIcon from "@mui/icons-material/Home";
 import { FileTable } from "@zesty-io/material";
-import DocumentScannerRounded from "@mui/icons-material/DocumentScannerRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import { MenuListDropDown } from "@zesty-io/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
-import { Nav } from "../../../../../../shell/components/NavTree";
 import {
   NavTree,
   TreeItem,
 } from "../../../../../../shell/components/NavTreeV2";
-import { modelIconMap } from "../../../../../schema/src/app/utils";
 import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
 import { useGetContentNavItemsQuery } from "../../../../../../shell/services/instance";
 
@@ -384,6 +381,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
       <NavTree
         tree={navTree.nav}
         expandedItems={expandedNavItems}
+        selected={location.pathname}
         HeaderComponent={
           <Stack
             direction="row"
@@ -436,6 +434,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
       <NavTree
         tree={navTree.headless}
         expandedItems={expandedNavItems}
+        selected={location.pathname}
         HeaderComponent={
           <Stack
             direction="row"
@@ -527,7 +526,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
             p: 0,
           }}
         >
-          <NavTree tree={navTree.hidden} />
+          <NavTree tree={navTree.hidden} selected={location.pathname} />
         </AccordionDetails>
       </Accordion>
     </AppSideBar>

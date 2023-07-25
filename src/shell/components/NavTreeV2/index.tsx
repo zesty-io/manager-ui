@@ -1,8 +1,7 @@
 import React, { FC } from "react";
 import { TreeView } from "@mui/lab";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { MenuListDropDown } from "@zesty-io/material";
+import { useHistory } from "react-router-dom";
 
 import { NavTreeItem } from "./components/NavTreeItem";
 import { ContentNavItem } from "../../services/types";
@@ -17,25 +16,32 @@ export type TreeItem = {
 interface Props {
   HeaderComponent?: React.ReactNode;
   tree: TreeItem[];
+  selected: string;
   expandedItems?: string[];
 }
 export const NavTree: FC<Readonly<Props>> = ({
   HeaderComponent,
   tree,
+  selected,
   expandedItems,
 }) => {
+  const history = useHistory();
+
   return (
     <>
       {HeaderComponent}
       <TreeView
         // expanded={expandedItems}
+        selected={selected}
         defaultCollapseIcon={<MenuListDropDown />}
         defaultExpandIcon={
           <MenuListDropDown sx={{ transform: "rotate(-90deg)" }} />
         }
-        onNodeSelect={(evt: any, nodeIds: string[]) =>
-          console.log("node selected", evt, nodeIds)
-        }
+        onNodeSelect={(evt: any, nodeIds: string) => {
+          if (evt.target.tagName !== "svg") {
+            history.push(nodeIds);
+          }
+        }}
         onNodeToggle={(evt, nodeIds) => {
           console.log(evt, nodeIds);
         }}
@@ -43,9 +49,9 @@ export const NavTree: FC<Readonly<Props>> = ({
         {tree?.map((item) => {
           return (
             <NavTreeItem
-              key={item.ZUID}
+              key={item.path}
               labelName={item.label}
-              nodeId={item.ZUID}
+              nodeId={item.path}
               labelIcon={item.icon}
               onHideItem={() => {}}
               onAddContent={() => {}}

@@ -125,9 +125,9 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
         nestedItems?.map((item) => {
           return (
             <NavTreeItem
-              key={item.ZUID}
+              key={item.path}
               labelName={item.label}
-              nodeId={item.ZUID}
+              nodeId={item.path}
               labelIcon={item.icon}
               onHideItem={() => {}}
               onAddContent={() => {}}
