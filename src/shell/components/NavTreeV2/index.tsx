@@ -15,7 +15,7 @@ export type TreeItem = {
 } & ContentNavItem;
 
 interface Props {
-  HeaderComponent: React.ReactNode;
+  HeaderComponent?: React.ReactNode;
   tree: TreeItem[];
   expandedItems?: string[];
 }

@@ -13,7 +13,9 @@ import {
   SvgIcon,
   Tooltip,
   IconButton,
-  Box,
+  AccordionSummary,
+  AccordionDetails,
+  Accordion,
 } from "@mui/material";
 import {
   SvgIconComponent,
@@ -31,6 +33,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { FileTable } from "@zesty-io/material";
 import DocumentScannerRounded from "@mui/icons-material/DocumentScannerRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import { MenuListDropDown } from "@zesty-io/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 
@@ -346,6 +349,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
                   disablePadding
                   selected={isActive}
                   sx={{
+                    color: "text.secondary",
                     borderLeft: isActive ? "2px solid" : "none",
                     borderColor: "primary.main",
                   }}
@@ -429,6 +433,103 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
           </Stack>
         }
       />
+      <NavTree
+        tree={navTree.headless}
+        expandedItems={expandedNavItems}
+        HeaderComponent={
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            px={1.5}
+            py={1.5}
+            sx={{
+              color: "text.secondary",
+            }}
+          >
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <Typography variant="body2" textTransform="uppercase">
+                Datasets
+              </Typography>
+              <Tooltip
+                placement="right-start"
+                title="Datasets listed here do not have a parent content item and do not have URLs for the content items."
+              >
+                <InfoRoundedIcon
+                  sx={{ width: 12, height: 12, color: "action.active" }}
+                />
+              </Tooltip>
+            </Stack>
+            <IconButton
+              sx={{
+                width: 20,
+                height: 20,
+                padding: 0.25,
+                borderRadius: 0.5,
+              }}
+            >
+              <AddRoundedIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Stack>
+        }
+      />
+      <Accordion
+        elevation={0}
+        sx={{
+          mt: 1.5,
+          "&.Mui-expanded": {
+            mt: 1.5,
+          },
+          "&:before": {
+            display: "none",
+          },
+          "&.MuiPaper-root": {
+            backgroundColor: "transparent",
+            backgroundImage: "none",
+          },
+        }}
+      >
+        <AccordionSummary
+          expandIcon={<MenuListDropDown sx={{ fontSize: "20px" }} />}
+          sx={{
+            "&.MuiButtonBase-root": {
+              minHeight: 20,
+              m: 0,
+              "&.Mui-expanded": {
+                height: 20,
+              },
+            },
+            "& .MuiAccordionSummary-content": {
+              m: 0,
+              "&.Mui-expanded": {
+                m: 0,
+              },
+            },
+            "& .MuiAccordionSummary-expandIconWrapper": {
+              transform: "rotate(-90deg)",
+              "&.Mui-expanded": {
+                transform: "rotate(0deg)",
+              },
+            },
+          }}
+        >
+          <Typography
+            variant="body2"
+            textTransform="uppercase"
+            color="text.secondary"
+          >
+            Hidden Items
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails
+          sx={{
+            mt: 1.5,
+            p: 0,
+          }}
+        >
+          <NavTree tree={navTree.hidden} />
+        </AccordionDetails>
+      </Accordion>
     </AppSideBar>
   );
 };
