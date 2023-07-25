@@ -18,12 +18,14 @@ interface Props {
   tree: TreeItem[];
   selected: string;
   expandedItems?: string[];
+  onToggleCollapse: (paths: string[]) => void;
 }
 export const NavTree: FC<Readonly<Props>> = ({
   HeaderComponent,
   tree,
   selected,
   expandedItems,
+  onToggleCollapse,
 }) => {
   const history = useHistory();
 
@@ -31,19 +33,21 @@ export const NavTree: FC<Readonly<Props>> = ({
     <>
       {HeaderComponent}
       <TreeView
-        // expanded={expandedItems}
+        expanded={expandedItems}
         selected={selected}
         defaultCollapseIcon={<MenuListDropDown />}
         defaultExpandIcon={
           <MenuListDropDown sx={{ transform: "rotate(-90deg)" }} />
         }
         onNodeSelect={(evt: any, nodeIds: string) => {
-          if (evt.target.tagName !== "svg") {
+          if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
             history.push(nodeIds);
           }
         }}
-        onNodeToggle={(evt, nodeIds) => {
-          console.log(evt, nodeIds);
+        onNodeToggle={(evt: any, nodeIds: string[]) => {
+          if (evt.target.tagName === "svg" || evt.target.tagName === "path") {
+            onToggleCollapse(nodeIds);
+          }
         }}
       >
         {tree?.map((item) => {

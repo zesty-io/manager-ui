@@ -76,18 +76,29 @@ const ICONS: Record<string, SvgIconComponent> = {
   homepage: HomeIcon,
 } as const;
 
-interface Props {
-  navData: NavData;
-}
-export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
+export const ContentNav = () => {
   const location = useLocation();
   const history = useHistory();
   const { data: currentUserRoles, isError: currentUserRolesFailed } =
     useGetCurrentUserRolesQuery();
   const { data: rawNavData, isError: navItemsFailed } =
     useGetContentNavItemsQuery();
-  const [expandedNavItems] = useLocalStorage("zesty:navContent:open", []);
-  const [hiddenNavItems] = useLocalStorage("zesty:navContent:hidden", []);
+  const [expandedPageItems, setExpandedPageItems] = useLocalStorage(
+    "zesty:navContentPages:open",
+    []
+  );
+  const [expandedDatasetItems, setExpandedDatasetItems] = useLocalStorage(
+    "zesty:navContentDatasets:open",
+    []
+  );
+  const [expandedHiddenItems, setExpandedHiddenItems] = useLocalStorage(
+    "zesty:navContentHiddenItems:open",
+    []
+  );
+  const [hiddenNavItems, setHiddenNavItems] = useLocalStorage(
+    "zesty:navContent:hidden",
+    []
+  );
 
   const hiddenZUIDs = useMemo(() => {
     if (!!hiddenNavItems?.length) {
@@ -380,8 +391,9 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
     >
       <NavTree
         tree={navTree.nav}
-        expandedItems={expandedNavItems}
+        expandedItems={expandedPageItems}
         selected={location.pathname}
+        onToggleCollapse={(paths) => setExpandedPageItems(paths)}
         HeaderComponent={
           <Stack
             direction="row"
@@ -433,8 +445,9 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
       />
       <NavTree
         tree={navTree.headless}
-        expandedItems={expandedNavItems}
+        expandedItems={expandedDatasetItems}
         selected={location.pathname}
+        onToggleCollapse={(paths) => setExpandedDatasetItems(paths)}
         HeaderComponent={
           <Stack
             direction="row"
@@ -526,7 +539,12 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
             p: 0,
           }}
         >
-          <NavTree tree={navTree.hidden} selected={location.pathname} />
+          <NavTree
+            tree={navTree.hidden}
+            selected={location.pathname}
+            expandedItems={expandedHiddenItems}
+            onToggleCollapse={(paths) => setExpandedHiddenItems(paths)}
+          />
         </AccordionDetails>
       </Accordion>
     </AppSideBar>
