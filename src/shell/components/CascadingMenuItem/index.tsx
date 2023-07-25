@@ -7,7 +7,7 @@ import {
   Paper,
   PaperProps,
 } from "@mui/material";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 
 type CascadingMenuItemProps = MenuItemProps & {
   MenuItemComponent: React.ReactNode;

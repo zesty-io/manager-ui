@@ -1,7 +1,7 @@
 import { FC, useMemo, useEffect } from "react";
 import { Typography, Box, Stack, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import moment from "moment-timezone";
 import { cloneDeep, isEmpty } from "lodash";
 import { useSelector } from "react-redux";

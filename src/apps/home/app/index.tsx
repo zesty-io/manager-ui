@@ -1,5 +1,5 @@
 import { Box, ThemeProvider, CircularProgress } from "@mui/material";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import { useState } from "react";
 import moment from "moment";
 import { useSelector } from "react-redux";

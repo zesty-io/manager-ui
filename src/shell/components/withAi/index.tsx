@@ -1,5 +1,5 @@
 import { Popover, IconButton } from "@mui/material";
-import { Brain, lightTheme as theme } from "@zesty-io/material";
+import { Brain, theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { ComponentType, MouseEvent, useState } from "react";
 import { AIGenerator } from "./AIGenerator";

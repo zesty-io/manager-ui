@@ -1,4 +1,4 @@
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import { useRef, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { ChartEvent } from "chart.js";

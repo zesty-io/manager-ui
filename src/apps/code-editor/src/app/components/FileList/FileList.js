@@ -6,7 +6,7 @@ import { Nav } from "@zesty-io/core/Nav";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import { Box } from "@mui/material";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 
 import { CreateFile } from "./components/CreateFile";
 import { OrderFiles } from "./components/OrderFiles";

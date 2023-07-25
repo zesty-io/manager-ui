@@ -1,5 +1,5 @@
 import { useHistory, useLocation } from "react-router";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import {
   Box,
   ListItem,

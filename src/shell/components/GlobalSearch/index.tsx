@@ -18,7 +18,7 @@ import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import { isEmpty } from "lodash";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
 import { useSearchContentQuery } from "../../services/instance";

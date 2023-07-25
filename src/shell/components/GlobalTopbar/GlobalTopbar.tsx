@@ -2,7 +2,7 @@ import { GlobalSearch } from "../GlobalSearch";
 import GlobalTabs from "../global-tabs";
 import { GlobalNotifications } from "../global-notifications";
 
-import { lightTheme as theme, legacyTheme } from "@zesty-io/material";
+import { theme, legacyTheme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";

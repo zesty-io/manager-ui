@@ -1,4 +1,4 @@
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import { useRef, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";

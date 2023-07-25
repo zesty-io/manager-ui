@@ -1,5 +1,5 @@
 import { Box, ThemeProvider } from "@mui/material";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import { Sidebar } from "./components/Sidebar";
 import { Redirect, Route, Switch } from "react-router";
 import { Model } from "./views/Model";

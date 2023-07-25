@@ -15,7 +15,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
 import Favicon from "../favicon";

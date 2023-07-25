@@ -1,5 +1,5 @@
 import { Box, ThemeProvider } from "@mui/material";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Redirect, Route, Switch, useHistory } from "react-router";

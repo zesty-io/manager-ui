@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import { cloneDeep } from "lodash";
 
 import { FilterButton } from "./FilterButton";

@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Box } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import zestyLogo from "../../../public/images/zestyLogo.svg";
 
 export const Staging: FC = (props) => {

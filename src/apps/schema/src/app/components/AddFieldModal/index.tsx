@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useLocation } from "react-router";
 import { Dialog } from "@mui/material";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";

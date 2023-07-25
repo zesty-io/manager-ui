@@ -177,6 +177,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
             onClick={(e) => {
               e.stopPropagation();
               // onHideItem(nodeId);
+              console.log("hide: ", navItem.ZUID);
             }}
           >
             <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
@@ -201,6 +202,7 @@ export const ContentNav: FC<Readonly<Props>> = ({ navData }) => {
               onClick={(e) => {
                 e.stopPropagation();
                 // onAddContent(nodeId);
+                console.log("add new item: ", navItem.ZUID);
               }}
             >
               <AddRoundedIcon sx={{ fontSize: 16 }} />

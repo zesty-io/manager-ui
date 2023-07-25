@@ -12,7 +12,7 @@ import {
   DialogActions,
   CircularProgress,
 } from "@mui/material";
-import { lightTheme as theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import winnerPanel from "../../../../../../public/images/winnerPanel.svg";
