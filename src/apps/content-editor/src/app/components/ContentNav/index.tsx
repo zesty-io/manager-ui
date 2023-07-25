@@ -1,4 +1,4 @@
-import { FC, useMemo, useEffect } from "react";
+import { FC, useMemo, useEffect, useState } from "react";
 import {
   Stack,
   Typography,
@@ -16,6 +16,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Accordion,
+  Box,
 } from "@mui/material";
 import {
   SvgIconComponent,
@@ -43,6 +44,7 @@ import {
 } from "../../../../../../shell/components/NavTreeV2";
 import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
 import { useGetContentNavItemsQuery } from "../../../../../../shell/services/instance";
+import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 
 interface NavData {
   nav: TreeItem[];
@@ -79,6 +81,7 @@ const ICONS: Record<string, SvgIconComponent> = {
 export const ContentNav = () => {
   const location = useLocation();
   const history = useHistory();
+  const [keyword, setKeyword] = useState("");
   const { data: currentUserRoles, isError: currentUserRolesFailed } =
     useGetCurrentUserRolesQuery();
   const { data: rawNavData, isError: navItemsFailed } =
@@ -143,6 +146,12 @@ export const ContentNav = () => {
   const navTree: NavData = useMemo(() => {
     if (!!rawNavData?.length) {
       let filteredNavData = [...rawNavData];
+
+      if (!!keyword) {
+        filteredNavData = filteredNavData.filter((navItem) => {
+          return navItem.label.toLowerCase().includes(keyword.toLowerCase());
+        });
+      }
 
       if (!!granularRoles?.length) {
         // Filter nav based on user's granular role access
@@ -290,11 +299,17 @@ export const ContentNav = () => {
       headless: [],
       hidden: [],
     };
-  }, [granularRoles, rawNavData]);
+  }, [granularRoles, rawNavData, keyword]);
 
   useEffect(() => {
     // TODO: Add notify handling here
   }, [navItemsFailed, currentUserRolesFailed]);
+
+  const noMatchedItems =
+    !navTree.nav.length &&
+    !navTree.headless.length &&
+    !navTree.hidden.length &&
+    !!keyword;
 
   return (
     <AppSideBar
@@ -346,207 +361,226 @@ export const ContentNav = () => {
             sx={{
               px: 1.5,
             }}
+            onChange={(evt) => setKeyword(evt.target.value)}
           />
-          <List disablePadding>
-            {SUB_MENUS.map((menu) => {
-              const isActive = location.pathname === menu.path;
+          {!noMatchedItems && (
+            <List disablePadding>
+              {SUB_MENUS.map((menu) => {
+                const isActive = location.pathname === menu.path;
 
-              return (
-                <ListItem
-                  key={menu.name}
-                  disablePadding
-                  selected={isActive}
-                  sx={{
-                    color: "text.secondary",
-                    borderLeft: isActive ? "2px solid" : "none",
-                    borderColor: "primary.main",
-                  }}
-                >
-                  <ListItemButton
+                return (
+                  <ListItem
+                    key={menu.name}
+                    disablePadding
+                    selected={isActive}
                     sx={{
-                      height: 36,
-                      pl: isActive ? 1.25 : 1.5,
-                      pr: 1.5,
-                      py: 0.75,
+                      color: "text.secondary",
+                      borderLeft: isActive ? "2px solid" : "none",
+                      borderColor: "primary.main",
                     }}
-                    onClick={() => history.push(menu.path)}
                   >
-                    <ListItemIcon sx={{ minWidth: 32 }}>
-                      <SvgIcon component={menu.icon} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={menu.name}
-                      primaryTypographyProps={{
-                        variant: "body3",
-                        fontWeight: 600,
+                    <ListItemButton
+                      sx={{
+                        height: 36,
+                        pl: isActive ? 1.25 : 1.5,
+                        pr: 1.5,
+                        py: 0.75,
                       }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
+                      onClick={() => history.push(menu.path)}
+                    >
+                      <ListItemIcon sx={{ minWidth: 32 }}>
+                        <SvgIcon component={menu.icon} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={menu.name}
+                        primaryTypographyProps={{
+                          variant: "body3",
+                          fontWeight: 600,
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
+          )}
         </Stack>
       }
     >
-      <NavTree
-        tree={navTree.nav}
-        expandedItems={expandedPageItems}
-        selected={location.pathname}
-        onToggleCollapse={(paths) => setExpandedPageItems(paths)}
-        HeaderComponent={
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            px={1.5}
-            pb={1.5}
-            sx={{
-              color: "text.secondary",
-            }}
-          >
-            <Stack direction="row" alignItems="center" gap={0.5}>
-              <Typography variant="body2" textTransform="uppercase">
-                Pages
-              </Typography>
-              <Tooltip
-                placement="right-start"
-                title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
-              >
-                <InfoRoundedIcon
-                  sx={{ width: 12, height: 12, color: "action.active" }}
-                />
-              </Tooltip>
-            </Stack>
-            <Stack direction="row" gap={1}>
-              <IconButton
+      {noMatchedItems ? (
+        <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
+          <img
+            src={noSearchResults}
+            alt="No search results"
+            width="70px"
+            height="64px"
+          />
+          <Typography color="text.secondary" variant="body2">
+            No results available for "{keyword}"
+          </Typography>
+        </Stack>
+      ) : (
+        <>
+          <NavTree
+            tree={navTree.nav}
+            expandedItems={expandedPageItems}
+            selected={location.pathname}
+            onToggleCollapse={(paths) => setExpandedPageItems(paths)}
+            HeaderComponent={
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                px={1.5}
+                pb={1.5}
                 sx={{
-                  width: 20,
-                  height: 20,
-                  padding: 0.25,
-                  borderRadius: 0.5,
+                  color: "text.secondary",
                 }}
               >
-                <ReorderRoundedIcon sx={{ fontSize: 16 }} />
-              </IconButton>
-              <IconButton
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  <Typography variant="body2" textTransform="uppercase">
+                    Pages
+                  </Typography>
+                  <Tooltip
+                    placement="right-start"
+                    title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
+                  >
+                    <InfoRoundedIcon
+                      sx={{ width: 12, height: 12, color: "action.active" }}
+                    />
+                  </Tooltip>
+                </Stack>
+                <Stack direction="row" gap={1}>
+                  <IconButton
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      padding: 0.25,
+                      borderRadius: 0.5,
+                    }}
+                  >
+                    <ReorderRoundedIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                  <IconButton
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      padding: 0.25,
+                      borderRadius: 0.5,
+                    }}
+                  >
+                    <AddRoundedIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Stack>
+              </Stack>
+            }
+          />
+          <NavTree
+            tree={navTree.headless}
+            expandedItems={expandedDatasetItems}
+            selected={location.pathname}
+            onToggleCollapse={(paths) => setExpandedDatasetItems(paths)}
+            HeaderComponent={
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                px={1.5}
+                py={1.5}
                 sx={{
-                  width: 20,
-                  height: 20,
-                  padding: 0.25,
-                  borderRadius: 0.5,
+                  color: "text.secondary",
                 }}
               >
-                <AddRoundedIcon sx={{ fontSize: 16 }} />
-              </IconButton>
-            </Stack>
-          </Stack>
-        }
-      />
-      <NavTree
-        tree={navTree.headless}
-        expandedItems={expandedDatasetItems}
-        selected={location.pathname}
-        onToggleCollapse={(paths) => setExpandedDatasetItems(paths)}
-        HeaderComponent={
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            px={1.5}
-            py={1.5}
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  <Typography variant="body2" textTransform="uppercase">
+                    Datasets
+                  </Typography>
+                  <Tooltip
+                    placement="right-start"
+                    title="Datasets listed here do not have a parent content item and do not have URLs for the content items."
+                  >
+                    <InfoRoundedIcon
+                      sx={{ width: 12, height: 12, color: "action.active" }}
+                    />
+                  </Tooltip>
+                </Stack>
+                <IconButton
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    padding: 0.25,
+                    borderRadius: 0.5,
+                  }}
+                >
+                  <AddRoundedIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Stack>
+            }
+          />
+          <Accordion
+            elevation={0}
             sx={{
-              color: "text.secondary",
+              mt: 1.5,
+              "&.Mui-expanded": {
+                mt: 1.5,
+              },
+              "&:before": {
+                display: "none",
+              },
+              "&.MuiPaper-root": {
+                backgroundColor: "transparent",
+                backgroundImage: "none",
+              },
             }}
           >
-            <Stack direction="row" alignItems="center" gap={0.5}>
-              <Typography variant="body2" textTransform="uppercase">
-                Datasets
-              </Typography>
-              <Tooltip
-                placement="right-start"
-                title="Datasets listed here do not have a parent content item and do not have URLs for the content items."
-              >
-                <InfoRoundedIcon
-                  sx={{ width: 12, height: 12, color: "action.active" }}
-                />
-              </Tooltip>
-            </Stack>
-            <IconButton
+            <AccordionSummary
+              expandIcon={<MenuListDropDown sx={{ fontSize: "20px" }} />}
               sx={{
-                width: 20,
-                height: 20,
-                padding: 0.25,
-                borderRadius: 0.5,
+                "&.MuiButtonBase-root": {
+                  minHeight: 20,
+                  m: 0,
+                  "&.Mui-expanded": {
+                    height: 20,
+                  },
+                },
+                "& .MuiAccordionSummary-content": {
+                  m: 0,
+                  "&.Mui-expanded": {
+                    m: 0,
+                  },
+                },
+                "& .MuiAccordionSummary-expandIconWrapper": {
+                  transform: "rotate(-90deg)",
+                  "&.Mui-expanded": {
+                    transform: "rotate(0deg)",
+                  },
+                },
               }}
             >
-              <AddRoundedIcon sx={{ fontSize: 16 }} />
-            </IconButton>
-          </Stack>
-        }
-      />
-      <Accordion
-        elevation={0}
-        sx={{
-          mt: 1.5,
-          "&.Mui-expanded": {
-            mt: 1.5,
-          },
-          "&:before": {
-            display: "none",
-          },
-          "&.MuiPaper-root": {
-            backgroundColor: "transparent",
-            backgroundImage: "none",
-          },
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<MenuListDropDown sx={{ fontSize: "20px" }} />}
-          sx={{
-            "&.MuiButtonBase-root": {
-              minHeight: 20,
-              m: 0,
-              "&.Mui-expanded": {
-                height: 20,
-              },
-            },
-            "& .MuiAccordionSummary-content": {
-              m: 0,
-              "&.Mui-expanded": {
-                m: 0,
-              },
-            },
-            "& .MuiAccordionSummary-expandIconWrapper": {
-              transform: "rotate(-90deg)",
-              "&.Mui-expanded": {
-                transform: "rotate(0deg)",
-              },
-            },
-          }}
-        >
-          <Typography
-            variant="body2"
-            textTransform="uppercase"
-            color="text.secondary"
-          >
-            Hidden Items
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails
-          sx={{
-            mt: 1.5,
-            p: 0,
-          }}
-        >
-          <NavTree
-            tree={navTree.hidden}
-            selected={location.pathname}
-            expandedItems={expandedHiddenItems}
-            onToggleCollapse={(paths) => setExpandedHiddenItems(paths)}
-          />
-        </AccordionDetails>
-      </Accordion>
+              <Typography
+                variant="body2"
+                textTransform="uppercase"
+                color="text.secondary"
+              >
+                Hidden Items
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              sx={{
+                mt: 1.5,
+                p: 0,
+              }}
+            >
+              <NavTree
+                tree={navTree.hidden}
+                selected={location.pathname}
+                expandedItems={expandedHiddenItems}
+                onToggleCollapse={(paths) => setExpandedHiddenItems(paths)}
+              />
+            </AccordionDetails>
+          </Accordion>
+        </>
+      )}
     </AppSideBar>
   );
 };
