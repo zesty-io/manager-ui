@@ -1,4 +1,4 @@
-import { FC, useMemo, useEffect, useState } from "react";
+import { useRef, useMemo, useEffect, useState } from "react";
 import {
   Stack,
   Typography,
@@ -81,6 +81,7 @@ const ICONS: Record<string, SvgIconComponent> = {
 export const ContentNav = () => {
   const location = useLocation();
   const history = useHistory();
+  const sideBarChildrenContainerRef = useRef(null);
   const [keyword, setKeyword] = useState("");
   const { data: currentUserRoles, isError: currentUserRolesFailed } =
     useGetCurrentUserRolesQuery();
@@ -315,6 +316,7 @@ export const ContentNav = () => {
     <AppSideBar
       data-cy="contentNav"
       mode="dark"
+      ref={sideBarChildrenContainerRef}
       HeaderSubComponent={
         <Stack gap={1.5}>
           <Stack
@@ -519,6 +521,11 @@ export const ContentNav = () => {
           />
           <Accordion
             elevation={0}
+            onChange={() => {
+              setTimeout(() => {
+                sideBarChildrenContainerRef.current?.scrollDown();
+              }, 300);
+            }}
             sx={{
               mt: 1.5,
               "&.Mui-expanded": {
@@ -538,7 +545,7 @@ export const ContentNav = () => {
               sx={{
                 "&.MuiButtonBase-root": {
                   minHeight: 20,
-                  m: 0,
+                  mb: 1.5,
                   "&.Mui-expanded": {
                     height: 20,
                   },
@@ -567,7 +574,6 @@ export const ContentNav = () => {
             </AccordionSummary>
             <AccordionDetails
               sx={{
-                mt: 1.5,
                 p: 0,
               }}
             >
