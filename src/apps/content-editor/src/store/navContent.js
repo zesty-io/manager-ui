@@ -140,13 +140,6 @@ export function fetchNav() {
               } else {
                 node.path = `/content/${node.ZUID}`;
               }
-
-              // Set Icon
-              if (node.label.toLowerCase() === "homepage") {
-                node.icon = ICONS["homepage"];
-              } else {
-                node.icon = ICONS[node.type];
-              }
             });
 
             dispatch({
@@ -253,7 +246,13 @@ function buildTree(nodes) {
       return acc;
     }
 
-    acc[node.ZUID] = { ...node };
+    //Set Icon
+    const icon =
+      node.label.toLowerCase() === "homepage"
+        ? ICONS["homepage"]
+        : ICONS[node.type];
+
+    acc[node.ZUID] = { ...node, icon };
 
     // Setup container for children nodes
     acc[node.ZUID].children = [];

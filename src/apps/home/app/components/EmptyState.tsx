@@ -4,7 +4,7 @@ import AddIcon from "@mui/icons-material/Add";
 import growInstance from "../../../../../public/images/growInstance.svg";
 import { useHistory } from "react-router";
 import { useState } from "react";
-import { CreateContentItemDialog } from "./CreateContentItemDialog";
+import { CreateContentItemDialog } from "../../../../shell/components/CreateContentItemDialog";
 
 export const EmptyState = () => {
   const history = useHistory();

@@ -53,22 +53,24 @@ export const instanceApi = createApi({
       query: ({ modelZUID, itemZUID }) =>
         `content/models/${modelZUID}/items/${itemZUID}/publishings`,
       transformResponse: getResponseData,
-      keepUnusedDataFor: 0.0001,
+      keepUnusedDataFor: 0,
       providesTags: (result, error, id) => [
         { type: "ItemPublishing", id: id.itemZUID },
       ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/items/publishings/#Get-All-Items-Publishings
     getAllPublishings: builder.query<Publishing[], void>({
-      query: () => ({
+      query: (params) => ({
         url: `content/items/publishings`,
         params: {
           limit: 10000,
+          order: "created",
+          dir: "DESC",
         },
       }),
       transformResponse: getResponseData,
       // TODO: Remove once all item publishing mutations are using rtk query
-      keepUnusedDataFor: 0.0001,
+      keepUnusedDataFor: 0,
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Delete-Item-Publishing
     deleteItemPublishing: builder.mutation<
@@ -121,6 +123,27 @@ export const instanceApi = createApi({
     getContentItem: builder.query<ContentItem, string>({
       query: (ZUID) => `search/items?q=${ZUID}&order=created&dir=DESC&limit=1`,
       transformResponse: (response: { data: any[] }) => response?.data?.[0],
+    }),
+    getContentItems: builder.query<any, any[]>({
+      async queryFn(args, _queryApi, _extraOptions, fetchWithBQ) {
+        try {
+          const requests = args.map(
+            (itemZUID) =>
+              `search/items?q=${itemZUID}&order=created&dir=DESC&limit=1`
+          );
+          const responses = await batchApiRequests(requests, fetchWithBQ);
+          return {
+            data: {
+              success: responses.success?.map(
+                (response) => response?.data?.data?.[0]
+              ),
+              error: responses.error,
+            },
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Get-All-Items
     getContentModelItems: builder.query<ContentItem[], string>({
@@ -450,6 +473,7 @@ export const {
   useGetAllPublishingsQuery,
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
+  useGetContentItemsQuery,
   useGetContentModelQuery,
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,

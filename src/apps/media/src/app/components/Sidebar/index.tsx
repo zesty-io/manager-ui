@@ -30,7 +30,7 @@ export const Sidebar = ({ lockedToGroupId, isSelectDialog }: Props) => {
           pb: 1,
         }}
       >
-        <Typography variant="h4">
+        <Typography variant="h4" fontWeight={600}>
           {isSelectDialog && "Insert from"} Media
         </Typography>
         <SearchBox />

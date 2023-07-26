@@ -1,10 +1,11 @@
 import { useSelector } from "react-redux";
-import { AppState } from "../../../../../../../../shell/store/types";
+import { AppState } from "../../../../../../../shell/store/types";
 import { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import googleAnalyticsIcon from "../../../../../../../../../public/images/googleAnalyticsIcon.svg";
-import contentAnalytics from "../../../../../../../../../public/images/contentAnalytics.svg";
-import googleIcon from "../../../../../../../../../public/images/googleIcon.svg";
+import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
+import contentAnalytics from "../../../../../../../../public/images/contentAnalytics.svg";
+import contentAnalyticsDashboard from "../../../../../../../../public/images/contentAnalyticsDashboard.svg";
+import googleIcon from "../../../../../../../../public/images/googleIcon.svg";
 import { AnalyticsDialog } from "./AnalyticsDialog";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 
@@ -17,9 +18,10 @@ type Message = {
 
 type Props = {
   validateAuth: () => void;
+  isDashboard: boolean;
 };
 
-export const AuthView = ({ validateAuth }: Props) => {
+export const AuthView = ({ validateAuth, isDashboard }: Props) => {
   const user = useSelector((state: AppState) => state.user);
   const instance = useSelector((state: AppState) => state.instance);
   const [showResult, setShowResult] = useState(null);
@@ -86,7 +88,10 @@ export const AuthView = ({ validateAuth }: Props) => {
           </Box>
         </Box>
         <Box flex={1}>
-          <img src={contentAnalytics} alt="contentAnalytics" />
+          <img
+            src={isDashboard ? contentAnalyticsDashboard : contentAnalytics}
+            alt="contentAnalytics"
+          />
         </Box>
       </Box>
       {showResult === true && (

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { useHistory } from "react-router";
-import { useGetContentModelsQuery } from "../../../../shell/services/instance";
+import { useGetContentModelsQuery } from "../services/instance";
 
 interface Props {
   open: boolean;

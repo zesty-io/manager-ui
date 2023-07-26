@@ -19,7 +19,7 @@ import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import { Database } from "@zesty-io/material";
 import { useHistory } from "react-router";
-import { CreateContentItemDialog } from "./CreateContentItemDialog";
+import { CreateContentItemDialog } from "../../../../shell/components/CreateContentItemDialog";
 
 interface Props {
   dateRange: number;

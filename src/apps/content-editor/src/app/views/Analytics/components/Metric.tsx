@@ -1,15 +1,16 @@
 //@ts-nocheck
 import { Box, Paper, Typography, Tooltip, Skeleton } from "@mui/material";
-import { numberFormatter } from "../../../../../../../../utility/numberFormatter";
+import { numberFormatter } from "../../../../../../../utility/numberFormatter";
 import { calculatePercentageDifference } from "../utils";
 type Props = {
-  title: string;
+  title?: string;
   value: number;
   priorValue: number;
-  description: string;
+  description?: string;
   formatter?: (value: number) => string;
   inverse?: boolean;
   loading?: boolean;
+  valueProps?: { [key: string]: any };
 };
 
 export const Metric = ({
@@ -20,11 +21,12 @@ export const Metric = ({
   formatter,
   inverse,
   loading = false,
+  valueProps,
 }: Props) => {
   return (
     <Tooltip
       title={
-        !loading ? (
+        !loading && description ? (
           <TooltipBody
             title={title}
             value={formatter ? formatter(value) : value?.toLocaleString()}
@@ -37,23 +39,27 @@ export const Metric = ({
       followCursor
       components={{ Tooltip: Box }}
     >
-      <Box py={0.5} width="100%">
-        {loading ? (
+      <Box width="100%">
+        {!title ? null : loading ? (
           <Skeleton
             variant="rectangular"
             width="80%"
-            height={24}
+            height={18}
             sx={{ bgcolor: "grey.200" }}
           />
         ) : (
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body3" color="text.secondary" fontWeight={600}>
             {title}
           </Typography>
         )}
         {loading ? (
-          <Skeleton variant="rectangular" width="100%" height={40} />
+          <Skeleton variant="rectangular" width="100%" height={32} />
         ) : (
-          <Typography variant="h2" fontWeight={600} sx={{ mb: 1 }}>
+          <Typography
+            variant="h4"
+            fontWeight={600}
+            sx={{ mb: 0.5, ...valueProps }}
+          >
             {formatter ? formatter(value) : numberFormatter.format(value)}
           </Typography>
         )}

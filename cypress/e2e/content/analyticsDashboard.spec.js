@@ -1,7 +1,7 @@
-describe("Single Page Analytics", () => {
+describe("Analytics dashboard", () => {
   before(() => {
     cy.waitOn("*getPropertyList*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/analytics");
+      cy.visit("/content");
     });
   });
   it("Renders the page with the zesty.pw property", () => {
@@ -20,21 +20,6 @@ describe("Single Page Analytics", () => {
     cy.waitOn("*/env/settings/*", () => {
       cy.contains("zesty.pw - GA4").click();
     });
-  });
-  it("Allows selecting a page to compare by showing recent publishings", () => {
-    cy.waitOn("*publishings*", () => {
-      cy.contains("Compare Page").click();
-    });
-    cy.get(".MuiList-root .MuiListItemButton-root").should("have.length.gt", 0);
-    cy.get("body").type("{esc}");
-  });
-  it("Allows searching pages to compare by calling search api", () => {
-    cy.contains("Compare Page").click();
-    cy.waitOn("*/search/items?q=t*", () => {
-      cy.get('input[placeholder="Search"]').type("t");
-    });
-    cy.get(".MuiList-root .MuiListItemButton-root").should("have.length.gt", 0);
-    cy.get("body").type("{esc}");
   });
   it("Displays linked google account information", () => {
     cy.getBySelector("analytics-settings").click();

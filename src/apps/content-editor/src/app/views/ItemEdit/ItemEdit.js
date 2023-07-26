@@ -34,7 +34,7 @@ import { NotFound } from "../NotFound";
 
 import { PublishState } from "./PublishState.tsx";
 import { Header } from "./components/Header";
-import Analytics from "./Analytics";
+import Analytics from "../Analytics";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
