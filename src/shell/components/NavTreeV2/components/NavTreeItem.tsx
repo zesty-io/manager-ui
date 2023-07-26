@@ -116,7 +116,7 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
           // This makes sure that the whole row is highlighted while still maintaining tree item depth
           marginLeft: 0,
           ".MuiTreeItem-content .MuiTreeItem-iconContainer": {
-            paddingLeft: depthPadding,
+            marginLeft: depthPadding,
           },
         },
       }}
