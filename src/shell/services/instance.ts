@@ -43,6 +43,7 @@ export const instanceApi = createApi({
     "Stylesheets",
     "Scripts",
     "Languages",
+    "ContentNav",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -440,6 +441,7 @@ export const instanceApi = createApi({
     getContentNavItems: builder.query<ContentNavItem[], void>({
       query: () => `/env/nav`,
       transformResponse: getResponseData,
+      providesTags: ["ContentNav"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/web/stylesheets/#Get-Stylesheet(s)
     getStylesheets: builder.query<Stylesheet[], void>({

@@ -4,6 +4,7 @@ import cloneDeep from "lodash/cloneDeep";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import { fetchNav, navContent } from "apps/content-editor/src/store/navContent";
+import { instanceApi } from "../../shell/services/instance";
 
 export function content(state = {}, action) {
   const item = state[action.itemZUID];
@@ -432,6 +433,7 @@ export function saveItem(itemZUID, action = "") {
         },
       }
     ).then((res) => {
+      dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
       dispatch({
         type: "UNMARK_ITEMS_DIRTY",
         items: [itemZUID],
@@ -499,6 +501,7 @@ export function createItem(modelZUID, itemZUID) {
       },
     }).then((res) => {
       if (!res.error) {
+        dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
         dispatch({
           type: "REMOVE_ITEM",
           itemZUID,
@@ -525,6 +528,7 @@ export function deleteItem(modelZUID, itemZUID) {
           })
         );
       } else {
+        dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
         dispatch({
           type: "REMOVE_ITEM",
           itemZUID,
