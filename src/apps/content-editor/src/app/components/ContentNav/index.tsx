@@ -45,6 +45,7 @@ import {
 import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
 import { useGetContentNavItemsQuery } from "../../../../../../shell/services/instance";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
+import { CreateContentItemDialog } from "../../../../../../shell/components/CreateContentItemDialog";
 
 interface NavData {
   nav: TreeItem[];
@@ -83,6 +84,8 @@ export const ContentNav = () => {
   const history = useHistory();
   const sideBarChildrenContainerRef = useRef(null);
   const [keyword, setKeyword] = useState("");
+  const [isCreateContentDialogOpen, setIsCreateContentDialogOpen] =
+    useState(false);
   const { data: currentUserRoles, isError: currentUserRolesFailed } =
     useGetCurrentUserRolesQuery();
   const { data: rawNavData, isError: navItemsFailed } =
@@ -313,156 +316,201 @@ export const ContentNav = () => {
     !!keyword;
 
   return (
-    <AppSideBar
-      data-cy="contentNav"
-      mode="dark"
-      ref={sideBarChildrenContainerRef}
-      HeaderSubComponent={
-        <Stack gap={1.5}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            px={1.5}
-          >
-            <Typography
-              variant="h6"
-              color="text.primary"
-              fontWeight={700}
-              lineHeight="24px"
-              fontSize={18}
+    <>
+      <AppSideBar
+        data-cy="contentNav"
+        mode="dark"
+        ref={sideBarChildrenContainerRef}
+        HeaderSubComponent={
+          <Stack gap={1.5}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              px={1.5}
             >
-              Content
-            </Typography>
-            <Button
-              variant="contained"
-              sx={{
-                width: 24,
-                height: 24,
-                minWidth: 0,
-                p: 0,
-                backgroundColor: "primary.dark",
-                "&:hover": {
-                  backgroundColor: "primary.dark",
-                },
-              }}
-            >
-              <AddRoundedIcon fontSize="small" />
-            </Button>
-          </Stack>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            placeholder="Search Content"
-            size="small"
-            sx={{
-              px: 1.5,
-            }}
-            onChange={(evt) => setKeyword(evt.target.value)}
-          />
-          {!noMatchedItems && (
-            <List disablePadding>
-              {SUB_MENUS.map((menu) => {
-                const isActive = location.pathname === menu.path;
-
-                return (
-                  <ListItem
-                    key={menu.name}
-                    disablePadding
-                    selected={isActive}
-                    sx={{
-                      color: "text.secondary",
-                      borderLeft: isActive ? "2px solid" : "none",
-                      borderColor: "primary.main",
-                    }}
-                  >
-                    <ListItemButton
-                      sx={{
-                        height: 36,
-                        pl: isActive ? 1.25 : 1.5,
-                        pr: 1.5,
-                        py: 0.75,
-                      }}
-                      onClick={() => history.push(menu.path)}
-                    >
-                      <ListItemIcon sx={{ minWidth: 32 }}>
-                        <SvgIcon component={menu.icon} />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={menu.name}
-                        primaryTypographyProps={{
-                          variant: "body3",
-                          fontWeight: 600,
-                        }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                );
-              })}
-            </List>
-          )}
-        </Stack>
-      }
-    >
-      {noMatchedItems ? (
-        <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
-          <img
-            src={noSearchResults}
-            alt="No search results"
-            width="70px"
-            height="64px"
-          />
-          <Typography color="text.secondary" variant="body2">
-            No results available for "{keyword}"
-          </Typography>
-        </Stack>
-      ) : (
-        <>
-          <NavTree
-            tree={navTree.nav}
-            expandedItems={expandedPageItems}
-            selected={location.pathname}
-            onToggleCollapse={(paths) => setExpandedPageItems(paths)}
-            HeaderComponent={
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                px={1.5}
-                pb={1.5}
+              <Typography
+                variant="h6"
+                color="text.primary"
+                fontWeight={700}
+                lineHeight="24px"
+                fontSize={18}
+              >
+                Content
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={() => setIsCreateContentDialogOpen(true)}
                 sx={{
-                  color: "text.secondary",
+                  width: 24,
+                  height: 24,
+                  minWidth: 0,
+                  p: 0,
+                  backgroundColor: "primary.dark",
+                  "&:hover": {
+                    backgroundColor: "primary.dark",
+                  },
                 }}
               >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  <Typography variant="body2" textTransform="uppercase">
-                    Pages
-                  </Typography>
-                  <Tooltip
-                    placement="right-start"
-                    title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
-                  >
-                    <InfoRoundedIcon
-                      sx={{ width: 12, height: 12, color: "action.active" }}
-                    />
-                  </Tooltip>
+                <AddRoundedIcon fontSize="small" />
+              </Button>
+            </Stack>
+            <TextField
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              placeholder="Search Content"
+              size="small"
+              sx={{
+                px: 1.5,
+              }}
+              onChange={(evt) => setKeyword(evt.target.value)}
+            />
+            {!noMatchedItems && (
+              <List disablePadding>
+                {SUB_MENUS.map((menu) => {
+                  const isActive = location.pathname === menu.path;
+
+                  return (
+                    <ListItem
+                      key={menu.name}
+                      disablePadding
+                      selected={isActive}
+                      sx={{
+                        color: "text.secondary",
+                        borderLeft: isActive ? "2px solid" : "none",
+                        borderColor: "primary.main",
+                      }}
+                    >
+                      <ListItemButton
+                        sx={{
+                          height: 36,
+                          pl: isActive ? 1.25 : 1.5,
+                          pr: 1.5,
+                          py: 0.75,
+                        }}
+                        onClick={() => history.push(menu.path)}
+                      >
+                        <ListItemIcon sx={{ minWidth: 32 }}>
+                          <SvgIcon component={menu.icon} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={menu.name}
+                          primaryTypographyProps={{
+                            variant: "body3",
+                            fontWeight: 600,
+                          }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            )}
+          </Stack>
+        }
+      >
+        {noMatchedItems ? (
+          <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
+            <img
+              src={noSearchResults}
+              alt="No search results"
+              width="70px"
+              height="64px"
+            />
+            <Typography color="text.secondary" variant="body2">
+              No results available for "{keyword}"
+            </Typography>
+          </Stack>
+        ) : (
+          <>
+            <NavTree
+              tree={navTree.nav}
+              expandedItems={expandedPageItems}
+              selected={location.pathname}
+              onToggleCollapse={(paths) => setExpandedPageItems(paths)}
+              HeaderComponent={
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  px={1.5}
+                  pb={1.5}
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    <Typography variant="body2" textTransform="uppercase">
+                      Pages
+                    </Typography>
+                    <Tooltip
+                      placement="right-start"
+                      title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
+                    >
+                      <InfoRoundedIcon
+                        sx={{ width: 12, height: 12, color: "action.active" }}
+                      />
+                    </Tooltip>
+                  </Stack>
+                  <Stack direction="row" gap={1}>
+                    <IconButton
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        padding: 0.25,
+                        borderRadius: 0.5,
+                      }}
+                    >
+                      <ReorderRoundedIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                    <IconButton
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        padding: 0.25,
+                        borderRadius: 0.5,
+                      }}
+                    >
+                      <AddRoundedIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </Stack>
                 </Stack>
-                <Stack direction="row" gap={1}>
-                  <IconButton
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      padding: 0.25,
-                      borderRadius: 0.5,
-                    }}
-                  >
-                    <ReorderRoundedIcon sx={{ fontSize: 16 }} />
-                  </IconButton>
+              }
+            />
+            <NavTree
+              tree={navTree.headless}
+              expandedItems={expandedDatasetItems}
+              selected={location.pathname}
+              onToggleCollapse={(paths) => setExpandedDatasetItems(paths)}
+              HeaderComponent={
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  px={1.5}
+                  py={1.5}
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    <Typography variant="body2" textTransform="uppercase">
+                      Datasets
+                    </Typography>
+                    <Tooltip
+                      placement="right-start"
+                      title="Datasets listed here do not have a parent content item and do not have URLs for the content items."
+                    >
+                      <InfoRoundedIcon
+                        sx={{ width: 12, height: 12, color: "action.active" }}
+                      />
+                    </Tooltip>
+                  </Stack>
                   <IconButton
                     sx={{
                       width: 20,
@@ -474,119 +522,83 @@ export const ContentNav = () => {
                     <AddRoundedIcon sx={{ fontSize: 16 }} />
                   </IconButton>
                 </Stack>
-              </Stack>
-            }
-          />
-          <NavTree
-            tree={navTree.headless}
-            expandedItems={expandedDatasetItems}
-            selected={location.pathname}
-            onToggleCollapse={(paths) => setExpandedDatasetItems(paths)}
-            HeaderComponent={
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                px={1.5}
-                py={1.5}
+              }
+            />
+            <Accordion
+              elevation={0}
+              onChange={() => {
+                setTimeout(() => {
+                  sideBarChildrenContainerRef.current?.scrollDown();
+                }, 300);
+              }}
+              sx={{
+                mt: 1.5,
+                "&.Mui-expanded": {
+                  mt: 1.5,
+                },
+                "&:before": {
+                  display: "none",
+                },
+                "&.MuiPaper-root": {
+                  backgroundColor: "transparent",
+                  backgroundImage: "none",
+                },
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<MenuListDropDown sx={{ fontSize: "20px" }} />}
                 sx={{
-                  color: "text.secondary",
+                  "&.MuiButtonBase-root": {
+                    minHeight: 20,
+                    mb: 1.5,
+                    "&.Mui-expanded": {
+                      height: 20,
+                    },
+                  },
+                  "& .MuiAccordionSummary-content": {
+                    m: 0,
+                    "&.Mui-expanded": {
+                      m: 0,
+                    },
+                  },
+                  "& .MuiAccordionSummary-expandIconWrapper": {
+                    transform: "rotate(-90deg)",
+                    "&.Mui-expanded": {
+                      transform: "rotate(0deg)",
+                    },
+                  },
                 }}
               >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  <Typography variant="body2" textTransform="uppercase">
-                    Datasets
-                  </Typography>
-                  <Tooltip
-                    placement="right-start"
-                    title="Datasets listed here do not have a parent content item and do not have URLs for the content items."
-                  >
-                    <InfoRoundedIcon
-                      sx={{ width: 12, height: 12, color: "action.active" }}
-                    />
-                  </Tooltip>
-                </Stack>
-                <IconButton
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    padding: 0.25,
-                    borderRadius: 0.5,
-                  }}
+                <Typography
+                  variant="body2"
+                  textTransform="uppercase"
+                  color="text.secondary"
                 >
-                  <AddRoundedIcon sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Stack>
-            }
-          />
-          <Accordion
-            elevation={0}
-            onChange={() => {
-              setTimeout(() => {
-                sideBarChildrenContainerRef.current?.scrollDown();
-              }, 300);
-            }}
-            sx={{
-              mt: 1.5,
-              "&.Mui-expanded": {
-                mt: 1.5,
-              },
-              "&:before": {
-                display: "none",
-              },
-              "&.MuiPaper-root": {
-                backgroundColor: "transparent",
-                backgroundImage: "none",
-              },
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<MenuListDropDown sx={{ fontSize: "20px" }} />}
-              sx={{
-                "&.MuiButtonBase-root": {
-                  minHeight: 20,
-                  mb: 1.5,
-                  "&.Mui-expanded": {
-                    height: 20,
-                  },
-                },
-                "& .MuiAccordionSummary-content": {
-                  m: 0,
-                  "&.Mui-expanded": {
-                    m: 0,
-                  },
-                },
-                "& .MuiAccordionSummary-expandIconWrapper": {
-                  transform: "rotate(-90deg)",
-                  "&.Mui-expanded": {
-                    transform: "rotate(0deg)",
-                  },
-                },
-              }}
-            >
-              <Typography
-                variant="body2"
-                textTransform="uppercase"
-                color="text.secondary"
+                  Hidden Items
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  p: 0,
+                }}
               >
-                Hidden Items
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                p: 0,
-              }}
-            >
-              <NavTree
-                tree={navTree.hidden}
-                selected={location.pathname}
-                expandedItems={expandedHiddenItems}
-                onToggleCollapse={(paths) => setExpandedHiddenItems(paths)}
-              />
-            </AccordionDetails>
-          </Accordion>
-        </>
+                <NavTree
+                  tree={navTree.hidden}
+                  selected={location.pathname}
+                  expandedItems={expandedHiddenItems}
+                  onToggleCollapse={(paths) => setExpandedHiddenItems(paths)}
+                />
+              </AccordionDetails>
+            </Accordion>
+          </>
+        )}
+      </AppSideBar>
+      {isCreateContentDialogOpen && (
+        <CreateContentItemDialog
+          open
+          onClose={() => setIsCreateContentDialogOpen(false)}
+        />
       )}
-    </AppSideBar>
+    </>
   );
 };
