@@ -16,7 +16,6 @@ import {
   AccordionSummary,
   AccordionDetails,
   Accordion,
-  Box,
 } from "@mui/material";
 import {
   SvgIconComponent,
@@ -84,6 +83,7 @@ export const ContentNav = () => {
   const history = useHistory();
   const sideBarChildrenContainerRef = useRef(null);
   const [keyword, setKeyword] = useState("");
+  const [clippingsZUID, setClippingsZUID] = useState("");
   const [isCreateContentDialogOpen, setIsCreateContentDialogOpen] =
     useState(false);
   const { data: currentUserRoles, isError: currentUserRolesFailed } =
@@ -150,6 +150,13 @@ export const ContentNav = () => {
   const navTree: NavData = useMemo(() => {
     if (!!rawNavData?.length) {
       let filteredNavData = [...rawNavData];
+
+      // Find and store the clippings zuid
+      const clippingsModel = filteredNavData.find(
+        (item) => item.label.toLowerCase() === "clippings"
+      );
+
+      setClippingsZUID(clippingsModel?.ZUID ?? "");
 
       if (!!keyword) {
         filteredNavData = filteredNavData.filter((navItem) => {
@@ -305,6 +312,33 @@ export const ContentNav = () => {
     };
   }, [granularRoles, rawNavData, keyword]);
 
+  const activeNodeId = useMemo(() => {
+    const pathnameArr = location?.pathname?.split("/");
+
+    if (!pathnameArr?.length) {
+      return "";
+    }
+
+    // Matches url /content/X-XXXXXX
+    if (pathnameArr.length === 3) {
+      return location.pathname;
+    }
+
+    // Matches url /content/X-XXXX/X-XXXX or /content/link/X-XXXXXX
+    if (pathnameArr.length >= 4) {
+      /**
+       * Checks if the url's content model ZUID is equal to the saved clippings zuid
+       * This allows the sidebar to select the clippings nav item since when the clippings item is
+       * loaded, it dynamically adds a content item zuid to the url
+       */
+      if (pathnameArr[2] === clippingsZUID) {
+        return pathnameArr.splice(0, 3).join("/");
+      }
+
+      return pathnameArr.splice(0, 4).join("/");
+    }
+  }, [location]);
+
   useEffect(() => {
     // TODO: Add notify handling here
   }, [navItemsFailed, currentUserRolesFailed]);
@@ -431,7 +465,7 @@ export const ContentNav = () => {
             <NavTree
               tree={navTree.nav}
               expandedItems={expandedPageItems}
-              selected={location.pathname}
+              selected={activeNodeId}
               onToggleCollapse={(paths) => setExpandedPageItems(paths)}
               HeaderComponent={
                 <Stack
@@ -485,7 +519,7 @@ export const ContentNav = () => {
             <NavTree
               tree={navTree.headless}
               expandedItems={expandedDatasetItems}
-              selected={location.pathname}
+              selected={activeNodeId}
               onToggleCollapse={(paths) => setExpandedDatasetItems(paths)}
               HeaderComponent={
                 <Stack
@@ -584,7 +618,7 @@ export const ContentNav = () => {
               >
                 <NavTree
                   tree={navTree.hidden}
-                  selected={location.pathname}
+                  selected={activeNodeId}
                   expandedItems={expandedHiddenItems}
                   onToggleCollapse={(paths) => setExpandedHiddenItems(paths)}
                 />
