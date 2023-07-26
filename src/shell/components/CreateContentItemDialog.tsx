@@ -11,8 +11,11 @@ import {
   InputLabel,
   Autocomplete,
   Typography,
+  Tooltip,
+  Stack,
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { useHistory } from "react-router";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
@@ -54,16 +57,28 @@ export const CreateContentItemDialog = ({ open, onClose }: Props) => {
               borderRadius: "20px",
               backgroundColor: "deepOrange.50",
               display: "block",
-              mb: 2,
+              mb: 1.5,
             }}
           />
-          <Typography variant="h5">Create Content Item</Typography>
+          <Typography variant="h5" fontWeight={600} mb={1}>
+            Create Content Item
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            You can only create a content item for a pre-existing model
+          </Typography>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            You can only create a content item for a pre-existing model
-          </DialogContentText>
-          <InputLabel sx={{ mt: 2.5 }}>Select Model</InputLabel>
+          <Stack direction="row" alignItems="center" gap={1} mb={0.5}>
+            <InputLabel sx={{ mb: 0 }}>Select Model</InputLabel>
+            <Tooltip
+              placement="right-start"
+              title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
+            >
+              <InfoRoundedIcon
+                sx={{ width: 12, height: 12, color: "action.active" }}
+              />
+            </Tooltip>
+          </Stack>
           <Autocomplete
             size="small"
             fullWidth
