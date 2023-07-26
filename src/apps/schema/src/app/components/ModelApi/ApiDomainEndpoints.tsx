@@ -3,20 +3,48 @@ import { ApiType } from ".";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { useGetDomainsQuery } from "../../../../../../shell/services/accounts";
+import { useParams } from "react-router";
+import {
+  useGetContentItemQuery,
+  useGetContentModelQuery,
+} from "../../../../../../shell/services/instance";
 
 type Props = {
   type: ApiType;
-  contentModelZUID: string;
 };
 
-export const ApiDomainEndpoints = ({ type, contentModelZUID }: Props) => {
+export const ApiDomainEndpoints = ({ type }: Props) => {
   const instance = useSelector((state: AppState) => state.instance);
   const { data: domains } = useGetDomainsQuery();
+
+  const { contentModelZUID, contentItemZUID } = useParams<{
+    contentModelZUID: string;
+    contentItemZUID: string;
+  }>();
+
+  const { data: modelData } = useGetContentModelQuery(contentModelZUID, {
+    skip: !contentModelZUID,
+  });
+
+  const { data: itemData } = useGetContentItemQuery(contentItemZUID, {
+    skip: !contentItemZUID,
+  });
+
   const apiTypeEndpointMap: Partial<Record<ApiType, string>> = {
-    "quick-access": `/-/instant/${contentModelZUID}.json`,
-    "site-generators": "/?toJSON",
-    graphql: "/-/gql/homepage.json",
+    "quick-access": `/-/instant/${
+      contentItemZUID ? contentItemZUID : contentModelZUID
+    }.json`,
+    "site-generators": itemData
+      ? `/${itemData?.web?.pathPart}/?toJSON`
+      : "/?toJSON",
+    graphql: `/-/gql/${modelData?.name}.json`,
+    "backend-coding": `https://${
+      instance.ZUID
+    }.api.zesty.io/v1/content/models/${contentModelZUID}/items${
+      contentItemZUID ? `/${contentItemZUID}` : ""
+    }`,
   };
+
   return (
     <Box>
       <Typography variant="h5" fontWeight={600} sx={{ mb: 2 }}>
@@ -27,11 +55,9 @@ export const ApiDomainEndpoints = ({ type, contentModelZUID }: Props) => {
           <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
             Rest Endpoint (needs authentication bearer)
           </Typography>
-          <Link
-            variant="body2"
-            href={`https://${instance.ZUID}.api.zesty.io/v1/content/models/${contentModelZUID}/items`}
-            target="_blank"
-          >{`${instance.ZUID}.api.zesty.io/v1/content/models/${contentModelZUID}/items`}</Link>
+          <Link variant="body2" href={apiTypeEndpointMap[type]} target="_blank">
+            {apiTypeEndpointMap[type]}
+          </Link>
           <Typography variant="h6" fontWeight={600} sx={{ mt: 2, mb: 1 }}>
             Rest Endpoint (needs authentication bearer)
           </Typography>

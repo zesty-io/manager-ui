@@ -8,7 +8,7 @@ import {
   Stack,
   CircularProgress,
 } from "@mui/material";
-import { useHistory, useLocation, useParams } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { SvgIconComponent } from "@mui/icons-material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
@@ -47,7 +47,6 @@ export const ApiDetails = () => {
   const history = useHistory();
   const location = useLocation();
   const installedApps = useSelector((state: AppState) => state.apps.installed);
-  const { id } = useParams<{ id: string }>();
   const selectedType = location.pathname.split("/").pop() as ApiType;
   const { data: instanceSettings, isFetching } = useGetInstanceSettingsQuery(
     null,
@@ -214,7 +213,7 @@ export const ApiDetails = () => {
                 </Stack>
               )}
               {apiTypesWithEndpoints.includes(selectedType) && (
-                <ApiDomainEndpoints type={selectedType} contentModelZUID={id} />
+                <ApiDomainEndpoints type={selectedType} />
               )}
             </Box>
           )}
