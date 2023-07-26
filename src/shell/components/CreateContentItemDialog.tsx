@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -16,6 +16,7 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { useHistory } from "react-router";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
+import { cloneDeep } from "lodash";
 
 import { useGetContentModelsQuery } from "../services/instance";
 
@@ -31,6 +32,16 @@ export const CreateContentItemDialog = ({ open, onClose }: Props) => {
     label: "None",
     ZUID: "",
   });
+
+  const sortedModels = useMemo(() => {
+    if (models?.length) {
+      const _models = cloneDeep(models);
+
+      return _models?.sort((a, b) => a.label?.localeCompare(b.label));
+    }
+
+    return [];
+  }, [models]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -59,13 +70,17 @@ export const CreateContentItemDialog = ({ open, onClose }: Props) => {
             value={selectedModel}
             disableClearable
             options={
-              models
+              sortedModels
                 ? [
                     {
                       label: "None",
                       ZUID: "",
                     },
-                    ...models,
+                    {
+                      label: "Internal/External Link",
+                      ZUID: "link",
+                    },
+                    ...sortedModels,
                   ]
                 : []
             }
@@ -84,6 +99,7 @@ export const CreateContentItemDialog = ({ open, onClose }: Props) => {
             color="primary"
             disabled={!selectedModel.ZUID}
             onClick={() => {
+              onClose();
               history.push("/content/" + selectedModel.ZUID + "/new");
             }}
           >
