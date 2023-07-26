@@ -22,13 +22,15 @@ import { theme } from "@zesty-io/material";
 import { cloneDeep } from "lodash";
 
 import { useGetContentModelsQuery } from "../services/instance";
+import { ModelType } from "../services/types";
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  limitTo?: ModelType[];
 }
 
-export const CreateContentItemDialog = ({ open, onClose }: Props) => {
+export const CreateContentItemDialog = ({ open, onClose, limitTo }: Props) => {
   const { data: models } = useGetContentModelsQuery();
   const history = useHistory();
   const [selectedModel, setSelectedModel] = useState({
@@ -38,13 +40,25 @@ export const CreateContentItemDialog = ({ open, onClose }: Props) => {
 
   const sortedModels = useMemo(() => {
     if (models?.length) {
-      const _models = cloneDeep(models);
+      let _models = cloneDeep(models);
+      // Remove special models from the create new item list
+      _models = _models.filter(
+        (model) =>
+          !["dashboard widgets", "clippings", "globals"].includes(
+            model.label.toLowerCase()
+          )
+      );
+
+      // Limit to certain types
+      if (!!limitTo?.length) {
+        _models = _models.filter((model) => limitTo.includes(model.type));
+      }
 
       return _models?.sort((a, b) => a.label?.localeCompare(b.label));
     }
 
     return [];
-  }, [models]);
+  }, [models, limitTo]);
 
   return (
     <ThemeProvider theme={theme}>

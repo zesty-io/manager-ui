@@ -45,6 +45,7 @@ import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/ac
 import { useGetContentNavItemsQuery } from "../../../../../../shell/services/instance";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { CreateContentItemDialog } from "../../../../../../shell/components/CreateContentItemDialog";
+import { ModelType } from "../../../../../../shell/services/types";
 
 interface NavData {
   nav: TreeItem[];
@@ -82,6 +83,9 @@ export const ContentNav = () => {
   const location = useLocation();
   const history = useHistory();
   const sideBarChildrenContainerRef = useRef(null);
+  const [createContentDialogLimit, setCreateContentDialogLimit] = useState<
+    ModelType[]
+  >([]);
   const [keyword, setKeyword] = useState("");
   const [clippingsZUID, setClippingsZUID] = useState("");
   const [isCreateContentDialogOpen, setIsCreateContentDialogOpen] =
@@ -503,6 +507,10 @@ export const ContentNav = () => {
                       <ReorderRoundedIcon sx={{ fontSize: 16 }} />
                     </IconButton>
                     <IconButton
+                      onClick={() => {
+                        setCreateContentDialogLimit(["pageset", "templateset"]);
+                        setIsCreateContentDialogOpen(true);
+                      }}
                       sx={{
                         width: 20,
                         height: 20,
@@ -546,6 +554,10 @@ export const ContentNav = () => {
                     </Tooltip>
                   </Stack>
                   <IconButton
+                    onClick={() => {
+                      setCreateContentDialogLimit(["dataset"]);
+                      setIsCreateContentDialogOpen(true);
+                    }}
                     sx={{
                       width: 20,
                       height: 20,
@@ -630,7 +642,11 @@ export const ContentNav = () => {
       {isCreateContentDialogOpen && (
         <CreateContentItemDialog
           open
-          onClose={() => setIsCreateContentDialogOpen(false)}
+          limitTo={createContentDialogLimit}
+          onClose={() => {
+            setCreateContentDialogLimit([]);
+            setIsCreateContentDialogOpen(false);
+          }}
         />
       )}
     </>
