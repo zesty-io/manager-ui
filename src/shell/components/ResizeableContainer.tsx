@@ -2,21 +2,21 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { useLocalStorage } from "react-use";
 
-interface ResizableContainerProps {
+type Props = {
   children: React.ReactNode;
   minWidth: number;
   maxWidth: number;
   defaultWidth: number;
   id: string;
-}
+};
 
-export const ResizableContainer: React.FC<ResizableContainerProps> = ({
+export const ResizableContainer = ({
   children,
   minWidth,
   maxWidth,
   defaultWidth,
   id,
-}) => {
+}: Props) => {
   const [isResizing, setIsResizing] = useState(false);
   const [initialPos, setInitialPos] = useState(0);
   const [width, setWidth] = useLocalStorage(
@@ -24,7 +24,6 @@ export const ResizableContainer: React.FC<ResizableContainerProps> = ({
     defaultWidth
   );
 
-  console.log("testing width", width);
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsResizing(true);
     setInitialPos(e.clientX);
