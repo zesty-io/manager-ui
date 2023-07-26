@@ -27,6 +27,7 @@ export const ResizableContainer = ({
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsResizing(true);
     setInitialPos(e.clientX);
+    // set cursor on the document body to handle cursor leaving the container as we resize
     document.body.style.cursor = "col-resize";
   };
 
