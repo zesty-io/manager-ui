@@ -46,6 +46,7 @@ import { useGetContentNavItemsQuery } from "../../../../../../shell/services/ins
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { CreateContentItemDialog } from "../../../../../../shell/components/CreateContentItemDialog";
 import { ModelType } from "../../../../../../shell/services/types";
+import { ReorderNav } from "../ReorderNav";
 
 interface NavData {
   nav: TreeItem[];
@@ -91,6 +92,7 @@ export const ContentNav = () => {
   const [modelZUID, setModelZUID] = useState("");
   const [isCreateContentDialogOpen, setIsCreateContentDialogOpen] =
     useState(false);
+  const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false);
   const { data: currentUserRoles, isError: currentUserRolesFailed } =
     useGetCurrentUserRolesQuery();
   const { data: rawNavData, isError: navItemsFailed } =
@@ -526,6 +528,7 @@ export const ContentNav = () => {
                   </Stack>
                   <Stack direction="row" gap={1}>
                     <IconButton
+                      onClick={() => setIsReorderDialogOpen(true)}
                       sx={{
                         width: 20,
                         height: 20,
@@ -679,6 +682,9 @@ export const ContentNav = () => {
             setIsCreateContentDialogOpen(false);
           }}
         />
+      )}
+      {isReorderDialogOpen && (
+        <ReorderNav isOpen toggleOpen={() => setIsReorderDialogOpen(false)} />
       )}
     </>
   );
