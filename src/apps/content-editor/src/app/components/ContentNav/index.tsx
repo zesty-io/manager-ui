@@ -199,9 +199,7 @@ export const ContentNav = () => {
       // Set path, actions and icon, and initiate empty children array
       return filteredNavData.map((navItem) => {
         let path = "";
-        const isHideMode = hiddenNavItems.find(
-          (item) => item.ZUID === navItem.ZUID
-        );
+        const isHideMode = hiddenZUIDs.includes(navItem.ZUID);
 
         switch (navItem.type) {
           case "item":
@@ -288,10 +286,14 @@ export const ContentNav = () => {
     }
 
     return [];
-  }, [granularRoles, rawNavData, keyword]);
+  }, [granularRoles, rawNavData, keyword, hiddenZUIDs]);
 
   const navTree: NavData = useMemo(() => {
     if (mappedTree?.length) {
+      const hidden: TreeItem[] = mappedTree.filter((item) =>
+        hiddenZUIDs.includes(item.ZUID)
+      );
+
       // Convert nav item array to zuid:treeItem map
       const zuidTreeItemMap = mappedTree.reduce(
         (acc: { [key: string]: TreeItem }, curr) => {
@@ -311,7 +313,11 @@ export const ContentNav = () => {
 
       // Place children inside their respective parents
       Object.values(zuidTreeItemMap).forEach((item) => {
-        if (!!item.parentZUID && !!zuidTreeItemMap[item.parentZUID]) {
+        if (
+          !!item.parentZUID &&
+          !!zuidTreeItemMap[item.parentZUID] &&
+          !hiddenZUIDs.includes(item.ZUID)
+        ) {
           zuidTreeItemMap[item.parentZUID].children.push(item);
         } else {
           tree.push(item);
@@ -321,18 +327,13 @@ export const ContentNav = () => {
       // Split the nav tree into categories
       const nav: TreeItem[] = [];
       const headless: TreeItem[] = [];
-      const hidden: TreeItem[] = [];
 
       tree.forEach((item) => {
-        if (hiddenZUIDs.includes(item.ZUID)) {
-          return hidden.push(item);
-        }
-
         if (item.type === "dataset") {
           return headless.push(item);
         }
 
-        if (!item.parentZUID) {
+        if (!item.parentZUID && !hiddenZUIDs.includes(item.ZUID)) {
           return nav.push(item);
         }
       });
@@ -349,7 +350,7 @@ export const ContentNav = () => {
       headless: [],
       hidden: [],
     };
-  }, [mappedTree]);
+  }, [mappedTree, hiddenZUIDs]);
 
   const pathExists = (tree: TreeItem[], path: string) => {
     return !!tree?.find((item) => item.path === path);
@@ -712,6 +713,22 @@ export const ContentNav = () => {
             setIsHideDialogOpen(false);
             setIsHideMode(false);
             setItemToHide(null);
+          }}
+          onToggleItemHideStatus={(item) => {
+            const matchedItem = hiddenNavItems.find(
+              (hiddenItem) => hiddenItem.ZUID === item.ZUID
+            );
+
+            // Remove if already exists, else add it
+            if (!!matchedItem) {
+              setHiddenNavItems(
+                hiddenNavItems.filter(
+                  (hiddenItem) => hiddenItem.ZUID !== item.ZUID
+                )
+              );
+            } else {
+              setHiddenNavItems([...hiddenNavItems, item]);
+            }
           }}
         />
       )}

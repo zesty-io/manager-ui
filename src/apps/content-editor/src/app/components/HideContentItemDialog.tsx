@@ -19,6 +19,7 @@ interface Props {
   isHide: boolean;
   item: ContentNavItem;
   onClose: () => void;
+  onToggleItemHideStatus: (item: ContentNavItem) => void;
 }
 
 export const HideContentItemDialog: FC<Readonly<Props>> = ({
@@ -26,6 +27,7 @@ export const HideContentItemDialog: FC<Readonly<Props>> = ({
   isHide,
   item,
   onClose,
+  onToggleItemHideStatus,
 }) => {
   return (
     <ThemeProvider theme={theme}>
@@ -77,7 +79,7 @@ export const HideContentItemDialog: FC<Readonly<Props>> = ({
             color="primary"
             onClick={() => {
               onClose();
-              // history.push("/content/" + selectedModel.ZUID + "/new");
+              onToggleItemHideStatus(item);
             }}
           >
             {isHide ? `Hide ${item.label}` : `Unhide ${item.label}`}
