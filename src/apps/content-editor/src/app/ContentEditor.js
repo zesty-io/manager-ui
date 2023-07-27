@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useEffect, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
@@ -7,15 +7,14 @@ import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { legacyTheme } from "@zesty-io/material";
 
-import { fetchModels } from "shell/store/models";
-import { fetchNav } from "../store/navContent";
+import { useGetCurrentUserRolesQuery } from "../../../../shell/services/accounts";
+import { useGetContentNavItemsQuery } from "../../../../shell/services/instance";
+import { notify } from "../../../../shell/store/notifications";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { ContentNav } from "./components/Nav";
-import { ContentNav as ContentNavV2 } from "./components/ContentNav";
+import { ContentNav } from "./components/ContentNav";
 
-import { Dashboard } from "./views/Dashboard";
 import { ItemList } from "./views/ItemList";
 import { ItemEdit } from "./views/ItemEdit";
 import { ItemCreate } from "./views/ItemCreate";
@@ -29,6 +28,7 @@ import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
 import Analytics from "./views/Analytics";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 let customTheme = createTheme(legacyTheme, {
@@ -96,31 +96,43 @@ let customTheme = createTheme(legacyTheme, {
 });
 
 export default function ContentEditor() {
-  const contentModels = useSelector((state) => state.models);
-  const navContent = useSelector((state) => state.navContent);
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
-  const [loading, setLoading] = useState(true);
+  const { error: currentUserRolesError } = useGetCurrentUserRolesQuery();
+  const {
+    data: rawNavData,
+    error: navItemsError,
+    isLoading: isLoadingNavItems,
+  } = useGetContentNavItemsQuery();
 
   useEffect(() => {
-    setLoading(true);
+    if (!!currentUserRolesError) {
+      dispatch(
+        notify({
+          message: `${currentUserRolesError.status}: Failed to load your user role.`,
+          kind: "error",
+        })
+      );
+    }
 
-    // Kick off loading data before app mount
-    // to decrease time to first interaction
-    dispatch(fetchNav())
-      .then((_) => setLoading(false))
-      .catch((e) => {
-        throw e;
-      });
-    dispatch(fetchModels());
-  }, []);
+    if (!!navItemsError) {
+      dispatch(
+        notify({
+          message: `${navItemsError.status}: Failed to load content nav items.`,
+          kind: "error",
+        })
+      );
+    }
+  }, [currentUserRolesError, navItemsError]);
+
+  const loading = isLoadingNavItems || navItemsError || currentUserRolesError;
 
   return (
     <Fragment>
       <WithLoader condition={!loading} message="Starting Content Editor">
         <ThemeProvider theme={customTheme}>
-          {navContent.raw.length === 0 ? (
+          {rawNavData?.length === 0 ? (
             <div className={styles.SchemaRedirect}>
               <h1 className={styles.display}>
                 Please create a new content model
@@ -140,14 +152,7 @@ export default function ContentEditor() {
                   : ""
               )}
             >
-              <ContentNavV2 navData={navContent} />
-              {/* <ContentNav
-                data-cy="contentNav"
-                dispatch={dispatch}
-                models={contentModels}
-                nav={navContent}
-              /> */}
-
+              <ContentNav />
               <div
                 className={cx(
                   styles.Content,

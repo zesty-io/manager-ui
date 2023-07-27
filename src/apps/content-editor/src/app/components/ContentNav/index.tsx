@@ -103,17 +103,9 @@ export const ContentNav = () => {
   const [isHideMode, setIsHideMode] = useState(false);
   const [itemToHide, setItemToHide] = useState<ContentNavItem>(null);
 
-  const {
-    data: currentUserRoles,
-    error: currentUserRolesError,
-    isUninitialized: currentUserRolesUninitialized,
-  } = useGetCurrentUserRolesQuery();
-  const { data: rawNavData } = useGetContentNavItemsQuery(null, {
-    skip:
-      currentUserRolesUninitialized ||
-      !currentUserRoles?.length ||
-      !!currentUserRolesError,
-  });
+  const { data: currentUserRoles, error: currentUserRolesError } =
+    useGetCurrentUserRolesQuery();
+  const { data: rawNavData } = useGetContentNavItemsQuery();
 
   const [expandedPageItems, setExpandedPageItems] = useLocalStorage(
     "zesty:navContentPages:open",
@@ -191,7 +183,7 @@ export const ContentNav = () => {
         });
       }
 
-      if (!!granularRoles?.length) {
+      if (!currentUserRolesError && !!granularRoles?.length) {
         // Filter nav based on user's granular role access
         filteredNavData = filteredNavData.filter((navItem) => {
           return granularRoles.includes(navItem.ZUID);
@@ -296,7 +288,7 @@ export const ContentNav = () => {
     }
 
     return [];
-  }, [granularRoles, rawNavData, keyword, hiddenZUIDs]);
+  }, [granularRoles, rawNavData, keyword, hiddenZUIDs, currentUserRolesError]);
 
   const navTree: NavData = useMemo(() => {
     if (mappedTree?.length) {
