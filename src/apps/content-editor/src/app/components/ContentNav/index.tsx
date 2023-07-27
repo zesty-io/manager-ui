@@ -88,6 +88,7 @@ const ICONS: Record<string, SvgIconComponent> = {
 export const ContentNav = () => {
   const location = useLocation();
   const history = useHistory();
+
   const sideBarChildrenContainerRef = useRef(null);
   const [createContentDialogLimit, setCreateContentDialogLimit] = useState<
     ModelType[]
@@ -101,10 +102,19 @@ export const ContentNav = () => {
   const [isHideDialogOpen, setIsHideDialogOpen] = useState(false);
   const [isHideMode, setIsHideMode] = useState(false);
   const [itemToHide, setItemToHide] = useState<ContentNavItem>(null);
-  const { data: currentUserRoles, isError: currentUserRolesFailed } =
-    useGetCurrentUserRolesQuery();
-  const { data: rawNavData, isError: navItemsFailed } =
-    useGetContentNavItemsQuery();
+
+  const {
+    data: currentUserRoles,
+    error: currentUserRolesError,
+    isUninitialized: currentUserRolesUninitialized,
+  } = useGetCurrentUserRolesQuery();
+  const { data: rawNavData } = useGetContentNavItemsQuery(null, {
+    skip:
+      currentUserRolesUninitialized ||
+      !currentUserRoles?.length ||
+      !!currentUserRolesError,
+  });
+
   const [expandedPageItems, setExpandedPageItems] = useLocalStorage(
     "zesty:navContentPages:open",
     []
@@ -290,6 +300,7 @@ export const ContentNav = () => {
 
   const navTree: NavData = useMemo(() => {
     if (mappedTree?.length) {
+      // Get all hidden items
       const hidden: TreeItem[] = mappedTree.filter((item) =>
         hiddenZUIDs.includes(item.ZUID)
       );
@@ -311,7 +322,7 @@ export const ContentNav = () => {
 
       const tree: TreeItem[] = [];
 
-      // Place children inside their respective parents
+      // Place children inside their respective parents except hidden items
       Object.values(zuidTreeItemMap).forEach((item) => {
         if (
           !!item.parentZUID &&
@@ -333,6 +344,7 @@ export const ContentNav = () => {
           return headless.push(item);
         }
 
+        // Don't add a hidden item to the tree
         if (!item.parentZUID && !hiddenZUIDs.includes(item.ZUID)) {
           return nav.push(item);
         }
@@ -391,10 +403,6 @@ export const ContentNav = () => {
       return pathWithContentZUID;
     }
   }, [location, mappedTree, clippingsZUID]);
-
-  useEffect(() => {
-    // TODO: Add notify handling here
-  }, [navItemsFailed, currentUserRolesFailed]);
 
   const noMatchedItems =
     !navTree.nav.length &&
