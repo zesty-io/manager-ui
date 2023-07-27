@@ -36,6 +36,8 @@ import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import { MenuListDropDown } from "@zesty-io/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage } from "react-use";
+import { isEmpty } from "lodash";
+import { useDispatch } from "react-redux";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
 import {
@@ -52,6 +54,7 @@ import {
 } from "../../../../../../shell/services/types";
 import { ReorderNav } from "../ReorderNav";
 import { HideContentItemDialog } from "../HideContentItemDialog";
+import { notify } from "../../../../../../shell/store/notifications";
 
 interface NavData {
   nav: TreeItem[];
@@ -88,6 +91,7 @@ const ICONS: Record<string, SvgIconComponent> = {
 export const ContentNav = () => {
   const location = useLocation();
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const sideBarChildrenContainerRef = useRef(null);
   const [createContentDialogLimit, setCreateContentDialogLimit] = useState<
@@ -103,9 +107,10 @@ export const ContentNav = () => {
   const [isHideMode, setIsHideMode] = useState(false);
   const [itemToHide, setItemToHide] = useState<ContentNavItem>(null);
 
-  const { data: currentUserRoles, error: currentUserRolesError } =
+  const { data: currentUserRoles, isError: currentUserRolesError } =
     useGetCurrentUserRolesQuery();
-  const { data: rawNavData } = useGetContentNavItemsQuery();
+  const { data: rawNavData, isError: navItemsError } =
+    useGetContentNavItemsQuery();
 
   const [expandedPageItems, setExpandedPageItems] = useLocalStorage(
     "zesty:navContentPages:open",
@@ -165,7 +170,7 @@ export const ContentNav = () => {
   }, [currentUserRoles]);
 
   const mappedTree: TreeItem[] = useMemo(() => {
-    if (!!rawNavData?.length) {
+    if (!!rawNavData?.length && !currentUserRolesError) {
       let filteredNavData = [...rawNavData];
 
       // Find and store the clippings zuid
@@ -183,7 +188,7 @@ export const ContentNav = () => {
         });
       }
 
-      if (!currentUserRolesError && !!granularRoles?.length) {
+      if (!!granularRoles?.length) {
         // Filter nav based on user's granular role access
         filteredNavData = filteredNavData.filter((navItem) => {
           return granularRoles.includes(navItem.ZUID);
@@ -395,6 +400,26 @@ export const ContentNav = () => {
       return pathWithContentZUID;
     }
   }, [location, mappedTree, clippingsZUID]);
+
+  useEffect(() => {
+    if (currentUserRolesError) {
+      dispatch(
+        notify({
+          message: "Failed to load your user role.",
+          kind: "error",
+        })
+      );
+    }
+
+    if (navItemsError) {
+      dispatch(
+        notify({
+          message: "Failed to load content nav items.",
+          kind: "error",
+        })
+      );
+    }
+  }, [currentUserRolesError, navItemsError]);
 
   const noMatchedItems =
     !navTree.nav.length &&

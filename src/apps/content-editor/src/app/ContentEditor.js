@@ -7,7 +7,6 @@ import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { legacyTheme } from "@zesty-io/material";
 
-import { useGetCurrentUserRolesQuery } from "../../../../shell/services/accounts";
 import { useGetContentNavItemsQuery } from "../../../../shell/services/instance";
 import { notify } from "../../../../shell/store/notifications";
 
@@ -28,7 +27,6 @@ import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
 import Analytics from "./views/Analytics";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 let customTheme = createTheme(legacyTheme, {
@@ -96,43 +94,34 @@ let customTheme = createTheme(legacyTheme, {
 });
 
 export default function ContentEditor() {
-  const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
+  const ui = useSelector((state) => state.ui);
 
-  const { error: currentUserRolesError } = useGetCurrentUserRolesQuery();
   const {
     data: rawNavData,
-    error: navItemsError,
-    isLoading: isLoadingNavItems,
+    isLoading: loadingNavItems,
+    isError: navItemsError,
   } = useGetContentNavItemsQuery();
 
   useEffect(() => {
-    if (!!currentUserRolesError) {
+    if (navItemsError) {
       dispatch(
         notify({
-          message: `${currentUserRolesError.status}: Failed to load your user role.`,
+          message: "Failed to load content nav items.",
           kind: "error",
         })
       );
     }
-
-    if (!!navItemsError) {
-      dispatch(
-        notify({
-          message: `${navItemsError.status}: Failed to load content nav items.`,
-          kind: "error",
-        })
-      );
-    }
-  }, [currentUserRolesError, navItemsError]);
-
-  const loading = isLoadingNavItems || navItemsError || currentUserRolesError;
+  }, [navItemsError]);
 
   return (
     <Fragment>
-      <WithLoader condition={!loading} message="Starting Content Editor">
+      <WithLoader
+        condition={!loadingNavItems}
+        message="Starting Content Editor"
+      >
         <ThemeProvider theme={customTheme}>
-          {rawNavData?.length === 0 ? (
+          {!rawNavData?.length ? (
             <div className={styles.SchemaRedirect}>
               <h1 className={styles.display}>
                 Please create a new content model
