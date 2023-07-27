@@ -357,7 +357,7 @@ export default function ItemEdit() {
                     <Box
                       sx={{
                         color: "text.primary",
-                        height: "100%",
+                        height: "calc(100% - 65px)",
                         "*": {
                           boxSizing: "border-box",
                         },

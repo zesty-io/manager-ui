@@ -25,7 +25,7 @@ export const ApiCardList = () => {
           meets your needs.
         </Typography>
       </Stack>
-      <Box bgcolor="grey.50" height="100%">
+      <Box bgcolor="grey.50">
         <Box
           gap={3}
           px={3}
