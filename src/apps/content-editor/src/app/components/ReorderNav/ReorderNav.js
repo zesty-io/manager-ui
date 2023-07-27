@@ -13,6 +13,7 @@ import DragList from "./DragComponents/DragList";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import { instanceApi } from "../../../../../../shell/services/instance";
 
 import styles from "./ReorderNav.less";
 class ReorderNav extends Component {
@@ -63,7 +64,10 @@ class ReorderNav extends Component {
           notify({ message: "Error saving changes", kind: "error" })
         );
         this.setState({ requesting: false });
-      });
+      })
+      .finally(() =>
+        this.props.dispatch(instanceApi.util.invalidateTags(["ContentNav"]))
+      );
   };
 
   handleNestChange = (name) => {
