@@ -27,7 +27,7 @@ import { FieldTypeText, FieldTypeUrl } from "@zesty-io/material";
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-
+import { instanceApi } from "../../../../../../shell/services/instance";
 import styles from "./LinkCreate.less";
 export function LinkCreate() {
   const dispatch = useDispatch();
@@ -104,6 +104,7 @@ export function LinkCreate() {
         } else {
           // this is a successful save
           // message and redirect to new item here
+          dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
           dispatch(
             notify({
               message: "Successfully created link",
