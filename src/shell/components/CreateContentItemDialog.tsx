@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -28,9 +28,15 @@ interface Props {
   open: boolean;
   onClose: () => void;
   limitTo?: ModelType[];
+  modelZUID?: string;
 }
 
-export const CreateContentItemDialog = ({ open, onClose, limitTo }: Props) => {
+export const CreateContentItemDialog = ({
+  open,
+  onClose,
+  limitTo,
+  modelZUID,
+}: Props) => {
   const { data: models } = useGetContentModelsQuery();
   const history = useHistory();
   const [selectedModel, setSelectedModel] = useState({
@@ -59,6 +65,13 @@ export const CreateContentItemDialog = ({ open, onClose, limitTo }: Props) => {
 
     return [];
   }, [models, limitTo]);
+
+  useEffect(() => {
+    if (!!models?.length && !!modelZUID) {
+      const match = models.find((model) => model.ZUID === modelZUID);
+      setSelectedModel(match);
+    }
+  }, [modelZUID, models]);
 
   return (
     <ThemeProvider theme={theme}>

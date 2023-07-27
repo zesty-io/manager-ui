@@ -88,6 +88,7 @@ export const ContentNav = () => {
   >([]);
   const [keyword, setKeyword] = useState("");
   const [clippingsZUID, setClippingsZUID] = useState("");
+  const [modelZUID, setModelZUID] = useState("");
   const [isCreateContentDialogOpen, setIsCreateContentDialogOpen] =
     useState(false);
   const { data: currentUserRoles, isError: currentUserRolesFailed } =
@@ -219,7 +220,12 @@ export const ContentNav = () => {
           </IconButton>,
         ];
 
-        if (navItem.type === "dataset" || navItem.type === "pageset") {
+        if (
+          (navItem.type === "dataset" || navItem.type === "pageset") &&
+          !["dashboard widgets", "clippings", "globals"].includes(
+            navItem.label.toLowerCase()
+          )
+        ) {
           actions.push(
             <IconButton
               data-cy="tree-item-add-new-content"
@@ -236,8 +242,8 @@ export const ContentNav = () => {
               size="xSmall"
               onClick={(e) => {
                 e.stopPropagation();
-                // onAddContent(nodeId);
-                console.log("add new item: ", navItem.ZUID);
+                setModelZUID(navItem.contentModelZUID);
+                setIsCreateContentDialogOpen(true);
               }}
             >
               <AddRoundedIcon sx={{ fontSize: 16 }} />
@@ -643,8 +649,10 @@ export const ContentNav = () => {
         <CreateContentItemDialog
           open
           limitTo={createContentDialogLimit}
+          modelZUID={modelZUID}
           onClose={() => {
             setCreateContentDialogLimit([]);
+            setModelZUID("");
             setIsCreateContentDialogOpen(false);
           }}
         />
