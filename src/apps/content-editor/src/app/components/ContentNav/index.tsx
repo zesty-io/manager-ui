@@ -32,6 +32,7 @@ import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import HomeIcon from "@mui/icons-material/Home";
 import { FileTable } from "@zesty-io/material";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import { MenuListDropDown } from "@zesty-io/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage } from "react-use";
@@ -45,8 +46,12 @@ import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/ac
 import { useGetContentNavItemsQuery } from "../../../../../../shell/services/instance";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { CreateContentItemDialog } from "../../../../../../shell/components/CreateContentItemDialog";
-import { ModelType } from "../../../../../../shell/services/types";
+import {
+  ContentNavItem,
+  ModelType,
+} from "../../../../../../shell/services/types";
 import { ReorderNav } from "../ReorderNav";
+import { HideContentItemDialog } from "../HideContentItemDialog";
 
 interface NavData {
   nav: TreeItem[];
@@ -93,6 +98,9 @@ export const ContentNav = () => {
   const [isCreateContentDialogOpen, setIsCreateContentDialogOpen] =
     useState(false);
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false);
+  const [isHideDialogOpen, setIsHideDialogOpen] = useState(false);
+  const [isHideMode, setIsHideMode] = useState(false);
+  const [itemToHide, setItemToHide] = useState<ContentNavItem>(null);
   const { data: currentUserRoles, isError: currentUserRolesFailed } =
     useGetCurrentUserRolesQuery();
   const { data: rawNavData, isError: navItemsFailed } =
@@ -191,6 +199,9 @@ export const ContentNav = () => {
       // Set path, actions and icon, and initiate empty children array
       return filteredNavData.map((navItem) => {
         let path = "";
+        const isHideMode = hiddenNavItems.find(
+          (item) => item.ZUID === navItem.ZUID
+        );
 
         switch (navItem.type) {
           case "item":
@@ -217,11 +228,17 @@ export const ContentNav = () => {
             size="xSmall"
             onClick={(e) => {
               e.stopPropagation();
-              // onHideItem(nodeId);
-              console.log("hide: ", navItem.ZUID);
+
+              setItemToHide(navItem);
+              setIsHideMode(!isHideMode);
+              setIsHideDialogOpen(true);
             }}
           >
-            <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
+            {isHideMode ? (
+              <VisibilityOffRoundedIcon sx={{ fontSize: 16 }} />
+            ) : (
+              <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
+            )}
           </IconButton>,
         ];
 
@@ -685,6 +702,18 @@ export const ContentNav = () => {
       )}
       {isReorderDialogOpen && (
         <ReorderNav isOpen toggleOpen={() => setIsReorderDialogOpen(false)} />
+      )}
+      {isHideDialogOpen && (
+        <HideContentItemDialog
+          open
+          isHide={isHideMode}
+          item={itemToHide}
+          onClose={() => {
+            setIsHideDialogOpen(false);
+            setIsHideMode(false);
+            setItemToHide(null);
+          }}
+        />
       )}
     </>
   );
