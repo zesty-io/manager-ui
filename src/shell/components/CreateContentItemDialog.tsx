@@ -6,16 +6,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  DialogContentText,
   TextField,
   InputLabel,
   Autocomplete,
   Typography,
-  Tooltip,
-  Stack,
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { useHistory } from "react-router";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
@@ -95,17 +91,7 @@ export const CreateContentItemDialog = ({
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <Stack direction="row" alignItems="center" gap={1} mb={0.5}>
-            <InputLabel sx={{ mb: 0 }}>Select Model</InputLabel>
-            <Tooltip
-              placement="right-start"
-              title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
-            >
-              <InfoRoundedIcon
-                sx={{ width: 12, height: 12, color: "action.active" }}
-              />
-            </Tooltip>
-          </Stack>
+          <InputLabel sx={{ mb: 0.5 }}>Select Model</InputLabel>
           <Autocomplete
             size="small"
             fullWidth
