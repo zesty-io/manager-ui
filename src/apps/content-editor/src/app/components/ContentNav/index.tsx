@@ -152,13 +152,15 @@ export const ContentNav = () => {
     return [];
   }, [currentUserRoles]);
 
-  const navTree: NavData = useMemo(() => {
+  const mappedTree: TreeItem[] = useMemo(() => {
     if (!!rawNavData?.length) {
       let filteredNavData = [...rawNavData];
 
       // Find and store the clippings zuid
       const clippingsModel = filteredNavData.find(
-        (item) => item.label.toLowerCase() === "clippings"
+        (item) =>
+          item.label.toLowerCase() === "clippings" ||
+          item.label.toLowerCase() === "globals"
       );
 
       setClippingsZUID(clippingsModel?.ZUID ?? "");
@@ -185,7 +187,7 @@ export const ContentNav = () => {
       filteredNavData = filteredNavData.sort((a, b) => a?.sort - b?.sort);
 
       // Set path, actions and icon, and initiate empty children array
-      const mappedTree: TreeItem[] = filteredNavData.map((navItem) => {
+      return filteredNavData.map((navItem) => {
         let path = "";
 
         switch (navItem.type) {
@@ -206,6 +208,7 @@ export const ContentNav = () => {
         let actions = [
           <IconButton
             data-cy="tree-item-hide"
+            key="tree-item-hide"
             sx={{
               borderRadius: 0.5,
             }}
@@ -229,6 +232,7 @@ export const ContentNav = () => {
           actions.push(
             <IconButton
               data-cy="tree-item-add-new-content"
+              key="tree-item-add-new-content"
               sx={{
                 borderRadius: 0.5,
                 backgroundColor: "primary.dark",
@@ -262,7 +266,13 @@ export const ContentNav = () => {
           children: [],
         };
       });
+    }
 
+    return [];
+  }, [granularRoles, rawNavData, keyword]);
+
+  const navTree: NavData = useMemo(() => {
+    if (mappedTree?.length) {
       // Convert nav item array to zuid:treeItem map
       const zuidTreeItemMap = mappedTree.reduce(
         (acc: { [key: string]: TreeItem }, curr) => {
@@ -320,7 +330,11 @@ export const ContentNav = () => {
       headless: [],
       hidden: [],
     };
-  }, [granularRoles, rawNavData, keyword]);
+  }, [mappedTree]);
+
+  const pathExists = (tree: TreeItem[], path: string) => {
+    return !!tree?.find((item) => item.path === path);
+  };
 
   const activeNodeId = useMemo(() => {
     const pathnameArr = location?.pathname?.split("/");
@@ -336,18 +350,27 @@ export const ContentNav = () => {
 
     // Matches url /content/X-XXXX/X-XXXX or /content/link/X-XXXXXX
     if (pathnameArr.length >= 4) {
-      /**
-       * Checks if the url's content model ZUID is equal to the saved clippings zuid
-       * This allows the sidebar to select the clippings nav item since when the clippings item is
-       * loaded, it dynamically adds a content item zuid to the url
-       */
-      if (pathnameArr[2] === clippingsZUID) {
-        return pathnameArr.splice(0, 3).join("/");
+      const pathWithContentZUID = pathnameArr.slice(0, 4).join("/");
+      const pathWithoutContentZUID = pathnameArr.slice(0, 3).join("/");
+
+      if (!pathExists(mappedTree, pathWithContentZUID)) {
+        /**
+         * Checks if the url's content model ZUID is equal to the saved clippings/globals zuid
+         * This allows the sidebar to select the clippings nav item since when the clippings item is
+         * loaded, it dynamically adds a content item zuid to the url.
+         * Also enables highlighting of a parent nav item when clicking an item from a templateset or dataset which has no nav item entry
+         */
+        if (
+          pathnameArr[2] === clippingsZUID ||
+          pathExists(mappedTree, pathWithoutContentZUID)
+        ) {
+          return pathWithoutContentZUID;
+        }
       }
 
-      return pathnameArr.splice(0, 4).join("/");
+      return pathWithContentZUID;
     }
-  }, [location]);
+  }, [location, mappedTree, clippingsZUID]);
 
   useEffect(() => {
     // TODO: Add notify handling here
