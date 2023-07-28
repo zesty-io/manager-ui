@@ -1,1 +1,0 @@
-export { Parent } from "./Parent";
