@@ -8,6 +8,7 @@ export default class DragList extends Component {
     source: "",
     target: "",
   };
+
   render() {
     return (
       <ul
@@ -24,6 +25,7 @@ export default class DragList extends Component {
               key={item.ZUID}
               id={item.ZUID}
               draggable={true}
+              onDrag={(event) => event.preventDefault()}
               onDragStart={(event) => {
                 // firefox requires this event, it does nothing
                 event.dataTransfer.setData("text", "");
@@ -32,9 +34,13 @@ export default class DragList extends Component {
                 event.preventDefault();
               }}
               onDragEnd={(evt) => {
-                this.props.handleMove(evt.target.id, this.state.target);
+                evt.preventDefault();
+                this.props.handleMove(item.ZUID, this.state.target);
               }}
-              onDragEnter={(evt) => this.setState({ target: evt.target.id })}
+              onDragEnter={(evt) => {
+                evt.preventDefault();
+                this.setState({ target: item.ZUID });
+              }}
               onDrop={this.drop}
               handleNestChange={this.props.handleNestChange}
             />

@@ -88,26 +88,27 @@ class ReorderNav extends Component {
     });
   };
 
-  handleMove = (source, target) => {
-    // filter out the source item
-    let mutatedArray = this.state[this.state.current].filter(
-      (item) => item.ZUID !== source
+  handleMove = (draggedZUID, hoveredZUID) => {
+    if (!draggedZUID || !hoveredZUID) {
+      return;
+    }
+
+    const hoveredIndex = [...this.state[this.state.current]].findIndex(
+      (i) => i.ZUID === hoveredZUID
     );
-    let indexOfTarget = 0;
-    mutatedArray.map((item, i) => {
-      if (item.ZUID === target) {
-        indexOfTarget = i;
-      }
-    });
-    // insert where it was dragged
-    mutatedArray.splice(
-      indexOfTarget,
-      0,
-      this.state[this.state.current].find((item) => item.ZUID === source)
+    const draggedIndex = [...this.state[this.state.current]].findIndex(
+      (i) => i.ZUID === draggedZUID
     );
+    const draggedItemData = [...this.state[this.state.current]].find(
+      (i) => i.ZUID === draggedZUID
+    );
+    const _items = [...this.state[this.state.current]];
+
+    _items.splice(draggedIndex, 1);
+    _items.splice(hoveredIndex, 0, draggedItemData);
 
     this.setState({
-      [this.state.current]: mutatedArray,
+      [this.state.current]: _items,
       dirty: true,
     });
   };
