@@ -36,7 +36,6 @@ import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import { MenuListDropDown } from "@zesty-io/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage } from "react-use";
-import { isEmpty } from "lodash";
 import { useDispatch } from "react-redux";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
@@ -485,7 +484,11 @@ export const ContentNav = () => {
             {!noMatchedItems && (
               <List disablePadding>
                 {SUB_MENUS.map((menu) => {
-                  const isActive = location.pathname === menu.path;
+                  // Wildcard match for /content/releases since this has a lot of sub routes
+                  const isActive =
+                    menu.name.toLowerCase() === "dashboard"
+                      ? location.pathname === menu.path
+                      : location.pathname.includes(menu.path);
 
                   return (
                     <ListItem
