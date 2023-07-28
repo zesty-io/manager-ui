@@ -1,4 +1,4 @@
-import { useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
@@ -7,8 +7,7 @@ import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { legacyTheme } from "@zesty-io/material";
 
-import { useGetContentNavItemsQuery } from "../../../../shell/services/instance";
-import { notify } from "../../../../shell/store/notifications";
+import { fetchNav } from "../store/navContent";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -95,34 +94,29 @@ let customTheme = createTheme(legacyTheme, {
 });
 
 export default function ContentEditor() {
-  const dispatch = useDispatch();
+  const navContent = useSelector((state) => state.navContent);
   const ui = useSelector((state) => state.ui);
+  const dispatch = useDispatch();
 
-  const {
-    data: rawNavData,
-    isLoading: loadingNavItems,
-    isError: navItemsError,
-  } = useGetContentNavItemsQuery();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (navItemsError) {
-      dispatch(
-        notify({
-          message: "Failed to load content nav items.",
-          kind: "error",
-        })
-      );
-    }
-  }, [navItemsError]);
+    setLoading(true);
+
+    // Kick off loading data before app mount
+    // to decrease time to first interaction
+    dispatch(fetchNav())
+      .then((_) => setLoading(false))
+      .catch((e) => {
+        throw e;
+      });
+  }, []);
 
   return (
     <Fragment>
-      <WithLoader
-        condition={!loadingNavItems}
-        message="Starting Content Editor"
-      >
+      <WithLoader condition={!loading} message="Starting Content Editor">
         <ThemeProvider theme={customTheme}>
-          {!rawNavData?.length ? (
+          {navContent.raw.length === 0 ? (
             <div className={styles.SchemaRedirect}>
               <h1 className={styles.display}>
                 Please create a new content model
