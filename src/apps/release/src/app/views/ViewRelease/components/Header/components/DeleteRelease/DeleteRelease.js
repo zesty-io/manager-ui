@@ -13,7 +13,7 @@ import { deleteRelease } from "shell/store/releases";
 import { usePermission } from "shell/hooks/use-permissions";
 
 import styles from "./DeleteRelease.less";
-export const DeleteRelease = memo(function DeleteRelease() {
+export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
   const dispatch = useDispatch();
   const params = useParams();
   const history = useHistory();
@@ -26,7 +26,7 @@ export const DeleteRelease = memo(function DeleteRelease() {
   const onDeleteRelease = () => {
     setLoading(true);
     dispatch(deleteRelease(params.zuid)).finally(() => {
-      history.push("/release");
+      history.push(isContentSubpage ? "/content/releases" : "/release");
     });
   };
 

@@ -75,7 +75,7 @@ const SUB_MENUS: Readonly<SubMenu[]> = [
   {
     name: "Releases",
     icon: ScheduleRounded,
-    path: "/release",
+    path: "/content/releases",
   },
 ] as const;
 const ICONS: Record<string, SvgIconComponent> = {

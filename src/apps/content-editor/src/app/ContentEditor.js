@@ -21,6 +21,7 @@ import { LinkCreate } from "./views/LinkCreate";
 import { LinkEdit } from "./views/LinkEdit";
 import { NotFound } from "./views/NotFound";
 import { CSVImport } from "./views/CSVImport";
+import ReleaseApp from "../../../release/src";
 
 // Vendor styles for codemirror, prosemirror and flatpickr
 import "@zesty-io/core/vendor.css";
@@ -150,6 +151,7 @@ export default function ContentEditor() {
               >
                 <div className={styles.ContentWrap}>
                   <Switch>
+                    <Route path="/content/releases" component={ReleaseApp} />
                     <Route exact path="/content" component={Analytics} />
                     <Route
                       exact

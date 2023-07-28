@@ -15,7 +15,7 @@ import { PublishAll } from "./components/PublishAll";
 import { DeleteRelease } from "./components/DeleteRelease";
 
 import styles from "./Header.less";
-export function Header({ plan }) {
+export function Header({ plan, isContentSubpage }) {
   const dispatch = useDispatch();
   const params = useParams();
   const history = useHistory();
@@ -37,7 +37,7 @@ export function Header({ plan }) {
 
   return (
     <header data-cy="ReleaseHeader" className={styles.Header}>
-      <AppLink to="/release">
+      <AppLink to={isContentSubpage ? `/content/releases` : `/release`}>
         <Button variant="contained" className={styles.BackBtn}>
           <FastRewindIcon fontSize="small" />
         </Button>
@@ -46,7 +46,13 @@ export function Header({ plan }) {
       <Select
         name="release"
         value={params.zuid}
-        onChange={(evt) => history.push(`/release/${evt.target.value}`)}
+        onChange={(evt) =>
+          history.push(
+            isContentSubpage
+              ? `/content/releases/${evt.target.value}`
+              : `/release/${evt.target.value}`
+          )
+        }
         size="small"
       >
         {releases.map((release) => {
@@ -62,7 +68,7 @@ export function Header({ plan }) {
         onSelect={onSelect}
         keepResultsOnSelect={true}
       />
-      <DeleteRelease />
+      <DeleteRelease isContentSubpage={isContentSubpage} />
     </header>
   );
 }

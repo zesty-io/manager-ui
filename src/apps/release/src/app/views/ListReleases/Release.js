@@ -14,7 +14,13 @@ export function Release(props) {
   return (
     <tr className={styles.ReleaseStep}>
       <td>
-        <AppLink to={`/release/${props.release.ZUID}`}>
+        <AppLink
+          to={
+            props.isContentSubpage
+              ? `/content/releases/${props.release.ZUID}`
+              : `/release/${props.release.ZUID}`
+          }
+        >
           {props.release.name}
         </AppLink>
       </td>

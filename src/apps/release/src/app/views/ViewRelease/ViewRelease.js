@@ -12,7 +12,7 @@ import { PlanTable } from "./components/PlanTable";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import styles from "./ViewRelease.less";
-export function ViewRelease() {
+export function ViewRelease({ isContentSubpage }) {
   const dispatch = useDispatch();
   const params = useParams();
 
@@ -67,7 +67,7 @@ export function ViewRelease() {
       message={`Loading Release: ${release?.name}`}
       height="100vh"
     >
-      <Header plan={release} />
+      <Header plan={release} isContentSubpage={isContentSubpage} />
       {Array.isArray(members) && members.length ? (
         <PlanTable members={members} />
       ) : (
