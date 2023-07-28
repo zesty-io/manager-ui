@@ -39,10 +39,7 @@ import { useLocalStorage } from "react-use";
 import { useDispatch } from "react-redux";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
-import {
-  NavTree,
-  TreeItem,
-} from "../../../../../../shell/components/NavTreeV2";
+import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
 import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
 import { useGetContentNavItemsQuery } from "../../../../../../shell/services/instance";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
