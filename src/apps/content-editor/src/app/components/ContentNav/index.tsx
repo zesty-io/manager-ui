@@ -296,11 +296,6 @@ export const ContentNav = () => {
 
   const navTree: NavData = useMemo(() => {
     if (mappedTree?.length) {
-      // Get all hidden items
-      const hidden: TreeItem[] = mappedTree.filter((item) =>
-        hiddenZUIDs.includes(item.ZUID)
-      );
-
       // Convert nav item array to zuid:treeItem map
       const zuidTreeItemMap = mappedTree.reduce(
         (acc: { [key: string]: TreeItem }, curr) => {
@@ -334,16 +329,29 @@ export const ContentNav = () => {
       // Split the nav tree into categories
       const nav: TreeItem[] = [];
       const headless: TreeItem[] = [];
+      const hidden: TreeItem[] = [];
 
       tree.forEach((item) => {
+        if (hiddenZUIDs.includes(item.ZUID)) {
+          return hidden.push(item);
+        }
+
         if (item.type === "dataset") {
           return headless.push(item);
         }
 
-        // Don't add a hidden item to the tree
-        if (!item.parentZUID && !hiddenZUIDs.includes(item.ZUID)) {
-          return nav.push(item);
+        if (item.parentZUID) {
+          // If an item has a parent that was deleted, show that item only if
+          // it's being search for, else don't add it to the nav
+          if (!!keyword) {
+            return nav.push(item);
+          }
+
+          return;
         }
+
+        // This pushes all the root nodes to the tree
+        return nav.push(item);
       });
 
       return {
@@ -358,7 +366,7 @@ export const ContentNav = () => {
       headless: [],
       hidden: [],
     };
-  }, [mappedTree, hiddenZUIDs]);
+  }, [mappedTree, hiddenZUIDs, keyword]);
 
   const pathExists = (tree: TreeItem[], path: string) => {
     return !!tree?.find((item) => item.path === path);
