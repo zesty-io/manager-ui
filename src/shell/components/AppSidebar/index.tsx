@@ -1,5 +1,4 @@
 import {
-  FC,
   useMemo,
   forwardRef,
   PropsWithChildren,
@@ -11,7 +10,6 @@ import {
   Stack,
   Typography,
   PaletteMode,
-  CssBaseline,
   ScopedCssBaseline,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
@@ -50,11 +48,11 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
 
     return (
       <ThemeProvider theme={themeMode}>
-        <ScopedCssBaseline component={Box} sx={{ height: "inherit" }}>
+        <ScopedCssBaseline component={Box} sx={{ height: "100%" }}>
           <Stack
             sx={{
               backgroundColor: isLightMode ? "common.white" : "grey.900",
-              height: "inherit",
+              height: "100%",
             }}
             {...props}
           >

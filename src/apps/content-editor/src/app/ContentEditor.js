@@ -27,6 +27,7 @@ import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
 import Analytics from "./views/Analytics";
+import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 let customTheme = createTheme(legacyTheme, {
@@ -136,7 +137,13 @@ export default function ContentEditor() {
                   : ""
               )}
             >
-              <ContentNav />
+              <ResizableContainer
+                defaultWidth={300}
+                minWidth={220}
+                maxWidth={360}
+              >
+                <ContentNav />
+              </ResizableContainer>
               <div
                 className={cx(
                   styles.Content,
