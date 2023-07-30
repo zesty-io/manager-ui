@@ -9,6 +9,7 @@ import {
   Avatar,
   Stack,
   Link,
+  Tooltip,
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -62,46 +63,53 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
           <InstanceMenu openNav={openNav} />
 
           {/* Sidebar handle */}
-          <IconButton
-            data-cy="CollapseGlobalSideBar"
-            onClick={onClick}
-            sx={{
-              borderColor: "grey.600",
-              borderStyle: "solid",
-              borderWidth: "1px",
-              backgroundColor: "grey.900",
-
-              width: "24px",
-              height: "24px",
-
-              position: "absolute",
-              top: "32px",
-              right: "-14px",
-              zIndex: (theme) => theme.zIndex.appBar,
-
-              "&:hover": {
+          <Tooltip
+            title={openNav ? "Collapse Sidebar" : "Expand Sidebar"}
+            placement="right-start"
+            enterDelay={2000}
+            enterNextDelay={2000}
+          >
+            <IconButton
+              data-cy="CollapseGlobalSideBar"
+              onClick={onClick}
+              sx={{
+                borderColor: "grey.600",
+                borderStyle: "solid",
+                borderWidth: "1px",
                 backgroundColor: "grey.900",
 
-                ".MuiSvgIcon-root": {
-                  color: "common.white",
+                width: "24px",
+                height: "24px",
+
+                position: "absolute",
+                top: "32px",
+                right: "-14px",
+                zIndex: (theme) => theme.zIndex.appBar,
+
+                "&:hover": {
+                  backgroundColor: "grey.900",
+
+                  ".MuiSvgIcon-root": {
+                    color: "common.white",
+                  },
                 },
-              },
-            }}
-          >
-            {openNav ? (
-              <KeyboardDoubleArrowLeftIcon
-                fontSize="small"
-                sx={{
-                  color: "grey.500",
-                }}
-              />
-            ) : (
-              <KeyboardDoubleArrowRightIcon
-                fontSize="small"
-                sx={{ color: "grey.500" }}
-              />
-            )}
-          </IconButton>
+              }}
+            >
+              {openNav ? (
+                <KeyboardDoubleArrowLeftIcon
+                  fontSize="small"
+                  sx={{
+                    color: "grey.500",
+                  }}
+                />
+              ) : (
+                <KeyboardDoubleArrowRightIcon
+                  fontSize="small"
+                  sx={{ color: "grey.500" }}
+                />
+              )}
+            </IconButton>
+          </Tooltip>
 
           <GlobalMenu />
 

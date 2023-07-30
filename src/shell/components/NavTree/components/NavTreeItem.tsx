@@ -1,24 +1,12 @@
 import React, { FC, useMemo, useState } from "react";
 import { TreeItem } from "@mui/lab";
-import {
-  Stack,
-  Box,
-  Typography,
-  IconButton,
-  SvgIcon,
-  Button,
-  Tooltip,
-} from "@mui/material";
-import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { Stack, Box, Typography, Tooltip } from "@mui/material";
 
 import { TreeItem as TreeItemType } from "../index";
 
 interface Props {
   labelName: string;
   labelIcon?: any;
-  onHideItem: (path: string) => void;
-  onAddContent: (path: string) => void;
   nodeId: string;
   nestedItems?: TreeItemType[];
   actions?: React.ReactNode[];
@@ -26,8 +14,6 @@ interface Props {
 }
 export const NavTreeItem: FC<Readonly<Props>> = ({
   labelName,
-  onHideItem,
-  onAddContent,
   labelIcon,
   nodeId,
   nestedItems,
@@ -55,7 +41,7 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
           }}
         >
           <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
-          <Tooltip title={labelName} enterDelay={3000} enterNextDelay={3000}>
+          <Tooltip title={labelName} enterDelay={2000} enterNextDelay={2000}>
             <Typography variant="body2" noWrap width="100%">
               {labelName}
             </Typography>
@@ -129,8 +115,6 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
               labelName={item.label}
               nodeId={item.path}
               labelIcon={item.icon}
-              onHideItem={() => {}}
-              onAddContent={() => {}}
               nestedItems={item.children}
               depth={currentDepth}
               actions={item.actions ?? []}

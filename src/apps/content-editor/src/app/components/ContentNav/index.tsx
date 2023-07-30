@@ -454,22 +454,29 @@ export const ContentNav = () => {
               >
                 Content
               </Typography>
-              <Button
-                variant="contained"
-                onClick={() => setIsCreateContentDialogOpen(true)}
-                sx={{
-                  width: 24,
-                  height: 24,
-                  minWidth: 0,
-                  p: 0,
-                  backgroundColor: "primary.dark",
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
+              <Tooltip
+                title="Create Content"
+                placement="right-start"
+                enterDelay={2000}
+                enterNextDelay={2000}
               >
-                <AddRoundedIcon fontSize="small" />
-              </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => setIsCreateContentDialogOpen(true)}
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    minWidth: 0,
+                    p: 0,
+                    backgroundColor: "primary.dark",
+                    "&:hover": {
+                      backgroundColor: "primary.dark",
+                    },
+                  }}
+                >
+                  <AddRoundedIcon fontSize="small" />
+                </Button>
+              </Tooltip>
             </Stack>
             <TextField
               InputProps={{

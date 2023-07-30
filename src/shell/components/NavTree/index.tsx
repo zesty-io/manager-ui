@@ -57,8 +57,6 @@ export const NavTree: FC<Readonly<Props>> = ({
               labelName={item.label}
               nodeId={item.path}
               labelIcon={item.icon}
-              onHideItem={() => {}}
-              onAddContent={() => {}}
               nestedItems={item.children}
               actions={item.actions ?? []}
             />
