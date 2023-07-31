@@ -29,11 +29,13 @@ export const ResizableContainer = ({
     setInitialPos(e.clientX);
     // set cursor on the document body to handle cursor leaving the container as we resize
     document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
   };
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);
     document.body.style.cursor = "default";
+    document.body.style.userSelect = "auto";
   }, []);
 
   const handleMouseMove = useCallback(
