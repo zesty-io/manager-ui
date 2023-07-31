@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Route, Switch, useHistory, useLocation } from "react-router";
 import cx from "classnames";
@@ -20,9 +20,7 @@ export default function ReleaseApp() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
 
-  const isContentSubpage = useMemo(() => {
-    return location.pathname.includes("/content");
-  }, [location]);
+  const isContentSubpage = location.pathname?.includes("/content") ?? false;
 
   // load versions for all ZUIDs
   // possibly can lazy load these when you open select
