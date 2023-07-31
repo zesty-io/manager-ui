@@ -378,13 +378,12 @@ export const ContentNav = () => {
 
   const activeNodeId = useMemo(() => {
     const pathnameArr = location?.pathname?.split("/");
-
     if (!pathnameArr?.length) {
       return "";
     }
 
     // Matches url /content/X-XXXXXX
-    if (pathnameArr.length === 3) {
+    if (pathnameArr.length <= 3) {
       return location.pathname;
     }
 
