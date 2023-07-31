@@ -741,7 +741,6 @@ export const ContentNav = () => {
       </AppSideBar>
       {isCreateContentDialogOpen && (
         <CreateContentItemDialog
-          open
           limitTo={createContentDialogLimit}
           modelZUID={modelZUID}
           onClose={() => {

@@ -27,10 +27,6 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   ) => {
     const childrenContainerRef = useRef<HTMLDivElement | null>(null);
 
-    const themeMode = useMemo(() => {
-      return mode === "light" ? theme : darkTheme;
-    }, [mode]);
-
     useImperativeHandle(
       ref,
       () => {
@@ -44,7 +40,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
       []
     );
 
-    const isLightMode = mode === "light";
+    const themeMode = mode === "light" ? theme : darkTheme;
 
     return (
       <ThemeProvider theme={themeMode}>
@@ -54,7 +50,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
         >
           <Stack
             sx={{
-              backgroundColor: isLightMode ? "common.white" : "grey.900",
+              backgroundColor: "background.paper",
               height: "100%",
               userSelect: "none",
             }}

@@ -21,14 +21,14 @@ import { useGetContentModelsQuery } from "../services/instance";
 import { ModelType } from "../services/types";
 
 interface Props {
-  open: boolean;
+  open?: boolean;
   onClose: () => void;
   limitTo?: ModelType[];
   modelZUID?: string;
 }
 
 export const CreateContentItemDialog = ({
-  open,
+  open = true,
   onClose,
   limitTo,
   modelZUID,
