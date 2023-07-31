@@ -15,54 +15,62 @@ export type TreeItem = {
 
 interface Props {
   HeaderComponent?: React.ReactNode;
+  ErrorComponent?: React.ReactNode;
   tree: TreeItem[];
   selected: string;
   expandedItems?: string[];
   onToggleCollapse: (paths: string[]) => void;
+  error?: boolean;
 }
 export const NavTree: FC<Readonly<Props>> = ({
   HeaderComponent,
+  ErrorComponent,
   tree,
   selected,
   expandedItems,
   onToggleCollapse,
+  error = false,
 }) => {
   const history = useHistory();
 
   return (
     <>
       {HeaderComponent}
-      <TreeView
-        expanded={expandedItems}
-        selected={selected}
-        defaultCollapseIcon={<MenuListDropDown />}
-        defaultExpandIcon={
-          <MenuListDropDown sx={{ transform: "rotate(-90deg)" }} />
-        }
-        onNodeSelect={(evt: any, nodeIds: string) => {
-          if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
-            history.push(nodeIds);
+      {error ? (
+        ErrorComponent
+      ) : (
+        <TreeView
+          expanded={expandedItems}
+          selected={selected}
+          defaultCollapseIcon={<MenuListDropDown />}
+          defaultExpandIcon={
+            <MenuListDropDown sx={{ transform: "rotate(-90deg)" }} />
           }
-        }}
-        onNodeToggle={(evt: any, nodeIds: string[]) => {
-          if (evt.target.tagName === "svg" || evt.target.tagName === "path") {
-            onToggleCollapse(nodeIds);
-          }
-        }}
-      >
-        {tree?.map((item) => {
-          return (
-            <NavTreeItem
-              key={item.path}
-              labelName={item.label}
-              nodeId={item.path}
-              labelIcon={item.icon}
-              nestedItems={item.children}
-              actions={item.actions ?? []}
-            />
-          );
-        })}
-      </TreeView>
+          onNodeSelect={(evt: any, nodeIds: string) => {
+            if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
+              history.push(nodeIds);
+            }
+          }}
+          onNodeToggle={(evt: any, nodeIds: string[]) => {
+            if (evt.target.tagName === "svg" || evt.target.tagName === "path") {
+              onToggleCollapse(nodeIds);
+            }
+          }}
+        >
+          {tree?.map((item) => {
+            return (
+              <NavTreeItem
+                key={item.path}
+                labelName={item.label}
+                nodeId={item.path}
+                labelIcon={item.icon}
+                nestedItems={item.children}
+                actions={item.actions ?? []}
+              />
+            );
+          })}
+        </TreeView>
+      )}
     </>
   );
 };

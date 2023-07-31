@@ -51,6 +51,8 @@ import {
 import { ReorderNav } from "../ReorderNav";
 import { HideContentItemDialog } from "../HideContentItemDialog";
 import { notify } from "../../../../../../shell/store/notifications";
+import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
+import { NavError } from "./components/NavError";
 
 interface NavData {
   nav: TreeItem[];
@@ -88,6 +90,11 @@ export const ContentNav = () => {
   const location = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
+  // @ts-ignore no proper typing
+  // FIXME: Cannot be overridden
+  const newContentItemShortcut = useMetaKey("N", (e) => {
+    console.log("soimething");
+  });
 
   const sideBarChildrenContainerRef = useRef(null);
   const [createContentDialogLimit, setCreateContentDialogLimit] = useState<
@@ -560,6 +567,7 @@ export const ContentNav = () => {
               expandedItems={expandedPageItems}
               selected={activeNodeId}
               onToggleCollapse={(paths) => setExpandedPageItems(paths)}
+              error={currentUserRolesError || navItemsError}
               HeaderComponent={
                 <Stack
                   direction="row"
@@ -613,12 +621,14 @@ export const ContentNav = () => {
                   </Stack>
                 </Stack>
               }
+              ErrorComponent={<NavError navName="models" />}
             />
             <NavTree
               tree={navTree.headless}
               expandedItems={expandedDatasetItems}
               selected={activeNodeId}
               onToggleCollapse={(paths) => setExpandedDatasetItems(paths)}
+              error={currentUserRolesError || navItemsError}
               HeaderComponent={
                 <Stack
                   direction="row"
@@ -659,6 +669,7 @@ export const ContentNav = () => {
                   </IconButton>
                 </Stack>
               }
+              ErrorComponent={<NavError navName="datasets" />}
             />
             <Accordion
               elevation={0}
