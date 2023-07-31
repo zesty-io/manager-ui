@@ -556,7 +556,7 @@ export const ContentNav = () => {
               width="70px"
               height="64px"
             />
-            <Typography color="text.secondary" variant="body2">
+            <Typography color="text.secondary" variant="body2" align="center">
               No results available for "{keyword}"
             </Typography>
           </Stack>

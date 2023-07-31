@@ -48,7 +48,10 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
 
     return (
       <ThemeProvider theme={themeMode}>
-        <ScopedCssBaseline component={Box} sx={{ height: "100%" }}>
+        <ScopedCssBaseline
+          component={Box}
+          sx={{ height: "100%", width: "inherit" }}
+        >
           <Stack
             sx={{
               backgroundColor: isLightMode ? "common.white" : "grey.900",
