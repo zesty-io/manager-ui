@@ -24,14 +24,12 @@ interface Props {
   open?: boolean;
   onClose: () => void;
   limitTo?: ModelType[];
-  modelZUID?: string;
 }
 
 export const CreateContentItemDialog = ({
   open = true,
   onClose,
   limitTo,
-  modelZUID,
 }: Props) => {
   const { data: models } = useGetContentModelsQuery();
   const history = useHistory();
@@ -61,13 +59,6 @@ export const CreateContentItemDialog = ({
 
     return [];
   }, [models, limitTo]);
-
-  useEffect(() => {
-    if (!!models?.length && !!modelZUID) {
-      const match = models.find((model) => model.ZUID === modelZUID);
-      setSelectedModel(match);
-    }
-  }, [modelZUID, models]);
 
   return (
     <ThemeProvider theme={theme}>

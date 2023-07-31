@@ -51,7 +51,6 @@ import {
 import { ReorderNav } from "../ReorderNav";
 import { HideContentItemDialog } from "../HideContentItemDialog";
 import { notify } from "../../../../../../shell/store/notifications";
-import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { NavError } from "./NavError";
 
 interface NavData {
@@ -90,11 +89,6 @@ export const ContentNav = () => {
   const location = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
-  // @ts-ignore no proper typing
-  // FIXME: Cannot be overridden
-  const newContentItemShortcut = useMetaKey("N", (e) => {
-    console.log("soimething");
-  });
 
   const sideBarChildrenContainerRef = useRef(null);
   const [createContentDialogLimit, setCreateContentDialogLimit] = useState<
@@ -102,7 +96,6 @@ export const ContentNav = () => {
   >([]);
   const [keyword, setKeyword] = useState("");
   const [clippingsZUID, setClippingsZUID] = useState("");
-  const [modelZUID, setModelZUID] = useState("");
   const [isCreateContentDialogOpen, setIsCreateContentDialogOpen] =
     useState(false);
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false);
@@ -273,8 +266,7 @@ export const ContentNav = () => {
               size="xSmall"
               onClick={(e) => {
                 e.stopPropagation();
-                setModelZUID(navItem.contentModelZUID);
-                setIsCreateContentDialogOpen(true);
+                history.push(`/content/${navItem.ZUID}/new`);
               }}
             >
               <AddRoundedIcon sx={{ fontSize: 16 }} />
@@ -742,10 +734,8 @@ export const ContentNav = () => {
       {isCreateContentDialogOpen && (
         <CreateContentItemDialog
           limitTo={createContentDialogLimit}
-          modelZUID={modelZUID}
           onClose={() => {
             setCreateContentDialogLimit([]);
-            setModelZUID("");
             setIsCreateContentDialogOpen(false);
           }}
         />
