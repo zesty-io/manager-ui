@@ -56,6 +56,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
             sx={{
               backgroundColor: isLightMode ? "common.white" : "grey.900",
               height: "100%",
+              userSelect: "none",
             }}
             {...props}
           >
