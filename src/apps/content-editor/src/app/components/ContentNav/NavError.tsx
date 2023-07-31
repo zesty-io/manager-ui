@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Box, Typography } from "@mui/material";
 
-import notFound from "../../../../../../../../public/images/notFoundTransparent.png";
+import notFound from "../../../../../../../public/images/notFoundTransparent.png";
 
 interface Props {
   navName: string;

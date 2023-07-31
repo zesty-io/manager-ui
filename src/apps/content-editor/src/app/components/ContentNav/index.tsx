@@ -52,7 +52,7 @@ import { ReorderNav } from "../ReorderNav";
 import { HideContentItemDialog } from "../HideContentItemDialog";
 import { notify } from "../../../../../../shell/store/notifications";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
-import { NavError } from "./components/NavError";
+import { NavError } from "./NavError";
 
 interface NavData {
   nav: TreeItem[];
