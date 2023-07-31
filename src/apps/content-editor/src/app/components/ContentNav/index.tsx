@@ -756,7 +756,6 @@ export const ContentNav = () => {
       )}
       {isHideDialogOpen && (
         <HideContentItemDialog
-          open
           isHide={isHideMode}
           item={itemToHide}
           onClose={() => {

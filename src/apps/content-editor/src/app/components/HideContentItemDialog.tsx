@@ -15,7 +15,6 @@ import { theme } from "@zesty-io/material";
 import { ContentNavItem } from "../../../../../shell/services/types";
 
 interface Props {
-  open: boolean;
   isHide: boolean;
   item: ContentNavItem;
   onClose: () => void;
@@ -23,7 +22,6 @@ interface Props {
 }
 
 export const HideContentItemDialog: FC<Readonly<Props>> = ({
-  open,
   isHide,
   item,
   onClose,
@@ -31,7 +29,7 @@ export const HideContentItemDialog: FC<Readonly<Props>> = ({
 }) => {
   return (
     <ThemeProvider theme={theme}>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
+      <Dialog open onClose={onClose} fullWidth maxWidth={"xs"}>
         <DialogContent sx={{ mt: 2.5 }}>
           <Stack>
             <SvgIcon
