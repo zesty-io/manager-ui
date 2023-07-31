@@ -491,7 +491,7 @@ export const ContentNav = () => {
               }}
               onChange={(evt) => setKeyword(evt.target.value)}
             />
-            {!noMatchedItems && (
+            {!keyword && (
               <List disablePadding>
                 {SUB_MENUS.map((menu) => {
                   // Wildcard match for /content/releases since this has a lot of sub routes
