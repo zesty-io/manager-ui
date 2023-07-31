@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { useLocalStorage } from "react-use";
 
@@ -29,11 +29,13 @@ export const ResizableContainer = ({
     setInitialPos(e.clientX);
     // set cursor on the document body to handle cursor leaving the container as we resize
     document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
   };
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);
     document.body.style.cursor = "default";
+    document.body.style.userSelect = "auto";
   }, []);
 
   const handleMouseMove = useCallback(
@@ -56,9 +58,11 @@ export const ResizableContainer = ({
     };
   }, [handleMouseMove, handleMouseUp]);
 
+  const MemoizedChildren = useMemo(() => children, [children]);
+
   return (
     <Box width={width} position="relative">
-      {children}
+      {MemoizedChildren}
       <Box
         sx={{
           width: "4px",
@@ -66,7 +70,7 @@ export const ResizableContainer = ({
           position: "absolute",
           right: "-2px",
           top: "0",
-          zIndex: "1",
+          zIndex: "2",
           bgcolor: isResizing ? "rgba(255, 93, 10, 0.5)" : "transparent",
           "&:hover": {
             backgroundColor: "rgba(255, 93, 10, 0.5)",
