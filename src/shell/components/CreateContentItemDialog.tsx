@@ -60,6 +60,11 @@ export const CreateContentItemDialog = ({
     return [];
   }, [models, limitTo]);
 
+  const onCreateClick = () => {
+    onClose();
+    history.push("/content/" + selectedModel.ZUID + "/new");
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
@@ -107,6 +112,18 @@ export const CreateContentItemDialog = ({
             getOptionLabel={(option: any) => option.label}
             isOptionEqualToValue={(option, value) => option.ZUID === value.ZUID}
             onChange={(event, newValue) => setSelectedModel(newValue)}
+            onKeyDown={(evt) => {
+              evt.preventDefault();
+
+              if (evt.key.toLowerCase() === "enter" && !!selectedModel?.ZUID) {
+                onCreateClick();
+              }
+            }}
+            ListboxProps={{
+              style: {
+                height: "250px",
+              },
+            }}
           />
         </DialogContent>
         <DialogActions>
@@ -117,10 +134,7 @@ export const CreateContentItemDialog = ({
             variant="contained"
             color="primary"
             disabled={!selectedModel.ZUID}
-            onClick={() => {
-              onClose();
-              history.push("/content/" + selectedModel.ZUID + "/new");
-            }}
+            onClick={onCreateClick}
           >
             Create
           </Button>
