@@ -23,7 +23,6 @@ import {
   ScheduleRounded,
 } from "@mui/icons-material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import SearchIcon from "@mui/icons-material/Search";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
@@ -452,8 +451,8 @@ export const ContentNav = () => {
               <Tooltip
                 title="Create Content"
                 placement="right-start"
-                enterDelay={2000}
-                enterNextDelay={2000}
+                enterDelay={1000}
+                enterNextDelay={1000}
               >
                 <Button
                   data-cy="create_new_content_item"
@@ -574,6 +573,8 @@ export const ContentNav = () => {
                     <Tooltip
                       placement="right-start"
                       title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
+                      enterDelay={1000}
+                      enterNextDelay={1000}
                     >
                       <InfoRoundedIcon
                         sx={{ width: 12, height: 12, color: "action.active" }}
@@ -637,6 +638,8 @@ export const ContentNav = () => {
                     <Tooltip
                       placement="right-start"
                       title="Datasets listed here do not have a parent content item and do not have URLs for the content items."
+                      enterDelay={1000}
+                      enterNextDelay={1000}
                     >
                       <InfoRoundedIcon
                         sx={{ width: 12, height: 12, color: "action.active" }}

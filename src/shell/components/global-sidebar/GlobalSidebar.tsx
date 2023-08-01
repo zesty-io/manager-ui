@@ -68,8 +68,8 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
           <Tooltip
             title={openNav ? "Collapse Sidebar" : "Expand Sidebar"}
             placement="right-start"
-            enterDelay={2000}
-            enterNextDelay={2000}
+            enterDelay={1000}
+            enterNextDelay={1000}
           >
             <IconButton
               data-cy="CollapseGlobalSideBar"

@@ -41,7 +41,7 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
           }}
         >
           <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
-          <Tooltip title={labelName} enterDelay={2000} enterNextDelay={2000}>
+          <Tooltip title={labelName} enterDelay={1000} enterNextDelay={1000}>
             <Typography variant="body2" noWrap width="100%">
               {labelName}
             </Typography>
