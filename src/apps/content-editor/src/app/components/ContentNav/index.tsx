@@ -532,6 +532,58 @@ export const ContentNav = () => {
                 })}
               </List>
             )}
+            {!noMatchedItems && (
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                px={1.5}
+                sx={{
+                  color: "text.secondary",
+                }}
+              >
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  <Typography variant="body2" textTransform="uppercase">
+                    Pages
+                  </Typography>
+                  <Tooltip
+                    placement="right-start"
+                    title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
+                  >
+                    <InfoRoundedIcon
+                      sx={{ width: 12, height: 12, color: "action.active" }}
+                    />
+                  </Tooltip>
+                </Stack>
+                <Stack direction="row" gap={1}>
+                  <IconButton
+                    onClick={() => setIsReorderDialogOpen(true)}
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      padding: 0.25,
+                      borderRadius: 0.5,
+                    }}
+                  >
+                    <ReorderRoundedIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => {
+                      setCreateContentDialogLimit(["pageset", "templateset"]);
+                      setIsCreateContentDialogOpen(true);
+                    }}
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      padding: 0.25,
+                      borderRadius: 0.5,
+                    }}
+                  >
+                    <AddRoundedIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Stack>
+              </Stack>
+            )}
           </Stack>
         }
       >
@@ -555,59 +607,8 @@ export const ContentNav = () => {
               selected={activeNodeId}
               onToggleCollapse={(paths) => setExpandedPageItems(paths)}
               error={currentUserRolesError || navItemsError}
-              HeaderComponent={
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  px={1.5}
-                  pb={1.5}
-                  sx={{
-                    color: "text.secondary",
-                  }}
-                >
-                  <Stack direction="row" alignItems="center" gap={0.5}>
-                    <Typography variant="body2" textTransform="uppercase">
-                      Pages
-                    </Typography>
-                    <Tooltip
-                      placement="right-start"
-                      title="Pages include single page and multi page models with URLs. Datasets that have been parented also show in this navigation."
-                    >
-                      <InfoRoundedIcon
-                        sx={{ width: 12, height: 12, color: "action.active" }}
-                      />
-                    </Tooltip>
-                  </Stack>
-                  <Stack direction="row" gap={1}>
-                    <IconButton
-                      onClick={() => setIsReorderDialogOpen(true)}
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        padding: 0.25,
-                        borderRadius: 0.5,
-                      }}
-                    >
-                      <ReorderRoundedIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => {
-                        setCreateContentDialogLimit(["pageset", "templateset"]);
-                        setIsCreateContentDialogOpen(true);
-                      }}
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        padding: 0.25,
-                        borderRadius: 0.5,
-                      }}
-                    >
-                      <AddRoundedIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
-                  </Stack>
-                </Stack>
-              }
+              // HeaderComponent={
+              // }
               ErrorComponent={<NavError navName="models" />}
             />
             <NavTree
