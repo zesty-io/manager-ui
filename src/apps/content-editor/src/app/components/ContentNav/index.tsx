@@ -251,27 +251,23 @@ export const ContentNav = () => {
           )
         ) {
           actions.push(
-            <IconButton
+            <Button
               data-cy="tree-item-add-new-content"
               key="tree-item-add-new-content"
-              sx={{
-                borderRadius: 0.5,
-                backgroundColor: "primary.dark",
-                "&:hover": {
-                  backgroundColor: "primary.dark",
-                },
-                "& svg.MuiSvgIcon-root": {
-                  color: "common.white",
-                },
-              }}
-              size="xSmall"
+              variant="contained"
               onClick={(e) => {
                 e.stopPropagation();
                 history.push(`/content/${navItem.ZUID}/new`);
               }}
+              sx={{
+                width: 20,
+                height: 20,
+                minWidth: 0,
+                p: 0,
+              }}
             >
               <AddRoundedIcon sx={{ fontSize: 16 }} />
-            </IconButton>
+            </Button>
           );
         }
 
@@ -467,10 +463,6 @@ export const ContentNav = () => {
                     height: 24,
                     minWidth: 0,
                     p: 0,
-                    backgroundColor: "primary.dark",
-                    "&:hover": {
-                      backgroundColor: "primary.dark",
-                    },
                   }}
                 >
                   <AddRoundedIcon fontSize="small" />

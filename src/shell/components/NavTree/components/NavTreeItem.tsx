@@ -77,6 +77,11 @@ export const NavTreeItem: FC<Readonly<Props>> = ({
               fontSize: 20,
             },
           },
+
+          ".MuiTreeItem-label .treeActions [data-cy='tree-item-add-new-content'] svg":
+            {
+              color: "common.white",
+            },
         },
         "& .MuiTreeItem-content.Mui-selected": {
           borderLeft: "2px solid",
