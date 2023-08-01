@@ -53,7 +53,7 @@ export default memo(function GlobalMenu() {
   };
 
   return (
-    <Box component="menu" width="100%" boxSizing="border-box" overflow="auto">
+    <Box component="menu" width="100%" boxSizing="border-box">
       {products.map((product) => {
         // Covert dashes to spaces
         // Uppercase first letter of word
