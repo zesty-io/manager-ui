@@ -19,6 +19,7 @@ export const ResizableContainer = ({
 }: Props) => {
   const [isResizing, setIsResizing] = useState(false);
   const [initialPos, setInitialPos] = useState(0);
+  const [initialWidth, setInitialWidth] = useState(0);
   const [width, setWidth] = useLocalStorage(
     `zesty:resizableContainer:${id}`,
     defaultWidth
@@ -27,6 +28,7 @@ export const ResizableContainer = ({
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsResizing(true);
     setInitialPos(e.clientX);
+    setInitialWidth(width);
     // set cursor on the document body to handle cursor leaving the container as we resize
     document.body.style.cursor = "col-resize";
     document.body.style.userSelect = "none";
@@ -41,9 +43,12 @@ export const ResizableContainer = ({
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isResizing) return;
-      const newWidth = width + e.clientX - initialPos;
-      if (newWidth < minWidth || newWidth > maxWidth) return;
-      setInitialPos(e.clientX);
+      let newWidth = initialWidth + e.clientX - initialPos;
+      if (newWidth < minWidth) {
+        newWidth = minWidth;
+      } else if (newWidth > maxWidth) {
+        newWidth = maxWidth;
+      }
       setWidth(newWidth);
     },
     [isResizing, initialPos, width, minWidth, maxWidth]
