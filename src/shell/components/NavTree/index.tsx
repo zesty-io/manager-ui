@@ -1,6 +1,5 @@
 import React, { FC } from "react";
 import { TreeView } from "@mui/lab";
-import { MenuListDropDown } from "@zesty-io/material";
 import { useHistory } from "react-router-dom";
 
 import { NavTreeItem } from "./components/NavTreeItem";

@@ -58,6 +58,8 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
           boxSizing="border-box"
           sx={{
             backgroundColor: "grey.900",
+            borderRight: "1px solid",
+            borderColor: "grey.800",
           }}
         >
           <InstanceMenu openNav={openNav} />

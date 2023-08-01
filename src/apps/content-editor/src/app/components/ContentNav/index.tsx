@@ -34,7 +34,7 @@ import { FileTable } from "@zesty-io/material";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import { MenuListDropDown } from "@zesty-io/material";
+import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { useDispatch } from "react-redux";
@@ -465,19 +465,22 @@ export const ContentNav = () => {
                     p: 0,
                   }}
                 >
-                  <AddRoundedIcon fontSize="small" />
+                  <AddRoundedIcon sx={{ fontSize: 18 }} />
                 </Button>
               </Tooltip>
             </Stack>
             <TextField
               InputProps={{
+                sx: {
+                  backgroundColor: "grey.800",
+                },
                 startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
+                  <InputAdornment position="start" sx={{ marginRight: 0.5 }}>
+                    <ManageSearchRoundedIcon fontSize="small" />
                   </InputAdornment>
                 ),
               }}
-              placeholder="Search Content"
+              placeholder="Filter Models"
               size="small"
               sx={{
                 px: 1.5,
