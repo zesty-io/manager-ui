@@ -155,7 +155,7 @@ export default function ContentEditor() {
               >
                 <div className={styles.ContentWrap}>
                   <Switch>
-                    <Route path="/content/releases" component={ReleaseApp} />
+                    {/* <Route path="/content/releases" component={ReleaseApp} /> */}
                     <Route exact path="/content" component={Analytics} />
                     <Route
                       exact

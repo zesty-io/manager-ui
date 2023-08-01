@@ -69,11 +69,12 @@ const SUB_MENUS: Readonly<SubMenu[]> = [
     icon: BackupTableRounded,
     path: "/content",
   },
-  {
-    name: "Releases",
-    icon: ScheduleRounded,
-    path: "/content/releases",
-  },
+  // To be re-added on a different release
+  // {
+  //   name: "Releases",
+  //   icon: ScheduleRounded,
+  //   path: "/content/releases",
+  // },
 ] as const;
 const ICONS: Record<string, SvgIconComponent> = {
   templateset: DescriptionRoundedIcon,
