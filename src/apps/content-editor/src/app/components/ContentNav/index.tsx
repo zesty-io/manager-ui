@@ -456,6 +456,7 @@ export const ContentNav = () => {
                 enterNextDelay={2000}
               >
                 <Button
+                  data-cy="create_new_content_item"
                   variant="contained"
                   onClick={() => setIsCreateContentDialogOpen(true)}
                   sx={{
@@ -550,6 +551,7 @@ export const ContentNav = () => {
         ) : (
           <>
             <NavTree
+              id="pages_nav"
               tree={navTree.nav}
               expandedItems={expandedPageItems}
               selected={activeNodeId}
@@ -580,6 +582,7 @@ export const ContentNav = () => {
                   </Stack>
                   <Stack direction="row" gap={1}>
                     <IconButton
+                      data-cy="reorder_nav"
                       onClick={() => setIsReorderDialogOpen(true)}
                       sx={{
                         width: 20,
@@ -610,6 +613,7 @@ export const ContentNav = () => {
               ErrorComponent={<NavError navName="models" />}
             />
             <NavTree
+              id="dataset_nav"
               tree={navTree.headless}
               expandedItems={expandedDatasetItems}
               selected={activeNodeId}
@@ -718,6 +722,7 @@ export const ContentNav = () => {
                 }}
               >
                 <NavTree
+                  id="hidden_nav"
                   tree={navTree.hidden}
                   selected={activeNodeId}
                   expandedItems={expandedHiddenItems}

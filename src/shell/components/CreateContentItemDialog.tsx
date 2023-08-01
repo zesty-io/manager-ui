@@ -67,7 +67,13 @@ export const CreateContentItemDialog = ({
 
   return (
     <ThemeProvider theme={theme}>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
+      <Dialog
+        data-cy="create_new_content_item_dialog"
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth={"xs"}
+      >
         <DialogTitle component={Box}>
           <EditRoundedIcon
             color="primary"
@@ -89,6 +95,7 @@ export const CreateContentItemDialog = ({
         <DialogContent>
           <InputLabel sx={{ mb: 0.5 }}>Select Model</InputLabel>
           <Autocomplete
+            data-cy="create_new_content_item_input"
             size="small"
             fullWidth
             value={selectedModel}
@@ -113,9 +120,8 @@ export const CreateContentItemDialog = ({
             isOptionEqualToValue={(option, value) => option.ZUID === value.ZUID}
             onChange={(event, newValue) => setSelectedModel(newValue)}
             onKeyDown={(evt) => {
-              evt.preventDefault();
-
               if (evt.key.toLowerCase() === "enter" && !!selectedModel?.ZUID) {
+                evt.preventDefault();
                 onCreateClick();
               }
             }}
@@ -131,6 +137,7 @@ export const CreateContentItemDialog = ({
             Discard
           </Button>
           <Button
+            data-cy="create_new_content_item_btn"
             variant="contained"
             color="primary"
             disabled={!selectedModel.ZUID}

@@ -15,6 +15,7 @@ export type TreeItem = {
 } & ContentNavItem;
 
 interface Props {
+  id: string;
   HeaderComponent?: React.ReactNode;
   ErrorComponent?: React.ReactNode;
   tree: TreeItem[];
@@ -24,6 +25,7 @@ interface Props {
   error?: boolean;
 }
 export const NavTree: FC<Readonly<Props>> = ({
+  id,
   HeaderComponent,
   ErrorComponent,
   tree,
@@ -41,12 +43,14 @@ export const NavTree: FC<Readonly<Props>> = ({
         ErrorComponent
       ) : (
         <TreeView
+          data-cy={id}
           expanded={expandedItems}
           selected={selected}
           defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
           defaultExpandIcon={<ArrowRightRoundedIcon />}
           onNodeSelect={(evt: any, nodeIds: string) => {
             if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
+              console.log(evt.target.tagName);
               history.push(nodeIds);
             }
           }}

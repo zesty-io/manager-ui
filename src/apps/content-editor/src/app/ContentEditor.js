@@ -7,6 +7,7 @@ import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { legacyTheme } from "@zesty-io/material";
 
+import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
 
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -111,6 +112,7 @@ export default function ContentEditor() {
       .catch((e) => {
         throw e;
       });
+    dispatch(fetchModels());
   }, []);
 
   return (
