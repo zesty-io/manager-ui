@@ -5,6 +5,8 @@ import { useHistory } from "react-router-dom";
 
 import { NavTreeItem } from "./components/NavTreeItem";
 import { ContentNavItem } from "../../services/types";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
+import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 
 export type TreeItem = {
   icon: any;
@@ -42,10 +44,8 @@ export const NavTree: FC<Readonly<Props>> = ({
         <TreeView
           expanded={expandedItems}
           selected={selected}
-          defaultCollapseIcon={<MenuListDropDown />}
-          defaultExpandIcon={
-            <MenuListDropDown sx={{ transform: "rotate(-90deg)" }} />
-          }
+          defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
+          defaultExpandIcon={<ArrowRightRoundedIcon />}
           onNodeSelect={(evt: any, nodeIds: string) => {
             if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
               history.push(nodeIds);

@@ -33,6 +33,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { FileTable } from "@zesty-io/material";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import { MenuListDropDown } from "@zesty-io/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage } from "react-use";
@@ -684,7 +685,9 @@ export const ContentNav = () => {
               }}
             >
               <AccordionSummary
-                expandIcon={<MenuListDropDown sx={{ fontSize: "20px" }} />}
+                expandIcon={
+                  <ArrowDropDownRoundedIcon sx={{ fontSize: "20px" }} />
+                }
                 sx={{
                   "&.MuiButtonBase-root": {
                     minHeight: 20,
