@@ -210,7 +210,7 @@ export const instanceApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["ContentModels", "WebViews"],
+      invalidatesTags: ["ContentModels", "WebViews", "ContentNav"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/env/langs/#Get-Langs
     getLangsMapping: builder.query<any, void>({
@@ -256,7 +256,7 @@ export const instanceApi = createApi({
         url: `content/models/${ZUID}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["ContentModels"],
+      invalidatesTags: ["ContentModels", "ContentNav"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/#Get-Fields
     getContentModelFields: builder.query<ContentModelField[], string>({
