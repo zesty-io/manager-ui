@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -69,6 +69,7 @@ export const Header = ({
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
+  const now = useMemo(() => new Date(), []);
   const [deleteFiles, { isLoading: isLoadingDelete }] =
     useDeleteFilesMutation();
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
@@ -153,6 +154,20 @@ export const Header = ({
       return false;
     }
   };
+
+  // Auto-select newly uploaded files when in content editor
+  useEffect(() => {
+    if (!addImagesCallback) return;
+    const filesToSelect = files?.filter(
+      (file) =>
+        new Date(file.created_at) > now && !selectedFiles?.includes(file)
+    );
+    if (filesToSelect?.length) {
+      filesToSelect.forEach((file) => {
+        dispatch(selectFile(file));
+      });
+    }
+  }, [files, addImagesCallback]);
 
   return (
     <>
