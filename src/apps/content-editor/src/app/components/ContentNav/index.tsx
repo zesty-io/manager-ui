@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect, useState } from "react";
+import { useRef, useMemo, useEffect, useState, useReducer } from "react";
 import {
   Stack,
   Typography,
@@ -17,11 +17,7 @@ import {
   AccordionDetails,
   Accordion,
 } from "@mui/material";
-import {
-  SvgIconComponent,
-  BackupTableRounded,
-  ScheduleRounded,
-} from "@mui/icons-material";
+import { SvgIconComponent, BackupTableRounded } from "@mui/icons-material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
@@ -53,10 +49,16 @@ import { HideContentItemDialog } from "../HideContentItemDialog";
 import { notify } from "../../../../../../shell/store/notifications";
 import { NavError } from "./NavError";
 
+interface HiddenPaths {
+  nav: string[];
+  headless: string[];
+  hidden: string[];
+}
 interface NavData {
   nav: TreeItem[];
   headless: TreeItem[];
   hidden: TreeItem[];
+  parents: Record<string, TreeItem>;
 }
 interface SubMenu {
   name: string;
@@ -109,21 +111,28 @@ export const ContentNav = () => {
   const { data: rawNavData, isError: navItemsError } =
     useGetContentNavItemsQuery();
 
-  const [expandedPageItems, setExpandedPageItems] = useLocalStorage(
-    "zesty:navContentPages:open",
+  const [closedPageItems, setClosedPageItems] = useLocalStorage(
+    "zesty:navContentPages:closed",
     []
   );
-  const [expandedDatasetItems, setExpandedDatasetItems] = useLocalStorage(
-    "zesty:navContentDatasets:open",
+  const [closedDatasetItems, setClosedDatasetItems] = useLocalStorage(
+    "zesty:navContentDatasets:closed",
     []
   );
-  const [expandedHiddenItems, setExpandedHiddenItems] = useLocalStorage(
-    "zesty:navContentHiddenItems:open",
+  const [closedHiddenItems, setClosedHiddenItems] = useLocalStorage(
+    "zesty:navContentHiddenItems:closed",
     []
   );
   const [hiddenNavItems, setHiddenNavItems] = useLocalStorage(
     "zesty:navContent:hidden",
     []
+  );
+
+  const [expandedItems, updateExpandedItems] = useReducer(
+    (acc: Partial<HiddenPaths>, curr: Partial<HiddenPaths>) => {
+      return { ...acc, ...curr };
+    },
+    { nav: [], headless: [], hidden: [] }
   );
 
   const hiddenZUIDs = useMemo(() => {
@@ -305,42 +314,36 @@ export const ContentNav = () => {
       );
 
       const tree: TreeItem[] = [];
+      const hidden: TreeItem[] = [];
+      const parents: Record<string, TreeItem> = {};
 
-      // Place children inside their respective parents except hidden items
       Object.values(zuidTreeItemMap).forEach((item) => {
-        if (
+        if (hiddenZUIDs.includes(item.ZUID)) {
+          // Get all hidden items
+          hidden.push(item);
+        } else if (
           !!item.parentZUID &&
           !!zuidTreeItemMap[item.parentZUID] &&
           !hiddenZUIDs.includes(item.ZUID)
         ) {
+          // Get parent zuids
+          if (!parents[item.parentZUID]) {
+            parents[item.parentZUID] = zuidTreeItemMap[item.parentZUID];
+          }
+
+          // Place children inside their respective parents except hidden items
           zuidTreeItemMap[item.parentZUID].children.push(item);
         } else {
           tree.push(item);
         }
       });
 
-      // Split the nav tree into categories
       const nav: TreeItem[] = [];
       const headless: TreeItem[] = [];
-      const hidden: TreeItem[] = [];
 
       tree.forEach((item) => {
-        if (hiddenZUIDs.includes(item.ZUID)) {
-          return hidden.push(item);
-        }
-
         if (item.type === "dataset") {
           return headless.push(item);
-        }
-
-        if (item.parentZUID) {
-          // If an item has a parent that was deleted, show that item only if
-          // it's being search for, else don't add it to the nav
-          if (!!keyword) {
-            return nav.push(item);
-          }
-
-          return;
         }
 
         // This pushes all the root nodes to the tree
@@ -351,6 +354,7 @@ export const ContentNav = () => {
         nav,
         headless,
         hidden,
+        parents,
       };
     }
 
@@ -358,6 +362,7 @@ export const ContentNav = () => {
       nav: [],
       headless: [],
       hidden: [],
+      parents: {},
     };
   }, [mappedTree, hiddenZUIDs, keyword]);
 
@@ -419,6 +424,65 @@ export const ContentNav = () => {
       );
     }
   }, [currentUserRolesError, navItemsError]);
+
+  // Sets the expanded navs
+  useEffect(() => {
+    if (!!Object.values(navTree.parents)?.length) {
+      const paths = Object.values(navTree.parents).reduce(
+        (acc: HiddenPaths, curr) => {
+          if (
+            hiddenZUIDs.includes(curr.ZUID) &&
+            !closedHiddenItems.includes(curr.path)
+          ) {
+            acc.hidden.push(curr.path);
+          } else if (
+            curr.type === "dataset" &&
+            !closedDatasetItems.includes(curr.path)
+          ) {
+            acc.headless.push(curr.path);
+          } else if (!closedPageItems.includes(curr.path)) {
+            acc.nav.push(curr.path);
+          }
+
+          return acc;
+        },
+        { nav: [], headless: [], hidden: [] }
+      );
+
+      updateExpandedItems(paths);
+    }
+  }, [
+    navTree,
+    hiddenZUIDs,
+    closedDatasetItems,
+    closedHiddenItems,
+    closedPageItems,
+  ]);
+
+  const getClosedPath = (
+    paths: string[],
+    type: "nav" | "headless" | "hidden"
+  ) => {
+    if (!!Object.values(navTree.parents)?.length) {
+      const matchedItem = Object.values(navTree.parents).filter((item) => {
+        if (!paths.includes(item.path)) {
+          if (type === "hidden" && hiddenZUIDs.includes(item.ZUID)) {
+            return item;
+          }
+
+          if (type === "headless" && item.type === "dataset") {
+            return item;
+          }
+
+          if (type === "nav" && item.type !== "dataset") {
+            return item;
+          }
+        }
+      });
+
+      return !!matchedItem?.length ? matchedItem[0].path : "";
+    }
+  };
 
   const noMatchedItems =
     !navTree.nav.length &&
@@ -553,9 +617,19 @@ export const ContentNav = () => {
             <NavTree
               id="pages_nav"
               tree={navTree.nav}
-              expandedItems={expandedPageItems}
+              expandedItems={expandedItems.nav}
               selected={activeNodeId}
-              onToggleCollapse={(paths) => setExpandedPageItems(paths)}
+              onToggleCollapse={(paths) => {
+                const path = getClosedPath(paths, "nav");
+
+                if (!closedPageItems.includes(path)) {
+                  setClosedPageItems([...closedPageItems, path]);
+                } else {
+                  setClosedPageItems(
+                    closedPageItems.filter((item) => item === path)
+                  );
+                }
+              }}
               error={currentUserRolesError || navItemsError}
               HeaderComponent={
                 <Stack
@@ -617,9 +691,19 @@ export const ContentNav = () => {
             <NavTree
               id="dataset_nav"
               tree={navTree.headless}
-              expandedItems={expandedDatasetItems}
+              expandedItems={expandedItems.headless}
               selected={activeNodeId}
-              onToggleCollapse={(paths) => setExpandedDatasetItems(paths)}
+              onToggleCollapse={(paths) => {
+                const path = getClosedPath(paths, "headless");
+
+                if (!closedDatasetItems.includes(path)) {
+                  setClosedDatasetItems([...closedDatasetItems, path]);
+                } else {
+                  setClosedDatasetItems(
+                    closedDatasetItems.filter((item) => item === path)
+                  );
+                }
+              }}
               error={currentUserRolesError || navItemsError}
               HeaderComponent={
                 <Stack
@@ -729,8 +813,18 @@ export const ContentNav = () => {
                   id="hidden_nav"
                   tree={navTree.hidden}
                   selected={activeNodeId}
-                  expandedItems={expandedHiddenItems}
-                  onToggleCollapse={(paths) => setExpandedHiddenItems(paths)}
+                  expandedItems={expandedItems.hidden}
+                  onToggleCollapse={(paths) => {
+                    const path = getClosedPath(paths, "hidden");
+
+                    if (!closedHiddenItems.includes(path)) {
+                      setClosedHiddenItems([...closedHiddenItems, path]);
+                    } else {
+                      setClosedHiddenItems(
+                        closedHiddenItems.filter((item) => item === path)
+                      );
+                    }
+                  }}
                 />
               </AccordionDetails>
             </Accordion>

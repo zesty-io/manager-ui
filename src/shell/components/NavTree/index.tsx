@@ -50,7 +50,6 @@ export const NavTree: FC<Readonly<Props>> = ({
           defaultExpandIcon={<ArrowRightRoundedIcon />}
           onNodeSelect={(evt: any, nodeIds: string) => {
             if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
-              console.log(evt.target.tagName);
               history.push(nodeIds);
             }
           }}
