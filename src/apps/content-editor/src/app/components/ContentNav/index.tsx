@@ -24,8 +24,11 @@ import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
-import HomeIcon from "@mui/icons-material/Home";
-import { FileTable } from "@zesty-io/material";
+import {
+  FileTable,
+  IconButton as IconButtonCustom,
+  Home,
+} from "@zesty-io/material";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
@@ -85,7 +88,7 @@ const ICONS: Record<string, SvgIconComponent> = {
   external: LinkRoundedIcon,
   internal: LinkRoundedIcon,
   item: DescriptionRoundedIcon,
-  homepage: HomeIcon,
+  homepage: Home as SvgIconComponent,
 } as const;
 
 export const ContentNav = () => {
@@ -233,10 +236,7 @@ export const ContentNav = () => {
           <IconButton
             data-cy="tree-item-hide"
             key="tree-item-hide"
-            sx={{
-              borderRadius: 0.5,
-            }}
-            size="xSmall"
+            size="xxsmall"
             onClick={(e) => {
               e.stopPropagation();
 
@@ -260,23 +260,18 @@ export const ContentNav = () => {
           )
         ) {
           actions.push(
-            <Button
+            <IconButtonCustom
               data-cy="tree-item-add-new-content"
               key="tree-item-add-new-content"
               variant="contained"
+              size="xxsmall"
               onClick={(e) => {
                 e.stopPropagation();
                 history.push(`/content/${navItem.ZUID}/new`);
               }}
-              sx={{
-                width: 20,
-                height: 20,
-                minWidth: 0,
-                p: 0,
-              }}
             >
               <AddRoundedIcon sx={{ fontSize: 16 }} />
-            </Button>
+            </IconButtonCustom>
           );
         }
 
@@ -519,19 +514,14 @@ export const ContentNav = () => {
                 enterDelay={1000}
                 enterNextDelay={1000}
               >
-                <Button
+                <IconButtonCustom
                   data-cy="create_new_content_item"
                   variant="contained"
+                  size="xsmall"
                   onClick={() => setIsCreateContentDialogOpen(true)}
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    minWidth: 0,
-                    p: 0,
-                  }}
                 >
                   <AddRoundedIcon sx={{ fontSize: 18 }} />
-                </Button>
+                </IconButtonCustom>
               </Tooltip>
             </Stack>
             <TextField
@@ -659,13 +649,8 @@ export const ContentNav = () => {
                   <Stack direction="row" gap={1}>
                     <IconButton
                       data-cy="reorder_nav"
+                      size="xxsmall"
                       onClick={() => setIsReorderDialogOpen(true)}
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        padding: 0.25,
-                        borderRadius: 0.5,
-                      }}
                     >
                       <ReorderRoundedIcon sx={{ fontSize: 16 }} />
                     </IconButton>
@@ -674,12 +659,7 @@ export const ContentNav = () => {
                         setCreateContentDialogLimit(["pageset", "templateset"]);
                         setIsCreateContentDialogOpen(true);
                       }}
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        padding: 0.25,
-                        borderRadius: 0.5,
-                      }}
+                      size="xxsmall"
                     >
                       <AddRoundedIcon sx={{ fontSize: 16 }} />
                     </IconButton>
@@ -736,12 +716,7 @@ export const ContentNav = () => {
                       setCreateContentDialogLimit(["dataset"]);
                       setIsCreateContentDialogOpen(true);
                     }}
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      padding: 0.25,
-                      borderRadius: 0.5,
-                    }}
+                    size="xxsmall"
                   >
                     <AddRoundedIcon sx={{ fontSize: 16 }} />
                   </IconButton>

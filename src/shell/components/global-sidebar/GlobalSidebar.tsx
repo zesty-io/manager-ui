@@ -75,6 +75,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               data-cy="CollapseGlobalSideBar"
               onClick={onClick}
               sx={{
+                borderRadius: "50%",
                 borderColor: "grey.600",
                 borderStyle: "solid",
                 borderWidth: "1px",
