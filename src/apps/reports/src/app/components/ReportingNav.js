@@ -31,12 +31,6 @@ export function ReportingNav() {
       path: "/reports/metrics",
       icon: <PieChartIcon />,
     },
-    {
-      label: "Analytics",
-      rootPath: "/reports/analytics",
-      path: "/reports/analytics",
-      icon: <InsightsIcon />,
-    },
   ];
 
   return (
