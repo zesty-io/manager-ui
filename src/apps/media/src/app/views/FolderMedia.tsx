@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams } from "react-router";
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 import { EmptyState } from "../components/EmptyState";
@@ -35,9 +35,13 @@ type Params = { id: string };
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
+  setCurrentFilesCallback: (files: File[]) => void;
 }
 
-export const FolderMedia = ({ addImagesCallback }: Props) => {
+export const FolderMedia = ({
+  addImagesCallback,
+  setCurrentFilesCallback,
+}: Props) => {
   const { id } = useParams<Params>();
   const [params, setParams] = useSearchParams();
   const sortOrder = params.get("sort");
@@ -144,6 +148,10 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
         return unsortedSubGroups;
     }
   }, [unsortedSubGroups, sortOrder, filetypeFilter, dateRangeFilter]);
+
+  useEffect(() => {
+    setCurrentFilesCallback(groupFiles || []);
+  }, [groupFiles]);
 
   return (
     <Box
