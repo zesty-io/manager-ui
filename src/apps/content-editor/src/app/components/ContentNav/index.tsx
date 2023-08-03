@@ -2,14 +2,6 @@ import { useRef, useMemo, useEffect, useState, useReducer } from "react";
 import {
   Stack,
   Typography,
-  TextField,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  InputAdornment,
-  ListItemButton,
-  SvgIcon,
   Tooltip,
   IconButton,
   AccordionSummary,
@@ -31,12 +23,14 @@ import {
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage, useDebounce } from "react-use";
 import { useDispatch } from "react-redux";
 
-import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
+import {
+  AppSideBar,
+  SubMenu,
+} from "../../../../../../shell/components/AppSidebar";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
 import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
 import { useGetContentNavItemsQuery } from "../../../../../../shell/services/instance";
@@ -51,23 +45,13 @@ import { HideContentItemDialog } from "../HideContentItemDialog";
 import { notify } from "../../../../../../shell/store/notifications";
 import { NavError } from "./NavError";
 
-interface HiddenPaths {
-  nav: string[];
-  headless: string[];
-  hidden: string[];
-}
 interface NavData {
   nav: TreeItem[];
   headless: TreeItem[];
   hidden: TreeItem[];
   parents: Record<string, TreeItem>;
 }
-interface SubMenu {
-  name: string;
-  icon: SvgIconComponent;
-  path: string;
-}
-const SUB_MENUS: Readonly<SubMenu[]> = [
+const SUB_MENUS: SubMenu[] = [
   {
     name: "Dashboard",
     icon: BackupTableRounded,
@@ -79,7 +63,7 @@ const SUB_MENUS: Readonly<SubMenu[]> = [
   //   icon: ScheduleRounded,
   //   path: "/content/releases",
   // },
-] as const;
+];
 const ICONS: Record<string, SvgIconComponent> = {
   templateset: DescriptionRoundedIcon,
   pageset: FormatListBulletedRoundedIcon,
@@ -451,104 +435,9 @@ export const ContentNav = () => {
         data-cy="contentNav"
         mode="dark"
         ref={sideBarChildrenContainerRef}
-        HeaderSubComponent={
-          <Stack gap={1.5}>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              px={1.5}
-            >
-              <Typography
-                variant="h6"
-                color="text.primary"
-                fontWeight={700}
-                lineHeight="24px"
-                fontSize={18}
-              >
-                Content
-              </Typography>
-              <Tooltip
-                title="Create Content"
-                placement="right-start"
-                enterDelay={1000}
-                enterNextDelay={1000}
-              >
-                <IconButtonCustom
-                  data-cy="create_new_content_item"
-                  variant="contained"
-                  size="xsmall"
-                  onClick={() => setIsCreateContentDialogOpen(true)}
-                >
-                  <AddRoundedIcon sx={{ fontSize: 18 }} />
-                </IconButtonCustom>
-              </Tooltip>
-            </Stack>
-            <TextField
-              InputProps={{
-                sx: {
-                  backgroundColor: "grey.800",
-                },
-                startAdornment: (
-                  <InputAdornment position="start" sx={{ marginRight: 0.5 }}>
-                    <ManageSearchRoundedIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-              placeholder="Filter Models"
-              size="small"
-              sx={{
-                px: 1.5,
-              }}
-              onChange={(evt) => setKeyword(evt.target.value)}
-            />
-            {!debouncedKeyword && (
-              <List disablePadding>
-                {SUB_MENUS.map((menu) => {
-                  // Wildcard match for /content/releases since this has a lot of sub routes
-                  const isActive =
-                    menu.name.toLowerCase() === "dashboard"
-                      ? location.pathname === menu.path
-                      : location.pathname.includes(menu.path);
-
-                  return (
-                    <ListItem
-                      key={menu.name}
-                      disablePadding
-                      selected={isActive}
-                      sx={{
-                        color: "text.secondary",
-                        borderLeft: isActive ? "2px solid" : "none",
-                        borderColor: "primary.main",
-                      }}
-                    >
-                      <ListItemButton
-                        sx={{
-                          height: 36,
-                          pl: isActive ? 1.25 : 1.5,
-                          pr: 1.5,
-                          py: 0.75,
-                        }}
-                        onClick={() => history.push(menu.path)}
-                      >
-                        <ListItemIcon sx={{ minWidth: 32 }}>
-                          <SvgIcon component={menu.icon} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={menu.name}
-                          primaryTypographyProps={{
-                            variant: "body3",
-                            fontWeight: 600,
-                          }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  );
-                })}
-              </List>
-            )}
-          </Stack>
-        }
+        subMenus={SUB_MENUS}
+        onAddClick={() => setIsCreateContentDialogOpen(true)}
+        onFilter={(keyword) => setKeyword(keyword)}
       >
         {noMatchedItems ? (
           <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
