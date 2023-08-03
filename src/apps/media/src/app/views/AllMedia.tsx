@@ -14,7 +14,7 @@ import { NoResultsState } from "../components/NoResultsState";
 import { File } from "../../../../../shell/services/types";
 import { UploadModal } from "../components/UploadModal";
 import Controls from "../components/Controls";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppState } from "../../../../../shell/store/types";
 import {
   fileExtension,
@@ -28,9 +28,13 @@ import { State } from "../../../../../shell/store/media-revamp";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
+  setCurrentFilesCallback: (files: File[]) => void;
 }
 
-export const AllMedia = ({ addImagesCallback }: Props) => {
+export const AllMedia = ({
+  addImagesCallback,
+  setCurrentFilesCallback,
+}: Props) => {
   const [params, setParams] = useSearchParams();
   const sortOrder = params.get("sort");
   const filetypeFilter = params.get("filetype") as Filetype;
@@ -99,6 +103,10 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
       return sortedFiles;
     }
   }, [sortedFiles, filetypeFilter, dateRangeFilter]);
+
+  useEffect(() => {
+    setCurrentFilesCallback(files || []);
+  }, [files]);
 
   return (
     <Box

@@ -35,6 +35,11 @@ import { NotFound } from "../NotFound";
 import { PublishState } from "./PublishState.tsx";
 import { Header } from "./components/Header";
 import Analytics from "../Analytics";
+import { ApiDetails } from "../../../../../schema/src/app/components/ModelApi/ApiDetails";
+import { ApiCardList } from "../../../../../schema/src/app/components/ModelApi/ApiCardList";
+import { theme } from "@zesty-io/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { Box } from "@mui/material";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -339,21 +344,37 @@ export default function ItemEdit() {
                 )}
               />
               <Route
-                exact
-                path="/content/:modelZUID/:itemZUID/headless"
+                path="/content/:contentModelZUID/:contentItemZUID/api"
                 render={() => (
-                  <HeadlessOptions
-                    instance={instance}
-                    modelZUID={modelZUID}
-                    model={model}
-                    itemZUID={itemZUID}
-                    item={item}
-                    items={items}
-                    fields={fields}
-                    user={user}
-                    dispatch={dispatch}
-                    saving={saving}
-                  />
+                  <ThemeProvider theme={theme}>
+                    <Header
+                      instance={instance}
+                      modelZUID={modelZUID}
+                      model={model}
+                      itemZUID={itemZUID}
+                      item={item}
+                    />
+                    <Box
+                      sx={{
+                        color: "text.primary",
+                        height: "calc(100% - 65px)",
+                        "*": {
+                          boxSizing: "border-box",
+                        },
+                      }}
+                    >
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api/:type"
+                        component={ApiDetails}
+                      />
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api"
+                        component={ApiCardList}
+                      />
+                    </Box>
+                  </ThemeProvider>
                 )}
               />
               <Route
