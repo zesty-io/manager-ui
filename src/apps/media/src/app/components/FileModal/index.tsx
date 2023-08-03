@@ -1,6 +1,7 @@
 import { FC, useEffect, Dispatch, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import CheckIcon from "@mui/icons-material/Check";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
+import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import {
   Modal,
   Box,
@@ -11,14 +12,12 @@ import {
   DialogContent,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-// import { WithLoader } from "@zesty-io/core";
-import { NotFoundState } from "../NotFoundState";
-
 import { FileModalContent } from "./FileModalContent";
 import { FileTypePreview } from "./FileTypePreview";
-
 import { useGetFileQuery } from "../../../../../../shell/services/mediaManager";
 import { OTFEditor } from "./OTFEditor";
+import { File } from "../../../../../../shell/services/types";
+import { useParams } from "../../../../../../shell/hooks/useParams";
 
 const styledModal = {
   position: "absolute",
@@ -33,13 +32,23 @@ const styledModal = {
 interface Props {
   fileId: string;
   onSetIsFileModalError: Dispatch<boolean>;
+  currentFiles: File[];
 }
 
-export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
+export const FileModal: FC<Props> = ({
+  fileId,
+  onSetIsFileModalError,
+  currentFiles,
+}) => {
   const history = useHistory();
   const location = useLocation();
   const { data, isLoading, isError } = useGetFileQuery(fileId);
   const [showEdit, setShowEdit] = useState(false);
+  const [params, setParams] = useParams();
+  const [adjacentFiles, setAdjacentFiles] = useState({
+    prevFile: null,
+    nextFile: null,
+  });
 
   const [imageSettings, setImageSettings] = useState<any>(null);
 
@@ -57,6 +66,62 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
     }
   }, [isError]);
 
+  const currentIndex = currentFiles.findIndex((file) => file.id === fileId);
+
+  const handleArrow = (file: File) => {
+    if (file) {
+      setParams(file.id, "fileId");
+      setShowEdit(false);
+    }
+  };
+
+  useEffect(() => {
+    if (currentIndex !== -1) {
+      const nextFile =
+        currentIndex < currentFiles.length - 1
+          ? currentFiles[currentIndex + 1]
+          : undefined;
+
+      const prevFile =
+        currentIndex > 0 ? currentFiles[currentIndex - 1] : undefined;
+
+      setAdjacentFiles({ prevFile, nextFile });
+    }
+  }, [currentIndex]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.code) {
+        case "ArrowLeft":
+          setAdjacentFiles((adjacentFiles) => {
+            if (adjacentFiles.prevFile) {
+              setParams(adjacentFiles.prevFile.id, "fileId");
+              setShowEdit(false);
+            }
+            return adjacentFiles;
+          });
+          break;
+        case "ArrowRight":
+          setAdjacentFiles((adjacentFiles) => {
+            if (adjacentFiles.nextFile) {
+              setParams(adjacentFiles.nextFile.id, "fileId");
+              setShowEdit(false);
+            }
+            return adjacentFiles;
+          });
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <>
       {data && !isError ? (
@@ -69,23 +134,59 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
             style: {
               height: "680px",
               maxWidth: "1300px",
+              overflow: "visible",
+              width: "calc(100% - 168px)",
             },
           }}
         >
-          <Box>
+          <IconButton
+            onClick={() => handleCloseModal()}
+            aria-label="Close Icon"
+            sx={{
+              position: "fixed",
+              zIndex: 999,
+              right: 5,
+              top: 0,
+            }}
+          >
+            <CloseIcon sx={{ color: "common.white" }} />
+          </IconButton>
+          {adjacentFiles.nextFile && (
             <IconButton
-              onClick={() => handleCloseModal()}
-              aria-label="Close Icon"
+              size="large"
+              onClick={() => {
+                handleArrow(adjacentFiles.nextFile);
+              }}
               sx={{
-                position: "fixed",
-                zIndex: 999,
-                right: 5,
-                top: 0,
+                position: "absolute",
+                right: -72,
+                top: "50%",
               }}
             >
-              <CloseIcon sx={{ color: "common.white" }} />
+              <ArrowForwardIosRoundedIcon
+                sx={{ color: "common.white", width: 35, height: 35 }}
+              />
             </IconButton>
-          </Box>
+          )}
+          {adjacentFiles.prevFile && (
+            <Box>
+              <IconButton
+                size="large"
+                onClick={() => {
+                  handleArrow(adjacentFiles.prevFile);
+                }}
+                sx={{
+                  position: "absolute",
+                  left: -72,
+                  top: "50%",
+                }}
+              >
+                <ArrowBackIosRoundedIcon
+                  sx={{ color: "common.white", width: 35, height: 35 }}
+                />
+              </IconButton>
+            </Box>
+          )}
           <DialogContent
             sx={{
               display: "flex",

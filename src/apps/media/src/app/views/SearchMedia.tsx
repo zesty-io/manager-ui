@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box, CircularProgress } from "@mui/material";
 import {
@@ -29,9 +29,14 @@ import {
 interface Props {
   lockedToGroupId?: string;
   addImagesCallback?: (selectedFiles: File[]) => void;
+  setCurrentFilesCallback: (files: File[]) => void;
 }
 
-export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
+export const SearchMedia = ({
+  lockedToGroupId,
+  addImagesCallback,
+  setCurrentFilesCallback,
+}: Props) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const [params] = useParams();
@@ -167,6 +172,10 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
       return sortedGroupFiles;
     }
   }, [sortedGroupFiles, filetypeFilter, dateRangeFilter]);
+
+  useEffect(() => {
+    setCurrentFilesCallback(userFilteredFiles || []);
+  }, [userFilteredFiles]);
 
   return (
     <Box
