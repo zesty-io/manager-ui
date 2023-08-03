@@ -26,6 +26,7 @@ import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import { useLocation, useHistory } from "react-router-dom";
 import { useLocalStorage, useDebounce } from "react-use";
 import { useDispatch } from "react-redux";
+import { cloneDeep } from "lodash";
 
 import {
   AppSideBar,
@@ -91,7 +92,7 @@ export const ContentNav = () => {
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false);
   const [isHideDialogOpen, setIsHideDialogOpen] = useState(false);
   const [isHideMode, setIsHideMode] = useState(false);
-  const [itemToHide, setItemToHide] = useState<ContentNavItem>(null);
+  const [itemToHide, setItemToHide] = useState<TreeItem>(null);
   const [expandedNavItems, setexpandedNavItems] = useState<string[]>([]);
 
   const { data: currentUserRoles, isError: currentUserRolesError } =
@@ -163,14 +164,6 @@ export const ContentNav = () => {
 
       setClippingsZUID(clippingsModel?.ZUID ?? "");
 
-      if (!!debouncedKeyword) {
-        filteredNavData = filteredNavData.filter((navItem) => {
-          return navItem.label
-            .toLowerCase()
-            .includes(debouncedKeyword.toLowerCase());
-        });
-      }
-
       if (!!granularRoles?.length) {
         // Filter nav based on user's granular role access
         filteredNavData = filteredNavData.filter((navItem) => {
@@ -186,10 +179,9 @@ export const ContentNav = () => {
       // Sort nav by user defined value
       filteredNavData = filteredNavData.sort((a, b) => a?.sort - b?.sort);
 
-      // Set path, actions and icon, and initiate empty children array
+      // Set path and icon, and initiate empty children and actions array
       return filteredNavData.map((navItem) => {
         let path = "";
-        const isHideMode = hiddenZUIDs.includes(navItem.ZUID);
 
         switch (navItem.type) {
           case "item":
@@ -206,49 +198,6 @@ export const ContentNav = () => {
             break;
         }
 
-        let actions = [
-          <IconButton
-            data-cy="tree-item-hide"
-            key="tree-item-hide"
-            size="xxsmall"
-            onClick={(e) => {
-              e.stopPropagation();
-
-              setItemToHide(navItem);
-              setIsHideMode(!isHideMode);
-              setIsHideDialogOpen(true);
-            }}
-          >
-            {isHideMode ? (
-              <VisibilityOffRoundedIcon sx={{ fontSize: 16 }} />
-            ) : (
-              <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
-            )}
-          </IconButton>,
-        ];
-
-        if (
-          (navItem.type === "dataset" || navItem.type === "pageset") &&
-          !["dashboard widgets", "clippings", "globals"].includes(
-            navItem.label.toLowerCase()
-          )
-        ) {
-          actions.push(
-            <IconButtonCustom
-              data-cy="tree-item-add-new-content"
-              key="tree-item-add-new-content"
-              variant="contained"
-              size="xxsmall"
-              onClick={(e) => {
-                e.stopPropagation();
-                history.push(`/content/${navItem.ZUID}/new`);
-              }}
-            >
-              <AddRoundedIcon sx={{ fontSize: 16 }} />
-            </IconButtonCustom>
-          );
-        }
-
         return {
           ...navItem,
           icon:
@@ -256,32 +205,88 @@ export const ContentNav = () => {
               ? ICONS["homepage"]
               : ICONS[navItem.type],
           path,
-          actions,
+          actions: [],
           children: [],
         };
       });
     }
 
     return [];
-  }, [
-    granularRoles,
-    rawNavData,
-    debouncedKeyword,
-    hiddenZUIDs,
-    currentUserRolesError,
-  ]);
+  }, [granularRoles, rawNavData, hiddenZUIDs, currentUserRolesError]);
+
+  const filteredMapTree = useMemo(() => {
+    if (mappedTree?.length) {
+      if (!!debouncedKeyword) {
+        return mappedTree.filter((navItem) => {
+          return navItem.label
+            .toLowerCase()
+            .includes(debouncedKeyword.toLowerCase());
+        });
+      }
+
+      return mappedTree;
+    }
+
+    return [];
+  }, [mappedTree, debouncedKeyword]);
 
   const navTree: NavData = useMemo(() => {
-    if (mappedTree?.length) {
+    if (filteredMapTree?.length) {
+      const _filteredTree = cloneDeep(filteredMapTree);
+
       // Convert nav item array to zuid:treeItem map
-      const zuidTreeItemMap = mappedTree.reduce(
+      const zuidTreeItemMap = _filteredTree.reduce(
         (acc: { [key: string]: TreeItem }, curr) => {
           // exclude dashboard widgets
           if (curr.label?.toLowerCase() === "dashboard widgets") {
             return acc;
           }
 
-          acc[curr.ZUID] = { ...curr };
+          const isHideMode = hiddenZUIDs.includes(curr.ZUID);
+          let actions = [
+            <IconButton
+              data-cy="tree-item-hide"
+              key="tree-item-hide"
+              size="xxsmall"
+              onClick={(e) => {
+                e.stopPropagation();
+
+                setItemToHide(curr);
+                setIsHideMode(!isHideMode);
+                setIsHideDialogOpen(true);
+              }}
+            >
+              {isHideMode ? (
+                <VisibilityOffRoundedIcon sx={{ fontSize: 16 }} />
+              ) : (
+                <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
+              )}
+            </IconButton>,
+          ];
+
+          if (
+            (curr.type === "dataset" || curr.type === "pageset") &&
+            !["dashboard widgets", "clippings", "globals"].includes(
+              curr.label.toLowerCase()
+            )
+          ) {
+            actions.push(
+              <IconButtonCustom
+                data-cy="tree-item-add-new-content"
+                key="tree-item-add-new-content"
+                variant="contained"
+                size="xxsmall"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  history.push(`/content/${curr.ZUID}/new`);
+                }}
+              >
+                <AddRoundedIcon sx={{ fontSize: 16 }} />
+              </IconButtonCustom>
+            );
+          }
+
+          acc[curr.ZUID] = { ...curr, actions };
 
           return acc;
         },
@@ -339,7 +344,7 @@ export const ContentNav = () => {
       hidden: [],
       parents: {},
     };
-  }, [mappedTree, hiddenZUIDs]);
+  }, [filteredMapTree, hiddenZUIDs]);
 
   const pathExists = (tree: TreeItem[], path: string) => {
     return !!tree?.find((item) => item.path === path);
@@ -672,7 +677,17 @@ export const ContentNav = () => {
                 )
               );
             } else {
-              setHiddenNavItems([...hiddenNavItems, item]);
+              setHiddenNavItems([
+                ...hiddenNavItems,
+                {
+                  ZUID: item.ZUID,
+                  label: item.label,
+                  sort: item.sort,
+                  type: item.type,
+                  contentModelZUID: item.contentModelZUID,
+                  parentZUID: item.parentZUID,
+                },
+              ]);
             }
           }}
         />

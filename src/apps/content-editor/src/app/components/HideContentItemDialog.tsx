@@ -13,12 +13,13 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 
 import { ContentNavItem } from "../../../../../shell/services/types";
+import { TreeItem } from "../../../../../shell/components/NavTree";
 
 interface Props {
   isHide: boolean;
-  item: ContentNavItem;
+  item: TreeItem;
   onClose: () => void;
-  onToggleItemHideStatus: (item: ContentNavItem) => void;
+  onToggleItemHideStatus: (item: TreeItem) => void;
 }
 
 export const HideContentItemDialog: FC<Readonly<Props>> = ({
