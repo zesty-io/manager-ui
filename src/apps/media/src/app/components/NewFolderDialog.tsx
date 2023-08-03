@@ -15,7 +15,7 @@ import {
   useCreateGroupMutation,
 } from "../../../../../shell/services/mediaManager";
 import { Group } from "../../../../../shell/services/types";
-import { useSessionStorage } from "react-use";
+import { useParams } from "../../../../../shell/hooks/useParams";
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -26,8 +26,7 @@ interface Props {
 export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   const [name, setName] = useState("Untitled");
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-  const [recentlyCreatedFolderId, setRecentlyCreatedFolderId] =
-    useSessionStorage("recentlyCreatedFolder", "");
+  const [params, setParams] = useParams();
 
   const { data: binGroups } = useGetBinGroupsQuery(binId);
 
@@ -36,9 +35,8 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
 
   useEffect(() => {
     if (isSuccess) {
-      setRecentlyCreatedFolderId(data?.data?.[0]?.id);
-      // Close dialog on task queue to allow storage to be set since it's async but not implemented as a promise
-      setTimeout(() => onClose(), 0);
+      setParams(data?.data?.[0]?.id, "newFolderId");
+      onClose();
     }
   }, [isSuccess]);
 

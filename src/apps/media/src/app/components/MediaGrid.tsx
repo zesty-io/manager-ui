@@ -6,7 +6,6 @@ import { File, Group } from "../../../../../shell/services/types";
 import { Thumbnail } from "./Thumbnail";
 import { useHistory, useLocation } from "react-router-dom";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
-import { useSessionStorage } from "react-use";
 
 const FILE_HEIGHT = 204;
 const FOLDER_HEIGHT = 44;
@@ -22,10 +21,6 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
   const history = useHistory();
   const [columns, setColumns] = useState(4);
   const listRef = useRef<VariableSizeGrid>();
-  const [recentlyCreatedFolderId] = useSessionStorage(
-    "recentlyCreatedFolder",
-    ""
-  );
 
   const onResize = (size: Size) => {
     setColumns(Math.floor(size.width / (225 + 16)));
@@ -116,9 +111,6 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
               <Folder
                 name={groups[gridItemIndex].name}
                 id={groups[gridItemIndex].id}
-                highlight={
-                  groups?.[gridItemIndex]?.id === recentlyCreatedFolderId
-                }
               />
             </Box>
           )}
@@ -164,7 +156,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
         </div>
       );
     },
-    [grid, recentlyCreatedFolderId]
+    [grid]
   );
 
   return (
