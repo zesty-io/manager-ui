@@ -7,7 +7,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Button,
   InputAdornment,
   ListItemButton,
   SvgIcon,
@@ -459,23 +458,25 @@ export const ContentNav = () => {
     type: "nav" | "headless" | "hidden"
   ) => {
     if (!!Object.values(navTree.parents)?.length) {
-      const matchedItem = Object.values(navTree.parents).filter((item) => {
-        if (!paths.includes(item.path)) {
-          if (type === "hidden" && hiddenZUIDs.includes(item.ZUID)) {
-            return item;
-          }
+      const matchedItem = Object.values(navTree.parents)
+        .filter((item) => {
+          if (!paths.includes(item.path)) {
+            if (type === "hidden" && hiddenZUIDs.includes(item.ZUID)) {
+              return item;
+            }
 
-          if (type === "headless" && item.type === "dataset") {
-            return item;
-          }
+            if (type === "headless" && item.type === "dataset") {
+              return item;
+            }
 
-          if (type === "nav" && item.type !== "dataset") {
-            return item;
+            if (type === "nav" && item.type !== "dataset") {
+              return item;
+            }
           }
-        }
-      });
+        })
+        .map((item) => item.path);
 
-      return !!matchedItem?.length ? matchedItem[0].path : "";
+      return matchedItem ?? [];
     }
   };
 
@@ -612,13 +613,7 @@ export const ContentNav = () => {
               onToggleCollapse={(paths) => {
                 const path = getClosedPath(paths, "nav");
 
-                if (!closedPageItems.includes(path)) {
-                  setClosedPageItems([...closedPageItems, path]);
-                } else {
-                  setClosedPageItems(
-                    closedPageItems.filter((item) => item === path)
-                  );
-                }
+                setClosedPageItems(path);
               }}
               error={currentUserRolesError || navItemsError}
               HeaderComponent={
@@ -676,13 +671,7 @@ export const ContentNav = () => {
               onToggleCollapse={(paths) => {
                 const path = getClosedPath(paths, "headless");
 
-                if (!closedDatasetItems.includes(path)) {
-                  setClosedDatasetItems([...closedDatasetItems, path]);
-                } else {
-                  setClosedDatasetItems(
-                    closedDatasetItems.filter((item) => item === path)
-                  );
-                }
+                setClosedDatasetItems(path);
               }}
               error={currentUserRolesError || navItemsError}
               HeaderComponent={
@@ -792,13 +781,7 @@ export const ContentNav = () => {
                   onToggleCollapse={(paths) => {
                     const path = getClosedPath(paths, "hidden");
 
-                    if (!closedHiddenItems.includes(path)) {
-                      setClosedHiddenItems([...closedHiddenItems, path]);
-                    } else {
-                      setClosedHiddenItems(
-                        closedHiddenItems.filter((item) => item === path)
-                      );
-                    }
+                    setClosedHiddenItems(path);
                   }}
                 />
               </AccordionDetails>
