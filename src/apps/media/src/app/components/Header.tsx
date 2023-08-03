@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useMemo, useState } from "react";
+import { MouseEvent, useEffect, useRef, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -66,6 +66,7 @@ export const Header = ({
   addImagesCallback,
   showBackButton,
 }: Props) => {
+  const doneButtonRef = useRef<HTMLButtonElement>(null);
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
@@ -155,6 +156,13 @@ export const Header = ({
     }
   };
 
+  // Focus done button after selecting files
+  useEffect(() => {
+    if (selectedFiles?.length > 0) {
+      doneButtonRef.current?.focus();
+    }
+  }, [selectedFiles]);
+
   // Auto-select newly uploaded files when in content editor
   useEffect(() => {
     if (!addImagesCallback) return;
@@ -226,7 +234,9 @@ export const Header = ({
               </IconButton>
               <Typography variant="h4" fontWeight={600}>
                 {selectedFiles?.length}{" "}
-                {isSelectDialog && limitSelected ? `/${limitSelected}` : null}
+                {isSelectDialog && limitSelected
+                  ? ` / ${limitSelected} `
+                  : null}
                 Selected
               </Typography>
             </Stack>
@@ -282,6 +292,7 @@ export const Header = ({
                   color="primary"
                   onClick={() => addImagesCallback(selectedFiles)}
                   startIcon={<CheckIcon fontSize="small" />}
+                  ref={doneButtonRef}
                 >
                   Done
                 </Button>
