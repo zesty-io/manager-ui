@@ -33,7 +33,7 @@ import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import { useLocation, useHistory } from "react-router-dom";
-import { useLocalStorage } from "react-use";
+import { useLocalStorage, useDebounce } from "react-use";
 import { useDispatch } from "react-redux";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
@@ -100,6 +100,7 @@ export const ContentNav = () => {
     ModelType[]
   >([]);
   const [keyword, setKeyword] = useState("");
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
   const [clippingsZUID, setClippingsZUID] = useState("");
   const [isCreateContentDialogOpen, setIsCreateContentDialogOpen] =
     useState(false);
@@ -129,6 +130,8 @@ export const ContentNav = () => {
     "zesty:navContent:hidden",
     []
   );
+
+  useDebounce(() => setDebouncedKeyword(keyword), 200, [keyword]);
 
   const [expandedItems, updateExpandedItems] = useReducer(
     (acc: Partial<HiddenPaths>, curr: Partial<HiddenPaths>) => {
@@ -190,9 +193,11 @@ export const ContentNav = () => {
 
       setClippingsZUID(clippingsModel?.ZUID ?? "");
 
-      if (!!keyword) {
+      if (!!debouncedKeyword) {
         filteredNavData = filteredNavData.filter((navItem) => {
-          return navItem.label.toLowerCase().includes(keyword.toLowerCase());
+          return navItem.label
+            .toLowerCase()
+            .includes(debouncedKeyword.toLowerCase());
         });
       }
 
@@ -288,7 +293,13 @@ export const ContentNav = () => {
     }
 
     return [];
-  }, [granularRoles, rawNavData, keyword, hiddenZUIDs, currentUserRolesError]);
+  }, [
+    granularRoles,
+    rawNavData,
+    debouncedKeyword,
+    hiddenZUIDs,
+    currentUserRolesError,
+  ]);
 
   const navTree: NavData = useMemo(() => {
     if (mappedTree?.length) {
@@ -358,7 +369,7 @@ export const ContentNav = () => {
       hidden: [],
       parents: {},
     };
-  }, [mappedTree, hiddenZUIDs, keyword]);
+  }, [mappedTree, hiddenZUIDs]);
 
   const pathExists = (tree: TreeItem[], path: string) => {
     return !!tree?.find((item) => item.path === path);
@@ -484,7 +495,7 @@ export const ContentNav = () => {
     !navTree.nav.length &&
     !navTree.headless.length &&
     !navTree.hidden.length &&
-    !!keyword;
+    !!debouncedKeyword;
 
   return (
     <>
@@ -543,7 +554,7 @@ export const ContentNav = () => {
               }}
               onChange={(evt) => setKeyword(evt.target.value)}
             />
-            {!keyword && (
+            {!debouncedKeyword && (
               <List disablePadding>
                 {SUB_MENUS.map((menu) => {
                   // Wildcard match for /content/releases since this has a lot of sub routes
@@ -600,7 +611,7 @@ export const ContentNav = () => {
               height="64px"
             />
             <Typography color="text.secondary" variant="body2" align="center">
-              No results available for "{keyword}"
+              No results available for "{debouncedKeyword}"
             </Typography>
           </Stack>
         ) : (
