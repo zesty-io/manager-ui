@@ -470,6 +470,7 @@ export const ContentNav = () => {
                   justifyContent="space-between"
                   alignItems="center"
                   px={1.5}
+                  pb={1.5}
                   sx={{
                     color: "text.secondary",
                   }}
