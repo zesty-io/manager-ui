@@ -4,10 +4,10 @@ import { ApiDetails } from "./ApiDetails";
 
 export const apiTypes = [
   "quick-access",
-  "backend-coding",
-  "graphql",
   "site-generators",
   "custom-endpoints",
+  "graphql",
+  "backend-coding",
   "visual-layout",
 ] as const;
 
@@ -35,8 +35,16 @@ export type ApiType = typeof apiTypes[number];
 export const ModelApi = () => {
   return (
     <Switch>
-      <Route exact path="/schema/:id/api/:type" component={ApiDetails} />
-      <Route exact path="/schema/:id/api" component={ApiCardList} />
+      <Route
+        exact
+        path="/schema/:contentModelZUID/api/:type"
+        component={ApiDetails}
+      />
+      <Route
+        exact
+        path="/schema/:contentModelZUID/api"
+        component={ApiCardList}
+      />
       <Redirect to="/schema/:id/fields/api" />
     </Switch>
   );

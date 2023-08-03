@@ -16,16 +16,16 @@ export const ApiCardList = () => {
         }}
       >
         <Typography variant="h5" fontWeight={600}>
-          View APIs
+          API Access Options
         </Typography>
         <Typography variant="body2">
-          Zesty offers multiple APIs for reading, creating, updating, deleting,
-          and publishing content, each
+          Zesty offers multiple APIs for accessing this content, each with
+          unique benefits. Select one that best
           <br />
-          with unique benefits. Select one that best meets your needs.
+          meets your needs.
         </Typography>
       </Stack>
-      <Box bgcolor="grey.50" height="100%">
+      <Box bgcolor="grey.50">
         <Box
           gap={3}
           px={3}

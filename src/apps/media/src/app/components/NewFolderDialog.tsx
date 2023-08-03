@@ -15,6 +15,7 @@ import {
   useCreateGroupMutation,
 } from "../../../../../shell/services/mediaManager";
 import { Group } from "../../../../../shell/services/types";
+import { useParams } from "../../../../../shell/hooks/useParams";
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -25,13 +26,18 @@ interface Props {
 export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   const [name, setName] = useState("Untitled");
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [params, setParams] = useParams();
 
   const { data: binGroups } = useGetBinGroupsQuery(binId);
 
-  const [createGroup, { isLoading, isSuccess }] = useCreateGroupMutation();
+  const [createGroup, { isLoading, isSuccess, data }] =
+    useCreateGroupMutation();
 
   useEffect(() => {
-    if (isSuccess) onClose();
+    if (isSuccess) {
+      setParams(data?.data?.[0]?.id, "newFolderId");
+      onClose();
+    }
   }, [isSuccess]);
 
   useEffect(() => {

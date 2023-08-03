@@ -192,6 +192,13 @@ export const FileModalContent: FC<Props> = ({
     // history.replace(location.path);
   };
 
+  useEffect(() => {
+    setNewTitle(title);
+    setNewFilename(
+      filename.substring(0, filename.lastIndexOf(".")) || filename
+    );
+  }, [title, filename]);
+
   return (
     <Box>
       {/* Delete File Modal */}

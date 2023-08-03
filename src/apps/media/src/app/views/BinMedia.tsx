@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams } from "react-router";
 import { EmptyState } from "../components/EmptyState";
 import {
@@ -31,9 +31,13 @@ type Params = { id: string };
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
+  setCurrentFilesCallback: (files: File[]) => void;
 }
 
-export const BinMedia = ({ addImagesCallback }: Props) => {
+export const BinMedia = ({
+  addImagesCallback,
+  setCurrentFilesCallback,
+}: Props) => {
   const [params, setParams] = useSearchParams();
   const sortOrder = params.get("sort");
   const filetypeFilter = params.get("filetype") as Filetype;
@@ -138,6 +142,10 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
         return unsortedBinGroups;
     }
   }, [unsortedBinGroups, sortOrder, binData, filetypeFilter, dateRangeFilter]);
+
+  useEffect(() => {
+    setCurrentFilesCallback(binFiles || []);
+  }, [binFiles]);
 
   return (
     <Box

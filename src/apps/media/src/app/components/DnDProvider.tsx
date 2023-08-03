@@ -73,7 +73,10 @@ export const DnDProvider = ({
         outline: "none",
         ...sx,
       }}
-      {...getRootProps({ onClick: (evt) => evt.stopPropagation() })}
+      {...getRootProps({
+        onClick: (evt) => evt.stopPropagation(),
+        onKeyDown: (evt) => evt.stopPropagation(),
+      })}
     >
       <input {...getInputProps()} />
       {isDragActive ? (

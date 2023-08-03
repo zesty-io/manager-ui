@@ -10,15 +10,29 @@ type Params = {
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
+  setCurrentFilesCallback: (files: File[]) => void;
 }
 
-export const Media = ({ addImagesCallback }: Props) => {
+export const Media = ({
+  addImagesCallback,
+  setCurrentFilesCallback,
+}: Props) => {
   const params = useParams<Params>();
   const { id } = params;
   if (id.startsWith("1")) {
-    return <BinMedia addImagesCallback={addImagesCallback} />;
+    return (
+      <BinMedia
+        addImagesCallback={addImagesCallback}
+        setCurrentFilesCallback={setCurrentFilesCallback}
+      />
+    );
   } else if (id.startsWith("2")) {
-    return <FolderMedia addImagesCallback={addImagesCallback} />;
+    return (
+      <FolderMedia
+        addImagesCallback={addImagesCallback}
+        setCurrentFilesCallback={setCurrentFilesCallback}
+      />
+    );
   } else {
     return <NotFoundState />;
   }
