@@ -3,6 +3,7 @@ import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemNavigation.less";
+import { apiTypes } from "../../../../../../../../schema/src/app/components/ModelApi";
 export default function ItemNavigation({ modelZUID, itemZUID, item }) {
   const slug = new URL(window.location).pathname.split("/").pop();
 
@@ -17,7 +18,8 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
           slug !== "meta" &&
             slug !== "head" &&
             slug !== "preview" &&
-            slug !== "headless" &&
+            slug !== "api" &&
+            !apiTypes.includes(slug) &&
             slug !== "publishings" &&
             slug !== "analytics"
             ? styles.Selected
@@ -69,13 +71,13 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
 
       <AppLink
         title="API"
-        data-cy="headless"
+        data-cy="api"
         className={cx(
           styles.AppLink,
           styles.buttonText,
-          slug === "headless" ? styles.Selected : null
+          slug === "api" || apiTypes.includes(slug) ? styles.Selected : null
         )}
-        to={`/content/${modelZUID}/${itemZUID}/headless`}
+        to={`/content/${modelZUID}/${itemZUID}/api`}
       >
         {/* Headless <span className={styles.Hide}>Options</span>
          */}
