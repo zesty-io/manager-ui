@@ -324,7 +324,7 @@ export const mediaManagerApi = createApi({
       ],
     }),
     createGroup: builder.mutation<
-      GroupData,
+      { data: GroupData[] },
       {
         body: { name: string; bin_id: string; group_id: string };
       }

@@ -1,13 +1,15 @@
 import { Typography, Button } from "@mui/material";
 import { useHistory } from "react-router-dom";
 import FolderIcon from "@mui/icons-material/Folder";
+import { alpha } from "@mui/material/styles";
 
 interface FolderProps {
   name: string;
   id: string;
+  highlight?: boolean;
 }
 
-export const Folder: React.FC<FolderProps> = ({ name, id }) => {
+export const Folder: React.FC<FolderProps> = ({ name, id, highlight }) => {
   const history = useHistory();
 
   return (
@@ -22,6 +24,9 @@ export const Folder: React.FC<FolderProps> = ({ name, id }) => {
         color: "grey.500",
         borderColor: "grey.100",
         textTransform: "none",
+        backgroundColor: highlight
+          ? (theme) => alpha(theme.palette.primary.main, 0.08)
+          : "",
       }}
       onClick={() => {
         history.push("/media/folder/" + id);
