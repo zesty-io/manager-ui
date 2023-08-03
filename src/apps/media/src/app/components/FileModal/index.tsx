@@ -42,7 +42,7 @@ export const FileModal: FC<Props> = ({
 }) => {
   const history = useHistory();
   const location = useLocation();
-  const { data, isLoading, isError } = useGetFileQuery(fileId);
+  const { data, isLoading, isError, isFetching } = useGetFileQuery(fileId);
   const [showEdit, setShowEdit] = useState(false);
   const [params, setParams] = useParams();
   const [adjacentFiles, setAdjacentFiles] = useState({
@@ -124,7 +124,7 @@ export const FileModal: FC<Props> = ({
 
   return (
     <>
-      {data && !isError ? (
+      {data && !isError && !isFetching ? (
         <Dialog
           open={data.url && !isLoading}
           fullWidth
@@ -239,7 +239,7 @@ export const FileModal: FC<Props> = ({
             {/* </WithLoader> */}
           </DialogContent>
         </Dialog>
-      ) : !data && !isError ? (
+      ) : isFetching || (!data && !isError) ? (
         <Dialog
           open={true}
           PaperProps={{
