@@ -8,16 +8,13 @@ describe("Global Search: Advanced Search", () => {
     );
 
     // Open via filter button
-    cy.getBySelector("GlobalSearchFilterButton").should("exist").click();
+    cy.getBySelector("GlobalSearchFilterButton").click();
     cy.getBySelector("AdvanceSearchModal").should("exist");
     cy.get("body").type("{esc}");
 
     // Open via advanced search button
-    cy.getBySelector("global-search-textfield")
-      .find("input")
-      .should("exist")
-      .type("cypress");
-    cy.getBySelector("AdvancedSearchButton").should("exist").click();
+    cy.getBySelector("global-search-textfield").find("input").type("cypress");
+    cy.getBySelector("AdvancedSearchButton").click();
     cy.getBySelector("AdvanceSearchModal").should("exist");
     cy.get("body").type("{esc}");
   });
@@ -30,11 +27,8 @@ describe("Global Search: Advanced Search", () => {
       }
     );
 
-    cy.getBySelector("global-search-textfield")
-      .find("input")
-      .should("exist")
-      .type("cypress");
-    cy.getBySelector("GlobalSearchFilterButton").should("exist").click();
+    cy.getBySelector("global-search-textfield").find("input").type("cypress");
+    cy.getBySelector("GlobalSearchFilterButton").click();
     cy.getBySelector("AdvanceSearchModal").should("exist");
     cy.getBySelector("AdvanceSearchKeyword")
       .find("input")
@@ -51,20 +45,17 @@ describe("Global Search: Advanced Search", () => {
     );
 
     // Type in keyword
-    cy.getBySelector("GlobalSearchFilterButton").should("exist").click();
+    cy.getBySelector("GlobalSearchFilterButton").click();
     cy.getBySelector("AdvanceSearchModal").should("exist");
-    cy.getBySelector("AdvanceSearchKeyword")
-      .find("input")
-      .should("exist")
-      .type("cypress");
+    cy.getBySelector("AdvanceSearchKeyword").find("input").type("cypress");
 
     // Select a user
-    cy.getBySelector("AdvanceSearchUser").should("exist").click();
-    cy.get("[data-option-index='0']").should("exist").click();
+    cy.getBySelector("AdvanceSearchUser").click();
+    cy.get("[data-option-index='0']").click();
 
     // Select a date
-    cy.getBySelector("AdvanceSearchDate").should("exist").click();
-    cy.get("[data-value='today']").should("exist").click();
+    cy.getBySelector("AdvanceSearchDate").click();
+    cy.get("[data-value='today']").click();
 
     // Validate that values exist on the fields
     cy.getBySelector("AdvanceSearchKeyword")
@@ -77,7 +68,7 @@ describe("Global Search: Advanced Search", () => {
       .should("not.have.value", "");
     cy.getBySelector("AdvanceSearchDate").should("exist").contains("Today");
 
-    cy.getBySelector("AdvanceSearchClearButton").should("exist").click();
+    cy.getBySelector("AdvanceSearchClearButton").click();
 
     // Validate that values do not exist on the fields
     cy.getBySelector("AdvanceSearchKeyword")
@@ -88,7 +79,7 @@ describe("Global Search: Advanced Search", () => {
       .find("input")
       .should("exist")
       .should("have.value", "");
-    cy.getBySelector("AdvanceSearchDate").should("exist").contains("Any Time");
+    cy.getBySelector("AdvanceSearchDate").contains("Any Time");
   });
 
   it("Takes the user to the search page with all user input set in the URL parameters accordingly", () => {
@@ -97,25 +88,22 @@ describe("Global Search: Advanced Search", () => {
     });
 
     // Type in keyword
-    cy.getBySelector("GlobalSearchFilterButton").should("exist").click();
+    cy.getBySelector("GlobalSearchFilterButton").click();
     cy.getBySelector("AdvanceSearchModal").should("exist");
-    cy.getBySelector("AdvanceSearchKeyword")
-      .find("input")
-      .should("exist")
-      .type("cypress");
+    cy.getBySelector("AdvanceSearchKeyword").find("input").type("cypress");
 
     // Select a date
-    cy.getBySelector("AdvanceSearchDate").should("exist").click();
-    cy.get("[data-value='today']").should("exist").click();
+    cy.getBySelector("AdvanceSearchDate").click();
+    cy.get("[data-value='today']").click();
 
     // Validate that values exist on the fields
     cy.getBySelector("AdvanceSearchKeyword")
       .find("input")
       .should("exist")
       .should("not.have.value", "");
-    cy.getBySelector("AdvanceSearchDate").should("exist").contains("Today");
+    cy.getBySelector("AdvanceSearchDate").contains("Today");
 
-    cy.getBySelector("AdvanceSearchSubmitButton").should("exist").click();
+    cy.getBySelector("AdvanceSearchSubmitButton").click();
 
     cy.location("pathname").should("equal", "/search");
     cy.location("search").should("equal", "?q=cypress&datePreset=today");
