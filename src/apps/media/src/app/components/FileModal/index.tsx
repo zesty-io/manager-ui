@@ -122,6 +122,8 @@ export const FileModal: FC<Props> = ({
     };
   }, []);
 
+  console.log("testing is fetching", isFetching);
+
   return (
     <>
       {data && !isError && !isFetching ? (
