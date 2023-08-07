@@ -35,11 +35,13 @@ export interface SubMenu {
   path: string;
 }
 interface Props {
-  onFilter: (keyword: string) => void;
-  onAddClick: () => void;
+  onFilter?: (keyword: string) => void;
+  onAddClick?: () => void;
   mode?: PaletteMode;
-  headerTitle?: string;
+  headerTitle: string;
   subMenus?: SubMenu[];
+  withSearch?: boolean;
+  withTitleButton?: boolean;
 }
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   (
@@ -47,9 +49,10 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
       onAddClick,
       onFilter,
       mode = "light",
-
       headerTitle,
       subMenus,
+      withSearch = true,
+      withTitleButton = true,
       children,
       ...props
     },
@@ -74,7 +77,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
     );
 
     useEffect(() => {
-      onFilter(keyword);
+      onFilter && onFilter(keyword);
     }, [keyword]);
 
     const themeMode = mode === "light" ? theme : darkTheme;
@@ -94,19 +97,6 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
             {...props}
           >
             <Box py={1.5}>
-              {!!headerTitle && (
-                <Typography
-                  variant="h6"
-                  color="text.primary"
-                  fontWeight={700}
-                  lineHeight="24px"
-                  fontSize={18}
-                  px={1.5}
-                >
-                  {headerTitle}
-                </Typography>
-              )}
-
               <Stack gap={1.5}>
                 <Stack
                   direction="row"
@@ -121,45 +111,49 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                     lineHeight="24px"
                     fontSize={18}
                   >
-                    Content
+                    {headerTitle}
                   </Typography>
-                  <Tooltip
-                    title="Create Content"
-                    placement="right-start"
-                    enterDelay={1000}
-                    enterNextDelay={1000}
-                  >
-                    <IconButtonCustom
-                      data-cy="create_new_content_item"
-                      variant="contained"
-                      size="xsmall"
-                      onClick={onAddClick}
+                  {withTitleButton && (
+                    <Tooltip
+                      title="Create Content"
+                      placement="right-start"
+                      enterDelay={1000}
+                      enterNextDelay={1000}
                     >
-                      <AddRoundedIcon sx={{ fontSize: 18 }} />
-                    </IconButtonCustom>
-                  </Tooltip>
-                </Stack>
-                <TextField
-                  InputProps={{
-                    sx: {
-                      backgroundColor: "grey.800",
-                    },
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        sx={{ marginRight: 0.5 }}
+                      <IconButtonCustom
+                        data-cy="create_new_content_item"
+                        variant="contained"
+                        size="xsmall"
+                        onClick={onAddClick}
                       >
-                        <ManageSearchRoundedIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  placeholder="Filter Models"
-                  size="small"
-                  sx={{
-                    px: 1.5,
-                  }}
-                  onChange={(evt) => setKeyword(evt.target.value)}
-                />
+                        <AddRoundedIcon sx={{ fontSize: 18 }} />
+                      </IconButtonCustom>
+                    </Tooltip>
+                  )}
+                </Stack>
+                {withSearch && (
+                  <TextField
+                    InputProps={{
+                      sx: {
+                        backgroundColor: "grey.800",
+                      },
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          sx={{ marginRight: 0.5 }}
+                        >
+                          <ManageSearchRoundedIcon fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    placeholder="Filter Models"
+                    size="small"
+                    sx={{
+                      px: 1.5,
+                    }}
+                    onChange={(evt) => setKeyword(evt.target.value)}
+                  />
+                )}
                 {!keyword && (
                   <List disablePadding>
                     {!!subMenus?.length &&

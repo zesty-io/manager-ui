@@ -439,6 +439,7 @@ export const ContentNav = () => {
       <AppSideBar
         data-cy="contentNav"
         mode="dark"
+        headerTitle="Content"
         ref={sideBarChildrenContainerRef}
         subMenus={SUB_MENUS}
         onAddClick={() => setIsCreateContentDialogOpen(true)}
