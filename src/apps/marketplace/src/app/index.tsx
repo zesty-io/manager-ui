@@ -1,8 +1,8 @@
-import { Redirect, Route, Switch, useHistory } from "react-router";
 import { Box, ThemeProvider } from "@mui/material";
 import { Sidebar } from "./components/Sidebar";
 import { theme } from "@zesty-io/material";
 import CustomApp from "./view/CustomApp";
+import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 
 export const MarketplaceApp = () => {
   return (
@@ -18,7 +18,14 @@ export const MarketplaceApp = () => {
           },
         }}
       >
-        <Sidebar />
+        <ResizableContainer
+          id="appsNav"
+          defaultWidth={300}
+          minWidth={220}
+          maxWidth={360}
+        >
+          <Sidebar />
+        </ResizableContainer>
         <CustomApp />
       </Box>
     </ThemeProvider>

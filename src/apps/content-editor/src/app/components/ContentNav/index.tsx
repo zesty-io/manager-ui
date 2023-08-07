@@ -444,6 +444,7 @@ export const ContentNav = () => {
         subMenus={SUB_MENUS}
         onAddClick={() => setIsCreateContentDialogOpen(true)}
         onFilter={(keyword) => setKeyword(keyword)}
+        titleButtonTooltip="Create Content"
       >
         {noMatchedItems ? (
           <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
