@@ -449,3 +449,17 @@ export interface Language {
   name: string;
   updatedAt: string;
 }
+
+export interface InstalledApp {
+  ZUID: string;
+  appZUID: string;
+  createdAt: string;
+  createdByUserZUID: string;
+  description: string | null;
+  label: string;
+  name: string;
+  public: boolean;
+  publisher: string;
+  updatedAt: string;
+  url: string;
+}
