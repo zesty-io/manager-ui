@@ -33,6 +33,8 @@ export interface SubMenu {
   name: string;
   icon: SvgIconComponent;
   path: string;
+  onClick?: () => void;
+  disableActive?: boolean;
 }
 interface Props {
   onFilter?: (keyword: string) => void;
@@ -42,6 +44,7 @@ interface Props {
   subMenus?: SubMenu[];
   withSearch?: boolean;
   withTitleButton?: boolean;
+  titleButtonTooltip?: string;
 }
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   (
@@ -53,6 +56,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
       subMenus,
       withSearch = true,
       withTitleButton = true,
+      titleButtonTooltip,
       children,
       ...props
     },
@@ -115,7 +119,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   </Typography>
                   {withTitleButton && (
                     <Tooltip
-                      title="Create Content"
+                      title={titleButtonTooltip}
                       placement="right-start"
                       enterDelay={1000}
                       enterNextDelay={1000}
@@ -168,10 +172,13 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                           <ListItem
                             key={menu.name}
                             disablePadding
-                            selected={isActive}
+                            selected={menu.disableActive ? false : isActive}
                             sx={{
                               color: "text.secondary",
-                              borderLeft: isActive ? "2px solid" : "none",
+                              borderLeft:
+                                !menu.disableActive && isActive
+                                  ? "2px solid"
+                                  : "none",
                               borderColor: "primary.main",
                             }}
                           >
@@ -182,7 +189,13 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                                 pr: 1.5,
                                 py: 0.75,
                               }}
-                              onClick={() => history.push(menu.path)}
+                              onClick={() => {
+                                if (menu.onClick) {
+                                  menu.onClick();
+                                } else {
+                                  history.push(menu.path);
+                                }
+                              }}
                             >
                               <ListItemIcon sx={{ minWidth: 32 }}>
                                 <SvgIcon component={menu.icon} />
