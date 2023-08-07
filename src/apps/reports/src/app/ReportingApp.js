@@ -3,18 +3,24 @@ import { Box, Typography } from "@mui/material";
 
 import { ReportingNav } from "./components/ReportingNav";
 import { ActivityLog } from "./views/ActivityLog";
-import Analytics from "./views/Analytics";
 import Metrics from "./views/Metrics";
+import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 
 export function ReportingApp() {
   return (
     <Box sx={{ display: "flex", height: "100%" }}>
-      <ReportingNav />
+      <ResizableContainer
+        id="reportsNav"
+        defaultWidth={300}
+        minWidth={220}
+        maxWidth={360}
+      >
+        <ReportingNav />
+      </ResizableContainer>
       <Box sx={{ flex: 1, overflowY: "scroll" }}>
         <Switch>
           <Route path="/reports/activity-log" component={ActivityLog} />
           <Route path="/reports/metrics" component={Metrics} />
-          <Route path="/reports/analytics" component={Analytics} />
           <Redirect to="/reports/activity-log" />
         </Switch>
       </Box>
