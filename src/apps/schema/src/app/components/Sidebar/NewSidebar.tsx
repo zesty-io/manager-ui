@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { SchemaRounded, InsightsRounded } from "@mui/icons-material";
 import { Box } from "@mui/material";
@@ -20,6 +20,10 @@ export const Sidebar = () => {
   const [isCreateModelDialogueOpen, setIsCreateModelDialogueOpen] =
     useState(false);
 
+  useEffect(() => {
+    setSearch(params.get("term") || "");
+  }, [params.get("term")]);
+
   const subMenu: SubMenu[] = [
     {
       name: "All Models",
@@ -38,6 +42,7 @@ export const Sidebar = () => {
         searchPlaceholder="Search Models"
         titleButtonTooltip="Create Model"
         hideSubMenuOnSearch={false}
+        filterKeyword={search}
         onAddClick={() => setIsCreateModelDialogueOpen(true)}
         onFilterEnter={(keyword) => {
           if (!!keyword) {

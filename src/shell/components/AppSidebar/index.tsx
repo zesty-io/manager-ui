@@ -49,6 +49,7 @@ interface Props {
   searchId?: string;
   searchPlaceholder?: string;
   hideSubMenuOnSearch?: boolean;
+  filterKeyword?: string;
 }
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   (
@@ -65,6 +66,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
       searchId = "appSidebarSearch",
       searchPlaceholder,
       hideSubMenuOnSearch = true,
+      filterKeyword = "",
       children,
       ...props
     },
@@ -73,7 +75,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
     const location = useLocation();
     const history = useHistory();
     const childrenContainerRef = useRef<HTMLDivElement | null>(null);
-    const [keyword, setKeyword] = useState("");
+    const [userInputKeyword, setUserInputKeyword] = useState("");
 
     useImperativeHandle(
       ref,
@@ -89,8 +91,12 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
     );
 
     useEffect(() => {
-      onFilterChange && onFilterChange(keyword);
-    }, [keyword]);
+      onFilterChange && onFilterChange(userInputKeyword);
+    }, [userInputKeyword]);
+
+    useEffect(() => {
+      setUserInputKeyword(filterKeyword);
+    }, [filterKeyword]);
 
     const themeMode = mode === "light" ? theme : darkTheme;
 
@@ -146,6 +152,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                 {withSearch && (
                   <TextField
                     data-cy={searchId}
+                    value={userInputKeyword}
                     InputProps={{
                       sx: {
                         backgroundColor: "grey.800",
@@ -164,15 +171,15 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                     sx={{
                       px: 1.5,
                     }}
-                    onChange={(evt) => setKeyword(evt.target.value)}
+                    onChange={(evt) => setUserInputKeyword(evt.target.value)}
                     onKeyDown={(evt) => {
                       if (evt.key.toLowerCase() === "enter") {
-                        onFilterEnter(keyword);
+                        onFilterEnter && onFilterEnter(userInputKeyword);
                       }
                     }}
                   />
                 )}
-                {hideSubMenuOnSearch && keyword ? (
+                {hideSubMenuOnSearch && userInputKeyword ? (
                   <></>
                 ) : (
                   <List disablePadding>
