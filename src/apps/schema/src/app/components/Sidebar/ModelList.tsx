@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import moment from "moment";
 import { theme } from "@zesty-io/material";
 
@@ -18,6 +19,7 @@ import { useLocalStorage } from "react-use";
 import { CreateModelDialogue } from "../CreateModelDialogue";
 import { modelIconMap } from "../../utils";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
+import { ModelMenu } from "../ModelMenu";
 
 interface Props {
   title: string;
@@ -32,8 +34,11 @@ export const ModelList = ({ title, models, type }: Props) => {
     `zesty:navSchema-${title}:sort`,
     "asc"
   );
+  const [modelZUID, setModelZUID] = useState("");
   const [showCreateModelDialogue, setShowCreateModelDialogue] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [modelMenuAnchorEl, setModelMenuAnchorEl] =
+    useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleSortMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -50,7 +55,21 @@ export const ModelList = ({ title, models, type }: Props) => {
           children: [],
           label: model.label,
           path: `/schema/${model.ZUID}`,
-          actions: [],
+          actions: [
+            <IconButton
+              data-cy="tree-item-more-menu"
+              key="tree-item-more-menu"
+              size="xxsmall"
+              onClick={(evt) => {
+                evt.stopPropagation();
+
+                setModelMenuAnchorEl(evt.currentTarget);
+                setModelZUID(model.ZUID);
+              }}
+            >
+              <MoreHorizRoundedIcon sx={{ fontSize: 16 }} />
+            </IconButton>,
+          ],
           ZUID: model.ZUID,
           updatedAt: model.updatedAt,
         };
@@ -153,6 +172,13 @@ export const ModelList = ({ title, models, type }: Props) => {
           onClose={() => setShowCreateModelDialogue(false)}
         />
       )}
+      <ModelMenu
+        anchorEl={modelMenuAnchorEl}
+        modelZUID={modelZUID}
+        onClose={() => {
+          setModelMenuAnchorEl(null);
+        }}
+      />
     </>
   );
 };
