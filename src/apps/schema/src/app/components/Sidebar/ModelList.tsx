@@ -117,7 +117,7 @@ export const ModelList = ({ title, models, type }: Props) => {
                 {title}
               </Typography>
               <IconButton size="xxsmall" onClick={handleSortMenuClick}>
-                <ArrowDropDownRoundedIcon sx={{ fontSize: 16 }} />
+                <ArrowDropDownRoundedIcon sx={{ fontSize: 20 }} />
               </IconButton>
             </Stack>
             <IconButton
