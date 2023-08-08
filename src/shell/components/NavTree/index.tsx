@@ -12,7 +12,8 @@ export type TreeItem = {
   children: TreeItem[];
   path: string;
   actions?: JSX.Element[];
-} & ContentNavItem;
+  updatedAt?: string;
+} & Partial<ContentNavItem>;
 
 interface Props {
   id: string;
@@ -21,7 +22,7 @@ interface Props {
   tree: TreeItem[];
   selected: string;
   expandedItems?: string[];
-  onToggleCollapse: (paths: string[]) => void;
+  onToggleCollapse?: (paths: string[]) => void;
   error?: boolean;
 }
 export const NavTree: FC<Readonly<Props>> = ({

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useHistory } from "react-router";
 import { SchemaRounded, InsightsRounded } from "@mui/icons-material";
+import { Box } from "@mui/material";
 
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
 import {
@@ -25,12 +26,6 @@ export const Sidebar = () => {
       path: "/schema",
       icon: SchemaRounded,
     },
-    // TODO: Maybe remove?
-    {
-      name: "Insights",
-      path: "/schema/insights",
-      icon: InsightsRounded,
-    },
   ];
 
   return (
@@ -50,21 +45,35 @@ export const Sidebar = () => {
           }
         }}
       >
-        <ModelList
-          title="single page"
-          type="templateset"
-          models={models?.filter((model) => model.type === "templateset") || []}
-        />
-        <ModelList
-          title="multi page"
-          type="pageset"
-          models={models?.filter((model) => model.type === "pageset") || []}
-        />
-        <ModelList
-          title="dataset"
-          type="dataset"
-          models={models?.filter((model) => model.type === "dataset") || []}
-        />
+        {!isLoading && (
+          <>
+            <ModelList
+              title="single page"
+              type="templateset"
+              models={
+                models?.filter((model) => model.type === "templateset") || []
+              }
+            />
+            <Box pt={1.5}>
+              <ModelList
+                title="multi page"
+                type="pageset"
+                models={
+                  models?.filter((model) => model.type === "pageset") || []
+                }
+              />
+            </Box>
+            <Box pt={1.5}>
+              <ModelList
+                title="dataset"
+                type="dataset"
+                models={
+                  models?.filter((model) => model.type === "dataset") || []
+                }
+              />
+            </Box>
+          </>
+        )}
       </AppSideBar>
       {isCreateModelDialogueOpen && (
         <CreateModelDialogue

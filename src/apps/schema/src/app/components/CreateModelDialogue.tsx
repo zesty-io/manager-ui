@@ -18,12 +18,14 @@ import {
   Tooltip,
   Autocomplete,
   Checkbox,
+  ThemeProvider,
 } from "@mui/material";
 import { useEffect, useReducer, useState, useMemo } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { isEmpty, cloneDeep } from "lodash";
+import { theme } from "@zesty-io/material";
 
 import {
   useCreateContentModelMutation,
@@ -465,21 +467,23 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   };
 
   return (
-    <Dialog
-      open
-      onClose={onClose}
-      sx={{
-        my: "20px",
-      }}
-      PaperProps={{
-        sx: {
-          maxWidth: "640px",
-          maxHeight: "min(100%, 1000px)",
-          m: 0,
-        },
-      }}
-    >
-      {getView()}
-    </Dialog>
+    <ThemeProvider theme={theme}>
+      <Dialog
+        open
+        onClose={onClose}
+        sx={{
+          my: "20px",
+        }}
+        PaperProps={{
+          sx: {
+            maxWidth: "640px",
+            maxHeight: "min(100%, 1000px)",
+            m: 0,
+          },
+        }}
+      >
+        {getView()}
+      </Dialog>
+    </ThemeProvider>
   );
 };
