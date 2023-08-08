@@ -440,10 +440,11 @@ export const ContentNav = () => {
         data-cy="contentNav"
         mode="dark"
         headerTitle="Content"
+        searchPlaceholder="Filter Models"
         ref={sideBarChildrenContainerRef}
         subMenus={SUB_MENUS}
         onAddClick={() => setIsCreateContentDialogOpen(true)}
-        onFilter={(keyword) => setKeyword(keyword)}
+        onFilterChange={(keyword) => setKeyword(keyword)}
         titleButtonTooltip="Create Content"
       >
         {noMatchedItems ? (

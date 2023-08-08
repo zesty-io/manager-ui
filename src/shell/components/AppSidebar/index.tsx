@@ -37,7 +37,8 @@ export interface SubMenu {
   disableActive?: boolean;
 }
 interface Props {
-  onFilter?: (keyword: string) => void;
+  onFilterChange?: (keyword: string) => void;
+  onFilterEnter?: (keyword: string) => void;
   onAddClick?: () => void;
   mode?: PaletteMode;
   headerTitle: string;
@@ -45,18 +46,23 @@ interface Props {
   withSearch?: boolean;
   withTitleButton?: boolean;
   titleButtonTooltip?: string;
+  searchId?: string;
+  searchPlaceholder?: string;
 }
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   (
     {
       onAddClick,
-      onFilter,
+      onFilterChange,
+      onFilterEnter,
       mode = "light",
       headerTitle,
       subMenus,
       withSearch = true,
       withTitleButton = true,
       titleButtonTooltip,
+      searchId = "appSidebarSearch",
+      searchPlaceholder,
       children,
       ...props
     },
@@ -81,7 +87,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
     );
 
     useEffect(() => {
-      onFilter && onFilter(keyword);
+      onFilterChange && onFilterChange(keyword);
     }, [keyword]);
 
     const themeMode = mode === "light" ? theme : darkTheme;
@@ -137,6 +143,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                 </Stack>
                 {withSearch && (
                   <TextField
+                    data-cy={searchId}
                     InputProps={{
                       sx: {
                         backgroundColor: "grey.800",
@@ -150,12 +157,17 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                         </InputAdornment>
                       ),
                     }}
-                    placeholder="Filter Models"
+                    placeholder={searchPlaceholder}
                     size="small"
                     sx={{
                       px: 1.5,
                     }}
                     onChange={(evt) => setKeyword(evt.target.value)}
+                    onKeyDown={(evt) => {
+                      if (evt.key.toLowerCase() === "enter") {
+                        onFilterEnter(keyword);
+                      }
+                    }}
                   />
                 )}
                 {!keyword && (
