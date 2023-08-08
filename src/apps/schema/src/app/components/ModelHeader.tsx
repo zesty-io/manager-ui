@@ -6,10 +6,6 @@ import {
   Tabs,
   Tab,
   IconButton,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
   SvgIcon,
   Tooltip,
 } from "@mui/material";
@@ -25,18 +21,11 @@ import SplitscreenRoundedIcon from "@mui/icons-material/SplitscreenRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
-import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
-import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import VerticalSplitRoundedIcon from "@mui/icons-material/VerticalSplitRounded";
-import { RenameModelDialogue } from "./RenameModelDialogue";
 import { modelIconMap, modelNameMap } from "../utils";
-import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
-import { DeleteModelDialogue } from "./DeleteModelDialogue";
-import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
+import { ModelMenu } from "./ModelMenu";
 
 moment.updateLocale("en", {
   relativeTime: {
@@ -60,34 +49,14 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   const { id } = params;
   const { data: models } = useGetContentModelsQuery();
   const { data: views } = useGetWebViewsQuery();
-  const [isCopied, setIsCopied] = useState(false);
   const location = useLocation();
   const history = useHistory();
   const { isSuccess: isFieldsLoaded } = useGetContentModelFieldsQuery(id);
   const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
 
   const model = models?.find((model) => model.ZUID === id);
   const view = views?.find((view) => view?.contentModelZUID === model?.ZUID);
   const canCreateModel = model?.name.toLowerCase() !== "clippings";
-
-  const [showDialogue, setShowDialogue] = useState<
-    "rename" | "duplicate" | "delete" | null
-  >(null);
-
-  const handleCopyZUID = (data: string) => {
-    navigator?.clipboard
-      ?.writeText(data)
-      .then(() => {
-        setIsCopied(true);
-        setTimeout(() => {
-          setIsCopied(false);
-        }, 1500);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
 
   return (
     <>
@@ -115,55 +84,11 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               >
                 <MoreHorizRoundedIcon fontSize="small" />
               </IconButton>
-              <Menu
+              <ModelMenu
                 anchorEl={anchorEl}
-                open={open}
+                modelZUID={id}
                 onClose={() => setAnchorEl(null)}
-              >
-                <MenuItem
-                  onClick={() => {
-                    setShowDialogue("rename");
-                    setAnchorEl(null);
-                  }}
-                >
-                  <ListItemIcon>
-                    <DriveFileRenameOutlineRoundedIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Rename Model</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    setShowDialogue("duplicate");
-                    setAnchorEl(null);
-                  }}
-                >
-                  <ListItemIcon>
-                    <ContentCopyRoundedIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Duplicate Model</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={() => handleCopyZUID(model.ZUID)}>
-                  <ListItemIcon>
-                    {isCopied ? (
-                      <CheckRoundedIcon fontSize="small" />
-                    ) : (
-                      <WidgetsRoundedIcon fontSize="small" />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText>Copy ZUID</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    setShowDialogue("delete");
-                    setAnchorEl(null);
-                  }}
-                >
-                  <ListItemIcon>
-                    <DeleteRoundedIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Delete Model</ListItemText>
-                </MenuItem>
-              </Menu>
+              />
             </Box>
             <Box display="flex" gap={2}>
               {view && (
@@ -280,24 +205,6 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
           </Tabs>
         </Box>
       </Box>
-      {showDialogue === "rename" && (
-        <RenameModelDialogue
-          model={model}
-          onClose={() => setShowDialogue(null)}
-        />
-      )}
-      {showDialogue === "duplicate" && (
-        <DuplicateModelDialogue
-          model={model}
-          onClose={() => setShowDialogue(null)}
-        />
-      )}
-      {showDialogue === "delete" && (
-        <DeleteModelDialogue
-          model={model}
-          onClose={() => setShowDialogue(null)}
-        />
-      )}
     </>
   );
 };
