@@ -48,6 +48,7 @@ interface Props {
   titleButtonTooltip?: string;
   searchId?: string;
   searchPlaceholder?: string;
+  hideSubMenuOnSearch?: boolean;
 }
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   (
@@ -63,6 +64,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
       titleButtonTooltip,
       searchId = "appSidebarSearch",
       searchPlaceholder,
+      hideSubMenuOnSearch = true,
       children,
       ...props
     },
@@ -170,15 +172,13 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                     }}
                   />
                 )}
-                {!keyword && (
+                {hideSubMenuOnSearch && keyword ? (
+                  <></>
+                ) : (
                   <List disablePadding>
                     {!!subMenus?.length &&
                       subMenus?.map((menu) => {
-                        // Wildcard match for /content/releases since this has a lot of sub routes
-                        const isActive =
-                          menu.name.toLowerCase() === "dashboard"
-                            ? location.pathname === menu.path
-                            : location.pathname.includes(menu.path);
+                        const isActive = location.pathname === menu.path;
 
                         return (
                           <ListItem
