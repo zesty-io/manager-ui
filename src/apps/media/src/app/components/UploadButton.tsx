@@ -56,7 +56,6 @@ export const UploadButton: FC<UploadButton> = ({
   ) => {
     const currentBin = binData[0];
 
-    console.log("uploading from:", caller);
     dispatch(
       fileUploadStage(
         Array.from(event.target.files).map((file) => {
@@ -75,7 +74,6 @@ export const UploadButton: FC<UploadButton> = ({
     hiddenFileInput.current.click();
   };
 
-  // console.log(caller);
   return (
     <>
       {isIconButton ? (

@@ -409,7 +409,11 @@ export const Header = ({
                 </Button>
               )}
               {hideUpload ? null : (
-                <UploadButton currentBinId={binId} currentGroupId={id} />
+                <UploadButton
+                  caller="header"
+                  currentBinId={binId}
+                  currentGroupId={id}
+                />
               )}
             </Box>
           </>
