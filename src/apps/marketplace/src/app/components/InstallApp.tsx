@@ -2,11 +2,11 @@ import { Stack, Box, Typography, Button } from "@mui/material";
 import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
 
 import zestyRocket from "../../../../../../public/images/zestyRocket.svg";
-import microsoftIcon from "../../../../../../public/images/microsoftIcon.svg";
-import googleAnalyticsIcon from "../../../../../../public/images/googleAnalyticsIconOnly.svg";
-import npmIcon from "../../../../../../public/images/npmIcon.svg";
-import nodejsIcon from "../../../../../../public/images/nodejsIcon.svg";
-import googleChromeIcon from "../../../../../../public/images/googleChromeIcon.svg";
+import microsoftIcon from "../../../../../../public/images/microsoftLogo.png";
+import googleAnalyticsIcon from "../../../../../../public/images/googleAnalyticsLogo.png";
+import npmIcon from "../../../../../../public/images/npmLogo.png";
+import nodejsIcon from "../../../../../../public/images/nodejsLogo.png";
+import googleChromeIcon from "../../../../../../public/images/googleChromeLogo.png";
 
 export const InstallApp = () => {
   return (
@@ -17,41 +17,36 @@ export const InstallApp = () => {
           component="img"
           src={microsoftIcon}
           alt="Microsoft Logo"
-          width={48}
-          height={48}
-          margin={3}
+          width={96}
+          height={96}
         />
         <Box
           component="img"
           src={googleAnalyticsIcon}
           alt="Google Anayltics Logo"
-          width={48}
-          height={48}
-          margin={3}
+          width={96}
+          height={96}
         />
         <Box
           component="img"
           src={npmIcon}
           alt="NPM Logo"
-          width={48}
-          height={48}
-          margin={3}
+          width={96}
+          height={96}
         />
         <Box
           component="img"
           src={nodejsIcon}
           alt="NodeJS Logo"
-          width={48}
-          height={48}
-          margin={3}
+          width={96}
+          height={96}
         />
         <Box
           component="img"
           src={googleChromeIcon}
           alt="Google Chrome Logo"
-          width={48}
-          height={48}
-          margin={3}
+          width={96}
+          height={96}
         />
       </Stack>
       <Typography variant="h3" mb={1} fontWeight={600}>
