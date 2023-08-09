@@ -1,7 +1,7 @@
 import { Box, ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 // import { Sidebar } from "./components/Sidebar";
-import { Sidebar } from "./components/Sidebar/NewSidebar";
+import { Sidebar } from "./components/Sidebar";
 import { Redirect, Route, Switch } from "react-router";
 import { Model } from "./views/Model";
 import { AllModels } from "./views/AllModels";
