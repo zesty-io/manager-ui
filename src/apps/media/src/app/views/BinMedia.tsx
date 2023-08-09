@@ -184,7 +184,6 @@ export const BinMedia = ({
                   {binFiles?.length} matches found
                 </Typography>
               )}
-              <UploadModal />
               <DnDProvider currentBinId={id} currentGroupId="">
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (
                   <>

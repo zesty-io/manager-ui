@@ -191,7 +191,6 @@ export const FolderMedia = ({
                   {groupFiles?.length} matches found
                 </Typography>
               )}
-              <UploadModal />
               <DnDProvider
                 currentBinId={groupData?.bin_id}
                 currentGroupId={groupData?.id}

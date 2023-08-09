@@ -21,6 +21,7 @@ import { FileModal } from "./components/FileModal";
 import { File } from "../../../../shell/services/types";
 import { NotFoundState } from "./components/NotFoundState";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
+import { UploadModal } from "./components/UploadModal";
 
 interface Props {
   limitSelected?: number;
@@ -68,6 +69,7 @@ export const MediaApp = ({
 
   return (
     <ThemeProvider theme={theme}>
+      <UploadModal />
       <Box
         sx={{
           color: "text.primary",

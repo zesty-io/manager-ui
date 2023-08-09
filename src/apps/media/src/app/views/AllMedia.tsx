@@ -141,7 +141,6 @@ export const AllMedia = ({
               {files?.length} matches found
             </Typography>
           )}
-          <UploadModal />
           <DnDProvider
             isDefaultBin
             currentBinId={defaultBin?.id}
