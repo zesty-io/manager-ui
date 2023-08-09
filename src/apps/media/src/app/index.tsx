@@ -20,6 +20,7 @@ import { Sidebar } from "./components/Sidebar/NewSidebar";
 import { FileModal } from "./components/FileModal";
 import { File } from "../../../../shell/services/types";
 import { NotFoundState } from "./components/NotFoundState";
+import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 
 interface Props {
   limitSelected?: number;
@@ -78,10 +79,17 @@ export const MediaApp = ({
           },
         }}
       >
-        <Sidebar
-          isSelectDialog={isSelectDialog}
-          lockedToGroupId={lockedToGroupId}
-        />
+        <ResizableContainer
+          id="mediaNav"
+          defaultWidth={300}
+          minWidth={220}
+          maxWidth={360}
+        >
+          <Sidebar
+            isSelectDialog={isSelectDialog}
+            lockedToGroupId={lockedToGroupId}
+          />
+        </ResizableContainer>
 
         {/* If a fileId is present render preview modal */}
         <Route
