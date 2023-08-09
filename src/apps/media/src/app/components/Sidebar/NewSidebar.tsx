@@ -70,11 +70,15 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
           history.push(`/media/search?term=${keyword}`)
         }
         TitleButtonComponent={
-          <UploadButton
-            currentBinId={defaultBin?.id}
-            isIconButton
-            caller="sidebar"
-          />
+          isSelectDialog ? (
+            <></>
+          ) : (
+            <UploadButton
+              currentBinId={defaultBin?.id}
+              isIconButton
+              caller="sidebar"
+            />
+          )
         }
       />
     </>
