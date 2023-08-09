@@ -98,7 +98,7 @@ export const ContentNav = () => {
   const { data: currentUserRoles, isError: currentUserRolesError } =
     useGetCurrentUserRolesQuery();
   const { data: rawNavData, isError: navItemsError } =
-    useGetContentNavItemsQuery();
+    useGetContentNavItemsQuery(null, { refetchOnMountOrArgChange: true });
 
   const [closedNavItems, setClosedNavItems] = useLocalStorage(
     "zesty:navContentItems:closed",
