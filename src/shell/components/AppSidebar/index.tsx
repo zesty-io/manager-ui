@@ -76,6 +76,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
     const location = useLocation();
     const history = useHistory();
     const childrenContainerRef = useRef<HTMLDivElement | null>(null);
+    const textfieldRef = useRef<HTMLInputElement | null>(null);
     const [userInputKeyword, setUserInputKeyword] = useState("");
 
     useImperativeHandle(
@@ -85,6 +86,10 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
           scrollDown() {
             const div = childrenContainerRef.current;
             div.scrollTop = div?.scrollHeight;
+          },
+          clearAndFocusTextField() {
+            setUserInputKeyword("");
+            textfieldRef.current?.focus();
           },
         };
       },
@@ -157,6 +162,9 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   <TextField
                     data-cy={searchId}
                     value={userInputKeyword}
+                    inputProps={{
+                      ref: textfieldRef,
+                    }}
                     InputProps={{
                       sx: {
                         backgroundColor: "grey.800",
