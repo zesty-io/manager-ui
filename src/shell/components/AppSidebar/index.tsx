@@ -50,6 +50,7 @@ interface Props {
   hideSubMenuOnSearch?: boolean;
   filterKeyword?: string;
   titleButtonIcon?: SvgIconComponent;
+  TitleButtonComponent?: React.ReactNode;
 }
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   (
@@ -68,6 +69,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
       hideSubMenuOnSearch = true,
       filterKeyword = "",
       titleButtonIcon = AddRounded,
+      TitleButtonComponent,
       children,
       ...props
     },
@@ -137,7 +139,8 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   >
                     {headerTitle}
                   </Typography>
-                  {withTitleButton && (
+                  {!!TitleButtonComponent && TitleButtonComponent}
+                  {withTitleButton && !TitleButtonComponent && (
                     <Tooltip
                       title={titleButtonTooltip}
                       placement="right-start"
