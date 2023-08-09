@@ -25,9 +25,8 @@ import {
 import { ThemeProvider } from "@mui/material/styles";
 import { darkTheme, theme } from "@zesty-io/material";
 import { IconButton as IconButtonCustom } from "@zesty-io/material";
-import { SvgIconComponent } from "@mui/icons-material";
+import { SvgIconComponent, AddRounded } from "@mui/icons-material";
 import { useLocation, useHistory } from "react-router-dom";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 export interface SubMenu {
   name: string;
@@ -50,6 +49,7 @@ interface Props {
   searchPlaceholder?: string;
   hideSubMenuOnSearch?: boolean;
   filterKeyword?: string;
+  titleButtonIcon?: SvgIconComponent;
 }
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   (
@@ -67,6 +67,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
       searchPlaceholder,
       hideSubMenuOnSearch = true,
       filterKeyword = "",
+      titleButtonIcon = AddRounded,
       children,
       ...props
     },
@@ -144,7 +145,10 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                         size="xsmall"
                         onClick={onAddClick}
                       >
-                        <AddRoundedIcon sx={{ fontSize: 18 }} />
+                        <SvgIcon
+                          component={titleButtonIcon}
+                          sx={{ fontSize: 18 }}
+                        />
                       </IconButtonCustom>
                     </Tooltip>
                   )}
@@ -156,6 +160,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                     InputProps={{
                       sx: {
                         backgroundColor: "grey.800",
+                        height: "100%",
                       },
                       startAdornment: (
                         <InputAdornment
@@ -170,6 +175,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                     size="small"
                     sx={{
                       px: 1.5,
+                      height: 36,
                     }}
                     onChange={(evt) => setUserInputKeyword(evt.target.value)}
                     onKeyDown={(evt) => {
