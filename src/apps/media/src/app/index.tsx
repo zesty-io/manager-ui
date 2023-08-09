@@ -15,7 +15,8 @@ import { Media } from "./views/Media";
 import { SearchMedia } from "./views/SearchMedia";
 import { InsightsMedia } from "./views/InsightsMedia";
 
-import { Sidebar } from "./components/Sidebar";
+// import { Sidebar } from "./components/Sidebar";
+import { Sidebar } from "./components/Sidebar/NewSidebar";
 import { FileModal } from "./components/FileModal";
 import { File } from "../../../../shell/services/types";
 import { NotFoundState } from "./components/NotFoundState";
