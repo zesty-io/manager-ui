@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef } from "react";
 import Button from "@mui/material/Button";
-import FileUpload from "@mui/icons-material/FileUpload";
+import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { fileUploadStage } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
 import { ChangeEventHandler } from "react";
@@ -10,12 +10,15 @@ import {
 } from "../../../../../shell/services/mediaManager";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { useHistory } from "react-router";
+import { IconButton } from "@zesty-io/material";
 
 export type UploadButton = {
   currentGroupId?: string;
   currentBinId: string;
   text?: string;
   variant?: "text" | "outlined" | "contained";
+  isIconButton?: boolean;
+  caller?: string;
 };
 
 export const UploadButton: FC<UploadButton> = ({
@@ -23,6 +26,8 @@ export const UploadButton: FC<UploadButton> = ({
   currentGroupId,
   text,
   variant = "contained",
+  isIconButton = false,
+  caller,
 }) => {
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
@@ -51,6 +56,7 @@ export const UploadButton: FC<UploadButton> = ({
   ) => {
     const currentBin = binData[0];
 
+    console.log("uploading from:", caller);
     dispatch(
       fileUploadStage(
         Array.from(event.target.files).map((file) => {
@@ -68,18 +74,32 @@ export const UploadButton: FC<UploadButton> = ({
     hiddenFileInput.current.value = "";
     hiddenFileInput.current.click();
   };
+
+  // console.log(caller);
   return (
     <>
-      <Button
-        onClick={handleUploadButtonClick}
-        variant={variant}
-        color="primary"
-        size="small"
-        startIcon={<FileUpload />}
-        disabled={loading || !binData}
-      >
-        {text || "Upload"}
-      </Button>
+      {isIconButton ? (
+        <IconButton
+          variant="contained"
+          size="xsmall"
+          onClick={handleUploadButtonClick}
+          disabled={loading || !binData}
+        >
+          <FileUploadRoundedIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+      ) : (
+        <Button
+          onClick={handleUploadButtonClick}
+          variant={variant}
+          color="primary"
+          size="small"
+          startIcon={<FileUploadRoundedIcon />}
+          disabled={loading || !binData}
+        >
+          {text || "Upload"}
+        </Button>
+      )}
+
       <input
         type="file"
         multiple
