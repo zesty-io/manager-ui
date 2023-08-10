@@ -13,6 +13,7 @@ export type TreeItem = {
   path: string;
   actions?: JSX.Element[];
   updatedAt?: string;
+  hidden?: boolean;
 } & Partial<ContentNavItem>;
 
 interface Props {
@@ -24,6 +25,7 @@ interface Props {
   expandedItems?: string[];
   onToggleCollapse?: (paths: string[]) => void;
   error?: boolean;
+  isHiddenTree?: boolean;
 }
 export const NavTree: FC<Readonly<Props>> = ({
   id,
@@ -34,6 +36,7 @@ export const NavTree: FC<Readonly<Props>> = ({
   expandedItems,
   onToggleCollapse,
   error = false,
+  isHiddenTree = false,
 }) => {
   const history = useHistory();
 
@@ -63,6 +66,7 @@ export const NavTree: FC<Readonly<Props>> = ({
           {tree?.map((item) => {
             return (
               <NavTreeItem
+                isHidden={item.hidden ?? false}
                 key={item.path}
                 labelName={item.label}
                 nodeId={item.path}
