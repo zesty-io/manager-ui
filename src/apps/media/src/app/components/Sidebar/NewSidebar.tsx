@@ -106,7 +106,7 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
         }
         TitleButtonComponent={renderTitleButton()}
       >
-        <Folders />
+        <Folders lockedToGroupId={lockedToGroupId} />
       </AppSideBar>
     </>
   );
