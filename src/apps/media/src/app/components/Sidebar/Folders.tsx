@@ -67,6 +67,7 @@ const nest = (
       label: item.name,
       actions: [],
       hidden: hiddenGroup.includes(item.id),
+      nodeData: item,
     }));
 };
 
@@ -91,7 +92,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   const [sort, setSort] = useLocalStorage("zesty:navMedia:sort", "asc");
   const [hiddenExpanded, setHiddenExpanded] = useState([]);
   const [expanded, setExpanded] = useLocalStorage("zesty:navMedia:open", []);
-  const [ecoBinPaths, setEcoBinPaths] = useState<string[]>([]);
 
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -147,6 +147,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               sort,
               hiddenGroups
             ),
+            nodeData: rootNode,
           },
         ];
       } else {
@@ -178,6 +179,13 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                 hidden: hiddenGroups.includes(bins[idx].id),
               };
             }
+          })
+          .flat()
+          .sort((a, b) => {
+            if (!sort) return;
+            return sort === "asc"
+              ? a.label.localeCompare(b.label)
+              : b.label.localeCompare(a.label);
           });
       }
     }
@@ -266,6 +274,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           label: rootNode.name,
           actions: [<h1>test</h1>],
           children: nest(rootGroup, id, "group_id", sort, hiddenGroups),
+          nodeData: rootNode,
         };
       });
     } else {
@@ -411,6 +420,19 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             </IconButton>
           </Stack>
         }
+        onItemDrop={(draggedItem, target) => {
+          if (draggedItem.bin_id === target.bin_id) {
+            updateFile({
+              id: draggedItem.id,
+              previousGroupId: draggedItem.group_id,
+              body: {
+                group_id: target.id,
+                filename: draggedItem.filename,
+              },
+            });
+          }
+        }}
+        dragAndDrop
       />
       {!lockedToGroupId && (
         <Accordion
@@ -473,6 +495,19 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               selected={location.pathname}
               expandedItems={hiddenExpanded}
               onToggleCollapse={(paths) => setHiddenExpanded(paths)}
+              dragAndDrop
+              onItemDrop={(draggedItem, target) => {
+                if (draggedItem.bin_id === target.bin_id) {
+                  updateFile({
+                    id: draggedItem.id,
+                    previousGroupId: draggedItem.group_id,
+                    body: {
+                      group_id: target.id,
+                      filename: draggedItem.filename,
+                    },
+                  });
+                }
+              }}
             />
           </AccordionDetails>
         </Accordion>
