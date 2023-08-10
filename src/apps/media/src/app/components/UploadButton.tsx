@@ -18,7 +18,7 @@ export type UploadButton = {
   text?: string;
   variant?: "text" | "outlined" | "contained";
   isIconButton?: boolean;
-  caller?: string;
+  id?: string;
 };
 
 export const UploadButton: FC<UploadButton> = ({
@@ -27,7 +27,7 @@ export const UploadButton: FC<UploadButton> = ({
   text,
   variant = "contained",
   isIconButton = false,
-  caller,
+  id = "fileUploadButton",
 }) => {
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
@@ -87,6 +87,7 @@ export const UploadButton: FC<UploadButton> = ({
         </IconButton>
       ) : (
         <Button
+          data-cy={id}
           onClick={handleUploadButtonClick}
           variant={variant}
           color="primary"

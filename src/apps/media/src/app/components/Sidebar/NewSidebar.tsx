@@ -1,7 +1,9 @@
 import { FC, useEffect, useState, useRef } from "react";
 import { ScheduleRounded, InsightsRounded } from "@mui/icons-material";
+import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { useHistory } from "react-router";
 import { useSelector } from "react-redux";
+import { IconButton } from "@zesty-io/material";
 
 import {
   AppSideBar,
@@ -11,6 +13,7 @@ import { UploadButton } from "../UploadButton";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { useGetBinsQuery } from "../../../../../../shell/services/mediaManager";
 import { AppState } from "../../../../../../shell/store/types";
+import { Folders } from "./Folders";
 
 interface Props {
   lockedToGroupId?: string;
@@ -55,6 +58,38 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
     },
   ];
 
+  const renderTitleButton = () => {
+    if (!!isSelectDialog) {
+      return <></>;
+    }
+
+    // For the insights and media page, use the upload button that uploads items to all media
+    if (
+      location.pathname === "/media/insights" ||
+      location.pathname === "/media"
+    ) {
+      return <UploadButton currentBinId={defaultBin?.id} isIconButton />;
+    }
+
+    // When in a folder, trigger the upload media to folder button on the folder's header
+    return (
+      <IconButton
+        data-cy="create_new_content_item"
+        variant="contained"
+        size="xsmall"
+        onClick={() => {
+          const folderUploadButton: HTMLButtonElement = document.querySelector(
+            "[data-cy='fileUploadButton']"
+          );
+
+          folderUploadButton?.click();
+        }}
+      >
+        <FileUploadRoundedIcon sx={{ fontSize: 18 }} />
+      </IconButton>
+    );
+  };
+
   return (
     <>
       <AppSideBar
@@ -69,18 +104,10 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
         onFilterEnter={(keyword) =>
           history.push(`/media/search?term=${keyword}`)
         }
-        TitleButtonComponent={
-          isSelectDialog ? (
-            <></>
-          ) : (
-            <UploadButton
-              currentBinId={defaultBin?.id}
-              isIconButton
-              caller="sidebar"
-            />
-          )
-        }
-      />
+        TitleButtonComponent={renderTitleButton()}
+      >
+        <Folders />
+      </AppSideBar>
     </>
   );
 };
