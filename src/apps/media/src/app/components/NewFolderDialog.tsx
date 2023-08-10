@@ -28,7 +28,8 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [params, setParams] = useParams();
 
-  const { data: binGroups } = useGetBinGroupsQuery(binId);
+  const { data: binGroups, isLoading: isLoadingBinGroups } =
+    useGetBinGroupsQuery(binId);
 
   const [createGroup, { isLoading, isSuccess, data }] =
     useCreateGroupMutation();
@@ -72,6 +73,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
         <Autocomplete
           size="small"
           fullWidth
+          loading={isLoadingBinGroups}
           value={selectedGroup}
           disableClearable
           options={
