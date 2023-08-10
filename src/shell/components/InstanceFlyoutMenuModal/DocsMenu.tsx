@@ -120,16 +120,6 @@ const linkMap = {
       url: "https://zesty.org/services/web-engine/forms-and-form-webhooks#capturing-form-data-to-an-instances-leads-feature",
     },
   ],
-  "reports/analytics": [
-    {
-      name: "Analytics Setup",
-      url: "https://zesty.org/services/web-engine/analytics",
-    },
-    {
-      name: "Analytics Settings",
-      url: "https://zesty.org/services/manager-ui/settings/instance-settings#analytics",
-    },
-  ],
   seo: [
     {
       name: "SEO Overview",
