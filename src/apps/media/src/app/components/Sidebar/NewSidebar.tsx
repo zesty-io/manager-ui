@@ -63,11 +63,8 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
       return <></>;
     }
 
-    // For the insights and media page, use the upload button that uploads items to all media
-    if (
-      location.pathname === "/media/insights" ||
-      location.pathname === "/media"
-    ) {
+    // For the insights page, use the upload button that uploads items to default bin
+    if (location.pathname === "/media/insights") {
       return <UploadButton currentBinId={defaultBin?.id} isIconButton />;
     }
 
