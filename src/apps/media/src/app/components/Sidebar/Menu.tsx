@@ -1,10 +1,11 @@
 import { MenuItem, ListItemIcon, ListItemText, MenuList } from "@mui/material";
 import BackupTableIcon from "@mui/icons-material/BackupTableRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 
 export const Menu = () => {
   const history = useHistory();
+  const location = useLocation();
   return (
     <MenuList sx={{ py: 1, px: 1 }}>
       <MenuItem
