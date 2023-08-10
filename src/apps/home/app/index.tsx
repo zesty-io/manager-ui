@@ -56,6 +56,7 @@ export const HomeApp = () => {
     isAMonthOld;
 
   const [dateRange, setDateRange] = useState(30);
+
   return (
     <ThemeProvider theme={theme}>
       <Box

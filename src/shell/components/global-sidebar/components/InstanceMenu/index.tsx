@@ -22,12 +22,12 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
     <>
       <ListItem
         sx={{
-          px: openNav ? 1.5 : 1,
-          py: 0.75,
-          mt: 1.5,
+          px: 1,
+          py: openNav ? 0.75 : 1.5,
+          mt: openNav ? 0.75 : 0,
           mb: 0.5,
-          mx: 1,
-          height: openNav ? 48 : 44,
+          mx: openNav ? 0.5 : 0,
+          height: 60,
           width: 184,
         }}
       >

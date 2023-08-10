@@ -25,7 +25,7 @@ import { unpinTab } from "shell/store/ui";
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-
+import { instanceApi } from "../../../../../../shell/services/instance";
 import styles from "./LinkEdit.less";
 export default function LinkEdit() {
   const dispatch = useDispatch();
@@ -200,6 +200,7 @@ export default function LinkEdit() {
         } else {
           setState({ ...state, saving: false });
           dispatch(notify({ message: "Saved link", kind: "save" }));
+          dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
         }
       })
       .catch((err) => {
@@ -219,6 +220,7 @@ export default function LinkEdit() {
       });
       dispatch(notify({ message: "Deleted Link", kind: "save" }));
       dispatch(unpinTab({ pathname: `/content/link/${linkZUID}`, search: "" }));
+      dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
     });
   }
 

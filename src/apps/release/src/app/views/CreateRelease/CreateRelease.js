@@ -12,7 +12,7 @@ import { FieldTypeText } from "@zesty-io/material";
 import { createRelease, fetchReleases } from "shell/store/releases";
 
 import styles from "./CreateRelease.less";
-export function CreateRelease() {
+export function CreateRelease({ isContentSubpage }) {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -39,7 +39,11 @@ export function CreateRelease() {
         if (res.status === 201) {
           dispatch(fetchReleases(res.data.ZUID))
             .then(() => {
-              history.push(`/release/${res.data.ZUID}`);
+              history.push(
+                isContentSubpage
+                  ? `/content/releases/${res.data.ZUID}`
+                  : `/release/${res.data.ZUID}`
+              );
             })
             .finally(() => setLoading(false));
         } else {

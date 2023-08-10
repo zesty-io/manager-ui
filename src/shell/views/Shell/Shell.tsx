@@ -39,7 +39,7 @@ export default memo(function Shell() {
       height="100vh"
       overflow="hidden"
       display="grid"
-      gridTemplateColumns={openNav ? "200px 1fr" : "64px 1fr"}
+      gridTemplateColumns={openNav ? "200px 1fr" : "48px 1fr"}
       sx={{
         backgroundColor: "background.paper",
       }}

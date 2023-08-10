@@ -10,7 +10,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { activate } from "shell/store/releases";
 
 import styles from "./Activate.less";
-export function Activate() {
+export function Activate({ isContentSubpage }) {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -20,7 +20,9 @@ export function Activate() {
     dispatch(activate())
       .then((res) => {
         if (res.status === 204) {
-          history.push(`/release/create`);
+          history.push(
+            isContentSubpage ? `/content/releases/create` : `/release/create`
+          );
         }
       })
       .finally(() => setLoading(false));

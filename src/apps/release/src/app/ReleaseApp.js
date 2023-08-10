@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Route, Switch, useHistory } from "react-router";
+import { Route, Switch, useHistory, useLocation } from "react-router";
 import cx from "classnames";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -17,7 +17,10 @@ import styles from "./ReleaseApp.less";
 export default function ReleaseApp() {
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
+
+  const isContentSubpage = location.pathname?.includes("/content") ?? false;
 
   // load versions for all ZUIDs
   // possibly can lazy load these when you open select
@@ -51,10 +54,31 @@ export default function ReleaseApp() {
           height="100vh"
         >
           <Switch>
-            <Route path="/release/activate" component={Activate} />
-            <Route path="/release/create" component={CreateRelease} />
-            <Route path="/release/:zuid" component={ViewRelease} />
-            <Route exact path="/release" component={ListReleases} />
+            <Route
+              path={["/release/activate", "/content/releases/activate"]}
+              render={(props) => (
+                <Activate {...props} isContentSubpage={isContentSubpage} />
+              )}
+            />
+            <Route
+              path={["/release/create", "/content/releases/create"]}
+              render={(props) => (
+                <CreateRelease {...props} isContentSubpage={isContentSubpage} />
+              )}
+            />
+            <Route
+              path={["/release/:zuid", "/content/releases/:zuid"]}
+              render={(props) => (
+                <ViewRelease {...props} isContentSubpage={isContentSubpage} />
+              )}
+            />
+            <Route
+              exact
+              path={["/release", "/content/releases"]}
+              render={(props) => (
+                <ListReleases {...props} isContentSubpage={isContentSubpage} />
+              )}
+            />
           </Switch>
         </WithLoader>
       </main>

@@ -294,6 +294,8 @@ export interface SystemRole {
   updatedAt: string;
 }
 
+export type GranularRole = SystemRole & { resourceZUID: string };
+
 export interface Role {
   ZUID: string;
   createdAt: string;
@@ -301,7 +303,7 @@ export interface Role {
   entityZUID: string;
   expiry: string | null;
   granularRoleZUID: string | null;
-  granularRoles: string | null;
+  granularRoles: GranularRole[] | null;
   name: string;
   static: boolean;
   systemRole: SystemRole;

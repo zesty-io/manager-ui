@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
-import { User, UserRole, Domain, Instance } from "./types";
+import { User, UserRole, Domain, Instance, Role } from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const accountsApi = createApi({
@@ -50,6 +50,10 @@ export const accountsApi = createApi({
         },
       }),
     }),
+    getCurrentUserRoles: builder.query<Role[], void>({
+      query: () => `/roles`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -62,4 +66,5 @@ export const {
   useGetUsersQuery,
   useGetUsersRolesQuery,
   useCreateUserInviteMutation,
+  useGetCurrentUserRolesQuery,
 } = accountsApi;

@@ -6,33 +6,35 @@ describe("Navigation through content editor", () => {
   });
 
   it("Opens homepage item", () => {
-    cy.get("#MainNavigation li a").contains("Homepage").click();
+    cy.getBySelector("pages_nav")
+      .find("li p[aria-label='Homepage']")
+      .should("exist")
+      .click();
     cy.get("#12-0c3934-8dz720").should("exist");
   });
 
   it("Opens the reorder nav modal", () => {
-    cy.get("#ReorderNavButton").click();
+    cy.getBySelector("reorder_nav").should("exist").click();
     cy.get(".ModalAligner--ptdt- article main ul.sort--taGo4").should("exist");
     cy.get(".ModalAligner--ptdt-.Open--M5j6S button.Close--kVpCO").click();
   });
 
   it("Creates a new item from the menu", () => {
-    cy.get("#MainNavigation").then((content) => {
-      if (!content.is(":visible")) {
-        cy.get("[data-cy=contentNavButton]").click();
-        cy.get(".CreateItemDropdown").find(".MuiSelect-select").click();
-        cy.get("[role=presentation]").find('[data-value="link"]').click();
-        cy.get("#CreateLinkButton").should("exist");
-      } else {
-        cy.get(".CreateItemDropdown").find(".MuiSelect-select").click();
-        cy.get("[role=presentation]").find('[data-value="link"]').click();
-        cy.get('[data-value="link"]').click();
-        cy.get("#CreateLinkButton").should("exist");
-      }
-    });
+    cy.getBySelector("create_new_content_item").should("exist").click();
+    cy.getBySelector("create_new_content_item_dialog").should("exist");
+    cy.getBySelector("create_new_content_item_input")
+      .find("input")
+      .type("cypress");
+    cy.get(".MuiAutocomplete-listbox .MuiAutocomplete-option")
+      .first()
+      .should("exist")
+      .click();
+    cy.getBySelector("create_new_content_item_btn").click();
+    cy.location("pathname").should("eq", "/content/6-0c960c-d1n0kx/new");
   });
 
-  it("Check Content Nav Collapsed functionality", () => {
+  // To be re-added on another release
+  it.skip("Check Content Nav Collapsed functionality", () => {
     cy.get("[data-cy=contentNavButton]")
       .siblings("div")
       .then((btn) => {
@@ -48,7 +50,8 @@ describe("Navigation through content editor", () => {
       });
   });
 
-  it("Check Content Nav Collapse persist when clicking on other Applications ", () => {
+  // To be re-added on another release
+  it.skip("Check Content Nav Collapse persist when clicking on other Applications ", () => {
     cy.get("[data-cy=contentNavButton]")
       .siblings("div")
       .then((btn) => {

@@ -43,6 +43,7 @@ export const instanceApi = createApi({
     "Stylesheets",
     "Scripts",
     "Languages",
+    "ContentNav",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -209,7 +210,7 @@ export const instanceApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["ContentModels", "WebViews"],
+      invalidatesTags: ["ContentModels", "WebViews", "ContentNav"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/env/langs/#Get-Langs
     getLangsMapping: builder.query<any, void>({
@@ -255,7 +256,7 @@ export const instanceApi = createApi({
         url: `content/models/${ZUID}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["ContentModels"],
+      invalidatesTags: ["ContentModels", "ContentNav"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/#Get-Fields
     getContentModelFields: builder.query<ContentModelField[], string>({
@@ -440,6 +441,7 @@ export const instanceApi = createApi({
     getContentNavItems: builder.query<ContentNavItem[], void>({
       query: () => `/env/nav`,
       transformResponse: getResponseData,
+      providesTags: ["ContentNav"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/web/stylesheets/#Get-Stylesheet(s)
     getStylesheets: builder.query<Stylesheet[], void>({

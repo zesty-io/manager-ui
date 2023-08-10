@@ -12,9 +12,8 @@ import { fetchNav } from "../store/navContent";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { ContentNav } from "./components/Nav";
+import { ContentNav } from "./components/ContentNav";
 
-import { Dashboard } from "./views/Dashboard";
 import { ItemList } from "./views/ItemList";
 import { ItemEdit } from "./views/ItemEdit";
 import { ItemCreate } from "./views/ItemCreate";
@@ -22,12 +21,14 @@ import { LinkCreate } from "./views/LinkCreate";
 import { LinkEdit } from "./views/LinkEdit";
 import { NotFound } from "./views/NotFound";
 import { CSVImport } from "./views/CSVImport";
+import ReleaseApp from "../../../release/src";
 
 // Vendor styles for codemirror, prosemirror and flatpickr
 import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
 import Analytics from "./views/Analytics";
+import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 let customTheme = createTheme(legacyTheme, {
@@ -95,7 +96,6 @@ let customTheme = createTheme(legacyTheme, {
 });
 
 export default function ContentEditor() {
-  const contentModels = useSelector((state) => state.models);
   const navContent = useSelector((state) => state.navContent);
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
@@ -139,13 +139,14 @@ export default function ContentEditor() {
                   : ""
               )}
             >
-              <ContentNav
-                data-cy="contentNav"
-                dispatch={dispatch}
-                models={contentModels}
-                nav={navContent}
-              />
-
+              <ResizableContainer
+                id="contentNav"
+                defaultWidth={300}
+                minWidth={220}
+                maxWidth={360}
+              >
+                <ContentNav />
+              </ResizableContainer>
               <div
                 className={cx(
                   styles.Content,
@@ -154,6 +155,7 @@ export default function ContentEditor() {
               >
                 <div className={styles.ContentWrap}>
                   <Switch>
+                    {/* <Route path="/content/releases" component={ReleaseApp} /> */}
                     <Route exact path="/content" component={Analytics} />
                     <Route
                       exact

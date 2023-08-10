@@ -9,13 +9,16 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { Release } from "./Release";
 
 import styles from "./ListReleases.less";
-export function ListReleases() {
+export function ListReleases({ isContentSubpage }) {
   const releases = useSelector((state) => state.releases.data);
 
   return (
     <>
       <section className={styles.ReleaseHeader}>
-        <AppLink className={styles.Create} to={`/release/create`}>
+        <AppLink
+          className={styles.Create}
+          to={isContentSubpage ? `/content/releases/create` : `/release/create`}
+        >
           <Button
             variant="contained"
             data-cy="release-createBtn"
@@ -38,7 +41,11 @@ export function ListReleases() {
         </thead>
         <tbody>
           {releases.map((release) => (
-            <Release key={release.ZUID} release={release}></Release>
+            <Release
+              key={release.ZUID}
+              release={release}
+              isContentSubpage={isContentSubpage}
+            ></Release>
           ))}
         </tbody>
       </table>
