@@ -36,7 +36,7 @@ import {
   NavTree,
   TreeItem as TreeItemType,
 } from "../../../../../../shell/components/NavTree";
-import { Group } from "../../../../../../shell/services/types";
+import { Bin, Group } from "../../../../../../shell/services/types";
 
 /**
  * It takes an array of items, an id, and a link, and returns a new array of items with the children of
@@ -49,7 +49,8 @@ const nest = (
   items: Group[],
   id: string,
   link: keyof Group,
-  sort: string
+  sort: string,
+  hiddenGroup: string[]
 ): TreeItemType[] => {
   return items
     ?.filter((item) => item[link] === id)
@@ -61,10 +62,11 @@ const nest = (
     })
     ?.map((item) => ({
       icon: FolderRounded,
-      children: nest(items, item.id, link, sort),
+      children: nest(items, item.id, link, sort, hiddenGroup),
       path: `/media/folder/${item.id}`,
       label: item.name,
       actions: [],
+      hidden: hiddenGroup.includes(item.id),
     }));
 };
 
@@ -89,6 +91,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   const [sort, setSort] = useLocalStorage("zesty:navMedia:sort", "asc");
   const [hiddenExpanded, setHiddenExpanded] = useState([]);
   const [expanded, setExpanded] = useLocalStorage("zesty:navMedia:open", []);
+  const [ecoBinPaths, setEcoBinPaths] = useState<string[]>([]);
 
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -137,7 +140,13 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             path: `/media/folder/${rootNode?.id}`,
             label: rootNode?.name,
             actions: [],
-            children: nest(rootGroup, lockedToGroupId, "group_id", sort),
+            children: nest(
+              rootGroup,
+              lockedToGroupId,
+              "group_id",
+              sort,
+              hiddenGroups
+            ),
           },
         ];
       } else {
@@ -151,14 +160,22 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                 path: `/media/folder/${bins[idx].id}`,
                 label: bins[idx].name,
                 actions: [],
+                hidden: hiddenGroups.includes(bins[idx].id),
               };
             } else {
               return {
                 icon: FolderGlobal,
-                children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
+                children: nest(
+                  binGroup,
+                  binGroup[0].bin_id,
+                  "group_id",
+                  sort,
+                  hiddenGroups
+                ),
                 path: `/media/folder/${bins[idx].id}`,
                 label: bins[idx].name,
                 actions: [],
+                hidden: hiddenGroups.includes(bins[idx].id),
               };
             }
           });
@@ -166,7 +183,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     }
 
     return [];
-  }, [binGroups, sort, bins]);
+  }, [binGroups, sort, bins, hiddenGroups]);
 
   /* Creating a tree structure from the data. */
   const trees = useMemo(() => {
@@ -183,7 +200,13 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         return [
           {
             ...rootNode,
-            children: nest(rootGroup, lockedToGroupId, "group_id", sort),
+            children: nest(
+              rootGroup,
+              lockedToGroupId,
+              "group_id",
+              sort,
+              hiddenGroups
+            ),
           },
         ];
       } else {
@@ -196,7 +219,13 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               // if (bins[idx].eco_id || binGroups.length > 1) {
               return {
                 ...bins[idx],
-                children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
+                children: nest(
+                  binGroup,
+                  binGroup[0].bin_id,
+                  "group_id",
+                  sort,
+                  hiddenGroups
+                ),
               };
             }
             // } else {
@@ -217,11 +246,11 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   }, [binGroups, sort, bins]);
 
   /* Creating a tree structure based on the hidden items. */
-  const hiddenTrees = useMemo(() => {
+  const hiddenTrees: TreeItemType[] = useMemo(() => {
     if (binGroups && hiddenGroups.length) {
       return hiddenGroups.map((id: string) => {
-        let rootGroup = [];
-        let rootNode = {};
+        let rootGroup: Group[];
+        let rootNode: Group | Bin;
         if (id.startsWith("1")) {
           rootGroup = binGroups.find((group: any) => group[0].bin_id === id);
           rootNode = bins.find((bin: any) => bin.id === id);
@@ -231,7 +260,13 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           )?.[0];
           rootNode = rootGroup?.find((group) => group.id === id);
         }
-        return { ...rootNode, children: nest(rootGroup, id, "group_id", sort) };
+        return {
+          icon: FolderIcon,
+          path: `/media/folder/${rootNode.id}`,
+          label: rootNode.name,
+          actions: [<h1>test</h1>],
+          children: nest(rootGroup, id, "group_id", sort, hiddenGroups),
+        };
       });
     } else {
       return [];
@@ -330,12 +365,25 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     );
   };
 
+  useEffect(() => {
+    // Sets ecobins open by default
+    if (!!bins?.length) {
+      const ecoBins = bins?.map((bin) => `/media/folder/${bin.id}`);
+
+      if (ecoBins?.length) {
+        setExpanded([...expanded, ...ecoBins]);
+      }
+    }
+  }, [bins]);
+
   return (
     <>
       <NavTree
         id="media-main-nav"
         selected={location.pathname}
         tree={mappedTree}
+        expandedItems={expanded}
+        onToggleCollapse={(paths) => setExpanded(paths)}
         HeaderComponent={
           <Stack
             direction="row"
@@ -364,6 +412,71 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           </Stack>
         }
       />
+      {!lockedToGroupId && (
+        <Accordion
+          elevation={0}
+          sx={{
+            mt: 1.5,
+            "&.Mui-expanded": {
+              mt: 1.5,
+            },
+            "&:before": {
+              display: "none",
+            },
+            "&.MuiPaper-root": {
+              backgroundColor: "transparent",
+              backgroundImage: "none",
+            },
+          }}
+        >
+          <AccordionSummary
+            expandIcon={<ArrowDropDownRoundedIcon sx={{ fontSize: "20px" }} />}
+            sx={{
+              "&.MuiButtonBase-root": {
+                minHeight: 20,
+                mb: 1.5,
+                "&.Mui-expanded": {
+                  height: 20,
+                },
+              },
+              "& .MuiAccordionSummary-content": {
+                m: 0,
+                "&.Mui-expanded": {
+                  m: 0,
+                },
+              },
+              "& .MuiAccordionSummary-expandIconWrapper": {
+                transform: "rotate(-90deg)",
+                "&.Mui-expanded": {
+                  transform: "rotate(0deg)",
+                },
+              },
+            }}
+          >
+            <Typography
+              variant="body2"
+              textTransform="uppercase"
+              color="text.secondary"
+            >
+              Hidden Items
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails
+            sx={{
+              p: 0,
+            }}
+          >
+            <NavTree
+              id="media-hidden-nav"
+              isHiddenTree
+              tree={hiddenTrees}
+              selected={location.pathname}
+              expandedItems={hiddenExpanded}
+              onToggleCollapse={(paths) => setHiddenExpanded(paths)}
+            />
+          </AccordionDetails>
+        </Accordion>
+      )}
       <ThemeProvider theme={theme}>
         <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
           <MenuItem
