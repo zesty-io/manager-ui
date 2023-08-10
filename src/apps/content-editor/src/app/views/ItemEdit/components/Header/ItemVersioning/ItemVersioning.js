@@ -24,6 +24,7 @@ import { useDomain } from "shell/hooks/use-domain";
 import styles from "./ItemVersioning.less";
 export function ItemVersioning(props) {
   const canPublish = usePermission("PUBLISH");
+  const canUpdate = usePermission("UPDATE");
   const domain = useDomain();
 
   const [open, setOpen] = useState(false);
@@ -115,7 +116,7 @@ export function ItemVersioning(props) {
     <Stack direction="row" spacing={1} className={styles.Actions}>
       <VersionSelector modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
 
-      {canPublish && (
+      {canUpdate && (
         <Stack direction="row" spacing={1} className={styles.Publish}>
           <LoadingButton
             disableElevation
@@ -134,52 +135,56 @@ export function ItemVersioning(props) {
           >
             <span className={styles.SaveVersion}>&nbsp;Save</span>
           </LoadingButton>
-          <ButtonGroup
-            variant="contained"
-            sx={{
-              ".MuiButtonGroup-grouped:not(:last-of-type)": {
-                borderColor: "#039855",
-              },
-              height: "32px",
-            }}
-          >
-            <Button
-              variant="contained"
-              color="success"
-              title="Publish"
-              id="PublishButton"
-              disabled={publishingDisabled || false}
-              onClick={handlePublish}
-            >
-              {publishing ? (
-                <CircularProgress size="20px" />
-              ) : cached ? (
-                <CheckCircleIcon fontSize="small" title="CDN in sync" />
-              ) : (
-                <BackupIcon fontSize="small" title="CDN out of sync" />
-              )}
+          {canPublish && (
+            <>
+              <ButtonGroup
+                variant="contained"
+                sx={{
+                  ".MuiButtonGroup-grouped:not(:last-of-type)": {
+                    borderColor: "#039855",
+                  },
+                  height: "32px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="success"
+                  title="Publish"
+                  id="PublishButton"
+                  disabled={publishingDisabled || false}
+                  onClick={handlePublish}
+                >
+                  {publishing ? (
+                    <CircularProgress size="20px" />
+                  ) : cached ? (
+                    <CheckCircleIcon fontSize="small" title="CDN in sync" />
+                  ) : (
+                    <BackupIcon fontSize="small" title="CDN out of sync" />
+                  )}
 
-              <span className={cx(styles.Hide, styles.PublishText)}>
-                Publish Version &nbsp;{props.item.meta.version}
-              </span>
-            </Button>
-            <Button
-              variant="contained"
-              color={open ? "primary" : "success"}
-              title="Publish Schedule"
-              id="PublishScheduleButton"
-              disabled={schedulingDisabled || false}
-              onClick={toggleScheduleModal}
-            >
-              <CalendarMonthIcon fontSize="small" />
-            </Button>
-          </ButtonGroup>
-          <ScheduleFlyout
-            isOpen={open}
-            item={props.item}
-            dispatch={props.dispatch}
-            toggleOpen={toggleScheduleModal}
-          />
+                  <span className={cx(styles.Hide, styles.PublishText)}>
+                    Publish Version &nbsp;{props.item.meta.version}
+                  </span>
+                </Button>
+                <Button
+                  variant="contained"
+                  color={open ? "primary" : "success"}
+                  title="Publish Schedule"
+                  id="PublishScheduleButton"
+                  disabled={schedulingDisabled || false}
+                  onClick={toggleScheduleModal}
+                >
+                  <CalendarMonthIcon fontSize="small" />
+                </Button>
+              </ButtonGroup>
+              <ScheduleFlyout
+                isOpen={open}
+                item={props.item}
+                dispatch={props.dispatch}
+                toggleOpen={toggleScheduleModal}
+              />
+            </>
+          )}
         </Stack>
       )}
     </Stack>
