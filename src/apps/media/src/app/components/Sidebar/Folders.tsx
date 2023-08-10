@@ -8,25 +8,30 @@ import {
   AccordionSummary,
   AccordionDetails,
   Tooltip,
+  Stack,
+  ThemeProvider,
 } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
-import { FolderGlobal } from "@zesty-io/material";
+import { FolderGlobal, theme } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { useLocalStorage } from "react-use";
+import { useSelector } from "react-redux";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
+import { useHistory, useLocation } from "react-router";
+
 import {
   mediaManagerApi,
   useGetBinsQuery,
   useUpdateFileMutation,
 } from "../../../../../../shell/services/mediaManager";
-import { useSelector } from "react-redux";
-import { MouseEvent, useEffect, useMemo, useState } from "react";
-import { useHistory, useLocation } from "react-router";
 import { NewFolderDialog } from "../NewFolderDialog";
-import { useLocalStorage } from "react-use";
+import { NavTree } from "../../../../../../shell/components/NavTree";
 
 /**
  * It takes an array of items, an id, and a link, and returns a new array of items with the children of
@@ -121,14 +126,17 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           .map((binGroup, idx) => {
             if (!binGroup.length) {
               return { ...bins[idx], children: [] };
-            } else if (bins[idx].eco_id || binGroups.length > 1) {
+            } else {
+              // if (bins[idx].eco_id || binGroups.length > 1) {
+
               return {
                 ...bins[idx],
                 children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
               };
-            } else {
-              return nest(binGroup, binGroup[0].bin_id, "group_id", sort);
             }
+            // } else {
+            //   return nest(binGroup, binGroup[0].bin_id, "group_id", sort);
+            // }
           })
           .flat()
           .sort((a, b) => {
@@ -201,6 +209,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         key={nodes.id}
         nodeId={nodes.id}
         data-cy={nodes.id}
+        // TODO: Pass this to navtree
         ContentProps={{
           onDragOver: (event) => {
             event.preventDefault();
@@ -258,165 +267,243 @@ export const Folders = ({ lockedToGroupId }: Props) => {
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          px: 2,
-          py: 1,
-          borderColor: "border",
-          borderStyle: "solid",
-          borderWidth: "0px",
-          borderTopWidth: "1px",
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
-          <Typography variant="overline" color="text.secondary">
-            FOLDERS
-          </Typography>
-          <Tooltip title="Sort Folders by">
-            <IconButton size="small" onClick={openMenu}>
-              <ArrowDropDownRoundedIcon fontSize="small" />
+      <NavTree
+        id="media-main-nav"
+        selected=""
+        tree={[]}
+        HeaderComponent={
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            px={1.5}
+            pb={1.5}
+            sx={{
+              color: "text.secondary",
+            }}
+          >
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <Typography variant="body2" textTransform="uppercase">
+                Folders
+              </Typography>
+              <IconButton size="xxsmall" onClick={openMenu}>
+                <ArrowDropDownRoundedIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            </Stack>
+            <IconButton
+              onClick={() => setOpenNewFolderDialog(true)}
+              size="xxsmall"
+            >
+              <AddRoundedIcon sx={{ fontSize: 16 }} />
             </IconButton>
-          </Tooltip>
-          <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
-            <MenuItem
-              onClick={() => {
-                closeMenu();
-                setSort("asc");
-              }}
-            >
-              Name (A to Z)
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                closeMenu();
-                setSort("desc");
-              }}
-            >
-              Name (Z to A)
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                closeMenu();
-                setSort("");
-              }}
-            >
-              Last Created
-            </MenuItem>
-          </Menu>
-        </Box>
-        <Tooltip title="Add New Folder">
-          <IconButton
-            aria-label="Create New Folder"
-            size="small"
-            onClick={() => setOpenNewFolderDialog(true)}
-          >
-            <AddIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </Box>
-      {!isLoading ? (
-        <>
-          <TreeView
-            onNodeSelect={(event: any, nodeIds: string[]) => {
-              if (
-                event.target.tagName !== "svg" &&
-                event.target.parentElement.getAttribute("data-testid") !==
-                  "ArrowDropDownRoundedIcon" &&
-                event.target.parentElement.getAttribute("data-testid") !==
-                  "ArrowRightRoundedIcon"
-              )
-                history.push(`/media/folder/${nodeIds}`);
+          </Stack>
+        }
+      />
+      <ThemeProvider theme={theme}>
+        <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
+          <MenuItem
+            onClick={() => {
+              closeMenu();
+              setSort("asc");
             }}
-            defaultCollapseIcon={
-              <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
-            }
-            defaultExpandIcon={
-              <ArrowRightRoundedIcon sx={{ color: "action.active" }} />
-            }
-            onNodeToggle={(event, nodeIds) => {
-              // @ts-ignore
-              if (
-                // @ts-ignore
-                event.target.tagName === "svg" ||
-                // @ts-ignore
-                event.target.parentElement.getAttribute("data-testid") ===
-                  "ArrowDropDownRoundedIcon" ||
-                // @ts-ignore
-                event.target.parentElement.getAttribute("data-testid") ===
-                  "ArrowRightRoundedIcon"
-              )
-                setExpanded(nodeIds);
-            }}
-            expanded={expanded}
-            sx={{ height: "100%", width: "100%", overflowY: "auto", px: 1 }}
-            selected={[location.pathname.split("/")[3]]}
           >
-            {trees.map((tree: any) => renderTree(tree))}
-          </TreeView>
-          {lockedToGroupId ? null : (
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <VisibilityIcon sx={{ color: "action.active" }} />
-                  <Typography color="text.secondary" variant="body3">
-                    Hidden Folders
-                  </Typography>
-                </Box>
-              </AccordionSummary>
-              <AccordionDetails>
-                <TreeView
-                  onNodeSelect={(event: any, nodeIds: string[]) => {
-                    if (
-                      event.target.tagName !== "svg" &&
-                      event.target.parentElement.getAttribute("data-testid") !==
-                        "ArrowDropDownRoundedIcon" &&
-                      event.target.parentElement.getAttribute("data-testid") !==
-                        "ArrowRightRoundedIcon"
-                    )
-                      history.push(`/media/folder/${nodeIds}`);
-                  }}
-                  defaultCollapseIcon={
-                    <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
-                  }
-                  defaultExpandIcon={
-                    <ArrowRightRoundedIcon sx={{ color: "action.active" }} />
-                  }
-                  onNodeToggle={(event: any, nodeIds) => {
-                    if (
-                      event.target.tagName === "svg" ||
-                      event.target.parentElement.getAttribute("data-testid") ===
-                        "ArrowDropDownRoundedIcon" ||
-                      event.target.parentElement.getAttribute("data-testid") ===
-                        "ArrowRightRoundedIcon"
-                    )
-                      setHiddenExpanded(nodeIds);
-                  }}
-                  expanded={hiddenExpanded}
-                  sx={{ height: "100%", width: "100%", overflowY: "auto" }}
-                  selected={[location.pathname.split("/")[3]]}
-                >
-                  {hiddenTrees.map((tree: any) => renderTree(tree, true))}
-                </TreeView>
-              </AccordionDetails>
-            </Accordion>
-          )}
-        </>
-      ) : null}
-      {openNewFolderDialog ? (
-        <NewFolderDialog
-          open
-          onClose={() => setOpenNewFolderDialog(false)}
-          id={id}
-          binId={
-            (id?.startsWith("1") ? id : null) ||
-            binGroups?.flat()?.find((binGroup) => binGroup.id === id)?.bin_id ||
-            bins?.find((bin) => bin.default)?.id
-          }
-        />
-      ) : null}
+            Name (A to Z)
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              closeMenu();
+              setSort("desc");
+            }}
+          >
+            Name (Z to A)
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              closeMenu();
+              setSort("");
+            }}
+          >
+            Last Created
+          </MenuItem>
+        </Menu>
+        {openNewFolderDialog && (
+          <NewFolderDialog
+            open
+            onClose={() => setOpenNewFolderDialog(false)}
+            id={id}
+            binId={
+              (id?.startsWith("1") ? id : null) ||
+              binGroups?.flat()?.find((binGroup) => binGroup.id === id)
+                ?.bin_id ||
+              bins?.find((bin) => bin.default)?.id
+            }
+          />
+        )}
+      </ThemeProvider>
     </>
   );
+
+  // return (
+  //   <>
+  //     <Box
+  //       sx={{
+  //         display: "flex",
+  //         justifyContent: "space-between",
+  //         alignItems: "center",
+  //         px: 2,
+  //         py: 1,
+  //         borderColor: "border",
+  //         borderStyle: "solid",
+  //         borderWidth: "0px",
+  //         borderTopWidth: "1px",
+  //       }}
+  //     >
+  //       <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+  //         <Typography variant="overline" color="text.secondary">
+  //           FOLDERS
+  //         </Typography>
+  //         <Tooltip title="Sort Folders by">
+  //           <IconButton size="small" onClick={openMenu}>
+  //             <ArrowDropDownRoundedIcon fontSize="small" />
+  //           </IconButton>
+  //         </Tooltip>
+  //         <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
+  //           <MenuItem
+  //             onClick={() => {
+  //               closeMenu();
+  //               setSort("asc");
+  //             }}
+  //           >
+  //             Name (A to Z)
+  //           </MenuItem>
+  //           <MenuItem
+  //             onClick={() => {
+  //               closeMenu();
+  //               setSort("desc");
+  //             }}
+  //           >
+  //             Name (Z to A)
+  //           </MenuItem>
+  //           <MenuItem
+  //             onClick={() => {
+  //               closeMenu();
+  //               setSort("");
+  //             }}
+  //           >
+  //             Last Created
+  //           </MenuItem>
+  //         </Menu>
+  //       </Box>
+  //       <Tooltip title="Add New Folder">
+  //         <IconButton
+  //           aria-label="Create New Folder"
+  //           size="small"
+  //           onClick={() => setOpenNewFolderDialog(true)}
+  //         >
+  //           <AddIcon fontSize="small" />
+  //         </IconButton>
+  //       </Tooltip>
+  //     </Box>
+  //     {!isLoading ? (
+  //       <>
+  //         <TreeView
+  //           onNodeSelect={(event: any, nodeIds: string[]) => {
+  //             if (
+  //               event.target.tagName !== "svg" &&
+  //               event.target.parentElement.getAttribute("data-testid") !==
+  //                 "ArrowDropDownRoundedIcon" &&
+  //               event.target.parentElement.getAttribute("data-testid") !==
+  //                 "ArrowRightRoundedIcon"
+  //             )
+  //               history.push(`/media/folder/${nodeIds}`);
+  //           }}
+  //           defaultCollapseIcon={
+  //             <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
+  //           }
+  //           defaultExpandIcon={
+  //             <ArrowRightRoundedIcon sx={{ color: "action.active" }} />
+  //           }
+  //           onNodeToggle={(event, nodeIds) => {
+  //             // @ts-ignore
+  //             if (
+  //               // @ts-ignore
+  //               event.target.tagName === "svg" ||
+  //               // @ts-ignore
+  //               event.target.parentElement.getAttribute("data-testid") ===
+  //                 "ArrowDropDownRoundedIcon" ||
+  //               // @ts-ignore
+  //               event.target.parentElement.getAttribute("data-testid") ===
+  //                 "ArrowRightRoundedIcon"
+  //             )
+  //               setExpanded(nodeIds);
+  //           }}
+  //           expanded={expanded}
+  //           sx={{ height: "100%", width: "100%", overflowY: "auto", px: 1 }}
+  //           selected={[location.pathname.split("/")[3]]}
+  //         >
+  //           {trees.map((tree: any) => renderTree(tree))}
+  //         </TreeView>
+  //         {lockedToGroupId ? null : (
+  //           <Accordion>
+  //             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+  //               <Box display="flex" alignItems="center" gap={1}>
+  //                 <VisibilityIcon sx={{ color: "action.active" }} />
+  //                 <Typography color="text.secondary" variant="body3">
+  //                   Hidden Folders
+  //                 </Typography>
+  //               </Box>
+  //             </AccordionSummary>
+  //             <AccordionDetails>
+  //               <TreeView
+  //                 onNodeSelect={(event: any, nodeIds: string[]) => {
+  //                   if (
+  //                     event.target.tagName !== "svg" &&
+  //                     event.target.parentElement.getAttribute("data-testid") !==
+  //                       "ArrowDropDownRoundedIcon" &&
+  //                     event.target.parentElement.getAttribute("data-testid") !==
+  //                       "ArrowRightRoundedIcon"
+  //                   )
+  //                     history.push(`/media/folder/${nodeIds}`);
+  //                 }}
+  //                 defaultCollapseIcon={
+  //                   <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
+  //                 }
+  //                 defaultExpandIcon={
+  //                   <ArrowRightRoundedIcon sx={{ color: "action.active" }} />
+  //                 }
+  //                 onNodeToggle={(event: any, nodeIds) => {
+  //                   if (
+  //                     event.target.tagName === "svg" ||
+  //                     event.target.parentElement.getAttribute("data-testid") ===
+  //                       "ArrowDropDownRoundedIcon" ||
+  //                     event.target.parentElement.getAttribute("data-testid") ===
+  //                       "ArrowRightRoundedIcon"
+  //                   )
+  //                     setHiddenExpanded(nodeIds);
+  //                 }}
+  //                 expanded={hiddenExpanded}
+  //                 sx={{ height: "100%", width: "100%", overflowY: "auto" }}
+  //                 selected={[location.pathname.split("/")[3]]}
+  //               >
+  //                 {hiddenTrees.map((tree: any) => renderTree(tree, true))}
+  //               </TreeView>
+  //             </AccordionDetails>
+  //           </Accordion>
+  //         )}
+  //       </>
+  //     ) : null}
+  //     {openNewFolderDialog ? (
+  //       <NewFolderDialog
+  //         open
+  //         onClose={() => setOpenNewFolderDialog(false)}
+  //         id={id}
+  //         binId={
+  //           (id?.startsWith("1") ? id : null) ||
+  //           binGroups?.flat()?.find((binGroup) => binGroup.id === id)?.bin_id ||
+  //           bins?.find((bin) => bin.default)?.id
+  //         }
+  //       />
+  //     ) : null}
+  //   </>
+  // );
 };
