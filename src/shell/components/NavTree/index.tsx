@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, HTMLAttributes } from "react";
 import { TreeView } from "@mui/lab";
 import { useHistory } from "react-router-dom";
 
@@ -14,6 +14,7 @@ export type TreeItem = {
   actions?: JSX.Element[];
   updatedAt?: string;
   hidden?: boolean;
+  nodeData?: any;
 } & Partial<ContentNavItem>;
 
 interface Props {
@@ -26,6 +27,8 @@ interface Props {
   onToggleCollapse?: (paths: string[]) => void;
   error?: boolean;
   isHiddenTree?: boolean;
+  onItemDrop?: (draggedItem: any, targetItem: any) => void;
+  dragAndDrop?: boolean;
 }
 export const NavTree: FC<Readonly<Props>> = ({
   id,
@@ -37,6 +40,8 @@ export const NavTree: FC<Readonly<Props>> = ({
   onToggleCollapse,
   error = false,
   isHiddenTree = false,
+  onItemDrop,
+  dragAndDrop = false,
 }) => {
   const history = useHistory();
 
@@ -77,6 +82,9 @@ export const NavTree: FC<Readonly<Props>> = ({
                 labelIcon={item.icon}
                 nestedItems={item.children}
                 actions={item.actions ?? []}
+                nodeData={item.nodeData}
+                onItemDrop={onItemDrop}
+                dragAndDrop={dragAndDrop}
               />
             );
           })}

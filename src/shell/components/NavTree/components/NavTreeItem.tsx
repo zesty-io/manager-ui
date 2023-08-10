@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, HTMLAttributes } from "react";
 import { TreeItem } from "@mui/lab";
 import { Stack, Box, Typography, Tooltip } from "@mui/material";
 
@@ -12,6 +12,9 @@ interface Props {
   actions?: React.ReactNode[];
   depth?: number;
   isHiddenTree?: boolean;
+  nodeData?: any;
+  onItemDrop?: (draggedItem: any, targetItem: any) => void;
+  dragAndDrop?: boolean;
 }
 export const NavTreeItem: FC<Props> = React.memo(
   ({
@@ -22,6 +25,9 @@ export const NavTreeItem: FC<Props> = React.memo(
     actions,
     depth = 0,
     isHiddenTree = false,
+    nodeData,
+    onItemDrop,
+    dragAndDrop = false,
   }) => {
     const currentDepth = depth + 1;
     const depthPadding = currentDepth * 1;
@@ -114,6 +120,29 @@ export const NavTreeItem: FC<Props> = React.memo(
             },
           },
         }}
+        ContentProps={{
+          onDragOver: (event) => {
+            if (dragAndDrop) {
+              event.preventDefault();
+              event.currentTarget.style.backgroundColor = "#f6f6f7";
+            }
+          },
+          onDragLeave: (event) => {
+            if (dragAndDrop) {
+              event.preventDefault();
+              event.currentTarget.style.backgroundColor = "";
+            }
+          },
+          onDrop: (event) => {
+            if (dragAndDrop) {
+              event.currentTarget.style.backgroundColor = "";
+              const draggedItem = JSON.parse(
+                event.dataTransfer.getData("text/plain")
+              );
+              onItemDrop && onItemDrop(draggedItem, nodeData);
+            }
+          },
+        }}
       >
         {!!nestedItems?.length &&
           nestedItems?.map((item) => {
@@ -123,6 +152,7 @@ export const NavTreeItem: FC<Props> = React.memo(
 
             return (
               <NavTreeItem
+                nodeData={item.nodeData}
                 key={item.path}
                 labelName={item.label}
                 nodeId={item.path}
@@ -130,6 +160,8 @@ export const NavTreeItem: FC<Props> = React.memo(
                 nestedItems={item.children}
                 depth={currentDepth}
                 actions={item.actions ?? []}
+                onItemDrop={onItemDrop}
+                dragAndDrop={dragAndDrop}
               />
             );
           })}
