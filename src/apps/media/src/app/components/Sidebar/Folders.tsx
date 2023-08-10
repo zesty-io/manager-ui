@@ -12,6 +12,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
+import { FolderRounded, SvgIconComponent } from "@mui/icons-material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { FolderGlobal, theme } from "@zesty-io/material";
@@ -31,7 +32,11 @@ import {
   useUpdateFileMutation,
 } from "../../../../../../shell/services/mediaManager";
 import { NewFolderDialog } from "../NewFolderDialog";
-import { NavTree } from "../../../../../../shell/components/NavTree";
+import {
+  NavTree,
+  TreeItem as TreeItemType,
+} from "../../../../../../shell/components/NavTree";
+import { Group } from "../../../../../../shell/services/types";
 
 /**
  * It takes an array of items, an id, and a link, and returns a new array of items with the children of
@@ -40,19 +45,28 @@ import { NavTree } from "../../../../../../shell/components/NavTree";
  * @param {string} id - The id of the group you want to nest
  * @param [link=group_id] - The name of the property that links the items together.
  */
-const nest = (items: any, id: string, link: string, sort: string) =>
-  items
-    ?.filter((item: any) => item[link] === id)
-    ?.sort((a: any, b: any) => {
+const nest = (
+  items: Group[],
+  id: string,
+  link: keyof Group,
+  sort: string
+): TreeItemType[] => {
+  return items
+    ?.filter((item) => item[link] === id)
+    ?.sort((a, b) => {
       if (!sort) return;
       return sort === "asc"
         ? a.name.localeCompare(b.name)
         : b.name.localeCompare(a.name);
     })
-    ?.map((item: any) => ({
-      ...item,
+    ?.map((item) => ({
+      icon: FolderRounded,
       children: nest(items, item.id, link, sort),
+      path: `/media/folder/${item.id}`,
+      label: item.name,
+      actions: [],
     }));
+};
 
 interface Props {
   lockedToGroupId?: string;
@@ -103,8 +117,60 @@ export const Folders = ({ lockedToGroupId }: Props) => {
       }
     );
 
+  const mappedTree: TreeItemType[] = useMemo(() => {
+    if (!!binGroups?.length) {
+      if (lockedToGroupId) {
+        let rootGroup = [];
+        let rootNode: Group;
+
+        rootGroup = binGroups?.filter((groups) =>
+          groups?.some((group) => group.id === lockedToGroupId)
+        )?.[0];
+
+        if (!rootGroup) return [];
+
+        rootNode = rootGroup?.find((group) => group.id === lockedToGroupId);
+
+        return [
+          {
+            icon: FolderGlobal,
+            path: `/media/folder/${rootNode?.id}`,
+            label: rootNode?.name,
+            actions: [],
+            children: nest(rootGroup, lockedToGroupId, "group_id", sort),
+          },
+        ];
+      } else {
+        return binGroups
+          .filter((binGroup) => (bins.length > 1 ? true : binGroup?.length))
+          .map((binGroup, idx) => {
+            if (!binGroup.length) {
+              return {
+                icon: FolderGlobal,
+                children: [],
+                path: `/media/folder/${bins[idx].id}`,
+                label: bins[idx].name,
+                actions: [],
+              };
+            } else {
+              return {
+                icon: FolderGlobal,
+                children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
+                path: `/media/folder/${bins[idx].id}`,
+                label: bins[idx].name,
+                actions: [],
+              };
+            }
+          });
+      }
+    }
+
+    return [];
+  }, [binGroups, sort, bins]);
+
   /* Creating a tree structure from the data. */
   const trees = useMemo(() => {
+    console.log(binGroups);
     if (binGroups) {
       if (lockedToGroupId) {
         let rootGroup = [];
@@ -128,7 +194,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               return { ...bins[idx], children: [] };
             } else {
               // if (bins[idx].eco_id || binGroups.length > 1) {
-
               return {
                 ...bins[idx],
                 children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
@@ -269,8 +334,8 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     <>
       <NavTree
         id="media-main-nav"
-        selected=""
-        tree={[]}
+        selected={location.pathname}
+        tree={mappedTree}
         HeaderComponent={
           <Stack
             direction="row"
