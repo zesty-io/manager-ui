@@ -64,9 +64,13 @@ export const NavTree: FC<Readonly<Props>> = ({
           }}
         >
           {tree?.map((item) => {
+            if (!isHiddenTree && item.hidden) {
+              return <></>;
+            }
+
             return (
               <NavTreeItem
-                isHidden={item.hidden ?? false}
+                isHiddenTree={isHiddenTree}
                 key={item.path}
                 labelName={item.label}
                 nodeId={item.path}

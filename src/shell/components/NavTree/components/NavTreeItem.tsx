@@ -11,7 +11,7 @@ interface Props {
   nestedItems?: TreeItemType[];
   actions?: React.ReactNode[];
   depth?: number;
-  isHidden?: boolean;
+  isHiddenTree?: boolean;
 }
 export const NavTreeItem: FC<Props> = React.memo(
   ({
@@ -21,7 +21,7 @@ export const NavTreeItem: FC<Props> = React.memo(
     nestedItems,
     actions,
     depth = 0,
-    isHidden = false,
+    isHiddenTree = false,
   }) => {
     const currentDepth = depth + 1;
     const depthPadding = currentDepth * 1;
@@ -117,9 +117,12 @@ export const NavTreeItem: FC<Props> = React.memo(
       >
         {!!nestedItems?.length &&
           nestedItems?.map((item) => {
+            if (!isHiddenTree && item.hidden) {
+              return <></>;
+            }
+
             return (
               <NavTreeItem
-                isHidden={item.hidden ?? false}
                 key={item.path}
                 labelName={item.label}
                 nodeId={item.path}
