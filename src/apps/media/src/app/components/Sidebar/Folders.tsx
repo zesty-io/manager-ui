@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Typography,
@@ -39,7 +40,7 @@ interface Props {
   lockedToGroupId?: string;
 }
 
-export const Folders = ({ lockedToGroupId }: Props) => {
+export const Folders = React.memo(({ lockedToGroupId }: Props) => {
   const [folderMenuAnchorEl, setFolderMenuAnchorEl] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -48,10 +49,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   const id = location.pathname.split("/")[2];
   const hiddenGroups =
     JSON.parse(localStorage.getItem("zesty:navMedia:hidden")) || [];
-  // const [hiddenGroups, setHiddenGroups] = useLocalStorage(
-  //   "zesty:navMedia:hidden",
-  //   []
-  // );
   const [value, setValue] = useState(0);
   const [folderMenuData, setFolderMenuData] = useState<{
     id: string;
@@ -68,7 +65,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   const [hiddenExpanded, setHiddenExpanded] = useState([]);
   const [expanded, setExpanded] = useLocalStorage("zesty:navMedia:open", []);
 
-  console.log(hiddenGroups);
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -294,7 +290,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             title: rootNode?.name,
             binId,
           }),
-          children: nest(rootGroup, id, "group_id", sort, hiddenGroups, "1"),
+          children: nest(rootGroup, id, "group_id", sort, hiddenGroups, binId),
           nodeData: rootNode,
         };
       });
@@ -658,4 +654,4 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   //     ) : null}
   //   </>
   // );
-};
+});

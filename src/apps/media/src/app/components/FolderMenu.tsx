@@ -36,10 +36,9 @@ export const FolderMenu: FC<Props> = ({
   binId,
 }) => {
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
-  const [hiddenGroups, setHiddenGroups] = useLocalStorage(
-    "zesty:navMedia:hidden",
-    []
-  );
+  const hiddenGroups =
+    JSON.parse(localStorage.getItem("zesty:navMedia:hidden")) || [];
+  const [_, setHiddenGroups] = useLocalStorage("zesty:navMedia:hidden", []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -85,12 +84,14 @@ export const FolderMenu: FC<Props> = ({
             onClick={() => {
               onCloseMenu();
               if (hiddenGroups?.includes(id)) {
-                setHiddenGroups(hiddenGroups?.filter((group) => group !== id));
+                setHiddenGroups(
+                  hiddenGroups?.filter((group: string) => group !== id)
+                );
               } else {
                 setHiddenGroups([...(hiddenGroups as string[]), id]);
               }
               // dispatches storage event for components to listen to
-              // window.dispatchEvent(new StorageEvent("storage"));
+              window.dispatchEvent(new StorageEvent("storage"));
             }}
           >
             <ListItemIcon>
