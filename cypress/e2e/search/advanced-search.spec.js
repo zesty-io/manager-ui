@@ -8,7 +8,7 @@ describe("Global Search: Advanced Search", () => {
     );
 
     // Open via filter button
-    cy.getBySelector("GlobalSearchFilterButton").should("exist").click();
+    cy.getBySelector("GlobalSearchFilterButton").click();
     cy.getBySelector("AdvanceSearchModal").should("exist");
     cy.get("body").type("{esc}");
 
@@ -17,7 +17,7 @@ describe("Global Search: Advanced Search", () => {
       .find("input")
       .should("exist")
       .type("cypress");
-    cy.getBySelector("AdvancedSearchButton").should("exist").click();
+    cy.getBySelector("AdvancedSearchButton").click();
     cy.getBySelector("AdvanceSearchModal").should("exist");
     cy.get("body").type("{esc}");
   });

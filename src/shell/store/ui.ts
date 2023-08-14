@@ -269,10 +269,6 @@ export function createTab(
         tab.name = "Metrics";
         tab.app = "Metrics";
         break;
-      case "analytics":
-        tab.name = "Analytics";
-        tab.app = "Analytics";
-        break;
     }
   } else if (parts[0] in appNameMap) {
     const name = parts[0] as keyof typeof appNameMap;
@@ -434,7 +430,6 @@ export function loadTabs(instanceZUID: string) {
 
           case "Activity Log":
           case "Metrics":
-          case "Analytics":
             tab.icon = ICON_CONFIG.reports;
             break;
 

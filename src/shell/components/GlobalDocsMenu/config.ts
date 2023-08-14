@@ -145,16 +145,6 @@ export const SUB_DOC_ITEMS: SubDocItems = {
       url: "https://zesty.org/services/web-engine/forms-and-form-webhooks#capturing-form-data-to-an-instances-leads-feature",
     },
   ],
-  "reports/analytics": [
-    {
-      text: "Analytics Setup",
-      url: "https://zesty.org/services/web-engine/analytics",
-    },
-    {
-      text: "Analytics Settings",
-      url: "https://zesty.org/services/manager-ui/settings/instance-settings#analytics",
-    },
-  ],
   redirects: [
     {
       text: "Redirects Overview",

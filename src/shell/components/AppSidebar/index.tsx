@@ -25,9 +25,11 @@ import {
 import { ThemeProvider } from "@mui/material/styles";
 import { darkTheme, theme } from "@zesty-io/material";
 import { IconButton as IconButtonCustom } from "@zesty-io/material";
-import { SvgIconComponent, AddRounded } from "@mui/icons-material";
+import { SvgIconComponent } from "@mui/icons-material";
 import { useLocation, useHistory } from "react-router-dom";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
+import { AddRounded } from "@mui/icons-material";
+
 export interface SubMenu {
   name: string;
   icon: SvgIconComponent;
