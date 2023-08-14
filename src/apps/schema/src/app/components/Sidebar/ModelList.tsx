@@ -57,8 +57,8 @@ export const ModelList = ({ title, models, type }: Props) => {
           path: `/schema/${model.ZUID}`,
           actions: [
             <IconButton
-              data-cy="tree-item-more-menu"
-              key="tree-item-more-menu"
+              data-cy="tree-item-hide"
+              key="tree-item-hide"
               size="xxsmall"
               onClick={(evt) => {
                 evt.stopPropagation();
