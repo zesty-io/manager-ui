@@ -7,19 +7,14 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Tooltip,
   Stack,
   ThemeProvider,
 } from "@mui/material";
-import { TreeView, TreeItem } from "@mui/lab";
-import { FolderRounded, SvgIconComponent } from "@mui/icons-material";
+import { FolderRounded } from "@mui/icons-material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { FolderGlobal, theme } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
-import AddIcon from "@mui/icons-material/Add";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { useLocalStorage } from "react-use";
 import { useSelector } from "react-redux";
@@ -37,45 +32,15 @@ import {
   TreeItem as TreeItemType,
 } from "../../../../../../shell/components/NavTree";
 import { Bin, Group } from "../../../../../../shell/services/types";
-
-/**
- * It takes an array of items, an id, and a link, and returns a new array of items with the children of
- * the item with the given id nested under it
- * @param {any} items - The array of items to nest.
- * @param {string} id - The id of the group you want to nest
- * @param [link=group_id] - The name of the property that links the items together.
- */
-const nest = (
-  items: Group[],
-  id: string,
-  link: keyof Group,
-  sort: string,
-  hiddenGroup: string[]
-): TreeItemType[] => {
-  return items
-    ?.filter((item) => item[link] === id)
-    ?.sort((a, b) => {
-      if (!sort) return;
-      return sort === "asc"
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
-    })
-    ?.map((item) => ({
-      icon: FolderRounded,
-      children: nest(items, item.id, link, sort, hiddenGroup),
-      path: `/media/folder/${item.id}`,
-      label: item.name,
-      actions: [],
-      hidden: hiddenGroup.includes(item.id),
-      nodeData: item,
-    }));
-};
+import { UploadButton } from "../UploadButton";
+import { FolderMenu } from "../FolderMenu";
 
 interface Props {
   lockedToGroupId?: string;
 }
 
 export const Folders = ({ lockedToGroupId }: Props) => {
+  const [folderMenuAnchorEl, setFolderMenuAnchorEl] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const history = useHistory();
@@ -83,7 +48,17 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   const id = location.pathname.split("/")[2];
   const hiddenGroups =
     JSON.parse(localStorage.getItem("zesty:navMedia:hidden")) || [];
+  // const [hiddenGroups, setHiddenGroups] = useLocalStorage(
+  //   "zesty:navMedia:hidden",
+  //   []
+  // );
   const [value, setValue] = useState(0);
+  const [folderMenuData, setFolderMenuData] = useState<{
+    id: string;
+    groupId: string | null;
+    title: string;
+    binId: string | null;
+  }>(null);
   const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -93,6 +68,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   const [hiddenExpanded, setHiddenExpanded] = useState([]);
   const [expanded, setExpanded] = useLocalStorage("zesty:navMedia:open", []);
 
+  console.log(hiddenGroups);
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -120,6 +96,88 @@ export const Folders = ({ lockedToGroupId }: Props) => {
       }
     );
 
+  const renderActions = ({
+    id,
+    title,
+    groupId,
+    binId,
+  }: {
+    id: string;
+    title: string;
+    binId: string;
+    groupId?: string;
+  }) => {
+    return [
+      <IconButton
+        data-cy="tree-item-hide"
+        key="tree-item-hide"
+        size="xxsmall"
+        onClick={(e) => {
+          e.stopPropagation();
+
+          setFolderMenuAnchorEl(e.currentTarget);
+          setFolderMenuData({ id, groupId, title, binId });
+        }}
+      >
+        <MoreHorizRoundedIcon sx={{ fontSize: 16 }} />
+      </IconButton>,
+      // FIXME: Causes a lot of api calls to fetch folder data
+      // <UploadButton
+      //   id="tree-item-add-new-content"
+      //   currentBinId={binId}
+      //   currentGroupId={groupdId}
+      //   isIconButton
+      //   IconButtonProps={{
+      //     size: "xxsmall",
+      //     sx: {
+      //       svg: {
+      //         fontSize: "16px",
+      //       },
+      //     },
+      //   }}
+      // />,
+    ];
+  };
+
+  /**
+   * It takes an array of items, an id, and a link, and returns a new array of items with the children of
+   * the item with the given id nested under it
+   * @param {any} items - The array of items to nest.
+   * @param {string} id - The id of the group you want to nest
+   * @param [link=group_id] - The name of the property that links the items together.
+   */
+  const nest = (
+    items: Group[],
+    id: string,
+    link: keyof Group,
+    sort: string,
+    hiddenGroup: string[],
+    binId: string
+  ): TreeItemType[] => {
+    return items
+      ?.filter((item) => item[link] === id)
+      ?.sort((a, b) => {
+        if (!sort) return;
+        return sort === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      })
+      ?.map((item) => ({
+        icon: FolderRounded,
+        children: nest(items, item.id, link, sort, hiddenGroup, binId),
+        path: `/media/folder/${item.id}`,
+        label: item.name,
+        actions: renderActions({
+          id: item.id,
+          title: item.name,
+          groupId: item.group_id,
+          binId,
+        }),
+        hidden: hiddenGroup.includes(item.id),
+        nodeData: item,
+      }));
+  };
+
   const mappedTree: TreeItemType[] = useMemo(() => {
     if (!!binGroups?.length) {
       if (lockedToGroupId) {
@@ -136,16 +194,21 @@ export const Folders = ({ lockedToGroupId }: Props) => {
 
         return [
           {
-            icon: FolderGlobal,
+            icon: FolderRounded,
             path: `/media/folder/${rootNode?.id}`,
             label: rootNode?.name,
-            actions: [],
+            actions: renderActions({
+              id: rootNode?.id,
+              title: rootNode?.name,
+              binId: rootNode.bin_id,
+            }),
             children: nest(
               rootGroup,
               lockedToGroupId,
               "group_id",
               sort,
-              hiddenGroups
+              hiddenGroups,
+              rootNode.bin_id
             ),
             nodeData: rootNode,
           },
@@ -160,7 +223,11 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                 children: [],
                 path: `/media/folder/${bins[idx].id}`,
                 label: bins[idx].name,
-                actions: [],
+                actions: renderActions({
+                  id: bins[idx].id,
+                  title: bins[idx].name,
+                  binId: bins[idx].id,
+                }),
                 hidden: hiddenGroups.includes(bins[idx].id),
               };
             } else {
@@ -171,11 +238,16 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                   binGroup[0].bin_id,
                   "group_id",
                   sort,
-                  hiddenGroups
+                  hiddenGroups,
+                  bins[idx].id
                 ),
                 path: `/media/folder/${bins[idx].id}`,
                 label: bins[idx].name,
-                actions: [],
+                actions: renderActions({
+                  id: bins[idx].id,
+                  title: bins[idx].name,
+                  binId: bins[idx].id,
+                }),
                 hidden: hiddenGroups.includes(bins[idx].id),
               };
             }
@@ -193,87 +265,36 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     return [];
   }, [binGroups, sort, bins, hiddenGroups]);
 
-  /* Creating a tree structure from the data. */
-  const trees = useMemo(() => {
-    console.log(binGroups);
-    if (binGroups) {
-      if (lockedToGroupId) {
-        let rootGroup = [];
-        let rootNode = {};
-        rootGroup = binGroups?.filter((groups) =>
-          groups?.some((group) => group.id === lockedToGroupId)
-        )?.[0];
-        if (!rootGroup) return [];
-        rootNode = rootGroup?.find((group) => group.id === lockedToGroupId);
-        return [
-          {
-            ...rootNode,
-            children: nest(
-              rootGroup,
-              lockedToGroupId,
-              "group_id",
-              sort,
-              hiddenGroups
-            ),
-          },
-        ];
-      } else {
-        return binGroups
-          .filter((binGroup) => (bins.length > 1 ? true : binGroup?.length))
-          .map((binGroup, idx) => {
-            if (!binGroup.length) {
-              return { ...bins[idx], children: [] };
-            } else {
-              // if (bins[idx].eco_id || binGroups.length > 1) {
-              return {
-                ...bins[idx],
-                children: nest(
-                  binGroup,
-                  binGroup[0].bin_id,
-                  "group_id",
-                  sort,
-                  hiddenGroups
-                ),
-              };
-            }
-            // } else {
-            //   return nest(binGroup, binGroup[0].bin_id, "group_id", sort);
-            // }
-          })
-          .flat()
-          .sort((a, b) => {
-            if (!sort) return;
-            return sort === "asc"
-              ? a.name.localeCompare(b.name)
-              : b.name.localeCompare(a.name);
-          });
-      }
-    } else {
-      return [];
-    }
-  }, [binGroups, sort, bins]);
-
   /* Creating a tree structure based on the hidden items. */
   const hiddenTrees: TreeItemType[] = useMemo(() => {
     if (binGroups && hiddenGroups.length) {
       return hiddenGroups.map((id: string) => {
         let rootGroup: Group[];
         let rootNode: Group | Bin;
+        let binId: string;
+
         if (id.startsWith("1")) {
           rootGroup = binGroups.find((group: any) => group[0].bin_id === id);
           rootNode = bins.find((bin: any) => bin.id === id);
+          binId = rootNode.id;
         } else {
           rootGroup = binGroups?.filter((groups) =>
             groups?.some((group) => group.id === id)
           )?.[0];
           rootNode = rootGroup?.find((group) => group.id === id);
+          binId = rootNode.bin_id;
         }
+
         return {
           icon: FolderIcon,
           path: `/media/folder/${rootNode.id}`,
           label: rootNode.name,
-          actions: [<h1>test</h1>],
-          children: nest(rootGroup, id, "group_id", sort, hiddenGroups),
+          actions: renderActions({
+            id: rootNode?.id,
+            title: rootNode?.name,
+            binId,
+          }),
+          children: nest(rootGroup, id, "group_id", sort, hiddenGroups, "1"),
           nodeData: rootNode,
         };
       });
@@ -281,98 +302,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
       return [];
     }
   }, [binGroups, hiddenGroups, sort]);
-
-  /* Creating a path to the selected folder. */
-  const selectedPath = useMemo(() => {
-    const path = [];
-    let done = false;
-
-    if (id && trees.length) {
-      let currId = id;
-      while (!done) {
-        const node = binGroups.flat().find((group) => group.id === currId);
-        if (node) {
-          path.push(node.id);
-          currId = node.group_id;
-        } else {
-          path.push(binGroups.flat().find((group) => group.id === id)?.bin_id);
-          done = true;
-        }
-      }
-      return path.reverse();
-    }
-
-    return [];
-  }, [trees, id]);
-
-  useEffect(() => {
-    setExpanded([...new Set([...expanded, ...selectedPath])]);
-    setHiddenExpanded([...new Set([...hiddenExpanded, ...selectedPath])]);
-  }, [selectedPath]);
-
-  const renderTree = (nodes: any, isHiddenTree = false) => {
-    if (!isHiddenTree && hiddenGroups.includes(nodes.id) && !lockedToGroupId)
-      return null;
-    return (
-      <TreeItem
-        key={nodes.id}
-        nodeId={nodes.id}
-        data-cy={nodes.id}
-        // TODO: Pass this to navtree
-        ContentProps={{
-          onDragOver: (event) => {
-            event.preventDefault();
-            event.currentTarget.style.backgroundColor = "#f6f6f7";
-          },
-          onDragLeave: (event) => {
-            event.preventDefault();
-            event.currentTarget.style.backgroundColor = "";
-          },
-          onDrop: (event) => {
-            event.currentTarget.style.backgroundColor = "";
-            const draggedItem = JSON.parse(
-              event.dataTransfer.getData("text/plain")
-            );
-            if (draggedItem.bin_id === nodes.bin_id) {
-              updateFile({
-                id: draggedItem.id,
-                previousGroupId: draggedItem.group_id,
-                body: {
-                  group_id: nodes.id,
-                  filename: draggedItem.filename,
-                },
-              });
-            }
-          },
-        }}
-        label={
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box
-              component={nodes.eco_id ? FolderGlobal : FolderIcon}
-              sx={{
-                mr: 1,
-              }}
-              color="action.active"
-            />
-            <Typography
-              variant="body3"
-              color="text.secondary"
-              fontWeight={500}
-              sx={{
-                wordBreak: "break-word",
-              }}
-            >
-              {nodes.name}
-            </Typography>
-          </Box>
-        }
-      >
-        {Array.isArray(nodes.children)
-          ? nodes.children.map((node: any) => renderTree(node))
-          : null}
-      </TreeItem>
-    );
-  };
 
   useEffect(() => {
     // Sets ecobins open by default
@@ -552,6 +481,16 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             }
           />
         )}
+        <FolderMenu
+          anchorEl={folderMenuAnchorEl}
+          onCloseMenu={() => {
+            setFolderMenuAnchorEl(null);
+          }}
+          groupId={folderMenuData?.groupId}
+          id={folderMenuData?.id}
+          title={folderMenuData?.title}
+          binId={folderMenuData?.binId}
+        />
       </ThemeProvider>
     </>
   );
