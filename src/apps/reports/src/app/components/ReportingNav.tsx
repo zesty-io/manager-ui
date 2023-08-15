@@ -9,8 +9,9 @@ export const ReportingNav = () => {
   const tree: SubMenu[] = [
     {
       name: "Activity Log",
-      path: "/reports/activity-log/resources",
+      path: "/reports/activity-log",
       icon: ScheduleRounded,
+      substringPathMatch: true,
     },
     {
       name: "Metrics",

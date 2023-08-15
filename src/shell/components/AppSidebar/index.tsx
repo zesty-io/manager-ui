@@ -36,6 +36,7 @@ export interface SubMenu {
   path: string;
   onClick?: () => void;
   disableActive?: boolean;
+  substringPathMatch?: boolean;
 }
 interface Props {
   onFilterChange?: (keyword: string) => void;
@@ -204,7 +205,9 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   <List disablePadding>
                     {!!subMenus?.length &&
                       subMenus?.map((menu) => {
-                        const isActive = location.pathname === menu.path;
+                        const isActive = menu.substringPathMatch
+                          ? location.pathname.includes(menu.path)
+                          : location.pathname === menu.path;
 
                         return (
                           <ListItem
