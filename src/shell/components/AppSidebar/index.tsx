@@ -157,10 +157,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                         size="xsmall"
                         onClick={onAddClick}
                       >
-                        <SvgIcon
-                          component={titleButtonIcon}
-                          sx={{ fontSize: 18 }}
-                        />
+                        <SvgIcon component={titleButtonIcon} fontSize="small" />
                       </IconButtonCustom>
                     </Tooltip>
                   )}

@@ -82,7 +82,7 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
           folderUploadButton?.click();
         }}
       >
-        <FileUploadRoundedIcon sx={{ fontSize: 18 }} />
+        <FileUploadRoundedIcon fontSize="small" />
       </IconButton>
     );
   };

@@ -343,7 +343,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
                 Folders
               </Typography>
               <IconButton size="xxsmall" onClick={openMenu}>
-                <ArrowDropDownRoundedIcon sx={{ fontSize: 20 }} />
+                <ArrowDropDownRoundedIcon fontSize="small" />
               </IconButton>
             </Stack>
             <IconButton
@@ -387,7 +387,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
           }}
         >
           <AccordionSummary
-            expandIcon={<ArrowDropDownRoundedIcon sx={{ fontSize: "20px" }} />}
+            expandIcon={<ArrowDropDownRoundedIcon fontSize="small" />}
             sx={{
               "&.MuiButtonBase-root": {
                 minHeight: 20,

@@ -93,7 +93,7 @@ export const UploadButton: FC<UploadButton> = ({
           onClick={handleUploadButtonClick}
           disabled={loading || !binData}
         >
-          <FileUploadRoundedIcon sx={{ fontSize: 18 }} />
+          <FileUploadRoundedIcon fontSize="small" />
         </IconButton>
       ) : (
         <Button
