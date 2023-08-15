@@ -8,46 +8,43 @@ import npmIcon from "../../../../../../public/images/npmLogo.png";
 import nodejsIcon from "../../../../../../public/images/nodejsLogo.png";
 import googleChromeIcon from "../../../../../../public/images/googleChromeLogo.png";
 
+const ICONS: { altText: string; image: any }[] = [
+  {
+    altText: "Microsoft Logo",
+    image: microsoftIcon,
+  },
+  {
+    altText: "Google Analytics Logo",
+    image: googleAnalyticsIcon,
+  },
+  {
+    altText: "NPM Logo",
+    image: npmIcon,
+  },
+  {
+    altText: "NodeJS Logo",
+    image: nodejsIcon,
+  },
+  {
+    altText: "Google Chrome Logo",
+    image: googleChromeIcon,
+  },
+];
+
 export const InstallApp = () => {
   return (
     <Stack height="100%" justifyContent="center" alignItems="center">
       <Box component="img" src={zestyRocket} alt="Zesty Rocket logo" mb={3} />
       <Stack direction="row" gap={1} mb={8}>
-        <Box
-          component="img"
-          src={microsoftIcon}
-          alt="Microsoft Logo"
-          width={96}
-          height={96}
-        />
-        <Box
-          component="img"
-          src={googleAnalyticsIcon}
-          alt="Google Anayltics Logo"
-          width={96}
-          height={96}
-        />
-        <Box
-          component="img"
-          src={npmIcon}
-          alt="NPM Logo"
-          width={96}
-          height={96}
-        />
-        <Box
-          component="img"
-          src={nodejsIcon}
-          alt="NodeJS Logo"
-          width={96}
-          height={96}
-        />
-        <Box
-          component="img"
-          src={googleChromeIcon}
-          alt="Google Chrome Logo"
-          width={96}
-          height={96}
-        />
+        {ICONS.map((icon) => (
+          <Box
+            component="img"
+            src={icon.image}
+            alt={icon.altText}
+            width={96}
+            height={96}
+          />
+        ))}
       </Stack>
       <Typography variant="h3" mb={1} fontWeight={600}>
         Explore Marketplace
