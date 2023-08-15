@@ -114,7 +114,11 @@ export const mediaManagerApi = createApi({
             ...file,
             thumbnail: generateThumbnail(file),
           }))
-          .reverse(),
+          .sort(
+            (a, b) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
+          ),
     }),
     getBinGroups: builder.query<Group[], string>({
       query: (binId) => `bin/${binId}/groups`,
