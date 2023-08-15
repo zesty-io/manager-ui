@@ -12,8 +12,13 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { FolderRounded } from "@mui/icons-material";
+import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import { FolderGlobal, theme } from "@zesty-io/material";
+import {
+  FolderGlobal,
+  theme,
+  IconButton as IconButtonCustom,
+} from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -96,11 +101,13 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
     id,
     title,
     groupId,
+    path,
     binId,
   }: {
     id: string;
     title: string;
     binId: string;
+    path: string;
     groupId?: string;
   }) => {
     return [
@@ -117,21 +124,18 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
       >
         <MoreHorizRoundedIcon sx={{ fontSize: 16 }} />
       </IconButton>,
-      // FIXME: Causes a lot of api calls to fetch folder data
-      // <UploadButton
-      //   id="tree-item-add-new-content"
-      //   currentBinId={binId}
-      //   currentGroupId={groupdId}
-      //   isIconButton
-      //   IconButtonProps={{
-      //     size: "xxsmall",
-      //     sx: {
-      //       svg: {
-      //         fontSize: "16px",
-      //       },
-      //     },
-      //   }}
-      // />,
+      <IconButtonCustom
+        data-cy="tree-item-add-new-content"
+        key="tree-item-add-new-content"
+        variant="contained"
+        size="xxsmall"
+        onClick={(e) => {
+          e.stopPropagation();
+          history.push(`${path}?triggerUpload=true`, { from: path });
+        }}
+      >
+        <FileUploadRoundedIcon sx={{ fontSize: 16 }} />
+      </IconButtonCustom>,
     ];
   };
 
@@ -168,6 +172,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
           title: item.name,
           groupId: item.group_id,
           binId,
+          path: `/media/folder/${item.id}`,
         }),
         hidden: hiddenGroup.includes(item.id),
         nodeData: item,
@@ -197,6 +202,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
               id: rootNode?.id,
               title: rootNode?.name,
               binId: rootNode.bin_id,
+              path: `/media/folder/${rootNode?.id}`,
             }),
             children: nest(
               rootGroup,
@@ -223,6 +229,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
                   id: bins[idx].id,
                   title: bins[idx].name,
                   binId: bins[idx].id,
+                  path: `/media/folder/${bins[idx].id}`,
                 }),
                 hidden: hiddenGroups.includes(bins[idx].id),
               };
@@ -243,6 +250,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
                   id: bins[idx].id,
                   title: bins[idx].name,
                   binId: bins[idx].id,
+                  path: `/media/folder/${bins[idx].id}`,
                 }),
                 hidden: hiddenGroups.includes(bins[idx].id),
               };
@@ -289,6 +297,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
             id: rootNode?.id,
             title: rootNode?.name,
             binId,
+            path: `/media/folder/${rootNode.id}`,
           }),
           children: nest(rootGroup, id, "group_id", sort, hiddenGroups, binId),
           nodeData: rootNode,
