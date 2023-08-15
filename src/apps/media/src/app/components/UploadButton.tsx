@@ -1,9 +1,8 @@
-import { FC, useEffect, useRef } from "react";
+import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { fileUploadStage } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
-import { ChangeEventHandler } from "react";
 import {
   useGetBinQuery,
   useGetGroupDataQuery,
@@ -29,6 +28,7 @@ export const UploadButton: FC<UploadButton> = ({
   isIconButton = false,
   id = "fileUploadButton",
 }) => {
+  const [filesToUpload, setFilesToUpload] = useState<FileList>(null);
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
   const history = useHistory();
@@ -46,30 +46,40 @@ export const UploadButton: FC<UploadButton> = ({
 
   useEffect(() => {
     if (triggerUpload) {
+      const { from }: { from?: string } = history.location.state;
+
       handleUploadButtonClick();
-      history.replace("/media");
+
+      if (!!from) {
+        history.replace(from === "/launchpad" ? "/media" : from);
+      }
     }
   }, [triggerUpload]);
 
-  const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (
-    event
-  ) => {
-    const currentBin = binData[0];
+  useEffect(() => {
+    // Makes sure that the file is uploaded to the correct folder by waiting for the ids to be loaded first
+    if (filesToUpload?.length && !loading) {
+      const currentBin = binData[0];
 
-    dispatch(
-      fileUploadStage(
-        Array.from(event.target.files).map((file) => {
-          return {
-            file,
-            bin_id: currentBin.id,
-            group_id: currentGroup?.id || currentBin.id,
-          };
-        })
-      )
-    );
-  };
+      dispatch(
+        fileUploadStage(
+          Array.from(filesToUpload).map((file) => {
+            return {
+              file,
+              bin_id: currentBin.id,
+              group_id: currentGroup?.id || currentBin.id,
+            };
+          })
+        )
+      );
+
+      setFilesToUpload(null);
+    }
+  }, [filesToUpload, loading]);
+
   const handleUploadButtonClick = () => {
     //clears any previous file input value to allow for the same file to be uploaded again
+    setFilesToUpload(null);
     hiddenFileInput.current.value = "";
     hiddenFileInput.current.click();
   };
@@ -103,7 +113,9 @@ export const UploadButton: FC<UploadButton> = ({
         type="file"
         multiple
         ref={hiddenFileInput}
-        onChange={handleFileInputChange}
+        onChange={(evt: ChangeEvent<HTMLInputElement>) =>
+          setFilesToUpload(evt.target.files)
+        }
         hidden
         style={{ display: "none" }}
       />
