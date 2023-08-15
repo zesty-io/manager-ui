@@ -13,8 +13,8 @@ export default function CustomApp() {
   return (
     <main className={cx(styles.CustomApp)}>
       <Switch>
-        <Route path="/apps" render={InstallApp} />
-        <Route path="/apps/:zuid" component={LoadApp} />
+        <Route exact path="/apps" render={InstallApp} />
+        <Route exact path="/apps/:zuid" component={LoadApp} />
       </Switch>
     </main>
   );
