@@ -40,12 +40,23 @@ export const NavTreeItem: FC<Props> = React.memo(
             direction="row"
             alignItems="center"
             justifyContent="space-between"
+            position="relative"
             sx={{
               "& .treeActions": {
-                display: "none",
+                display: "flex",
+                position: "absolute",
+                right: 0,
+                zIndex: -1,
               },
               "&:hover .treeActions": {
-                display: "flex",
+                zIndex: 2,
+              },
+              // HACK: Makes sure that the label width is adjusted when the overlay buttons are rendered
+              "& .treeSpacer": {
+                display: "none",
+              },
+              "&:hover .treeSpacer": {
+                display: "block",
               },
             }}
           >
@@ -55,17 +66,21 @@ export const NavTreeItem: FC<Props> = React.memo(
                 {labelName}
               </Typography>
             </Tooltip>
+            {/* HACK: Used to force the label width to shrink when actions overlay is shown */}
+            <Box
+              className="treeSpacer"
+              minWidth={
+                // calculate width based on number of actions + padding between each action
+                !isNaN(actions?.length)
+                  ? actions?.length * 20 + (actions?.length - 1) * 4
+                  : 0
+              }
+            />
             <Stack
               direction="row"
               alignItems="center"
               gap={0.5}
               className="treeActions"
-              // calculate width based on number of actions + padding between each action
-              width={
-                !isNaN(actions?.length)
-                  ? actions?.length * 20 + (actions?.length - 1) * 4
-                  : 0
-              }
             >
               {actions?.map((action) => {
                 return action;
