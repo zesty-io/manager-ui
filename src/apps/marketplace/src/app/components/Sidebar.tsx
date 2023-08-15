@@ -22,7 +22,7 @@ export const Sidebar = () => {
   }, []);
 
   const apps: SubMenu[] = useMemo(() => {
-    if (!!installedApps.length) {
+    if (installedApps.length) {
       return installedApps.map((app) => {
         return {
           name: app.label,

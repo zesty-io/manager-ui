@@ -180,7 +180,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
   };
 
   const mappedTree: TreeItemType[] = useMemo(() => {
-    if (!!binGroups?.length) {
+    if (binGroups?.length) {
       if (lockedToGroupId) {
         let rootGroup = [];
         let rootNode: Group;

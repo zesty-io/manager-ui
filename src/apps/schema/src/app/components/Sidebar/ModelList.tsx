@@ -48,7 +48,7 @@ export const ModelList = ({ title, models, type }: Props) => {
   };
 
   const mappedModels: TreeItem[] = useMemo(() => {
-    if (!!models.length) {
+    if (models.length) {
       return models.map((model) => {
         return {
           icon: modelIconMap[model.type],
