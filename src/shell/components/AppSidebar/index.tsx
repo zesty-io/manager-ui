@@ -134,6 +134,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   px={1.5}
                 >
                   <Typography
+                    data-cy="appSidebarHeaderTitle"
                     variant="h6"
                     color="text.primary"
                     fontWeight={700}

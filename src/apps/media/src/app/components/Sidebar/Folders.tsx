@@ -347,6 +347,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
               </IconButton>
             </Stack>
             <IconButton
+              data-cy="createNewMediaFolder"
               onClick={() => setOpenNewFolderDialog(true)}
               size="xxsmall"
             >
