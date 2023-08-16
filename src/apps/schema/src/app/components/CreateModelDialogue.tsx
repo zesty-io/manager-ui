@@ -132,6 +132,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               canonicalTagMode: 1,
               metaLinkText: model.label,
               metaTitle: model.label,
+              // When creating single page model item only set parentZUID if the selected parent is a content item and not a model
               parentZUID: model.parentZUID.startsWith("7-")
                 ? model.parentZUID
                 : "0",
