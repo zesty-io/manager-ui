@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { fileUploadStage } from "../../../../../shell/store/media-revamp";
@@ -46,12 +46,12 @@ export const UploadButton: FC<UploadButton> = ({
 
   useEffect(() => {
     if (triggerUpload) {
-      const { from }: { from?: string } = history.location.state;
-
       handleUploadButtonClick();
+      // @ts-ignore
+      const origin = history?.location?.state?.from;
 
-      if (!!from) {
-        history.replace(from === "/launchpad" ? "/media" : from);
+      if (!!origin) {
+        history.replace(origin === "/launchpad" ? "/media" : origin);
       }
     }
   }, [triggerUpload]);
