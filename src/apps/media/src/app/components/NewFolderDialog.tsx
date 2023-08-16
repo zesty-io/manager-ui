@@ -10,9 +10,13 @@ import {
   Autocomplete,
   createFilterOptions,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { useSelector } from "react-redux";
+
 import {
   useGetBinGroupsQuery,
   useCreateGroupMutation,
+  useGetBinsQuery,
 } from "../../../../../shell/services/mediaManager";
 import { Group } from "../../../../../shell/services/types";
 import { useParams } from "../../../../../shell/hooks/useParams";
@@ -31,8 +35,16 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   const { data: binGroups, isLoading: isLoadingBinGroups } =
     useGetBinGroupsQuery(binId);
 
-  const [createGroup, { isLoading, isSuccess, data }] =
+  const [createGroup, { isLoading: isCreatingGroup, isSuccess, data }] =
     useCreateGroupMutation();
+
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const { data: bins, isLoading: isLoadingBins } = useGetBinsQuery({
+    instanceId,
+    ecoId,
+  });
+  const currentBin = bins?.find((bin) => bin.id === binId);
 
   useEffect(() => {
     if (isSuccess) {
@@ -45,14 +57,14 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
     if (binGroups) {
       setSelectedGroup(
         binGroups?.find((group) => group.id === id) || {
-          name: "None",
+          name: currentBin?.name ?? "None",
           bin_id: binId,
           group_id: binId,
           id: binId,
         }
       );
     }
-  }, [binGroups, id]);
+  }, [binGroups, id, currentBin]);
 
   const handleCreate = () => {
     createGroup({
@@ -65,6 +77,8 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
     return [...binGroups].sort((a, b) => a?.name?.localeCompare(b?.name));
   }, [binGroups]);
 
+  const loading = isLoadingBinGroups || isLoadingBins;
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
       <DialogTitle>New Folder</DialogTitle>
@@ -73,14 +87,14 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
         <Autocomplete
           size="small"
           fullWidth
-          loading={isLoadingBinGroups}
+          loading={loading}
           value={selectedGroup}
           disableClearable
           options={
             binGroups
               ? [
                   {
-                    name: "None",
+                    name: currentBin?.name ?? "None",
                     bin_id: binId,
                     group_id: binId,
                     id: binId,
@@ -119,9 +133,14 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <Button disabled={isLoading} variant="contained" onClick={handleCreate}>
+        <LoadingButton
+          loading={isCreatingGroup}
+          disabled={loading}
+          variant="contained"
+          onClick={handleCreate}
+        >
           Create
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
