@@ -45,7 +45,6 @@ export const NavTree: FC<Readonly<Props>> = ({
 }) => {
   const history = useHistory();
 
-  console.log(tree);
   return (
     <>
       {HeaderComponent}
