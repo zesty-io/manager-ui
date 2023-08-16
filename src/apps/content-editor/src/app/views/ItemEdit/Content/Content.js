@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import cx from "classnames";
 
 import { Editor } from "../../../components/Editor";
-import { Header } from "../components/Header";
+import { Header2 } from "../components/Header2";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
 import { ActionsDrawer } from "./ActionsDrawer";
@@ -13,7 +13,7 @@ export default function Content(props) {
 
   return (
     <main className={styles.Content}>
-      <Header
+      {/* <Header
         instance={props.instance}
         modelZUID={props.modelZUID}
         model={props.model}
@@ -30,7 +30,8 @@ export default function Content(props) {
           onSave={props.onSave}
           dispatch={props.dispatch}
         />
-      </Header>
+      </Header> */}
+      <Header2 />
 
       <div
         className={cx(
