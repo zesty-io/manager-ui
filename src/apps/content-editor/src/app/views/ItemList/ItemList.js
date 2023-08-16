@@ -740,7 +740,7 @@ export default connect((state, props) => {
                   reverseSort: filter.reverseSort,
                 }}
                 height={height}
-                width={width}
+                width="100%"
               >
                 {RowRender}
               </List>
