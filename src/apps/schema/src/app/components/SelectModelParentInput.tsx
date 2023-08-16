@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import { useMemo } from "react";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import { cloneDeep } from "lodash";
 import { useGetContentNavItemsQuery } from "../../../../../shell/services/instance";
 import { ContentNavItem, ModelType } from "../../../../../shell/services/types";
 
@@ -26,7 +25,7 @@ export const SelectModelParentInput = ({
 
   const parents = useMemo(() => {
     if (navItems) {
-      const _navItems = cloneDeep(navItems);
+      const _navItems = [...navItems];
 
       // remove homepage from list of parents only if model type is not dataset
       if (modelType !== "dataset") {
