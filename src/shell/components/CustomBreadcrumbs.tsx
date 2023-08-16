@@ -18,6 +18,11 @@ export const CustomBreadcrumbs = ({ children }: CustomBreadcrumbsProps) => {
           event.stopPropagation();
           setShowBreadcrumbPopover(event.currentTarget);
         }}
+        sx={{
+          "&:hover": {
+            color: "primary.main",
+          },
+        }}
       >
         <MoreHorizRounded fontSize="small" />
       </IconButton>

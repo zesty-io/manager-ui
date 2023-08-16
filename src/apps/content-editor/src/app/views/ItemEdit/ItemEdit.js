@@ -40,6 +40,7 @@ import { ApiCardList } from "../../../../../schema/src/app/components/ModelApi/A
 import { theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
+import { Header2 } from "./components/Header2";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -284,7 +285,11 @@ export default function ItemEdit() {
             onDiscard={discard}
           />
 
-          <section style={{ height: "100%" }}>
+          <Box
+            component="section"
+            sx={{ display: "flex", flexDirection: "column", height: "100%" }}
+          >
+            <Header2 />
             <Switch>
               <Route
                 exact
@@ -416,7 +421,7 @@ export default function ItemEdit() {
                 )}
               />
             </Switch>
-          </section>
+          </Box>
         </WithLoader>
       )}
     </Fragment>

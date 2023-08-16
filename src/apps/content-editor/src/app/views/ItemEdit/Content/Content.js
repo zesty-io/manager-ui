@@ -31,7 +31,7 @@ export default function Content(props) {
           dispatch={props.dispatch}
         />
       </Header> */}
-      <Header2 />
+      {/* <Header2 /> */}
 
       <div
         className={cx(
@@ -41,20 +41,18 @@ export default function Content(props) {
           ui.duoMode && ui.contentActions ? styles.DuoAndActionsOn : ""
         )}
       >
-        <div className={styles.Editor}>
-          <Editor
-            // active={this.state.makeActive}
-            // scrolled={() => this.setState({ makeActive: "" })}
-            model={props.model}
-            itemZUID={props.itemZUID}
-            item={props.item}
-            fields={props.fields}
-            dispatch={props.dispatch}
-            isDirty={props.item.dirty}
-            onSave={props.onSave}
-            modelZUID={props.modelZUID}
-          />
-        </div>
+        <Editor
+          // active={this.state.makeActive}
+          // scrolled={() => this.setState({ makeActive: "" })}
+          model={props.model}
+          itemZUID={props.itemZUID}
+          item={props.item}
+          fields={props.fields}
+          dispatch={props.dispatch}
+          isDirty={props.item.dirty}
+          onSave={props.onSave}
+          modelZUID={props.modelZUID}
+        />
 
         {ui.duoMode && (
           <PreviewMode

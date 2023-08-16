@@ -1,14 +1,4 @@
-import {
-  Breadcrumbs,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  SvgIcon,
-  Tabs,
-  Tab,
-  Typography,
-} from "@mui/material";
+import { Box, SvgIcon, Tabs, Tab, Typography } from "@mui/material";
 import {
   useGetContentItemQuery,
   useGetContentModelQuery,
@@ -16,13 +6,12 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { Home, theme } from "@zesty-io/material";
 import { useHistory, useLocation, useParams } from "react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ContentNavItem } from "../../../../../../../../shell/services/types";
 import { MODEL_ICON } from "../../../../../../../../shell/constants";
 import { Link } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import {
-  MoreHorizRounded,
   VerticalSplitRounded,
   QueryStatsRounded,
   BarChartRounded,
@@ -31,6 +20,39 @@ import {
   ManageAccountsRounded,
 } from "@mui/icons-material";
 import { CustomBreadcrumbs } from "../../../../../../../../shell/components/CustomBreadcrumbs";
+
+const tabs = [
+  {
+    label: "Content",
+    icon: VerticalSplitRounded,
+    value: "",
+  },
+  {
+    label: "SEO",
+    icon: QueryStatsRounded,
+    value: "meta",
+  },
+  {
+    label: "Analytics",
+    icon: BarChartRounded,
+    value: "analytics",
+  },
+  {
+    label: "Head Tags",
+    icon: CodeRounded,
+    value: "head",
+  },
+  {
+    label: "APIs",
+    icon: ApiRounded,
+    value: "api",
+  },
+  {
+    label: "Publish Status",
+    icon: ManageAccountsRounded,
+    value: "publishings",
+  },
+];
 
 export const Header2 = () => {
   const { modelZUID, itemZUID } = useParams<{
@@ -41,6 +63,7 @@ export const Header2 = () => {
   const history = useHistory();
 
   const { data: contentItem } = useGetContentItemQuery(itemZUID);
+  const { data: model } = useGetContentModelQuery(modelZUID);
 
   return (
     <ThemeProvider theme={theme}>
@@ -85,48 +108,19 @@ export const Header2 = () => {
             top: "2px",
           }}
         >
-          <Tab
-            disableRipple
-            label="Content"
-            value=""
-            icon={<VerticalSplitRounded fontSize="small" />}
-            iconPosition="start"
-          />
-          <Tab
-            disableRipple
-            label="SEO"
-            value="meta"
-            icon={<QueryStatsRounded fontSize="small" />}
-            iconPosition="start"
-          />
-          <Tab
-            disableRipple
-            label="Analytics"
-            value="analytics"
-            icon={<BarChartRounded fontSize="small" />}
-            iconPosition="start"
-          />
-          <Tab
-            disableRipple
-            label="Head Tags"
-            value="head"
-            icon={<CodeRounded fontSize="small" />}
-            iconPosition="start"
-          />
-          <Tab
-            disableRipple
-            label="APIs"
-            value="api"
-            icon={<ApiRounded fontSize="small" />}
-            iconPosition="start"
-          />
-          <Tab
-            disableRipple
-            label="Publish Status"
-            value="publishings"
-            icon={<ManageAccountsRounded fontSize="small" />}
-            iconPosition="start"
-          />
+          {tabs.map((tab) => {
+            if (tab.value === "meta" && model?.type === "dataset") return;
+            return (
+              <Tab
+                key={tab.value}
+                disableRipple
+                label={tab.label}
+                value={tab.value}
+                icon={<tab.icon fontSize="small" />}
+                iconPosition="start"
+              />
+            );
+          })}
         </Tabs>
       </Box>
     </ThemeProvider>
