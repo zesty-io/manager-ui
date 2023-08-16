@@ -81,7 +81,11 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
 
   const handleCreate = () => {
     createGroup({
-      body: { name, group_id: selectedGroup?.id, bin_id: binId },
+      body: {
+        name,
+        group_id: selectedGroup?.id,
+        bin_id: binId ?? selectedGroup?.bin_id,
+      },
     });
   };
 
