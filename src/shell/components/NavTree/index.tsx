@@ -45,6 +45,7 @@ export const NavTree: FC<Readonly<Props>> = ({
 }) => {
   const history = useHistory();
 
+  console.log(tree);
   return (
     <>
       {HeaderComponent}
@@ -69,7 +70,7 @@ export const NavTree: FC<Readonly<Props>> = ({
           }}
         >
           {tree?.map((item) => {
-            if (!isHiddenTree && item.hidden) {
+            if ((!isHiddenTree && item.hidden) || !item) {
               return <></>;
             }
 
