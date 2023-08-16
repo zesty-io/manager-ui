@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Box,
   Typography,
   IconButton,
   Menu,
@@ -38,7 +37,6 @@ import {
   TreeItem as TreeItemType,
 } from "../../../../../../shell/components/NavTree";
 import { Bin, Group } from "../../../../../../shell/services/types";
-import { UploadButton } from "../UploadButton";
 import { FolderMenu } from "../FolderMenu";
 
 interface Props {
@@ -51,7 +49,6 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
   const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
-  const id = location.pathname.split("/")[2];
   const hiddenGroups =
     JSON.parse(localStorage.getItem("zesty:navMedia:hidden")) || [];
   const [value, setValue] = useState(0);
@@ -232,6 +229,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
                   path: `/media/folder/${bins[idx].id}`,
                 }),
                 hidden: hiddenGroups.includes(bins[idx].id),
+                nodeData: bins[idx],
               };
             } else {
               return {
@@ -253,6 +251,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
                   path: `/media/folder/${bins[idx].id}`,
                 }),
                 hidden: hiddenGroups.includes(bins[idx].id),
+                nodeData: bins[idx],
               };
             }
           })
@@ -358,7 +357,11 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
           </Stack>
         }
         onItemDrop={(draggedItem, target) => {
-          if (draggedItem.bin_id === target.bin_id) {
+          // Allow drag and drop of file when the target folder is in the same eco bin or is the actual eco bin root
+          if (
+            draggedItem.bin_id === target.bin_id ||
+            (target.id.startsWith("1") && draggedItem.bin_id === target.id)
+          ) {
             updateFile({
               id: draggedItem.id,
               previousGroupId: draggedItem.group_id,
