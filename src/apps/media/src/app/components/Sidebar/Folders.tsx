@@ -9,6 +9,11 @@ import {
   AccordionDetails,
   Stack,
   ThemeProvider,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
+  Button,
 } from "@mui/material";
 import { FolderRounded } from "@mui/icons-material";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
@@ -21,6 +26,7 @@ import {
 import FolderIcon from "@mui/icons-material/Folder";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import { useLocalStorage } from "react-use";
 import { useSelector } from "react-redux";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
@@ -59,6 +65,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
     binId: string | null;
   }>(null);
   const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
+  const [openDndFailedDialog, setOpenDndFailedDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
@@ -370,6 +377,8 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
                 filename: draggedItem.filename,
               },
             });
+          } else {
+            setOpenDndFailedDialog(true);
           }
         }}
         dragAndDrop
@@ -492,6 +501,44 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
           title={folderMenuData?.title}
           binId={folderMenuData?.binId}
         />
+        {openDndFailedDialog && (
+          <Dialog
+            open
+            onClose={() => setOpenDndFailedDialog(false)}
+            fullWidth
+            maxWidth={"xs"}
+          >
+            <DialogTitle>
+              <WarningAmberRoundedIcon
+                color="warning"
+                sx={{
+                  padding: "8px",
+                  borderRadius: "20px",
+                  backgroundColor: "warning.light",
+                  display: "block",
+                  mb: 2,
+                }}
+              />
+              Cannot move file to another eco-bin
+            </DialogTitle>
+            <DialogContent>
+              <Typography variant="body2" color="text.secondary">
+                Currently Zesty lacks the ability to allow you to move files
+                between eco-bins. If you desire this feature please contact
+                support@zesty.io.
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenDndFailedDialog(false)}
+              >
+                Okay
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
       </ThemeProvider>
     </>
   );
