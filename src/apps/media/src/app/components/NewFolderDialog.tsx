@@ -14,9 +14,9 @@ import { LoadingButton } from "@mui/lab";
 import { useSelector } from "react-redux";
 
 import {
-  useGetBinGroupsQuery,
   useCreateGroupMutation,
   useGetBinsQuery,
+  useGetAllBinGroupsQuery,
 } from "../../../../../shell/services/mediaManager";
 import { Group } from "../../../../../shell/services/types";
 import { useParams } from "../../../../../shell/hooks/useParams";
@@ -24,16 +24,13 @@ interface Props {
   open: boolean;
   onClose: () => void;
   id?: string;
-  binId: string;
+  binId?: string;
 }
 
 export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   const [name, setName] = useState("Untitled");
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [params, setParams] = useParams();
-
-  const { data: binGroups, isLoading: isLoadingBinGroups } =
-    useGetBinGroupsQuery(binId);
 
   const [createGroup, { isLoading: isCreatingGroup, isSuccess, data }] =
     useCreateGroupMutation();
@@ -45,6 +42,13 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
     ecoId,
   });
   const currentBin = bins?.find((bin) => bin.id === binId);
+  const { data: allBinGroups, isLoading: isLoadingAllBinGroups } =
+    useGetAllBinGroupsQuery(
+      bins?.map((bin) => bin.id),
+      {
+        skip: !bins?.length,
+      }
+    );
 
   useEffect(() => {
     if (isSuccess) {
@@ -54,17 +58,26 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   }, [isSuccess]);
 
   useEffect(() => {
-    if (binGroups) {
-      setSelectedGroup(
-        binGroups?.find((group) => group.id === id) || {
-          name: currentBin?.name ?? "None",
-          bin_id: binId,
-          group_id: binId,
-          id: binId,
-        }
-      );
+    if (allBinGroups) {
+      if (!binId) {
+        setSelectedGroup({
+          name: "None",
+          id: null,
+          group_id: null,
+          bin_id: null,
+        });
+      } else {
+        setSelectedGroup(
+          allBinGroups?.flat()?.find((group) => group.id === id) || {
+            name: currentBin?.name,
+            id: binId,
+            group_id: binId,
+            bin_id: binId,
+          }
+        );
+      }
     }
-  }, [binGroups, id, currentBin]);
+  }, [allBinGroups, id, currentBin, binId]);
 
   const handleCreate = () => {
     createGroup({
@@ -73,11 +86,36 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   };
 
   const sortedBinGroups = useMemo(() => {
-    if (!binGroups) return [];
-    return [...binGroups].sort((a, b) => a?.name?.localeCompare(b?.name));
-  }, [binGroups]);
+    if (allBinGroups?.length && bins?.length) {
+      if (binId) {
+        return [
+          {
+            name: currentBin?.name ?? "None",
+            bin_id: binId,
+            group_id: binId,
+            id: binId,
+          },
+          ...allBinGroups.flat(),
+        ]
+          .filter((group) => group.bin_id === binId)
+          .sort((a, b) => a?.name?.localeCompare(b?.name));
+      } else {
+        const allBins = bins.map((bin) => ({
+          name: bin.name,
+          bin_id: bin.id,
+          group_id: bin.id,
+          id: bin.id,
+        }));
+        return [...allBins, ...allBinGroups.flat()].sort((a, b) =>
+          a?.name?.localeCompare(b?.name)
+        );
+      }
+    }
 
-  const loading = isLoadingBinGroups || isLoadingBins;
+    return [];
+  }, [allBinGroups, binId, bins]);
+
+  const loading = isLoadingBins || isLoadingAllBinGroups;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
@@ -91,13 +129,13 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           value={selectedGroup}
           disableClearable
           options={
-            binGroups
+            sortedBinGroups?.length
               ? [
                   {
-                    name: currentBin?.name ?? "None",
-                    bin_id: binId,
-                    group_id: binId,
-                    id: binId,
+                    name: "None",
+                    id: null,
+                    group_id: null,
+                    bin_id: null,
                   },
                   ...sortedBinGroups,
                 ]
@@ -135,7 +173,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
         </Button>
         <LoadingButton
           loading={isCreatingGroup}
-          disabled={loading}
+          disabled={loading || !selectedGroup || selectedGroup?.bin_id === null}
           variant="contained"
           onClick={handleCreate}
         >

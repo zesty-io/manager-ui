@@ -280,14 +280,16 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
         if (id.startsWith("1")) {
           rootGroup = binGroups.find((group: any) => group[0].bin_id === id);
           rootNode = bins.find((bin: any) => bin.id === id);
-          binId = rootNode.id;
+          binId = rootNode?.id;
         } else {
           rootGroup = binGroups?.filter((groups) =>
             groups?.some((group) => group.id === id)
           )?.[0];
           rootNode = rootGroup?.find((group) => group.id === id);
-          binId = rootNode.bin_id;
+          binId = rootNode?.bin_id;
         }
+
+        if (!rootNode) return;
 
         return {
           icon: FolderIcon,
@@ -475,17 +477,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
           </MenuItem>
         </Menu>
         {openNewFolderDialog && (
-          <NewFolderDialog
-            open
-            onClose={() => setOpenNewFolderDialog(false)}
-            id={id}
-            binId={
-              (id?.startsWith("1") ? id : null) ||
-              binGroups?.flat()?.find((binGroup) => binGroup.id === id)
-                ?.bin_id ||
-              bins?.find((bin) => bin.default)?.id
-            }
-          />
+          <NewFolderDialog open onClose={() => setOpenNewFolderDialog(false)} />
         )}
         <FolderMenu
           anchorEl={folderMenuAnchorEl}
