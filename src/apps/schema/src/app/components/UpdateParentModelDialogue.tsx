@@ -48,6 +48,14 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
     if (navItems) {
       const _navItems = cloneDeep(navItems);
 
+      // remove homepage from list of parents only if model type is not dataset
+      if (model.type !== "dataset") {
+        _navItems?.splice(
+          _navItems?.findIndex((m) => m.label === "Homepage"),
+          1
+        );
+      }
+
       return _navItems?.sort((a, b) => a.label.localeCompare(b.label));
     }
 
