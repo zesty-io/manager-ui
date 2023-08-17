@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { theme } from "@zesty-io/material";
 
@@ -201,8 +201,8 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   }}
                 />
                 {openNav && (
-                  <ArrowDropDownIcon
-                    fontSize="inherit"
+                  <ArrowDropDownRoundedIcon
+                    fontSize="small"
                     sx={{
                       color: "grey.500",
                     }}
