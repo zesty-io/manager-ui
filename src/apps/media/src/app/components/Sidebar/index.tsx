@@ -1,7 +1,7 @@
 import { FC, useEffect, useState, useRef } from "react";
 import { ScheduleRounded, InsightsRounded } from "@mui/icons-material";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { useSelector } from "react-redux";
 import { IconButton } from "@zesty-io/material";
 
@@ -14,6 +14,7 @@ import { useParams } from "../../../../../../shell/hooks/useParams";
 import { useGetBinsQuery } from "../../../../../../shell/services/mediaManager";
 import { AppState } from "../../../../../../shell/store/types";
 import { Folders } from "./Folders";
+import { Bin } from "../../../../../../shell/services/types";
 
 interface Props {
   lockedToGroupId?: string;
@@ -58,35 +59,6 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
     },
   ];
 
-  const renderTitleButton = () => {
-    if (!!isSelectDialog) {
-      return <></>;
-    }
-
-    // For the insights page, use the upload button that uploads items to default bin
-    if (location.pathname === "/media/insights") {
-      return <UploadButton currentBinId={defaultBin?.id} isIconButton />;
-    }
-
-    // When in a folder, trigger the upload media to folder button on the folder's header
-    return (
-      <IconButton
-        data-cy="create_new_content_item"
-        variant="contained"
-        size="xsmall"
-        onClick={() => {
-          const folderUploadButton: HTMLButtonElement = document.querySelector(
-            "[data-cy='fileUploadButton']"
-          );
-
-          folderUploadButton?.click();
-        }}
-      >
-        <FileUploadRoundedIcon fontSize="small" />
-      </IconButton>
-    );
-  };
-
   return (
     <>
       <AppSideBar
@@ -101,10 +73,50 @@ export const Sidebar: FC<Props> = ({ lockedToGroupId, isSelectDialog }) => {
         onFilterEnter={(keyword) =>
           history.push(`/media/search?term=${keyword}`)
         }
-        TitleButtonComponent={renderTitleButton()}
+        TitleButtonComponent={
+          <TitleButton
+            isSelectDialog={isSelectDialog}
+            defaultBin={defaultBin}
+          />
+        }
       >
         <Folders lockedToGroupId={lockedToGroupId} />
       </AppSideBar>
     </>
+  );
+};
+
+interface TitleButtonProps {
+  isSelectDialog: boolean;
+  defaultBin: Bin;
+}
+const TitleButton: FC<TitleButtonProps> = ({ isSelectDialog, defaultBin }) => {
+  const location = useLocation();
+
+  if (!!isSelectDialog) {
+    return <></>;
+  }
+
+  // For the insights page, use the upload button that uploads items to default bin
+  if (location.pathname === "/media/insights") {
+    return <UploadButton currentBinId={defaultBin?.id} isIconButton />;
+  }
+
+  // When in a folder, trigger the upload media to folder button on the folder's header
+  return (
+    <IconButton
+      data-cy="create_new_content_item"
+      variant="contained"
+      size="xsmall"
+      onClick={() => {
+        const folderUploadButton: HTMLButtonElement = document.querySelector(
+          "[data-cy='fileUploadButton']"
+        );
+
+        folderUploadButton?.click();
+      }}
+    >
+      <FileUploadRoundedIcon fontSize="small" />
+    </IconButton>
   );
 };
