@@ -23,18 +23,14 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
       <ListItem
         sx={{
           px: 1,
-          py: openNav ? 0.75 : 1.5,
-          mt: openNav ? 0.75 : 0,
-          mb: 0.5,
-          mx: openNav ? 0.5 : 0,
-          height: 60,
-          width: 184,
+          py: 0.75,
+          mb: 0.75,
+          height: 48,
         }}
       >
         <Stack
           data-cy="InstanceMenuButton"
           direction="row"
-          height={36}
           width="100%"
           justifyContent="space-between"
           alignItems="center"
