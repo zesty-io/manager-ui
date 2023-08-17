@@ -9,9 +9,7 @@ import {
   Avatar,
   Stack,
   Link,
-  Tooltip,
   ListItem,
-  SvgIcon,
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -52,6 +50,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
     instance?.createdAt &&
     moment().diff(moment(instance?.createdAt), "days") <= 15;
 
+  // TODO: Add the app sidebar expand icon based off of ui.ts
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -76,18 +75,11 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               justifyContent: "space-between",
             }}
           >
-            <Tooltip
-              title={openNav ? "Collapse Sidebar" : "Expand Sidebar"}
-              placement="right-start"
-              enterDelay={1000}
-              enterNextDelay={1000}
-            >
-              <MenuRoundedIcon
-                data-cy="CollapseGlobalSideBar"
-                onClick={onClick}
-                sx={{ color: "grey.400", cursor: "pointer" }}
-              />
-            </Tooltip>
+            <MenuRoundedIcon
+              data-cy="CollapseGlobalSideBar"
+              onClick={onClick}
+              sx={{ color: "grey.400", cursor: "pointer" }}
+            />
             {openNav && (
               <Box
                 component="img"
