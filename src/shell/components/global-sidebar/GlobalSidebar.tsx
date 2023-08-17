@@ -10,18 +10,22 @@ import {
   Stack,
   Link,
   Tooltip,
+  ListItem,
+  SvgIcon,
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { theme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
 import Favicon from "../favicon";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import zestyLogoOnly from "../../../../public/images/zestyLogoOnly.svg";
+import zestyLogoOnlyGrey from "../../../../public/images/zestyLogoOnlyGrey.svg";
 import InviteMembersModal from "../InviteMembersModal";
 import { User } from "../../services/types";
 import { useGetInstanceQuery } from "../../services/accounts";
@@ -62,58 +66,41 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             borderColor: "grey.800",
           }}
         >
-          <InstanceMenu openNav={openNav} />
-
-          {/* Sidebar handle */}
-          <Tooltip
-            title={openNav ? "Collapse Sidebar" : "Expand Sidebar"}
-            placement="right-start"
-            enterDelay={1000}
-            enterNextDelay={1000}
+          <ListItem
+            sx={{
+              height: 36,
+              px: 1.5,
+              py: 0.75,
+              mt: 0.75,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
-            <IconButton
-              data-cy="CollapseGlobalSideBar"
-              onClick={onClick}
-              sx={{
-                borderRadius: "50%",
-                borderColor: "grey.600",
-                borderStyle: "solid",
-                borderWidth: "1px",
-                backgroundColor: "grey.900",
-
-                width: "24px",
-                height: "24px",
-
-                position: "absolute",
-                top: "32px",
-                right: "-14px",
-                zIndex: (theme) => theme.zIndex.appBar,
-
-                "&:hover": {
-                  backgroundColor: "grey.900",
-
-                  ".MuiSvgIcon-root": {
-                    color: "common.white",
-                  },
-                },
-              }}
+            <Tooltip
+              title={openNav ? "Collapse Sidebar" : "Expand Sidebar"}
+              placement="right-start"
+              enterDelay={1000}
+              enterNextDelay={1000}
             >
-              {openNav ? (
-                <KeyboardDoubleArrowLeftIcon
-                  fontSize="small"
-                  sx={{
-                    color: "grey.500",
-                  }}
-                />
-              ) : (
-                <KeyboardDoubleArrowRightIcon
-                  fontSize="small"
-                  sx={{ color: "grey.500" }}
-                />
-              )}
-            </IconButton>
-          </Tooltip>
+              <MenuRoundedIcon
+                data-cy="CollapseGlobalSideBar"
+                onClick={onClick}
+                sx={{ color: "grey.400", cursor: "pointer" }}
+              />
+            </Tooltip>
+            {openNav && (
+              <Box
+                component="img"
+                src={zestyLogoOnlyGrey}
+                alt="Zesty Logo"
+                width={20}
+                height={20}
+              />
+            )}
+          </ListItem>
 
+          <InstanceMenu openNav={openNav} />
           <GlobalMenu />
 
           {/* Bottom bar */}
