@@ -127,6 +127,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
       <DialogContent>
         <InputLabel>Parent Folder</InputLabel>
         <Autocomplete
+          data-cy="newFolderParentSelector"
           size="small"
           fullWidth
           loading={loading}

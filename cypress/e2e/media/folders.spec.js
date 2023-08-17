@@ -7,6 +7,10 @@ describe("Media Folders", () => {
   it("Creates folder ", () => {
     cy.getBySelector("createNewMediaFolder").click();
 
+    cy.getBySelector("newFolderParentSelector")
+      .click()
+      .type("zesty-{downArrow}{enter}");
+
     cy.get(".MuiDialog-container").within(() => {
       cy.contains("Folder Name").next().type("CYPRESS TEST NEW FOLDER");
       cy.contains("Create").click();
