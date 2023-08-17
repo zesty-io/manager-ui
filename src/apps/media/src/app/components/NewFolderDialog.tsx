@@ -29,7 +29,12 @@ interface Props {
 
 export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   const [name, setName] = useState("Untitled");
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>({
+    name: "None",
+    id: null,
+    group_id: null,
+    bin_id: null,
+  });
   const [params, setParams] = useParams();
 
   const [createGroup, { isLoading: isCreatingGroup, isSuccess, data }] =
@@ -59,14 +64,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
 
   useEffect(() => {
     if (allBinGroups) {
-      if (!binId) {
-        setSelectedGroup({
-          name: "None",
-          id: null,
-          group_id: null,
-          bin_id: null,
-        });
-      } else {
+      if (binId) {
         setSelectedGroup(
           allBinGroups?.flat()?.find((group) => group.id === id) || {
             name: currentBin?.name,
