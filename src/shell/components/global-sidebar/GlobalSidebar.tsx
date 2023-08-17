@@ -101,69 +101,66 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
 
           <InstanceMenu openNav={openNav} />
           <GlobalMenu />
+          {is15DaysFromCreation && openNav && <OnboardingCall />}
 
           {/* Bottom bar */}
           <Box position="absolute" bottom={0} left={0} right={0}>
-            {is15DaysFromCreation && openNav && <OnboardingCall />}
-
-            {!is15DaysFromCreation && (
-              <Stack
-                direction={openNav ? "row" : "column"}
-                alignItems="center"
-                justifyContent="space-between"
-                height={openNav ? 24 : "inherit"}
-                px={1.5}
-                mb={openNav ? 1.5 : 0}
-                pt={openNav ? 0 : 1.5}
-                gap={1.5}
-                borderTop={openNav ? "none" : "1px solid"}
-                sx={{
-                  borderColor: "grey.800",
-                }}
-              >
-                <img
-                  src={openNav ? zestyLogo : zestyLogoOnly}
-                  alt="Zesty Logo"
-                  width={openNav ? 84 : 20}
-                  height={openNav ? 24 : 20}
-                />
-                <Stack direction="row" gap={0.5} alignItems="end">
-                  {openNav && (
-                    <Box
-                      component="img"
-                      src={githubLogoSmall}
-                      alt="Github Logo"
-                      width={12}
-                      height={12}
-                    />
-                  )}
-                  <Link
-                    fontFamily="Roboto Mono"
-                    fontSize={10}
-                    letterSpacing={0.15}
-                    lineHeight="10px"
-                    color="grey.500"
-                    underline="none"
-                    // @ts-ignore
-                    href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
-                    target="_blank"
-                    rel="noopener"
-                    width={openNav ? "inherit" : 32}
-                    textAlign="center"
-                    title="View source code commit"
-                    sx={{
-                      wordWrap: "break-word",
-                    }}
-                  >
-                    #
-                    {
-                      //@ts-ignore
-                      CONFIG?.build?.data?.gitCommit
-                    }
-                  </Link>
-                </Stack>
+            <Stack
+              direction={openNav ? "row" : "column"}
+              alignItems="center"
+              justifyContent="space-between"
+              height={openNav ? 24 : "inherit"}
+              px={1.5}
+              mb={openNav ? 1.5 : 0}
+              pt={openNav ? 0 : 1.5}
+              gap={1.5}
+              borderTop={openNav ? "none" : "1px solid"}
+              sx={{
+                borderColor: "grey.800",
+              }}
+            >
+              <img
+                src={openNav ? zestyLogo : zestyLogoOnly}
+                alt="Zesty Logo"
+                width={openNav ? 84 : 20}
+                height={openNav ? 24 : 20}
+              />
+              <Stack direction="row" gap={0.5} alignItems="end">
+                {openNav && (
+                  <Box
+                    component="img"
+                    src={githubLogoSmall}
+                    alt="Github Logo"
+                    width={12}
+                    height={12}
+                  />
+                )}
+                <Link
+                  fontFamily="Roboto Mono"
+                  fontSize={10}
+                  letterSpacing={0.15}
+                  lineHeight="10px"
+                  color="grey.500"
+                  underline="none"
+                  // @ts-ignore
+                  href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
+                  target="_blank"
+                  rel="noopener"
+                  width={openNav ? "inherit" : 32}
+                  textAlign="center"
+                  title="View source code commit"
+                  sx={{
+                    wordWrap: "break-word",
+                  }}
+                >
+                  #
+                  {
+                    //@ts-ignore
+                    CONFIG?.build?.data?.gitCommit
+                  }
+                </Link>
               </Stack>
-            )}
+            </Stack>
 
             <Stack
               width="inherit"
@@ -173,7 +170,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               alignItems="center"
               flexDirection={openNav ? "row" : "column-reverse"}
               py={1.25}
-              px={2.5}
+              px={openNav ? 1.5 : 1}
               gap={openNav ? 0 : 1}
               sx={{
                 borderColor: "grey.800",
