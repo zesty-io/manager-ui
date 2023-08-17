@@ -15,8 +15,6 @@ import {
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { theme } from "@zesty-io/material";
@@ -26,6 +24,7 @@ import Favicon from "../favicon";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import zestyLogoOnly from "../../../../public/images/zestyLogoOnly.svg";
 import zestyLogoOnlyGrey from "../../../../public/images/zestyLogoOnlyGrey.svg";
+import githubLogoSmall from "../../../../public/images/githubLogoSmall.svg";
 import InviteMembersModal from "../InviteMembersModal";
 import { User } from "../../services/types";
 import { useGetInstanceQuery } from "../../services/accounts";
@@ -111,9 +110,10 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               <Stack
                 direction={openNav ? "row" : "column"}
                 alignItems="center"
+                justifyContent="space-between"
                 height={openNav ? 24 : "inherit"}
-                px={2.5}
-                mb={openNav ? 1.25 : 0}
+                px={1.5}
+                mb={openNav ? 1.5 : 0}
                 pt={openNav ? 0 : 1.5}
                 gap={1.5}
                 borderTop={openNav ? "none" : "1px solid"}
@@ -127,30 +127,41 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   width={openNav ? 84 : 20}
                   height={openNav ? 24 : 20}
                 />
-                <Link
-                  fontFamily="Roboto Mono"
-                  fontSize={10}
-                  letterSpacing={0.15}
-                  lineHeight="10px"
-                  color="grey.500"
-                  underline="none"
-                  // @ts-ignore
-                  href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
-                  target="_blank"
-                  rel="noopener"
-                  width={openNav ? "inherit" : 32}
-                  textAlign="center"
-                  title="View source code commit"
-                  sx={{
-                    wordWrap: "break-word",
-                  }}
-                >
-                  #
-                  {
-                    //@ts-ignore
-                    CONFIG?.build?.data?.gitCommit
-                  }
-                </Link>
+                <Stack direction="row" gap={0.5} alignItems="end">
+                  {openNav && (
+                    <Box
+                      component="img"
+                      src={githubLogoSmall}
+                      alt="Github Logo"
+                      width={12}
+                      height={12}
+                    />
+                  )}
+                  <Link
+                    fontFamily="Roboto Mono"
+                    fontSize={10}
+                    letterSpacing={0.15}
+                    lineHeight="10px"
+                    color="grey.500"
+                    underline="none"
+                    // @ts-ignore
+                    href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
+                    target="_blank"
+                    rel="noopener"
+                    width={openNav ? "inherit" : 32}
+                    textAlign="center"
+                    title="View source code commit"
+                    sx={{
+                      wordWrap: "break-word",
+                    }}
+                  >
+                    #
+                    {
+                      //@ts-ignore
+                      CONFIG?.build?.data?.gitCommit
+                    }
+                  </Link>
+                </Stack>
               </Stack>
             )}
 
