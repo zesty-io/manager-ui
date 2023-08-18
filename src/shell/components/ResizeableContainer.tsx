@@ -75,7 +75,9 @@ export const ResizableContainer = ({
 
   return (
     <Box width={collapsed ? 0 : width} position="relative">
-      <Box overflow={collapsed ? "hidden" : "visible"}>{MemoizedChildren}</Box>
+      <Box overflow={collapsed ? "hidden" : "visible"} height="100%">
+        {MemoizedChildren}
+      </Box>
       <Box
         sx={{
           width: "4px",
