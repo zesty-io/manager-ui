@@ -52,11 +52,6 @@ export type UIState = {
   codeEditorPosition: null | CodeEditorPosition;
   codeChangesModal: null | CodeChangesModalInfo;
   isUpdateFaviconModalOpen: boolean;
-  contentNavCollapsed: boolean;
-  schemaNavCollapsed: boolean;
-  mediaNavCollapsed: boolean;
-  appsNavCollapsed: boolean;
-  reportsNavCollapsed: boolean;
 };
 export const ui = createSlice({
   name: "ui",
@@ -73,11 +68,6 @@ export const ui = createSlice({
     codeEditorPosition: null,
     codeChangesModal: null,
     isUpdateFaviconModalOpen: false,
-    contentNavCollapsed: false,
-    schemaNavCollapsed: false,
-    mediaNavCollapsed: false,
-    appsNavCollapsed: false,
-    reportsNavCollapsed: false,
   },
   reducers: {
     loadTabsSuccess(
@@ -94,7 +84,10 @@ export const ui = createSlice({
     loadedUI(
       state: UIState,
       action: {
-        payload?: UIState;
+        payload?: Pick<
+          UIState,
+          "openNav" | "contentNav" | "contentActions" | "duoMode"
+        >;
       }
     ) {
       if (action.payload) {
@@ -102,11 +95,6 @@ export const ui = createSlice({
         state.contentNav = action.payload.contentNav;
         state.contentActions = action.payload.contentActions;
         state.duoMode = action.payload.duoMode;
-        state.contentNavCollapsed = action.payload.contentNavCollapsed;
-        state.schemaNavCollapsed = action.payload.schemaNavCollapsed;
-        state.mediaNavCollapsed = action.payload.mediaNavCollapsed;
-        state.appsNavCollapsed = action.payload.appsNavCollapsed;
-        state.reportsNavCollapsed = action.payload.reportsNavCollapsed;
       }
     },
     setGlobalNav(state: UIState, action: { payload: boolean }) {
@@ -144,21 +132,6 @@ export const ui = createSlice({
     },
     toggleUpdateFaviconModal(state: UIState, action: { payload: boolean }) {
       state.isUpdateFaviconModalOpen = action.payload;
-    },
-    toggleContentNav(state: UIState, action: { payload: boolean }) {
-      state.contentNavCollapsed = action.payload;
-    },
-    toggleSchemaNav(state: UIState, action: { payload: boolean }) {
-      state.schemaNavCollapsed = action.payload;
-    },
-    toggleMediaNav(state: UIState, action: { payload: boolean }) {
-      state.mediaNavCollapsed = action.payload;
-    },
-    toggleAppsNav(state: UIState, action: { payload: boolean }) {
-      state.appsNavCollapsed = action.payload;
-    },
-    toggleReportsNav(state: UIState, action: { payload: boolean }) {
-      state.reportsNavCollapsed = action.payload;
     },
   },
 });

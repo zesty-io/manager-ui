@@ -95,12 +95,9 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
           </ListItem>
 
           <InstanceMenu openNav={openNav} />
-
-          <AppSidebarButton inGlobalSidebar />
-
           <GlobalMenu />
-          {is15DaysFromCreation && openNav && <OnboardingCall />}
 
+          {is15DaysFromCreation && openNav && <OnboardingCall />}
           {/* Bottom bar */}
           <Box position="absolute" bottom={0} left={0} right={0}>
             <Stack
