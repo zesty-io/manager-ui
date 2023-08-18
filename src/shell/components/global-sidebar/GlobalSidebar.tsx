@@ -32,7 +32,6 @@ import { actions } from "../../store/ui";
 import { OnboardingCall } from "./components/OnboardingCall";
 import { GlobalAccountMenu } from "../GlobalAccountMenu";
 import { GlobalDocsMenu } from "../GlobalDocsMenu";
-import { AppSidebarButton } from "../AppSidebarButton";
 
 interface GlobalSidebarProps {
   openNav: boolean;

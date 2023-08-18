@@ -6,8 +6,6 @@ import {
   KeyboardDoubleArrowRight,
 } from "@mui/icons-material";
 
-import { AppSidebarButton } from "./AppSidebarButton";
-
 type Props = {
   children: React.ReactNode;
   minWidth: number;
@@ -94,9 +92,6 @@ export const ResizableContainer = ({
         }}
         onMouseDown={handleMouseDown}
         display={collapsed ? "none" : "block"}
-      />
-      <AppSidebarButton
-        onToggleCollapse={(collapsed) => setCollapsed(collapsed)}
       />
       <Tooltip
         title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
