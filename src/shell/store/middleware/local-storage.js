@@ -13,6 +13,11 @@ export const localStorage = (store) => (next) => (action) => {
       case `${actions.setContentNav}`:
       case `${actions.setContentActions}`:
       case `${actions.setDuoMode}`:
+      case `${actions.toggleContentNav}`:
+      case `${actions.toggleSchemaNav}`:
+      case `${actions.toggleMediaNav}`:
+      case `${actions.toggleAppsNav}`:
+      case `${actions.toggleReportsNav}`:
         const ui = { ...state.ui };
         // we already store tabs separately
         delete ui.tabs;
