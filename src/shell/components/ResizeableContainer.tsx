@@ -5,6 +5,10 @@ import {
   KeyboardDoubleArrowRight,
 } from "@mui/icons-material";
 import { useLocalStorage } from "react-use";
+import { useSelector } from "react-redux";
+
+import { AppSidebarButton } from "./AppSidebarButton";
+import { AppState } from "../store/types";
 
 type Props = {
   children: React.ReactNode;
@@ -21,17 +25,13 @@ export const ResizableContainer = ({
   defaultWidth,
   id,
 }: Props) => {
+  const [collapsed, setCollapsed] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [initialPos, setInitialPos] = useState(0);
   const [initialWidth, setInitialWidth] = useState(0);
   const [width, setWidth] = useLocalStorage(
     `zesty:resizableContainer:${id}`,
     defaultWidth
-  );
-  // TODO: Transfer to ui.ts
-  const [collapsed, setCollapsed] = useLocalStorage(
-    `zesty:collapsedContainer:${id}`,
-    false
   );
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -93,50 +93,9 @@ export const ResizableContainer = ({
         }}
         onMouseDown={handleMouseDown}
       />
-      <Tooltip
-        title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-        placement="right-start"
-        enterDelay={1000}
-        enterNextDelay={1000}
-      >
-        <IconButton
-          data-cy="collapseAppSideBar"
-          onClick={() => setCollapsed(!collapsed)}
-          sx={{
-            borderRadius: "50%",
-            borderColor: "grey.600",
-            borderStyle: "solid",
-            borderWidth: "1px",
-            backgroundColor: "grey.900",
-
-            width: "24px",
-            height: "24px",
-
-            position: "absolute",
-            top: "32px",
-            right: "-12px",
-            zIndex: (theme) => theme.zIndex.appBar,
-
-            "&:hover": {
-              backgroundColor: "grey.900",
-
-              ".MuiSvgIcon-root": {
-                color: "common.white",
-              },
-            },
-          }}
-        >
-          <SvgIcon
-            component={
-              collapsed ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft
-            }
-            fontSize="small"
-            sx={{
-              color: "grey.500",
-            }}
-          />
-        </IconButton>
-      </Tooltip>
+      <AppSidebarButton
+        onToggleCollapse={(collapsed) => setCollapsed(collapsed)}
+      />
     </Box>
   );
 };

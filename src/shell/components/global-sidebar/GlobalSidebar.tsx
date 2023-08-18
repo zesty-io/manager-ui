@@ -9,10 +9,12 @@ import {
   Avatar,
   Stack,
   Link,
+  Tooltip,
   ListItem,
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { theme } from "@zesty-io/material";
@@ -32,6 +34,7 @@ import { actions } from "../../store/ui";
 import { OnboardingCall } from "./components/OnboardingCall";
 import { GlobalAccountMenu } from "../GlobalAccountMenu";
 import { GlobalDocsMenu } from "../GlobalDocsMenu";
+import { AppSidebarButton } from "../AppSidebarButton";
 
 interface GlobalSidebarProps {
   openNav: boolean;
@@ -92,6 +95,9 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
           </ListItem>
 
           <InstanceMenu openNav={openNav} />
+
+          <AppSidebarButton inGlobalSidebar />
+
           <GlobalMenu />
           {is15DaysFromCreation && openNav && <OnboardingCall />}
 
