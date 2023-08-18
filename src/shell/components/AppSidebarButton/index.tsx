@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { Tooltip, IconButton, SvgIcon } from "@mui/material";
+import { Tooltip, IconButton, SvgIcon, SxProps } from "@mui/material";
 import {
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
@@ -85,7 +85,7 @@ export const AppSidebarButton: FC<Props> = ({
           height: "24px",
 
           position: "absolute",
-          top: "32px",
+          top: inGlobalSidebar ? "72px" : "32px",
           right: "-12px",
           zIndex: (theme) => theme.zIndex.appBar,
 
