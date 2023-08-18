@@ -75,11 +75,14 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               justifyContent: "space-between",
             }}
           >
-            <MenuRoundedIcon
+            <IconButton
               data-cy="CollapseGlobalSideBar"
               onClick={onClick}
-              sx={{ color: "grey.400", cursor: "pointer" }}
-            />
+              size="large"
+              sx={{ padding: 0 }}
+            >
+              <MenuRoundedIcon sx={{ color: "grey.400" }} />
+            </IconButton>
             {openNav && (
               <Box
                 component="img"
