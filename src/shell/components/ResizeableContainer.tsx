@@ -75,7 +75,11 @@ export const ResizableContainer = ({
   const MemoizedChildren = useMemo(() => children, [children]);
 
   return (
-    <Box width={collapsed ? 0 : width} position="relative">
+    <Box
+      width={collapsed ? 0 : width}
+      position="relative"
+      overflow={collapsed ? "hidden" : "visible"}
+    >
       {MemoizedChildren}
       <Box
         sx={{
@@ -92,6 +96,7 @@ export const ResizableContainer = ({
           },
         }}
         onMouseDown={handleMouseDown}
+        display={collapsed ? "none" : "block"}
       />
       <AppSidebarButton
         onToggleCollapse={(collapsed) => setCollapsed(collapsed)}
