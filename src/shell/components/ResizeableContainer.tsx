@@ -1,14 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Box, Tooltip, IconButton, SvgIcon } from "@mui/material";
-import {
-  KeyboardDoubleArrowLeft,
-  KeyboardDoubleArrowRight,
-} from "@mui/icons-material";
+import { Box } from "@mui/material";
 import { useLocalStorage } from "react-use";
-import { useSelector } from "react-redux";
 
 import { AppSidebarButton } from "./AppSidebarButton";
-import { AppState } from "../store/types";
 
 type Props = {
   children: React.ReactNode;

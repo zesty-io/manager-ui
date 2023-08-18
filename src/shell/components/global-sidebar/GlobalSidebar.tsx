@@ -9,12 +9,10 @@ import {
   Avatar,
   Stack,
   Link,
-  Tooltip,
   ListItem,
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { theme } from "@zesty-io/material";
@@ -53,7 +51,6 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
     instance?.createdAt &&
     moment().diff(moment(instance?.createdAt), "days") <= 15;
 
-  // TODO: Add the app sidebar expand icon based off of ui.ts
   return (
     <>
       <ThemeProvider theme={theme}>
