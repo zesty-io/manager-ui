@@ -20,6 +20,7 @@ import {
   Stylesheet,
   Script,
   Language,
+  Data,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -450,16 +451,20 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["InstanceSettings"],
     }),
-    // https://www.zesty.io/docs/instances/api-reference/env/settings/#Create-Item
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/
     createContentItem: builder.mutation<
       any,
-      { modelZUID: string; body: { web: Partial<Web>; meta: Partial<Meta> } }
+      {
+        modelZUID: string;
+        body: { web: Partial<Web>; meta: Partial<Meta>; data?: Data };
+      }
     >({
       query: ({ modelZUID, body }) => ({
         url: `content/models/${modelZUID}/items`,
         method: "POST",
         body,
       }),
+      invalidatesTags: ["ContentNav"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/env/nav/#Get-Content-Navigation
     getContentNavItems: builder.query<ContentNavItem[], void>({

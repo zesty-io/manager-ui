@@ -84,7 +84,7 @@ const IOSSwitch = styled((props: SwitchProps) => (
     boxSizing: "border-box",
     width: 28,
     height: 28,
-    backgroundColor: theme.palette.grey[300],
+    backgroundColor: theme.palette.grey[600],
     "&:before": {
       content: "''",
       position: "absolute",

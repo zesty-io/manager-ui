@@ -1,18 +1,11 @@
-import { Box, SvgIcon, Tabs, Tab, Typography, Tooltip } from "@mui/material";
-import {
-  useGetContentModelQuery,
-  useGetContentNavItemsQuery,
-} from "../../../../../../../../shell/services/instance";
-import { Home, theme } from "@zesty-io/material";
+import { Box, Tabs, Tab, Typography, IconButton } from "@mui/material";
+import { useGetContentModelQuery } from "../../../../../../../../shell/services/instance";
+import { ScreenShare, theme } from "@zesty-io/material";
 import { useHistory, useLocation, useParams } from "react-router";
-import { useMemo } from "react";
 import {
   ContentItem,
-  ContentNavItem,
   Publishing,
 } from "../../../../../../../../shell/services/types";
-import { MODEL_ICON } from "../../../../../../../../shell/constants";
-import { Link } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import {
   VerticalSplitRounded,
@@ -21,8 +14,8 @@ import {
   CodeRounded,
   ApiRounded,
   ManageAccountsRounded,
+  ContentCopyRounded,
 } from "@mui/icons-material";
-import { CustomBreadcrumbs } from "../../../../../../../../shell/components/CustomBreadcrumbs";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
@@ -30,6 +23,7 @@ import { VersionSelector } from "./VersionSelector";
 import { LanguageSelector } from "./LanguageSelector";
 import { ItemEditBreadcrumbs } from "./ItemEditBreadcrumbs";
 import { DuoModeSwitch } from "./DuoModeToggle";
+import { MoreMenu } from "./MoreMenu";
 
 const tabs = [
   {
@@ -119,7 +113,16 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
               {item?.web?.metaTitle || item?.web?.metaLinkText}
             </Typography>
           </Box>
-          <ItemEditHeaderActions saving={saving} onSave={onSave} />
+          <Box display="flex" gap={1} alignItems="center" height="32px">
+            <MoreMenu />
+            <IconButton size="small">
+              <ContentCopyRounded fontSize="small" />
+            </IconButton>
+            <IconButton size="small">
+              <ScreenShare fontSize="small" />
+            </IconButton>
+            <ItemEditHeaderActions saving={saving} onSave={onSave} />
+          </Box>
         </Box>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Tabs

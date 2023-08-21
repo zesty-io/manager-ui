@@ -16,15 +16,13 @@ import {
   useGetItemPublishingsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ContentItem,
   Publishing,
 } from "../../../../../../../../shell/services/types";
 import {
   SaveRounded,
-  MoreHorizRounded,
-  ContentCopyRounded,
   ArrowDropDownRounded,
   CloudUploadRounded,
   CheckCircleRounded,
@@ -189,198 +187,129 @@ export const ItemEditHeaderActions = ({
 
   return (
     <>
-      <Box display="flex" gap={1} alignItems="center" height="32px">
-        <IconButton
-          size="small"
-          onClick={(e) => setPublishMenu(e.currentTarget)}
-        >
-          <MoreHorizRounded fontSize="small" />
-        </IconButton>
-        <IconButton size="small">
-          <ContentCopyRounded fontSize="small" />
-        </IconButton>
-        <IconButton size="small">
-          <ContentCopyRounded fontSize="small" />
-        </IconButton>
-
+      <Tooltip
+        enterDelay={1000}
+        enterNextDelay={1000}
+        title={
+          itemState === ITEM_STATES.dirty ? (
+            <div>
+              Save Item <br />
+              {saveShortcut}
+            </div>
+          ) : (
+            <div>
+              v{item?.meta?.version} saved on <br />
+              {formatDate(item?.meta?.updatedAt)} <br />
+              by {lastItemUpdateAudit?.firstName}{" "}
+              {lastItemUpdateAudit?.lastName}
+            </div>
+          )
+        }
+        placement="bottom"
+      >
+        {itemState === ITEM_STATES.dirty ? (
+          <LoadingButton
+            variant="contained"
+            startIcon={<SaveRounded />}
+            size="small"
+            onClick={() => {
+              onSave();
+            }}
+            loading={saving && !publishAfterSave}
+            disabled={!canUpdate}
+          >
+            Save
+          </LoadingButton>
+        ) : (
+          <Box display="flex" gap={1} alignItems="center" px="10px">
+            <CheckCircleRounded fontSize="small" color="action" />
+            <Typography variant="body2" color="text.disabled" fontWeight={500}>
+              Saved
+            </Typography>
+          </Box>
+        )}
+      </Tooltip>
+      {itemState !== ITEM_STATES.scheduled && canPublish && (
         <Tooltip
           enterDelay={1000}
           enterNextDelay={1000}
           title={
+            itemState === ITEM_STATES.draft ||
             itemState === ITEM_STATES.dirty ? (
               <div>
-                Save Item <br />
-                {saveShortcut}
+                {itemState === ITEM_STATES.dirty
+                  ? "Save & Publish Item"
+                  : "Publish Item"}{" "}
+                <br />
+                {publishShortcut}
               </div>
             ) : (
               <div>
-                v{item?.meta?.version} saved on <br />
-                {formatDate(item?.meta?.updatedAt)} <br />
-                by {lastItemUpdateAudit?.firstName}{" "}
-                {lastItemUpdateAudit?.lastName}
-              </div>
-            )
-          }
-          placement="bottom"
-        >
-          {itemState === ITEM_STATES.dirty ? (
-            <LoadingButton
-              variant="contained"
-              startIcon={<SaveRounded />}
-              size="small"
-              onClick={() => {
-                onSave();
-              }}
-              loading={saving && !publishAfterSave}
-              disabled={!canUpdate}
-            >
-              Save
-            </LoadingButton>
-          ) : (
-            <Box display="flex" gap={1} alignItems="center" px="10px">
-              <CheckCircleRounded fontSize="small" color="action" />
-              <Typography
-                variant="body2"
-                color="text.disabled"
-                fontWeight={500}
-              >
-                Saved
-              </Typography>
-            </Box>
-          )}
-        </Tooltip>
-        {itemState !== ITEM_STATES.scheduled && canPublish && (
-          <Tooltip
-            enterDelay={1000}
-            enterNextDelay={1000}
-            title={
-              itemState === ITEM_STATES.draft ||
-              itemState === ITEM_STATES.dirty ? (
-                <div>
-                  {itemState === ITEM_STATES.dirty
-                    ? "Save & Publish Item"
-                    : "Publish Item"}{" "}
-                  <br />
-                  {publishShortcut}
-                </div>
-              ) : (
-                <div>
-                  v{activePublishing?.version} published on <br />
-                  by {formatDate(activePublishing?.publishAt)} <br />
-                  {
-                    users?.find(
-                      (user: any) =>
-                        user.ZUID === activePublishing?.publishedByUserZUID
-                    )?.firstName
-                  }{" "}
-                  {
-                    users?.find(
-                      (user: any) =>
-                        user.ZUID === activePublishing?.publishedByUserZUID
-                    )?.lastName
-                  }
-                </div>
-              )
-            }
-            placement="bottom"
-          >
-            {itemState === ITEM_STATES.draft ||
-            itemState === ITEM_STATES.dirty ||
-            publishAfterSave ||
-            isFetching ? (
-              <ButtonGroup variant="contained" color="success" size="small">
-                <LoadingButton
-                  startIcon={<CloudUploadRounded />}
-                  sx={{
-                    color: "common.white",
-                    whiteSpace: "nowrap",
-                  }}
-                  onClick={() => {
-                    if (itemState === ITEM_STATES.dirty) {
-                      setPublishAfterSave(true);
-                      onSave();
-                    } else {
-                      handlePublish();
-                    }
-                  }}
-                  loading={publishing || publishAfterSave || isFetching}
-                  color="success"
-                  variant="contained"
-                >
-                  {itemState === ITEM_STATES.dirty
-                    ? "Save & Publish"
-                    : "Publish"}
-                </LoadingButton>
-                <Button
-                  sx={{
-                    color: "common.white",
-                  }}
-                  onClick={(e) => {
-                    setPublishMenu(e.currentTarget);
-                  }}
-                >
-                  <ArrowDropDownRounded fontSize="small" />
-                </Button>
-              </ButtonGroup>
-            ) : (
-              <Box display="flex" alignItems="center" pl="10px" pr="4px">
-                <Box display="flex" gap={1} alignItems="center">
-                  <CheckCircleRounded fontSize="small" color="success" />
-                  <Typography
-                    variant="body2"
-                    color="success.main"
-                    fontWeight={500}
-                  >
-                    Published
-                  </Typography>
-                </Box>
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    setPublishMenu(e.currentTarget);
-                  }}
-                >
-                  <ArrowDropDownRounded fontSize="small" />
-                </IconButton>
-              </Box>
-            )}
-          </Tooltip>
-        )}
-
-        {itemState === ITEM_STATES.scheduled && canPublish && (
-          <Tooltip
-            enterDelay={1000}
-            enterNextDelay={1000}
-            title={
-              <div>
-                v{item?.scheduling?.version} published on <br />
-                {formatDate(item?.scheduling?.publishAt)} <br />
-                by{" "}
+                v{activePublishing?.version} published on <br />
+                by {formatDate(activePublishing?.publishAt)} <br />
                 {
                   users?.find(
                     (user: any) =>
-                      user.ZUID === item?.scheduling?.publishedByUserZUID
+                      user.ZUID === activePublishing?.publishedByUserZUID
                   )?.firstName
                 }{" "}
                 {
                   users?.find(
                     (user: any) =>
-                      user.ZUID === item?.scheduling?.publishedByUserZUID
+                      user.ZUID === activePublishing?.publishedByUserZUID
                   )?.lastName
                 }
               </div>
-            }
-            placement="bottom"
-          >
+            )
+          }
+          placement="bottom"
+        >
+          {itemState === ITEM_STATES.draft ||
+          itemState === ITEM_STATES.dirty ||
+          publishAfterSave ||
+          isFetching ? (
+            <ButtonGroup variant="contained" color="success" size="small">
+              <LoadingButton
+                startIcon={<CloudUploadRounded />}
+                sx={{
+                  color: "common.white",
+                  whiteSpace: "nowrap",
+                }}
+                onClick={() => {
+                  if (itemState === ITEM_STATES.dirty) {
+                    setPublishAfterSave(true);
+                    onSave();
+                  } else {
+                    handlePublish();
+                  }
+                }}
+                loading={publishing || publishAfterSave || isFetching}
+                color="success"
+                variant="contained"
+              >
+                {itemState === ITEM_STATES.dirty ? "Save & Publish" : "Publish"}
+              </LoadingButton>
+              <Button
+                sx={{
+                  color: "common.white",
+                }}
+                onClick={(e) => {
+                  setPublishMenu(e.currentTarget);
+                }}
+              >
+                <ArrowDropDownRounded fontSize="small" />
+              </Button>
+            </ButtonGroup>
+          ) : (
             <Box display="flex" alignItems="center" pl="10px" pr="4px">
               <Box display="flex" gap={1} alignItems="center">
-                <ScheduleRounded fontSize="small" color="warning" />
+                <CheckCircleRounded fontSize="small" color="success" />
                 <Typography
                   variant="body2"
-                  color="warning.main"
+                  color="success.main"
                   fontWeight={500}
                 >
-                  Scheduled
+                  Published
                 </Typography>
               </Box>
               <IconButton
@@ -392,100 +321,65 @@ export const ItemEditHeaderActions = ({
                 <ArrowDropDownRounded fontSize="small" />
               </IconButton>
             </Box>
-          </Tooltip>
-        )}
-      </Box>
-      <Menu
-        onClose={() => setPublishMenu(null)}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: -8,
-          horizontal: "right",
-        }}
-        anchorEl={publishMenu}
-        open={!!publishMenu}
-      >
-        <MenuItem
-          onClick={() => {
-            switch (itemState) {
-              case ITEM_STATES.dirty:
-                setPublishAfterSave(true);
-                onSave();
-                break;
-              case ITEM_STATES.published:
-                setUnpublishDialogOpen(true);
-                break;
-              case ITEM_STATES.scheduled:
-                setScheduledPublishDialogOpen(true);
-                break;
-              case ITEM_STATES.draft:
-                handlePublish();
-                break;
-            }
+          )}
+        </Tooltip>
+      )}
 
-            setPublishMenu(null);
-          }}
+      {itemState === ITEM_STATES.scheduled && canPublish && (
+        <Tooltip
+          enterDelay={1000}
+          enterNextDelay={1000}
+          title={
+            <div>
+              v{item?.scheduling?.version} published on <br />
+              {formatDate(item?.scheduling?.publishAt)} <br />
+              by{" "}
+              {
+                users?.find(
+                  (user: any) =>
+                    user.ZUID === item?.scheduling?.publishedByUserZUID
+                )?.firstName
+              }{" "}
+              {
+                users?.find(
+                  (user: any) =>
+                    user.ZUID === item?.scheduling?.publishedByUserZUID
+                )?.lastName
+              }
+            </div>
+          }
+          placement="bottom"
         >
-          <ListItemIcon>
-            {itemState === ITEM_STATES.dirty ? (
-              <CloudUploadRounded fontSize="small" />
-            ) : itemState === ITEM_STATES.scheduled ? (
-              <CloudUploadRounded fontSize="small" />
-            ) : itemState === ITEM_STATES.published ? (
-              <UnpublishedRounded fontSize="small" />
-            ) : (
-              <CloudUploadRounded fontSize="small" />
-            )}
-          </ListItemIcon>
-          {itemState === ITEM_STATES.dirty
-            ? "Save & Publish"
-            : itemState === ITEM_STATES.scheduled
-            ? "Publish Now"
-            : itemState === ITEM_STATES.published
-            ? "Unpublish Now"
-            : "Publish Now"}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            switch (itemState) {
-              case ITEM_STATES.dirty:
-                setScheduleAfterSave(true);
-                onSave();
-                break;
-              case ITEM_STATES.scheduled:
-                setScheduledPublishDialogOpen(true);
-                break;
-              case ITEM_STATES.published:
-                console.log("schedule unpublish");
-                break;
-              case ITEM_STATES.draft:
-                setScheduledPublishDialogOpen(true);
-                break;
-            }
-            setPublishMenu(null);
-          }}
-        >
-          <ListItemIcon>
-            <CalendarTodayRounded fontSize="small" />
-          </ListItemIcon>
-          {itemState === ITEM_STATES.dirty
-            ? "Save & Schedule Publish"
-            : itemState === ITEM_STATES.scheduled
-            ? "Unschedule Publish"
-            : itemState === ITEM_STATES.published
-            ? "Schedule Unpublish"
-            : "Schedule Publish"}
-        </MenuItem>
-        <MenuItem onClick={() => history.push("publishings")}>
-          <ListItemIcon>
-            <ManageAccountsRounded fontSize="small" />
-          </ListItemIcon>
-          Manage Publish Status
-        </MenuItem>
-      </Menu>
+          <Box display="flex" alignItems="center" pl="10px" pr="4px">
+            <Box display="flex" gap={1} alignItems="center">
+              <ScheduleRounded fontSize="small" color="warning" />
+              <Typography variant="body2" color="warning.main" fontWeight={500}>
+                Scheduled
+              </Typography>
+            </Box>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                setPublishMenu(e.currentTarget);
+              }}
+            >
+              <ArrowDropDownRounded fontSize="small" />
+            </IconButton>
+          </Box>
+        </Tooltip>
+      )}
+
+      <PublishingMenu
+        itemState={itemState}
+        onSave={onSave}
+        onClose={() => setPublishMenu(null)}
+        anchorEl={publishMenu}
+        setPublishAfterSave={setPublishAfterSave}
+        setScheduleAfterSave={setScheduleAfterSave}
+        setUnpublishDialogOpen={setUnpublishDialogOpen}
+        setScheduledPublishDialogOpen={setScheduledPublishDialogOpen}
+        handlePublish={handlePublish}
+      />
       {unpublishDialogOpen && (
         <UnpublishDialog
           onClose={() => setUnpublishDialogOpen(false)}
@@ -501,5 +395,124 @@ export const ItemEditHeaderActions = ({
         toggleOpen={() => setScheduledPublishDialogOpen(false)}
       />
     </>
+  );
+};
+
+type PublishingMenuProps = {
+  itemState: string;
+  onSave: () => void;
+  onClose: () => void;
+  anchorEl: null | HTMLElement;
+  setPublishAfterSave: (value: boolean) => void;
+  setScheduleAfterSave: (value: boolean) => void;
+  setUnpublishDialogOpen: (value: boolean) => void;
+  setScheduledPublishDialogOpen: (value: boolean) => void;
+  handlePublish: () => void;
+};
+
+const PublishingMenu = ({
+  itemState,
+  onSave,
+  onClose,
+  anchorEl,
+  setPublishAfterSave,
+  setScheduleAfterSave,
+  setUnpublishDialogOpen,
+  setScheduledPublishDialogOpen,
+  handlePublish,
+}: PublishingMenuProps) => {
+  const history = useHistory();
+  return (
+    <Menu
+      onClose={() => onClose()}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      transformOrigin={{
+        vertical: -8,
+        horizontal: "right",
+      }}
+      anchorEl={anchorEl}
+      open={!!anchorEl}
+    >
+      <MenuItem
+        onClick={() => {
+          switch (itemState) {
+            case ITEM_STATES.dirty:
+              setPublishAfterSave(true);
+              onSave();
+              break;
+            case ITEM_STATES.published:
+              setUnpublishDialogOpen(true);
+              break;
+            case ITEM_STATES.scheduled:
+              setScheduledPublishDialogOpen(true);
+              break;
+            case ITEM_STATES.draft:
+              handlePublish();
+              break;
+          }
+
+          onClose();
+        }}
+      >
+        <ListItemIcon>
+          {itemState === ITEM_STATES.dirty ? (
+            <CloudUploadRounded fontSize="small" />
+          ) : itemState === ITEM_STATES.scheduled ? (
+            <CloudUploadRounded fontSize="small" />
+          ) : itemState === ITEM_STATES.published ? (
+            <UnpublishedRounded fontSize="small" />
+          ) : (
+            <CloudUploadRounded fontSize="small" />
+          )}
+        </ListItemIcon>
+        {itemState === ITEM_STATES.dirty
+          ? "Save & Publish"
+          : itemState === ITEM_STATES.scheduled
+          ? "Publish Now"
+          : itemState === ITEM_STATES.published
+          ? "Unpublish Now"
+          : "Publish Now"}
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          switch (itemState) {
+            case ITEM_STATES.dirty:
+              setScheduleAfterSave(true);
+              onSave();
+              break;
+            case ITEM_STATES.scheduled:
+              setScheduledPublishDialogOpen(true);
+              break;
+            case ITEM_STATES.published:
+              console.log("schedule unpublish");
+              break;
+            case ITEM_STATES.draft:
+              setScheduledPublishDialogOpen(true);
+              break;
+          }
+          onClose();
+        }}
+      >
+        <ListItemIcon>
+          <CalendarTodayRounded fontSize="small" />
+        </ListItemIcon>
+        {itemState === ITEM_STATES.dirty
+          ? "Save & Schedule Publish"
+          : itemState === ITEM_STATES.scheduled
+          ? "Unschedule Publish"
+          : itemState === ITEM_STATES.published
+          ? "Schedule Unpublish"
+          : "Schedule Publish"}
+      </MenuItem>
+      <MenuItem onClick={() => history.push("publishings")}>
+        <ListItemIcon>
+          <ManageAccountsRounded fontSize="small" />
+        </ListItemIcon>
+        Manage Publish Status
+      </MenuItem>
+    </Menu>
   );
 };
