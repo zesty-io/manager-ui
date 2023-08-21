@@ -29,6 +29,7 @@ import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
 import { VersionSelector } from "./VersionSelector";
 import { LanguageSelector } from "./LanguageSelector";
 import { ItemEditBreadcrumbs } from "./ItemEditBreadcrumbs";
+import { DuoModeSwitch } from "./DuoModeToggle";
 
 const tabs = [
   {
@@ -149,7 +150,8 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
               );
             })}
           </Tabs>
-          <Box display="flex" gap={2}>
+          <Box display="flex" gap={2} alignItems="center">
+            <DuoModeSwitch />
             <LanguageSelector />
             <VersionSelector />
           </Box>
