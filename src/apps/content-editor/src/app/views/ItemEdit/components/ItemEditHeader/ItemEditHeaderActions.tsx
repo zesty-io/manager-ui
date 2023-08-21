@@ -232,7 +232,7 @@ export const ItemEditHeaderActions = ({
                 onSave();
               }}
               loading={saving && !publishAfterSave}
-              disabled={canUpdate}
+              disabled={!canUpdate}
             >
               Save
             </LoadingButton>
