@@ -8,9 +8,6 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  Dialog,
-  DialogTitle,
-  DialogActions,
 } from "@mui/material";
 import {
   useCreateItemPublishingMutation,
@@ -19,7 +16,7 @@ import {
   useGetItemPublishingsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ContentItem,
   Publishing,
@@ -44,6 +41,15 @@ import { LoadingButton } from "@mui/lab";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
 import { ScheduleFlyout } from "../Header/ItemVersioning/ScheduleFlyout";
+import { UnpublishDialog } from "./UnpublishDialog";
+import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
+
+const ITEM_STATES = {
+  dirty: "dirty",
+  published: "published",
+  scheduled: "scheduled",
+  draft: "draft",
+} as const;
 
 type ContentItemWithDirtyAndPublishing = ContentItem & {
   dirty: boolean;
@@ -66,6 +72,8 @@ export const ItemEditHeaderActions = ({
   }>();
   const dispatch = useDispatch();
   const history = useHistory();
+  const canPublish = usePermission("PUBLISH");
+  const canUpdate = usePermission("UPDATE");
   const [publishMenu, setPublishMenu] = useState<null | HTMLElement>(null);
   const [publishAfterSave, setPublishAfterSave] = useState(false);
   const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
@@ -93,17 +101,14 @@ export const ItemEditHeaderActions = ({
     (itemPublishing) => itemPublishing._active
   );
 
-  const isPublished = activePublishing?.version === item?.meta.version;
-  const isScheduled = item?.scheduling?.isScheduled;
-
   const saveShortcut = useMetaKey("s", undefined, () => {
-    if (item?.dirty) {
+    if (itemState === ITEM_STATES.dirty) {
       onSave();
     }
   });
 
   const publishShortcut = useMetaKey("p", undefined, () => {
-    if (item?.dirty) {
+    if (itemState === ITEM_STATES.dirty) {
       setPublishAfterSave(true);
       onSave();
     } else {
@@ -111,9 +116,21 @@ export const ItemEditHeaderActions = ({
     }
   });
 
+  const itemState = (() => {
+    if (item?.dirty) {
+      return ITEM_STATES.dirty;
+    } else if (item?.scheduling?.isScheduled) {
+      return ITEM_STATES.scheduled;
+    } else if (activePublishing?.version === item?.meta.version) {
+      return ITEM_STATES.published;
+    } else {
+      return ITEM_STATES.draft;
+    }
+  })();
+
   const handlePublish = async () => {
     // If item is scheduled, delete the scheduled publishing first
-    if (isScheduled) {
+    if (itemState === ITEM_STATES.scheduled) {
       await deleteItemPublishing({
         modelZUID,
         itemZUID,
@@ -190,7 +207,7 @@ export const ItemEditHeaderActions = ({
           enterDelay={1000}
           enterNextDelay={1000}
           title={
-            item?.dirty ? (
+            itemState === ITEM_STATES.dirty ? (
               <div>
                 Save Item <br />
                 {saveShortcut}
@@ -206,7 +223,7 @@ export const ItemEditHeaderActions = ({
           }
           placement="bottom"
         >
-          {item?.dirty ? (
+          {itemState === ITEM_STATES.dirty ? (
             <LoadingButton
               variant="contained"
               startIcon={<SaveRounded />}
@@ -215,6 +232,7 @@ export const ItemEditHeaderActions = ({
                 onSave();
               }}
               loading={saving && !publishAfterSave}
+              disabled={canUpdate}
             >
               Save
             </LoadingButton>
@@ -231,14 +249,18 @@ export const ItemEditHeaderActions = ({
             </Box>
           )}
         </Tooltip>
-        {!isScheduled && (
+        {itemState !== ITEM_STATES.scheduled && canPublish && (
           <Tooltip
             enterDelay={1000}
             enterNextDelay={1000}
             title={
-              !isPublished || item?.dirty ? (
+              itemState === ITEM_STATES.draft ||
+              itemState === ITEM_STATES.dirty ? (
                 <div>
-                  {item?.dirty ? "Save & Publish Item" : "Publish Item"} <br />
+                  {itemState === ITEM_STATES.dirty
+                    ? "Save & Publish Item"
+                    : "Publish Item"}{" "}
+                  <br />
                   {publishShortcut}
                 </div>
               ) : (
@@ -262,7 +284,10 @@ export const ItemEditHeaderActions = ({
             }
             placement="bottom"
           >
-            {!isPublished || item?.dirty || publishAfterSave || isFetching ? (
+            {itemState === ITEM_STATES.draft ||
+            itemState === ITEM_STATES.dirty ||
+            publishAfterSave ||
+            isFetching ? (
               <ButtonGroup variant="contained" color="success" size="small">
                 <LoadingButton
                   startIcon={<CloudUploadRounded />}
@@ -271,7 +296,7 @@ export const ItemEditHeaderActions = ({
                     whiteSpace: "nowrap",
                   }}
                   onClick={() => {
-                    if (item?.dirty) {
+                    if (itemState === ITEM_STATES.dirty) {
                       setPublishAfterSave(true);
                       onSave();
                     } else {
@@ -282,7 +307,9 @@ export const ItemEditHeaderActions = ({
                   color="success"
                   variant="contained"
                 >
-                  {item?.dirty ? "Save & Publish" : "Publish"}
+                  {itemState === ITEM_STATES.dirty
+                    ? "Save & Publish"
+                    : "Publish"}
                 </LoadingButton>
                 <Button
                   sx={{
@@ -319,7 +346,8 @@ export const ItemEditHeaderActions = ({
             )}
           </Tooltip>
         )}
-        {isScheduled && (
+
+        {itemState === ITEM_STATES.scheduled && canPublish && (
           <Tooltip
             enterDelay={1000}
             enterNextDelay={1000}
@@ -382,50 +410,60 @@ export const ItemEditHeaderActions = ({
       >
         <MenuItem
           onClick={() => {
-            if (item?.dirty) {
-              setPublishAfterSave(true);
-              onSave();
-            } else if (isScheduled) {
-              handlePublish();
-            } else if (isPublished) {
-              setUnpublishDialogOpen(true);
-            } else {
-              handlePublish();
+            switch (itemState) {
+              case ITEM_STATES.dirty:
+                setPublishAfterSave(true);
+                onSave();
+                break;
+              case ITEM_STATES.published:
+                setUnpublishDialogOpen(true);
+                break;
+              case ITEM_STATES.scheduled:
+                setScheduledPublishDialogOpen(true);
+                break;
+              case ITEM_STATES.draft:
+                handlePublish();
+                break;
             }
+
             setPublishMenu(null);
           }}
         >
           <ListItemIcon>
-            {item?.dirty ? (
+            {itemState === ITEM_STATES.dirty ? (
               <CloudUploadRounded fontSize="small" />
-            ) : isScheduled ? (
+            ) : itemState === ITEM_STATES.scheduled ? (
               <CloudUploadRounded fontSize="small" />
-            ) : isPublished ? (
+            ) : itemState === ITEM_STATES.published ? (
               <UnpublishedRounded fontSize="small" />
             ) : (
               <CloudUploadRounded fontSize="small" />
             )}
           </ListItemIcon>
-          {item?.dirty
+          {itemState === ITEM_STATES.dirty
             ? "Save & Publish"
-            : isScheduled
+            : itemState === ITEM_STATES.scheduled
             ? "Publish Now"
-            : isPublished
+            : itemState === ITEM_STATES.published
             ? "Unpublish Now"
             : "Publish Now"}
         </MenuItem>
         <MenuItem
           onClick={() => {
-            if (item?.dirty) {
-              setScheduleAfterSave(true);
-              onSave();
-            } else if (isScheduled) {
-              setScheduledPublishDialogOpen(true);
-            } else if (isPublished) {
-              console.log("schedule unpublish");
-              //setUnpublishDialogOpen(true);
-            } else {
-              setScheduledPublishDialogOpen(true);
+            switch (itemState) {
+              case ITEM_STATES.dirty:
+                setScheduleAfterSave(true);
+                onSave();
+                break;
+              case ITEM_STATES.scheduled:
+                setScheduledPublishDialogOpen(true);
+                break;
+              case ITEM_STATES.published:
+                console.log("schedule unpublish");
+                break;
+              case ITEM_STATES.draft:
+                setScheduledPublishDialogOpen(true);
+                break;
             }
             setPublishMenu(null);
           }}
@@ -433,11 +471,11 @@ export const ItemEditHeaderActions = ({
           <ListItemIcon>
             <CalendarTodayRounded fontSize="small" />
           </ListItemIcon>
-          {item?.dirty
+          {itemState === ITEM_STATES.dirty
             ? "Save & Schedule Publish"
-            : isScheduled
+            : itemState === ITEM_STATES.scheduled
             ? "Unschedule Publish"
-            : isPublished
+            : itemState === ITEM_STATES.published
             ? "Schedule Unpublish"
             : "Schedule Publish"}
         </MenuItem>
@@ -449,56 +487,12 @@ export const ItemEditHeaderActions = ({
         </MenuItem>
       </Menu>
       {unpublishDialogOpen && (
-        <Dialog
-          open
-          fullWidth
-          maxWidth={"xs"}
+        <UnpublishDialog
           onClose={() => setUnpublishDialogOpen(false)}
-        >
-          <DialogTitle>
-            <Box
-              sx={{
-                backgroundColor: "red.100",
-                borderRadius: "100%",
-                width: "40px",
-                height: "40px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <UnpublishedRounded color="error" />
-            </Box>
-            <Typography variant="h5" sx={{ mt: 1.5 }}>
-              <Typography variant="inherit" display="inline" fontWeight={600}>
-                Unpublish Content Item:
-              </Typography>{" "}
-              {item?.web?.metaTitle || item?.web?.metaLinkText}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              This will make the it immediately unavailable on all of your
-              platforms. You can always republish this item by clicking on the
-              publish button.
-            </Typography>
-          </DialogTitle>
-          <DialogActions>
-            <Button
-              color="inherit"
-              onClick={() => setUnpublishDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <LoadingButton
-              variant="contained"
-              color="error"
-              aria-label="Delete Button"
-              onClick={() => handleUnpublish()}
-              loading={unpublishing}
-            >
-              Unpublish Item
-            </LoadingButton>
-          </DialogActions>
-        </Dialog>
+          onConfirm={handleUnpublish}
+          itemName={item?.web?.metaTitle || item?.web?.metaLinkText}
+          loading={unpublishing}
+        />
       )}
       <ScheduleFlyout
         isOpen={scheduledPublishDialogOpen}
