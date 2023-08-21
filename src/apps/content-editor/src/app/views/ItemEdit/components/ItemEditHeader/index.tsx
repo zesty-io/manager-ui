@@ -24,6 +24,8 @@ import { LanguageSelector } from "./LanguageSelector";
 import { ItemEditBreadcrumbs } from "./ItemEditBreadcrumbs";
 import { DuoModeSwitch } from "./DuoModeToggle";
 import { MoreMenu } from "./MoreMenu";
+import { DuplicateItemDialog } from "./DuplicateItemDialog";
+import { useState } from "react";
 
 const tabs = [
   {
@@ -74,6 +76,7 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
   }>();
   const location = useLocation();
   const history = useHistory();
+  const [showDuplicateItemDialog, setShowDuplicateItemDialog] = useState(false);
 
   const { data: model } = useGetContentModelQuery(modelZUID);
   const item = useSelector(
@@ -83,83 +86,97 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        px={4}
-        pt={4}
-        sx={{
-          backgroundColor: "background.paper",
-          color: "text.primary",
-          borderBottom: (theme) => `2px solid ${theme?.palette?.divider} `,
-          "*": {
-            boxSizing: "border-box",
-          },
-        }}
-      >
-        <Box display="flex" justifyContent="space-between">
-          <Box>
-            <ItemEditBreadcrumbs />
-            <Typography
-              variant="h3"
-              fontWeight="700"
+      <>
+        <Box
+          px={4}
+          pt={4}
+          sx={{
+            backgroundColor: "background.paper",
+            color: "text.primary",
+            borderBottom: (theme) => `2px solid ${theme?.palette?.divider} `,
+            "*": {
+              boxSizing: "border-box",
+            },
+          }}
+        >
+          <Box display="flex" justifyContent="space-between">
+            <Box>
+              <ItemEditBreadcrumbs />
+              <Typography
+                variant="h3"
+                fontWeight="700"
+                sx={{
+                  display: "-webkit-box",
+                  "-webkit-line-clamp": "2",
+                  "-webkit-box-orient": "vertical",
+                  wordBreak: "break-all",
+                  overflow: "hidden",
+                  mb: 2,
+                }}
+              >
+                {item?.web?.metaTitle || item?.web?.metaLinkText}
+              </Typography>
+            </Box>
+            <Box display="flex" gap={1} alignItems="center" height="32px">
+              <MoreMenu />
+              <IconButton
+                size="small"
+                onClick={() => setShowDuplicateItemDialog(true)}
+              >
+                <ContentCopyRounded fontSize="small" />
+              </IconButton>
+              <IconButton size="small">
+                <ScreenShare fontSize="small" />
+              </IconButton>
+              <ItemEditHeaderActions saving={saving} onSave={onSave} />
+            </Box>
+          </Box>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Tabs
+              value={
+                location.pathname.split("/")?.pop()?.includes("7-")
+                  ? ""
+                  : location.pathname.split("/")?.pop()
+              }
+              onChange={(event, value) =>
+                history.push(`/content/${modelZUID}/${itemZUID}/${value}`)
+              }
               sx={{
-                display: "-webkit-box",
-                "-webkit-line-clamp": "2",
-                "-webkit-box-orient": "vertical",
-                wordBreak: "break-all",
-                overflow: "hidden",
-                mb: 2,
+                position: "relative",
+                top: "2px",
               }}
             >
-              {item?.web?.metaTitle || item?.web?.metaLinkText}
-            </Typography>
-          </Box>
-          <Box display="flex" gap={1} alignItems="center" height="32px">
-            <MoreMenu />
-            <IconButton size="small">
-              <ContentCopyRounded fontSize="small" />
-            </IconButton>
-            <IconButton size="small">
-              <ScreenShare fontSize="small" />
-            </IconButton>
-            <ItemEditHeaderActions saving={saving} onSave={onSave} />
-          </Box>
-        </Box>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Tabs
-            value={
-              location.pathname.split("/")?.pop()?.includes("7-")
-                ? ""
-                : location.pathname.split("/")?.pop()
-            }
-            onChange={(event, value) =>
-              history.push(`/content/${modelZUID}/${itemZUID}/${value}`)
-            }
-            sx={{
-              position: "relative",
-              top: "2px",
-            }}
-          >
-            {tabs.map((tab) => {
-              if (tab.value === "meta" && model?.type === "dataset") return;
-              return (
-                <Tab
-                  key={tab.value}
-                  disableRipple
-                  label={tab.label}
-                  value={tab.value}
-                  icon={<tab.icon fontSize="small" />}
-                  iconPosition="start"
-                />
-              );
-            })}
-          </Tabs>
-          <Box display="flex" gap={2} alignItems="center">
-            <DuoModeSwitch />
-            <LanguageSelector />
-            <VersionSelector />
+              {tabs.map((tab) => {
+                if (tab.value === "meta" && model?.type === "dataset") return;
+                return (
+                  <Tab
+                    key={tab.value}
+                    disableRipple
+                    label={tab.label}
+                    value={tab.value}
+                    icon={<tab.icon fontSize="small" />}
+                    iconPosition="start"
+                  />
+                );
+              })}
+            </Tabs>
+            <Box display="flex" gap={2} alignItems="center">
+              <DuoModeSwitch />
+              <LanguageSelector />
+              <VersionSelector />
+            </Box>
           </Box>
         </Box>
-      </Box>
+        {showDuplicateItemDialog && (
+          <DuplicateItemDialog
+            onClose={() => setShowDuplicateItemDialog(false)}
+          />
+        )}
+      </>
     </ThemeProvider>
   );
 };

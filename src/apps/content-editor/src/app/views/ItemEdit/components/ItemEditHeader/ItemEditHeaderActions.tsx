@@ -69,7 +69,6 @@ export const ItemEditHeaderActions = ({
     itemZUID: string;
   }>();
   const dispatch = useDispatch();
-  const history = useHistory();
   const canPublish = usePermission("PUBLISH");
   const canUpdate = usePermission("UPDATE");
   const [publishMenu, setPublishMenu] = useState<null | HTMLElement>(null);
