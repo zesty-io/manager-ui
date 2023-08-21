@@ -45,6 +45,7 @@ export const instanceApi = createApi({
     "Languages",
     "ContentNav",
     "ContentItem",
+    "ItemVersions",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -498,6 +499,9 @@ export const instanceApi = createApi({
       query: ({ modelZUID, itemZUID }) =>
         `/content/models/${modelZUID}/items/${itemZUID}/versions`,
       transformResponse: getResponseData,
+      providesTags: (result, error, id) => [
+        { type: "ItemVersions", id: id.itemZUID },
+      ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Update-Item
     updateContentItem: builder.mutation<

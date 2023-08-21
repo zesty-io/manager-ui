@@ -170,8 +170,6 @@ export const ItemEditHeaderActions = ({
     }
   }, [item, scheduleAfterSave, saving, activePublishing]);
 
-  console.log("tesint data", item?.publishing);
-
   return (
     <>
       <Box display="flex" gap={1} alignItems="center" height="32px">

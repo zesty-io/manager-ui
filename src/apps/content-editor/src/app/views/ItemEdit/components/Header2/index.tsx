@@ -26,6 +26,8 @@ import { CustomBreadcrumbs } from "../../../../../../../../shell/components/Cust
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
+import { VersionSelector } from "./VersionSelector";
+import { LanguageSelector } from "./LanguageSelector";
 
 const tabs = [
   {
@@ -117,34 +119,40 @@ export const Header2 = ({ saving, onSave }: HeaderProps) => {
           </Box>
           <ItemEditHeaderActions saving={saving} onSave={onSave} />
         </Box>
-        <Tabs
-          value={
-            location.pathname.split("/")?.pop()?.includes("7-")
-              ? ""
-              : location.pathname.split("/")?.pop()
-          }
-          onChange={(event, value) =>
-            history.push(`/content/${modelZUID}/${itemZUID}/${value}`)
-          }
-          sx={{
-            position: "relative",
-            top: "2px",
-          }}
-        >
-          {tabs.map((tab) => {
-            if (tab.value === "meta" && model?.type === "dataset") return;
-            return (
-              <Tab
-                key={tab.value}
-                disableRipple
-                label={tab.label}
-                value={tab.value}
-                icon={<tab.icon fontSize="small" />}
-                iconPosition="start"
-              />
-            );
-          })}
-        </Tabs>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Tabs
+            value={
+              location.pathname.split("/")?.pop()?.includes("7-")
+                ? ""
+                : location.pathname.split("/")?.pop()
+            }
+            onChange={(event, value) =>
+              history.push(`/content/${modelZUID}/${itemZUID}/${value}`)
+            }
+            sx={{
+              position: "relative",
+              top: "2px",
+            }}
+          >
+            {tabs.map((tab) => {
+              if (tab.value === "meta" && model?.type === "dataset") return;
+              return (
+                <Tab
+                  key={tab.value}
+                  disableRipple
+                  label={tab.label}
+                  value={tab.value}
+                  icon={<tab.icon fontSize="small" />}
+                  iconPosition="start"
+                />
+              );
+            })}
+          </Tabs>
+          <Box display="flex" gap={2}>
+            <LanguageSelector />
+            <VersionSelector />
+          </Box>
+        </Box>
       </Box>
     </ThemeProvider>
   );

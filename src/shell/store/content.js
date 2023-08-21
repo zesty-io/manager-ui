@@ -434,6 +434,9 @@ export function saveItem(itemZUID, action = "") {
       }
     ).then(async (res) => {
       dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+      dispatch(
+        instanceApi.util.invalidateTags([{ type: "ItemVersions", itemZUID }])
+      );
       dispatch({
         type: "UNMARK_ITEMS_DIRTY",
         items: [itemZUID],
