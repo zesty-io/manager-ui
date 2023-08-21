@@ -28,6 +28,7 @@ import { AppState } from "../../../../../../../../shell/store/types";
 import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
 import { VersionSelector } from "./VersionSelector";
 import { LanguageSelector } from "./LanguageSelector";
+import { ItemEditBreadcrumbs } from "./ItemEditBreadcrumbs";
 
 const tabs = [
   {
@@ -71,7 +72,7 @@ type HeaderProps = {
   saving: boolean;
   onSave: () => void;
 };
-export const Header2 = ({ saving, onSave }: HeaderProps) => {
+export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -101,7 +102,7 @@ export const Header2 = ({ saving, onSave }: HeaderProps) => {
       >
         <Box display="flex" justifyContent="space-between">
           <Box>
-            <ContentBreadcrumbs />
+            <ItemEditBreadcrumbs />
             <Typography
               variant="h3"
               fontWeight="700"
@@ -155,102 +156,5 @@ export const Header2 = ({ saving, onSave }: HeaderProps) => {
         </Box>
       </Box>
     </ThemeProvider>
-  );
-};
-
-const ContentBreadcrumbs = () => {
-  const { data: nav } = useGetContentNavItemsQuery();
-  const { modelZUID, itemZUID } = useParams<{
-    modelZUID: string;
-    itemZUID: string;
-  }>();
-  const history = useHistory();
-
-  const breadcrumbData = useMemo(() => {
-    let activeItem = nav?.find((item) => item.ZUID === itemZUID);
-    const crumbs = [];
-
-    // If nav item is not found that means that it is part of a dataset so we push that dataset onto the breadcrumb
-    if (!activeItem) {
-      activeItem = nav?.find((item) => item.ZUID === modelZUID);
-      if (activeItem) {
-        crumbs.push(activeItem);
-      } else {
-        return [];
-      }
-    }
-
-    let parent = activeItem.parentZUID;
-    while (parent) {
-      const parentItem = nav?.find((item) => item.ZUID === parent);
-      if (parentItem) {
-        crumbs.unshift(parentItem);
-        parent = parentItem.parentZUID;
-      } else {
-        parent = null;
-      }
-    }
-    return crumbs.map((item) => ({
-      node: <Breadcrumb contentNavItem={item} />,
-      onClick: () => {
-        if (item.type === "item") {
-          history.push(`/content/${item.contentModelZUID}/${item.ZUID}`);
-        } else {
-          history.push(`/content/${item.contentModelZUID}`);
-        }
-      },
-    }));
-  }, [nav, itemZUID]);
-
-  return (
-    <CustomBreadcrumbs
-      items={[
-        {
-          node: (
-            <Link
-              style={{
-                display: "flex",
-              }}
-              to={`/content/${
-                nav?.find((item) => item.label === "Homepage")?.contentModelZUID
-              }/${nav?.find((item) => item.label === "Homepage")?.ZUID}`}
-            >
-              <Home color="action" fontSize="small" />
-            </Link>
-          ),
-          onClick: () => {
-            history.push(
-              `/content/${
-                nav?.find((item) => item.label === "Homepage")?.contentModelZUID
-              }/${nav?.find((item) => item.label === "Homepage")?.ZUID}`
-            );
-          },
-        },
-        ...breadcrumbData,
-      ]}
-    />
-  );
-};
-
-type BreadcrumbProps = {
-  contentNavItem: ContentNavItem;
-};
-
-export const Breadcrumb = ({ contentNavItem }: BreadcrumbProps) => {
-  const { data: model } = useGetContentModelQuery(
-    contentNavItem.contentModelZUID
-  );
-
-  return (
-    <Box display="flex" gap={0.5}>
-      <SvgIcon
-        color="action"
-        fontSize="small"
-        component={MODEL_ICON[model?.type]}
-      />
-      <Typography variant="body2" color="text.secondary" noWrap maxWidth={100}>
-        {contentNavItem.label}
-      </Typography>
-    </Box>
   );
 };

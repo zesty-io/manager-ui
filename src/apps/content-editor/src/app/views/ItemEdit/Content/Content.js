@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import cx from "classnames";
 
 import { Editor } from "../../../components/Editor";
-import { Header2 } from "../components/Header2";
+import { Header2 } from "../components/ItemEditHeader";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
 import { ActionsDrawer } from "./ActionsDrawer";

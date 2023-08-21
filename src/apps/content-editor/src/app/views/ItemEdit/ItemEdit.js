@@ -40,7 +40,7 @@ import { ApiCardList } from "../../../../../schema/src/app/components/ModelApi/A
 import { theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
-import { Header2 } from "./components/Header2";
+import { ItemEditHeader } from "./components/ItemEditHeader";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -289,7 +289,7 @@ export default function ItemEdit() {
             component="section"
             sx={{ display: "flex", flexDirection: "column", height: "100%" }}
           >
-            <Header2 onSave={save} saving={saving} />
+            <ItemEditHeader onSave={save} saving={saving} />
             <Switch>
               <Route
                 exact
