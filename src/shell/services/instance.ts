@@ -44,6 +44,7 @@ export const instanceApi = createApi({
     "Scripts",
     "Languages",
     "ContentNav",
+    "ContentItem",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -72,6 +73,28 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       // TODO: Remove once all item publishing mutations are using rtk query
       keepUnusedDataFor: 0,
+    }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Create-Item-Publishing
+    createItemPublishing: builder.mutation<
+      any,
+      {
+        modelZUID: string;
+        itemZUID: string;
+        body: {
+          publishAt: string;
+          unpublishAt: string;
+          version: number;
+        };
+      }
+    >({
+      query: ({ modelZUID, itemZUID, body }) => ({
+        url: `content/models/${modelZUID}/items/${itemZUID}/publishings`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "ItemPublishing", id: id.itemZUID },
+      ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Delete-Item-Publishing
     deleteItemPublishing: builder.mutation<
@@ -464,6 +487,32 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["Languages"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/versions/#Get-All-Item-Versions
+    getContentItemVersions: builder.query<
+      ContentItem[],
+      {
+        modelZUID: string;
+        itemZUID: string;
+      }
+    >({
+      query: ({ modelZUID, itemZUID }) =>
+        `/content/models/${modelZUID}/items/${itemZUID}/versions`,
+      transformResponse: getResponseData,
+    }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Update-Item
+    updateContentItem: builder.mutation<
+      any,
+      { modelZUID: string; itemZUID: string; body: Partial<ContentItem> }
+    >({
+      query: ({ modelZUID, itemZUID, body }) => ({
+        url: `content/models/${modelZUID}/items/${itemZUID}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentItem", id: arg.itemZUID },
+      ],
+    }),
   }),
 });
 
@@ -473,6 +522,7 @@ export const {
   useGetAuditsQuery,
   useGetItemPublishingsQuery,
   useGetAllPublishingsQuery,
+  useCreateItemPublishingMutation,
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
   useGetContentItemsQuery,
@@ -504,4 +554,6 @@ export const {
   useGetScriptsQuery,
   useCreateInstanceSettingsMutation,
   useGetLangsQuery,
+  useGetContentItemVersionsQuery,
+  useUpdateContentItemMutation,
 } = instanceApi;

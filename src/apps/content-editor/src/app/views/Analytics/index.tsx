@@ -35,8 +35,9 @@ const Analytics = ({ item }: Props) => {
           boxSizing: "border-box",
           color: (theme) => theme.palette.text.primary,
         }}
-        height={item ? "calc(100% - 65px)" : "100%"}
+        height={"100%"}
         overflow="auto"
+        bgcolor="grey.50"
       >
         {!isError ? (
           <>

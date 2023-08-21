@@ -1,33 +1,18 @@
-import { Children, ReactNode, useCallback, useState } from "react";
-import { Breadcrumbs, Box, IconButton, Menu, MenuItem } from "@mui/material";
-import { MoreHorizRounded } from "@mui/icons-material";
+import { ReactNode, useState } from "react";
+import { Breadcrumbs, Box, Menu, MenuItem } from "@mui/material";
 
-type CustomBreadcrumbsProps = {
-  children: ReactNode[];
+type BreadCrumbItem = {
+  node: ReactNode;
+  onClick?: () => void;
 };
 
-export const CustomBreadcrumbs = ({ children }: CustomBreadcrumbsProps) => {
+type CustomBreadcrumbsProps = {
+  items: BreadCrumbItem[];
+};
+
+export const CustomBreadcrumbs = ({ items }: CustomBreadcrumbsProps) => {
   const [showBreadcrumbPopover, setShowBreadcrumbPopover] =
     useState<HTMLButtonElement | null>(null);
-
-  const CollapseButton = useCallback(() => {
-    return (
-      <IconButton
-        size="xxsmall"
-        onClick={(event) => {
-          event.stopPropagation();
-          setShowBreadcrumbPopover(event.currentTarget);
-        }}
-        sx={{
-          "&:hover": {
-            color: "primary.main",
-          },
-        }}
-      >
-        <MoreHorizRounded fontSize="small" />
-      </IconButton>
-    );
-  }, []);
 
   return (
     <>
@@ -35,11 +20,34 @@ export const CustomBreadcrumbs = ({ children }: CustomBreadcrumbsProps) => {
         itemsBeforeCollapse={2}
         maxItems={4}
         itemsAfterCollapse={2}
-        slots={{
-          CollapsedIcon: CollapseButton,
+        slotProps={{
+          collapsedIcon: {
+            onClick: (event) => {
+              event.stopPropagation();
+              setShowBreadcrumbPopover(event.target as HTMLButtonElement);
+            },
+          },
         }}
       >
-        {children}
+        {items.map((item, index) => (
+          <Box
+            key={index}
+            onClick={item.onClick}
+            sx={{
+              cursor: item.onClick ? "pointer" : "default",
+              "&:hover": {
+                " p": {
+                  color: "primary.main",
+                },
+                " svg": {
+                  color: "primary.main",
+                },
+              },
+            }}
+          >
+            {item.node}
+          </Box>
+        ))}
         {/* Trailing slash */}
         <Box></Box>
       </Breadcrumbs>
@@ -48,18 +56,20 @@ export const CustomBreadcrumbs = ({ children }: CustomBreadcrumbsProps) => {
         open={!!showBreadcrumbPopover}
         onClose={() => setShowBreadcrumbPopover(null)}
       >
-        {Children.toArray(children)
-          .slice(2, -1)
-          .map((item, index) => (
-            <MenuItem
-              key={index}
-              sx={{
-                pl: index ? 2 + index * 1.5 : "",
-              }}
-            >
-              {item}
-            </MenuItem>
-          ))}
+        {items.slice(2, -1).map((item, index) => (
+          <MenuItem
+            key={index}
+            sx={{
+              pl: index ? 2 + index * 1.5 : "",
+            }}
+            onClick={() => {
+              setShowBreadcrumbPopover(null);
+              item.onClick?.();
+            }}
+          >
+            {item.node}
+          </MenuItem>
+        ))}
       </Menu>
     </>
   );

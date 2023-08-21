@@ -1,13 +1,16 @@
-import { Box, SvgIcon, Tabs, Tab, Typography } from "@mui/material";
+import { Box, SvgIcon, Tabs, Tab, Typography, Tooltip } from "@mui/material";
 import {
-  useGetContentItemQuery,
   useGetContentModelQuery,
   useGetContentNavItemsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { Home, theme } from "@zesty-io/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import { useMemo } from "react";
-import { ContentNavItem } from "../../../../../../../../shell/services/types";
+import {
+  ContentItem,
+  ContentNavItem,
+  Publishing,
+} from "../../../../../../../../shell/services/types";
 import { MODEL_ICON } from "../../../../../../../../shell/constants";
 import { Link } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
@@ -20,6 +23,9 @@ import {
   ManageAccountsRounded,
 } from "@mui/icons-material";
 import { CustomBreadcrumbs } from "../../../../../../../../shell/components/CustomBreadcrumbs";
+import { useSelector } from "react-redux";
+import { AppState } from "../../../../../../../../shell/store/types";
+import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
 
 const tabs = [
   {
@@ -54,7 +60,16 @@ const tabs = [
   },
 ];
 
-export const Header2 = () => {
+type ContentItemWithDirtyAndPublishing = ContentItem & {
+  dirty: boolean;
+  publishing: Publishing;
+};
+
+type HeaderProps = {
+  saving: boolean;
+  onSave: () => void;
+};
+export const Header2 = ({ saving, onSave }: HeaderProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -62,8 +77,11 @@ export const Header2 = () => {
   const location = useLocation();
   const history = useHistory();
 
-  const { data: contentItem } = useGetContentItemQuery(itemZUID);
   const { data: model } = useGetContentModelQuery(modelZUID);
+  const item = useSelector(
+    (state: AppState) =>
+      state.content[itemZUID] as ContentItemWithDirtyAndPublishing
+  );
 
   return (
     <ThemeProvider theme={theme}>
@@ -79,21 +97,26 @@ export const Header2 = () => {
           },
         }}
       >
-        <ContentBreadcrumbs />
-        <Typography
-          variant="h3"
-          fontWeight="700"
-          sx={{
-            display: "-webkit-box",
-            "-webkit-line-clamp": "2",
-            "-webkit-box-orient": "vertical",
-            wordBreak: "break-all",
-            overflow: "hidden",
-            mb: 2,
-          }}
-        >
-          {contentItem?.web?.metaTitle || contentItem?.web?.metaLinkText}
-        </Typography>
+        <Box display="flex" justifyContent="space-between">
+          <Box>
+            <ContentBreadcrumbs />
+            <Typography
+              variant="h3"
+              fontWeight="700"
+              sx={{
+                display: "-webkit-box",
+                "-webkit-line-clamp": "2",
+                "-webkit-box-orient": "vertical",
+                wordBreak: "break-all",
+                overflow: "hidden",
+                mb: 2,
+              }}
+            >
+              {item?.web?.metaTitle || item?.web?.metaLinkText}
+            </Typography>
+          </Box>
+          <ItemEditHeaderActions saving={saving} onSave={onSave} />
+        </Box>
         <Tabs
           value={
             location.pathname.split("/")?.pop()?.includes("7-")
@@ -133,6 +156,7 @@ const ContentBreadcrumbs = () => {
     modelZUID: string;
     itemZUID: string;
   }>();
+  const history = useHistory();
 
   const breadcrumbData = useMemo(() => {
     let activeItem = nav?.find((item) => item.ZUID === itemZUID);
@@ -158,25 +182,45 @@ const ContentBreadcrumbs = () => {
         parent = null;
       }
     }
-    return crumbs;
+    return crumbs.map((item) => ({
+      node: <Breadcrumb contentNavItem={item} />,
+      onClick: () => {
+        if (item.type === "item") {
+          history.push(`/content/${item.contentModelZUID}/${item.ZUID}`);
+        } else {
+          history.push(`/content/${item.contentModelZUID}`);
+        }
+      },
+    }));
   }, [nav, itemZUID]);
 
   return (
-    <CustomBreadcrumbs>
-      <Link
-        style={{
-          display: "flex",
-        }}
-        to={`/content/${
-          nav?.find((item) => item.label === "Homepage")?.contentModelZUID
-        }/${nav?.find((item) => item.label === "Homepage")?.ZUID}`}
-      >
-        <Home color="action" fontSize="small" />
-      </Link>
-      {breadcrumbData.map((item) => (
-        <Breadcrumb key={item.ZUID} contentNavItem={item} />
-      ))}
-    </CustomBreadcrumbs>
+    <CustomBreadcrumbs
+      items={[
+        {
+          node: (
+            <Link
+              style={{
+                display: "flex",
+              }}
+              to={`/content/${
+                nav?.find((item) => item.label === "Homepage")?.contentModelZUID
+              }/${nav?.find((item) => item.label === "Homepage")?.ZUID}`}
+            >
+              <Home color="action" fontSize="small" />
+            </Link>
+          ),
+          onClick: () => {
+            history.push(
+              `/content/${
+                nav?.find((item) => item.label === "Homepage")?.contentModelZUID
+              }/${nav?.find((item) => item.label === "Homepage")?.ZUID}`
+            );
+          },
+        },
+        ...breadcrumbData,
+      ]}
+    />
   );
 };
 
@@ -196,18 +240,7 @@ export const Breadcrumb = ({ contentNavItem }: BreadcrumbProps) => {
         fontSize="small"
         component={MODEL_ICON[model?.type]}
       />
-      {/* @ts-ignore */}
-      <Typography
-        component={Link}
-        to={`/content/${contentNavItem.contentModelZUID}/${
-          contentNavItem?.type === "dataset" ? "" : contentNavItem.ZUID
-        }`}
-        variant="body2"
-        color="text.secondary"
-        sx={{
-          textDecoration: "none",
-        }}
-      >
+      <Typography variant="body2" color="text.secondary" noWrap maxWidth={100}>
         {contentNavItem.label}
       </Typography>
     </Box>

@@ -27,7 +27,7 @@ export const ApiCard = ({ type }: Props) => {
   return (
     <Box
       width="100%"
-      height="378px"
+      // minHeight="378px"
       p={2}
       borderRadius="8px"
       display="flex"

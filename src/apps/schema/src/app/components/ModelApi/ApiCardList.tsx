@@ -4,7 +4,7 @@ import { apiTypes } from ".";
 
 export const ApiCardList = () => {
   return (
-    <Box height="100%" sx={{ overflowY: "auto" }}>
+    <Box height="100%">
       <Stack
         spacing={0.5}
         px={3}
@@ -25,24 +25,25 @@ export const ApiCardList = () => {
           meets your needs.
         </Typography>
       </Stack>
-      <Box bgcolor="grey.50">
-        <Box
-          gap={3}
-          px={3}
-          py={2}
-          maxWidth="1440px"
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gridTemplateRows: "repeat(2, 1fr)",
-            gridColumnGap: "24px",
-            gridRowGap: "24px",
-          }}
-        >
-          {apiTypes.map((apiType) => (
-            <ApiCard type={apiType} />
-          ))}
-        </Box>
+
+      <Box
+        gap={3}
+        px={3}
+        py={2}
+        maxWidth="1440px"
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateRows: "repeat(2, 378px)",
+          gridColumnGap: "24px",
+          gridRowGap: "24px",
+          height: "calc(100% - 104px)",
+          overflow: "auto",
+        }}
+      >
+        {apiTypes.map((apiType) => (
+          <ApiCard type={apiType} />
+        ))}
       </Box>
     </Box>
   );

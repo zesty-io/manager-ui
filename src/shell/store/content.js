@@ -432,18 +432,17 @@ export function saveItem(itemZUID, action = "") {
           web: item.web,
         },
       }
-    ).then((res) => {
+    ).then(async (res) => {
       dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
       dispatch({
         type: "UNMARK_ITEMS_DIRTY",
         items: [itemZUID],
       });
 
-      dispatch(fetchItem(item.meta.contentModelZUID, itemZUID)).then(() => {
-        // NOTE: Communicate with ActivePreview that this item
-        // was updated and it needs to refreshed
-        zesty.trigger("PREVIEW_REFRESH");
-      });
+      await dispatch(fetchItem(item.meta.contentModelZUID, itemZUID));
+
+      zesty.trigger("PREVIEW_REFRESH");
+
       return res;
     });
   };
@@ -588,6 +587,11 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         );
       })
       .then(() => {
+        dispatch(
+          instanceApi.util.invalidateTags([
+            { type: "ItemPublishing", itemZUID },
+          ])
+        );
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
       .catch((err) => {
@@ -640,6 +644,11 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
         );
       })
       .then(() => {
+        dispatch(
+          instanceApi.util.invalidateTags([
+            { type: "ItemPublishing", itemZUID },
+          ])
+        );
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
       .catch((err) => {
