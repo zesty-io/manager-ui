@@ -6,27 +6,19 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
-  InputLabel,
-  TextField,
-  Tooltip,
-  Autocomplete,
 } from "@mui/material";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutline";
 import {
   useGetContentModelsQuery,
   useUpdateContentModelMutation,
   useGetContentNavItemsQuery,
 } from "../../../../../shell/services/instance";
-import {
-  ContentModel,
-  ContentNavItem,
-} from "../../../../../shell/services/types";
+import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import { cloneDeep } from "lodash";
+import { SelectModelParentInput } from "./SelectModelParentInput";
 
 interface Props {
   onClose: () => void;
@@ -38,21 +30,9 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
   const [newParentZUID, setNewParentZUID] = useState(
     model.parentZUID === "0" ? null : model.parentZUID
   );
-  const { data: models } = useGetContentModelsQuery();
-  const { data: navItems } = useGetContentNavItemsQuery();
 
   const [updateModel, { isLoading, isSuccess, error }] =
     useUpdateContentModelMutation();
-
-  const parents = useMemo(() => {
-    if (navItems) {
-      const _navItems = cloneDeep(navItems);
-
-      return _navItems?.sort((a, b) => a.label.localeCompare(b.label));
-    }
-
-    return [];
-  }, [navItems]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -97,36 +77,11 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Box>
-          <InputLabel>
-            Select Model Parent
-            <Tooltip
-              placement="top"
-              title="Selecting a parent affects default routing and content navigation in the UI"
-            >
-              <InfoRoundedIcon
-                sx={{ ml: 1, width: "10px", height: "10px" }}
-                color="action"
-              />
-            </Tooltip>
-          </InputLabel>
-          <Autocomplete
-            fullWidth
-            renderInput={(params) => (
-              <TextField {...params} placeholder="None" />
-            )}
-            value={navItems?.find((m) => m.ZUID === newParentZUID) || null}
-            options={parents}
-            onChange={(event, value: ContentNavItem) =>
-              setNewParentZUID(value?.ZUID || null)
-            }
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                padding: "2px",
-              },
-            }}
-          />
-        </Box>
+        <SelectModelParentInput
+          modelType={model.type}
+          value={newParentZUID}
+          onChange={(value) => setNewParentZUID(value)}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">

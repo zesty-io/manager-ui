@@ -16,7 +16,6 @@ import {
   InputLabel,
   TextField,
   Tooltip,
-  Autocomplete,
   Checkbox,
   ThemeProvider,
 } from "@mui/material";
@@ -32,11 +31,7 @@ import {
   useCreateContentItemMutation,
   useGetContentNavItemsQuery,
 } from "../../../../../shell/services/instance";
-import {
-  ContentModel,
-  ContentNavItem,
-  User,
-} from "../../../../../shell/services/types";
+import { ContentModel, User } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
@@ -45,6 +40,7 @@ import { modelIconMap } from "../utils";
 import { withCursorPosition } from "../../../../../shell/components/withCursorPosition";
 import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
+import { SelectModelParentInput } from "./SelectModelParentInput";
 
 interface Props {
   onClose: () => void;
@@ -121,7 +117,6 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     },
   ] = useCreateContentItemMutation();
   const user: User = useSelector((state: AppState) => state.user);
-  const { data: navItems } = useGetContentNavItemsQuery();
 
   const error = createModelError || createContentItemError;
 
@@ -140,7 +135,10 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               canonicalTagMode: 1,
               metaLinkText: model.label,
               metaTitle: model.label,
-              parentZUID: model.parentZUID || "0",
+              // When creating single page model item only set parentZUID if the selected parent is a content item and not a model
+              parentZUID: model.parentZUID.startsWith("7-")
+                ? model.parentZUID
+                : "0",
             },
             meta: {
               contentModelZUID: createModelData.data.ZUID,
@@ -171,16 +169,6 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       );
     }
   }, [error]);
-
-  const parents = useMemo(() => {
-    if (navItems) {
-      const _navItems = cloneDeep(navItems);
-
-      return _navItems?.sort((a, b) => a.label.localeCompare(b.label));
-    }
-
-    return [];
-  }, [navItems]);
 
   const getView = () => {
     if (!model.type) {
@@ -365,35 +353,15 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   fullWidth
                 />
               </Box>
-              <Box>
-                <InputLabel>
-                  Select Model Parent
-                  <Tooltip
-                    placement="top"
-                    title="Selecting a parent affects default routing and content navigation in the UI"
-                  >
-                    <InfoRoundedIcon
-                      sx={{ ml: 1, width: "10px", height: "10px" }}
-                      color="action"
-                    />
-                  </Tooltip>
-                </InputLabel>
-                <Autocomplete
-                  fullWidth
-                  renderInput={(params) => (
-                    <TextField {...params} placeholder="None" />
-                  )}
-                  options={parents}
-                  onChange={(event, value: ContentNavItem) =>
-                    updateModel({ parentZUID: value?.ZUID || null })
-                  }
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      padding: "2px",
-                    },
-                  }}
-                />
-              </Box>
+              <SelectModelParentInput
+                modelType={model.type}
+                value={model.parentZUID}
+                onChange={(value) =>
+                  updateModel({
+                    parentZUID: value,
+                  })
+                }
+              />
               <Box>
                 <InputLabel>
                   Description

@@ -85,11 +85,7 @@ export const FolderMedia = ({
           return b.filename.localeCompare(a.filename);
         });
       case "dateadded":
-        return [...unsortedGroupFiles].sort((a, b) => {
-          return (
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-        });
+        return unsortedGroupFiles;
       // Default to API order
       default:
         return unsortedGroupFiles;

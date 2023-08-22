@@ -80,11 +80,7 @@ export const BinMedia = ({
           return b.filename.localeCompare(a.filename);
         });
       case "dateadded":
-        return [...unsortedBinFiles].sort((a, b) => {
-          return (
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-        });
+        return unsortedBinFiles;
       // Default to API order
       default:
         return unsortedBinFiles;
