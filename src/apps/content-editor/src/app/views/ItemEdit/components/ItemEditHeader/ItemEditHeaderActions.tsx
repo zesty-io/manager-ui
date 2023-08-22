@@ -470,37 +470,39 @@ const PublishingMenu = ({
           ? "Unpublish Now"
           : "Publish Now"}
       </MenuItem>
-      <MenuItem
-        onClick={() => {
-          switch (itemState) {
-            case ITEM_STATES.dirty:
-              setScheduleAfterSave(true);
-              onSave();
-              break;
-            case ITEM_STATES.scheduled:
-              setScheduledPublishDialogOpen(true);
-              break;
-            case ITEM_STATES.published:
-              console.log("schedule unpublish");
-              break;
-            case ITEM_STATES.draft:
-              setScheduledPublishDialogOpen(true);
-              break;
-          }
-          onClose();
-        }}
-      >
-        <ListItemIcon>
-          <CalendarTodayRounded fontSize="small" />
-        </ListItemIcon>
-        {itemState === ITEM_STATES.dirty
-          ? "Save & Schedule Publish"
-          : itemState === ITEM_STATES.scheduled
-          ? "Unschedule Publish"
-          : itemState === ITEM_STATES.published
-          ? "Schedule Unpublish"
-          : "Schedule Publish"}
-      </MenuItem>
+      {itemState !== ITEM_STATES.published && (
+        <MenuItem
+          onClick={() => {
+            switch (itemState) {
+              case ITEM_STATES.dirty:
+                setScheduleAfterSave(true);
+                onSave();
+                break;
+              case ITEM_STATES.scheduled:
+                setScheduledPublishDialogOpen(true);
+                break;
+              case ITEM_STATES.published:
+                console.log("schedule unpublish");
+                break;
+              case ITEM_STATES.draft:
+                setScheduledPublishDialogOpen(true);
+                break;
+            }
+            onClose();
+          }}
+        >
+          <ListItemIcon>
+            <CalendarTodayRounded fontSize="small" />
+          </ListItemIcon>
+          {itemState === ITEM_STATES.dirty
+            ? "Save & Schedule Publish"
+            : itemState === ITEM_STATES.scheduled
+            ? "Unschedule Publish"
+            : itemState === ITEM_STATES.published
+            ? "Schedule Unpublish"
+            : "Schedule Publish"}
+        </MenuItem>
+      )}
       <MenuItem onClick={() => history.push("publishings")}>
         <ListItemIcon>
           <ManageAccountsRounded fontSize="small" />

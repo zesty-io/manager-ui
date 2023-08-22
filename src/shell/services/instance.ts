@@ -511,6 +511,20 @@ export const instanceApi = createApi({
         { type: "ContentItem", id: arg.itemZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Delete-Item
+    deleteContentItem: builder.mutation<
+      any,
+      {
+        modelZUID: string;
+        itemZUID: string;
+      }
+    >({
+      query: ({ modelZUID, itemZUID }) => ({
+        url: `content/models/${modelZUID}/items/${itemZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ContentNav"],
+    }),
   }),
 });
 
@@ -553,4 +567,5 @@ export const {
   useGetLangsQuery,
   useGetContentItemVersionsQuery,
   useUpdateContentItemMutation,
+  useDeleteContentItemMutation,
 } = instanceApi;

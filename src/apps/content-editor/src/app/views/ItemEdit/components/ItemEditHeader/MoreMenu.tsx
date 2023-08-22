@@ -28,6 +28,7 @@ import { DuplicateItemDialog } from "./DuplicateItemDialog";
 import { ApiType } from "../../../../../../../schema/src/app/components/ModelApi";
 import { useGetDomainsQuery } from "../../../../../../../../shell/services/accounts";
 import { useFilePath } from "../../../../../../../../shell/hooks/useFilePath";
+import { DeleteItemDialog } from "./DeleteItemDialog";
 
 export const MoreMenu = () => {
   const { modelZUID, itemZUID } = useParams<{
@@ -40,6 +41,7 @@ export const MoreMenu = () => {
   const [showApiEndpoints, setShowApiEndpoints] = useState<null | HTMLElement>(
     null
   );
+  const [showDeleteItemDialog, setShowDeleteItemDialog] = useState(false);
   const [apiEndpointType, setApiEndpointType] = useState("quick-access");
   const history = useHistory();
   const item = useSelector(
@@ -158,7 +160,12 @@ export const MoreMenu = () => {
           </ListItemIcon>
           Edit Template
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          onClick={() => {
+            setShowDeleteItemDialog(true);
+            setAnchorEl(null);
+          }}
+        >
           <ListItemIcon>
             <DeleteRounded fontSize="small" />
           </ListItemIcon>
@@ -240,6 +247,9 @@ export const MoreMenu = () => {
           </MenuItem>
         )}
       </Menu>
+      {showDeleteItemDialog && (
+        <DeleteItemDialog onClose={() => setShowDeleteItemDialog(false)} />
+      )}
     </>
   );
 };
