@@ -133,9 +133,7 @@ export const mediaManagerApi = createApi({
           ...file,
           thumbnail: generateThumbnail(file),
         })),
-        groups: response.data[0].groups.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        ),
+        groups: response.data[0].groups,
       }),
     }),
     updateBin: builder.mutation<
