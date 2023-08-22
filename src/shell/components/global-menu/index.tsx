@@ -87,6 +87,10 @@ export default memo(function GlobalMenu() {
                 "&:hover": {
                   backgroundColor: activeBgColor,
                 },
+                "& .MuiListItemIcon-root": {
+                  minWidth: 0,
+                  pr: 1,
+                },
               }}
             >
               <MenuItemIcon product={product} />

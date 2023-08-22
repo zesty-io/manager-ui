@@ -22,8 +22,8 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
     <>
       <ListItem
         sx={{
-          px: 1,
-          py: 0.75,
+          px: 0.5,
+          py: 0,
           mb: 0.75,
           height: 48,
         }}
@@ -37,9 +37,14 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
           gap={1}
           color="grey.500"
           sx={{
+            px: 0.5,
+            py: 0.75,
+            borderRadius: "4px",
+            minWidth: "40px",
             "&:hover": {
               color: "primary.main",
               cursor: "pointer",
+              backgroundColor: "grey.800",
             },
           }}
           onClick={(evt: React.MouseEvent<HTMLDivElement>) =>

@@ -66,8 +66,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
           <ListItem
             sx={{
               height: 36,
-              px: 1.5,
-              py: 0.75,
+              p: 0,
               mt: 0.75,
               display: "flex",
               alignItems: "center",
@@ -78,7 +77,14 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               data-cy="CollapseGlobalSideBar"
               onClick={onClick}
               size="large"
-              sx={{ padding: 0 }}
+              sx={{
+                px: 1.5,
+                py: 0.75,
+                borderRadius: 0,
+                "&:hover": {
+                  backgroundColor: "rgba(255, 93, 10, 0.08)",
+                },
+              }}
             >
               <MenuRoundedIcon sx={{ color: "grey.400" }} />
             </IconButton>
@@ -89,6 +95,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                 alt="Zesty Logo"
                 width={20}
                 height={20}
+                mr={1.5}
               />
             )}
           </ListItem>
@@ -107,7 +114,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               px={1.5}
               mb={openNav ? 1.5 : 0}
               pt={openNav ? 0 : 1.5}
-              gap={1.5}
+              gap={openNav ? 1.5 : 1}
               borderTop={openNav ? "none" : "1px solid"}
               sx={{
                 borderColor: "grey.800",
@@ -163,7 +170,8 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               borderTop={openNav ? "1px solid" : "none"}
               alignItems="center"
               flexDirection={openNav ? "row" : "column-reverse"}
-              py={1.25}
+              pt={openNav ? 1.25 : 1}
+              pb={openNav ? 1.25 : 1.5}
               px={openNav ? 1.5 : 1}
               gap={openNav ? 0 : 1}
               sx={{
