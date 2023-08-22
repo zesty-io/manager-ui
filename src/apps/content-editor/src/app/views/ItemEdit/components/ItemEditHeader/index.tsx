@@ -26,6 +26,7 @@ import { DuoModeSwitch } from "./DuoModeToggle";
 import { MoreMenu } from "./MoreMenu";
 import { DuplicateItemDialog } from "./DuplicateItemDialog";
 import { useState } from "react";
+import { PreviewMenu } from "./PreviewMenu";
 
 const tabs = [
   {
@@ -60,9 +61,10 @@ const tabs = [
   },
 ];
 
-type ContentItemWithDirtyAndPublishing = ContentItem & {
+export type ContentItemWithDirtyAndPublishing = ContentItem & {
   dirty: boolean;
   publishing: Publishing;
+  scheduling: any;
 };
 
 type HeaderProps = {
@@ -125,9 +127,7 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
               >
                 <ContentCopyRounded fontSize="small" />
               </IconButton>
-              <IconButton size="small">
-                <ScreenShare fontSize="small" />
-              </IconButton>
+              <PreviewMenu />
               <ItemEditHeaderActions saving={saving} onSave={onSave} />
             </Box>
           </Box>
@@ -138,9 +138,11 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
           >
             <Tabs
               value={
-                location.pathname.split("/")?.pop()?.includes("7-")
-                  ? ""
-                  : location.pathname.split("/")?.pop()
+                tabs.find(
+                  (tab) =>
+                    tab.label !== "Content" &&
+                    location.pathname.includes(tab.value)
+                )?.value || ""
               }
               onChange={(event, value) =>
                 history.push(`/content/${modelZUID}/${itemZUID}/${value}`)

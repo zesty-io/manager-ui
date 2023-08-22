@@ -229,6 +229,9 @@ export default class ScheduleFlyout extends Component {
                   onClick={this.handleSchedulePublish}
                   disabled={this.state.scheduling}
                   startIcon={<CalendarMonthIcon />}
+                  sx={{
+                    color: "common.white",
+                  }}
                 >
                   Schedule Publishing Version {this.props.item.meta.version}
                 </Button>

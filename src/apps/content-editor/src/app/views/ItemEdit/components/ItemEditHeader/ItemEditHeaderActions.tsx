@@ -41,6 +41,7 @@ import { formatDate } from "../../../../../../../../utility/formatDate";
 import { ScheduleFlyout } from "../Header/ItemVersioning/ScheduleFlyout";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
+import { ContentItemWithDirtyAndPublishing } from ".";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -48,12 +49,6 @@ const ITEM_STATES = {
   scheduled: "scheduled",
   draft: "draft",
 } as const;
-
-type ContentItemWithDirtyAndPublishing = ContentItem & {
-  dirty: boolean;
-  publishing: Publishing;
-  scheduling: any;
-};
 
 type ItemEditHeaderActionsProps = {
   saving: boolean;

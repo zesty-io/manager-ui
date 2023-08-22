@@ -183,17 +183,6 @@ export const instanceApi = createApi({
       // Restore cache when content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
     }),
-    // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-Item-Publishing
-    getContentItemPublishings: builder.query<
-      ContentModel[],
-      { modelZUID: string; itemZUID: string }
-    >({
-      query: ({ modelZUID, itemZUID }) =>
-        `content/models/${modelZUID}/items/${itemZUID}/publishings`,
-      transformResponse: getResponseData,
-      // Restore cache once content/schema uses rtk query for mutations and can invalidate this
-      keepUnusedDataFor: 0.0001,
-    }),
     // https://www.zesty.io/docs/instances/api-reference/search/#Search
     searchContent: builder.query<ContentItem[], SearchQuery>({
       query: ({ query, ...rest }) => ({
@@ -538,7 +527,6 @@ export const {
   useGetContentModelQuery,
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
-  useGetContentItemPublishingsQuery,
   useSearchContentQuery,
   useGetContentModelFieldsQuery,
   useBulkUpdateContentModelFieldMutation,

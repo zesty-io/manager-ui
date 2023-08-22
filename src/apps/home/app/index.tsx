@@ -4,9 +4,9 @@ import { useState } from "react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import {
-  useGetContentItemPublishingsQuery,
   useGetContentModelItemsQuery,
   useGetContentModelsQuery,
+  useGetItemPublishingsQuery,
 } from "../../../shell/services/instance";
 import { AppState } from "../../../shell/store/types";
 import { CongratulationsDialog } from "./components/CongratulationsDialog";
@@ -33,7 +33,7 @@ export const HomeApp = () => {
   const {
     data: contentItemPublishings,
     isFetching: isContentItemPublishingsFetching,
-  } = useGetContentItemPublishingsQuery(
+  } = useGetItemPublishingsQuery(
     {
       modelZUID: homepageModel?.ZUID,
       itemZUID: contentModelItems?.[0]?.meta?.ZUID,
