@@ -70,7 +70,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const [updateFile] = useUpdateFileMutation();
-  const [sort, setSort] = useLocalStorage("zesty:navMedia:sort", "asc");
+  const [sort, setSort] = useLocalStorage("zesty:navMedia:sort", "");
   const [hiddenExpanded, setHiddenExpanded] = useState([]);
   const [expanded, setExpanded] = useLocalStorage("zesty:navMedia:open", []);
 
