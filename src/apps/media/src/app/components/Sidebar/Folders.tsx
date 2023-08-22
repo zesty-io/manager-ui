@@ -221,7 +221,6 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
         ];
       } else {
         return binGroups
-          .filter((binGroup) => (bins.length > 1 ? true : binGroup?.length))
           .map((binGroup, idx) => {
             if (!binGroup.length) {
               return {
