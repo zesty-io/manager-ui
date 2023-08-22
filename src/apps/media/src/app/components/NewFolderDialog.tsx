@@ -29,12 +29,7 @@ interface Props {
 
 export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   const [name, setName] = useState("Untitled");
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>({
-    name: "None",
-    id: null,
-    group_id: null,
-    bin_id: null,
-  });
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>();
   const [params, setParams] = useParams();
 
   const [createGroup, { isLoading: isCreatingGroup, isSuccess, data }] =
@@ -47,6 +42,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
     ecoId,
   });
   const currentBin = bins?.find((bin) => bin.id === binId);
+  const defaultBin = bins?.find((bin) => bin.default === true);
   const { data: allBinGroups, isLoading: isLoadingAllBinGroups } =
     useGetAllBinGroupsQuery(
       bins?.map((bin) => bin.id),
@@ -73,6 +69,13 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
             bin_id: binId,
           }
         );
+      } else {
+        setSelectedGroup({
+          name: defaultBin?.name,
+          id: defaultBin?.id,
+          group_id: defaultBin?.id,
+          bin_id: defaultBin?.id,
+        });
       }
     }
   }, [allBinGroups, id, currentBin, binId]);
@@ -131,19 +134,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           loading={loading}
           value={selectedGroup}
           disableClearable
-          options={
-            sortedBinGroups?.length
-              ? [
-                  {
-                    name: "None",
-                    id: null,
-                    group_id: null,
-                    bin_id: null,
-                  },
-                  ...sortedBinGroups,
-                ]
-              : []
-          }
+          options={sortedBinGroups?.length ? sortedBinGroups : []}
           renderInput={(params) => <TextField {...params} hiddenLabel />}
           renderOption={(props, option) => (
             <li {...props} key={option.id}>
