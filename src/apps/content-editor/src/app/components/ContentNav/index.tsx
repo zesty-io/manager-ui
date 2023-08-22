@@ -599,6 +599,7 @@ export const ContentNav = () => {
                   "&.MuiButtonBase-root": {
                     minHeight: 20,
                     mb: 1.5,
+                    px: 1.5,
                     "&.Mui-expanded": {
                       height: 20,
                     },
