@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Typography,
   IconButton,
@@ -340,6 +340,25 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     }
   }, [bins]);
 
+  const handleItemDrop = useCallback((draggedItem, target) => {
+    // Allow drag and drop of file when the target folder is in the same eco bin or is the actual eco bin root
+    if (
+      draggedItem.bin_id === target.bin_id ||
+      (target.id.startsWith("1") && draggedItem.bin_id === target.id)
+    ) {
+      updateFile({
+        id: draggedItem.id,
+        previousGroupId: draggedItem.group_id,
+        body: {
+          group_id: target.id,
+          filename: draggedItem.filename,
+        },
+      });
+    } else {
+      setOpenDndFailedDialog(true);
+    }
+  }, []);
+
   return (
     <>
       <NavTree
@@ -376,24 +395,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             </IconButton>
           </Stack>
         }
-        onItemDrop={(draggedItem, target) => {
-          // Allow drag and drop of file when the target folder is in the same eco bin or is the actual eco bin root
-          if (
-            draggedItem.bin_id === target.bin_id ||
-            (target.id.startsWith("1") && draggedItem.bin_id === target.id)
-          ) {
-            updateFile({
-              id: draggedItem.id,
-              previousGroupId: draggedItem.group_id,
-              body: {
-                group_id: target.id,
-                filename: draggedItem.filename,
-              },
-            });
-          } else {
-            setOpenDndFailedDialog(true);
-          }
-        }}
+        onItemDrop={handleItemDrop}
         dragAndDrop
       />
       {!lockedToGroupId && (
