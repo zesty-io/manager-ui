@@ -50,14 +50,15 @@ interface Props {
   lockedToGroupId?: string;
 }
 
-export const Folders = React.memo(({ lockedToGroupId }: Props) => {
+export const Folders = ({ lockedToGroupId }: Props) => {
   const [folderMenuAnchorEl, setFolderMenuAnchorEl] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
-  const hiddenGroups =
-    JSON.parse(localStorage.getItem("zesty:navMedia:hidden")) || [];
+  const [hiddenGroups, setHiddenGroups] = useState(
+    JSON.parse(localStorage.getItem("zesty:navMedia:hidden"))
+  );
   const [value, setValue] = useState(0);
   const [folderMenuData, setFolderMenuData] = useState<{
     id: string;
@@ -83,14 +84,12 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
   };
 
   useEffect(() => {
-    window.addEventListener("storage", (evt) =>
-      setValue((prevCount) => prevCount + 1)
+    window.addEventListener("storage", () =>
+      setHiddenGroups(JSON.parse(localStorage.getItem("zesty:navMedia:hidden")))
     );
 
     return () => {
-      window.removeEventListener("storage", (evt) =>
-        setValue((prevCount) => prevCount + 1)
-      );
+      window.removeEventListener("storage", () => {});
     };
   }, []);
 
@@ -557,4 +556,4 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
       </ThemeProvider>
     </>
   );
-});
+};
