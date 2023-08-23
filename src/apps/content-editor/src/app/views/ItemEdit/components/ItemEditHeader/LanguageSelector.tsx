@@ -89,7 +89,9 @@ export const LanguageSelector = () => {
         endIcon={<KeyboardArrowDownRounded color="action" />}
         onClick={(e) => setAnchorEl(e.currentTarget)}
       >
-        {getFlagEmojiFromIETFTag(activeLanguage?.code)}{" "}
+        <Box component="span" color="text.primary">
+          {getFlagEmojiFromIETFTag(activeLanguage?.code)}
+        </Box>{" "}
         {activeLanguage?.code?.split("-")[0]?.toUpperCase()} (
         {getCountryCode(activeLanguage?.code)})
       </Button>

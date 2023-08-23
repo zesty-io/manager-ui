@@ -290,6 +290,7 @@ export const ItemEditHeaderActions = ({
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);
                 }}
+                disabled={publishing || publishAfterSave || isFetching}
               >
                 <ArrowDropDownRounded fontSize="small" />
               </Button>

@@ -111,7 +111,9 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
                   display: "-webkit-box",
                   "-webkit-line-clamp": "2",
                   "-webkit-box-orient": "vertical",
-                  wordBreak: "break-all",
+                  wordBreak: "break-word",
+                  wordWrap: "break-word",
+                  hyphens: "auto",
                   overflow: "hidden",
                   mb: 2,
                 }}

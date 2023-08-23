@@ -18,7 +18,7 @@ export const CustomBreadcrumbs = ({ items }: CustomBreadcrumbsProps) => {
     <>
       <Breadcrumbs
         itemsBeforeCollapse={2}
-        maxItems={4}
+        maxItems={5}
         itemsAfterCollapse={2}
         slotProps={{
           collapsedIcon: {
