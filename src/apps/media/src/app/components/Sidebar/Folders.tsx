@@ -188,7 +188,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           binId,
           path: `/media/folder/${item.id}`,
         }),
-        hidden: hiddenGroup.includes(item.id),
+        hidden: hiddenGroup?.includes(item.id),
         nodeData: item,
         createdAt: item.created_at,
       }));
