@@ -46,6 +46,21 @@ import {
 import { Bin, Group } from "../../../../../../shell/services/types";
 import { FolderMenu } from "../FolderMenu";
 
+const SortMenuItems: { label: string; value: string }[] = [
+  {
+    label: "Name (A to Z)",
+    value: "asc",
+  },
+  {
+    label: "Name (Z to A)",
+    value: "desc",
+  },
+  {
+    label: "Last Created",
+    value: "",
+  },
+];
+
 interface Props {
   lockedToGroupId?: string;
 }
@@ -250,7 +265,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                   binId: bins[idx].id,
                   path: `/media/folder/${bins[idx].id}`,
                 }),
-                hidden: hiddenGroups.includes(bins[idx].id),
+                hidden: hiddenGroups?.includes(bins[idx].id),
                 nodeData: bins[idx],
                 createdAt: bins[idx].created_at,
               };
@@ -273,7 +288,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                   binId: bins[idx].id,
                   path: `/media/folder/${bins[idx].id}`,
                 }),
-                hidden: hiddenGroups.includes(bins[idx].id),
+                hidden: hiddenGroups?.includes(bins[idx].id),
                 nodeData: bins[idx],
                 createdAt: bins[idx].created_at,
               };
@@ -290,8 +305,8 @@ export const Folders = ({ lockedToGroupId }: Props) => {
 
   /* Creating a tree structure based on the hidden items. */
   const hiddenTrees: TreeItemType[] = useMemo(() => {
-    if (binGroups && hiddenGroups.length) {
-      return hiddenGroups.map((id: string) => {
+    if (binGroups && hiddenGroups?.length) {
+      return hiddenGroups?.map((id: string) => {
         let rootGroup: Group[];
         let rootNode: Group | Bin;
         let binId: string;
@@ -479,30 +494,17 @@ export const Folders = ({ lockedToGroupId }: Props) => {
       )}
       <ThemeProvider theme={theme}>
         <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
-          <MenuItem
-            onClick={() => {
-              closeMenu();
-              setSort("asc");
-            }}
-          >
-            Name (A to Z)
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              closeMenu();
-              setSort("desc");
-            }}
-          >
-            Name (Z to A)
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              closeMenu();
-              setSort("");
-            }}
-          >
-            Last Created
-          </MenuItem>
+          {SortMenuItems.map((menuItem) => (
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                setSort(menuItem.value);
+              }}
+              selected={sort === menuItem.value}
+            >
+              {menuItem.label}
+            </MenuItem>
+          ))}
         </Menu>
         {openNewFolderDialog && (
           <NewFolderDialog open onClose={() => setOpenNewFolderDialog(false)} />
