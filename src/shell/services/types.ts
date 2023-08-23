@@ -44,6 +44,7 @@ export interface Group {
   bin_id: string;
   group_id: string;
   name: string;
+  created_at?: string;
 }
 
 export interface File {

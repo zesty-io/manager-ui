@@ -31,6 +31,7 @@ import { useLocalStorage } from "react-use";
 import { useSelector } from "react-redux";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router";
+import moment from "moment-timezone";
 
 import {
   mediaManagerApi,
@@ -143,6 +144,22 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
     ];
   };
 
+  const sortItems = (rawItems: TreeItemType[], sortBy: string) => {
+    if (sortBy === "asc" || sortBy === "desc") {
+      return rawItems.sort((a, b) => {
+        if (sortBy === "asc") {
+          return a.label.localeCompare(b.label);
+        } else if (sortBy === "desc") {
+          return b.label.localeCompare(a.label);
+        }
+      });
+    } else {
+      return rawItems
+        .sort((a, b) => a.label.localeCompare(b.label))
+        .sort((a, b) => moment(b.createdAt).diff(a.createdAt));
+    }
+  };
+
   /**
    * It takes an array of items, an id, and a link, and returns a new array of items with the children of
    * the item with the given id nested under it
@@ -158,14 +175,8 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
     hiddenGroup: string[],
     binId: string
   ): TreeItemType[] => {
-    return items
+    const childItems = items
       ?.filter((item) => item[link] === id)
-      ?.sort((a, b) => {
-        if (!sort) return;
-        return sort === "asc"
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
-      })
       ?.map((item) => ({
         icon: FolderRounded,
         children: nest(items, item.id, link, sort, hiddenGroup, binId),
@@ -180,7 +191,10 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
         }),
         hidden: hiddenGroup.includes(item.id),
         nodeData: item,
+        createdAt: item.created_at,
       }));
+
+    return sortItems(childItems, sort);
   };
 
   const mappedTree: TreeItemType[] = useMemo(() => {
@@ -197,7 +211,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
 
         rootNode = rootGroup?.find((group) => group.id === lockedToGroupId);
 
-        return [
+        const items = [
           {
             icon: FolderRounded,
             path: `/media/folder/${rootNode?.id}`,
@@ -217,10 +231,13 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
               rootNode.bin_id
             ),
             nodeData: rootNode,
+            createdAt: rootNode.created_at,
           },
         ];
+
+        return sortItems(items, sort);
       } else {
-        return binGroups
+        const items = binGroups
           .map((binGroup, idx) => {
             if (!binGroup.length) {
               return {
@@ -236,6 +253,7 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
                 }),
                 hidden: hiddenGroups.includes(bins[idx].id),
                 nodeData: bins[idx],
+                createdAt: bins[idx].created_at,
               };
             } else {
               return {
@@ -258,16 +276,13 @@ export const Folders = React.memo(({ lockedToGroupId }: Props) => {
                 }),
                 hidden: hiddenGroups.includes(bins[idx].id),
                 nodeData: bins[idx],
+                createdAt: bins[idx].created_at,
               };
             }
           })
-          .flat()
-          .sort((a, b) => {
-            if (!sort) return;
-            return sort === "asc"
-              ? a.label.localeCompare(b.label)
-              : b.label.localeCompare(a.label);
-          });
+          .flat();
+
+        return sortItems(items, sort);
       }
     }
 

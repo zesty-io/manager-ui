@@ -15,6 +15,7 @@ export type TreeItem = {
   updatedAt?: string;
   hidden?: boolean;
   nodeData?: any;
+  createdAt?: string;
 } & Partial<ContentNavItem>;
 
 interface Props {
