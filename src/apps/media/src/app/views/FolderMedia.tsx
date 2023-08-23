@@ -1,5 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router";
+import moment from "moment-timezone";
+
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 import { EmptyState } from "../components/EmptyState";
 import {
@@ -141,7 +143,9 @@ export const FolderMedia = ({
       case "createdDesc":
       // Default to API order
       default:
-        return unsortedSubGroups;
+        return [...unsortedSubGroups]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .sort((a, b) => moment(b.created_at).diff(a.created_at));
     }
   }, [unsortedSubGroups, sortOrder, filetypeFilter, dateRangeFilter]);
 
