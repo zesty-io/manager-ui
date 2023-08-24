@@ -102,13 +102,14 @@ export const LanguageSelector = () => {
           horizontal: "right",
         }}
         transformOrigin={{
-          vertical: -8,
+          vertical: -10,
           horizontal: "right",
         }}
         anchorEl={anchorEl}
         open={!!anchorEl}
         PaperProps={{
-          style: {
+          sx: {
+            boxShadow: (theme) => theme.shadows[8],
             width: "280px",
           },
         }}

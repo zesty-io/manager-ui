@@ -74,7 +74,7 @@ export const VersionSelector = () => {
           horizontal: "right",
         }}
         transformOrigin={{
-          vertical: -8,
+          vertical: -10,
           horizontal: "right",
         }}
         anchorEl={anchorEl}

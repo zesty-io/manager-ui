@@ -75,7 +75,7 @@ export const PreviewMenu = () => {
           }}
         >
           <ListItemIcon>
-            <DesignServicesRounded fontSize="small" />
+            <DesignServicesRounded />
           </ListItemIcon>
           Draft Preview - v{item?.meta?.version}
         </MenuItem>
@@ -87,7 +87,7 @@ export const PreviewMenu = () => {
             }}
           >
             <ListItemIcon>
-              <LanguageRounded fontSize="small" />
+              <LanguageRounded />
             </ListItemIcon>
             Production Preview -v{activePublishing?.version}
           </MenuItem>

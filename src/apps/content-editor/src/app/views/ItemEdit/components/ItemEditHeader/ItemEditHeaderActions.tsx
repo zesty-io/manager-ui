@@ -262,7 +262,16 @@ export const ItemEditHeaderActions = ({
           itemState === ITEM_STATES.dirty ||
           publishAfterSave ||
           isFetching ? (
-            <ButtonGroup variant="contained" color="success" size="small">
+            <ButtonGroup
+              variant="contained"
+              color="success"
+              size="small"
+              sx={{
+                "& .MuiButtonGroup-grouped:not(:last-of-type)": {
+                  borderColor: "green.600",
+                },
+              }}
+            >
               <LoadingButton
                 startIcon={<CloudUploadRounded />}
                 sx={{
@@ -286,6 +295,8 @@ export const ItemEditHeaderActions = ({
               <Button
                 sx={{
                   color: "common.white",
+                  width: 32,
+                  minWidth: 32,
                 }}
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);

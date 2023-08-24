@@ -95,13 +95,13 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
           sx={{
             backgroundColor: "background.paper",
             color: "text.primary",
-            borderBottom: (theme) => `2px solid ${theme?.palette?.divider} `,
+            borderBottom: (theme) => `2px solid ${theme?.palette?.border} `,
             "*": {
               boxSizing: "border-box",
             },
           }}
         >
-          <Box display="flex" justifyContent="space-between">
+          <Box display="flex" justifyContent="space-between" gap={15}>
             <Box>
               <ItemEditBreadcrumbs />
               <Typography

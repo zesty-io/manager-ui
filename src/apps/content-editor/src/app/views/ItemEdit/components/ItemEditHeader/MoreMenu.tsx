@@ -17,6 +17,7 @@ import {
   CheckRounded,
   DesignServicesRounded,
   VisibilityRounded,
+  KeyboardArrowRightRounded,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { Database } from "@zesty-io/material";
@@ -96,6 +97,11 @@ export const MoreMenu = () => {
         onClose={() => {
           setAnchorEl(null);
         }}
+        PaperProps={{
+          sx: {
+            width: 288,
+          },
+        }}
       >
         <MenuItem
           onClick={() => {
@@ -104,17 +110,13 @@ export const MoreMenu = () => {
           }}
         >
           <ListItemIcon>
-            <ContentCopyRounded fontSize="small" />
+            <ContentCopyRounded />
           </ListItemIcon>
           Duplicate Item
         </MenuItem>
         <MenuItem onClick={() => handleCopyClick(itemZUID)}>
           <ListItemIcon>
-            {isCopied ? (
-              <CheckRounded fontSize="small" />
-            ) : (
-              <WidgetsRounded fontSize="small" />
-            )}
+            {isCopied ? <CheckRounded /> : <WidgetsRounded />}
           </ListItemIcon>
           Copy ZUID
         </MenuItem>
@@ -125,9 +127,10 @@ export const MoreMenu = () => {
           }}
         >
           <ListItemIcon>
-            <BoltRounded fontSize="small" />
+            <BoltRounded />
           </ListItemIcon>
           View Quick Access API
+          <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
         </MenuItem>
         <MenuItem
           onClick={(event) => {
@@ -136,9 +139,10 @@ export const MoreMenu = () => {
           }}
         >
           <ListItemIcon>
-            <DataObjectRounded fontSize="small" />
+            <DataObjectRounded />
           </ListItemIcon>
           View Site Generators API
+          <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -146,7 +150,7 @@ export const MoreMenu = () => {
           }}
         >
           <ListItemIcon>
-            <Database fontSize="small" />
+            <Database />
           </ListItemIcon>
           Edit Model
         </MenuItem>
@@ -156,7 +160,7 @@ export const MoreMenu = () => {
           }}
         >
           <ListItemIcon>
-            <CodeRounded fontSize="small" />
+            <CodeRounded />
           </ListItemIcon>
           Edit Template
         </MenuItem>
@@ -167,7 +171,7 @@ export const MoreMenu = () => {
           }}
         >
           <ListItemIcon>
-            <DeleteRounded fontSize="small" />
+            <DeleteRounded />
           </ListItemIcon>
           Delete Item
         </MenuItem>
@@ -199,7 +203,7 @@ export const MoreMenu = () => {
           }}
         >
           <ListItemIcon>
-            <DesignServicesRounded fontSize="small" />
+            <DesignServicesRounded />
           </ListItemIcon>
           <Typography
             variant="inherit"
@@ -228,7 +232,7 @@ export const MoreMenu = () => {
             }}
           >
             <ListItemIcon>
-              <VisibilityRounded fontSize="small" />
+              <VisibilityRounded />
             </ListItemIcon>
             <Typography
               variant="inherit"
