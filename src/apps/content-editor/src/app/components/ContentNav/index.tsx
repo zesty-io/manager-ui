@@ -34,7 +34,10 @@ import {
 } from "../../../../../../shell/components/AppSidebar";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
 import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
-import { useGetContentNavItemsQuery } from "../../../../../../shell/services/instance";
+import {
+  useGetContentNavItemsQuery,
+  useGetContentItemQuery,
+} from "../../../../../../shell/services/instance";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { CreateContentItemDialog } from "../../../../../../shell/components/CreateContentItemDialog";
 import {
@@ -99,6 +102,10 @@ export const ContentNav = () => {
     useGetCurrentUserRolesQuery();
   const { data: rawNavData, isError: navItemsError } =
     useGetContentNavItemsQuery(null, { refetchOnMountOrArgChange: true });
+  const { data: contentItem } = useGetContentItemQuery(
+    location.pathname.split("/")[3],
+    { skip: !location.pathname.split("/")[3] }
+  );
 
   const [closedNavItems, setClosedNavItems] = useLocalStorage(
     "zesty:navContentItems:closed",
@@ -379,11 +386,24 @@ export const ContentNav = () => {
         ) {
           return pathWithoutContentZUID;
         }
+
+        /**
+         * Checks if the current url has a sibling that exists on the content nav
+         * Adds support to multi-lang content items
+         */
+        if (!!contentItem?.siblings) {
+          const siblingOnContentNav = Object.values(contentItem.siblings)?.find(
+            (item) =>
+              pathExists(mappedTree, `${pathWithoutContentZUID}/${item}`)
+          );
+
+          return `${pathWithoutContentZUID}/${siblingOnContentNav}`;
+        }
       }
 
       return pathWithContentZUID;
     }
-  }, [location, mappedTree, clippingsZUID]);
+  }, [location, mappedTree, clippingsZUID, contentItem]);
 
   useEffect(() => {
     if (currentUserRolesError) {
