@@ -296,7 +296,8 @@ export const ItemEditHeaderActions = ({
                 sx={{
                   color: "common.white",
                   width: 32,
-                  minWidth: 32,
+                  // Override MUI default minWidth of 40px one-off
+                  minWidth: "unset !important",
                 }}
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);
@@ -314,6 +315,7 @@ export const ItemEditHeaderActions = ({
                   variant="body2"
                   color="success.main"
                   fontWeight={500}
+                  letterSpacing="0.46px"
                 >
                   Published
                 </Typography>

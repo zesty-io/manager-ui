@@ -74,10 +74,10 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
       <Prompt when={Boolean(props.show)} message={"content_confirm"} />
       <ThemeProvider theme={theme}>
         <Dialog
-          open={open || props.loading}
+          open={open}
           fullWidth
           maxWidth={"xs"}
-          onClick={() => handler("cancel")}
+          onClose={() => handler("cancel")}
         >
           <DialogTitle>
             <Box
