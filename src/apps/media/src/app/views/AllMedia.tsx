@@ -111,10 +111,16 @@ export const AllMedia = ({
   return (
     <Box
       component="main"
-      sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        backgroundColor: "grey.50",
+      }}
     >
       <Header
-        title="All Media"
+        title="Recents"
         addImagesCallback={addImagesCallback}
         binId={defaultBin?.id}
         hideFolderCreate

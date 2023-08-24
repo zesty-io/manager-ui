@@ -212,15 +212,13 @@ export const Header = ({
           display: "flex",
           justifyContent: "space-between",
           pt: 4,
-          pb: 2,
+          pb: 1.75,
           px: 4,
           borderStyle: "solid",
           borderWidth: "0px",
-          borderBottomWidth: "1px",
+          borderBottomWidth: "2px",
           borderColor: "border",
-          // mb: 2,
-          // Height specified to make border inset
-          // height: "64px",
+          backgroundColor: "background.paper",
         }}
       >
         {selectedFiles?.length > 0 ? (
