@@ -721,7 +721,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
   ];
 
   return (
-    <Box component="main" sx={{ height: "100%", width: "100%" }}>
+    <Box component="main" sx={{ height: "100%", width: "100%", px: 4 }}>
       {files && (
         <DataGridPro
           sx={{
@@ -730,6 +730,9 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
               cursor: "pointer",
             },
             border: "none",
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "grey.100",
+            },
           }}
           columns={columns}
           rows={files}

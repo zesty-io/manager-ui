@@ -88,12 +88,26 @@ export const InsightsMedia: FC = () => {
         display: "flex",
         flexDirection: "column",
         height: "100%",
+        backgroundColor: "grey.50",
       }}
     >
-      <Box sx={{ pt: 2, px: 3 }}>
-        <Typography variant="h4" fontWeight={600}>
+      <Box
+        sx={{
+          pt: 4,
+          pb: 1.75,
+          px: 4,
+          backgroundColor: "background.paper",
+          borderStyle: "solid",
+          borderWidth: "0px",
+          borderBottomWidth: "2px",
+          borderColor: "border",
+        }}
+      >
+        <Typography variant="h3" fontWeight={700}>
           Insights
         </Typography>
+      </Box>
+      <Box sx={{ px: 4, py: 2 }}>
         <Button
           endIcon={<ArrowDropDownIcon />}
           onClick={(event) => setAnchorEl(event.currentTarget)}
@@ -133,7 +147,7 @@ export const InsightsMedia: FC = () => {
           ))}
         </Menu>
       </Box>
-      <Box sx={{ display: "flex", gap: 2, py: 2, px: 3 }}>
+      <Box sx={{ display: "flex", gap: 2, pb: 2, px: 4 }}>
         <MetricCard
           title="Media Requests"
           value={totalMediaRequests || 0}
