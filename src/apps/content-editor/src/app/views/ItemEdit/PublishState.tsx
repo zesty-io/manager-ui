@@ -152,8 +152,9 @@ export const PublishState = ({ reloadItem }: Props) => {
             sx={{
               boxSizing: "border-box",
               height: "100%",
-              p: 2,
               bgcolor: "grey.50",
+              py: 2.5,
+              px: 4,
             }}
           >
             <DataGridPro
