@@ -1,5 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router";
+import moment from "moment-timezone";
+
 import { EmptyState } from "../components/EmptyState";
 import {
   mediaManagerApi,
@@ -135,7 +137,9 @@ export const BinMedia = ({
       case "createdDesc":
       // Default to API order
       default:
-        return unsortedBinGroups;
+        return [...unsortedBinGroups]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .sort((a, b) => moment(b.created_at).diff(a.created_at));
     }
   }, [unsortedBinGroups, sortOrder, binData, filetypeFilter, dateRangeFilter]);
 
@@ -180,7 +184,6 @@ export const BinMedia = ({
                   {binFiles?.length} matches found
                 </Typography>
               )}
-              <UploadModal />
               <DnDProvider currentBinId={id} currentGroupId="">
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (
                   <>

@@ -44,6 +44,7 @@ export interface Group {
   bin_id: string;
   group_id: string;
   name: string;
+  created_at?: string;
 }
 
 export interface File {
@@ -448,4 +449,18 @@ export interface Language {
   default: boolean;
   name: string;
   updatedAt: string;
+}
+
+export interface InstalledApp {
+  ZUID: string;
+  appZUID: string;
+  createdAt: string;
+  createdByUserZUID: string;
+  description: string | null;
+  label: string;
+  name: string;
+  public: boolean;
+  publisher: string;
+  updatedAt: string;
+  url: string;
 }

@@ -64,7 +64,7 @@ export const InstanceAvatar: FC<InstanceAvatar> = ({
         sx={{
           height: 32,
           width: 32,
-          backgroundColor: faviconURL ? "transparent" : "info.main",
+          backgroundColor: faviconURL ? "common.white" : "info.main",
         }}
       >
         {(!faviconURL && instance?.name[0]?.toUpperCase()) || "A"}

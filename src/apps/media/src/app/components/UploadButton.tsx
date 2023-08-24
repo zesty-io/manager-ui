@@ -1,21 +1,23 @@
-import { FC, useEffect, useRef } from "react";
+import React, { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
-import FileUpload from "@mui/icons-material/FileUpload";
+import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { fileUploadStage } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
-import { ChangeEventHandler } from "react";
 import {
   useGetBinQuery,
   useGetGroupDataQuery,
 } from "../../../../../shell/services/mediaManager";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { useHistory } from "react-router";
+import { IconButton } from "@zesty-io/material";
 
 export type UploadButton = {
   currentGroupId?: string;
   currentBinId: string;
   text?: string;
   variant?: "text" | "outlined" | "contained";
+  isIconButton?: boolean;
+  id?: string;
 };
 
 export const UploadButton: FC<UploadButton> = ({
@@ -23,7 +25,10 @@ export const UploadButton: FC<UploadButton> = ({
   currentGroupId,
   text,
   variant = "contained",
+  isIconButton = false,
+  id = "fileUploadButton",
 }) => {
+  const [filesToUpload, setFilesToUpload] = useState<FileList>(null);
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
   const history = useHistory();
@@ -42,49 +47,75 @@ export const UploadButton: FC<UploadButton> = ({
   useEffect(() => {
     if (triggerUpload) {
       handleUploadButtonClick();
-      history.replace("/media");
+      // @ts-ignore
+      const origin = history?.location?.state?.from;
+
+      if (!!origin) {
+        history.replace(origin === "/launchpad" ? "/media" : origin);
+      }
     }
   }, [triggerUpload]);
 
-  const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (
-    event
-  ) => {
-    const currentBin = binData[0];
+  useEffect(() => {
+    // Makes sure that the file is uploaded to the correct folder by waiting for the ids to be loaded first
+    if (filesToUpload?.length && !loading) {
+      const currentBin = binData[0];
 
-    dispatch(
-      fileUploadStage(
-        Array.from(event.target.files).map((file) => {
-          return {
-            file,
-            bin_id: currentBin.id,
-            group_id: currentGroup?.id || currentBin.id,
-          };
-        })
-      )
-    );
-  };
+      dispatch(
+        fileUploadStage(
+          Array.from(filesToUpload).map((file) => {
+            return {
+              file,
+              bin_id: currentBin.id,
+              group_id: currentGroup?.id || currentBin.id,
+            };
+          })
+        )
+      );
+
+      setFilesToUpload(null);
+    }
+  }, [filesToUpload, loading]);
+
   const handleUploadButtonClick = () => {
     //clears any previous file input value to allow for the same file to be uploaded again
+    setFilesToUpload(null);
     hiddenFileInput.current.value = "";
     hiddenFileInput.current.click();
   };
+
   return (
     <>
-      <Button
-        onClick={handleUploadButtonClick}
-        variant={variant}
-        color="primary"
-        size="small"
-        startIcon={<FileUpload />}
-        disabled={loading || !binData}
-      >
-        {text || "Upload"}
-      </Button>
+      {isIconButton ? (
+        <IconButton
+          variant="contained"
+          size="xsmall"
+          onClick={handleUploadButtonClick}
+          disabled={loading || !binData}
+        >
+          <FileUploadRoundedIcon fontSize="small" />
+        </IconButton>
+      ) : (
+        <Button
+          data-cy={id}
+          onClick={handleUploadButtonClick}
+          variant={variant}
+          color="primary"
+          size="small"
+          startIcon={<FileUploadRoundedIcon />}
+          disabled={loading || !binData}
+        >
+          {text || "Upload"}
+        </Button>
+      )}
+
       <input
         type="file"
         multiple
         ref={hiddenFileInput}
-        onChange={handleFileInputChange}
+        onChange={(evt: ChangeEvent<HTMLInputElement>) =>
+          setFilesToUpload(evt.target.files)
+        }
         hidden
         style={{ display: "none" }}
       />
