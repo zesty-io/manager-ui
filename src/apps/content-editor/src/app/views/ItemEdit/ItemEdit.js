@@ -285,8 +285,6 @@ export default function ItemEdit() {
             onDiscard={discard}
           />
 
-          {/* <UnsavedChangesDialog /> */}
-
           <Box
             component="section"
             sx={{ display: "flex", flexDirection: "column", height: "100%" }}
