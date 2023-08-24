@@ -75,6 +75,7 @@ export const AnalyticsPropertySelector = ({ showSkeleton, path }: Props) => {
             height: "22px",
             width: "38px",
             minWidth: "unset",
+            bgcolor: "background.paper",
           }}
         >
           <SettingsIcon color="action" sx={{ width: "18px", height: "18px" }} />

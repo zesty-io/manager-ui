@@ -7,12 +7,12 @@ export const ApiCardList = () => {
     <Box height="100%">
       <Stack
         spacing={0.5}
-        px={3}
-        py={2}
+        px={4}
+        py={2.5}
         sx={{
           position: "sticky",
           top: 0,
-          backgroundColor: "common.white",
+          backgroundColor: "grey.50",
         }}
       >
         <Typography variant="h5" fontWeight={600}>

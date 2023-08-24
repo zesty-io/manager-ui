@@ -522,12 +522,6 @@ export const FieldForm = ({
           onChange={(_, value: ActiveTab) => setActiveTab(value)}
           sx={{
             px: 2.5,
-            height: "52px",
-            ".Mui-selected": {
-              svg: {
-                color: "primary.main",
-              },
-            },
           }}
         >
           <Tab

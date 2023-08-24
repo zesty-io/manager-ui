@@ -42,7 +42,7 @@ const Analytics = ({ item }: Props) => {
         {!isError ? (
           <>
             {item ? (
-              <Box px={3} py={2}>
+              <Box px={4} py={2.5}>
                 <SinglePageAnalytics item={item} loading={isFetching} />
               </Box>
             ) : (
