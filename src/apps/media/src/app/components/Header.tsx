@@ -41,6 +41,7 @@ import {
 } from "../../../../../shell/services/mediaManager";
 import { File } from "../../../../../shell/services/types";
 import { useHistory } from "react-router";
+import { FolderMenu } from "./FolderMenu";
 
 interface Props {
   title: string;
@@ -330,71 +331,14 @@ export const Header = ({
                   <MoreHorizRoundedIcon fontSize="small" />
                 </IconButton>
               ) : null}
-              <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
-                <MenuItem
-                  divider
-                  onClick={() => {
-                    closeMenu();
-                    setOpenDialog("new");
-                  }}
-                >
-                  <ListItemIcon>
-                    <CreateNewFolderIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Add Sub Folder</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    closeMenu();
-                    setOpenDialog("rename");
-                  }}
-                >
-                  <ListItemIcon>
-                    <DriveFileRenameOutlineIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Rename</ListItemText>
-                </MenuItem>
-                {groupId ? (
-                  <MenuItem
-                    onClick={() => {
-                      closeMenu();
-                      setOpenDialog("delete");
-                    }}
-                  >
-                    <ListItemIcon>
-                      <DeleteIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Delete</ListItemText>
-                  </MenuItem>
-                ) : null}
-                {id ? (
-                  <MenuItem
-                    onClick={() => {
-                      closeMenu();
-                      if (hiddenGroups.includes(id)) {
-                        setHiddenGroups(
-                          hiddenGroups.filter((group) => group !== id)
-                        );
-                      } else {
-                        setHiddenGroups([...(hiddenGroups as String[]), id]);
-                      }
-                      // dispatches storage event for components to listen to
-                      window.dispatchEvent(new StorageEvent("storage"));
-                    }}
-                  >
-                    <ListItemIcon>
-                      {hiddenGroups.includes(id) ? (
-                        <VisibilityIcon fontSize="small" />
-                      ) : (
-                        <VisibilityOffIcon fontSize="small" />
-                      )}
-                    </ListItemIcon>
-                    <ListItemText>
-                      {hiddenGroups.includes(id) ? "Show" : "Hide"}
-                    </ListItemText>
-                  </MenuItem>
-                ) : null}
-              </Menu>
+              <FolderMenu
+                anchorEl={anchorEl}
+                onCloseMenu={closeMenu}
+                title={title}
+                binId={binId}
+                groupId={groupId}
+                id={id}
+              />
             </Box>
             <Box>
               {hideFolderCreate ? null : (
@@ -415,17 +359,6 @@ export const Header = ({
           </>
         )}
       </Box>
-      {openDialog === "rename" ? (
-        <RenameFolderDialog
-          open
-          onClose={() => {
-            setOpenDialog(null);
-          }}
-          id={id}
-          name={title}
-          groupId={groupId}
-        />
-      ) : null}
       {openDialog === "new" ? (
         <NewFolderDialog
           open
@@ -434,16 +367,6 @@ export const Header = ({
           }}
           binId={binId}
           id={id}
-        />
-      ) : null}
-      {openDialog === "delete" ? (
-        <DeleteFolderDialog
-          open
-          onClose={() => {
-            setOpenDialog(null);
-          }}
-          id={id}
-          groupId={groupId}
         />
       ) : null}
     </>

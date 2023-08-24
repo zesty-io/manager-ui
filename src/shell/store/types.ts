@@ -1,5 +1,6 @@
 import { UIState } from "./ui";
 import { State as MediaRevampState } from "./media-revamp";
+import { InstalledApp } from "../services/types";
 /*
   TODO
   The UI state is well typed but the rest of the application state is entirely
@@ -11,7 +12,10 @@ import { State as MediaRevampState } from "./media-revamp";
 */
 export type AppState = {
   ui: UIState;
-  apps: any;
+  apps: {
+    frames: any;
+    installed: InstalledApp[];
+  };
   auth: any;
   user: any;
   users: any;

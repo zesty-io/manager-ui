@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, HTMLAttributes } from "react";
 import { TreeView } from "@mui/lab";
 import { useHistory } from "react-router-dom";
 
@@ -12,7 +12,11 @@ export type TreeItem = {
   children: TreeItem[];
   path: string;
   actions?: JSX.Element[];
-} & ContentNavItem;
+  updatedAt?: string;
+  hidden?: boolean;
+  nodeData?: any;
+  createdAt?: string;
+} & Partial<ContentNavItem>;
 
 interface Props {
   id: string;
@@ -21,8 +25,11 @@ interface Props {
   tree: TreeItem[];
   selected: string;
   expandedItems?: string[];
-  onToggleCollapse: (paths: string[]) => void;
+  onToggleCollapse?: (paths: string[]) => void;
   error?: boolean;
+  isHiddenTree?: boolean;
+  onItemDrop?: (draggedItem: any, targetItem: any) => void;
+  dragAndDrop?: boolean;
 }
 export const NavTree: FC<Readonly<Props>> = ({
   id,
@@ -33,6 +40,9 @@ export const NavTree: FC<Readonly<Props>> = ({
   expandedItems,
   onToggleCollapse,
   error = false,
+  isHiddenTree = false,
+  onItemDrop,
+  dragAndDrop = false,
 }) => {
   const history = useHistory();
 
@@ -60,14 +70,22 @@ export const NavTree: FC<Readonly<Props>> = ({
           }}
         >
           {tree?.map((item) => {
+            if ((!isHiddenTree && item.hidden) || !item) {
+              return <></>;
+            }
+
             return (
               <NavTreeItem
+                isHiddenTree={isHiddenTree}
                 key={item.path}
                 labelName={item.label}
                 nodeId={item.path}
                 labelIcon={item.icon}
                 nestedItems={item.children}
                 actions={item.actions ?? []}
+                nodeData={item.nodeData}
+                onItemDrop={onItemDrop}
+                dragAndDrop={dragAndDrop}
               />
             );
           })}

@@ -10,9 +10,13 @@ import {
   Autocomplete,
   createFilterOptions,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { useSelector } from "react-redux";
+
 import {
-  useGetBinGroupsQuery,
   useCreateGroupMutation,
+  useGetBinsQuery,
+  useGetAllBinGroupsQuery,
 } from "../../../../../shell/services/mediaManager";
 import { Group } from "../../../../../shell/services/types";
 import { useParams } from "../../../../../shell/hooks/useParams";
@@ -20,18 +24,32 @@ interface Props {
   open: boolean;
   onClose: () => void;
   id?: string;
-  binId: string;
+  binId?: string;
 }
 
 export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   const [name, setName] = useState("Untitled");
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>();
   const [params, setParams] = useParams();
 
-  const { data: binGroups } = useGetBinGroupsQuery(binId);
-
-  const [createGroup, { isLoading, isSuccess, data }] =
+  const [createGroup, { isLoading: isCreatingGroup, isSuccess, data }] =
     useCreateGroupMutation();
+
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const { data: bins, isLoading: isLoadingBins } = useGetBinsQuery({
+    instanceId,
+    ecoId,
+  });
+  const currentBin = bins?.find((bin) => bin.id === binId);
+  const defaultBin = bins?.find((bin) => bin.default === true);
+  const { data: allBinGroups, isLoading: isLoadingAllBinGroups } =
+    useGetAllBinGroupsQuery(
+      bins?.map((bin) => bin.id),
+      {
+        skip: !bins?.length,
+      }
+    );
 
   useEffect(() => {
     if (isSuccess) {
@@ -41,28 +59,68 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   }, [isSuccess]);
 
   useEffect(() => {
-    if (binGroups) {
-      setSelectedGroup(
-        binGroups?.find((group) => group.id === id) || {
-          name: "None",
-          bin_id: binId,
-          group_id: binId,
-          id: binId,
-        }
-      );
+    if (allBinGroups) {
+      if (binId) {
+        setSelectedGroup(
+          allBinGroups?.flat()?.find((group) => group.id === id) || {
+            name: currentBin?.name,
+            id: binId,
+            group_id: binId,
+            bin_id: binId,
+          }
+        );
+      } else {
+        setSelectedGroup({
+          name: defaultBin?.name,
+          id: defaultBin?.id,
+          group_id: defaultBin?.id,
+          bin_id: defaultBin?.id,
+        });
+      }
     }
-  }, [binGroups, id]);
+  }, [allBinGroups, id, currentBin, binId]);
 
   const handleCreate = () => {
     createGroup({
-      body: { name, group_id: selectedGroup?.id, bin_id: binId },
+      body: {
+        name,
+        group_id: selectedGroup?.id,
+        bin_id: binId ?? selectedGroup?.bin_id,
+      },
     });
   };
 
   const sortedBinGroups = useMemo(() => {
-    if (!binGroups) return [];
-    return [...binGroups].sort((a, b) => a?.name?.localeCompare(b?.name));
-  }, [binGroups]);
+    if (allBinGroups?.length && bins?.length) {
+      if (binId) {
+        return [
+          {
+            name: currentBin?.name ?? "None",
+            bin_id: binId,
+            group_id: binId,
+            id: binId,
+          },
+          ...allBinGroups.flat(),
+        ]
+          .filter((group) => group.bin_id === binId)
+          .sort((a, b) => a?.name?.localeCompare(b?.name));
+      } else {
+        const allBins = bins.map((bin) => ({
+          name: bin.name,
+          bin_id: bin.id,
+          group_id: bin.id,
+          id: bin.id,
+        }));
+        return [...allBins, ...allBinGroups.flat()].sort((a, b) =>
+          a?.name?.localeCompare(b?.name)
+        );
+      }
+    }
+
+    return [];
+  }, [allBinGroups, binId, bins]);
+
+  const loading = isLoadingBins || isLoadingAllBinGroups;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
@@ -70,23 +128,13 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
       <DialogContent>
         <InputLabel>Parent Folder</InputLabel>
         <Autocomplete
+          data-cy="newFolderParentSelector"
           size="small"
           fullWidth
+          loading={loading}
           value={selectedGroup}
           disableClearable
-          options={
-            binGroups
-              ? [
-                  {
-                    name: "None",
-                    bin_id: binId,
-                    group_id: binId,
-                    id: binId,
-                  },
-                  ...sortedBinGroups,
-                ]
-              : []
-          }
+          options={sortedBinGroups?.length ? sortedBinGroups : []}
           renderInput={(params) => <TextField {...params} hiddenLabel />}
           renderOption={(props, option) => (
             <li {...props} key={option.id}>
@@ -117,9 +165,14 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <Button disabled={isLoading} variant="contained" onClick={handleCreate}>
+        <LoadingButton
+          loading={isCreatingGroup}
+          disabled={loading || !selectedGroup || selectedGroup?.bin_id === null}
+          variant="contained"
+          onClick={handleCreate}
+        >
           Create
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
