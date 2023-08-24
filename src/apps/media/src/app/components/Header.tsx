@@ -211,15 +211,16 @@ export const Header = ({
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          py: 2,
-          px: 3,
+          pt: 4,
+          pb: 2,
+          px: 4,
           borderStyle: "solid",
           borderWidth: "0px",
           borderBottomWidth: "1px",
           borderColor: "border",
-          mb: 2,
+          // mb: 2,
           // Height specified to make border inset
-          height: "64px",
+          // height: "64px",
         }}
       >
         {selectedFiles?.length > 0 ? (
@@ -317,7 +318,7 @@ export const Header = ({
                   <ArrowBackRoundedIcon fontSize="small" color="action" />
                 </IconButton>
               )}
-              <Typography variant="h4" fontWeight={600}>
+              <Typography variant="h3" fontWeight={700}>
                 {title}
               </Typography>
               {id ? (
