@@ -20,7 +20,7 @@ describe("Content media selection modal", () => {
         .click({ force: true });
     });
     // Test that modal popped up
-    cy.get("h4").contains("Insert from Media");
+    cy.getBySelector("appSidebarHeaderTitle").contains("Insert from Media");
     cy.get("[data-testid='media-thumbnail-content']")
       .first()
       .parent()
@@ -54,11 +54,15 @@ describe("Content media selection modal", () => {
   });
 
   it("allows selection in wysiwyg", () => {
-    cy.reload();
+    cy.waitOn("*groups*", () => {
+      cy.waitOn("*models*", () => {
+        cy.visit("/content/6-556370-8sh47g/new");
+      });
+    });
     cy.get('button[title="Select media from your uploaded assets"]')
       .first()
       .click();
-    cy.get("h4").contains("Insert from Media");
+    cy.getBySelector("appSidebarHeaderTitle").contains("Insert from Media");
   });
 
   it("locks nav to locked media group", () => {
@@ -67,8 +71,8 @@ describe("Content media selection modal", () => {
     });
     cy.contains("2x Images");
     cy.get("figure button").last().click({ force: true });
-    cy.get("h4").contains("Insert from Media");
-    cy.get(".MuiTreeView-root li").should("have.length", 1);
+    cy.getBySelector("appSidebarHeaderTitle").contains("Insert from Media");
+    cy.getBySelector("media-main-nav").find("li").should("have.length", 1);
   });
 
   // Dependent on state of previous test

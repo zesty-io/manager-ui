@@ -114,7 +114,7 @@ export const AllMedia = ({
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
       <Header
-        title="All Media"
+        title="Recents"
         addImagesCallback={addImagesCallback}
         binId={defaultBin?.id}
         hideFolderCreate
@@ -141,7 +141,6 @@ export const AllMedia = ({
               {files?.length} matches found
             </Typography>
           )}
-          <UploadModal />
           <DnDProvider
             isDefaultBin
             currentBinId={defaultBin?.id}

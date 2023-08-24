@@ -96,8 +96,8 @@ export const mediaManagerApi = createApi({
               fetchWithBQ(`bin/${binId}/groups`)
             )
           )) as QueryReturnValue<any, FetchBaseQueryError>[];
-          const groups = groupResponses.map((groupResponse) =>
-            groupResponse.data.data?.reverse()
+          const groups = groupResponses.map(
+            (groupResponse) => groupResponse.data.data
           ) as Group[][];
           return { data: groups };
         } catch (error) {
@@ -120,8 +120,7 @@ export const mediaManagerApi = createApi({
       providesTags: (result, error, binId) => [
         { type: "BinGroups", id: binId },
       ],
-      transformResponse: (response: { data: Group[] }) =>
-        response.data.reverse(),
+      transformResponse: getResponseData,
     }),
     getGroupData: builder.query<GroupData, string>({
       query: (groupId) => `group/${groupId}`,
@@ -134,9 +133,7 @@ export const mediaManagerApi = createApi({
           ...file,
           thumbnail: generateThumbnail(file),
         })),
-        groups: response.data[0].groups.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        ),
+        groups: response.data[0].groups,
       }),
     }),
     updateBin: builder.mutation<

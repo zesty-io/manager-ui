@@ -27,29 +27,52 @@ import { darkTheme, theme } from "@zesty-io/material";
 import { IconButton as IconButtonCustom } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import { useLocation, useHistory } from "react-router-dom";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
+import { AddRounded } from "@mui/icons-material";
+
 export interface SubMenu {
   name: string;
   icon: SvgIconComponent;
   path: string;
+  onClick?: () => void;
+  disableActive?: boolean;
+  substringPathMatch?: boolean;
 }
 interface Props {
-  onFilter: (keyword: string) => void;
-  onAddClick: () => void;
+  onFilterChange?: (keyword: string) => void;
+  onFilterEnter?: (keyword: string) => void;
+  onAddClick?: () => void;
   mode?: PaletteMode;
-  headerTitle?: string;
+  headerTitle: string;
   subMenus?: SubMenu[];
+  withSearch?: boolean;
+  withTitleButton?: boolean;
+  titleButtonTooltip?: string;
+  searchId?: string;
+  searchPlaceholder?: string;
+  hideSubMenuOnSearch?: boolean;
+  filterKeyword?: string;
+  titleButtonIcon?: SvgIconComponent;
+  TitleButtonComponent?: React.ReactNode;
 }
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   (
     {
       onAddClick,
-      onFilter,
+      onFilterChange,
+      onFilterEnter,
       mode = "light",
-
       headerTitle,
       subMenus,
+      withSearch = true,
+      withTitleButton = true,
+      titleButtonTooltip,
+      searchId = "appSidebarSearch",
+      searchPlaceholder,
+      hideSubMenuOnSearch = true,
+      filterKeyword = "",
+      titleButtonIcon = AddRounded,
+      TitleButtonComponent,
       children,
       ...props
     },
@@ -58,7 +81,8 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
     const location = useLocation();
     const history = useHistory();
     const childrenContainerRef = useRef<HTMLDivElement | null>(null);
-    const [keyword, setKeyword] = useState("");
+    const textfieldRef = useRef<HTMLInputElement | null>(null);
+    const [userInputKeyword, setUserInputKeyword] = useState("");
 
     useImperativeHandle(
       ref,
@@ -68,14 +92,22 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
             const div = childrenContainerRef.current;
             div.scrollTop = div?.scrollHeight;
           },
+          clearAndFocusTextField() {
+            setUserInputKeyword("");
+            textfieldRef.current?.focus();
+          },
         };
       },
       []
     );
 
     useEffect(() => {
-      onFilter(keyword);
-    }, [keyword]);
+      onFilterChange && onFilterChange(userInputKeyword);
+    }, [userInputKeyword]);
+
+    useEffect(() => {
+      setUserInputKeyword(filterKeyword);
+    }, [filterKeyword]);
 
     const themeMode = mode === "light" ? theme : darkTheme;
 
@@ -94,19 +126,6 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
             {...props}
           >
             <Box py={1.5}>
-              {!!headerTitle && (
-                <Typography
-                  variant="h6"
-                  color="text.primary"
-                  fontWeight={700}
-                  lineHeight="24px"
-                  fontSize={18}
-                  px={1.5}
-                >
-                  {headerTitle}
-                </Typography>
-              )}
-
               <Stack gap={1.5}>
                 <Stack
                   direction="row"
@@ -115,69 +134,90 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                   px={1.5}
                 >
                   <Typography
+                    data-cy="appSidebarHeaderTitle"
                     variant="h6"
                     color="text.primary"
                     fontWeight={700}
                     lineHeight="24px"
                     fontSize={18}
                   >
-                    Content
+                    {headerTitle}
                   </Typography>
-                  <Tooltip
-                    title="Create Content"
-                    placement="right-start"
-                    enterDelay={1000}
-                    enterNextDelay={1000}
-                  >
-                    <IconButtonCustom
-                      data-cy="create_new_content_item"
-                      variant="contained"
-                      size="xsmall"
-                      onClick={onAddClick}
+                  {!!TitleButtonComponent && TitleButtonComponent}
+                  {withTitleButton && !TitleButtonComponent && (
+                    <Tooltip
+                      title={titleButtonTooltip}
+                      placement="right-start"
+                      enterDelay={1000}
+                      enterNextDelay={1000}
                     >
-                      <AddRoundedIcon sx={{ fontSize: 18 }} />
-                    </IconButtonCustom>
-                  </Tooltip>
-                </Stack>
-                <TextField
-                  InputProps={{
-                    sx: {
-                      backgroundColor: "grey.800",
-                    },
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        sx={{ marginRight: 0.5 }}
+                      <IconButtonCustom
+                        data-cy="create_new_content_item"
+                        variant="contained"
+                        size="xsmall"
+                        onClick={onAddClick}
                       >
-                        <ManageSearchRoundedIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  placeholder="Filter Models"
-                  size="small"
-                  sx={{
-                    px: 1.5,
-                  }}
-                  onChange={(evt) => setKeyword(evt.target.value)}
-                />
-                {!keyword && (
+                        <SvgIcon component={titleButtonIcon} fontSize="small" />
+                      </IconButtonCustom>
+                    </Tooltip>
+                  )}
+                </Stack>
+                {withSearch && (
+                  <TextField
+                    data-cy={searchId}
+                    value={userInputKeyword}
+                    inputProps={{
+                      ref: textfieldRef,
+                    }}
+                    InputProps={{
+                      sx: {
+                        backgroundColor: "grey.800",
+                        height: "100%",
+                      },
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          sx={{ marginRight: 0.5 }}
+                        >
+                          <ManageSearchRoundedIcon fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    placeholder={searchPlaceholder}
+                    size="small"
+                    sx={{
+                      px: 1.5,
+                      height: 36,
+                    }}
+                    onChange={(evt) => setUserInputKeyword(evt.target.value)}
+                    onKeyDown={(evt) => {
+                      if (evt.key.toLowerCase() === "enter") {
+                        onFilterEnter && onFilterEnter(userInputKeyword);
+                      }
+                    }}
+                  />
+                )}
+                {hideSubMenuOnSearch && userInputKeyword ? (
+                  <></>
+                ) : (
                   <List disablePadding>
                     {!!subMenus?.length &&
                       subMenus?.map((menu) => {
-                        // Wildcard match for /content/releases since this has a lot of sub routes
-                        const isActive =
-                          menu.name.toLowerCase() === "dashboard"
-                            ? location.pathname === menu.path
-                            : location.pathname.includes(menu.path);
+                        const isActive = menu.substringPathMatch
+                          ? location.pathname.includes(menu.path)
+                          : location.pathname === menu.path;
 
                         return (
                           <ListItem
                             key={menu.name}
                             disablePadding
-                            selected={isActive}
+                            selected={menu.disableActive ? false : isActive}
                             sx={{
                               color: "text.secondary",
-                              borderLeft: isActive ? "2px solid" : "none",
+                              borderLeft:
+                                !menu.disableActive && isActive
+                                  ? "2px solid"
+                                  : "none",
                               borderColor: "primary.main",
                             }}
                           >
@@ -188,7 +228,13 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                                 pr: 1.5,
                                 py: 0.75,
                               }}
-                              onClick={() => history.push(menu.path)}
+                              onClick={() => {
+                                if (menu.onClick) {
+                                  menu.onClick();
+                                } else {
+                                  history.push(menu.path);
+                                }
+                              }}
                             >
                               <ListItemIcon sx={{ minWidth: 32 }}>
                                 <SvgIcon component={menu.icon} />
