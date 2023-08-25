@@ -28,6 +28,11 @@ export const CustomBreadcrumbs = ({ items }: CustomBreadcrumbsProps) => {
             },
           },
         }}
+        sx={{
+          "& .MuiBreadcrumbs-separator": {
+            alignItems: "center",
+          },
+        }}
       >
         {items.map((item, index) => (
           <Box
