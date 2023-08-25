@@ -324,11 +324,23 @@ export const Header = ({
                     <ArrowBackRoundedIcon fontSize="small" color="action" />
                   </IconButton>
                 )}
-                <Typography variant="h3" fontWeight={700}>
+                <Typography
+                  variant="h3"
+                  fontWeight={700}
+                  sx={{
+                    display: "-webkit-box",
+                    "-webkit-line-clamp": "2",
+                    "-webkit-box-orient": "vertical",
+                    wordBreak: "break-word",
+                    wordWrap: "break-word",
+                    hyphens: "auto",
+                    overflow: "hidden",
+                  }}
+                >
                   {title}
                 </Typography>
               </Box>
-              <Box>
+              <Box flexShrink={0}>
                 {id ? (
                   <IconButton
                     size="small"
