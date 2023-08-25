@@ -201,7 +201,7 @@ export default class ScheduleFlyout extends Component {
                     />
                   </FormControl>
                 </div>
-                <div className={styles.Row}>
+                <div className={styles.Row} data-cy="SchedulePublishDate">
                   <FieldTypeDateTime
                     name="publish"
                     label="Publish date and time"
