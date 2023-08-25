@@ -175,6 +175,7 @@ export const FolderMedia = ({
             files={groupFiles}
             groupId={currentGroup?.group_id || groupData?.group_id}
             addImagesCallback={addImagesCallback}
+            showBreadcrumbs
           />
           {isBinsFetching || isBinGroupsFetching || isFetching ? (
             <Box
