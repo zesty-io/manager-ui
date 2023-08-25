@@ -22,10 +22,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRounded";
+import { useHistory } from "react-router";
+import { useLocalStorage } from "react-use";
+
 import { RenameFolderDialog } from "./RenameFolderDialog";
 import { NewFolderDialog } from "./NewFolderDialog";
 import { DeleteFolderDialog } from "./DeleteFolderDialog";
-import { useLocalStorage } from "react-use";
 import { UploadButton } from "./UploadButton";
 import { useDispatch, useSelector } from "react-redux";
 import { MoveFileDialog } from "./FileModal/MoveFileDialog";
@@ -40,7 +42,7 @@ import {
   useDeleteFilesMutation,
 } from "../../../../../shell/services/mediaManager";
 import { File } from "../../../../../shell/services/types";
-import { useHistory } from "react-router";
+import { MediaBreadcrumbs } from "./MediaBreadcrumbs";
 
 interface Props {
   title: string;
@@ -52,6 +54,7 @@ interface Props {
   hideFolderCreate?: boolean;
   addImagesCallback?: (selectedFiles: File[]) => void;
   showBackButton?: boolean;
+  showBreadcrumbs?: boolean;
 }
 type Dialogs = "delete" | "rename" | "new" | null;
 
@@ -65,6 +68,7 @@ export const Header = ({
   hideFolderCreate,
   addImagesCallback,
   showBackButton,
+  showBreadcrumbs,
 }: Props) => {
   const doneButtonRef = useRef<HTMLButtonElement>(null);
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
@@ -209,8 +213,6 @@ export const Header = ({
 
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
           pt: 4,
           pb: 1.75,
           px: 4,
@@ -222,7 +224,7 @@ export const Header = ({
         }}
       >
         {selectedFiles?.length > 0 ? (
-          <>
+          <Stack direction="row" justifyContent="space-between">
             <Stack direction="row" spacing="2px" alignItems="center">
               <IconButton
                 size="small"
@@ -297,120 +299,128 @@ export const Header = ({
                 </Button>
               )}
             </Stack>
-          </>
+          </Stack>
         ) : (
           <>
-            <Box sx={{ display: "flex", gap: "2px", alignItems: "center" }}>
-              {showBackButton && (
-                <IconButton
-                  size="small"
-                  sx={{ height: "fit-content" }}
-                  onClick={() => {
-                    if (history.length > 2) {
-                      history.goBack();
-                    } else {
-                      history.push("/media");
-                    }
-                  }}
-                >
-                  <ArrowBackRoundedIcon fontSize="small" color="action" />
-                </IconButton>
-              )}
-              <Typography variant="h3" fontWeight={700}>
-                {title}
-              </Typography>
-              {id ? (
-                <IconButton
-                  size="small"
-                  onClick={openMenu}
-                  sx={{ height: "fit-content" }}
-                  aria-label="Open folder menu"
-                >
-                  <MoreHorizRoundedIcon fontSize="small" />
-                </IconButton>
-              ) : null}
-              <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
-                <MenuItem
-                  divider
-                  onClick={() => {
-                    closeMenu();
-                    setOpenDialog("new");
-                  }}
-                >
-                  <ListItemIcon>
-                    <CreateNewFolderIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Add Sub Folder</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    closeMenu();
-                    setOpenDialog("rename");
-                  }}
-                >
-                  <ListItemIcon>
-                    <DriveFileRenameOutlineIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Rename</ListItemText>
-                </MenuItem>
-                {groupId ? (
-                  <MenuItem
+            {showBreadcrumbs && id && <MediaBreadcrumbs id={id} />}
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Box sx={{ display: "flex", gap: "2px", alignItems: "center" }}>
+                {showBackButton && (
+                  <IconButton
+                    size="small"
+                    sx={{ height: "fit-content" }}
                     onClick={() => {
-                      closeMenu();
-                      setOpenDialog("delete");
-                    }}
-                  >
-                    <ListItemIcon>
-                      <DeleteIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Delete</ListItemText>
-                  </MenuItem>
-                ) : null}
-                {id ? (
-                  <MenuItem
-                    onClick={() => {
-                      closeMenu();
-                      if (hiddenGroups.includes(id)) {
-                        setHiddenGroups(
-                          hiddenGroups.filter((group) => group !== id)
-                        );
+                      if (history.length > 2) {
+                        history.goBack();
                       } else {
-                        setHiddenGroups([...(hiddenGroups as String[]), id]);
+                        history.push("/media");
                       }
-                      // dispatches storage event for components to listen to
-                      window.dispatchEvent(new StorageEvent("storage"));
+                    }}
+                  >
+                    <ArrowBackRoundedIcon fontSize="small" color="action" />
+                  </IconButton>
+                )}
+                <Typography variant="h3" fontWeight={700}>
+                  {title}
+                </Typography>
+              </Box>
+              <Box>
+                {id ? (
+                  <IconButton
+                    size="small"
+                    onClick={openMenu}
+                    sx={{ height: "fit-content", mr: 1 }}
+                    aria-label="Open folder menu"
+                  >
+                    <MoreHorizRoundedIcon fontSize="small" />
+                  </IconButton>
+                ) : null}
+                <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
+                  <MenuItem
+                    divider
+                    onClick={() => {
+                      closeMenu();
+                      setOpenDialog("new");
                     }}
                   >
                     <ListItemIcon>
-                      {hiddenGroups.includes(id) ? (
-                        <VisibilityIcon fontSize="small" />
-                      ) : (
-                        <VisibilityOffIcon fontSize="small" />
-                      )}
+                      <CreateNewFolderIcon fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>
-                      {hiddenGroups.includes(id) ? "Show" : "Hide"}
-                    </ListItemText>
+                    <ListItemText>Add Sub Folder</ListItemText>
                   </MenuItem>
-                ) : null}
-              </Menu>
-            </Box>
-            <Box>
-              {hideFolderCreate ? null : (
-                <Button
-                  sx={{ mr: 2 }}
-                  variant="outlined"
-                  color="inherit"
-                  startIcon={<CreateNewFolderRoundedIcon color="action" />}
-                  onClick={() => setOpenDialog("new")}
-                >
-                  Add Sub Folder
-                </Button>
-              )}
-              {hideUpload ? null : (
-                <UploadButton currentBinId={binId} currentGroupId={id} />
-              )}
-            </Box>
+                  <MenuItem
+                    onClick={() => {
+                      closeMenu();
+                      setOpenDialog("rename");
+                    }}
+                  >
+                    <ListItemIcon>
+                      <DriveFileRenameOutlineIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Rename</ListItemText>
+                  </MenuItem>
+                  {groupId ? (
+                    <MenuItem
+                      onClick={() => {
+                        closeMenu();
+                        setOpenDialog("delete");
+                      }}
+                    >
+                      <ListItemIcon>
+                        <DeleteIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Delete</ListItemText>
+                    </MenuItem>
+                  ) : null}
+                  {id ? (
+                    <MenuItem
+                      onClick={() => {
+                        closeMenu();
+                        if (hiddenGroups.includes(id)) {
+                          setHiddenGroups(
+                            hiddenGroups.filter((group) => group !== id)
+                          );
+                        } else {
+                          setHiddenGroups([...(hiddenGroups as String[]), id]);
+                        }
+                        // dispatches storage event for components to listen to
+                        window.dispatchEvent(new StorageEvent("storage"));
+                      }}
+                    >
+                      <ListItemIcon>
+                        {hiddenGroups.includes(id) ? (
+                          <VisibilityIcon fontSize="small" />
+                        ) : (
+                          <VisibilityOffIcon fontSize="small" />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText>
+                        {hiddenGroups.includes(id) ? "Show" : "Hide"}
+                      </ListItemText>
+                    </MenuItem>
+                  ) : null}
+                </Menu>
+                {hideFolderCreate ? null : (
+                  <Button
+                    sx={{ mr: 1 }}
+                    variant="outlined"
+                    color="inherit"
+                    startIcon={<CreateNewFolderRoundedIcon color="action" />}
+                    onClick={() => setOpenDialog("new")}
+                    size="small"
+                  >
+                    Add Sub Folder
+                  </Button>
+                )}
+                {hideUpload ? null : (
+                  <UploadButton currentBinId={binId} currentGroupId={id} />
+                )}
+              </Box>
+            </Stack>
           </>
         )}
       </Box>
