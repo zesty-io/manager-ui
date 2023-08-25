@@ -233,7 +233,7 @@ export const Header = ({
               >
                 <CloseIcon fontSize="small" />
               </IconButton>
-              <Typography variant="h4" fontWeight={600}>
+              <Typography variant="h3" fontWeight={700}>
                 {selectedFiles?.length}{" "}
                 {isSelectDialog && limitSelected
                   ? ` / ${limitSelected} `
