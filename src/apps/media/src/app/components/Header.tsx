@@ -377,22 +377,6 @@ export const Header = ({
                 )}
               </Box>
             </Stack>
-            <Box>
-              {hideFolderCreate ? null : (
-                <Button
-                  sx={{ mr: 2 }}
-                  variant="outlined"
-                  color="inherit"
-                  startIcon={<CreateNewFolderRoundedIcon color="action" />}
-                  onClick={() => setOpenDialog("new")}
-                >
-                  Add Sub Folder
-                </Button>
-              )}
-              {hideUpload ? null : (
-                <UploadButton currentBinId={binId} currentGroupId={id} />
-              )}
-            </Box>
           </>
         )}
       </Box>
