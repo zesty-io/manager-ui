@@ -211,6 +211,7 @@ export const ItemEditHeaderActions = ({
             }}
             loading={saving && !publishAfterSave}
             disabled={!canUpdate}
+            id="SaveItemButton"
           >
             Save
           </LoadingButton>
@@ -289,6 +290,7 @@ export const ItemEditHeaderActions = ({
                 loading={publishing || publishAfterSave || isFetching}
                 color="success"
                 variant="contained"
+                id="PublishButton"
               >
                 {itemState === ITEM_STATES.dirty ? "Save & Publish" : "Publish"}
               </LoadingButton>
@@ -303,6 +305,7 @@ export const ItemEditHeaderActions = ({
                   setPublishMenu(e.currentTarget);
                 }}
                 disabled={publishing || publishAfterSave || isFetching}
+                data-cy="PublishMenuButton"
               >
                 <ArrowDropDownRounded fontSize="small" />
               </Button>
@@ -504,6 +507,7 @@ const PublishingMenu = ({
             }
             onClose();
           }}
+          data-cy="PublishScheduleButton"
         >
           <ListItemIcon>
             <CalendarTodayRounded fontSize="small" />

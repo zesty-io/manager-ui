@@ -35,6 +35,7 @@ export const DuoModeSwitch = () => {
 
   return (
     <IOSSwitch
+      data-cy="DuoModeToggle"
       checked={ui.duoMode}
       onChange={(event) => {
         if (event.target.checked) {

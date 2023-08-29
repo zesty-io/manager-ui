@@ -135,11 +135,7 @@ export const SearchMedia = ({
           return b.filename.localeCompare(a.filename);
         });
       case "dateadded":
-        return [...filteredFiles].sort((a, b) => {
-          return (
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-        });
+        return filteredFiles;
       // Default to API order
       default:
         return filteredFiles;

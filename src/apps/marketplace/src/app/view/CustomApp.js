@@ -6,19 +6,15 @@ import { Route, Switch } from "react-router";
 import { Box } from "@mui/material";
 
 import { NotFound } from "shell/components/NotFound";
-
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { Search } from "@zesty-io/core/Search";
-
-import Link from "@mui/material/Link";
+import { InstallApp } from "../components/InstallApp";
 
 import styles from "./CustomApp.less";
 export default function CustomApp() {
   return (
     <main className={cx(styles.CustomApp)}>
       <Switch>
-        {/*<Route path="/apps" render={InstallApp} />*/}
-        <Route path="/apps/:zuid" component={LoadApp} />
+        <Route exact path="/apps" render={InstallApp} />
+        <Route exact path="/apps/:zuid" component={LoadApp} />
       </Switch>
     </main>
   );
@@ -73,128 +69,5 @@ function LoadApp(props) {
     <NotFound
       message={`The app "${props.match.params.zuid}" is not installed.`}
     />
-  );
-}
-
-function InstallApp() {
-  return (
-    <section className={styles.InstallApp}>
-      <header className={styles.Filter}>
-        <h1 className={styles.display}>Find an application: </h1>
-        <Search />
-      </header>
-
-      <main className={styles.Grid}>
-        <Card className={styles.Register}>
-          <CardHeader>
-            <h1 className={styles.display}>Custom Applications</h1>
-          </CardHeader>
-          <CardContent>
-            <ol className={styles.subheadline}>
-              <li>
-                <Link
-                  color="secondary"
-                  underline="none"
-                  href="https://github.com/zesty-io/app-custom-guide"
-                >
-                  Build an application
-                </Link>
-              </li>
-              <li>Register an application</li>
-              <li>Install an application</li>
-            </ol>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <h1 className={styles.display}>Content Composer</h1>
-          </CardHeader>
-          <CardContent>
-            <figure>
-              <img src="" />
-            </figure>
-            <p>Create dynamic layouts.</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <h1 className={styles.display}>Content Composer</h1>
-          </CardHeader>
-          <CardContent>
-            <figure>
-              <img src="" />
-            </figure>
-            <p>Create dynamic layouts.</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <h1 className={styles.display}>Content Composer</h1>
-          </CardHeader>
-          <CardContent>
-            <figure>
-              <img src="" />
-            </figure>
-            <p>Create dynamic layouts.</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <h1 className={styles.display}>Content Composer</h1>
-          </CardHeader>
-          <CardContent>
-            <figure>
-              <img src="" />
-            </figure>
-            <p>Create dynamic layouts.</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <h1 className={styles.display}>Content Composer</h1>
-          </CardHeader>
-          <CardContent>
-            <figure>
-              <img src="" />
-            </figure>
-            <p>Create dynamic layouts.</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <h1 className={styles.display}>Content Composer</h1>
-          </CardHeader>
-          <CardContent>
-            <figure>
-              <img src="" />
-            </figure>
-            <p>Create dynamic layouts.</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <h1 className={styles.display}>Content Composer</h1>
-          </CardHeader>
-          <CardContent>
-            <figure>
-              <img src="" />
-            </figure>
-            <p>Create dynamic layouts.</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <h1 className={styles.display}>Content Composer</h1>
-          </CardHeader>
-          <CardContent>
-            <figure>
-              <img src="" />
-            </figure>
-            <p>Create dynamic layouts.</p>
-          </CardContent>
-        </Card>
-      </main>
-    </section>
   );
 }

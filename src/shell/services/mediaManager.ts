@@ -76,11 +76,12 @@ export const mediaManagerApi = createApi({
               thumbnail: generateThumbnail(file),
             }))
             .sort(
-              //@ts-ignore
-              (a, b) => new Date(a.created_at) - new Date(b.created_at)
+              (a, b) =>
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime()
             ) as File[];
 
-          return { data: files.reverse() };
+          return { data: files };
         } catch (error) {
           return { error };
         }
@@ -95,8 +96,8 @@ export const mediaManagerApi = createApi({
               fetchWithBQ(`bin/${binId}/groups`)
             )
           )) as QueryReturnValue<any, FetchBaseQueryError>[];
-          const groups = groupResponses.map((groupResponse) =>
-            groupResponse.data.data?.reverse()
+          const groups = groupResponses.map(
+            (groupResponse) => groupResponse.data.data
           ) as Group[][];
           return { data: groups };
         } catch (error) {
@@ -109,20 +110,17 @@ export const mediaManagerApi = createApi({
       query: (binId) => `bin/${binId}/files`,
       providesTags: (result, error, binId) => [{ type: "BinFiles", id: binId }],
       transformResponse: (response: { data: File[] }) =>
-        response.data
-          .map((file) => ({
-            ...file,
-            thumbnail: generateThumbnail(file),
-          }))
-          .reverse(),
+        response.data.map((file) => ({
+          ...file,
+          thumbnail: generateThumbnail(file),
+        })),
     }),
     getBinGroups: builder.query<Group[], string>({
       query: (binId) => `bin/${binId}/groups`,
       providesTags: (result, error, binId) => [
         { type: "BinGroups", id: binId },
       ],
-      transformResponse: (response: { data: Group[] }) =>
-        response.data.reverse(),
+      transformResponse: getResponseData,
     }),
     getGroupData: builder.query<GroupData, string>({
       query: (groupId) => `group/${groupId}`,
@@ -131,15 +129,11 @@ export const mediaManagerApi = createApi({
       ],
       transformResponse: (response: { data: GroupData[] }) => ({
         ...response.data[0],
-        files: response.data[0].files
-          .map((file) => ({
-            ...file,
-            thumbnail: generateThumbnail(file),
-          }))
-          .reverse(),
-        groups: response.data[0].groups.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        ),
+        files: response.data[0].files.map((file) => ({
+          ...file,
+          thumbnail: generateThumbnail(file),
+        })),
+        groups: response.data[0].groups,
       }),
     }),
     updateBin: builder.mutation<
@@ -360,12 +354,10 @@ export const mediaManagerApi = createApi({
       query: ({ binIds, term }) =>
         `/search/files?bins=${binIds.join(",")}&term=${term}`,
       transformResponse: (response: { data: File[] }) =>
-        response.data
-          .map((file) => ({
-            ...file,
-            thumbnail: generateThumbnail(file),
-          }))
-          .reverse(),
+        response.data.map((file) => ({
+          ...file,
+          thumbnail: generateThumbnail(file),
+        })),
       providesTags: ["Search"],
     }),
   }),

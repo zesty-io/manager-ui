@@ -18,7 +18,7 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import { Database } from "@zesty-io/material";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { CreateContentItemDialog } from "../../../../shell/components/CreateContentItemDialog";
 
 interface Props {
@@ -40,6 +40,8 @@ export const Header = ({
   const [open, setOpen] = useState(false);
   const [openCreateContentDialog, setOpenCreateContentDialog] = useState(false);
   const history = useHistory();
+  const location = useLocation();
+
   const actions = [
     {
       icon: <EditRoundedIcon />,
@@ -49,7 +51,10 @@ export const Header = ({
     {
       icon: <ImageRoundedIcon />,
       name: "Upload Media",
-      onClick: () => history.push("/media?triggerUpload=true"),
+      onClick: () =>
+        history.push("/media?triggerUpload=true", {
+          from: location.pathname,
+        }),
     },
     {
       icon: <Database />,

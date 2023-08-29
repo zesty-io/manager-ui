@@ -41,16 +41,15 @@ describe("Content Specs", () => {
     });
 
     it("Check Duo Mode Collapsed functionality", () => {
-      cy.get("main header button span").then((el) => {
-        // el[1] === ON(desktop icon)
-        const classList = Array.from(el[1].classList);
-        if (classList.includes("Selected--3_F85")) {
-          console.log("Selected");
-          cy.get("[data-cy=DuoModeContainer] iframe").should("be.visible");
-        } else {
-          console.log("Not Selected");
-        }
-      });
+      cy.getBySelector("DuoModeToggle")
+        .invoke("hasClass", "Mui-checked")
+        .then((hasClass) => {
+          if (hasClass) {
+            cy.get("[data-cy=DuoModeContainer] iframe").should("be.visible");
+          } else {
+            cy.log("Not Selected");
+          }
+        });
     });
   });
 

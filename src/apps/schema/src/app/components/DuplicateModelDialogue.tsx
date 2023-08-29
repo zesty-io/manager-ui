@@ -243,7 +243,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       <DialogContent dividers sx={{ pt: 2.5 }}>
         <Box display="flex" flexDirection="column" gap={2.5}>
           <Alert severity="info">
-            You&apos;re about to duplicate the Articles model with all of
+            You&apos;re about to duplicate the {model.name} model with all of
             it&apos;s existing fields. No content items will be duplicated.
           </Alert>
           <Box>

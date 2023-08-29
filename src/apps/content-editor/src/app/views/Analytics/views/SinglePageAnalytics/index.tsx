@@ -214,6 +214,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
         <Box
           display="flex"
           justifyContent={"space-between"}
+          alignItems="center"
           borderRadius={"8px"}
           gap={2}
           p={2}
