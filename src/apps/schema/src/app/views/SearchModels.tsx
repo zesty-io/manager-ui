@@ -24,6 +24,7 @@ export const SearchModels = () => {
         px={4}
         pt={4}
         pb={1.75}
+        minHeight={84}
         sx={{
           borderBottom: (theme) => `2px solid ${theme.palette.border}`,
           backgroundColor: "background.paper",
