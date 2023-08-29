@@ -25,20 +25,27 @@ export const AllModels = () => {
 
   return (
     <>
-      <Box width="100%" display="flex" flexDirection="column">
+      <Box
+        width="100%"
+        display="flex"
+        flexDirection="column"
+        sx={{ backgroundColor: "grey.50" }}
+      >
         <Box
           display="flex"
           justifyContent="space-between"
-          px={3}
-          py={2}
+          px={4}
+          pt={4}
+          pb={1.75}
           sx={{
-            borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+            borderBottom: (theme) => `2px solid ${theme.palette.border}`,
+            backgroundColor: "background.paper",
           }}
         >
-          <Typography variant="h4" fontWeight="600">
+          <Typography variant="h3" fontWeight="700">
             All Models
           </Typography>
-          <Box display="flex" gap={2}>
+          <Box display="flex" gap={1}>
             <TextField
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -73,7 +80,7 @@ export const AllModels = () => {
             </Button>
           </Box>
         </Box>
-        <Box height="100%" px={3} pt={2}>
+        <Box height="100%" px={4} pt={2}>
           <ModelsTable
             search={search}
             onEmptySearch={() => searchRef?.current?.focus()}
