@@ -27,6 +27,7 @@ import { MoreMenu } from "./MoreMenu";
 import { DuplicateItemDialog } from "./DuplicateItemDialog";
 import { useState } from "react";
 import { PreviewMenu } from "./PreviewMenu";
+import { styled } from "@mui/system";
 
 const tabs = [
   {
@@ -99,9 +100,20 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
             "*": {
               boxSizing: "border-box",
             },
+            containerType: "inline-size",
           }}
         >
-          <Box display="flex" justifyContent="space-between" gap={15}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            gap={15}
+            sx={{
+              "@container (max-width: 900px)": {
+                flexWrap: "wrap",
+                gap: "16px",
+              },
+            }}
+          >
             <Box>
               <ItemEditBreadcrumbs />
               <Typography
@@ -115,13 +127,12 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
                   wordWrap: "break-word",
                   hyphens: "auto",
                   overflow: "hidden",
-                  mb: 2,
                 }}
               >
                 {item?.web?.metaTitle || item?.web?.metaLinkText}
               </Typography>
             </Box>
-            <Box display="flex" gap={1} alignItems="center" height="32px">
+            <Box display="flex" gap={1} alignItems="center" flexWrap="wrap">
               <MoreMenu />
               <IconButton
                 size="small"
@@ -137,8 +148,11 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
             display="flex"
             justifyContent="space-between"
             alignItems="center"
+            mt={2}
           >
             <Tabs
+              variant="scrollable"
+              scrollButtons={false}
               value={
                 tabs.find(
                   (tab) =>
