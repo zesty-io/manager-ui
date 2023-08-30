@@ -310,13 +310,13 @@ export const Header = ({
             </Box>
           </Stack>
         ) : (
-          <>
-            {showBreadcrumbs && id && <MediaBreadcrumbs id={id} />}
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="baseline"
+          >
+            <Stack gap={0.25}>
+              {showBreadcrumbs && id && <MediaBreadcrumbs id={id} />}
               <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
                 {showBackButton && (
                   <IconButton
@@ -349,43 +349,43 @@ export const Header = ({
                   {title}
                 </Typography>
               </Box>
-              <Box flexShrink={0}>
-                {id ? (
-                  <IconButton
-                    size="small"
-                    onClick={openMenu}
-                    sx={{ height: "fit-content", mr: 1 }}
-                    aria-label="Open folder menu"
-                  >
-                    <MoreHorizRoundedIcon fontSize="small" />
-                  </IconButton>
-                ) : null}
-                <FolderMenu
-                  anchorEl={anchorEl}
-                  onCloseMenu={closeMenu}
-                  title={title}
-                  binId={binId}
-                  groupId={groupId}
-                  id={id}
-                />
-                {hideFolderCreate ? null : (
-                  <Button
-                    sx={{ mr: 1 }}
-                    variant="outlined"
-                    color="inherit"
-                    startIcon={<CreateNewFolderRoundedIcon color="action" />}
-                    onClick={() => setOpenDialog("new")}
-                    size="small"
-                  >
-                    Add Sub Folder
-                  </Button>
-                )}
-                {hideUpload ? null : (
-                  <UploadButton currentBinId={binId} currentGroupId={id} />
-                )}
-              </Box>
             </Stack>
-          </>
+            <Box flexShrink={0}>
+              {id ? (
+                <IconButton
+                  size="small"
+                  onClick={openMenu}
+                  sx={{ height: "fit-content", mr: 1 }}
+                  aria-label="Open folder menu"
+                >
+                  <MoreHorizRoundedIcon fontSize="small" />
+                </IconButton>
+              ) : null}
+              <FolderMenu
+                anchorEl={anchorEl}
+                onCloseMenu={closeMenu}
+                title={title}
+                binId={binId}
+                groupId={groupId}
+                id={id}
+              />
+              {hideFolderCreate ? null : (
+                <Button
+                  sx={{ mr: 1 }}
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<CreateNewFolderRoundedIcon color="action" />}
+                  onClick={() => setOpenDialog("new")}
+                  size="small"
+                >
+                  Add Sub Folder
+                </Button>
+              )}
+              {hideUpload ? null : (
+                <UploadButton currentBinId={binId} currentGroupId={id} />
+              )}
+            </Box>
+          </Stack>
         )}
       </Box>
       {openDialog === "new" ? (
