@@ -225,7 +225,11 @@ export const Header = ({
         }}
       >
         {selectedFiles?.length > 0 ? (
-          <Stack direction="row" justifyContent="space-between">
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Stack direction="row" spacing="2px" alignItems="center">
               <IconButton
                 size="small"
@@ -242,11 +246,12 @@ export const Header = ({
                 Selected
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={2}>
+            <Box>
               <Button
                 variant="outlined"
                 size="small"
                 color="inherit"
+                sx={{ mr: 1 }}
                 onClick={() => dispatch(clearSelectedFiles())}
                 startIcon={<CloseIcon color="action" fontSize="small" />}
               >
@@ -256,6 +261,7 @@ export const Header = ({
                 variant="outlined"
                 size="small"
                 color="inherit"
+                sx={{ mr: 1 }}
                 onClick={() => handleSelectAll()}
                 disabled={disableSelectAll()}
                 startIcon={
@@ -270,6 +276,7 @@ export const Header = ({
                     variant="outlined"
                     size="small"
                     color="inherit"
+                    sx={{ mr: 1 }}
                     onClick={() => setShowDeleteFileDialog(true)}
                     startIcon={<DeleteIcon color="action" fontSize="small" />}
                   >
@@ -278,6 +285,7 @@ export const Header = ({
                   <Button
                     variant="contained"
                     size="small"
+                    sx={{ mr: addImagesCallback ? 1 : 0 }}
                     onClick={() => setShowMoveFileDialog(true)}
                     startIcon={
                       <DriveFolderUploadRoundedIcon fontSize="small" />
@@ -299,7 +307,7 @@ export const Header = ({
                   Done
                 </Button>
               )}
-            </Stack>
+            </Box>
           </Stack>
         ) : (
           <>
