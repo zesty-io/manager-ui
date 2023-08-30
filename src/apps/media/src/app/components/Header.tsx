@@ -317,7 +317,7 @@ export const Header = ({
               justifyContent="space-between"
               alignItems="center"
             >
-              <Box sx={{ display: "flex", gap: "2px", alignItems: "center" }}>
+              <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
                 {showBackButton && (
                   <IconButton
                     size="small"

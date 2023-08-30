@@ -204,7 +204,7 @@ export const SearchMedia = ({
           }}
         >
           <Header
-            title={`Search Results for "${term}"`}
+            title={term}
             hideUpload
             addImagesCallback={addImagesCallback}
             hideFolderCreate
