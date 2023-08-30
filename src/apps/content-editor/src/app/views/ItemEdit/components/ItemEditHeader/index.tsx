@@ -132,7 +132,16 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
                 {item?.web?.metaTitle || item?.web?.metaLinkText}
               </Typography>
             </Box>
-            <Box display="flex" gap={1} alignItems="center" flexWrap="wrap">
+            <Box
+              display="flex"
+              gap={1}
+              alignItems="center"
+              sx={{
+                "@container (max-width: 900px)": {
+                  flexWrap: "wrap",
+                },
+              }}
+            >
               <MoreMenu />
               <IconButton
                 size="small"
