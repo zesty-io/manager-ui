@@ -769,9 +769,6 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
               cursor: "pointer",
             },
             border: "none",
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "grey.100",
-            },
           }}
           columns={columns}
           rows={items}

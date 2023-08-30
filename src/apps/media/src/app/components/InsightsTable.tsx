@@ -730,9 +730,6 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
               cursor: "pointer",
             },
             border: "none",
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "grey.100",
-            },
           }}
           columns={columns}
           rows={files}
