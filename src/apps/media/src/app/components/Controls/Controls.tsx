@@ -13,7 +13,7 @@ export const Controls: FC<ControlsProps> = ({ showFilters = true }) => {
     <Box
       sx={{
         px: 4,
-        py: 1.5,
+        py: 2,
       }}
     >
       <Box

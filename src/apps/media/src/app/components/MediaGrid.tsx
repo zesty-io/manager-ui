@@ -160,7 +160,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
   );
 
   return (
-    <Box sx={{ pl: 4, pt: 2, width: "100%", height: "100%" }}>
+    <Box sx={{ pl: 4, width: "100%", height: "100%" }}>
       <AutoSizer onResize={onResize}>
         {({ width, height }) => (
           <VariableSizeGrid

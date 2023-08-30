@@ -760,7 +760,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
   ];
 
   return (
-    <Box component="main" sx={{ height: "100%", width: "100%", px: 4, pt: 2 }}>
+    <Box component="main" sx={{ height: "100%", width: "100%", px: 4 }}>
       {files && (
         <DataGridPro
           sx={{
