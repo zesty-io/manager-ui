@@ -1,6 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Box } from "@mui/material";
+import {
+  Box,
+  SvgIcon,
+  IconButton,
+  Tooltip,
+  ThemeProvider,
+} from "@mui/material";
 import { useLocalStorage } from "react-use";
+import {
+  KeyboardDoubleArrowLeft,
+  KeyboardDoubleArrowRight,
+} from "@mui/icons-material";
+import { theme } from "@zesty-io/material";
 
 type Props = {
   children: React.ReactNode;
@@ -23,6 +34,10 @@ export const ResizableContainer = ({
   const [width, setWidth] = useLocalStorage(
     `zesty:resizableContainer:${id}`,
     defaultWidth
+  );
+  const [collapsed, setCollapsed] = useLocalStorage(
+    `zesty:collapsedContainer:${id}`,
+    false
   );
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -66,24 +81,77 @@ export const ResizableContainer = ({
   const MemoizedChildren = useMemo(() => children, [children]);
 
   return (
-    <Box width={width} position="relative">
-      {MemoizedChildren}
-      <Box
-        sx={{
-          width: "4px",
-          height: "100%",
-          position: "absolute",
-          right: "-2px",
-          top: "0",
-          zIndex: "2",
-          bgcolor: isResizing ? "rgba(255, 93, 10, 0.5)" : "transparent",
-          "&:hover": {
-            backgroundColor: "rgba(255, 93, 10, 0.5)",
-            cursor: "col-resize",
-          },
-        }}
-        onMouseDown={handleMouseDown}
-      />
-    </Box>
+    <ThemeProvider theme={theme}>
+      <Box width={collapsed ? 0 : width} position="relative">
+        <Box
+          overflow={collapsed ? "hidden" : "visible"}
+          height="100%"
+          width="inherit"
+        >
+          {MemoizedChildren}
+        </Box>
+        <Box
+          sx={{
+            width: "4px",
+            height: "100%",
+            position: "absolute",
+            right: "-2px",
+            top: "0",
+            zIndex: "2",
+            bgcolor: isResizing ? "rgba(255, 93, 10, 0.5)" : "transparent",
+            "&:hover": {
+              backgroundColor: "rgba(255, 93, 10, 0.5)",
+              cursor: "col-resize",
+            },
+          }}
+          onMouseDown={handleMouseDown}
+          display={collapsed ? "none" : "block"}
+        />
+        <Tooltip
+          title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          placement="right-start"
+          enterDelay={1000}
+          enterNextDelay={1000}
+        >
+          <IconButton
+            data-cy="collapseAppSideBar"
+            onClick={() => setCollapsed(!collapsed)}
+            sx={{
+              borderRadius: "50%",
+              borderColor: "grey.600",
+              borderStyle: "solid",
+              borderWidth: "1px",
+              backgroundColor: "grey.900",
+
+              width: "24px",
+              height: "24px",
+
+              position: "absolute",
+              top: "32px",
+              right: "-12px",
+              zIndex: (theme) => theme.zIndex.appBar,
+
+              "&:hover": {
+                backgroundColor: "grey.900",
+
+                ".MuiSvgIcon-root": {
+                  color: "common.white",
+                },
+              },
+            }}
+          >
+            <SvgIcon
+              component={
+                collapsed ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft
+              }
+              fontSize="small"
+              sx={{
+                color: "grey.500",
+              }}
+            />
+          </IconButton>
+        </Tooltip>
+      </Box>
+    </ThemeProvider>
   );
 };
