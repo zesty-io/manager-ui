@@ -4,7 +4,7 @@ import { theme } from "@zesty-io/material";
 
 import notFound from "../../../../public/images/notFoundTransparent.png";
 
-export default () => {
+export const AppError = () => {
   return (
     <ThemeProvider theme={theme}>
       <Stack
