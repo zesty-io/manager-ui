@@ -18,16 +18,41 @@ import {
 } from "../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import moment from "moment";
-import SplitscreenRoundedIcon from "@mui/icons-material/SplitscreenRounded";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import {
+  InfoRounded,
+  ApiRounded,
+  SplitscreenRounded,
+  HistoryRounded,
+} from "@mui/icons-material";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import VerticalSplitRoundedIcon from "@mui/icons-material/VerticalSplitRounded";
 import { modelIconMap, modelNameMap } from "../utils";
-import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import { ModelMenu } from "./ModelMenu";
 import { ModelBreadcrumbs } from "./ModelBreadcrumbs";
+
+const TABS = [
+  {
+    name: "Fields",
+    value: "fields",
+    icon: SplitscreenRounded,
+  },
+  {
+    name: "API",
+    value: "api",
+    icon: ApiRounded,
+  },
+  {
+    name: "Activity Log",
+    value: "activity-log",
+    icon: HistoryRounded,
+  },
+  {
+    name: "Info",
+    value: "info",
+    icon: InfoRounded,
+  },
+];
 
 moment.updateLocale("en", {
   relativeTime: {
@@ -70,11 +95,11 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
       >
         <Stack
           px={4}
-          pt={4}
+          pt={3.75}
           pb={1}
           direction="row"
           justifyContent="space-between"
-          alignItems="baseline"
+          alignItems="flex-start"
         >
           <Stack gap={0.25} justifyContent="space-between">
             <ModelBreadcrumbs modelZUID={model?.ZUID} />
@@ -94,7 +119,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 }}
               />
               <Typography
-                variant="caption"
+                variant="body3"
                 color="text.secondary"
                 whiteSpace="pre"
               >{`${modelNameMap[model?.type]} Model  •  ZUID: ${
@@ -105,7 +130,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                   "Do MMMM YYYY [at] h:mm A"
                 )}
                 children={
-                  <Typography variant="caption" color="textSecondary">
+                  <Typography variant="body3" color="text.secondary">
                     Updated {moment(model?.updatedAt).fromNow()}
                   </Typography>
                 }
@@ -189,30 +214,15 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
             history.push(`/schema/${model?.ZUID}/${value}`)
           }
         >
-          <Tab
-            icon={<SplitscreenRoundedIcon fontSize="small" />}
-            iconPosition="start"
-            label="Fields"
-            value="fields"
-          />
-          <Tab
-            icon={<ApiRoundedIcon fontSize="small" />}
-            iconPosition="start"
-            label="API"
-            value="api"
-          />
-          <Tab
-            icon={<HistoryRoundedIcon fontSize="small" />}
-            iconPosition="start"
-            label="Activity Log"
-            value="activity-log"
-          />
-          <Tab
-            icon={<InfoRoundedIcon fontSize="small" />}
-            iconPosition="start"
-            label="Info"
-            value="info"
-          />
+          {TABS?.map((tab) => (
+            <Tab
+              icon={<SvgIcon component={tab.icon} fontSize="small" />}
+              iconPosition="start"
+              label={tab.name}
+              value={tab.value}
+              disableRipple
+            />
+          ))}
         </Tabs>
       </Box>
     </>
