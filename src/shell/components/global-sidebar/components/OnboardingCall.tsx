@@ -1,26 +1,28 @@
 import { useState } from "react";
-import { Avatar, Box, Button, Dialog, Typography, Stack } from "@mui/material";
+import { Avatar, Box, Button, Dialog, Typography } from "@mui/material";
 
 import salesAvatar from "../../../../../public/images/salesAvatar.png";
-import zestyLogo from "../../../../../public/images/zestyLogo.svg";
 
 export const OnboardingCall = () => {
   const [showMeetModal, setShowMeetModal] = useState(false);
 
   return (
     <>
-      <Box px={2} py={2.5} borderTop="1px solid" borderColor="grey.800">
-        <Stack direction="row" justifyContent="space-between">
-          <Avatar
-            src={salesAvatar}
-            alt="Sales Avatar"
-            sx={{
-              width: "32px",
-              height: "32px",
-            }}
-          />
-          <img src={zestyLogo} alt="Full Zesty Logo" width={70} height={20} />
-        </Stack>
+      <Box
+        px={1.5}
+        py={3.25}
+        mt={2.5}
+        borderTop="1px solid"
+        borderColor="grey.800"
+      >
+        <Avatar
+          src={salesAvatar}
+          alt="Sales Avatar"
+          sx={{
+            width: "32px",
+            height: "32px",
+          }}
+        />
         <Typography variant="h6" color="common.white" my={1.5}>
           Schedule an onboarding call with our support team
         </Typography>

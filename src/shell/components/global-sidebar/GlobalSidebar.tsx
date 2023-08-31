@@ -9,19 +9,20 @@ import {
   Avatar,
   Stack,
   Link,
-  Tooltip,
+  ListItem,
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { theme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
 import Favicon from "../favicon";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import zestyLogoOnly from "../../../../public/images/zestyLogoOnly.svg";
+import zestyLogoOnlyGrey from "../../../../public/images/zestyLogoOnlyGrey.svg";
+import githubLogoSmall from "../../../../public/images/githubLogoSmall.svg";
 import InviteMembersModal from "../InviteMembersModal";
 import { User } from "../../services/types";
 import { useGetInstanceQuery } from "../../services/accounts";
@@ -62,84 +63,79 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
             borderColor: "grey.800",
           }}
         >
-          <InstanceMenu openNav={openNav} />
-
-          {/* Sidebar handle */}
-          <Tooltip
-            title={openNav ? "Collapse Sidebar" : "Expand Sidebar"}
-            placement="right-start"
-            enterDelay={1000}
-            enterNextDelay={1000}
+          <ListItem
+            sx={{
+              height: 36,
+              p: 0,
+              mt: 0.75,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
             <IconButton
               data-cy="CollapseGlobalSideBar"
               onClick={onClick}
+              size="large"
               sx={{
-                borderRadius: "50%",
-                borderColor: "grey.600",
-                borderStyle: "solid",
-                borderWidth: "1px",
-                backgroundColor: "grey.900",
-
-                width: "24px",
-                height: "24px",
-
-                position: "absolute",
-                top: "32px",
-                right: "-14px",
-                zIndex: (theme) => theme.zIndex.appBar,
-
+                px: 1.5,
+                py: 0.75,
+                borderRadius: 0,
                 "&:hover": {
-                  backgroundColor: "grey.900",
-
-                  ".MuiSvgIcon-root": {
-                    color: "common.white",
-                  },
+                  backgroundColor: "rgba(255, 93, 10, 0.08)",
                 },
               }}
             >
-              {openNav ? (
-                <KeyboardDoubleArrowLeftIcon
-                  fontSize="small"
-                  sx={{
-                    color: "grey.500",
-                  }}
-                />
-              ) : (
-                <KeyboardDoubleArrowRightIcon
-                  fontSize="small"
-                  sx={{ color: "grey.500" }}
-                />
-              )}
+              <MenuRoundedIcon sx={{ color: "grey.400" }} />
             </IconButton>
-          </Tooltip>
+            {openNav && (
+              <Box
+                component="img"
+                src={zestyLogoOnlyGrey}
+                alt="Zesty Logo"
+                width={20}
+                height={20}
+                mr={1.5}
+              />
+            )}
+          </ListItem>
 
+          <InstanceMenu openNav={openNav} />
           <GlobalMenu />
 
+          {is15DaysFromCreation && openNav && <OnboardingCall />}
           {/* Bottom bar */}
           <Box position="absolute" bottom={0} left={0} right={0}>
-            {is15DaysFromCreation && openNav && <OnboardingCall />}
-
-            {!is15DaysFromCreation && (
-              <Stack
-                direction={openNav ? "row" : "column"}
-                alignItems="center"
-                height={openNav ? 24 : "inherit"}
-                px={2.5}
-                mb={openNav ? 1.25 : 0}
-                pt={openNav ? 0 : 1.5}
-                gap={1.5}
-                borderTop={openNav ? "none" : "1px solid"}
-                sx={{
-                  borderColor: "grey.800",
-                }}
-              >
-                <img
-                  src={openNav ? zestyLogo : zestyLogoOnly}
-                  alt="Zesty Logo"
-                  width={openNav ? 84 : 20}
-                  height={openNav ? 24 : 20}
-                />
+            <Stack
+              direction={openNav ? "row" : "column"}
+              alignItems="center"
+              justifyContent="space-between"
+              height={openNav ? 24 : "inherit"}
+              px={1.5}
+              mb={openNav ? 1.5 : 0}
+              pt={openNav ? 0 : 1.5}
+              gap={openNav ? 1.5 : 1}
+              borderTop={openNav ? "none" : "1px solid"}
+              sx={{
+                borderColor: "grey.800",
+              }}
+            >
+              <img
+                src={openNav ? zestyLogo : zestyLogoOnly}
+                alt="Zesty Logo"
+                width={openNav ? 84 : 20}
+                height={openNav ? 24 : 20}
+              />
+              <Stack direction="row" gap={0.5} alignItems="end">
+                {openNav && (
+                  <Box
+                    component="img"
+                    src={githubLogoSmall}
+                    alt="Github Logo"
+                    width={12}
+                    height={12}
+                  />
+                )}
                 <Link
                   fontFamily="Roboto Mono"
                   fontSize={10}
@@ -165,7 +161,7 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   }
                 </Link>
               </Stack>
-            )}
+            </Stack>
 
             <Stack
               width="inherit"
@@ -174,8 +170,9 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
               borderTop={openNav ? "1px solid" : "none"}
               alignItems="center"
               flexDirection={openNav ? "row" : "column-reverse"}
-              py={1.25}
-              px={2.5}
+              pt={openNav ? 1.25 : 1}
+              pb={openNav ? 1.25 : 1.5}
+              px={openNav ? 1.5 : 1}
               gap={openNav ? 0 : 1}
               sx={{
                 borderColor: "grey.800",
@@ -206,8 +203,8 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
                   }}
                 />
                 {openNav && (
-                  <ArrowDropDownIcon
-                    fontSize="inherit"
+                  <ArrowDropDownRoundedIcon
+                    fontSize="small"
                     sx={{
                       color: "grey.500",
                     }}
