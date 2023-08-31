@@ -77,7 +77,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
           alignItems="baseline"
         >
           <Stack gap={0.25} justifyContent="space-between">
-            <ModelBreadcrumbs />
+            <ModelBreadcrumbs modelZUID={model?.ZUID} />
             <Box display="flex" alignItems="center" gap={0.5}>
               <Typography variant="h3" fontWeight={700}>
                 {model?.label}
