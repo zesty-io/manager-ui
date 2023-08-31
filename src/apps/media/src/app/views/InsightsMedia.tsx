@@ -24,6 +24,7 @@ import {
 } from "../../../../../shell/services/mediaManager";
 import { AppState } from "../../../../../shell/store/types";
 import { uniqBy } from "lodash";
+import { FilterButton } from "../../../../../shell/components/Filters";
 
 const iconStyles = {
   height: "32px",
@@ -108,18 +109,12 @@ export const InsightsMedia: FC = () => {
         </Typography>
       </Box>
       <Box sx={{ px: 4, py: 2 }}>
-        <Button
-          endIcon={<ArrowDropDownIcon />}
-          onClick={(event) => setAnchorEl(event.currentTarget)}
-          variant="outlined"
-          size="small"
-          color="inherit"
-          sx={{
-            mt: 2,
-          }}
-        >
-          Last {dateRange} Days
-        </Button>
+        <FilterButton
+          isFilterActive={false}
+          buttonText={`Last ${dateRange} Days`}
+          onRemoveFilter={() => {}}
+          onOpenMenu={(event) => setAnchorEl(event.currentTarget)}
+        />
         <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
           {dateRanges.map((dateRangeItem) => (
             <MenuItem
