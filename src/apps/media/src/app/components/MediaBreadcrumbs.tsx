@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { Stack, Typography, SvgIcon } from "@mui/material";
+import { Stack, Typography, SvgIcon, Tooltip } from "@mui/material";
 import { FolderGlobal } from "@zesty-io/material";
 import { FolderRounded } from "@mui/icons-material";
 import { useHistory } from "react-router-dom";
@@ -78,15 +78,22 @@ interface CrumbProps {
 }
 const Crumb: FC<CrumbProps> = ({ id, name }) => {
   return (
-    <Stack direction="row" gap={0.5}>
-      <SvgIcon
-        component={id.startsWith("1") ? FolderGlobal : FolderRounded}
-        fontSize="small"
-        color="action"
-      />
-      <Typography variant="body2" color="text.secondary" noWrap maxWidth={100}>
-        {name}
-      </Typography>
-    </Stack>
+    <Tooltip title={name} placement="top" enterDelay={800} enterNextDelay={800}>
+      <Stack direction="row" gap={0.5}>
+        <SvgIcon
+          component={id.startsWith("1") ? FolderGlobal : FolderRounded}
+          fontSize="small"
+          color="action"
+        />
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          noWrap
+          maxWidth={100}
+        >
+          {name}
+        </Typography>
+      </Stack>
+    </Tooltip>
   );
 };
