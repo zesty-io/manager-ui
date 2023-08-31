@@ -82,7 +82,8 @@ export const UploadModal: FC = () => {
               <ArrowBackRoundedIcon fontSize="small" color="action" />
             </IconButton>
             <Typography variant="h5" color="text.primary" fontWeight={700}>
-              {filesToUpload.length} Files Selected for Upload
+              {filesToUpload.length} File{filesToUpload.length > 1 && "s"}{" "}
+              Selected for Upload
             </Typography>
           </Box>
           <UploadButton {...ids} text="Upload More" variant="outlined" />
