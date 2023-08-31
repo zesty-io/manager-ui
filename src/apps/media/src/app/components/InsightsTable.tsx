@@ -682,7 +682,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
       width: 140,
       renderCell: (params: any) => {
         return (
-          <Typography>
+          <Typography variant="body2">
             {numberFormatter.format(params.row.ThroughtputGB)} GB
           </Typography>
         );
