@@ -28,7 +28,7 @@ export const ApiCardList = () => {
 
       <Box
         gap={3}
-        px={3}
+        px={4}
         py={2}
         maxWidth="1440px"
         sx={{
