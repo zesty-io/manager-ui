@@ -51,7 +51,13 @@ export const Model = () => {
   }
 
   return (
-    <Box flex="1" display="flex" height="100%" flexDirection="column">
+    <Box
+      flex="1"
+      display="flex"
+      height="100%"
+      flexDirection="column"
+      sx={{ backgroundColor: "grey.50" }}
+    >
       <ModelHeader onNewFieldModalClick={handleNewFieldModalClick} />
       <Route
         path="/schema/:id/fields/:fieldId"
