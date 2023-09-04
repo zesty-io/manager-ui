@@ -122,19 +122,11 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                 variant="body3"
                 color="text.secondary"
                 whiteSpace="pre"
-              >{`${modelNameMap[model?.type]} Model  •  ZUID: ${
-                model?.ZUID
-              }  •  `}</Typography>
-              <Tooltip
-                title={moment(model?.updatedAt).format(
-                  "Do MMMM YYYY [at] h:mm A"
-                )}
-                children={
-                  <Typography variant="body3" color="text.secondary">
-                    Updated {moment(model?.updatedAt).fromNow()}
-                  </Typography>
-                }
-              ></Tooltip>
+              >{`${modelNameMap[model?.type]} Model  •  `}</Typography>
+              <Typography variant="body3" color="text.secondary">
+                Last Updated:{" "}
+                {moment(model?.updatedAt).format("Do MMMM YYYY [at] h:mm A")}
+              </Typography>
             </Stack>
           </Stack>
           <Stack direction="row" gap={1}>
