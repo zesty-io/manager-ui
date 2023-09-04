@@ -68,9 +68,11 @@ export const ApiDetails = () => {
   };
 
   return (
-    <Box display="flex" height="100%" px={4} pt={2}>
+    <Box display="flex" height="100%" sx={{ overflowY: "auto" }}>
       <Box
         width="220px"
+        pt={2}
+        pl={4}
         sx={{
           borderRight: (theme) => `1px solid ${theme.palette.border}`,
         }}
@@ -141,7 +143,8 @@ export const ApiDetails = () => {
       ) : (
         <Box
           flex={1}
-          px={3}
+          pl={3}
+          pr={4}
           py={2}
           sx={{
             overflow: "auto",

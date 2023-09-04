@@ -59,7 +59,7 @@ export const FieldsListRight = ({ model }: Props) => {
   };
 
   return (
-    <Box height="100%" width="280px" bgcolor="grey.50" padding={2}>
+    <Box height="100%" width="280px" bgcolor="grey.50" py={2} pl={2} pr={4}>
       <InputLabel>
         Reference ID
         <Tooltip
