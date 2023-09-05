@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import { Box, Typography } from "@mui/material";
-import notFound from "../../../public/images/notFound.jpg";
+import notFound from "../../../public/images/notFoundTransparent.png";
 
 interface Props {
   title: string;
