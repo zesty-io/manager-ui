@@ -326,6 +326,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     updateModel({ label: event.target.value })
                   }
                   fullWidth
+                  autoFocus
                 />
               </Box>
               <Box>
