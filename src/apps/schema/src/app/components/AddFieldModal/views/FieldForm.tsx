@@ -518,7 +518,6 @@ export const FieldForm = ({
           value={activeTab}
           onChange={(_, value: ActiveTab) => setActiveTab(value)}
           sx={{
-            px: 2.5,
             position: "relative",
             top: "2px",
           }}
@@ -558,8 +557,10 @@ export const FieldForm = ({
           <Grid
             data-cy="DetailsTab"
             container
-            spacing={2.5}
-            maxWidth="480px"
+            rowSpacing={2.5}
+            columnSpacing={2.5}
+            // maxWidth="480px"
+            width="inherit"
             minHeight={448}
             // mt={-2.5} //Offset grid item default top padding
             ml={0}
