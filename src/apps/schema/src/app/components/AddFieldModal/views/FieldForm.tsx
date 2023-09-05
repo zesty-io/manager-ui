@@ -24,6 +24,7 @@ import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
+import { theme } from "@zesty-io/material";
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
@@ -464,17 +465,13 @@ export const FieldForm = ({
   return (
     <>
       <DialogTitle
+        component="div"
         sx={{
-          padding: 0,
+          borderBottom: `2px solid ${theme.palette.border}`,
+          pb: 0,
         }}
       >
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          px={2.5}
-          pt={2.5}
-        >
+        <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" alignItems="center">
             {!isUpdateField && (
               <IconButton
@@ -495,7 +492,7 @@ export const FieldForm = ({
               />
             </Box>
             <Box display="flex" flexDirection="column">
-              <Typography variant="h5" fontWeight={600}>
+              <Typography variant="h5" fontWeight={700}>
                 {isUpdateField
                   ? `Edit ${fieldData.label}`
                   : `Add ${name} Field`}
@@ -522,6 +519,8 @@ export const FieldForm = ({
           onChange={(_, value: ActiveTab) => setActiveTab(value)}
           sx={{
             px: 2.5,
+            position: "relative",
+            top: "2px",
           }}
         >
           <Tab
@@ -550,8 +549,9 @@ export const FieldForm = ({
       <DialogContent
         dividers
         sx={{
-          p: 2.5,
-          position: "relative",
+          pt: "20px",
+          backgroundColor: "grey.50",
+          borderTop: 0,
         }}
       >
         {activeTab === "details" && (
@@ -561,7 +561,7 @@ export const FieldForm = ({
             spacing={2.5}
             maxWidth="480px"
             minHeight={448}
-            mt={-2.5} //Offset grid item default top padding
+            // mt={-2.5} //Offset grid item default top padding
             ml={0}
             sx={{
               "&.MuiGrid-container .MuiGrid-item": {
@@ -660,7 +660,7 @@ export const FieldForm = ({
       {isUpdateField ? (
         <DialogActions
           sx={{
-            p: 2.5,
+            pt: 2.5,
           }}
         >
           <Button
@@ -689,8 +689,7 @@ export const FieldForm = ({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            px: 3,
-            py: 2,
+            pt: 2.5,
           }}
         >
           <Button variant="outlined" color="inherit" onClick={onBackClick}>
