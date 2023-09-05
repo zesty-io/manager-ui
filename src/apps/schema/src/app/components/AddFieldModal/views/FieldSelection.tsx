@@ -67,9 +67,11 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
 
   return (
     <>
-      <DialogTitle sx={{ px: 3, py: 2.5 }}>
+      <DialogTitle component="div">
         <Box display="flex" justifyContent="space-between" pb={2}>
-          Select a Field Type
+          <Typography variant="h5" fontWeight={700}>
+            Select a Field Type
+          </Typography>
           <IconButton
             size="small"
             onClick={onModalClose}
@@ -100,8 +102,8 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
         data-cy="FieldSelection"
         dividers
         sx={{
-          px: 3,
-          py: 1.5,
+          pt: 2.5,
+          backgroundColor: "grey.50",
           "&.MuiDialogContent-dividers": {
             borderColor: "border",
           },
