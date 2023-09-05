@@ -174,13 +174,13 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     if (!model.type) {
       return (
         <>
-          <DialogTitle sx={{ p: 3 }}>
+          <DialogTitle>
             <Stack
               direction="row"
               justifyContent="space-between"
               sx={{ mb: 1 }}
             >
-              <Typography variant="h5" fontWeight={600}>
+              <Typography variant="h5" fontWeight={700}>
                 Select Model Type
               </Typography>
               <IconButton size="small" onClick={() => onClose()}>
@@ -199,7 +199,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               </Link>
             </Box>
           </DialogTitle>
-          <DialogContent sx={{ p: 3 }} dividers>
+          <DialogContent sx={{ pt: 2.5, backgroundColor: "grey.50" }} dividers>
             <Box display="flex" flexDirection="column" gap={2}>
               {modelTypes.map((modelType) => (
                 <ListItemButton
@@ -211,6 +211,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     borderStyle: "solid",
                     borderWidth: "1px",
                     borderColor: "border",
+                    backgroundColor: "common.white",
                     py: 2,
                     "&.Mui-selected": {
                       borderColor: "primary.main",
@@ -252,7 +253,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               ))}
             </Box>
           </DialogContent>
-          <DialogActions sx={{ pt: 2 }}>
+          <DialogActions sx={{ pt: 2.5 }}>
             <Button variant="outlined" color="inherit" onClick={onClose}>
               Cancel
             </Button>
@@ -269,16 +270,15 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     } else {
       return (
         <>
-          <DialogTitle>
+          <DialogTitle component="div">
             <Stack
               direction="row"
               justifyContent="space-between"
               alignItems="flex-start"
-              sx={{ mb: 1 }}
             >
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box display="flex" alignItems="center" gap={1.5}>
                 <SvgIcon
-                  sx={{ fontSize: "32px" }}
+                  sx={{ fontSize: "28px" }}
                   color="action"
                   component={
                     modelIconMap[
@@ -287,21 +287,21 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     ]
                   }
                 />
-                <Box>
-                  <Typography variant="h5" fontWeight={600} sx={{ mb: 1 }}>
+                <Stack>
+                  <Typography variant="h5" fontWeight={700}>
                     Create {modelTypes.find((x) => x.key === model.type).name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body3" color="text.secondary">
                     {modelTypes.find((x) => x.key === model.type).description}
                   </Typography>
-                </Box>
+                </Stack>
               </Box>
               <IconButton size="small" onClick={() => onClose()}>
                 <CloseRoundedIcon fontSize="small" />
               </IconButton>
             </Stack>
           </DialogTitle>
-          <DialogContent dividers sx={{ pt: 2.5 }}>
+          <DialogContent dividers sx={{ pt: 2.5, backgroundColor: "grey.50" }}>
             <Box display="flex" flexDirection="column" gap={2.5}>
               <Box>
                 <InputLabel>
