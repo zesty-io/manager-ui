@@ -1,4 +1,4 @@
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton, Stack } from "@mui/material";
 import { ModelsTable } from "../components/ModelsTable";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import KeyboardBackspaceRoundedIcon from "@mui/icons-material/KeyboardBackspaceRounded";
@@ -17,9 +17,9 @@ export const SearchModels = () => {
       flexDirection="column"
       sx={{ backgroundColor: "grey.50" }}
     >
-      <Box
-        display="flex"
-        alignItems="center"
+      <Stack
+        direction="row"
+        alignItems="flex-start"
         gap={1.5}
         px={4}
         pt={4}
@@ -33,10 +33,10 @@ export const SearchModels = () => {
         <IconButton size="small" onClick={() => history.push("/schema")}>
           <KeyboardBackspaceRoundedIcon fontSize="small" color="action" />
         </IconButton>
-        <Typography variant="h4" fontWeight="700">
-          Search results for "{search}"
+        <Typography variant="h3" fontWeight="700">
+          {search}
         </Typography>
-      </Box>
+      </Stack>
       <Box height="100%" px={4} pt={2}>
         <ModelsTable
           search={search}
