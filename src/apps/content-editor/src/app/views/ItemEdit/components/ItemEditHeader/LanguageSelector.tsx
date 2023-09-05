@@ -88,6 +88,7 @@ export const LanguageSelector = () => {
         color="inherit"
         endIcon={<KeyboardArrowDownRounded color="action" />}
         onClick={(e) => setAnchorEl(e.currentTarget)}
+        data-cy="language-selector"
       >
         <Box component="span" color="text.primary">
           {getFlagEmojiFromIETFTag(activeLanguage?.code)}
