@@ -202,7 +202,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                 size="small"
                 color="inherit"
                 startIcon={<CompareArrowsRoundedIcon color="action" />}
-                sx={{ height: "28px" }}
+                sx={{ height: "28px", bgcolor: "background.paper" }}
                 onClick={() => setShowCompareDialog(true)}
               >
                 Compare Page
@@ -214,11 +214,13 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
         <Box
           display="flex"
           justifyContent={"space-between"}
+          alignItems="center"
           borderRadius={"8px"}
           gap={2}
           p={2}
           mt={2.5}
           border={(theme) => `1px solid ${theme.palette.border}`}
+          bgcolor="background.paper"
         >
           <Metric
             loading={isLoading}
@@ -326,7 +328,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
             }
             description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
           />
-          <Box width="184px" height="100px">
+          <Box width="184px" height="100px" bgcolor="background.paper">
             <UsersDoughnutChart
               loading={isLoading}
               data={totalUsersReport}
@@ -345,7 +347,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
             />
           </Box>
         </Box>
-        <Box display="flex" mt={2.5} gap={2}>
+        <Box display="flex" mt={2.5} gap={2} bgcolor="background.paper">
           <Box
             width="40%"
             borderRadius={"8px"}
@@ -377,6 +379,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
             borderRadius={"8px"}
             p={2}
             border={(theme) => `1px solid ${theme.palette.border}`}
+            bgcolor="background.paper"
           >
             <ByDayLineChart
               loading={isLoading}

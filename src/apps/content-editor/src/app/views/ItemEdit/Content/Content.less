@@ -2,7 +2,9 @@
 @import "~@zesty-io/core/typography.less";
 
 .Content {
-  height: calc(100vh - 40px);
+  flex: 1;
+  overflow: hidden;
+  background-color: #f9fafb;
 
   .MainEditor {
     //Hide Scrollbar
@@ -11,11 +13,10 @@
     ::-webkit-scrollbar {
       display: none;
     }
-
+    height: 100%;
     display: grid;
     grid-template-columns: 1fr 40px;
-    position: relative;
-    height: calc(100vh - 40px - 73px);
+    grid-template-rows: 1fr;
     gap: 32px;
 
     transition: grid-template-columns 350ms ease;
@@ -35,9 +36,6 @@
 
     &.DuoAndActionsOn {
       grid-template-columns: 40fr 60fr 20vw;
-    }
-    .Editor {
-      overflow: auto;
     }
   }
   .ActionsDrawerButton {

@@ -139,8 +139,6 @@ export default memo(function Editor({
 
   return (
     <div className={styles.Fields}>
-      {item.meta && item.meta.ZUID && <Breadcrumbs itemZUID={item.meta.ZUID} />}
-
       {activeFields.length ? (
         activeFields.map((field) => {
           return (

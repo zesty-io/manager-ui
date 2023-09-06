@@ -40,6 +40,7 @@ import { ApiCardList } from "../../../../../schema/src/app/components/ModelApi/A
 import { theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
+import { ItemEditHeader } from "./components/ItemEditHeader";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -284,7 +285,11 @@ export default function ItemEdit() {
             onDiscard={discard}
           />
 
-          <section style={{ height: "100%" }}>
+          <Box
+            component="section"
+            sx={{ display: "flex", flexDirection: "column", height: "100%" }}
+          >
+            <ItemEditHeader onSave={save} saving={saving} />
             <Switch>
               <Route
                 exact
@@ -330,37 +335,21 @@ export default function ItemEdit() {
               <Route
                 exact
                 path="/content/:modelZUID/:itemZUID/analytics"
-                render={() => (
-                  <>
-                    <Header
-                      instance={instance}
-                      modelZUID={modelZUID}
-                      model={model}
-                      itemZUID={itemZUID}
-                      item={item}
-                    />
-                    <Analytics item={item} />
-                  </>
-                )}
+                render={() => <Analytics item={item} />}
               />
               <Route
                 path="/content/:contentModelZUID/:contentItemZUID/api"
                 render={() => (
                   <ThemeProvider theme={theme}>
-                    <Header
-                      instance={instance}
-                      modelZUID={modelZUID}
-                      model={model}
-                      itemZUID={itemZUID}
-                      item={item}
-                    />
                     <Box
                       sx={{
                         color: "text.primary",
-                        height: "calc(100% - 65px)",
+                        flex: "1",
+                        overflow: "hidden",
                         "*": {
                           boxSizing: "border-box",
                         },
+                        bgcolor: "grey.50",
                       }}
                     >
                       <Route
@@ -381,18 +370,7 @@ export default function ItemEdit() {
                 exact
                 path="/content/:modelZUID/:itemZUID/publishings"
                 render={() => (
-                  <>
-                    <Header
-                      instance={instance}
-                      modelZUID={modelZUID}
-                      model={model}
-                      itemZUID={itemZUID}
-                      item={item}
-                    />
-                    <PublishState
-                      reloadItem={() => load(modelZUID, itemZUID)}
-                    />
-                  </>
+                  <PublishState reloadItem={() => load(modelZUID, itemZUID)} />
                 )}
               />
               <Route
@@ -416,7 +394,7 @@ export default function ItemEdit() {
                 )}
               />
             </Switch>
-          </section>
+          </Box>
         </WithLoader>
       )}
     </Fragment>

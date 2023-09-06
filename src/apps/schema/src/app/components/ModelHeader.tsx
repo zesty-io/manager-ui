@@ -61,7 +61,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   return (
     <>
       <Box
-        sx={{ borderBottom: (theme) => `1px solid ${theme.palette.border}` }}
+        sx={{ borderBottom: (theme) => `2px solid ${theme.palette.border}` }}
       >
         <Box sx={{ px: 3, pt: 2 }}>
           <Box display="flex" justifyContent="space-between">
@@ -166,12 +166,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
           <Tabs
             sx={{
               position: "relative",
-              top: "1px",
-              ".Mui-selected": {
-                svg: {
-                  color: "primary.main",
-                },
-              },
+              top: "2px",
             }}
             value={location.pathname.split("/")[3]}
             onChange={(event, value) =>
@@ -179,25 +174,25 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
             }
           >
             <Tab
-              icon={<SplitscreenRoundedIcon color="action" fontSize="small" />}
+              icon={<SplitscreenRoundedIcon fontSize="small" />}
               iconPosition="start"
               label="Fields"
               value="fields"
             />
             <Tab
-              icon={<ApiRoundedIcon color="action" fontSize="small" />}
+              icon={<ApiRoundedIcon fontSize="small" />}
               iconPosition="start"
               label="API"
               value="api"
             />
             <Tab
-              icon={<HistoryRoundedIcon color="action" fontSize="small" />}
+              icon={<HistoryRoundedIcon fontSize="small" />}
               iconPosition="start"
               label="Activity Log"
               value="activity-log"
             />
             <Tab
-              icon={<InfoRoundedIcon color="action" fontSize="small" />}
+              icon={<InfoRoundedIcon fontSize="small" />}
               iconPosition="start"
               label="Info"
               value="info"
