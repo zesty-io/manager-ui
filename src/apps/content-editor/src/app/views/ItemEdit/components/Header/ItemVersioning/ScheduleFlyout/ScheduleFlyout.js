@@ -10,7 +10,13 @@ import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeDateTime } from "@zesty-io/material";
 
-import { FormControl, FormLabel, Autocomplete, TextField } from "@mui/material";
+import {
+  FormControl,
+  FormLabel,
+  Autocomplete,
+  TextField,
+  Dialog,
+} from "@mui/material";
 
 import { publish, unpublish } from "shell/store/content";
 
@@ -126,25 +132,26 @@ export default class ScheduleFlyout extends Component {
   render() {
     return (
       this.props.isOpen && (
-        <Modal
-          className={styles.Modal}
-          type="global"
-          open={true}
-          onClose={this.props.toggleOpen}
-        >
-          {this.props.item.scheduling &&
-          this.props.item.scheduling.isScheduled ? (
-            <>
-              <ModalContent>
-                <Notice className={styles.Notice}>
-                  New versions can not be published while there is a version
-                  scheduled.
-                </Notice>
-                <p className={styles.Row}>
-                  Version {this.props.item.scheduling.version} is scheduled to
-                  publish on{" "}
-                  <em>
-                    {/*
+        <Dialog open={true}>
+          <Modal
+            className={styles.Modal}
+            type="global"
+            open={true}
+            onClose={this.props.toggleOpen}
+          >
+            {this.props.item.scheduling &&
+            this.props.item.scheduling.isScheduled ? (
+              <>
+                <ModalContent>
+                  <Notice className={styles.Notice}>
+                    New versions can not be published while there is a version
+                    scheduled.
+                  </Notice>
+                  <p className={styles.Row}>
+                    Version {this.props.item.scheduling.version} is scheduled to
+                    publish on{" "}
+                    <em>
+                      {/*
             publishAt from API is in UTC.
 
             Order of moment > utc > local > format is important
@@ -155,90 +162,95 @@ export default class ScheduleFlyout extends Component {
             that information is not persisted to the API so we always display it after
             the fact in the users current timezone
           */}
-                    {moment
-                      .utc(this.props.item.scheduling.publishAt)
-                      .tz(this.state.userTimezone)
-                      .format(DISPLAY_FORMAT)}
-                  </em>{" "}
-                  in the <em>{this.state.userTimezone}</em> timezone.
-                </p>
-              </ModalContent>
-              <ModalFooter className={styles.ModalFooter}>
-                <Button
-                  variant="contained"
-                  onClick={this.props.toggleOpen}
-                  startIcon={<DoDisturbAltIcon />}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  data-cy="UnschedulePublishButton"
-                  disabled={this.state.scheduling}
-                  onClick={this.handleCancelPublish}
-                  startIcon={<DeleteIcon />}
-                >
-                  Unschedule Version&nbsp;
-                  {this.props.item.scheduling.version}
-                </Button>
-              </ModalFooter>
-            </>
-          ) : (
-            <>
-              <ModalContent>
-                <div className={styles.Row}>
-                  <FormControl fullWidth>
-                    <FormLabel>Timezone where this will be published</FormLabel>
-                    <Autocomplete
-                      name="selectedTimezone"
-                      size="small"
-                      disableClearable
-                      renderInput={(params) => <TextField {...params} />}
-                      value={this.state.selectedTimezone}
-                      onChange={(_, value) => this.handleChangeTimezone(value)}
-                      options={this.state.timezones}
+                      {moment
+                        .utc(this.props.item.scheduling.publishAt)
+                        .tz(this.state.userTimezone)
+                        .format(DISPLAY_FORMAT)}
+                    </em>{" "}
+                    in the <em>{this.state.userTimezone}</em> timezone.
+                  </p>
+                </ModalContent>
+                <ModalFooter className={styles.ModalFooter}>
+                  <Button
+                    variant="contained"
+                    onClick={this.props.toggleOpen}
+                    startIcon={<DoDisturbAltIcon />}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    data-cy="UnschedulePublishButton"
+                    disabled={this.state.scheduling}
+                    onClick={this.handleCancelPublish}
+                    startIcon={<DeleteIcon />}
+                  >
+                    Unschedule Version&nbsp;
+                    {this.props.item.scheduling.version}
+                  </Button>
+                </ModalFooter>
+              </>
+            ) : (
+              <>
+                <ModalContent>
+                  <div className={styles.Row}>
+                    <FormControl fullWidth>
+                      <FormLabel>
+                        Timezone where this will be published
+                      </FormLabel>
+                      <Autocomplete
+                        name="selectedTimezone"
+                        size="small"
+                        disableClearable
+                        renderInput={(params) => <TextField {...params} />}
+                        value={this.state.selectedTimezone}
+                        onChange={(_, value) =>
+                          this.handleChangeTimezone(value)
+                        }
+                        options={this.state.timezones}
+                      />
+                    </FormControl>
+                  </div>
+                  <div className={styles.Row} data-cy="SchedulePublishDate">
+                    <FieldTypeDateTime
+                      name="publish"
+                      label="Publish date and time"
+                      value={this.state.selectedTime}
+                      onChange={this.handleChangePublish}
+                      disablePast
                     />
-                  </FormControl>
-                </div>
-                <div className={styles.Row} data-cy="SchedulePublishDate">
-                  <FieldTypeDateTime
-                    name="publish"
-                    label="Publish date and time"
-                    value={this.state.selectedTime}
-                    onChange={this.handleChangePublish}
-                    disablePast
-                  />
-                </div>
-              </ModalContent>
-              <ModalFooter className={styles.ModalFooter}>
-                <Button
-                  variant="contained"
-                  className={styles.Cancel}
-                  id="SchedulePublishClose"
-                  onClick={this.props.toggleOpen}
-                  startIcon={<DoDisturbAltIcon />}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="contained"
-                  color="success"
-                  type="save"
-                  data-cy="SchedulePublishButton"
-                  onClick={this.handleSchedulePublish}
-                  disabled={this.state.scheduling}
-                  startIcon={<CalendarMonthIcon />}
-                  sx={{
-                    color: "common.white",
-                  }}
-                >
-                  Schedule Publishing Version {this.props.item.meta.version}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </Modal>
+                  </div>
+                </ModalContent>
+                <ModalFooter className={styles.ModalFooter}>
+                  <Button
+                    variant="contained"
+                    className={styles.Cancel}
+                    id="SchedulePublishClose"
+                    onClick={this.props.toggleOpen}
+                    startIcon={<DoDisturbAltIcon />}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    type="save"
+                    data-cy="SchedulePublishButton"
+                    onClick={this.handleSchedulePublish}
+                    disabled={this.state.scheduling}
+                    startIcon={<CalendarMonthIcon />}
+                    sx={{
+                      color: "common.white",
+                    }}
+                  >
+                    Schedule Publishing Version {this.props.item.meta.version}
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </Modal>
+        </Dialog>
       )
     );
   }
