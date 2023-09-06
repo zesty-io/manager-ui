@@ -433,6 +433,10 @@ const PublishingMenu = ({
   handlePublish,
 }: PublishingMenuProps) => {
   const history = useHistory();
+  const { modelZUID, itemZUID } = useParams<{
+    modelZUID: string;
+    itemZUID: string;
+  }>();
   return (
     <Menu
       onClose={() => onClose()}
@@ -521,7 +525,13 @@ const PublishingMenu = ({
             : "Schedule Publish"}
         </MenuItem>
       )}
-      <MenuItem onClick={() => history.push("publishings")}>
+
+      <MenuItem
+        onClick={() => {
+          history.push(`/content/${modelZUID}/${itemZUID}/publishings`);
+          onClose();
+        }}
+      >
         <ListItemIcon>
           <ManageAccountsRounded fontSize="small" />
         </ListItemIcon>
