@@ -548,7 +548,8 @@ export const FieldForm = ({
       <DialogContent
         dividers
         sx={{
-          pt: "20px",
+          pt: 2.5,
+          pl: activeTab === "details" ? 0 : 2.5,
           backgroundColor: "grey.50",
           borderTop: 0,
         }}
@@ -559,16 +560,9 @@ export const FieldForm = ({
             container
             rowSpacing={2.5}
             columnSpacing={2.5}
-            // maxWidth="480px"
             width="inherit"
             minHeight={448}
-            // mt={-2.5} //Offset grid item default top padding
             ml={0}
-            sx={{
-              "&.MuiGrid-container .MuiGrid-item": {
-                pl: 0,
-              },
-            }}
           >
             {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
               // Only show tooltip field when updating a field that already has a tooltip value
@@ -707,7 +701,7 @@ export const FieldForm = ({
               loading={isCreatingField || isBulkUpdating}
               onClick={handleAddAnotherField}
             >
-              Add another field
+              Add Another Field
             </LoadingButton>
             <LoadingButton
               data-cy="FieldFormAddFieldBtn"
@@ -715,7 +709,7 @@ export const FieldForm = ({
               onClick={handleSubmitForm}
               variant="contained"
             >
-              Done
+              Add Field
             </LoadingButton>
           </Box>
         </DialogActions>
