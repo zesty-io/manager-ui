@@ -24,7 +24,6 @@ import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
-import { theme } from "@zesty-io/material";
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
@@ -467,7 +466,8 @@ export const FieldForm = ({
       <DialogTitle
         component="div"
         sx={{
-          borderBottom: `2px solid ${theme.palette.border}`,
+          borderBottom: "2px solid",
+          borderColor: "border",
           pb: 0,
         }}
       >
