@@ -95,7 +95,7 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
       >
         <Stack
           px={4}
-          pt={3.75}
+          pt={4}
           pb={1}
           direction="row"
           justifyContent="space-between"
