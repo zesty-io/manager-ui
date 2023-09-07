@@ -94,7 +94,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
               color="text.secondary"
               fontWeight={600}
               sx={{
-                px: 1,
+                pr: 2,
               }}
             >
               Folders
@@ -104,7 +104,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
             <Box
               sx={{
                 height: "44px",
-                px: 1,
+                pr: 2,
               }}
             >
               {/* TODO: Construct path folder should navigate to */}
@@ -120,7 +120,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
               color="text.secondary"
               fontWeight={600}
               sx={{
-                px: 1,
+                pr: 2,
               }}
             >
               Files
@@ -130,7 +130,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
             <Box
               sx={{
                 height: "204px",
-                px: 1,
+                pr: 2,
               }}
             >
               <Thumbnail
@@ -160,7 +160,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
   );
 
   return (
-    <Box sx={{ pl: 2, width: "100%", height: "100%" }}>
+    <Box sx={{ pl: 4, width: "100%", height: "100%" }}>
       <AutoSizer onResize={onResize}>
         {({ width, height }) => (
           <VariableSizeGrid

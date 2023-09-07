@@ -5,7 +5,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { MediaSortOrder } from "../../../../../../shell/store/media-revamp";
 import { useParams } from "../../../../../../shell/hooks/useParams";
+import { FilterButton } from "../../../../../../shell/components/Filters";
 
+type SortOrder = "AtoZ" | "ZtoA" | "dateadded";
+const SORT_ORDER: Record<SortOrder, string> = {
+  dateadded: "Date Added",
+  AtoZ: "Name (A to Z)",
+  ZtoA: "Name (Z to A)",
+} as const;
 export const Sort: FC = () => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -17,32 +24,36 @@ export const Sort: FC = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  type SortOrder = "AtoZ" | "ZtoA" | "dateadded";
   const handleChange = (sortOrder: SortOrder) => {
     //dispatch(setSortOrder(sortOrder));
     setParams(sortOrder, "sort");
     handleClose();
   };
+
   return (
     <>
-      <Button
-        endIcon={<ArrowDropDownIcon />}
-        onClick={handleClick}
-        variant="outlined"
-        size="small"
-        color="inherit"
-        sx={{
-          py: "1px",
-        }}
-      >
-        Sort By
-      </Button>
+      <FilterButton
+        filterId="sortBy"
+        isFilterActive={false}
+        buttonText={`Sort: ${
+          SORT_ORDER[params.get("sort") as SortOrder] ?? SORT_ORDER.dateadded
+        }`}
+        onOpenMenu={handleClick}
+        onRemoveFilter={() => {}}
+      />
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        <MenuItem onClick={() => handleChange("dateadded")}>
-          Date Added
-        </MenuItem>
-        <MenuItem onClick={() => handleChange("AtoZ")}>Name (A to Z)</MenuItem>
-        <MenuItem onClick={() => handleChange("ZtoA")}>Name (Z to A)</MenuItem>
+        {Object.entries(SORT_ORDER).map(([key, value]) => (
+          <MenuItem
+            onClick={() => handleChange(key as SortOrder)}
+            selected={
+              key === "dateadded"
+                ? !params.get("sort") || params.get("sort") === key
+                : params.get("sort") === key
+            }
+          >
+            {value}
+          </MenuItem>
+        ))}
       </Menu>
     </>
   );

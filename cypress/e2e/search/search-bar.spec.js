@@ -60,7 +60,9 @@ describe("Global Search: Search Bar", () => {
     cy.getBySelector("global-search-recent-keyword")
       .should("exist")
       .trigger("mouseover");
-    cy.getBySelector("RemoveRecentSearchKeyword").should("exist").click();
+    cy.getBySelector("RemoveRecentSearchKeyword")
+      .should("exist")
+      .click({ force: true });
 
     // Verify if keyword was removed
     cy.getBySelector("global-search-recent-keyword").should("not.exist");

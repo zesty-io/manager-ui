@@ -525,6 +525,7 @@ const PublishingMenu = ({
             : "Schedule Publish"}
         </MenuItem>
       )}
+
       <MenuItem
         onClick={() => {
           history.push(`/content/${modelZUID}/${itemZUID}/publishings`);

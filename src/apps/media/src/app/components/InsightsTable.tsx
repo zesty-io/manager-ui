@@ -682,7 +682,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
       width: 140,
       renderCell: (params: any) => {
         return (
-          <Typography>
+          <Typography variant="body2">
             {numberFormatter.format(params.row.ThroughtputGB)} GB
           </Typography>
         );
@@ -721,7 +721,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
   ];
 
   return (
-    <Box component="main" sx={{ height: "100%", width: "100%" }}>
+    <Box component="main" sx={{ height: "100%", width: "100%", px: 4 }}>
       {files && (
         <DataGridPro
           sx={{

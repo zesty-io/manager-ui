@@ -261,7 +261,7 @@ export const FileModalContent: FC<Props> = ({
                 width: "300px",
               }}
             >
-              <Typography variant="body1" noWrap>
+              <Typography variant="body1" fontWeight={700} noWrap>
                 {newFilename}
               </Typography>
             </Box>

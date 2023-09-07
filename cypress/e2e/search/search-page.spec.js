@@ -26,7 +26,7 @@ describe("Global Search: Search Page", () => {
       "https://8-f48cf3a682-7fthvk.api.dev.zesty.io/v1/search/items*",
       () => {
         cy.visit(
-          "/search?q=somerandomstringthatdoesnotexist&user=5-b497838d8d-p2j5tm&datePreset=today"
+          "/search?q=somerandomstringthatdoesnotexist&user=5-faeda8978e-j5xb6l&datePreset=today"
         );
       }
     );
@@ -68,7 +68,7 @@ describe("Global Search: Search Page", () => {
 
     cy.location("search").should(
       "equal",
-      `?q=somerandomstringthatdoesnotexist&sort=created&user=5-84d1e6d4ae-s3m974&datePreset=today`
+      `?q=somerandomstringthatdoesnotexist&sort=created&user=5-da8c91c9da-l9cqsz&datePreset=today`
     );
   });
 
