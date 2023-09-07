@@ -7,7 +7,7 @@ export const ApiCardList = () => {
     <Stack height="100%" pl={4} pt={2} sx={{ overflowY: "auto" }}>
       <Stack
         spacing={0.5}
-        pb={2.5}
+        pb={2}
         sx={{
           backgroundColor: "grey.50",
         }}
@@ -25,7 +25,7 @@ export const ApiCardList = () => {
 
       <Box
         gap={3}
-        py={2}
+        pb={2}
         pr={4}
         sx={{
           display: "grid",
