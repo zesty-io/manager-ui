@@ -25,6 +25,7 @@ import { AppState } from "../../../../../../shell/store/types";
 import { Filetype } from "../../../../../../shell/store/media-revamp";
 import { ImageFilterRow } from "./ImageFilterRow";
 import { VideoFilterRow } from "./VideoFilterRow";
+import { FilterButton } from "../../../../../../shell/components/Filters";
 
 const pluralize = (filetype: Filetype) => {
   // audio & code filetypes can't be pluralized
@@ -51,50 +52,15 @@ export const FiletypeFilter: FC = () => {
     handleClose();
   };
 
-  const inactiveButton = (
-    <Button
-      endIcon={<ArrowDropDownIcon />}
-      onClick={handleClick}
-      variant="outlined"
-      size="small"
-      color="inherit"
-      sx={{
-        py: "1px",
-      }}
-    >
-      File Type
-    </Button>
-  );
-
-  const activeButton = (
-    <ButtonGroup variant="contained">
-      <Button
-        startIcon={<CheckIcon sx={{ width: "20px", height: "20px" }} />}
-        onClick={handleClick}
-        size="small"
-        sx={{
-          py: "1px",
-        }}
-      >
-        <Typography variant="body2" sx={{ textTransform: "capitalize" }}>
-          {pluralize(activeFilter)}
-        </Typography>
-      </Button>
-      <Button
-        onClick={() => handleChange(null)}
-        size="small"
-        sx={{
-          py: "1px",
-        }}
-      >
-        <CloseRounded fontSize="small" />
-      </Button>
-    </ButtonGroup>
-  );
-
   return (
     <>
-      {activeFilter ? activeButton : inactiveButton}
+      <FilterButton
+        filterId="fileType"
+        isFilterActive={!!activeFilter}
+        buttonText={activeFilter ? pluralize(activeFilter) : "File Type"}
+        onOpenMenu={handleClick}
+        onRemoveFilter={() => handleChange(null)}
+      />
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
         <ImageFilterRow onClose={handleClose} />
         <VideoFilterRow onClose={handleClose} />

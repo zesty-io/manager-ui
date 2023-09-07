@@ -176,7 +176,13 @@ export const SearchMedia = ({
   return (
     <Box
       component="main"
-      sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        backgroundColor: "grey.50",
+      }}
     >
       {isGroupsFetching ||
       isFilesFetching ||
@@ -198,7 +204,7 @@ export const SearchMedia = ({
           }}
         >
           <Header
-            title={`Search Results for "${term}"`}
+            title={term}
             hideUpload
             addImagesCallback={addImagesCallback}
             hideFolderCreate

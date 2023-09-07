@@ -163,10 +163,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         checked={checked}
         icon={<CheckCircleIcon sx={{ color: "common.white" }} />}
         checkedIcon={
-          <CheckCircleIcon
-            sx={{ backgroundColor: "common.white", borderRadius: "100%" }}
-            color="primary"
-          />
+          <Box position="relative">
+            <Box
+              sx={{
+                position: "absolute",
+                top: 3,
+                left: 3,
+                width: "18px",
+                height: "18px",
+                backgroundColor: "common.white",
+                borderRadius: "50%",
+                zIndex: 1,
+              }}
+            />
+            <CheckCircleIcon
+              sx={{ position: "relative", zIndex: 2, borderRadius: "100%" }}
+              color="primary"
+            />
+          </Box>
         }
         // onChange={(evt, checked) => {}
         onClick={(evt) => {

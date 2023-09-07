@@ -53,7 +53,7 @@ export const UploadModal: FC = () => {
         onClose={handleDismiss}
         PaperProps={{
           style: {
-            maxWidth: "1120px",
+            maxWidth: "1280px",
           },
         }}
       >
@@ -81,8 +81,9 @@ export const UploadModal: FC = () => {
             <IconButton size="small" onClick={handleDismiss}>
               <ArrowBackRoundedIcon fontSize="small" color="action" />
             </IconButton>
-            <Typography variant="h5" color="text.secondary">
-              {filesToUpload.length} Files Selected for Upload
+            <Typography variant="h5" color="text.primary" fontWeight={700}>
+              {filesToUpload.length} File{filesToUpload.length > 1 && "s"}{" "}
+              Selected for Upload
             </Typography>
           </Box>
           <UploadButton {...ids} text="Upload More" variant="outlined" />

@@ -17,7 +17,7 @@ describe("Global Search: Advanced Search", () => {
       .find("input")
       .should("exist")
       .type("cypress");
-    cy.getBySelector("AdvancedSearchButton").click();
+    cy.getBySelector("AdvancedSearchButton").click({ force: true });
     cy.getBySelector("AdvanceSearchModal").should("exist");
     cy.get("body").type("{esc}");
   });

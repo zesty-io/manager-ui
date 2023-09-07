@@ -23,10 +23,10 @@ export const ToggleViews = () => {
       color="primary"
     >
       <ToggleButton value="grid">
-        <GridViewIcon />
+        <GridViewIcon fontSize="inherit" />
       </ToggleButton>
       <ToggleButton value="list">
-        <ListIcon />
+        <ListIcon fontSize="inherit" />
       </ToggleButton>
     </ToggleButtonGroup>
   );

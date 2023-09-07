@@ -17,6 +17,7 @@ export const CustomBreadcrumbs = ({ items }: CustomBreadcrumbsProps) => {
   return (
     <>
       <Breadcrumbs
+        data-cy="breadcrumbs"
         itemsBeforeCollapse={2}
         maxItems={5}
         itemsAfterCollapse={2}
