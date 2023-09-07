@@ -31,30 +31,39 @@ export const RelatedModels = () => {
       <Typography color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
         View the models, this model is connected to
       </Typography>
-      {relatedModelsZUIDs?.map((modelZUID) => {
-        const model = models?.find((model) => model.ZUID === modelZUID);
-        return (
-          <Box
-            display="flex"
-            alignItems="center"
-            py={2}
-            sx={{
-              borderBottom: (theme) => `1px solid ${theme.palette.border}`,
-            }}
-          >
-            <Box display="flex" flex={1} gap={1.5} alignItems="center">
-              <SvgIcon color="action" component={modelIconMap[model?.type]} />
-              <Typography>{model?.label}</Typography>
-            </Box>
-            <Button
-              size="small"
-              onClick={() => history.push(`/schema/${model?.ZUID}`)}
+      <Box
+        borderRadius="8px"
+        border="1px solid"
+        borderColor="border"
+        sx={{ backgroundColor: "background.paper" }}
+      >
+        {relatedModelsZUIDs?.map((modelZUID, index) => {
+          const model = models?.find((model) => model.ZUID === modelZUID);
+          return (
+            <Box
+              display="flex"
+              alignItems="center"
+              p={2}
+              sx={{
+                borderBottom:
+                  index + 1 < relatedModelsZUIDs?.length ? "1px solid" : "none",
+                borderColor: "border",
+              }}
             >
-              View
-            </Button>
-          </Box>
-        );
-      })}
+              <Box display="flex" flex={1} gap={1.5} alignItems="center">
+                <SvgIcon color="action" component={modelIconMap[model?.type]} />
+                <Typography>{model?.label}</Typography>
+              </Box>
+              <Button
+                size="small"
+                onClick={() => history.push(`/schema/${model?.ZUID}`)}
+              >
+                View
+              </Button>
+            </Box>
+          );
+        })}
+      </Box>
     </Box>
   );
 };

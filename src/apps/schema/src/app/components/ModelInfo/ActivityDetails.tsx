@@ -49,91 +49,100 @@ export const ActivityDetails = () => {
         Learn when the model was created, updated, and by whom
       </Typography>
       <Box
-        display="flex"
-        alignItems="center"
-        py={2}
-        sx={{
-          borderBottom: (theme) => `1px solid ${theme.palette.border}`,
-        }}
+        borderRadius="8px"
+        border="1px solid"
+        borderColor="border"
+        sx={{ backgroundColor: "background.paper" }}
       >
-        <Box minWidth={280}>
-          <Typography color="text.secondary">Created On</Typography>
+        <Box
+          display="flex"
+          alignItems="center"
+          p={2}
+          sx={{
+            borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+          }}
+        >
+          <Box minWidth={280}>
+            <Typography color="text.primary">Created On</Typography>
+          </Box>
+          <Box flex={1}>
+            <Typography>
+              {moment(model?.createdAt).format("Do MMMM, YYYY [at] h:mm A")}
+            </Typography>
+          </Box>
         </Box>
-        <Box flex={1}>
-          <Typography>
-            {moment(model?.createdAt).format("Do MMMM, YYYY [at] h:mm A")}
-          </Typography>
+        <Box
+          display="flex"
+          alignItems="center"
+          px={2}
+          py={1.5}
+          sx={{
+            borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+          }}
+        >
+          <Box minWidth={280}>
+            <Typography color="text.primary">Created By</Typography>
+          </Box>
+          <Box flex={1} display="flex" gap={1.5} alignItems="center">
+            <Avatar
+              sx={{ width: 32, height: 32 }}
+              src={`https://www.gravatar.com/avatar/${MD5(
+                createdByUser?.email || ""
+              )}?d=mm&s=32`}
+            />
+            <Typography>
+              {createdByUser?.firstName} {createdByUser?.lastName}
+            </Typography>
+          </Box>
+          <Box>
+            <Button
+              onClick={() => handleCopy(createdByUser?.email)}
+              size="small"
+            >
+              {isCopied ? "Copied!" : "Copy Email"}
+            </Button>
+          </Box>
         </Box>
-      </Box>
-      <Box
-        display="flex"
-        alignItems="center"
-        sx={{
-          borderBottom: (theme) => `1px solid ${theme.palette.border}`,
-        }}
-      >
-        <Box minWidth={280} py={2}>
-          <Typography color="text.secondary">Created By</Typography>
+        <Box
+          display="flex"
+          alignItems="center"
+          p={2}
+          sx={{
+            borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+          }}
+        >
+          <Box minWidth={280}>
+            <Typography color="text.primary">Last Updated On</Typography>
+          </Box>
+          <Box flex={1}>
+            <Typography>
+              {moment(model?.updatedAt).format("Do MMMM, YYYY [at] h:mm A")}
+            </Typography>
+          </Box>
         </Box>
-        <Box flex={1} display="flex" gap={1.5} alignItems="center" py={1.5}>
-          <Avatar
-            sx={{ width: 32, height: 32 }}
-            src={`https://www.gravatar.com/avatar/${MD5(
-              createdByUser?.email || ""
-            )}?d=mm&s=32`}
-          />
-          <Typography>
-            {createdByUser?.firstName} {createdByUser?.lastName}
-          </Typography>
-        </Box>
-        <Box py={1.5}>
-          <Button onClick={() => handleCopy(createdByUser?.email)} size="small">
-            {isCopied ? "Copied!" : "Copy Email"}
-          </Button>
-        </Box>
-      </Box>
-      <Box
-        display="flex"
-        alignItems="center"
-        py={2}
-        sx={{
-          borderBottom: (theme) => `1px solid ${theme.palette.border}`,
-        }}
-      >
-        <Box minWidth={280}>
-          <Typography color="text.secondary">Last Updated On</Typography>
-        </Box>
-        <Box flex={1}>
-          <Typography>
-            {moment(model?.updatedAt).format("Do MMMM, YYYY [at] h:mm A")}
-          </Typography>
-        </Box>
-      </Box>
-      <Box
-        display="flex"
-        alignItems="center"
-        sx={{
-          borderBottom: (theme) => `1px solid ${theme.palette.border}`,
-        }}
-      >
-        <Box minWidth={280} py={2}>
-          <Typography color="text.secondary">Last Updated By</Typography>
-        </Box>
-        <Box flex={1} display="flex" gap={1.5} alignItems="center" py={1.5}>
-          <Avatar
-            sx={{ width: 32, height: 32 }}
-            src={`https://www.gravatar.com/avatar/${MD5(
-              updatedByUser?.email || ""
-            )}?d=mm&s=32`}
-          />
-          <Typography>
-            {updatedByUser?.firstName} {updatedByUser?.lastName}
-          </Typography>
-        </Box>
-        <Box sx={{ py: 1.5 }}>
-          <Button onClick={() => handleCopy(updatedByUser?.email)}>
-            {isCopied ? "Copied!" : "Copy Email"}
-          </Button>
+        <Box display="flex" alignItems="center" px={2} py={1.5}>
+          <Box minWidth={280}>
+            <Typography color="text.primary">Last Updated By</Typography>
+          </Box>
+          <Box flex={1} display="flex" gap={1.5} alignItems="center">
+            <Avatar
+              sx={{ width: 32, height: 32 }}
+              src={`https://www.gravatar.com/avatar/${MD5(
+                updatedByUser?.email || ""
+              )}?d=mm&s=32`}
+            />
+            <Typography>
+              {updatedByUser?.firstName} {updatedByUser?.lastName}
+            </Typography>
+          </Box>
+          <Box>
+            <Button
+              onClick={() => handleCopy(updatedByUser?.email)}
+              size="small"
+            >
+              {isCopied ? "Copied!" : "Copy Email"}
+            </Button>
+          </Box>
         </Box>
       </Box>
       <Button
