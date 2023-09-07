@@ -6,7 +6,7 @@ describe("Mature Home", () => {
     cy.url().should("include", "/launchpad");
   });
   it("Displays user first name", () => {
-    cy.contains("Good Morning, FirstName");
+    cy.contains("Good Morning, Developers");
   });
   it("Displays delta percentage on metric card if instance is over 2 months old", () => {
     // Test instance is over 2 months old
