@@ -158,7 +158,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         flexDirection="column"
         height="100%"
         flex={1}
-        px={4}
+        pl={4}
         pt={2}
         borderRight="1px solid"
         borderColor="border"
@@ -168,6 +168,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           display="flex"
           alignItems="center"
           justifyContent="space-between"
+          pr={2}
         >
           <TextField
             data-cy="FieldListFilter"
@@ -207,7 +208,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           />
         </Box>
 
-        <Box sx={{ overflowY: "auto", height: "100%" }}>
+        <Box sx={{ overflowY: "auto", height: "100%", pr: 2 }}>
           {/* SYSTEM FIELDS */}
           {isSystemFieldsVisible === "true" && !search && (
             <Box

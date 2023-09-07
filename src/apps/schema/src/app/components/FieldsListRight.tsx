@@ -147,7 +147,7 @@ export const FieldsListRight = ({ model }: Props) => {
           title="Displays the purpose of the model to help content-writers"
         >
           <InfoRoundedIcon
-            sx={{ ml: 1, width: "10px", height: "10px" }}
+            sx={{ ml: 1, width: "12px", height: "12px" }}
             color="action"
           />
         </Tooltip>
