@@ -4,6 +4,7 @@ import {
   TextField,
   Button,
   InputAdornment,
+  Stack,
 } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -45,13 +46,13 @@ export const AllModels = () => {
           <Typography variant="h3" fontWeight="700">
             All Models
           </Typography>
-          <Box display="flex" gap={1}>
+          <Stack direction="row" alignItems="center" gap={1}>
             <TextField
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               size="small"
               sx={{
-                height: "32px",
+                width: "240px",
                 "& .MuiOutlinedInput-notchedOutline": {
                   border: 0,
                 },
@@ -60,9 +61,12 @@ export const AllModels = () => {
               InputProps={{
                 sx: {
                   backgroundColor: "grey.50",
+                  input: {
+                    py: 0.75,
+                  },
                 },
                 startAdornment: (
-                  <InputAdornment position="start">
+                  <InputAdornment position="start" sx={{ marginRight: 0.5 }}>
                     <SearchRoundedIcon fontSize="small" color="action" />
                   </InputAdornment>
                 ),
@@ -78,7 +82,7 @@ export const AllModels = () => {
             >
               Create Model
             </Button>
-          </Box>
+          </Stack>
         </Box>
         <Box height="100%" px={4} pt={2}>
           <ModelsTable
