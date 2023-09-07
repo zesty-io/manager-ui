@@ -451,6 +451,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
         PaperProps={{
           sx: {
             maxWidth: "640px",
+            width: 640,
             maxHeight: "min(100%, 1000px)",
             m: 0,
           },
