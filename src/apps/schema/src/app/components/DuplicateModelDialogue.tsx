@@ -227,7 +227,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
             />
             <Stack>
               <Typography variant="h5" fontWeight={700}>
-                Duplicate {model.name} Model
+                Duplicate {model.label} Model
               </Typography>
               <Typography variant="body3" color="text.secondary">
                 As a {modelNameMap[model.type]}
