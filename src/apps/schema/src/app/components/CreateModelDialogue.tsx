@@ -174,30 +174,32 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     if (!model.type) {
       return (
         <>
-          <DialogTitle>
+          <DialogTitle component="div">
             <Stack
               direction="row"
               justifyContent="space-between"
-              sx={{ mb: 1 }}
+              alignItems="flex-start"
             >
-              <Typography variant="h5" fontWeight={700}>
-                Select Model Type
-              </Typography>
+              <Box width={520}>
+                <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
+                  Select Model Type
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  The model type you select affects how content items render in
+                  the interface and whether URLs and templates are created.
+                  Note: All Models can be used headless
+                </Typography>
+                <Box display="flex" alignItems="center" gap={1} mt={1}>
+                  <MenuBookRoundedIcon color="info" />{" "}
+                  <Link variant="body2" href="#" underline="always">
+                    Read our docs about different model types and their uses
+                  </Link>
+                </Box>
+              </Box>
               <IconButton size="small" onClick={() => onClose()}>
                 <CloseRoundedIcon fontSize="small" />
               </IconButton>
             </Stack>
-            <Typography variant="body2" color="text.secondary">
-              The model type you select affects how content items render in the
-              interface and whether URLs and templates are created. Note: All
-              Models can be used headless
-            </Typography>
-            <Box display="flex" alignItems="center" gap={1} mt={1.25}>
-              <MenuBookRoundedIcon color="info" />{" "}
-              <Link variant="body2" href="#">
-                Read our docs about different model types and their uses
-              </Link>
-            </Box>
           </DialogTitle>
           <DialogContent sx={{ pt: 2.5, backgroundColor: "grey.50" }} dividers>
             <Box display="flex" flexDirection="column" gap={2}>
@@ -221,7 +223,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     },
                   }}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon sx={{ minWidth: 48 }}>
                     <SvgIcon
                       sx={{ fontSize: "32px" }}
                       component={
@@ -230,8 +232,11 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     />
                   </ListItemIcon>
                   <ListItemText
-                    primary={modelType.name}
-                    primaryTypographyProps={{ variant: "h6", fontWeight: 600 }}
+                    primary={
+                      <Typography variant="h6" fontWeight={600}>
+                        {modelType.name}
+                      </Typography>
+                    }
                     disableTypography
                     sx={{ my: 0 }}
                     secondary={
