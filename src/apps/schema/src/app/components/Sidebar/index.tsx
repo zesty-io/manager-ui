@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
-import { SchemaRounded, InsightsRounded } from "@mui/icons-material";
+import { SvgIconComponent } from "@mui/icons-material";
 import { Box } from "@mui/material";
+import { DatabaseSearch } from "@zesty-io/material";
 
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
 import {
@@ -28,7 +29,7 @@ export const Sidebar = () => {
     {
       name: "All Models",
       path: "/schema",
-      icon: SchemaRounded,
+      icon: DatabaseSearch as SvgIconComponent,
     },
   ];
 

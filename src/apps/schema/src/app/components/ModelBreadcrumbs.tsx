@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { Tooltip, Stack, SvgIcon, Typography } from "@mui/material";
 import { Link, useHistory } from "react-router-dom";
-import SchemaRoundedIcon from "@mui/icons-material/SchemaRounded";
+import { DatabaseSearch } from "@zesty-io/material";
 
 import {
   useGetContentModelsQuery,
@@ -65,7 +65,7 @@ export const ModelBreadcrumbs: FC<Props> = ({ modelZUID }) => {
               }}
               to="/schema"
             >
-              <SchemaRoundedIcon color="action" fontSize="small" />
+              <DatabaseSearch color="action" fontSize="small" />
             </Link>
           ),
           onClick: () => {
