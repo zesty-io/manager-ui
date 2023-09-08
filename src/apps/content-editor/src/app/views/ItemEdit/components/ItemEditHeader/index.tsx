@@ -178,7 +178,6 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
               }}
             >
               {tabs.map((tab) => {
-                if (tab.value === "meta" && model?.type === "dataset") return;
                 return (
                   <Tab
                     key={tab.value}
