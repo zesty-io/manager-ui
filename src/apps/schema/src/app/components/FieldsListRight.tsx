@@ -59,7 +59,7 @@ export const FieldsListRight = ({ model }: Props) => {
   };
 
   return (
-    <Box height="100%" width="280px" bgcolor="grey.50" padding={2}>
+    <Box height="100%" width="280px" bgcolor="grey.50" py={2} pl={2} pr={4}>
       <InputLabel>
         Reference ID
         <Tooltip
@@ -147,7 +147,7 @@ export const FieldsListRight = ({ model }: Props) => {
           title="Displays the purpose of the model to help content-writers"
         >
           <InfoRoundedIcon
-            sx={{ ml: 1, width: "10px", height: "10px" }}
+            sx={{ ml: 1, width: "12px", height: "12px" }}
             color="action"
           />
         </Tooltip>

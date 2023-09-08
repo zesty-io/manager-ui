@@ -1,53 +1,43 @@
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton, Stack } from "@mui/material";
 import { ModelsTable } from "../components/ModelsTable";
-import { useMemo } from "react";
 import { useParams } from "../../../../../shell/hooks/useParams";
-import { useGetContentModelsQuery } from "../../../../../shell/services/instance";
-import { ContentModel } from "../../../../../shell/services/types";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import KeyboardBackspaceRoundedIcon from "@mui/icons-material/KeyboardBackspaceRounded";
 import { useHistory } from "react-router";
-import { modelNameMap } from "../utils";
 
 export const SearchModels = () => {
   const [params, setParams] = useParams();
-  const { data: models } = useGetContentModelsQuery();
   const history = useHistory();
 
   const search = params.get("term") || "";
 
-  const filteredModelsLength = useMemo(() => {
-    return models?.filter((model: ContentModel) => {
-      return (
-        model?.label?.toLowerCase().includes(search.toLowerCase()) ||
-        model?.name?.toLowerCase().includes(search.toLowerCase()) ||
-        modelNameMap[model.type as keyof typeof modelNameMap]
-          ?.toLowerCase()
-          ?.includes(search.toLowerCase()) ||
-        model.ZUID?.toLowerCase() === search.toLowerCase()
-      );
-    })?.length;
-  }, [search, models]);
-
   return (
-    <Box width="100%" display="flex" flexDirection="column">
-      <Box
-        display="flex"
-        alignItems="center"
+    <Box
+      width="100%"
+      display="flex"
+      flexDirection="column"
+      sx={{ backgroundColor: "grey.50" }}
+    >
+      <Stack
+        direction="row"
+        alignItems="flex-start"
         gap={1.5}
-        px={3}
-        py={1.5}
+        px={4}
+        pt={4}
+        pb={1.75}
+        minHeight={84}
         sx={{
-          borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+          borderBottom: (theme) => `2px solid ${theme.palette.border}`,
+          backgroundColor: "background.paper",
         }}
       >
         <IconButton size="small" onClick={() => history.push("/schema")}>
-          <CloseRoundedIcon fontSize="small" color="action" />
+          <KeyboardBackspaceRoundedIcon fontSize="small" color="action" />
         </IconButton>
-        <Typography variant="h6" fontWeight="600">
-          {filteredModelsLength} Search Results for "{search}"
+        <Typography variant="h3" fontWeight="700">
+          {search}
         </Typography>
-      </Box>
-      <Box height="100%" px={3} pt={2}>
+      </Stack>
+      <Box height="100%" px={4} pt={2}>
         <ModelsTable
           search={search}
           onEmptySearch={() => {

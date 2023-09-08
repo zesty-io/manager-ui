@@ -158,13 +158,17 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         flexDirection="column"
         height="100%"
         flex={1}
-        sx={{ pr: 3, pt: 2 }}
+        pl={4}
+        pt={2}
+        borderRight="1px solid"
+        borderColor="border"
       >
         <Box
           mb={2}
           display="flex"
           alignItems="center"
           justifyContent="space-between"
+          pr={2}
         >
           <TextField
             data-cy="FieldListFilter"
@@ -172,7 +176,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             placeholder="Search Fields"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            sx={{ width: "360px", px: 3 }}
+            sx={{ width: "360px" }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -204,12 +208,11 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           />
         </Box>
 
-        <Box sx={{ overflowY: "auto", height: "100%" }}>
+        <Box sx={{ overflowY: "auto", height: "100%", pr: 2 }}>
           {/* SYSTEM FIELDS */}
           {isSystemFieldsVisible === "true" && !search && (
             <Box
               data-cy="SystemFields"
-              ml={3}
               pb={2}
               mb={1.5}
               borderBottom="1px solid"
@@ -255,9 +258,6 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               type="search"
               searchTerm={search}
               onButtonClick={handleSearchAgain}
-              sx={{
-                p: 3,
-              }}
             />
           )}
 
@@ -272,7 +272,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {Boolean(filteredFields?.length) && (
             <>
               {isSystemFieldsVisible === "true" && (
-                <Box pl={3} pb={2}>
+                <Box pb={2}>
                   <Typography variant="h6" mb={1}>
                     User Fields
                   </Typography>
@@ -293,23 +293,21 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                         onDividerClick={() => onNewFieldModalClick(index)}
                       />
                     )}
-                    <Box sx={{ pl: 3 }}>
-                      <Field
-                        index={index}
-                        field={field}
-                        setDraggedIndex={setDraggedIndex}
-                        setHoveredIndex={setHoveredIndex}
-                        onReorder={handleReorder}
-                        disableDrag={!!search}
-                        withDragIcon
-                        withMenu
-                        withHover
-                      />
-                    </Box>
+                    <Field
+                      index={index}
+                      field={field}
+                      setDraggedIndex={setDraggedIndex}
+                      setHoveredIndex={setHoveredIndex}
+                      onReorder={handleReorder}
+                      disableDrag={!!search}
+                      withDragIcon
+                      withMenu
+                      withHover
+                    />
                   </Box>
                 );
               })}
-              <Box pl={3} mb={!!deactivatedFields?.length ? 2 : 4}>
+              <Box mb={!!deactivatedFields?.length ? 2 : 4}>
                 <Button
                   data-cy="EndOfListAddFieldBtn"
                   sx={{
@@ -341,7 +339,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {!Boolean(filteredFields?.length) &&
             Boolean(deactivatedFields?.length) &&
             !search && (
-              <Box pl={3} pb={2}>
+              <Box pb={2}>
                 <Typography variant="body2" color="text.secondary">
                   There are no active fields in this model.
                 </Typography>
@@ -351,7 +349,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {/* INACTIVE FIELDS ARE PRESENT */}
           {Boolean(deactivatedFields?.length) && !search && (
             <Box mb={2} display="flex" flexDirection="column" gap={1.5}>
-              <Box pl={3}>
+              <Box>
                 <Typography variant="h6" mb={1}>
                   Deactivated Fields
                 </Typography>
@@ -362,7 +360,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               </Box>
               {deactivatedFields?.map((field, index) => {
                 return (
-                  <Box sx={{ pl: 3 }} key={field.ZUID}>
+                  <Box key={field.ZUID}>
                     <Field
                       index={index}
                       field={field}

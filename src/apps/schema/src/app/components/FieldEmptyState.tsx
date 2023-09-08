@@ -25,7 +25,6 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
       display="flex"
       flexDirection="row"
       alignItems="center"
-      px={3}
       gap={7}
       justifyContent="space-between"
     >

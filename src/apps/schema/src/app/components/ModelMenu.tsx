@@ -78,7 +78,7 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
               <WidgetsRoundedIcon fontSize="small" />
             )}
           </ListItemIcon>
-          <ListItemText>Copy ZUID</ListItemText>
+          <ListItemText>Copy Model ZUID</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {

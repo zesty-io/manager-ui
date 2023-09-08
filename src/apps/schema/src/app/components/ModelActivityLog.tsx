@@ -71,7 +71,8 @@ export const ModelActivityLog = () => {
   return (
     <Stack
       height="100%"
-      px={3}
+      px={4}
+      pt={0.5}
       sx={{
         "*::-webkit-scrollbar": {
           display: "none",

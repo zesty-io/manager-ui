@@ -7,6 +7,7 @@ import {
   Box,
   Typography,
   IconButton,
+  Stack,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
@@ -67,9 +68,34 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
 
   return (
     <>
-      <DialogTitle sx={{ px: 3, py: 2.5 }}>
-        <Box display="flex" justifyContent="space-between" pb={2}>
-          Select a Field Type
+      <DialogTitle component="div">
+        <Stack
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+        >
+          <Stack gap={2}>
+            <Typography variant="h5" fontWeight={700}>
+              Select a Field Type
+            </Typography>
+            <Box width="349px">
+              <TextField
+                data-cy="FieldSelectionFilter"
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                }}
+                onChange={handleFilterFields}
+                placeholder="Search field types"
+                autoFocus
+                size="small"
+              />
+            </Box>
+          </Stack>
           <IconButton
             size="small"
             onClick={onModalClose}
@@ -77,31 +103,14 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
           >
             <CloseIcon fontSize="small" />
           </IconButton>
-        </Box>
-        <Box width="349px">
-          <TextField
-            data-cy="FieldSelectionFilter"
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleFilterFields}
-            placeholder="Search field types"
-            autoFocus
-            size="small"
-          />
-        </Box>
+        </Stack>
       </DialogTitle>
       <DialogContent
         data-cy="FieldSelection"
         dividers
         sx={{
-          px: 3,
-          py: 1.5,
+          pt: 2.5,
+          backgroundColor: "grey.50",
           "&.MuiDialogContent-dividers": {
             borderColor: "border",
           },

@@ -142,7 +142,12 @@ export const FieldFormInput = ({
     <Grid item xs={fieldConfig.gridSize}>
       {fieldConfig.type === "input" && (
         <>
-          <Box mb={0.5}>
+          <Stack
+            flexDirection="row"
+            alignItems="center"
+            mb={!!fieldConfig.subLabel ? 0 : 0.5}
+            height={18}
+          >
             <Typography component="span" variant="body2" fontWeight={600}>
               {fieldConfig.label}
             </Typography>
@@ -151,6 +156,7 @@ export const FieldFormInput = ({
                 component="span"
                 variant="body2"
                 color="text.secondary"
+                sx={{ whiteSpace: "pre" }}
               >
                 {" "}
                 (optional)
@@ -164,12 +170,17 @@ export const FieldFormInput = ({
                 />
               </Tooltip>
             )}
-            {fieldConfig.subLabel && (
-              <Typography component="p" variant="body3" color="text.secondary">
-                {fieldConfig.subLabel}
-              </Typography>
-            )}
-          </Box>
+          </Stack>
+          {fieldConfig.subLabel && (
+            <Typography
+              component="p"
+              variant="body3"
+              color="text.secondary"
+              mb={0.5}
+            >
+              {fieldConfig.subLabel}
+            </Typography>
+          )}
           <InputTextField
             autoFocus={fieldConfig.autoFocus}
             data-cy={`FieldFormInput_${fieldConfig.name}`}

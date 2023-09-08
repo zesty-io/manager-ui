@@ -213,38 +213,38 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
         sx: { maxWidth: "640px", maxHeight: "min(100%, 1000px)", m: 0 },
       }}
     >
-      <DialogTitle>
+      <DialogTitle component="div">
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="flex-start"
-          sx={{ mb: 1 }}
         >
           <Box display="flex" alignItems="center" gap={1}>
             <SvgIcon
-              sx={{ fontSize: "32px" }}
+              sx={{ fontSize: "28px" }}
               color="action"
               component={modelIconMap[model.type]}
             />
-            <Box>
-              <Typography variant="h5" fontWeight={600} sx={{ mb: 1 }}>
-                Duplicate {model.name} Model
+            <Stack>
+              <Typography variant="h5" fontWeight={700}>
+                Duplicate {model.label} Model
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                As a {modelNameMap[model.type]}
+              <Typography variant="body3" color="text.secondary">
+                As a {modelNameMap[model.type]} Model
               </Typography>
-            </Box>
+            </Stack>
           </Box>
           <IconButton size="small" onClick={() => onClose()}>
             <CloseRoundedIcon fontSize="small" />
           </IconButton>
         </Stack>
       </DialogTitle>
-      <DialogContent dividers sx={{ pt: 2.5 }}>
+      <DialogContent dividers sx={{ pt: 2.5, backgroundColor: "grey.50" }}>
         <Box display="flex" flexDirection="column" gap={2.5}>
           <Alert severity="info">
-            You&apos;re about to duplicate the {model.name} model with all of
-            it&apos;s existing fields. No content items will be duplicated.
+            You&apos;re about to duplicate the <strong>{model.label}</strong>{" "}
+            model with all of it&apos;s existing fields. No content items will
+            be duplicated.
           </Alert>
           <Box>
             <InputLabel>Display Name</InputLabel>
@@ -258,6 +258,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
                 updateNewModel({ label: event.target.value })
               }
               fullWidth
+              autoFocus
             />
           </Box>
           <Box>

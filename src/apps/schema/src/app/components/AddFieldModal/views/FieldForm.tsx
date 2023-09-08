@@ -464,17 +464,14 @@ export const FieldForm = ({
   return (
     <>
       <DialogTitle
+        component="div"
         sx={{
-          padding: 0,
+          borderBottom: "2px solid",
+          borderColor: "border",
+          pb: 0,
         }}
       >
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          px={2.5}
-          pt={2.5}
-        >
+        <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" alignItems="center">
             {!isUpdateField && (
               <IconButton
@@ -495,7 +492,7 @@ export const FieldForm = ({
               />
             </Box>
             <Box display="flex" flexDirection="column">
-              <Typography variant="h5" fontWeight={600}>
+              <Typography variant="h5" fontWeight={700}>
                 {isUpdateField
                   ? `Edit ${fieldData.label}`
                   : `Add ${name} Field`}
@@ -521,7 +518,8 @@ export const FieldForm = ({
           value={activeTab}
           onChange={(_, value: ActiveTab) => setActiveTab(value)}
           sx={{
-            px: 2.5,
+            position: "relative",
+            top: "2px",
           }}
         >
           <Tab
@@ -550,24 +548,21 @@ export const FieldForm = ({
       <DialogContent
         dividers
         sx={{
-          p: 2.5,
-          position: "relative",
+          pt: 2.5,
+          pl: activeTab === "details" ? 0 : 2.5,
+          backgroundColor: "grey.50",
+          borderTop: 0,
         }}
       >
         {activeTab === "details" && (
           <Grid
             data-cy="DetailsTab"
             container
-            spacing={2.5}
-            maxWidth="480px"
+            rowSpacing={2.5}
+            columnSpacing={2.5}
+            width="inherit"
             minHeight={448}
-            mt={-2.5} //Offset grid item default top padding
             ml={0}
-            sx={{
-              "&.MuiGrid-container .MuiGrid-item": {
-                pl: 0,
-              },
-            }}
           >
             {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
               // Only show tooltip field when updating a field that already has a tooltip value
@@ -660,7 +655,7 @@ export const FieldForm = ({
       {isUpdateField ? (
         <DialogActions
           sx={{
-            p: 2.5,
+            pt: 2.5,
           }}
         >
           <Button
@@ -689,8 +684,7 @@ export const FieldForm = ({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            px: 3,
-            py: 2,
+            pt: 2.5,
           }}
         >
           <Button variant="outlined" color="inherit" onClick={onBackClick}>
@@ -707,7 +701,7 @@ export const FieldForm = ({
               loading={isCreatingField || isBulkUpdating}
               onClick={handleAddAnotherField}
             >
-              Add another field
+              Add Another Field
             </LoadingButton>
             <LoadingButton
               data-cy="FieldFormAddFieldBtn"
@@ -715,7 +709,7 @@ export const FieldForm = ({
               onClick={handleSubmitForm}
               variant="contained"
             >
-              Done
+              Add Field
             </LoadingButton>
           </Box>
         </DialogActions>

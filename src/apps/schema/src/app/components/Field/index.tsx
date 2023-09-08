@@ -353,7 +353,7 @@ export const Field = ({
                   {isZuidCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
                 </ListItemIcon>
                 <ListItemText>
-                  {isZuidCopied ? "Copied" : "Copy ZUID"}
+                  {isZuidCopied ? "Copied" : "Copy Field ZUID"}
                 </ListItemText>
               </MenuItem>
               {isDeletingField || isUndeletingField ? (

@@ -4,6 +4,7 @@ import {
   TextField,
   Button,
   InputAdornment,
+  Stack,
 } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -25,26 +26,33 @@ export const AllModels = () => {
 
   return (
     <>
-      <Box width="100%" display="flex" flexDirection="column">
+      <Box
+        width="100%"
+        display="flex"
+        flexDirection="column"
+        sx={{ backgroundColor: "grey.50" }}
+      >
         <Box
           display="flex"
           justifyContent="space-between"
-          px={3}
-          py={2}
+          px={4}
+          pt={4}
+          pb={1.75}
           sx={{
-            borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+            borderBottom: (theme) => `2px solid ${theme.palette.border}`,
+            backgroundColor: "background.paper",
           }}
         >
-          <Typography variant="h4" fontWeight="600">
+          <Typography variant="h3" fontWeight="700">
             All Models
           </Typography>
-          <Box display="flex" gap={2}>
+          <Stack direction="row" alignItems="center" gap={1}>
             <TextField
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               size="small"
               sx={{
-                height: "32px",
+                width: "240px",
                 "& .MuiOutlinedInput-notchedOutline": {
                   border: 0,
                 },
@@ -53,9 +61,12 @@ export const AllModels = () => {
               InputProps={{
                 sx: {
                   backgroundColor: "grey.50",
+                  input: {
+                    py: 0.75,
+                  },
                 },
                 startAdornment: (
-                  <InputAdornment position="start">
+                  <InputAdornment position="start" sx={{ marginRight: 0.5 }}>
                     <SearchRoundedIcon fontSize="small" color="action" />
                   </InputAdornment>
                 ),
@@ -71,9 +82,9 @@ export const AllModels = () => {
             >
               Create Model
             </Button>
-          </Box>
+          </Stack>
         </Box>
-        <Box height="100%" px={3} pt={2}>
+        <Box height="100%" px={4} pt={2}>
           <ModelsTable
             search={search}
             onEmptySearch={() => searchRef?.current?.focus()}

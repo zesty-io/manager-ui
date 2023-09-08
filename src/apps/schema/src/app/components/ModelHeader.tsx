@@ -8,6 +8,7 @@ import {
   IconButton,
   SvgIcon,
   Tooltip,
+  Stack,
 } from "@mui/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import {
@@ -17,15 +18,41 @@ import {
 } from "../../../../../shell/services/instance";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import moment from "moment";
-import SplitscreenRoundedIcon from "@mui/icons-material/SplitscreenRounded";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import {
+  InfoRounded,
+  ApiRounded,
+  SplitscreenRounded,
+  HistoryRounded,
+} from "@mui/icons-material";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import ApiRoundedIcon from "@mui/icons-material/ApiRounded";
 import VerticalSplitRoundedIcon from "@mui/icons-material/VerticalSplitRounded";
 import { modelIconMap, modelNameMap } from "../utils";
-import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import { ModelMenu } from "./ModelMenu";
+import { ModelBreadcrumbs } from "./ModelBreadcrumbs";
+
+const TABS = [
+  {
+    name: "Fields",
+    value: "fields",
+    icon: SplitscreenRounded,
+  },
+  {
+    name: "API",
+    value: "api",
+    icon: ApiRounded,
+  },
+  {
+    name: "Activity Log",
+    value: "activity-log",
+    icon: HistoryRounded,
+  },
+  {
+    name: "Info",
+    value: "info",
+    icon: InfoRounded,
+  },
+];
 
 moment.updateLocale("en", {
   relativeTime: {
@@ -61,48 +88,73 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
   return (
     <>
       <Box
-        sx={{ borderBottom: (theme) => `2px solid ${theme.palette.border}` }}
+        sx={{
+          backgroundColor: "background.paper",
+          borderBottom: (theme) => `2px solid ${theme.palette.border}`,
+        }}
       >
-        <Box sx={{ px: 3, pt: 2 }}>
-          <Box display="flex" justifyContent="space-between">
+        <Stack
+          px={4}
+          pt={4}
+          pb={1}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+        >
+          <Stack gap={0.25} justifyContent="space-between">
+            <ModelBreadcrumbs modelZUID={model?.ZUID} />
             <Box display="flex" alignItems="center" gap={0.5}>
+              <Typography variant="h3" fontWeight={700}>
+                {model?.label}
+              </Typography>
+            </Box>
+            <Stack direction="row" alignItems="center" gap={0.25}>
               <SvgIcon
-                fontSize="small"
-                color="action"
                 component={
                   modelIconMap[model?.type as keyof typeof modelIconMap]
                 }
+                sx={{
+                  color: "text.secondary",
+                  fontSize: "18px",
+                }}
               />
-              <Typography variant="h4" fontWeight={600}>
-                {model?.label}
+              <Typography
+                variant="body3"
+                color="text.secondary"
+                whiteSpace="pre"
+              >{`${modelNameMap[model?.type]} Model  •  `}</Typography>
+              <Typography variant="body3" color="text.secondary">
+                Last Updated:{" "}
+                {moment(model?.updatedAt).format("Do MMMM YYYY [at] h:mm A")}
               </Typography>
-              <IconButton
+            </Stack>
+          </Stack>
+          <Stack direction="row" gap={1}>
+            <IconButton
+              size="small"
+              onClick={(event) => setAnchorEl(event.currentTarget)}
+              sx={{ height: "fit-content" }}
+              data-cy="model-header-menu"
+            >
+              <MoreHorizRoundedIcon fontSize="small" />
+            </IconButton>
+            <ModelMenu
+              anchorEl={anchorEl}
+              modelZUID={id}
+              onClose={() => setAnchorEl(null)}
+            />
+            {view && (
+              <Button
                 size="small"
-                onClick={(event) => setAnchorEl(event.currentTarget)}
-                sx={{ height: "fit-content" }}
-                data-cy="model-header-menu"
+                variant="outlined"
+                color="inherit"
+                startIcon={<CodeRoundedIcon color="action" />}
+                onClick={() => history.push(`/code/file/views/${view?.ZUID}`)}
               >
-                <MoreHorizRoundedIcon fontSize="small" />
-              </IconButton>
-              <ModelMenu
-                anchorEl={anchorEl}
-                modelZUID={id}
-                onClose={() => setAnchorEl(null)}
-              />
-            </Box>
-            <Box display="flex" gap={2}>
-              {view && (
-                <Button
-                  size="small"
-                  variant="outlined"
-                  color="inherit"
-                  startIcon={<CodeRoundedIcon color="action" />}
-                  onClick={() => history.push(`/code/file/views/${view?.ZUID}`)}
-                >
-                  Edit in Code
-                </Button>
-              )}
-              {/* {canCreateModel && (
+                Edit in Code
+              </Button>
+            )}
+            {/* {canCreateModel && (
                 <Button
                   size="small"
                   variant="outlined"
@@ -122,83 +174,48 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
                   </Box>
                 </Button>
               )} */}
-              <Button
-                size="small"
-                variant="outlined"
-                color="inherit"
-                startIcon={<VerticalSplitRoundedIcon color="action" />}
-                onClick={() => history.push(`/content/${model?.ZUID}`)}
-              >
-                View Content
-              </Button>
-              <Button
-                size="small"
-                variant="contained"
-                startIcon={<AddRoundedIcon />}
-                onClick={() => onNewFieldModalClick(null)}
-                disabled={!isFieldsLoaded}
-                data-cy="AddFieldBtn"
-              >
-                Add Field
-              </Button>
-            </Box>
-          </Box>
-          <Box mt={1.5}>
-            <Typography
-              variant="caption"
-              color="textSecondary"
-              whiteSpace="pre"
-            >{`${modelNameMap[model?.type]} Model  •  ZUID: ${
-              model?.ZUID
-            }  •  `}</Typography>
-            <Tooltip
-              title={moment(model?.updatedAt).format(
-                "Do MMMM YYYY [at] h:mm A"
-              )}
-              children={
-                <Typography variant="caption" color="textSecondary">
-                  Updated {moment(model?.updatedAt).fromNow()}
-                </Typography>
-              }
-            ></Tooltip>
-          </Box>
-          {/* TODO: Update tab theme to match design */}
-          <Tabs
-            sx={{
-              position: "relative",
-              top: "2px",
-            }}
-            value={location.pathname.split("/")[3]}
-            onChange={(event, value) =>
-              history.push(`/schema/${model?.ZUID}/${value}`)
-            }
-          >
+            <Button
+              size="small"
+              variant="outlined"
+              color="inherit"
+              startIcon={<VerticalSplitRoundedIcon color="action" />}
+              onClick={() => history.push(`/content/${model?.ZUID}`)}
+            >
+              View Content
+            </Button>
+            <Button
+              size="small"
+              variant="contained"
+              startIcon={<AddRoundedIcon />}
+              onClick={() => onNewFieldModalClick(null)}
+              disabled={!isFieldsLoaded}
+              data-cy="AddFieldBtn"
+            >
+              Add Field
+            </Button>
+          </Stack>
+        </Stack>
+        <Tabs
+          sx={{
+            position: "relative",
+            top: "2px",
+            px: 4,
+          }}
+          value={location.pathname.split("/")[3]}
+          onChange={(event, value) =>
+            history.push(`/schema/${model?.ZUID}/${value}`)
+          }
+        >
+          {TABS?.map((tab) => (
             <Tab
-              icon={<SplitscreenRoundedIcon fontSize="small" />}
+              icon={<SvgIcon component={tab.icon} fontSize="small" />}
               iconPosition="start"
-              label="Fields"
-              value="fields"
+              label={tab.name}
+              value={tab.value}
+              disableRipple
             />
-            <Tab
-              icon={<ApiRoundedIcon fontSize="small" />}
-              iconPosition="start"
-              label="API"
-              value="api"
-            />
-            <Tab
-              icon={<HistoryRoundedIcon fontSize="small" />}
-              iconPosition="start"
-              label="Activity Log"
-              value="activity-log"
-            />
-            <Tab
-              icon={<InfoRoundedIcon fontSize="small" />}
-              iconPosition="start"
-              label="Info"
-              value="info"
-            />
-          </Tabs>
-        </Box>
+          ))}
+        </Tabs>
       </Box>
     </>
   );

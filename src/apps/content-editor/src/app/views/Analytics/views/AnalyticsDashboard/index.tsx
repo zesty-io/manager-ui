@@ -193,7 +193,7 @@ const AnalyticsDashboard = ({ loading }: Props) => {
         height="100%"
       >
         <AnalyticsDashboardHeader />
-        <Box pb={8} px={2} overflow="auto" height="100%">
+        <Box pb={8} px={4} overflow="auto" height="100%">
           <Box display="flex" py={2} justifyContent="space-between">
             <AnalyticsDateFilter />
             <Typography variant="h6" fontWeight="600" maxWidth={304} noWrap>
@@ -466,14 +466,16 @@ const AnalyticsDashboardHeader = () => {
       <Box
         display="flex"
         justifyContent="space-between"
-        p={2}
-        borderBottom={`1px inset ${theme.palette.border}`}
+        px={4}
+        pt={4}
+        pb={1.75}
+        borderBottom={`2px solid ${theme.palette.border}`}
         bgcolor={theme.palette.background.paper}
       >
-        <Typography variant="h5" fontWeight="600">
+        <Typography variant="h3" fontWeight="700">
           Dashboard
         </Typography>
-        <Box display="flex" gap={1.5}>
+        <Box display="flex" gap={1.5} height="fit-content">
           {topUsedModels?.reverse()?.map((model: any) => (
             <CreateItemButton modelZUID={model[0]} />
           ))}

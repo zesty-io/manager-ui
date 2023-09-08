@@ -213,6 +213,10 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
         sx={{
           ".MuiDataGrid-row": {
             cursor: "pointer",
+            backgroundColor: "background.paper",
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: "grey.100",
           },
         }}
       />

@@ -84,7 +84,7 @@ export const DateFilter: FC<DateFilterProps> = ({
   onChange,
   value,
   withDateRange = false,
-  defaultButtonText = "Last Updated",
+  defaultButtonText = "Date Updated",
   clearable = true,
   hideCustomDates = false,
   extraPresets = [],

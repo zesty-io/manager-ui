@@ -68,14 +68,16 @@ export const ApiDetails = () => {
   };
 
   return (
-    <Box display="flex" height="100%">
+    <Box display="flex" height="100%" sx={{ overflowY: "auto" }}>
       <Box
         width="220px"
+        pt={2}
+        pl={4}
         sx={{
           borderRight: (theme) => `1px solid ${theme.palette.border}`,
         }}
       >
-        <Box p={1}>
+        <Box pb={1}>
           <Button
             size="small"
             color="inherit"
@@ -89,7 +91,7 @@ export const ApiDetails = () => {
             Back
           </Button>
         </Box>
-        <Box px={1}>
+        <Box pr={1}>
           {apiTypes.map((type) => (
             <ListItemButton
               key={type}
@@ -141,7 +143,8 @@ export const ApiDetails = () => {
       ) : (
         <Box
           flex={1}
-          px={3}
+          pl={3}
+          pr={4}
           py={2}
           sx={{
             overflow: "auto",
