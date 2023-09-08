@@ -60,4 +60,19 @@ describe("Schema: Models", () => {
     });
     cy.contains("Delete Forever").click();
   });
+  it("Can navigate via breadcrumbs", () => {
+    cy.waitOn(
+      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
+      () => {
+        cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
+          cy.waitOn("/v1/content/models", () => {
+            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+          });
+        });
+      }
+    );
+
+    cy.getBySelector("breadcrumbs").find(".MuiBreadcrumbs-li").first().click();
+    cy.location("pathname").should("eq", "/schema");
+  });
 });
