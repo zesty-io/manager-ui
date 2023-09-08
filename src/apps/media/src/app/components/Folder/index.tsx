@@ -28,6 +28,7 @@ export const Folder: React.FC<FolderProps> = ({ name, id }) => {
         color: "grey.500",
         borderColor: "grey.100",
         textTransform: "none",
+        backgroundColor: "background.paper",
         "&:focus": {
           backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08),
         },

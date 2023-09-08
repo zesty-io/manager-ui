@@ -722,7 +722,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
       sortable: false,
       renderCell: (params: any) => {
         return (
-          <Typography>
+          <Typography variant="body2">
             {params.row.created_at &&
               moment(params.row.created_at).format("MMMM Do YYYY")}
           </Typography>
@@ -732,7 +732,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
     {
       field: "type",
       headerName: "Type",
-      width: 88,
+      width: 104,
       sortable: false,
       renderCell: (params: any) => {
         return (
@@ -760,7 +760,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
   ];
 
   return (
-    <Box component="main" sx={{ height: "100%", width: "100%" }}>
+    <Box component="main" sx={{ height: "100%", width: "100%", px: 4 }}>
       {files && (
         <DataGridPro
           sx={{

@@ -105,6 +105,7 @@ export const DateRangeFilter: FC = () => {
       color="inherit"
       sx={{
         py: "1px",
+        backgroundColor: "common.white",
       }}
     >
       Date

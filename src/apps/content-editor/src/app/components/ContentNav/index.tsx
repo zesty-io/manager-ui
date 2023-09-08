@@ -251,24 +251,31 @@ export const ContentNav = () => {
 
           const isHideMode = hiddenZUIDs.includes(curr.ZUID);
           let actions = [
-            <IconButton
-              data-cy="tree-item-hide"
-              key="tree-item-hide"
-              size="xxsmall"
-              onClick={(e) => {
-                e.stopPropagation();
-
-                setItemToHide(curr);
-                setIsHideMode(!isHideMode);
-                setIsHideDialogOpen(true);
-              }}
+            <Tooltip
+              placement="right-start"
+              title="Hide Content"
+              enterDelay={1000}
+              enterNextDelay={1000}
             >
-              {isHideMode ? (
-                <VisibilityOffRoundedIcon sx={{ fontSize: 16 }} />
-              ) : (
-                <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
-              )}
-            </IconButton>,
+              <IconButton
+                data-cy="tree-item-hide"
+                key="tree-item-hide"
+                size="xxsmall"
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  setItemToHide(curr);
+                  setIsHideMode(!isHideMode);
+                  setIsHideDialogOpen(true);
+                }}
+              >
+                {isHideMode ? (
+                  <VisibilityOffRoundedIcon sx={{ fontSize: 16 }} />
+                ) : (
+                  <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
+                )}
+              </IconButton>
+            </Tooltip>,
           ];
 
           if (
@@ -278,18 +285,25 @@ export const ContentNav = () => {
             )
           ) {
             actions.push(
-              <IconButtonCustom
-                data-cy="tree-item-add-new-content"
-                key="tree-item-add-new-content"
-                variant="contained"
-                size="xxsmall"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  history.push(`/content/${curr.ZUID}/new`);
-                }}
+              <Tooltip
+                placement="right-start"
+                title="Add Content Item"
+                enterDelay={1000}
+                enterNextDelay={1000}
               >
-                <AddRoundedIcon sx={{ fontSize: 16 }} />
-              </IconButtonCustom>
+                <IconButtonCustom
+                  data-cy="tree-item-add-new-content"
+                  key="tree-item-add-new-content"
+                  variant="contained"
+                  size="xxsmall"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    history.push(`/content/${curr.ZUID}/new`);
+                  }}
+                >
+                  <AddRoundedIcon sx={{ fontSize: 16 }} />
+                </IconButtonCustom>
+              </Tooltip>
             );
           }
 
@@ -519,22 +533,39 @@ export const ContentNav = () => {
                     </Tooltip>
                   </Stack>
                   <Stack direction="row" gap={1}>
-                    <IconButton
-                      data-cy="reorder_nav"
-                      size="xxsmall"
-                      onClick={() => setIsReorderDialogOpen(true)}
+                    <Tooltip
+                      placement="right-start"
+                      title="Reorder Pages"
+                      enterDelay={1000}
+                      enterNextDelay={1000}
                     >
-                      <ReorderRoundedIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => {
-                        setCreateContentDialogLimit(["pageset", "templateset"]);
-                        setIsCreateContentDialogOpen(true);
-                      }}
-                      size="xxsmall"
+                      <IconButton
+                        data-cy="reorder_nav"
+                        size="xxsmall"
+                        onClick={() => setIsReorderDialogOpen(true)}
+                      >
+                        <ReorderRoundedIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip
+                      placement="right-start"
+                      title="Create Page"
+                      enterDelay={1000}
+                      enterNextDelay={1000}
                     >
-                      <AddRoundedIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          setCreateContentDialogLimit([
+                            "pageset",
+                            "templateset",
+                          ]);
+                          setIsCreateContentDialogOpen(true);
+                        }}
+                        size="xxsmall"
+                      >
+                        <AddRoundedIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Tooltip>
                   </Stack>
                 </Stack>
               }
@@ -577,15 +608,22 @@ export const ContentNav = () => {
                       />
                     </Tooltip>
                   </Stack>
-                  <IconButton
-                    onClick={() => {
-                      setCreateContentDialogLimit(["dataset"]);
-                      setIsCreateContentDialogOpen(true);
-                    }}
-                    size="xxsmall"
+                  <Tooltip
+                    placement="right-start"
+                    title="Create Dataset"
+                    enterDelay={1000}
+                    enterNextDelay={1000}
                   >
-                    <AddRoundedIcon sx={{ fontSize: 16 }} />
-                  </IconButton>
+                    <IconButton
+                      onClick={() => {
+                        setCreateContentDialogLimit(["dataset"]);
+                        setIsCreateContentDialogOpen(true);
+                      }}
+                      size="xxsmall"
+                    >
+                      <AddRoundedIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </Tooltip>
                 </Stack>
               }
               ErrorComponent={<NavError navName="datasets" />}

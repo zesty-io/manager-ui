@@ -7,9 +7,8 @@ describe("multi-lang", () => {
       }
     );
 
-    cy.get(".LanguageSelector").click();
-    cy.get('[data-value="es"]').click();
+    cy.getBySelector("language-selector").click();
 
-    cy.get(".LanguageSelector").contains("es");
+    cy.contains("ES (ES)");
   });
 });

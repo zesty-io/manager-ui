@@ -35,13 +35,14 @@ const Analytics = ({ item }: Props) => {
           boxSizing: "border-box",
           color: (theme) => theme.palette.text.primary,
         }}
-        height={item ? "calc(100% - 65px)" : "100%"}
+        height={"100%"}
         overflow="auto"
+        bgcolor="grey.50"
       >
         {!isError ? (
           <>
             {item ? (
-              <Box px={3} py={2}>
+              <Box px={4} py={2.5}>
                 <SinglePageAnalytics item={item} loading={isFetching} />
               </Box>
             ) : (

@@ -19,7 +19,7 @@ import { DeleteModelDialogue } from "./DeleteModelDialogue";
 import { RenameModelDialogue } from "./RenameModelDialogue";
 
 interface Props {
-  anchorEl: Element | ((element: Element) => Element);
+  anchorEl: any;
   onClose: () => void;
   modelZUID: string;
 }

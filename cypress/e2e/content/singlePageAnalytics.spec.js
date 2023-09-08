@@ -12,13 +12,16 @@ describe("Single Page Analytics", () => {
     cy.get('input[placeholder="Search Google Analytics Properties"]').type(
       "zesty.pw"
     );
-    cy.get(".MuiList-root .MuiListItemButton-root").should("have.length", 1);
+
+    cy.get('[role="presentation"]')
+      .find(".MuiList-root .MuiListItemButton-root")
+      .should("have.length", 1);
     cy.get("body").type("{esc}");
   });
   it("Allows property switching by updating instance setting", () => {
     cy.getBySelector("analytics-settings").click();
     cy.waitOn("*/env/settings/*", () => {
-      cy.contains("zesty.pw - GA4").click();
+      cy.get('[role="presentation"]').contains("zesty.pw").click();
     });
   });
   it("Allows selecting a page to compare by showing recent publishings", () => {
@@ -39,7 +42,7 @@ describe("Single Page Analytics", () => {
   it("Displays linked google account information", () => {
     cy.getBySelector("analytics-settings").click();
     cy.contains("GA Settings").click();
-    cy.contains("Stuart Runyan");
+    cy.contains("Andres Galindo");
     cy.get("body").type("{esc}");
   });
   it("Applies selected date filter to url params", () => {

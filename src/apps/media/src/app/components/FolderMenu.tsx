@@ -20,7 +20,7 @@ import { DeleteFolderDialog } from "./DeleteFolderDialog";
 
 export type Dialogs = "delete" | "rename" | "new" | null;
 interface Props {
-  anchorEl: Element | ((element: Element) => Element);
+  anchorEl: any;
   onCloseMenu: () => void;
   title: string;
   binId: string;

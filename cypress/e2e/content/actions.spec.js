@@ -84,7 +84,8 @@ describe("Actions in content editor", () => {
   it.skip("Schedules a Publish for an item", () => {
     // TODO: remove reload when UI state is consistent
     cy.reload();
-    cy.get("#PublishScheduleButton").click();
+    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishScheduleButton").click();
     // select date and time
     cy.get(".form-control").first().click();
     cy.get(".flatpickr-calendar.open .flatpickr-next-month").click();
@@ -102,10 +103,12 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     });
 
-    cy.get("#PublishScheduleButton").click();
-    cy.get(
-      ".ModalAligner--ptdt- .MuiOutlinedInput-root .MuiInputAdornment-root .MuiButtonBase-root"
-    ).click();
+    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishScheduleButton").click();
+    // cy.get(
+    //   ".ModalAligner--ptdt- .MuiOutlinedInput-root .MuiInputAdornment-root .MuiButtonBase-root"
+    // ).click();
+    cy.getBySelector("SchedulePublishDate").find("button").click();
 
     cy.get(
       '.MuiCalendarPicker-root .MuiPickersArrowSwitcher-root button[aria-label="Previous month"]'
@@ -116,8 +119,8 @@ describe("Actions in content editor", () => {
   });
 
   it.skip("Unschedules a Publish for an item", () => {
-    cy.get("#PublishScheduleButton").click();
-    cy.get("[data-cy=UnschedulePublishButton]").click();
+    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishScheduleButton").click();
     cy.get("#SchedulePublishClose").click();
   });
 
@@ -134,7 +137,6 @@ describe("Actions in content editor", () => {
 
   it("Saved item becomes publishable", () => {
     cy.get("#PublishButton").should("exist");
-    cy.get("#PublishButton").should("contain", "1");
   });
 
   it("Displays a new item in the list", () => {

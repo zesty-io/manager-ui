@@ -139,7 +139,14 @@ export const ApiDetails = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <Box flex={1} px={3} py={2}>
+        <Box
+          flex={1}
+          px={3}
+          py={2}
+          sx={{
+            overflow: "auto",
+          }}
+        >
           {selectedType === "site-generators" && !headlessEnabled ? (
             <HeadlessSwitcher
               instanceSetting={instanceSettings?.find(
