@@ -522,33 +522,27 @@ export const FieldForm = ({
           onChange={(_, value: ActiveTab) => setActiveTab(value)}
           sx={{
             px: 2.5,
-            height: "52px",
-            ".Mui-selected": {
-              svg: {
-                color: "primary.main",
-              },
-            },
           }}
         >
           <Tab
             data-cy="DetailsTabBtn"
             value="details"
             label="Details"
-            icon={<InfoRoundedIcon fontSize="small" color="action" />}
+            icon={<InfoRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
           <Tab
             data-cy="RulesTabBtn"
             value="rules"
             label="Rules"
-            icon={<RuleRoundedIcon fontSize="small" color="action" />}
+            icon={<RuleRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
           <Tab
             data-cy="LearnTabBtn"
             value="learn"
             label="Learn"
-            icon={<MenuBookRoundedIcon fontSize="small" color="action" />}
+            icon={<MenuBookRoundedIcon fontSize="small" />}
             iconPosition="start"
           />
         </Tabs>

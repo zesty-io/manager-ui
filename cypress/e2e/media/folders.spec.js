@@ -51,6 +51,12 @@ describe("Media Folders", () => {
       .contains("CYPRESS TEST NEW FOLDER")
       .should("exist");
   });
+  it("Navigates folders via breadcrumbs", () => {
+    cy.get(".MuiTreeView-root").contains("CYPRESS TEST NEW FOLDER").click();
+
+    cy.getBySelector("breadcrumbs").find(".MuiBreadcrumbs-li").first().click();
+    cy.location("pathname").should("eq", "/media/folder/1-6c9618c-r26pt");
+  });
   it("Renames folder", () => {
     cy.get(".MuiTreeView-root").contains("CYPRESS TEST NEW FOLDER").click();
 

@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import cx from "classnames";
 
 import { Editor } from "../../../components/Editor";
-import { Header } from "../components/Header";
+import { Header2 } from "../components/ItemEditHeader";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
 import { ActionsDrawer } from "./ActionsDrawer";
@@ -13,25 +13,6 @@ export default function Content(props) {
 
   return (
     <main className={styles.Content}>
-      <Header
-        instance={props.instance}
-        modelZUID={props.modelZUID}
-        model={props.model}
-        itemZUID={props.itemZUID}
-        item={props.item}
-      >
-        <ItemVersioning
-          instance={props.instance}
-          modelZUID={props.modelZUID}
-          itemZUID={props.itemZUID}
-          item={props.item}
-          user={props.user}
-          saving={props.saving}
-          onSave={props.onSave}
-          dispatch={props.dispatch}
-        />
-      </Header>
-
       <div
         className={cx(
           styles.MainEditor,
@@ -40,20 +21,18 @@ export default function Content(props) {
           ui.duoMode && ui.contentActions ? styles.DuoAndActionsOn : ""
         )}
       >
-        <div className={styles.Editor}>
-          <Editor
-            // active={this.state.makeActive}
-            // scrolled={() => this.setState({ makeActive: "" })}
-            model={props.model}
-            itemZUID={props.itemZUID}
-            item={props.item}
-            fields={props.fields}
-            dispatch={props.dispatch}
-            isDirty={props.item.dirty}
-            onSave={props.onSave}
-            modelZUID={props.modelZUID}
-          />
-        </div>
+        <Editor
+          // active={this.state.makeActive}
+          // scrolled={() => this.setState({ makeActive: "" })}
+          model={props.model}
+          itemZUID={props.itemZUID}
+          item={props.item}
+          fields={props.fields}
+          dispatch={props.dispatch}
+          isDirty={props.item.dirty}
+          onSave={props.onSave}
+          modelZUID={props.modelZUID}
+        />
 
         {ui.duoMode && (
           <PreviewMode

@@ -20,6 +20,7 @@ import {
   Stylesheet,
   Script,
   Language,
+  Data,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -44,6 +45,8 @@ export const instanceApi = createApi({
     "Scripts",
     "Languages",
     "ContentNav",
+    "ContentItem",
+    "ItemVersions",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -72,6 +75,28 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       // TODO: Remove once all item publishing mutations are using rtk query
       keepUnusedDataFor: 0,
+    }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Create-Item-Publishing
+    createItemPublishing: builder.mutation<
+      any,
+      {
+        modelZUID: string;
+        itemZUID: string;
+        body: {
+          publishAt: string;
+          unpublishAt: string;
+          version: number;
+        };
+      }
+    >({
+      query: ({ modelZUID, itemZUID, body }) => ({
+        url: `content/models/${modelZUID}/items/${itemZUID}/publishings`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "ItemPublishing", id: id.itemZUID },
+      ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Delete-Item-Publishing
     deleteItemPublishing: builder.mutation<
@@ -156,17 +181,6 @@ export const instanceApi = createApi({
       }),
       transformResponse: getResponseData,
       // Restore cache when content/schema uses rtk query for mutations and can invalidate this
-      keepUnusedDataFor: 0.0001,
-    }),
-    // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-Item-Publishing
-    getContentItemPublishings: builder.query<
-      ContentModel[],
-      { modelZUID: string; itemZUID: string }
-    >({
-      query: ({ modelZUID, itemZUID }) =>
-        `content/models/${modelZUID}/items/${itemZUID}/publishings`,
-      transformResponse: getResponseData,
-      // Restore cache once content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
     }),
     // https://www.zesty.io/docs/instances/api-reference/search/#Search
@@ -426,16 +440,20 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["InstanceSettings"],
     }),
-    // https://www.zesty.io/docs/instances/api-reference/env/settings/#Create-Item
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/
     createContentItem: builder.mutation<
       any,
-      { modelZUID: string; body: { web: Partial<Web>; meta: Partial<Meta> } }
+      {
+        modelZUID: string;
+        body: { web: Partial<Web>; meta: Partial<Meta>; data?: Data };
+      }
     >({
       query: ({ modelZUID, body }) => ({
         url: `content/models/${modelZUID}/items`,
         method: "POST",
         body,
       }),
+      invalidatesTags: ["ContentNav"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/env/nav/#Get-Content-Navigation
     getContentNavItems: builder.query<ContentNavItem[], void>({
@@ -464,6 +482,49 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["Languages"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/versions/#Get-All-Item-Versions
+    getContentItemVersions: builder.query<
+      ContentItem[],
+      {
+        modelZUID: string;
+        itemZUID: string;
+      }
+    >({
+      query: ({ modelZUID, itemZUID }) =>
+        `/content/models/${modelZUID}/items/${itemZUID}/versions`,
+      transformResponse: getResponseData,
+      providesTags: (result, error, id) => [
+        { type: "ItemVersions", id: id.itemZUID },
+      ],
+    }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Update-Item
+    updateContentItem: builder.mutation<
+      any,
+      { modelZUID: string; itemZUID: string; body: Partial<ContentItem> }
+    >({
+      query: ({ modelZUID, itemZUID, body }) => ({
+        url: `content/models/${modelZUID}/items/${itemZUID}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "ContentItem", id: arg.itemZUID },
+      ],
+    }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Delete-Item
+    deleteContentItem: builder.mutation<
+      any,
+      {
+        modelZUID: string;
+        itemZUID: string;
+      }
+    >({
+      query: ({ modelZUID, itemZUID }) => ({
+        url: `content/models/${modelZUID}/items/${itemZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ContentNav"],
+    }),
   }),
 });
 
@@ -473,13 +534,13 @@ export const {
   useGetAuditsQuery,
   useGetItemPublishingsQuery,
   useGetAllPublishingsQuery,
+  useCreateItemPublishingMutation,
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
   useGetContentItemsQuery,
   useGetContentModelQuery,
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
-  useGetContentItemPublishingsQuery,
   useSearchContentQuery,
   useGetContentModelFieldsQuery,
   useBulkUpdateContentModelFieldMutation,
@@ -504,4 +565,7 @@ export const {
   useGetScriptsQuery,
   useCreateInstanceSettingsMutation,
   useGetLangsQuery,
+  useGetContentItemVersionsQuery,
+  useUpdateContentItemMutation,
+  useDeleteContentItemMutation,
 } = instanceApi;

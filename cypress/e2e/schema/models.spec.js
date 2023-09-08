@@ -1,3 +1,4 @@
+const SEARCH_TERM = `cypress ${Date.now()}`;
 describe("Schema: Models", () => {
   before(() => {
     cy.waitOn("/v1/content/models", () => {
@@ -22,7 +23,7 @@ describe("Schema: Models", () => {
   });
   it("Creates model", () => {
     cy.getBySelector(`create-model-button-all-models`).click();
-    cy.contains("Single Page Model").click();
+    cy.contains("Multi Page Model").click();
     cy.contains("Next").click();
     cy.contains("Display Name").next().type("Cypress Test Model");
     cy.contains("Reference ID")

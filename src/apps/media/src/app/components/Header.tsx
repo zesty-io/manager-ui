@@ -22,10 +22,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRounded";
+import { useHistory } from "react-router";
+import { useLocalStorage } from "react-use";
+
 import { RenameFolderDialog } from "./RenameFolderDialog";
 import { NewFolderDialog } from "./NewFolderDialog";
 import { DeleteFolderDialog } from "./DeleteFolderDialog";
-import { useLocalStorage } from "react-use";
 import { UploadButton } from "./UploadButton";
 import { useDispatch, useSelector } from "react-redux";
 import { MoveFileDialog } from "./FileModal/MoveFileDialog";
@@ -40,7 +42,7 @@ import {
   useDeleteFilesMutation,
 } from "../../../../../shell/services/mediaManager";
 import { File } from "../../../../../shell/services/types";
-import { useHistory } from "react-router";
+import { MediaBreadcrumbs } from "./MediaBreadcrumbs";
 import { FolderMenu } from "./FolderMenu";
 
 interface Props {
@@ -53,6 +55,7 @@ interface Props {
   hideFolderCreate?: boolean;
   addImagesCallback?: (selectedFiles: File[]) => void;
   showBackButton?: boolean;
+  showBreadcrumbs?: boolean;
 }
 type Dialogs = "delete" | "rename" | "new" | null;
 
@@ -66,6 +69,7 @@ export const Header = ({
   hideFolderCreate,
   addImagesCallback,
   showBackButton,
+  showBreadcrumbs,
 }: Props) => {
   const doneButtonRef = useRef<HTMLButtonElement>(null);
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
@@ -210,21 +214,22 @@ export const Header = ({
 
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          py: 2,
-          px: 3,
+          pt: 4,
+          pb: 1.75,
+          px: 4,
           borderStyle: "solid",
           borderWidth: "0px",
-          borderBottomWidth: "1px",
+          borderBottomWidth: "2px",
           borderColor: "border",
-          mb: 2,
-          // Height specified to make border inset
-          height: "64px",
+          backgroundColor: "background.paper",
         }}
       >
         {selectedFiles?.length > 0 ? (
-          <>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Stack direction="row" spacing="2px" alignItems="center">
               <IconButton
                 size="small"
@@ -233,7 +238,7 @@ export const Header = ({
               >
                 <CloseIcon fontSize="small" />
               </IconButton>
-              <Typography variant="h4" fontWeight={600}>
+              <Typography variant="h3" fontWeight={700}>
                 {selectedFiles?.length}{" "}
                 {isSelectDialog && limitSelected
                   ? ` / ${limitSelected} `
@@ -241,11 +246,12 @@ export const Header = ({
                 Selected
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={2}>
+            <Box>
               <Button
                 variant="outlined"
                 size="small"
                 color="inherit"
+                sx={{ mr: 1 }}
                 onClick={() => dispatch(clearSelectedFiles())}
                 startIcon={<CloseIcon color="action" fontSize="small" />}
               >
@@ -255,6 +261,7 @@ export const Header = ({
                 variant="outlined"
                 size="small"
                 color="inherit"
+                sx={{ mr: 1 }}
                 onClick={() => handleSelectAll()}
                 disabled={disableSelectAll()}
                 startIcon={
@@ -269,6 +276,7 @@ export const Header = ({
                     variant="outlined"
                     size="small"
                     color="inherit"
+                    sx={{ mr: 1 }}
                     onClick={() => setShowDeleteFileDialog(true)}
                     startIcon={<DeleteIcon color="action" fontSize="small" />}
                   >
@@ -277,6 +285,7 @@ export const Header = ({
                   <Button
                     variant="contained"
                     size="small"
+                    sx={{ mr: addImagesCallback ? 1 : 0 }}
                     onClick={() => setShowMoveFileDialog(true)}
                     startIcon={
                       <DriveFolderUploadRoundedIcon fontSize="small" />
@@ -298,34 +307,55 @@ export const Header = ({
                   Done
                 </Button>
               )}
-            </Stack>
-          </>
+            </Box>
+          </Stack>
         ) : (
-          <>
-            <Box sx={{ display: "flex", gap: "2px", alignItems: "center" }}>
-              {showBackButton && (
-                <IconButton
-                  size="small"
-                  sx={{ height: "fit-content" }}
-                  onClick={() => {
-                    if (history.length > 2) {
-                      history.goBack();
-                    } else {
-                      history.push("/media");
-                    }
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="baseline"
+          >
+            <Stack gap={0.25}>
+              {showBreadcrumbs && id && <MediaBreadcrumbs id={id} />}
+              <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
+                {showBackButton && (
+                  <IconButton
+                    size="small"
+                    sx={{ height: "fit-content" }}
+                    onClick={() => {
+                      if (history.length > 2) {
+                        history.goBack();
+                      } else {
+                        history.push("/media");
+                      }
+                    }}
+                  >
+                    <ArrowBackRoundedIcon fontSize="small" color="action" />
+                  </IconButton>
+                )}
+                <Typography
+                  variant="h3"
+                  fontWeight={700}
+                  sx={{
+                    display: "-webkit-box",
+                    "-webkit-line-clamp": "2",
+                    "-webkit-box-orient": "vertical",
+                    wordBreak: "break-word",
+                    wordWrap: "break-word",
+                    hyphens: "auto",
+                    overflow: "hidden",
                   }}
                 >
-                  <ArrowBackRoundedIcon fontSize="small" color="action" />
-                </IconButton>
-              )}
-              <Typography variant="h4" fontWeight={600}>
-                {title}
-              </Typography>
+                  {title}
+                </Typography>
+              </Box>
+            </Stack>
+            <Box flexShrink={0}>
               {id ? (
                 <IconButton
                   size="small"
                   onClick={openMenu}
-                  sx={{ height: "fit-content" }}
+                  sx={{ height: "fit-content", mr: 1 }}
                   aria-label="Open folder menu"
                 >
                   <MoreHorizRoundedIcon fontSize="small" />
@@ -339,15 +369,14 @@ export const Header = ({
                 groupId={groupId}
                 id={id}
               />
-            </Box>
-            <Box>
               {hideFolderCreate ? null : (
                 <Button
-                  sx={{ mr: 2 }}
+                  sx={{ mr: 1 }}
                   variant="outlined"
                   color="inherit"
                   startIcon={<CreateNewFolderRoundedIcon color="action" />}
                   onClick={() => setOpenDialog("new")}
+                  size="small"
                 >
                   Add Sub Folder
                 </Button>
@@ -356,7 +385,7 @@ export const Header = ({
                 <UploadButton currentBinId={binId} currentGroupId={id} />
               )}
             </Box>
-          </>
+          </Stack>
         )}
       </Box>
       {openDialog === "new" ? (
