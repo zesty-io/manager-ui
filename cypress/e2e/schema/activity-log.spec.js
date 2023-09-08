@@ -33,9 +33,11 @@ describe("Schema: Activity Log Tab", () => {
   });
 
   it("Shows the no logs found message", () => {
-    cy.visit(
-      "/schema/6-ce80dbfe90-ptjpm6/activity-log?from=2099-02-15&to=2099-03-15"
-    );
+    cy.waitOn("/v1/env/audits*", () => {
+      cy.visit(
+        "/schema/6-ce80dbfe90-ptjpm6/activity-log?from=2099-02-15&to=2099-03-15"
+      );
+    });
 
     cy.contains("No Logs Found");
   });
