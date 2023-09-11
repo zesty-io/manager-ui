@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
   Box,
@@ -22,25 +22,23 @@ import { theme } from "@zesty-io/material";
 import { useMetaKey } from "../../../../../../../shell/hooks/useMetaKey";
 import { ContentModel } from "../../../../../../../shell/services/types";
 import { ItemCreateBreadcrumbs } from "./ItemCreateBreadcrumbs";
+import { ActionAfterSave } from "../ItemCreate";
 
 type DropdownMenuType = "default" | "addNew";
-const DropdownMenu: Record<
-  DropdownMenuType,
-  { createPublishNow: string; createSchedPublish: string }
-> = {
+const DropdownMenu: Record<DropdownMenuType, Record<string, string>> = {
   default: {
-    createPublishNow: "Create & Publish Now",
-    createSchedPublish: "Create & Schedule Publish",
+    publishNow: "Create & Publish Now",
+    schedulePublish: "Create & Schedule Publish",
   },
   addNew: {
-    createPublishNow: "Create, Publish & Add New",
-    createSchedPublish: "Create, Schedule Publish & Add New",
+    publishAddNew: "Create, Publish & Add New",
+    schedulePublishAddNew: "Create, Schedule Publish & Add New",
   },
 };
 
 interface Props {
   model: ContentModel;
-  onSave: (createNew: boolean) => void;
+  onSave: (action: ActionAfterSave) => void;
   saving: boolean;
   isDirty: boolean;
 }
@@ -48,6 +46,7 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
   const [dropdownMenuType, setDropdownMenuType] =
     useState<DropdownMenuType | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
+
   //@ts-ignore Fix type
   const metaShortcut = useMetaKey("s", onSave);
 
@@ -93,7 +92,9 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
             >
               <Button
                 startIcon={<AddRoundedIcon />}
-                onClick={() => onSave(true)}
+                onClick={() => {
+                  onSave("addNew");
+                }}
               >
                 Create & Add New
               </Button>
@@ -124,7 +125,9 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
             >
               <Button
                 startIcon={<SaveRoundedIcon />}
-                onClick={() => onSave(false)}
+                onClick={() => {
+                  onSave("");
+                }}
               >
                 Create
               </Button>
@@ -165,7 +168,12 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
           {!!DropdownMenu[dropdownMenuType] &&
             Object.entries(DropdownMenu[dropdownMenuType])?.map(
               ([key, value]) => (
-                <MenuItem key={key}>
+                <MenuItem
+                  key={key}
+                  onClick={() => {
+                    onSave(key as ActionAfterSave);
+                  }}
+                >
                   <ListItemIcon>
                     {key === "createPublishNow" ? (
                       <CloudUploadRoundedIcon />
