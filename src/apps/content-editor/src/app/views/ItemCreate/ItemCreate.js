@@ -5,7 +5,7 @@ import { useHistory, useParams } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 
-import Divider from "@mui/material/Divider";
+import { Divider, Box } from "@mui/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { NotFound } from "shell/components/NotFound";
@@ -142,7 +142,11 @@ export default function ItemCreate() {
           saving={saving}
           isDirty={item?.dirty}
         />
-        <main className={styles.ItemCreate}>
+        <Box
+          component="main"
+          className={styles.ItemCreate}
+          sx={{ backgroundColor: "grey.50" }}
+        >
           <div className={styles.Editor}>
             <Editor
               active={active}
@@ -182,7 +186,7 @@ export default function ItemCreate() {
               )}
             </div>
           </div>
-        </main>
+        </Box>
       </section>
     </WithLoader>
   );
