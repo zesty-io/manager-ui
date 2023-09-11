@@ -21,7 +21,7 @@ import { ItemCreateBreadcrumbs } from "./ItemCreateBreadcrumbs";
 
 interface Props {
   model: ContentModel;
-  onSave: () => void;
+  onSave: (createNew: boolean) => void;
   saving: boolean;
   isDirty: boolean;
 }
@@ -62,8 +62,15 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
           </Typography>
         </Stack>
         <Stack direction="row" gap={1} flexShrink={0} alignItems="flex-start">
-          <ButtonGroup variant="outlined" color="primary" size="small">
-            <Button startIcon={<AddRoundedIcon />}>Create & Add New</Button>
+          <ButtonGroup
+            variant="outlined"
+            color="primary"
+            size="small"
+            disabled={!isDirty || saving}
+          >
+            <Button startIcon={<AddRoundedIcon />} onClick={() => onSave(true)}>
+              Create & Add New
+            </Button>
             <Button>
               <ArrowDropDownRoundedIcon />
             </Button>
@@ -72,6 +79,7 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
             variant="contained"
             color="primary"
             size="small"
+            disabled={!isDirty || saving}
             sx={{
               "& .MuiButtonGroup-grouped": {
                 backgroundColor: "primary.main",
@@ -83,7 +91,12 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
               },
             }}
           >
-            <Button startIcon={<SaveRoundedIcon />}>Create</Button>
+            <Button
+              startIcon={<SaveRoundedIcon />}
+              onClick={() => onSave(false)}
+            >
+              Create
+            </Button>
             <Button>
               <ArrowDropDownRoundedIcon />
             </Button>

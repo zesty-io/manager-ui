@@ -71,7 +71,7 @@ export default function ItemCreate() {
     }
   }
 
-  async function save() {
+  async function save(createNew) {
     setSaving(true);
     try {
       const res = await dispatch(createItem(modelZUID, itemZUID));
@@ -104,7 +104,9 @@ export default function ItemCreate() {
         await dispatch(fetchItem(modelZUID, res.data.ZUID));
 
         // Redirect to new item after creating
-        history.push(`/content/${modelZUID}/${res.data.ZUID}`);
+        if (!createNew) {
+          history.push(`/content/${modelZUID}/${res.data.ZUID}`);
+        }
 
         dispatch(
           notify({
