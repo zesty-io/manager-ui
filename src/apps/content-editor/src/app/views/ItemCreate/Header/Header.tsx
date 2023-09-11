@@ -1,15 +1,19 @@
 import { FC } from "react";
-import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import SaveIcon from "@mui/icons-material/Save";
-import { Box, Stack, Typography, ThemeProvider } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+  ThemeProvider,
+  Button,
+  ButtonGroup,
+  alpha,
+  Theme,
+} from "@mui/material";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { theme } from "@zesty-io/material";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faAngleRight } from "@fortawesome/free-solid-svg-icons";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-
-import { AppLink } from "@zesty-io/core/AppLink";
 
 import { useMetaKey } from "../../../../../../../shell/hooks/useMetaKey";
 import { ContentModel } from "../../../../../../../shell/services/types";
@@ -34,42 +38,58 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
         borderBottom="2px solid"
         borderColor="border"
         sx={{ backgroundColor: "background.paper" }}
+        direction="row"
+        justifyContent="space-between"
+        alignItems="flext-start"
       >
-        <ItemCreateBreadcrumbs />
-        <Typography variant="h3" fontWeight={700} color="text.primary">
-          Create {model.label} Item
-        </Typography>
+        <Stack gap={0.25}>
+          <ItemCreateBreadcrumbs />
+          <Typography
+            variant="h3"
+            fontWeight={700}
+            color="text.primary"
+            sx={{
+              display: "-webkit-box",
+              "-webkit-line-clamp": "2",
+              "-webkit-box-orient": "vertical",
+              wordBreak: "break-word",
+              wordWrap: "break-word",
+              hyphens: "auto",
+              overflow: "hidden",
+            }}
+          >
+            Create {model.label} Item
+          </Typography>
+        </Stack>
+        <Stack direction="row" gap={1} flexShrink={0} alignItems="flex-start">
+          <ButtonGroup variant="outlined" color="primary" size="small">
+            <Button startIcon={<AddRoundedIcon />}>Create & Add New</Button>
+            <Button>
+              <ArrowDropDownRoundedIcon />
+            </Button>
+          </ButtonGroup>
+          <ButtonGroup
+            variant="contained"
+            color="primary"
+            size="small"
+            sx={{
+              "& .MuiButtonGroup-grouped": {
+                backgroundColor: "primary.main",
+                color: "common.white",
+
+                "&:hover": {
+                  backgroundColor: "primary.dark",
+                },
+              },
+            }}
+          >
+            <Button startIcon={<SaveRoundedIcon />}>Create</Button>
+            <Button>
+              <ArrowDropDownRoundedIcon />
+            </Button>
+          </ButtonGroup>
+        </Stack>
       </Stack>
     </ThemeProvider>
   );
-  // return (
-  //   <header className={styles.Header}>
-  //     <span>
-  //       <AppLink to="/content">
-  //         <FontAwesomeIcon icon={faHome} />
-  //       </AppLink>
-  //       <FontAwesomeIcon icon={faAngleRight} />
-  //       <AppLink to={`/content/${props.model.ZUID}`}>
-  //         {props.model.label}
-  //       </AppLink>
-  //       <FontAwesomeIcon icon={faAngleRight} />
-  //       &nbsp;New Item
-  //     </span>
-
-  //     <ButtonGroup className={styles.Actions}>
-  //       <Button
-  //         variant="contained"
-  //         color="success"
-  //         id="CreateItemSaveButton"
-  //         disabled={props.saving || !props.isDirty}
-  //         onClick={props.onSave}
-  //         startIcon={
-  //           props.saving ? <CircularProgress size="20px" /> : <SaveIcon />
-  //         }
-  //       >
-  //         Create
-  //       </Button>
-  //     </ButtonGroup>
-  //   </header>
-  // );
 };
