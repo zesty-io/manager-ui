@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Avatar, Box, Button, Dialog, Typography } from "@mui/material";
 
-import salesAvatar from "../../../../../public/images/salesAvatar.png";
-
 export const OnboardingCall = () => {
   const [showMeetModal, setShowMeetModal] = useState(false);
 
@@ -16,7 +14,7 @@ export const OnboardingCall = () => {
         borderColor="grey.800"
       >
         <Avatar
-          src={salesAvatar}
+          src="https://zestyio.media.zestyio.com/gisele-blair-zestyio.jpeg"
           alt="Sales Avatar"
           sx={{
             width: "32px",
