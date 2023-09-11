@@ -8,19 +8,32 @@ import { createSelector } from "@reduxjs/toolkit";
 import { Divider, Box } from "@mui/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { NotFound } from "shell/components/NotFound";
+import { NotFound } from "../../../../../../shell/components/NotFound";
 import { Header } from "./Header";
 import { Editor } from "../../components/Editor";
 import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
 import { DataSettings } from "../ItemEdit/Meta/ItemSettings/DataSettings";
-import { fetchFields } from "shell/store/fields";
-import { createItem, generateItem, fetchItem } from "shell/store/content";
-import { notify } from "shell/store/notifications";
+import { fetchFields } from "../../../../../../shell/store/fields";
+import {
+  createItem,
+  generateItem,
+  fetchItem,
+} from "../../../../../../shell/store/content";
+import { notify } from "../../../../../../shell/store/notifications";
 import styles from "./ItemCreate.less";
+import { AppState } from "../../../../../../shell/store/types";
+
+export type ActionAfterSave =
+  | ""
+  | "addNew"
+  | "publishNow"
+  | "schedulePublish"
+  | "publishAddNew"
+  | "schedulePublishAddNew";
 
 const selectSortedModelFields = createSelector(
-  (state) => state.fields,
-  (_, modelZUID) => modelZUID,
+  (state: any) => state.fields,
+  (_: any, modelZUID: string) => modelZUID,
   (fields, modelZUID) =>
     Object.keys(fields)
       .filter((fieldZUID) => fields[fieldZUID].contentModelZUID === modelZUID)
@@ -28,22 +41,24 @@ const selectSortedModelFields = createSelector(
       .sort((a, b) => a.sort - b.sort)
 );
 
-export default function ItemCreate() {
+export const ItemCreate = () => {
   const history = useHistory();
   const isMounted = useIsMounted();
   const dispatch = useDispatch();
-  const { modelZUID } = useParams();
+  const { modelZUID } = useParams<{ modelZUID: string }>();
   const itemZUID = `new:${modelZUID}`;
-  const model = useSelector((state) => state.models[modelZUID]);
-  const item = useSelector((state) => state.content[itemZUID]);
-  const instance = useSelector((state) => state.instance);
-  const content = useSelector((state) => state.content);
+  const model = useSelector((state: AppState) => state.models[modelZUID]);
+  const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const instance = useSelector((state: AppState) => state.instance);
+  const content = useSelector((state: AppState) => state.content);
   const fields = useSelector((state) =>
     selectSortedModelFields(state, modelZUID)
   );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [active, setActive] = useState();
+  const [newItemZUID, setNewItemZUID] = useState();
+  const [afterSaveBehavior, setAfterSaveBehavior] = useState();
 
   // on mount and update modelZUID, load item fields
   useEffect(() => {
@@ -57,7 +72,7 @@ export default function ItemCreate() {
     }
   }, [modelZUID, item]);
 
-  async function loadItemFields(modelZUID) {
+  async function loadItemFields(modelZUID: string) {
     setLoading(true);
     try {
       await dispatch(fetchFields(modelZUID));
@@ -71,16 +86,16 @@ export default function ItemCreate() {
     }
   }
 
-  async function save(createNew) {
+  async function save(action: ActionAfterSave) {
     setSaving(true);
     try {
-      const res = await dispatch(createItem(modelZUID, itemZUID));
+      const res: any = await dispatch(createItem(modelZUID, itemZUID));
       if (res.err || res.error) {
         if (res.missingRequired) {
           dispatch(
             notify({
               message: `You are missing data in ${res.missingRequired
-                .map((f) => f.label)
+                .map((f: any) => f.label)
                 .join(", ")}`,
               kind: "error",
             })
@@ -103,15 +118,40 @@ export default function ItemCreate() {
         // fetch item we just saved
         await dispatch(fetchItem(modelZUID, res.data.ZUID));
 
-        // Redirect to new item after creating
-        if (!createNew) {
-          history.push(`/content/${modelZUID}/${res.data.ZUID}`);
+        setNewItemZUID(res.data.ZUID);
+
+        switch (action) {
+          case "addNew":
+            // Do nothing, just stay on the same page
+            break;
+
+          case "publishNow":
+            // Do api call to publish now
+            console.log("publish this now");
+            break;
+
+          case "schedulePublish":
+            // Open schedule publish flyout and redirect to item once done
+            break;
+
+          case "publishAddNew":
+            // Publish but stay on page
+            break;
+
+          case "schedulePublishAddNew":
+            // Open schedule publish flyout but stay on page once done
+            break;
+
+          default:
+            // Redirect to new item
+            history.push(`/content/${modelZUID}/${res.data.ZUID}`);
+            break;
         }
 
         dispatch(
           notify({
             message: `Created new ${model.label} item`,
-            kind: "save",
+            kind: "success",
           })
         );
       } else {
@@ -151,6 +191,7 @@ export default function ItemCreate() {
         >
           <div className={styles.Editor}>
             <Editor
+              // @ts-ignore no types
               active={active}
               scrolled={setActive}
               itemZUID={itemZUID}
@@ -179,6 +220,7 @@ export default function ItemCreate() {
                 <DataSettings item={item} dispatch={dispatch} />
               ) : (
                 <ItemSettings
+                  // @ts-ignore no types
                   instance={instance}
                   modelZUID={modelZUID}
                   item={item}
@@ -192,4 +234,4 @@ export default function ItemCreate() {
       </section>
     </WithLoader>
   );
-}
+};
