@@ -18,10 +18,12 @@ import {
   createItem,
   generateItem,
   fetchItem,
+  fetchItemPublishing,
 } from "../../../../../../shell/store/content";
 import { notify } from "../../../../../../shell/store/notifications";
 import styles from "./ItemCreate.less";
 import { AppState } from "../../../../../../shell/store/types";
+import { useCreateItemPublishingMutation } from "../../../../../../shell/services/instance";
 
 export type ActionAfterSave =
   | ""
@@ -60,6 +62,11 @@ export const ItemCreate = () => {
   const [newItemZUID, setNewItemZUID] = useState();
   const [afterSaveBehavior, setAfterSaveBehavior] = useState();
 
+  const [
+    createPublishing,
+    { isLoading: isPublishing, isSuccess: isPublished, data: publishedItem },
+  ] = useCreateItemPublishingMutation();
+
   // on mount and update modelZUID, load item fields
   useEffect(() => {
     loadItemFields(modelZUID);
@@ -72,7 +79,15 @@ export const ItemCreate = () => {
     }
   }, [modelZUID, item]);
 
-  async function loadItemFields(modelZUID: string) {
+  // Redirect to the item once published
+  useEffect(() => {
+    if (!isPublishing && isPublished) {
+      history.push(`/content/${modelZUID}/${publishedItem?.data?.itemZUID}`);
+      // console.log(publishedItem);
+    }
+  }, [isPublishing, isPublished, publishedItem]);
+
+  const loadItemFields = async (modelZUID: string) => {
     setLoading(true);
     try {
       await dispatch(fetchFields(modelZUID));
@@ -84,9 +99,9 @@ export const ItemCreate = () => {
         setLoading(false);
       }
     }
-  }
+  };
 
-  async function save(action: ActionAfterSave) {
+  const save = async (action: ActionAfterSave) => {
     setSaving(true);
     try {
       const res: any = await dispatch(createItem(modelZUID, itemZUID));
@@ -126,8 +141,8 @@ export const ItemCreate = () => {
             break;
 
           case "publishNow":
-            // Do api call to publish now
-            console.log("publish this now");
+            // Make an api call to publish now
+            handlePublish(res.data.ZUID);
             break;
 
           case "schedulePublish":
@@ -169,7 +184,22 @@ export const ItemCreate = () => {
         setSaving(false);
       }
     }
-  }
+  };
+
+  const handlePublish = async (newItemZUID: string) => {
+    createPublishing({
+      modelZUID,
+      itemZUID: newItemZUID,
+      body: {
+        version: 1, // This is always going to be v1 since these are all newly-created items
+        publishAt: "now",
+        unpublishAt: "never",
+      },
+    }).then(() => {
+      // Retain non rtk-query fetch of item publishing for legacy code
+      dispatch(fetchItemPublishing(modelZUID, itemZUID));
+    });
+  };
 
   if (!loading && !model) {
     return <NotFound message={`Model "${modelZUID}" not found`} />;
@@ -181,7 +211,7 @@ export const ItemCreate = () => {
         <Header
           onSave={save}
           model={model}
-          saving={saving}
+          isLoading={saving || isPublishing}
           isDirty={item?.dirty}
         />
         <Box
