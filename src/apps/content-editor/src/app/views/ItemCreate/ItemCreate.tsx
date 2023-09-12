@@ -23,7 +23,11 @@ import {
 import { notify } from "../../../../../../shell/store/notifications";
 import styles from "./ItemCreate.less";
 import { AppState } from "../../../../../../shell/store/types";
-import { useCreateItemPublishingMutation } from "../../../../../../shell/services/instance";
+import {
+  useCreateItemPublishingMutation,
+  useGetContentItemQuery,
+} from "../../../../../../shell/services/instance";
+import { ScheduleFlyout } from "../ItemEdit/components/Header/ItemVersioning/ScheduleFlyout";
 
 export type ActionAfterSave =
   | ""
@@ -60,12 +64,16 @@ export const ItemCreate = () => {
   const [saving, setSaving] = useState(false);
   const [active, setActive] = useState();
   const [newItemZUID, setNewItemZUID] = useState();
-  const [afterSaveBehavior, setAfterSaveBehavior] = useState();
+  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
 
   const [
     createPublishing,
     { isLoading: isPublishing, isSuccess: isPublished, data: publishedItem },
   ] = useCreateItemPublishingMutation();
+  const { data: newItemData, isLoading: isLoadingNewItem } =
+    useGetContentItemQuery(newItemZUID, {
+      skip: !newItemZUID,
+    });
 
   // on mount and update modelZUID, load item fields
   useEffect(() => {
@@ -83,7 +91,6 @@ export const ItemCreate = () => {
   useEffect(() => {
     if (!isPublishing && isPublished) {
       history.push(`/content/${modelZUID}/${publishedItem?.data?.itemZUID}`);
-      // console.log(publishedItem);
     }
   }, [isPublishing, isPublished, publishedItem]);
 
@@ -147,6 +154,7 @@ export const ItemCreate = () => {
 
           case "schedulePublish":
             // Open schedule publish flyout and redirect to item once done
+            setIsScheduleDialogOpen(true);
             break;
 
           case "publishAddNew":
@@ -211,7 +219,7 @@ export const ItemCreate = () => {
         <Header
           onSave={save}
           model={model}
-          isLoading={saving || isPublishing}
+          isLoading={saving || isPublishing || isLoadingNewItem}
           isDirty={item?.dirty}
         />
         <Box
@@ -262,6 +270,16 @@ export const ItemCreate = () => {
           </div>
         </Box>
       </section>
+      <ScheduleFlyout
+        isOpen={!isLoadingNewItem && isScheduleDialogOpen}
+        item={newItemData}
+        dispatch={dispatch}
+        toggleOpen={() => setIsScheduleDialogOpen(false)}
+        onScheduled={() => {
+          setIsScheduleDialogOpen(false);
+          history.push(`/content/${modelZUID}/${newItemData?.meta?.ZUID}`);
+        }}
+      />
     </WithLoader>
   );
 };
