@@ -14,7 +14,7 @@ export const OnboardingCall = () => {
         borderColor="grey.800"
       >
         <Avatar
-          src="https://zestyio.media.zestyio.com/gisele-blair-zestyio.jpeg"
+          src="https://zestyio.media.zestyio.com/gisele-blair-zestyio.jpeg?width=64&height=64"
           alt="Sales Avatar"
           sx={{
             width: "32px",

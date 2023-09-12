@@ -173,7 +173,7 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
             <img
               width="24px"
               style={{ borderRadius: "50%" }}
-              src="https://zestyio.media.zestyio.com/gisele-blair-zestyio.jpeg"
+              src="https://zestyio.media.zestyio.com/gisele-blair-zestyio.jpeg?width=48&height=48"
             />
           </ListItemIcon>
           <ListItemText
