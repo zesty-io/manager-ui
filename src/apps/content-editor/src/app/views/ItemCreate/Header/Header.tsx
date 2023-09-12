@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import CircularProgress from "@mui/material/CircularProgress";
+import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Stack,
@@ -39,10 +39,10 @@ const DropdownMenu: Record<DropdownMenuType, Record<string, string>> = {
 interface Props {
   model: ContentModel;
   onSave: (action: ActionAfterSave) => void;
-  saving: boolean;
+  isLoading: boolean;
   isDirty: boolean;
 }
-export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
+export const Header: FC<Props> = ({ model, onSave, isLoading, isDirty }) => {
   const [dropdownMenuType, setDropdownMenuType] =
     useState<DropdownMenuType | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
@@ -88,16 +88,18 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
               variant="outlined"
               color="primary"
               size="small"
-              disabled={!isDirty || saving}
+              disabled={!isDirty || isLoading}
             >
-              <Button
+              <LoadingButton
                 startIcon={<AddRoundedIcon />}
                 onClick={() => {
                   onSave("addNew");
                 }}
+                loading={isLoading}
+                variant="outlined"
               >
                 Create & Add New
-              </Button>
+              </LoadingButton>
               <Button
                 onClick={(evt) => {
                   setAnchorEl(evt.currentTarget);
@@ -111,7 +113,7 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
               variant="contained"
               color="primary"
               size="small"
-              disabled={!isDirty || saving}
+              disabled={!isDirty || isLoading}
               sx={{
                 "& .MuiButtonGroup-grouped": {
                   backgroundColor: "primary.main",
@@ -123,14 +125,16 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
                 },
               }}
             >
-              <Button
+              <LoadingButton
                 startIcon={<SaveRoundedIcon />}
                 onClick={() => {
                   onSave("");
                 }}
+                loading={isLoading}
+                variant="contained"
               >
                 Create
-              </Button>
+              </LoadingButton>
               <Button
                 onClick={(evt) => {
                   setAnchorEl(evt.currentTarget);
@@ -172,6 +176,8 @@ export const Header: FC<Props> = ({ model, onSave, saving, isDirty }) => {
                   key={key}
                   onClick={() => {
                     onSave(key as ActionAfterSave);
+                    setAnchorEl(null);
+                    setDropdownMenuType(null);
                   }}
                 >
                   <ListItemIcon>
