@@ -17,7 +17,6 @@ import parsleyIcon from "../../../../../public/images/parsleyIcon.svg";
 import starCheckIcon from "../../../../../public/images/starCheckIcon.svg";
 import slackIcon from "../../../../../public/images/slackIcon.svg";
 import youtubeIcon from "../../../../../public/images/youtubeIcon.svg";
-import salesAvatar from "../../../../../public/images/salesAvatar.png";
 import NewspaperRoundedIcon from "@mui/icons-material/NewspaperRounded";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import GroupAddRoundedIcon from "@mui/icons-material/GroupAddRounded";
@@ -171,7 +170,11 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
       <>
         <ListItemButton divider onClick={() => setShowMeetModal(true)}>
           <ListItemIcon sx={{ minWidth: "36px" }}>
-            <img src={salesAvatar} />
+            <img
+              width="24px"
+              style={{ borderRadius: "50%" }}
+              src="https://zestyio.media.zestyio.com/gisele-blair-zestyio.jpeg?width=48&height=48"
+            />
           </ListItemIcon>
           <ListItemText
             primary="Schedule Onboarding Call"
