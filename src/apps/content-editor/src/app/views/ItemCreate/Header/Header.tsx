@@ -132,6 +132,7 @@ export const Header: FC<Props> = ({ model, onSave, isLoading, isDirty }) => {
                 }}
                 loading={isLoading}
                 variant="contained"
+                data-cy="CreateItemSaveButton"
               >
                 Create
               </LoadingButton>
