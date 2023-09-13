@@ -4,11 +4,12 @@ import { useSelector } from "react-redux";
 /**
  * useMetaKey is a hook that allows for attaching a callback to keyboard events
  * @param {String} key character
- * @param {String} modifier Options: "shift", "shiftKey", "alt", "altKey"
- * @param {Function} callback bound to keypress
+ * @param {String|Function} [modifier] Options: "shift", "shiftKey", "alt", "altKey" or a callback function
+ * @param {Function} [callback] bound to keypress (optional if the modifier is a callback)
  * @returns {String} OS specific meta/ctrl and key shortcut
  * @example
- * const metaShortcut = useMetaKey('s', "shift" handleSave)
+ * const metaShortcut = useMetaKey('s', "shift", handleSave)
+ * const metaShortcut = useMetaKey('s', handleSave)  // Without modifier
  */
 
 export function useMetaKey(key, modifier, callback) {
