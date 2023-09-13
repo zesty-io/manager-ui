@@ -65,6 +65,7 @@ export const ItemCreate = () => {
   const [active, setActive] = useState();
   const [newItemZUID, setNewItemZUID] = useState();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
+  const [willRedirect, setWillRedirect] = useState(true);
 
   const [
     createPublishing,
@@ -90,9 +91,12 @@ export const ItemCreate = () => {
   // Redirect to the item once published
   useEffect(() => {
     if (!isPublishing && isPublished) {
-      history.push(`/content/${modelZUID}/${publishedItem?.data?.itemZUID}`);
+      // console.log("will it redirect?", redirect);
+      if (willRedirect) {
+        history.push(`/content/${modelZUID}/${publishedItem?.data?.itemZUID}`);
+      }
     }
-  }, [isPublishing, isPublished, publishedItem]);
+  }, [isPublishing, isPublished, publishedItem, willRedirect]);
 
   const loadItemFields = async (modelZUID: string) => {
     setLoading(true);
@@ -150,19 +154,26 @@ export const ItemCreate = () => {
           case "publishNow":
             // Make an api call to publish now
             handlePublish(res.data.ZUID);
+            setWillRedirect(true);
             break;
 
           case "schedulePublish":
             // Open schedule publish flyout and redirect to item once done
             setIsScheduleDialogOpen(true);
+            setWillRedirect(true);
             break;
 
           case "publishAddNew":
             // Publish but stay on page
+            handlePublish(res.data.ZUID);
+            setWillRedirect(false);
+
             break;
 
           case "schedulePublishAddNew":
             // Open schedule publish flyout but stay on page once done
+            setIsScheduleDialogOpen(true);
+            setWillRedirect(false);
             break;
 
           default:
@@ -277,7 +288,10 @@ export const ItemCreate = () => {
         toggleOpen={() => setIsScheduleDialogOpen(false)}
         onScheduled={() => {
           setIsScheduleDialogOpen(false);
-          history.push(`/content/${modelZUID}/${newItemData?.meta?.ZUID}`);
+
+          if (willRedirect) {
+            history.push(`/content/${modelZUID}/${newItemData?.meta?.ZUID}`);
+          }
         }}
       />
     </WithLoader>
