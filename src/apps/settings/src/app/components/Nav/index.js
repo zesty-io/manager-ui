@@ -1,2 +1,2 @@
-import SettingsNav from "./SettingsNav";
+import { SettingsNav } from "./SettingsNav";
 export { SettingsNav };
