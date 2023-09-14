@@ -696,7 +696,7 @@ export default connect((state, props) => {
               className={"ItemList"}
               outerRef={list}
               overscanCount={20}
-              itemCount={items.length}
+              itemCount={items?.length}
               itemSize={getRowSize}
               itemData={{
                 modelZUID: props.modelZUID,
@@ -712,9 +712,9 @@ export default connect((state, props) => {
                 onSort,
                 reverseSort: filter.reverseSort,
               }}
-              height={items.length === 1 ? 55 : height}
+              height={items?.length > 1 ? height : 55}
               width="100%"
-              style={{ overflow: items.lenth === 1 ? "auto" : "hidden" }}
+              style={{ overflow: items?.length > 1 ? "auto" : "hidden" }}
             >
               {RowRender}
             </List>
