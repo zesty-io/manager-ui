@@ -464,3 +464,14 @@ export interface InstalledApp {
   updatedAt: string;
   url: string;
 }
+
+export interface StyleCategory {
+  ID: number;
+  name: string;
+  icon: string;
+  sort: number;
+  options: any;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
