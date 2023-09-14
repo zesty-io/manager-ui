@@ -1,5 +1,4 @@
 import { useState, useEffect, FC, useMemo } from "react";
-import { connect } from "react-redux";
 import { useLocation } from "react-router";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import FormatSizeRoundedIcon from "@mui/icons-material/FormatSizeRounded";
@@ -46,6 +45,8 @@ const GLOBAL_META_CAT: TreeItem[] = [
 
 export const SettingsNav = () => {
   const location = useLocation();
+  const [keyword, setKeyword] = useState("");
+
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
   const { data: instanceStylesCategories } =
     useGetInstanceStylesCategoriesQuery();
@@ -71,12 +72,14 @@ export const SettingsNav = () => {
 
   const styleSettings: TreeItem[] = useMemo(() => {
     if (instanceStylesCategories?.length) {
-      return instanceStylesCategories.map((setting) => ({
-        label: setting.name,
-        path: `/settings/styles/${setting.ID}`,
-        icon: PaletteRoundedIcon,
-        children: [],
-      }));
+      return [...instanceStylesCategories]
+        .sort((a, b) => (a.sort > b.sort ? 1 : -1))
+        .map((setting) => ({
+          label: setting.name,
+          path: `/settings/styles/${setting.ID}`,
+          icon: PaletteRoundedIcon,
+          children: [],
+        }));
     }
 
     return [];
@@ -89,18 +92,31 @@ export const SettingsNav = () => {
       mode="dark"
       searchPlaceholder="Filter Settings"
       withTitleButton={false}
+      onFilterChange={(keyword) => setKeyword(keyword.toLowerCase())}
     >
       <NavTree
         id="InstanceSettingsTree"
         HeaderComponent={<HeaderComponent title="Instance Settings" />}
-        tree={instanceSettings}
+        tree={
+          keyword
+            ? instanceSettings?.filter((setting) =>
+                setting.label.toLowerCase().includes(keyword)
+              )
+            : instanceSettings
+        }
         selected={location.pathname}
       />
       <Box pt={1.5}>
         <NavTree
           id="MetaTree"
           HeaderComponent={<HeaderComponent title="Global Meta & SEO" />}
-          tree={GLOBAL_META_CAT}
+          tree={
+            keyword
+              ? GLOBAL_META_CAT?.filter((setting) =>
+                  setting.label.toLowerCase().includes(keyword)
+                )
+              : GLOBAL_META_CAT
+          }
           selected={location.pathname}
         />
       </Box>
@@ -108,7 +124,13 @@ export const SettingsNav = () => {
         <NavTree
           id="StylesTree"
           HeaderComponent={<HeaderComponent title="Styles" />}
-          tree={styleSettings}
+          tree={
+            keyword
+              ? styleSettings?.filter((setting) =>
+                  setting.label.toLowerCase().includes(keyword)
+                )
+              : styleSettings
+          }
           selected={location.pathname}
         />
       </Box>
@@ -116,7 +138,13 @@ export const SettingsNav = () => {
         <NavTree
           id="FontsTree"
           HeaderComponent={<HeaderComponent title="Fonts" />}
-          tree={FONTS_CAT}
+          tree={
+            keyword
+              ? FONTS_CAT?.filter((setting) =>
+                  setting.label.toLowerCase().includes(keyword)
+                )
+              : FONTS_CAT
+          }
           selected={location.pathname}
         />
       </Box>
