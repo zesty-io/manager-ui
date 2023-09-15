@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -19,10 +19,10 @@ import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import { theme } from "@zesty-io/material";
 
-import { useMetaKey } from "../../../../../../../shell/hooks/useMetaKey";
-import { ContentModel } from "../../../../../../../shell/services/types";
-import { ItemCreateBreadcrumbs } from "./ItemCreateBreadcrumbs";
-import { ActionAfterSave } from "../ItemCreate";
+import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
+import { ContentModel } from "../../../../../../shell/services/types";
+import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
+import { ActionAfterSave } from "./ItemCreate";
 
 type DropdownMenuType = "default" | "addNew";
 const DropdownMenu: Record<DropdownMenuType, Record<string, string>> = {
@@ -42,12 +42,11 @@ interface Props {
   isLoading: boolean;
   isDirty: boolean;
 }
-export const Header: FC<Props> = ({ model, onSave, isLoading, isDirty }) => {
+export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
   const [dropdownMenuType, setDropdownMenuType] =
     useState<DropdownMenuType | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
-  //@ts-ignore Fix type
   const metaShortcut = useMetaKey("s", onSave);
 
   return (
@@ -65,7 +64,7 @@ export const Header: FC<Props> = ({ model, onSave, isLoading, isDirty }) => {
           alignItems="flext-start"
         >
           <Stack gap={0.25}>
-            <ItemCreateBreadcrumbs />
+            <ContentBreadcrumbs />
             <Typography
               variant="h3"
               fontWeight={700}
