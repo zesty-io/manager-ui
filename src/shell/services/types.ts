@@ -465,7 +465,7 @@ export interface InstalledApp {
   url: string;
 }
 
-export interface StyleCategory {
+export type StyleCategory = {
   ID: number;
   name: string;
   icon: string;
@@ -474,4 +474,4 @@ export interface StyleCategory {
   description: string;
   createdAt: string;
   updatedAt: string;
-}
+};

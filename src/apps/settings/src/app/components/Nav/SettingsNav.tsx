@@ -152,10 +152,10 @@ export const SettingsNav = () => {
   );
 };
 
-interface HeaderComponentProps {
+type HeaderComponentProps = {
   title: string;
-}
-const HeaderComponent: FC<HeaderComponentProps> = ({ title }) => {
+};
+const HeaderComponent = ({ title }: HeaderComponentProps) => {
   return (
     <Typography
       variant="body2"
