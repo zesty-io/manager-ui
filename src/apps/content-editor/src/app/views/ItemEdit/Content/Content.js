@@ -12,10 +12,17 @@ import styles from "./Content.less";
 import { Box, Stack, IconButton } from "@mui/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
+import { useLocalStorage } from "react-use";
 export default function Content(props) {
   // const ui = useSelector((state) => state.ui);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [showDuoMode, setShowDuoMode] = useState(false);
+  const [showSidebar, setShowSidebar] = useLocalStorage(
+    "zesty:content:sidebarOpen",
+    false
+  );
+  const [showDuoMode, setShowDuoMode] = useLocalStorage(
+    "zesty:content:duoModeOpen",
+    false
+  );
 
   return (
     <Box
@@ -26,7 +33,15 @@ export default function Content(props) {
       pt={2.5}
       display="flex"
       justifyContent="space-between"
-      gap={3}
+      sx={{
+        "*": {
+          scrollbarWidth: "none",
+          "-ms-overflow-style": "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        },
+      }}
     >
       <Box
         height="100%"
@@ -77,8 +92,7 @@ export default function Content(props) {
           </Stack>
           {showSidebar && (
             <Box
-              maxWidth={320}
-              minWidth={256}
+              width={320}
               height="100%"
               pl={4}
               sx={{
