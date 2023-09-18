@@ -6,6 +6,8 @@ import zuid from "zuid";
 
 import { fetchFields } from "shell/store/fields";
 import { fetchItems, searchItems } from "shell/store/content";
+import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
+import { FieldTooltipBody } from "./FieldTooltipBody";
 
 import {
   ToggleButtonGroup,
@@ -22,6 +24,7 @@ import {
   TextField,
   Dialog,
   IconButton,
+  Typography,
 } from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
@@ -55,6 +58,7 @@ import {
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
+import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 
 const AITextField = withAI(FieldTypeText);
 const AIEditorField = withAI(FieldTypeEditor);
@@ -209,11 +213,17 @@ export default function Field({
   const allItems = useSelector((state) => state.content);
   const allFields = useSelector((state) => state.fields);
   const allLanguages = useSelector((state) => state.languages);
+  const {
+    data: fields,
+    isLoading: isFieldsLoading,
+    isFetching: isFieldsFetching,
+  } = useGetContentModelFieldsQuery(contentModelZUID);
 
   const [imageModal, setImageModal] = useState();
 
   const value = item?.data?.[name];
   const version = item?.meta?.version;
+  const fieldData = fields?.find((field) => field.ZUID === ZUID);
 
   useEffect(() => {
     if (datatype !== "date" && datatype !== "datetime") {
@@ -268,8 +278,19 @@ export default function Field({
 
   // NOTE: stablize label, large perf improvement
   const FieldTypeLabel = useMemo(
-    () => <FieldLabel label={label} name={name} datatype={datatype} />,
-    [label, name, datatype]
+    () => (
+      <InteractiveTooltip
+        slots={{
+          title: (
+            <Typography variant="body2" fontWeight={600}>
+              {fieldData?.label}
+            </Typography>
+          ),
+          body: <FieldTooltipBody data={fieldData} />,
+        }}
+      />
+    ),
+    [fieldData]
   );
   switch (datatype) {
     case "text":
