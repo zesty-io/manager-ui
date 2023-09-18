@@ -282,11 +282,20 @@ export default function Field({
       <InteractiveTooltip
         slots={{
           title: (
-            <Typography variant="body2" fontWeight={600}>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              sx={{
+                "&:hover": { textDecoration: "underline" },
+              }}
+            >
               {fieldData?.label}
             </Typography>
           ),
           body: <FieldTooltipBody data={fieldData} />,
+        }}
+        TooltipProps={{
+          placement: "top",
         }}
       />
     ),

@@ -5,12 +5,12 @@ type Slots = {
 };
 type InteractiveTooltipProps = {
   slots: Slots;
-  tooltipProps?: TooltipProps;
+  TooltipProps?: TooltipProps;
 };
 
 export const InteractiveTooltip = ({
   slots,
-  tooltipProps,
+  TooltipProps,
 }: InteractiveTooltipProps) => {
   return (
     <Tooltip
@@ -18,7 +18,7 @@ export const InteractiveTooltip = ({
       enterNextDelay={800}
       title={<Paper>{slots.body}</Paper>}
       components={{ Tooltip: Box }}
-      {...tooltipProps}
+      {...TooltipProps}
     >
       {slots.title}
     </Tooltip>
