@@ -295,7 +295,15 @@ export default function Field({
           body: <FieldTooltipBody data={fieldData} />,
         }}
         TooltipProps={{
-          placement: "top",
+          placement: "top-start",
+        }}
+        PaperProps={{
+          sx: {
+            width: 400,
+            p: 1.5,
+            mb: 1.25,
+            borderRadius: 1,
+          },
         }}
       />
     ),
