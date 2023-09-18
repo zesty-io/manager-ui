@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import cx from "classnames";
 
+import { useState } from "react";
 import { Editor } from "../../../components/Editor";
 import { Header2 } from "../components/ItemEditHeader";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
@@ -8,41 +9,108 @@ import { PreviewMode } from "../../../components/Editor/PreviewMode";
 import { ActionsDrawer } from "./ActionsDrawer";
 
 import styles from "./Content.less";
+import { Box, Stack, IconButton } from "@mui/material";
+import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
+import { Actions } from "./Actions";
 export default function Content(props) {
-  const ui = useSelector((state) => state.ui);
+  // const ui = useSelector((state) => state.ui);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [showDuoMode, setShowDuoMode] = useState(false);
 
   return (
-    <main className={styles.Content}>
-      <div
-        className={cx(
-          styles.MainEditor,
-          ui.contentActions ? styles.ContentActionsOn : "",
-          ui.duoMode ? styles.DuoModeOn : "",
-          ui.duoMode && ui.contentActions ? styles.DuoAndActionsOn : ""
-        )}
+    <Box
+      bgcolor="grey.50"
+      height="100%"
+      overflow="hidden"
+      px={4}
+      pt={2.5}
+      display="flex"
+      justifyContent="space-between"
+      gap={3}
+    >
+      <Box
+        height="100%"
+        sx={{
+          flex: 1,
+          display: "flex",
+          justifyContent:
+            !showDuoMode && !showSidebar ? "center" : "flex-start",
+        }}
       >
-        <Editor
-          // active={this.state.makeActive}
-          // scrolled={() => this.setState({ makeActive: "" })}
-          model={props.model}
-          itemZUID={props.itemZUID}
-          item={props.item}
-          fields={props.fields}
-          dispatch={props.dispatch}
-          isDirty={props.item.dirty}
-          onSave={props.onSave}
-          modelZUID={props.modelZUID}
-        />
-
-        {ui.duoMode && (
+        <Box height="100%" maxWidth={640}>
+          <Editor
+            // active={this.state.makeActive}
+            // scrolled={() => this.setState({ makeActive: "" })}
+            model={props.model}
+            itemZUID={props.itemZUID}
+            item={props.item}
+            fields={props.fields}
+            dispatch={props.dispatch}
+            isDirty={props.item.dirty}
+            onSave={props.onSave}
+            modelZUID={props.modelZUID}
+          />
+        </Box>
+      </Box>
+      {!showDuoMode ? (
+        <Box display="flex" gap={1}>
+          <Stack gap={1.5}>
+            <IconButton
+              size="small"
+              onClick={() => setShowSidebar(!showSidebar)}
+            >
+              <StartRounded
+                fontSize="small"
+                sx={{
+                  transform: showSidebar ? "rotate(0deg)" : "rotate(180deg)",
+                }}
+              />
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={() => {
+                setShowDuoMode(true);
+              }}
+            >
+              <DesktopMacRounded fontSize="small" />
+            </IconButton>
+          </Stack>
+          {showSidebar && (
+            <Box
+              maxWidth={320}
+              minWidth={256}
+              height="100%"
+              pl={4}
+              sx={{
+                borderLeft: (theme) => `1px solid ${theme.palette.grey[200]}`,
+                overflowY: "auto",
+              }}
+            >
+              <Actions
+                {...props}
+                site={{}}
+                set={{
+                  type: props.model?.type,
+                }}
+              />
+            </Box>
+          )}
+        </Box>
+      ) : (
+        <Box height="100%" flex={1} minWidth={360}>
           <PreviewMode
             dirty={props.item.dirty}
             version={props.item.meta.version}
           />
-        )}
+        </Box>
+      )}
 
-        <ActionsDrawer className={styles.Actions} {...props} />
-      </div>
-    </main>
+      {/* {ui.duoMode && (
+          <PreviewMode
+            dirty={props.item.dirty}
+            version={props.item.meta.version}
+          />
+        )} */}
+    </Box>
   );
 }
