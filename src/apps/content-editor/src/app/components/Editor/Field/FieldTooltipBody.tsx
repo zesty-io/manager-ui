@@ -12,16 +12,19 @@ import {
 import { Database } from "@zesty-io/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import moment from "moment-timezone";
 
 import { ContentModelField } from "../../../../../../../shell/services/types";
 import { FieldIcon } from "../../../../../../schema/src/app/components/Field/FieldIcon";
+import { TYPE_TEXT } from "../../../../../../schema/src/app/components/configs";
 
 type FieldTooltipBodyProps = {
   data: ContentModelField;
 };
 export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
+  const history = useHistory();
+
   return (
     <>
       <Stack
@@ -29,6 +32,7 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
         direction="row"
         alignItems="center"
         justifyContent="space-between"
+        borderRadius="inherit"
         sx={{
           backgroundColor: "grey.50",
         }}
@@ -40,7 +44,7 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
               {data?.label} {data?.required && "*"}
             </Typography>
             <Typography variant="body3" fontWeight={600} color="text.secondary">
-              {data?.datatype}
+              {TYPE_TEXT[data?.datatype]} Field
             </Typography>
           </Stack>
         </Stack>
@@ -49,6 +53,11 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
           color="inherit"
           size="small"
           startIcon={<Database color="action" />}
+          onClick={() =>
+            history.push(
+              `/schema/${data?.contentModelZUID}/fields/${data?.ZUID}`
+            )
+          }
         >
           Edit Field
         </Button>
@@ -62,7 +71,7 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
           </Typography>
           <Link
             component={RouterLink}
-            to="#"
+            to={`/reports/activity-log/resources/${data?.contentModelZUID}`}
             color="text.secondary"
             underline="always"
             variant="body3"

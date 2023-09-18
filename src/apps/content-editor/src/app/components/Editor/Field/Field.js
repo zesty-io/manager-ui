@@ -300,9 +300,8 @@ export default function Field({
         PaperProps={{
           sx: {
             width: 400,
-            p: 1.5,
             mb: 1.25,
-            borderRadius: 1,
+            borderRadius: 2,
           },
         }}
       />
