@@ -9,7 +9,6 @@ import { fetchItems, searchItems } from "shell/store/content";
 import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
 import { FieldTooltipBody } from "./FieldTooltipBody";
 import { FieldShell } from "./FieldShell";
-import { FieldV2 } from "./FieldV2";
 
 import {
   ToggleButtonGroup,
@@ -62,7 +61,7 @@ import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 
-const AITextFieldNew = withAI(FieldV2);
+const AITextFieldNew = withAI(FieldShell);
 const AITextField = withAI(FieldTypeText);
 const AIEditorField = withAI(FieldTypeEditor);
 const AITinyMCEField = withAI(FieldTypeTinyMCE);
