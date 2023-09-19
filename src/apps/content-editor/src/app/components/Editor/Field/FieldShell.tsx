@@ -19,6 +19,11 @@ export const FieldShell = ({ data, endLabel, children }: FieldShellProps) => {
         <FieldLabel data={data} />
         {endLabel}
       </FormLabel>
+      {data?.description && (
+        <Typography variant="body2" color="text.secondary">
+          {data?.description}
+        </Typography>
+      )}
       {children}
     </Stack>
   );

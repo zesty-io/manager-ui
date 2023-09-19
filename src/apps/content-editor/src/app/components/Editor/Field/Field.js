@@ -314,6 +314,8 @@ export const Field = ({
     case "text":
       return (
         <AITextFieldNew
+          name={fieldData?.name}
+          label={fieldData?.label}
           data={fieldData}
           onChange={(evt) => onChange(evt.target.value, name)}
         >
