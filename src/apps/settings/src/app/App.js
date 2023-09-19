@@ -119,7 +119,7 @@ export default connect((state) => ({
           <div className={styles.AppWrap}>
             <ResizableContainer
               id="settingsNav"
-              defaultWidth={300}
+              defaultWidth={220}
               minWidth={220}
               maxWidth={360}
             >
