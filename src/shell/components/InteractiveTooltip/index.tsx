@@ -14,8 +14,8 @@ type Slots = {
 };
 type InteractiveTooltipProps = {
   slots: Slots;
-  TooltipProps?: TooltipProps;
-  PaperProps?: PaperProps;
+  TooltipProps?: Partial<TooltipProps>;
+  PaperProps?: Partial<PaperProps>;
 };
 
 export const InteractiveTooltip = ({
