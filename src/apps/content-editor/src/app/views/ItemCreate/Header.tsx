@@ -100,12 +100,19 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
                 Create & Add New
               </LoadingButton>
               <Button
+                size="xsmall"
                 onClick={(evt) => {
                   setAnchorEl(evt.currentTarget);
                   setDropdownMenuType("addNew");
                 }}
+                sx={{
+                  px: 1,
+                  "&.MuiButtonGroup-grouped": {
+                    minWidth: 34,
+                  },
+                }}
               >
-                <ArrowDropDownRoundedIcon />
+                <ArrowDropDownRoundedIcon sx={{ fontSize: 18 }} />
               </Button>
             </ButtonGroup>
             <ButtonGroup
@@ -136,12 +143,19 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
                 Create
               </LoadingButton>
               <Button
+                size="xsmall"
                 onClick={(evt) => {
                   setAnchorEl(evt.currentTarget);
                   setDropdownMenuType("default");
                 }}
+                sx={{
+                  px: 1,
+                  "&.MuiButtonGroup-grouped": {
+                    minWidth: 34,
+                  },
+                }}
               >
-                <ArrowDropDownRoundedIcon />
+                <ArrowDropDownRoundedIcon sx={{ fontSize: 18 }} />
               </Button>
             </ButtonGroup>
           </Stack>
@@ -179,9 +193,14 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
                     setAnchorEl(null);
                     setDropdownMenuType(null);
                   }}
+                  sx={{
+                    height: 40,
+                    px: 2,
+                    py: 1,
+                  }}
                 >
                   <ListItemIcon>
-                    {key === "createPublishNow" ? (
+                    {["publishNow", "publishAddNew"].includes(key) ? (
                       <CloudUploadRoundedIcon />
                     ) : (
                       <CalendarTodayRoundedIcon />
