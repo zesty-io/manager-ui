@@ -63,8 +63,17 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
         </Button>
       </Stack>
       <Stack gap={2.5} p={1.5}>
-        <CopyField value={data?.name} title="API / Parsley Code ID" />
-        <CopyField value={data?.ZUID} title="Field ZUID" />
+        <CopyField
+          value={data?.name}
+          title="API / Parsley Code ID"
+          tooltip="This will appear as the key in API responses."
+        />
+        <CopyField
+          value={data?.ZUID}
+          title="Field ZUID"
+          tooltip="Unique Hash assigned to each field. It can be used to access a field's information through our API.
+"
+        />
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body3" fontWeight={600} color="text.secondary">
             Field added on {moment(data?.createdAt)?.format("MMM D, YYYY")}
