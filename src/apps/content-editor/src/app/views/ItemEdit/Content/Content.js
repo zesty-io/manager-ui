@@ -32,6 +32,7 @@ export default function Content(props) {
       px={4}
       pt={2.5}
       display="flex"
+      gap={3}
       justifyContent="space-between"
       sx={{
         "*": {
@@ -46,8 +47,8 @@ export default function Content(props) {
       <Box
         height="100%"
         sx={{
-          flex: 1,
           display: "flex",
+          flex: showDuoMode ? 0 : 1,
           justifyContent:
             !showDuoMode && !showSidebar ? "center" : "flex-start",
         }}
