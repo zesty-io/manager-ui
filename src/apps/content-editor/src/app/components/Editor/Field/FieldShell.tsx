@@ -1,5 +1,11 @@
-import { memo } from "react";
-import { Stack, Typography, Tooltip, FormLabel } from "@mui/material";
+import { memo, useEffect, useState } from "react";
+import {
+  Stack,
+  Typography,
+  Tooltip,
+  FormLabel,
+  TextField,
+} from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
@@ -8,11 +14,32 @@ import { ContentModelField } from "../../../../../../../shell/services/types";
 
 type FieldShellProps = {
   data: ContentModelField;
+  value: any;
+  onChange: (value: any, name: string) => void;
   endLabel?: JSX.Element;
-  children: JSX.Element;
+  maxLength?: number;
+  withLengthCounter?: boolean;
 };
-export const FieldShell = ({ data, endLabel, children }: FieldShellProps) => {
+export const FieldShell = ({
+  data,
+  endLabel,
+  value,
+  onChange,
+  maxLength = 150,
+  withLengthCounter = false,
+}: FieldShellProps) => {
   console.log("re-rendered text field");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (value?.length > maxLength) {
+      setError("Your input is over the specified limit");
+    } else {
+      setError("");
+    }
+  }, [value]);
+
+  // TODO: Make a diff component that changes the input field based on datatype
   return (
     <Stack gap={0.5}>
       <FormLabel sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -24,7 +51,21 @@ export const FieldShell = ({ data, endLabel, children }: FieldShellProps) => {
           {data?.description}
         </Typography>
       )}
-      {children}
+      <TextField
+        value={value}
+        onChange={(evt) => onChange(evt, data?.name)}
+        fullWidth
+      />
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="body2" color="error">
+          {error}
+        </Typography>
+        {maxLength && withLengthCounter && (
+          <Typography variant="body2" color="text.disabled">
+            {value?.length}/{maxLength}
+          </Typography>
+        )}
+      </Stack>
     </Stack>
   );
 };

@@ -316,43 +316,39 @@ export const Field = ({
         <AITextFieldNew
           name={fieldData?.name}
           label={fieldData?.label}
+          value={value}
           data={fieldData}
           onChange={(evt) => onChange(evt.target.value, name)}
-        >
-          <TextField
-            value={value}
-            onChange={(evt) => onChange(evt.target.value, name)}
-            fullWidth
-          />
-        </AITextFieldNew>
-      );
-      return (
-        <AITextField
-          name={name}
-          label={
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                " "
-              )}
-              {FieldTypeLabel}
-            </Stack>
-          }
-          helperText={description}
-          tooltip={settings.tooltip}
-          required={required}
-          value={value}
-          onChange={(evt) => onChange(evt.target.value, name)}
-          aiType="text"
+          withLengthCounter
         />
       );
+    // return (
+    //   <AITextField
+    //     name={name}
+    //     label={
+    //       <Stack direction="row" alignItems="center">
+    //         {settings.tooltip ? (
+    //           <Tooltip
+    //             placement="top-start"
+    //             arrow
+    //             title={settings.tooltip ? settings.tooltip : " "}
+    //           >
+    //             <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+    //           </Tooltip>
+    //         ) : (
+    //           " "
+    //         )}
+    //         {FieldTypeLabel}
+    //       </Stack>
+    //     }
+    //     helperText={description}
+    //     tooltip={settings.tooltip}
+    //     required={required}
+    //     value={value}
+    //     onChange={(evt) => onChange(evt.target.value, name)}
+    //     aiType="text"
+    //   />
+    // );
     case "fontawesome":
       return (
         <FieldTypeText
