@@ -4,6 +4,11 @@ import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
+import { FieldV2 } from "./Field/FieldV2";
+import { FieldShell } from "./Field/FieldShell";
+import { withAI } from "../../../../../../shell/components/withAi";
+
+const AITextField = withAI(FieldShell);
 
 import styles from "./Editor.less";
 export default memo(function Editor({
@@ -48,6 +53,7 @@ export default memo(function Editor({
   };
 
   const onChange = useCallback((value, name) => {
+    // console.log(value, name);
     if (value === null || name === null) return;
     if (!name) {
       throw new Error("Input is missing name attribute");

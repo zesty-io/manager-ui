@@ -8,6 +8,8 @@ import { fetchFields } from "shell/store/fields";
 import { fetchItems, searchItems } from "shell/store/content";
 import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
 import { FieldTooltipBody } from "./FieldTooltipBody";
+import { FieldShell } from "./FieldShell";
+import { FieldV2 } from "./FieldV2";
 
 import {
   ToggleButtonGroup,
@@ -60,6 +62,7 @@ import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 
+const AITextFieldNew = withAI(FieldV2);
 const AITextField = withAI(FieldTypeText);
 const AIEditorField = withAI(FieldTypeEditor);
 const AITinyMCEField = withAI(FieldTypeTinyMCE);
@@ -193,7 +196,7 @@ function resolveRelatedOptions(
 const getSelectedLang = (langs, langID) =>
   langs.find((lang) => lang.ID === langID).code;
 
-export default function Field({
+export const Field = ({
   ZUID,
   contentModelZUID,
   item,
@@ -208,7 +211,7 @@ export default function Field({
   langID,
   onChange,
   onSave,
-}) {
+}) => {
   const dispatch = useDispatch();
   const allItems = useSelector((state) => state.content);
   const allFields = useSelector((state) => state.fields);
@@ -310,6 +313,18 @@ export default function Field({
   );
   switch (datatype) {
     case "text":
+      return (
+        <AITextFieldNew
+          data={fieldData}
+          onChange={(evt) => onChange(evt.target.value, name)}
+        >
+          <TextField
+            value={value}
+            onChange={(evt) => onChange(evt.target.value, name)}
+            fullWidth
+          />
+        </AITextFieldNew>
+      );
       return (
         <AITextField
           name={name}
@@ -1119,4 +1134,4 @@ export default function Field({
         </AppLink>
       );
   }
-}
+};
