@@ -1,10 +1,10 @@
-import { useState, useEffect, FC, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useLocation } from "react-router";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import FormatSizeRoundedIcon from "@mui/icons-material/FormatSizeRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import PaletteRoundedIcon from "@mui/icons-material/PaletteRounded";
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Stack } from "@mui/material";
 import { startCase } from "lodash";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
@@ -13,6 +13,7 @@ import {
   useGetInstanceSettingsQuery,
   useGetInstanceStylesCategoriesQuery,
 } from "../../../../../../shell/services/instance";
+import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 
 const FONTS_CAT: TreeItem[] = [
   {
@@ -85,6 +86,32 @@ export const SettingsNav = () => {
     return [];
   }, [instanceStylesCategories]);
 
+  const navItems = useMemo(() => {
+    if (keyword) {
+      return {
+        instance: instanceSettings?.filter((setting) =>
+          setting.label.toLowerCase().includes(keyword)
+        ),
+        meta: GLOBAL_META_CAT?.filter((setting) =>
+          setting.label.toLowerCase().includes(keyword)
+        ),
+        styles: styleSettings?.filter((setting) =>
+          setting.label.toLowerCase().includes(keyword)
+        ),
+        fonts: FONTS_CAT?.filter((setting) =>
+          setting.label.toLowerCase().includes(keyword)
+        ),
+      };
+    }
+
+    return {
+      instance: instanceSettings,
+      meta: GLOBAL_META_CAT,
+      styles: styleSettings,
+      fonts: FONTS_CAT,
+    };
+  }, [keyword, instanceSettings, styleSettings]);
+
   return (
     <AppSideBar
       data-cy="SettingsNav"
@@ -94,60 +121,57 @@ export const SettingsNav = () => {
       withTitleButton={false}
       onFilterChange={(keyword) => setKeyword(keyword.toLowerCase())}
     >
-      <NavTree
-        id="InstanceSettingsTree"
-        HeaderComponent={<HeaderComponent title="Instance Settings" />}
-        tree={
-          keyword
-            ? instanceSettings?.filter((setting) =>
-                setting.label.toLowerCase().includes(keyword)
-              )
-            : instanceSettings
-        }
-        selected={location.pathname}
-      />
-      <Box pt={1.5}>
-        <NavTree
-          id="MetaTree"
-          HeaderComponent={<HeaderComponent title="Global Meta & SEO" />}
-          tree={
-            keyword
-              ? GLOBAL_META_CAT?.filter((setting) =>
-                  setting.label.toLowerCase().includes(keyword)
-                )
-              : GLOBAL_META_CAT
-          }
-          selected={location.pathname}
-        />
-      </Box>
-      <Box pt={1.5}>
-        <NavTree
-          id="StylesTree"
-          HeaderComponent={<HeaderComponent title="Styles" />}
-          tree={
-            keyword
-              ? styleSettings?.filter((setting) =>
-                  setting.label.toLowerCase().includes(keyword)
-                )
-              : styleSettings
-          }
-          selected={location.pathname}
-        />
-      </Box>
-      <Box pt={1.5}>
-        <NavTree
-          id="FontsTree"
-          HeaderComponent={<HeaderComponent title="Fonts" />}
-          tree={
-            keyword
-              ? FONTS_CAT?.filter((setting) =>
-                  setting.label.toLowerCase().includes(keyword)
-                )
-              : FONTS_CAT
-          }
-          selected={location.pathname}
-        />
-      </Box>
+      {keyword &&
+      !navItems.fonts?.length &&
+      !navItems.instance?.length &&
+      !navItems.meta?.length &&
+      !navItems.styles?.length ? (
+        <Stack gap={1.5} alignItems="center">
+          <Box
+            component="img"
+            src={noSearchResults}
+            height={64}
+            width={70}
+            alt="No Search Results"
+          />
+          <Typography variant="body2" color="grey.400">
+            No results for "{keyword}"
+          </Typography>
+        </Stack>
+      ) : (
+        <>
+          <NavTree
+            id="InstanceSettingsTree"
+            HeaderComponent={<HeaderComponent title="Instance Settings" />}
+            tree={navItems.instance}
+            selected={location.pathname}
+          />
+          <Box pt={1.5}>
+            <NavTree
+              id="MetaTree"
+              HeaderComponent={<HeaderComponent title="Global Meta & SEO" />}
+              tree={navItems.meta}
+              selected={location.pathname}
+            />
+          </Box>
+          <Box pt={1.5}>
+            <NavTree
+              id="StylesTree"
+              HeaderComponent={<HeaderComponent title="Styles" />}
+              tree={navItems.styles}
+              selected={location.pathname}
+            />
+          </Box>
+          <Box pt={1.5}>
+            <NavTree
+              id="FontsTree"
+              HeaderComponent={<HeaderComponent title="Fonts" />}
+              tree={navItems.fonts}
+              selected={location.pathname}
+            />
+          </Box>
+        </>
+      )}
     </AppSideBar>
   );
 };
