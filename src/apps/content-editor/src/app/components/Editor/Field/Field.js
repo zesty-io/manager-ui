@@ -322,6 +322,7 @@ export const Field = ({
           onChange={(evt) => onChange(evt.target.value, name)}
           withLengthCounter
           missingRequired={missingRequired}
+          aiType="text"
         />
       );
     // return (
@@ -426,24 +427,37 @@ export const Field = ({
 
     case "textarea":
       return (
-        <AITextField
-          name={name}
-          label={FieldTypeLabel}
-          helperText={description}
-          tooltip={settings.tooltip}
-          required={required}
+        <AITextFieldNew
+          name={fieldData?.name}
+          label={fieldData?.label}
           value={value}
-          version={version}
-          datatype={datatype}
-          multiline={true}
-          rows={6}
+          data={fieldData}
+          onChange={(evt) => onChange(evt.target.value, name)}
+          withLengthCounter
+          missingRequired={missingRequired}
           aiType="paragraph"
-          onChange={(evt) => {
-            onChange(evt.target.value, name);
-          }}
-          maxLength="16000"
+          maxLength={16000}
         />
       );
+    // return (
+    //   <AITextField
+    //     name={name}
+    //     label={FieldTypeLabel}
+    //     helperText={description}
+    //     tooltip={settings.tooltip}
+    //     required={required}
+    //     value={value}
+    //     version={version}
+    //     datatype={datatype}
+    //     multiline={true}
+    //     rows={6}
+    //     aiType="paragraph"
+    //     onChange={(evt) => {
+    //       onChange(evt.target.value, name);
+    //     }}
+    //     maxLength="16000"
+    //   />
+    // );
 
     case "wysiwyg_advanced":
     case "wysiwyg_basic":

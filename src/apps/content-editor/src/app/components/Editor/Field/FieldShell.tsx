@@ -45,7 +45,6 @@ export const FieldShell = ({
     }
   }, [value, missingRequired]);
 
-  // TODO: Make a diff component that changes the input field based on datatype
   return (
     <Stack gap={0.5}>
       <FormLabel sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -57,10 +56,11 @@ export const FieldShell = ({
           {data?.description}
         </Typography>
       )}
-      <TextField
+      <FieldInput
         value={value}
-        onChange={(evt) => onChange(evt, data?.name)}
-        fullWidth
+        datatype={data?.datatype}
+        name={data?.name}
+        onChange={onChange}
       />
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="body2" color="error">
@@ -74,6 +74,31 @@ export const FieldShell = ({
       </Stack>
     </Stack>
   );
+};
+
+type FieldInputProps = {
+  name: string;
+  datatype: string;
+  value: any;
+  onChange: (value: any, name: string) => void;
+};
+const FieldInput = ({ name, datatype, value, onChange }: FieldInputProps) => {
+  switch (datatype) {
+    case "text":
+    case "textarea":
+      return (
+        <TextField
+          value={value}
+          onChange={(evt) => onChange(evt, name)}
+          fullWidth
+          multiline={datatype === "textarea"}
+          rows={6}
+        />
+      );
+
+    default:
+      return <></>;
+  }
 };
 
 type FieldLabelProps = {
