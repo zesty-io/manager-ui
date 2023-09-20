@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { useParams } from "react-router";
 
@@ -10,9 +10,6 @@ export const LayoutsWrapper = () => {
     itemZUID: string;
   }>();
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  // const app = useSelector((state) =>
-  //   state.apps.installed.find((app) => app.ZUID === props.match.params.zuid)
-  // );
 
   const instance = useSelector((state: AppState) => state.instance);
   // @ts-expect-error CONFIG not typed
