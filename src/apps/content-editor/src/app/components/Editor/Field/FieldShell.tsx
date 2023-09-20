@@ -15,29 +15,31 @@ import { ContentModelField } from "../../../../../../../shell/services/types";
 type FieldShellProps = {
   data: ContentModelField;
   value: any;
-  onChange: (value: any, name: string) => void;
   endLabel?: JSX.Element;
   maxLength?: number;
   withLengthCounter?: boolean;
   missingRequired?: boolean;
+  children: JSX.Element;
 };
 export const FieldShell = ({
   data,
   endLabel,
   value,
-  onChange,
   maxLength = 150,
   withLengthCounter = false,
   missingRequired,
+  children,
 }: FieldShellProps) => {
   console.log("re-rendered text field");
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (value?.length > maxLength) {
-      const exceedAmount = value?.length - maxLength;
+      if (withLengthCounter) {
+        const exceedAmount = value?.length - maxLength;
 
-      setError(`Exceeding by ${exceedAmount} characters.`);
+        setError(`Exceeding by ${exceedAmount} characters.`);
+      }
     } else if (!value?.length && missingRequired) {
       setError("Required Field. Please enter a value.");
     } else {
@@ -56,12 +58,7 @@ export const FieldShell = ({
           {data?.description}
         </Typography>
       )}
-      <FieldInput
-        value={value}
-        datatype={data?.datatype}
-        name={data?.name}
-        onChange={onChange}
-      />
+      {children}
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="body2" color="error">
           {error}
@@ -74,31 +71,6 @@ export const FieldShell = ({
       </Stack>
     </Stack>
   );
-};
-
-type FieldInputProps = {
-  name: string;
-  datatype: string;
-  value: any;
-  onChange: (value: any, name: string) => void;
-};
-const FieldInput = ({ name, datatype, value, onChange }: FieldInputProps) => {
-  switch (datatype) {
-    case "text":
-    case "textarea":
-      return (
-        <TextField
-          value={value}
-          onChange={(evt) => onChange(evt, name)}
-          fullWidth
-          multiline={datatype === "textarea"}
-          rows={6}
-        />
-      );
-
-    default:
-      return <></>;
-  }
 };
 
 type FieldLabelProps = {

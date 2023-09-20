@@ -323,7 +323,13 @@ export const Field = ({
           withLengthCounter
           missingRequired={missingRequired}
           aiType="text"
-        />
+        >
+          <TextField
+            value={value}
+            onChange={(evt) => onChange(evt.target.value, name)}
+            fullWidth
+          />
+        </AITextFieldNew>
       );
     // return (
     //   <AITextField
@@ -437,7 +443,15 @@ export const Field = ({
           missingRequired={missingRequired}
           aiType="paragraph"
           maxLength={16000}
-        />
+        >
+          <TextField
+            value={value}
+            onChange={(evt) => onChange(evt.target.value, name)}
+            fullWidth
+            multiline
+            rows={6}
+          />
+        </AITextFieldNew>
       );
     // return (
     //   <AITextField
@@ -660,6 +674,24 @@ export const Field = ({
           : [];
       }, [settings.options]);
 
+      return (
+        <FieldShell data={fieldData} value={value ?? ""}>
+          <Select
+            name={name}
+            variant="outlined"
+            displayEmpty
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value, name)}
+          >
+            <MenuItem value="">Select</MenuItem>
+            {dropdownOptions.map((dropdownOption, idx) => (
+              <MenuItem key={idx} value={dropdownOption.value}>
+                {dropdownOption.text}
+              </MenuItem>
+            ))}
+          </Select>
+        </FieldShell>
+      );
       return (
         <FormControl fullWidth required={required} size="small">
           <FormLabel>
