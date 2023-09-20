@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from "react";
+import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -15,6 +15,7 @@ export default memo(function Editor({
   onSave,
   itemZUID,
   modelZUID,
+  missingRequired,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
@@ -35,6 +36,15 @@ export default memo(function Editor({
       scrollToField(active);
     }
   }, [active]);
+
+  const missingRequiredFieldNames = useMemo(() => {
+    if (missingRequired?.length) {
+      return missingRequired.reduce((acc, curr) => {
+        acc = [curr.name, ...acc];
+        return acc;
+      }, []);
+    }
+  }, [missingRequired]);
 
   const scrollToField = (fieldZUID) => {
     const node = document.getElementById(fieldZUID);
@@ -161,6 +171,9 @@ export default memo(function Editor({
                 onSave={onSave}
                 item={item}
                 langID={item?.meta?.langID}
+                missingRequired={missingRequiredFieldNames?.includes(
+                  field.name
+                )}
               />
             </div>
           );

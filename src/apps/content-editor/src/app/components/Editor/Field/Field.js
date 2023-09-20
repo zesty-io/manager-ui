@@ -210,6 +210,7 @@ export const Field = ({
   langID,
   onChange,
   onSave,
+  missingRequired,
 }) => {
   const dispatch = useDispatch();
   const allItems = useSelector((state) => state.content);
@@ -320,6 +321,7 @@ export const Field = ({
           data={fieldData}
           onChange={(evt) => onChange(evt.target.value, name)}
           withLengthCounter
+          missingRequired={missingRequired}
         />
       );
     // return (

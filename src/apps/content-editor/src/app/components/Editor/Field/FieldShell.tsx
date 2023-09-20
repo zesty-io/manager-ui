@@ -19,6 +19,7 @@ type FieldShellProps = {
   endLabel?: JSX.Element;
   maxLength?: number;
   withLengthCounter?: boolean;
+  missingRequired?: boolean;
 };
 export const FieldShell = ({
   data,
@@ -27,17 +28,22 @@ export const FieldShell = ({
   onChange,
   maxLength = 150,
   withLengthCounter = false,
+  missingRequired,
 }: FieldShellProps) => {
   console.log("re-rendered text field");
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (value?.length > maxLength) {
-      setError("Your input is over the specified limit");
+      const exceedAmount = value?.length - maxLength;
+
+      setError(`Exceeding by ${exceedAmount} characters.`);
+    } else if (!value?.length && missingRequired) {
+      setError("Required Field. Please enter a value.");
     } else {
       setError("");
     }
-  }, [value]);
+  }, [value, missingRequired]);
 
   // TODO: Make a diff component that changes the input field based on datatype
   return (

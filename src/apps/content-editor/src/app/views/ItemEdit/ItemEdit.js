@@ -90,6 +90,7 @@ export default function ItemEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notFound, setNotFound] = useState("");
+  const [missingRequired, setMissingRequired] = useState([]);
 
   useEffect(() => {
     setNotFound("");
@@ -192,6 +193,7 @@ export default function ItemEdit() {
     try {
       const res = await dispatch(saveItem(itemZUID));
       if (res.err === "MISSING_REQUIRED") {
+        setMissingRequired(res.missingRequired ?? []);
         dispatch(
           notify({
             message: `You are missing data in ${res.missingRequired.map(
@@ -212,6 +214,7 @@ export default function ItemEdit() {
         return;
       }
 
+      setMissingRequired([]);
       dispatch(
         notify({
           message: `Saved a new ${
@@ -390,6 +393,7 @@ export default function ItemEdit() {
                     dispatch={dispatch}
                     loading={loading}
                     saving={saving}
+                    missingRequired={missingRequired}
                   />
                 )}
               />

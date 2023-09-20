@@ -65,6 +65,7 @@ export default function Content(props) {
             isDirty={props.item.dirty}
             onSave={props.onSave}
             modelZUID={props.modelZUID}
+            missingRequired={props.missingRequired ?? []}
           />
         </Box>
       </Box>
