@@ -123,7 +123,7 @@ module.exports = {
     URL_ACCOUNTS: "https://accounts.dev.zesty.io:9001",
     URL_MARKETPLACE:
       "https://kfg6bckb-dev.webengine.zesty.io/marketplace/apps/",
-    URL_APPS: "http://apps.dev.zesty.io",
+    URL_APPS: "https://apps.dev.zesty.io",
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
