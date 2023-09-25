@@ -637,7 +637,11 @@ export const Field = ({
       }, [settings.options]);
 
       return (
-        <FieldShell data={fieldData} value={value ?? ""}>
+        <FieldShell
+          data={fieldData}
+          value={value ?? ""}
+          missingRequired={missingRequired}
+        >
           <Select
             name={name}
             variant="outlined"
@@ -984,6 +988,7 @@ export const Field = ({
           data={fieldData}
           value={value ?? ""}
           customTooltip={`View this value in different currencies based upon your locale "${window.navigator.language}"`}
+          missingRequired={missingRequired}
         >
           <FieldTypeCurrency
             name={name}
