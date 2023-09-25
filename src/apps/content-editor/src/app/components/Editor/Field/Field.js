@@ -409,32 +409,38 @@ export const Field = ({
     case "wysiwyg_basic":
       return (
         <div className={styles.WYSIWYGFieldType}>
-          <AITinyMCEField
-            name={name}
-            label={FieldTypeLabel}
-            description={description}
-            tooltip={settings.tooltip}
-            required={required}
+          <AITextFieldNew
+            name={fieldData?.name}
+            label={fieldData?.label}
             value={value}
-            version={version}
+            data={fieldData}
             onChange={onChange}
-            onSave={onSave}
-            datatype={datatype}
-            maxLength="16000"
+            missingRequired={missingRequired}
             aiType="paragraph"
-            skin="oxide"
-            skinURL="/vendors/tinymce/skins/ui/oxide"
-            contentCSS="/vendors/tinymce/content.css"
-            externalPlugins={{
-              advcode: "/vendors/tinymce/plugins/advcode/plugin.js",
-              powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
-              formatpainter: "/vendors/tinymce/plugins/formatpainter/plugin.js",
-              pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js",
-            }}
-            mediaBrowser={(opts) => {
-              setImageModal(opts);
-            }}
-          />
+            datatype={fieldData?.datatype}
+          >
+            <FieldTypeTinyMCE
+              name={name}
+              value={value}
+              version={version}
+              onChange={onChange}
+              onSave={onSave}
+              datatype={datatype}
+              skin="oxide"
+              skinURL="/vendors/tinymce/skins/ui/oxide"
+              contentCSS="/vendors/tinymce/content.css"
+              externalPlugins={{
+                advcode: "/vendors/tinymce/plugins/advcode/plugin.js",
+                powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
+                formatpainter:
+                  "/vendors/tinymce/plugins/formatpainter/plugin.js",
+                pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js",
+              }}
+              mediaBrowser={(opts) => {
+                setImageModal(opts);
+              }}
+            />
+          </AITextFieldNew>
           {imageModal && renderMediaModal()}
         </div>
       );
