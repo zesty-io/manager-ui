@@ -148,7 +148,7 @@ export function Preview(props) {
           </Link>
         </Box>
         <Box display="flex" gap={0.5} alignItems="center">
-          <IconButton size="small">
+          <IconButton size="small" onClick={() => setRefresh(Date.now())}>
             <RefreshRounded />
           </IconButton>
           <IconButton size="small">
