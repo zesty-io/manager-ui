@@ -9,6 +9,9 @@ import {
   MenuItem,
   Box,
   IconButton,
+  Menu,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import SyncIcon from "@mui/icons-material/Sync";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -56,6 +59,7 @@ export function Preview(props) {
   const [refresh, setRefresh] = useState(Date.now());
   const [version, setVersion] = useState(0);
   const [dirty, setDirty] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   // Track initial version sent. We use this to make a determination
   // on whether current content has changed or the different version was
@@ -122,6 +126,11 @@ export function Preview(props) {
     });
   };
 
+  const selectTemplate = (template) => {
+    setDevice(template);
+    setAnchorEl(null);
+  };
+
   return (
     <WithLoader condition={domain} message="Finding Domain" height="100vh">
       <Box
@@ -151,9 +160,43 @@ export function Preview(props) {
           <IconButton size="small" onClick={() => setRefresh(Date.now())}>
             <RefreshRounded />
           </IconButton>
-          <IconButton size="small">
+          <IconButton
+            size="small"
+            onClick={(event) => setAnchorEl(event.currentTarget)}
+          >
             <PhoneIphoneRounded />
           </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            <MenuItem onClick={() => selectTemplate("fullscreen")}>
+              No Device
+            </MenuItem>
+            {Object.keys(templates)
+              .slice(1)
+              .map((template, index) => (
+                <MenuItem
+                  key={index}
+                  onClick={(evt) => selectTemplate(template)}
+                >
+                  {templates[template].option}
+                </MenuItem>
+              ))}
+            <FormControlLabel
+              value="start"
+              control={
+                <Switch
+                  color="primary"
+                  checked={rotate}
+                  onChange={(event) => setRotate(event.target.checked)}
+                />
+              }
+              label="Landscape Mode"
+              labelPlacement="start"
+            />
+          </Menu>
           <IconButton
             size="small"
             onClick={() =>
@@ -352,6 +395,7 @@ export function Preview(props) {
         // )}
         sx={{
           height: "calc(100% - 48px)",
+          overflow: "auto",
         }}
       >
         {initialVersion === version && dirty && (
