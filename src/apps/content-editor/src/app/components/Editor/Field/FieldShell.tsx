@@ -34,6 +34,7 @@ type FieldShellProps = {
   missingRequired?: boolean;
   onEditorChange?: (editorType: string) => void;
   editorType?: string;
+  customTooltip?: string;
   children: JSX.Element;
 };
 export const FieldShell = ({
@@ -45,6 +46,7 @@ export const FieldShell = ({
   onEditorChange,
   editorType = "markdown",
   missingRequired,
+  customTooltip,
   children,
 }: FieldShellProps) => {
   console.log("re-rendered text field");
@@ -68,7 +70,7 @@ export const FieldShell = ({
   return (
     <Stack gap={0.5}>
       <Stack direction="row" justifyContent="space-between">
-        <FieldLabel data={data} />
+        <FieldLabel data={data} customTooltip={customTooltip} />
         <Stack direction="row" gap={0.5}>
           {["article_writer", "markdown"].includes(data?.datatype) && (
             <>
@@ -145,8 +147,9 @@ export const FieldShell = ({
 
 type FieldLabelProps = {
   data: ContentModelField;
+  customTooltip?: string;
 };
-const FieldLabel = memo(({ data }: FieldLabelProps) => {
+const FieldLabel = memo(({ data, customTooltip }: FieldLabelProps) => {
   console.log("re-rendered field label");
   return (
     <Stack direction="row" gap={0.5} alignItems="center">
@@ -177,8 +180,8 @@ const FieldLabel = memo(({ data }: FieldLabelProps) => {
           },
         }}
       />
-      {data?.settings?.tooltip && (
-        <Tooltip title={data.settings.tooltip} placement="top">
+      {(!!customTooltip || data?.settings?.tooltip) && (
+        <Tooltip title={customTooltip ?? data.settings.tooltip} placement="top">
           <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
         </Tooltip>
       )}

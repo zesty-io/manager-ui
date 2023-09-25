@@ -980,16 +980,18 @@ export const Field = ({
 
     case "currency":
       return (
-        <FieldTypeCurrency
-          name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          placeholder="0.00"
-          required={required}
-          value={value}
-          onChange={onChange}
-        />
+        <FieldShell
+          data={fieldData}
+          value={value ?? ""}
+          customTooltip={`View this value in different currencies based upon your locale "${window.navigator.language}"`}
+        >
+          <FieldTypeCurrency
+            name={name}
+            placeholder="0.00"
+            value={value}
+            onChange={onChange}
+          />
+        </FieldShell>
       );
 
     case "date":
