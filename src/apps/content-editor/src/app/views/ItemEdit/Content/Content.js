@@ -121,6 +121,7 @@ export default function Content(props) {
           <PreviewMode
             dirty={props.item.dirty}
             version={props.item.meta.version}
+            onClose={() => setShowDuoModeLS(false)}
           />
         </Box>
       )}

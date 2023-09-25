@@ -1,10 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import cx from "classnames";
 
-import { Button, Select, Link, TextField, MenuItem } from "@mui/material";
+import {
+  Button,
+  Select,
+  Link,
+  TextField,
+  MenuItem,
+  Box,
+  IconButton,
+} from "@mui/material";
 import SyncIcon from "@mui/icons-material/Sync";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import MobileScreenShareIcon from "@mui/icons-material/MobileScreenShare";
+import {
+  LinkRounded,
+  RefreshRounded,
+  PhoneIphoneRounded,
+  OpenInNewRounded,
+  CloseRounded,
+} from "@mui/icons-material";
 
 import { CopyButton } from "@zesty-io/material";
 
@@ -101,9 +115,62 @@ export function Preview(props) {
       .finally(() => setLoading(false));
   }, []);
 
+  const sendMessage = (action) => {
+    window.parent.postMessage({
+      source: "zesty",
+      action,
+    });
+  };
+
   return (
     <WithLoader condition={domain} message="Finding Domain" height="100vh">
-      <section className={styles.ActivePreview}>
+      <Box
+        bgcolor="grey.100"
+        display="flex"
+        gap={1}
+        justifyContent="space-between"
+        p={1}
+      >
+        <Box display="flex" gap={0.25} alignItems="center">
+          <IconButton size="small">
+            <LinkRounded />
+          </IconButton>
+          <Link
+            href={`${domain}${route}`}
+            target="_blank"
+            noWrap
+            sx={{
+              direction: "rtl",
+              maxWidth: "234px",
+            }}
+          >
+            {`${domain}${route}`}
+          </Link>
+        </Box>
+        <Box display="flex" gap={0.5} alignItems="center">
+          <IconButton size="small">
+            <RefreshRounded />
+          </IconButton>
+          <IconButton size="small">
+            <PhoneIphoneRounded />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() =>
+              window.open(
+                `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`,
+                "_blank"
+              )
+            }
+          >
+            <OpenInNewRounded />
+          </IconButton>
+          <IconButton size="small" onClick={() => sendMessage("close")}>
+            <CloseRounded />
+          </IconButton>
+        </Box>
+      </Box>
+      {/*
         <header className={styles.TopBar}>
           <figure className={styles.Logo}>
             <img
@@ -223,10 +290,6 @@ export function Preview(props) {
                 size="small"
               >
                 <MenuItem value="fullscreen">Device</MenuItem>
-                {/*
-            Generate available options from templates,
-            except the initial "No Template" template
-            */}
                 {Object.keys(templates)
                   .slice(1)
                   .map((template, index) => (
@@ -258,9 +321,9 @@ export function Preview(props) {
                   }}
                 />
               </Button>
-            </div>
+            </div> */}
 
-            {/* <div className={styles.Menu}>
+      {/* <div className={styles.Menu}>
               <Button
                 disableElevation
                 variant="contained"
@@ -280,44 +343,46 @@ export function Preview(props) {
               </Button>
               <Meta open={open} route={route} instanceZUID={ZUID} />
             </div> */}
+      {/* </div>
+        </header> */}
+      <Box
+        // className={cx(
+        //   styles.Preview,
+        //   device !== "fullscreen" ? styles.Mobile : null
+        // )}
+        sx={{
+          height: "calc(100% - 48px)",
+        }}
+      >
+        {initialVersion === version && dirty && (
+          <div className={styles.Overlay}>
+            <Notice>Save to update preview</Notice>
           </div>
-        </header>
-        <main
-          className={cx(
-            styles.Preview,
-            device !== "fullscreen" ? styles.Mobile : null
-          )}
-        >
-          {initialVersion === version && dirty && (
-            <div className={styles.Overlay}>
-              <Notice>Save to update preview</Notice>
-            </div>
-          )}
+        )}
 
-          {!loading && domain && route ? (
-            route.includes(".json") ? (
-              <JSONPreview src={`${domain}${route}`} settings={settings} />
-            ) : (
-              <Frame
-                key={refresh}
-                device={device}
-                domain={domain}
-                route={route}
-                rotate={rotate}
-                blur={initialVersion === version && dirty}
-              />
-            )
+        {!loading && domain && route ? (
+          route.includes(".json") ? (
+            <JSONPreview src={`${domain}${route}`} settings={settings} />
           ) : (
-            <div className={styles.NoDomain}>
-              <h1 className={styles.headline}>
-                {!authenticated
-                  ? "Your session is not active. Please login to Zesty.io"
-                  : "Disconnected from preview domain"}
-              </h1>
-            </div>
-          )}
-        </main>
-      </section>
+            <Frame
+              key={refresh}
+              device={device}
+              domain={domain}
+              route={route}
+              rotate={rotate}
+              blur={initialVersion === version && dirty}
+            />
+          )
+        ) : (
+          <div className={styles.NoDomain}>
+            <h1 className={styles.headline}>
+              {!authenticated
+                ? "Your session is not active. Please login to Zesty.io"
+                : "Disconnected from preview domain"}
+            </h1>
+          </div>
+        )}
+      </Box>
     </WithLoader>
   );
 }
