@@ -368,16 +368,18 @@ export const Field = ({
     case "uuid":
       //Note we should generate the UUID here if one does not exist
       return (
-        <FieldTypeUUID
-          name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          placeholder="UUID field values are auto-generated"
-          required={required}
+        <FieldShell
+          data={fieldData}
           value={value}
-          onChange={onChange} // Is used to set the UUID value on new item creation
-        />
+          missingRequired={missingRequired}
+        >
+          <FieldTypeUUID
+            name={name}
+            placeholder="UUID field values are auto-generated"
+            value={value}
+            onChange={onChange} // Is used to set the UUID value on new item creation
+          />
+        </FieldShell>
       );
 
     case "textarea":
