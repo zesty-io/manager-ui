@@ -19,10 +19,12 @@ export default function Content(props) {
     "zesty:content:sidebarOpen",
     false
   );
-  const [showDuoMode, setShowDuoMode] = useLocalStorage(
+  const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
     "zesty:content:duoModeOpen",
     false
   );
+
+  const showDuoMode = props?.model?.type === "dataset" ? false : showDuoModeLS;
 
   return (
     <Box
@@ -53,7 +55,7 @@ export default function Content(props) {
             !showDuoMode && !showSidebar ? "center" : "flex-start",
         }}
       >
-        <Box height="100%" maxWidth={640}>
+        <Box height="100%" width={showDuoMode ? 412 : 640}>
           <Editor
             // active={this.state.makeActive}
             // scrolled={() => this.setState({ makeActive: "" })}
@@ -83,14 +85,16 @@ export default function Content(props) {
                 }}
               />
             </IconButton>
-            <IconButton
-              size="small"
-              onClick={() => {
-                setShowDuoMode(true);
-              }}
-            >
-              <DesktopMacRounded fontSize="small" />
-            </IconButton>
+            {props.model?.type !== "dataset" && (
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setShowDuoModeLS(true);
+                }}
+              >
+                <DesktopMacRounded fontSize="small" />
+              </IconButton>
+            )}
           </Stack>
           {showSidebar && (
             <Box
