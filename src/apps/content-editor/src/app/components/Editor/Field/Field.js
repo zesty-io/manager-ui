@@ -331,62 +331,38 @@ export const Field = ({
           />
         </AITextFieldNew>
       );
+
     case "fontawesome":
       return (
-        <FieldTypeText
-          name={name}
-          label={
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                " "
-              )}
-              {FieldTypeLabel}
-            </Stack>
-          }
-          helperText={description}
-          tooltip={settings.tooltip}
-          required={required}
+        <FieldShell
+          data={fieldData}
           value={value}
-          onChange={(evt) => onChange(evt.target.value, name)}
-        />
+          missingRequired={missingRequired}
+        >
+          <TextField
+            value={value}
+            onChange={(evt) => onChange(evt.target.value, name)}
+            fullWidth
+          />
+        </FieldShell>
       );
 
     case "link":
       return (
-        <FieldTypeText
-          name={name}
-          label={
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                " "
-              )}
-              {FieldTypeLabel}
-            </Stack>
-          }
-          helperText={description}
-          tooltip={settings.tooltip}
-          required={required}
+        <FieldShell
+          data={fieldData}
           value={value}
-          onChange={(evt) => onChange(evt.target.value, name)}
-          type="url"
+          missingRequired={missingRequired}
           maxLength={2000}
-        />
+          withLengthCounter
+        >
+          <TextField
+            value={value}
+            onChange={(evt) => onChange(evt.target.value, name)}
+            fullWidth
+            type="url"
+          />
+        </FieldShell>
       );
 
     case "uuid":
