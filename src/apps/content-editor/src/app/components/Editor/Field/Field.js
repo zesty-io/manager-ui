@@ -62,7 +62,6 @@ import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 
 const AITextFieldNew = withAI(FieldShell);
-const AITextField = withAI(FieldTypeText);
 const AIEditorField = withAI(FieldTypeEditor);
 const AITinyMCEField = withAI(FieldTypeTinyMCE);
 
@@ -223,6 +222,7 @@ export const Field = ({
   } = useGetContentModelFieldsQuery(contentModelZUID);
 
   const [imageModal, setImageModal] = useState();
+  const [editorType, setEditorType] = useState(datatype);
 
   const value = item?.data?.[name];
   const version = item?.meta?.version;
@@ -331,33 +331,6 @@ export const Field = ({
           />
         </AITextFieldNew>
       );
-    // return (
-    //   <AITextField
-    //     name={name}
-    //     label={
-    //       <Stack direction="row" alignItems="center">
-    //         {settings.tooltip ? (
-    //           <Tooltip
-    //             placement="top-start"
-    //             arrow
-    //             title={settings.tooltip ? settings.tooltip : " "}
-    //           >
-    //             <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-    //           </Tooltip>
-    //         ) : (
-    //           " "
-    //         )}
-    //         {FieldTypeLabel}
-    //       </Stack>
-    //     }
-    //     helperText={description}
-    //     tooltip={settings.tooltip}
-    //     required={required}
-    //     value={value}
-    //     onChange={(evt) => onChange(evt.target.value, name)}
-    //     aiType="text"
-    //   />
-    // );
     case "fontawesome":
       return (
         <FieldTypeText
@@ -453,25 +426,6 @@ export const Field = ({
           />
         </AITextFieldNew>
       );
-    // return (
-    //   <AITextField
-    //     name={name}
-    //     label={FieldTypeLabel}
-    //     helperText={description}
-    //     tooltip={settings.tooltip}
-    //     required={required}
-    //     value={value}
-    //     version={version}
-    //     datatype={datatype}
-    //     multiline={true}
-    //     rows={6}
-    //     aiType="paragraph"
-    //     onChange={(evt) => {
-    //       onChange(evt.target.value, name);
-    //     }}
-    //     maxLength="16000"
-    //   />
-    // );
 
     case "wysiwyg_advanced":
     case "wysiwyg_basic":
@@ -511,22 +465,30 @@ export const Field = ({
     case "article_writer":
       return (
         <div className={styles.WYSIWYGFieldType}>
-          <AIEditorField
-            name={name}
-            label={FieldTypeLabel}
-            description={description}
-            tooltip={settings.tooltip}
-            required={required}
+          <AITextFieldNew
+            name={fieldData?.name}
+            label={fieldData?.label}
             value={value}
-            version={version}
+            data={fieldData}
             onChange={onChange}
-            datatype={datatype}
-            maxLength="16000"
+            missingRequired={missingRequired}
             aiType="paragraph"
-            mediaBrowser={(opts) => {
-              setImageModal(opts);
-            }}
-          />
+            datatype={fieldData?.datatype}
+            editorType={editorType}
+            onEditorChange={(value) => setEditorType(value)}
+          >
+            <FieldTypeEditor
+              name={name}
+              value={value}
+              version={version}
+              onChange={onChange}
+              datatype={datatype}
+              mediaBrowser={(opts) => {
+                setImageModal(opts);
+              }}
+              editor={editorType}
+            />
+          </AITextFieldNew>
           {imageModal && renderMediaModal()}
         </div>
       );
@@ -691,41 +653,6 @@ export const Field = ({
             ))}
           </Select>
         </FieldShell>
-      );
-      return (
-        <FormControl fullWidth required={required} size="small">
-          <FormLabel>
-            <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" />
-                </Tooltip>
-              ) : (
-                " "
-              )}
-              {FieldTypeLabel}
-            </Box>
-          </FormLabel>
-          <Select
-            name={name}
-            variant="outlined"
-            displayEmpty
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value, name)}
-          >
-            <MenuItem value="">- None -</MenuItem>
-            {dropdownOptions.map((dropdownOption, idx) => (
-              <MenuItem key={idx} value={dropdownOption.value}>
-                {dropdownOption.text}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>{description}</FormHelperText>
-        </FormControl>
       );
 
     case "internal_link":
