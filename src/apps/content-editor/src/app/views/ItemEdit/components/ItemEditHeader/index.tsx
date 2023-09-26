@@ -15,6 +15,7 @@ import {
   ApiRounded,
   ManageAccountsRounded,
   ContentCopyRounded,
+  WebRounded,
 } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
@@ -28,6 +29,7 @@ import { DuplicateItemDialog } from "./DuplicateItemDialog";
 import { useState } from "react";
 import { PreviewMenu } from "./PreviewMenu";
 import { styled } from "@mui/system";
+import { useGetInstalledAppsQuery } from "../../../../../../../../shell/services/accounts";
 
 const tabs = [
   {
@@ -60,6 +62,11 @@ const tabs = [
     icon: ManageAccountsRounded,
     value: "publishings",
   },
+  {
+    label: "Layouts",
+    icon: WebRounded,
+    value: "layouts",
+  },
 ];
 
 export type ContentItemWithDirtyAndPublishing = ContentItem & {
@@ -80,11 +87,15 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
   const location = useLocation();
   const history = useHistory();
   const [showDuplicateItemDialog, setShowDuplicateItemDialog] = useState(false);
+  const { data: installedApps } = useGetInstalledAppsQuery();
 
-  const { data: model } = useGetContentModelQuery(modelZUID);
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
+  );
+
+  const layoutsAppInstalled = installedApps?.find(
+    (app) => app.appZUID === "80-d8abaff6ef-wxs830"
   );
 
   return (
@@ -178,16 +189,19 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
               }}
             >
               {tabs.map((tab) => {
-                return (
-                  <Tab
-                    key={tab.value}
-                    disableRipple
-                    label={tab.label}
-                    value={tab.value}
-                    icon={<tab.icon fontSize="small" />}
-                    iconPosition="start"
-                  />
-                );
+                if (tab.label === "Layouts" && !layoutsAppInstalled) {
+                  return;
+                } else
+                  return (
+                    <Tab
+                      key={tab.value}
+                      disableRipple
+                      label={tab.label}
+                      value={tab.value}
+                      icon={<tab.icon fontSize="small" />}
+                      iconPosition="start"
+                    />
+                  );
               })}
             </Tabs>
             <Box display="flex" gap={2} alignItems="center">

@@ -41,6 +41,7 @@ import { theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import { ItemEditHeader } from "./components/ItemEditHeader";
+import { LayoutsWrapper } from "./LayoutsWrapper";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -396,6 +397,11 @@ export default function ItemEdit() {
                     missingRequired={missingRequired}
                   />
                 )}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/layouts"
+                render={() => <LayoutsWrapper />}
               />
             </Switch>
           </Box>

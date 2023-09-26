@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
-import { User, UserRole, Domain, Instance, Role } from "./types";
+import { User, UserRole, Domain, Instance, Role, InstalledApp } from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const accountsApi = createApi({
@@ -54,6 +54,10 @@ export const accountsApi = createApi({
       query: () => `/roles`,
       transformResponse: getResponseData,
     }),
+    getInstalledApps: builder.query<InstalledApp[], void>({
+      query: () => `instances/${instanceZUID}/app-installs`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -67,4 +71,5 @@ export const {
   useGetUsersRolesQuery,
   useCreateUserInviteMutation,
   useGetCurrentUserRolesQuery,
+  useGetInstalledAppsQuery,
 } = accountsApi;
