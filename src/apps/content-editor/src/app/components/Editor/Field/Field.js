@@ -802,7 +802,6 @@ export const Field = ({
             value={value ? value.toString() : "0"}
             name={name}
             required={required}
-            helperText={description}
             onChange={(evt) => onChange(evt.target.value, name)}
           />
         </FieldShell>
@@ -842,13 +841,15 @@ export const Field = ({
 
       return (
         <FieldShell settings={fieldData} missingRequired={missingRequired}>
-          <FieldTypeDate
-            name={name}
-            required={required}
-            value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
-            inputFormat="yyyy-MM-dd"
-            onChange={(date) => onDateChange(date, name, datatype)}
-          />
+          <Box width={360}>
+            <FieldTypeDate
+              name={name}
+              required={required}
+              value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
+              inputFormat="yyyy-MM-dd"
+              onChange={(date) => onDateChange(date, name, datatype)}
+            />
+          </Box>
         </FieldShell>
       );
 
@@ -858,13 +859,15 @@ export const Field = ({
       }, []);
       return (
         <FieldShell settings={fieldData} missingRequired={missingRequired}>
-          <FieldTypeDateTime
-            name={name}
-            required={required}
-            value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
-            inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
-            onChange={(date) => onDateTimeChange(date, name, datatype)}
-          />
+          <Box width={360}>
+            <FieldTypeDateTime
+              name={name}
+              required={required}
+              value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
+              inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
+              onChange={(date) => onDateTimeChange(date, name, datatype)}
+            />
+          </Box>
         </FieldShell>
       );
 

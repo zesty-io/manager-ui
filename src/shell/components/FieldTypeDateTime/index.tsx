@@ -19,7 +19,9 @@ export const FieldTypeDateTime = ({
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DesktopDateTimePicker
         data-testid="zds-date-time-picker"
-        renderInput={(params) => <TextField {...params} size="small" />}
+        renderInput={(params) => (
+          <TextField {...params} fullWidth size="small" />
+        )}
         // Spread props at the end to allow prop overrides
         {...props}
       />
