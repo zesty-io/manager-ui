@@ -6,29 +6,20 @@ import zuid from "zuid";
 
 import { fetchFields } from "shell/store/fields";
 import { fetchItems, searchItems } from "shell/store/content";
-import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
-import { FieldTooltipBody } from "./FieldTooltipBody";
 import { FieldShell } from "./FieldShell";
 
 import {
   ToggleButtonGroup,
   ToggleButton,
-  FormControl,
-  FormLabel,
-  Tooltip,
   Box,
   Select,
   MenuItem,
-  FormHelperText,
-  Stack,
   Chip,
   TextField,
   Dialog,
   IconButton,
-  Typography,
 } from "@mui/material";
 
-import InfoIcon from "@mui/icons-material/InfoOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -59,8 +50,6 @@ import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 
 const AITextFieldNew = withAI(FieldShell);
-const AIEditorField = withAI(FieldTypeEditor);
-const AITinyMCEField = withAI(FieldTypeTinyMCE);
 
 // NOTE: Componetized so it can be memoized for input/render perf
 const ResolvedOption = memo((props) => {
@@ -261,38 +250,6 @@ export const Field = ({
     );
   }
 
-  // NOTE: stablize label, large perf improvement
-  const FieldTypeLabel = useMemo(
-    () => (
-      <InteractiveTooltip
-        slots={{
-          title: (
-            <Typography
-              variant="body2"
-              fontWeight={600}
-              sx={{
-                "&:hover": { textDecoration: "underline" },
-              }}
-            >
-              {fieldData?.label}
-            </Typography>
-          ),
-          body: <FieldTooltipBody data={fieldData} />,
-        }}
-        TooltipProps={{
-          placement: "top-start",
-        }}
-        PaperProps={{
-          sx: {
-            width: 400,
-            mb: 1.25,
-            borderRadius: 2,
-          },
-        }}
-      />
-    ),
-    [fieldData]
-  );
   switch (datatype) {
     case "text":
       return (
@@ -543,7 +500,7 @@ export const Field = ({
               size="small"
               value={value}
               exclusive
-              onChange={(e, val) => onChange(val, name)}
+              onChange={(_, val) => onChange(val, name)}
             >
               <ToggleButton value={0}>
                 {binaryFieldOpts[0] || "No"}{" "}
