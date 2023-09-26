@@ -780,7 +780,7 @@ export const Field = ({
 
     case "color":
       return (
-        <Box sx={{ width: "300px" }}>
+        <Box width={300}>
           <FieldShell settings={fieldData} missingRequired={missingRequired}>
             <FieldTypeColor
               name={name}
