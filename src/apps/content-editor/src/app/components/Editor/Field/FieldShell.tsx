@@ -25,8 +25,8 @@ const EditorTypes: Record<string, string> = {
 };
 
 type FieldShellProps = {
-  data: ContentModelField;
-  value: any;
+  settings: ContentModelField;
+  valueLength: number;
   endLabel?: JSX.Element;
   maxLength?: number;
   withLengthCounter?: boolean;
@@ -36,39 +36,42 @@ type FieldShellProps = {
   customTooltip?: string;
   children: JSX.Element;
 };
-
-export const FieldShell = (props: any) => {
+export const FieldShell = ({
+  settings,
+  endLabel,
+  valueLength,
+  maxLength = 150,
+  withLengthCounter = false,
+  onEditorChange,
+  editorType = "markdown",
+  missingRequired,
+  customTooltip,
+  children,
+}: FieldShellProps) => {
   console.log("re-rendered text field");
   const [error, setError] = useState("");
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
-  // Set default values
-  const withLengthCounter = props.withLengthCounter ?? false;
-  const maxLength = props.maxLength ?? 150;
-
   useEffect(() => {
-    if (props.valueLength > maxLength) {
+    if (valueLength > maxLength) {
       if (withLengthCounter) {
-        const amountExceeded = props.valueLength - maxLength;
+        const amountExceeded = valueLength - maxLength;
 
         setError(`Exceeding by ${amountExceeded} characters.`);
       }
-    } else if (!props.valueLength && props.missingRequired) {
+    } else if (!valueLength && missingRequired) {
       setError("Required Field. Please enter a value.");
     } else {
       setError("");
     }
-  }, [props.valueLength, props.missingRequired]);
+  }, [valueLength, missingRequired]);
 
   return (
     <Stack gap={0.5}>
       <Stack direction="row" justifyContent="space-between">
-        <FieldLabel
-          settings={props.settings}
-          customTooltip={props.customTooltip}
-        />
+        <FieldLabel settings={settings} customTooltip={customTooltip} />
         <Stack direction="row" gap={0.5}>
-          {["article_writer", "markdown"].includes(props.data?.datatype) && (
+          {["article_writer", "markdown"].includes(settings?.datatype) && (
             <>
               <Button
                 size="xsmall"
@@ -97,7 +100,7 @@ export const FieldShell = (props: any) => {
                   setAnchorEl(evt.currentTarget);
                 }}
               >
-                {EditorTypes[props.editorType ?? "markdown"]}
+                {EditorTypes[editorType]}
               </Button>
               <Menu
                 open={!!anchorEl}
@@ -109,7 +112,7 @@ export const FieldShell = (props: any) => {
                     key={key}
                     onClick={() => {
                       setAnchorEl(null);
-                      props.onEditorChange?.(key);
+                      onEditorChange?.(key);
                     }}
                   >
                     {value}
@@ -118,22 +121,22 @@ export const FieldShell = (props: any) => {
               </Menu>
             </>
           )}
-          {props.endLabel}
+          {endLabel}
         </Stack>
       </Stack>
-      {props.settings?.description && (
+      {settings?.description && (
         <Typography variant="body2" color="text.secondary">
-          {props.settings?.description}
+          {settings?.description}
         </Typography>
       )}
-      {props.children}
+      {children}
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="body2" color="error">
           {error}
         </Typography>
         {maxLength && withLengthCounter && (
           <Typography variant="body2" color="text.disabled">
-            {props.valueLength}/{maxLength}
+            {valueLength}/{maxLength}
           </Typography>
         )}
       </Stack>
