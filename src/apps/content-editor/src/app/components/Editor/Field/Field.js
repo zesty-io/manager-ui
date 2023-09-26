@@ -49,7 +49,7 @@ import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 
-const AITextFieldNew = withAI(FieldShell);
+const AIFieldShell = withAI(FieldShell);
 
 // NOTE: Componetized so it can be memoized for input/render perf
 const ResolvedOption = memo((props) => {
@@ -253,7 +253,7 @@ export const Field = ({
   switch (datatype) {
     case "text":
       return (
-        <AITextFieldNew
+        <AIFieldShell
           name={fieldData?.name}
           label={fieldData?.label}
           valueLength={value?.length}
@@ -268,7 +268,7 @@ export const Field = ({
             onChange={(evt) => onChange(evt.target.value, name)}
             fullWidth
           />
-        </AITextFieldNew>
+        </AIFieldShell>
       );
 
     case "fontawesome":
@@ -323,7 +323,7 @@ export const Field = ({
 
     case "textarea":
       return (
-        <AITextFieldNew
+        <AIFieldShell
           name={fieldData?.name}
           label={fieldData?.label}
           valueLength={value?.length}
@@ -341,14 +341,14 @@ export const Field = ({
             multiline
             rows={6}
           />
-        </AITextFieldNew>
+        </AIFieldShell>
       );
 
     case "wysiwyg_advanced":
     case "wysiwyg_basic":
       return (
         <div className={styles.WYSIWYGFieldType}>
-          <AITextFieldNew
+          <AIFieldShell
             name={fieldData?.name}
             label={fieldData?.label}
             valueLength={value?.length}
@@ -379,7 +379,7 @@ export const Field = ({
                 setImageModal(opts);
               }}
             />
-          </AITextFieldNew>
+          </AIFieldShell>
           {imageModal && renderMediaModal()}
         </div>
       );
@@ -388,7 +388,7 @@ export const Field = ({
     case "article_writer":
       return (
         <div className={styles.WYSIWYGFieldType}>
-          <AITextFieldNew
+          <AIFieldShell
             name={fieldData?.name}
             label={fieldData?.label}
             valueLength={value?.length}
@@ -411,7 +411,7 @@ export const Field = ({
               }}
               editor={editorType}
             />
-          </AITextFieldNew>
+          </AIFieldShell>
           {imageModal && renderMediaModal()}
         </div>
       );
