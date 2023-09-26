@@ -471,26 +471,24 @@ export const Field = ({
       }
       return (
         <>
-          <FieldTypeImage
-            images={images}
-            name={name}
-            label={FieldTypeLabel}
-            description={description}
-            tooltip={settings.tooltip}
-            required={required}
-            limit={(settings && settings.limit) || 1}
-            locked={Boolean(
-              settings && settings.group_id && settings.group_id != "0"
-            )}
-            onChange={onChange}
-            value={value}
-            resolveImage={(zuid, width, height) =>
-              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
-            }
-            mediaBrowser={(opts) => {
-              setImageModal(opts);
-            }}
-          />
+          <FieldShell settings={fieldData} missingRequired={missingRequired}>
+            <FieldTypeImage
+              images={images}
+              name={name}
+              limit={(settings && settings.limit) || 1}
+              locked={Boolean(
+                settings && settings.group_id && settings.group_id != "0"
+              )}
+              onChange={onChange}
+              value={value}
+              resolveImage={(zuid, width, height) =>
+                `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
+              }
+              mediaBrowser={(opts) => {
+                setImageModal(opts);
+              }}
+            />
+          </FieldShell>
           {imageModal && (
             <MemoryRouter>
               <Dialog
