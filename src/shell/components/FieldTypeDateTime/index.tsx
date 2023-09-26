@@ -4,40 +4,25 @@ import {
   DesktopDateTimePicker,
   DesktopDateTimePickerProps,
 } from "@mui/x-date-pickers";
-import { TextField, FormControl, FormLabel } from "@mui/material";
+import { TextField } from "@mui/material";
 
 export interface FieldTypeDateTimeProps
   extends Omit<DesktopDateTimePickerProps<Date, Date>, "renderInput"> {
-  helperText?: string;
-  error?: boolean;
   required?: boolean;
 }
 
 export const FieldTypeDateTime = ({
-  label,
-  helperText,
-  error,
   required,
   ...props
 }: FieldTypeDateTimeProps) => {
   return (
-    <FormControl fullWidth required={required}>
-      <FormLabel>{label}</FormLabel>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DesktopDateTimePicker
-          data-testid="zds-date-time-picker"
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              helperText={helperText}
-              error={error}
-              size="small"
-            />
-          )}
-          // Spread props at the end to allow prop overrides
-          {...props}
-        />
-      </LocalizationProvider>
-    </FormControl>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <DesktopDateTimePicker
+        data-testid="zds-date-time-picker"
+        renderInput={(params) => <TextField {...params} size="small" />}
+        // Spread props at the end to allow prop overrides
+        {...props}
+      />
+    </LocalizationProvider>
   );
 };

@@ -884,31 +884,15 @@ export const Field = ({
       }, []);
 
       return (
-        <FieldTypeDate
-          name={name}
-          label={
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                ""
-              )}
-
-              {FieldTypeLabel}
-            </Stack>
-          }
-          helperText={description}
-          required={required}
-          value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
-          inputFormat="yyyy-MM-dd"
-          onChange={(date) => onDateChange(date, name, datatype)}
-        />
+        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+          <FieldTypeDate
+            name={name}
+            required={required}
+            value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
+            inputFormat="yyyy-MM-dd"
+            onChange={(date) => onDateChange(date, name, datatype)}
+          />
+        </FieldShell>
       );
 
     case "datetime":
@@ -916,31 +900,15 @@ export const Field = ({
         onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
       }, []);
       return (
-        <FieldTypeDateTime
-          name={name}
-          label={
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                ""
-              )}
-
-              {FieldTypeLabel}
-            </Stack>
-          }
-          helperText={description}
-          required={required}
-          value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
-          inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
-          onChange={(date) => onDateTimeChange(date, name, datatype)}
-        />
+        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+          <FieldTypeDateTime
+            name={name}
+            required={required}
+            value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
+            inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
+            onChange={(date) => onDateTimeChange(date, name, datatype)}
+          />
+        </FieldShell>
       );
 
     case "sort":
