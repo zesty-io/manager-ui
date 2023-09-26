@@ -884,30 +884,13 @@ export const Field = ({
     case "color":
       return (
         <Box sx={{ width: "300px" }}>
-          <FieldTypeColor
-            name={name}
-            label={
-              <Stack direction="row" alignItems="center">
-                {settings.tooltip ? (
-                  <Tooltip
-                    placement="top-start"
-                    arrow
-                    title={settings.tooltip ? settings.tooltip : " "}
-                  >
-                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                  </Tooltip>
-                ) : (
-                  " "
-                )}
-
-                {FieldTypeLabel}
-              </Stack>
-            }
-            helperText={description}
-            required={required}
-            value={value || "#FFFFFF"}
-            onChange={(evt) => onChange(evt.target.value, name)}
-          />
+          <FieldShell settings={fieldData} missingRequired={missingRequired}>
+            <FieldTypeColor
+              name={name}
+              value={value || "#FFFFFF"}
+              onChange={(evt) => onChange(evt.target.value, name)}
+            />
+          </FieldShell>
         </Box>
       );
 

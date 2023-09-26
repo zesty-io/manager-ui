@@ -23,6 +23,10 @@ const EditorTypes: Record<string, string> = {
   article_writer: "Inline",
   html: "HTML",
 };
+// const Errors: Record<string, string> = {
+//   MISSING_REQUIRED: "",
+//   EXCEEDING_MAXLENGTH: "",
+// }
 
 type FieldShellProps = {
   settings: ContentModelField;
