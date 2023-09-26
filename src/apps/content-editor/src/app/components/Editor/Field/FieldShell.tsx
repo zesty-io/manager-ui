@@ -16,7 +16,6 @@ import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownR
 import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
 import { FieldTooltipBody } from "./FieldTooltipBody";
 import { ContentModelField } from "../../../../../../../shell/services/types";
-import { EditorActions } from "../../../../../../code-editor/src/app/components/FileActions/components/EditorActions";
 
 const EditorTypes: Record<string, string> = {
   markdown: "Markdown",
@@ -37,42 +36,39 @@ type FieldShellProps = {
   customTooltip?: string;
   children: JSX.Element;
 };
-export const FieldShell = ({
-  data,
-  endLabel,
-  value,
-  maxLength = 150,
-  withLengthCounter = false,
-  onEditorChange,
-  editorType = "markdown",
-  missingRequired,
-  customTooltip,
-  children,
-}: FieldShellProps) => {
+
+export const FieldShell = (props: any) => {
   console.log("re-rendered text field");
   const [error, setError] = useState("");
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (value?.length > maxLength) {
-      if (withLengthCounter) {
-        const exceedAmount = value?.length - maxLength;
+  // Set default values
+  const withLengthCounter = props.withLengthCounter ?? false;
+  const maxLength = props.maxLength ?? 150;
 
-        setError(`Exceeding by ${exceedAmount} characters.`);
+  useEffect(() => {
+    if (props.valueLength > maxLength) {
+      if (withLengthCounter) {
+        const amountExceeded = props.valueLength - maxLength;
+
+        setError(`Exceeding by ${amountExceeded} characters.`);
       }
-    } else if (!value?.length && missingRequired) {
+    } else if (!props.valueLength && props.missingRequired) {
       setError("Required Field. Please enter a value.");
     } else {
       setError("");
     }
-  }, [value, missingRequired]);
+  }, [props.valueLength, props.missingRequired]);
 
   return (
     <Stack gap={0.5}>
       <Stack direction="row" justifyContent="space-between">
-        <FieldLabel data={data} customTooltip={customTooltip} />
+        <FieldLabel
+          settings={props.settings}
+          customTooltip={props.customTooltip}
+        />
         <Stack direction="row" gap={0.5}>
-          {["article_writer", "markdown"].includes(data?.datatype) && (
+          {["article_writer", "markdown"].includes(props.data?.datatype) && (
             <>
               <Button
                 size="xsmall"
@@ -101,7 +97,7 @@ export const FieldShell = ({
                   setAnchorEl(evt.currentTarget);
                 }}
               >
-                {EditorTypes[editorType]}
+                {EditorTypes[props.editorType ?? "markdown"]}
               </Button>
               <Menu
                 open={!!anchorEl}
@@ -113,7 +109,7 @@ export const FieldShell = ({
                     key={key}
                     onClick={() => {
                       setAnchorEl(null);
-                      onEditorChange(key);
+                      props.onEditorChange?.(key);
                     }}
                   >
                     {value}
@@ -122,22 +118,22 @@ export const FieldShell = ({
               </Menu>
             </>
           )}
-          {endLabel}
+          {props.endLabel}
         </Stack>
       </Stack>
-      {data?.description && (
+      {props.settings?.description && (
         <Typography variant="body2" color="text.secondary">
-          {data?.description}
+          {props.settings?.description}
         </Typography>
       )}
-      {children}
+      {props.children}
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="body2" color="error">
           {error}
         </Typography>
         {maxLength && withLengthCounter && (
           <Typography variant="body2" color="text.disabled">
-            {value?.length}/{maxLength}
+            {props.valueLength}/{maxLength}
           </Typography>
         )}
       </Stack>
@@ -146,10 +142,10 @@ export const FieldShell = ({
 };
 
 type FieldLabelProps = {
-  data: ContentModelField;
+  settings: ContentModelField;
   customTooltip?: string;
 };
-const FieldLabel = memo(({ data, customTooltip }: FieldLabelProps) => {
+const FieldLabel = memo(({ settings, customTooltip }: FieldLabelProps) => {
   console.log("re-rendered field label");
   return (
     <Stack direction="row" gap={0.5} alignItems="center">
@@ -164,10 +160,10 @@ const FieldLabel = memo(({ data, customTooltip }: FieldLabelProps) => {
                 "&:hover": { textDecoration: "underline" },
               }}
             >
-              {data?.label} {data?.required && "*"}
+              {settings?.label} {settings?.required && "*"}
             </Typography>
           ),
-          body: <FieldTooltipBody data={data} />,
+          body: <FieldTooltipBody data={settings} />,
         }}
         TooltipProps={{
           placement: "top-start",
@@ -180,8 +176,11 @@ const FieldLabel = memo(({ data, customTooltip }: FieldLabelProps) => {
           },
         }}
       />
-      {(!!customTooltip || data?.settings?.tooltip) && (
-        <Tooltip title={customTooltip ?? data.settings.tooltip} placement="top">
+      {(!!customTooltip || settings?.settings?.tooltip) && (
+        <Tooltip
+          title={customTooltip ?? settings.settings.tooltip}
+          placement="top"
+        >
           <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
         </Tooltip>
       )}

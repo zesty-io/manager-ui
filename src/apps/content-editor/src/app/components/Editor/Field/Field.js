@@ -52,15 +52,6 @@ import { FieldTypeOneToOne } from "../../../../../../../shell/components/FieldTy
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
-// import {
-//   FieldTypeColor,
-//   FieldTypeOneToOne,
-//   FieldTypeOneToMany,
-//   FieldTypeText,
-//   FieldTypeDate,
-//   FieldTypeDateTime,
-//   FieldTypeSort,
-// } from "@zesty-io/material";
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
@@ -70,17 +61,6 @@ import { useGetContentModelFieldsQuery } from "../../../../../../../shell/servic
 const AITextFieldNew = withAI(FieldShell);
 const AIEditorField = withAI(FieldTypeEditor);
 const AITinyMCEField = withAI(FieldTypeTinyMCE);
-
-const FieldLabel = memo((props) => {
-  return (
-    <>
-      <span className={styles.MainLabel}>{props.label}&nbsp;</span>
-      <span className={styles.SubLabel}>
-        {props.datatype}: {props.name}
-      </span>
-    </>
-  );
-});
 
 // NOTE: Componetized so it can be memoized for input/render perf
 const ResolvedOption = memo((props) => {
@@ -221,11 +201,7 @@ export const Field = ({
   const allItems = useSelector((state) => state.content);
   const allFields = useSelector((state) => state.fields);
   const allLanguages = useSelector((state) => state.languages);
-  const {
-    data: fields,
-    isLoading: isFieldsLoading,
-    isFetching: isFieldsFetching,
-  } = useGetContentModelFieldsQuery(contentModelZUID);
+  const { data: fields } = useGetContentModelFieldsQuery(contentModelZUID);
 
   const [imageModal, setImageModal] = useState();
   const [editorType, setEditorType] = useState(datatype);
@@ -323,8 +299,8 @@ export const Field = ({
         <AITextFieldNew
           name={fieldData?.name}
           label={fieldData?.label}
-          value={value}
-          data={fieldData}
+          valueLength={value?.length}
+          settings={fieldData}
           onChange={(evt) => onChange(evt.target.value, name)}
           withLengthCounter
           missingRequired={missingRequired}
@@ -341,8 +317,8 @@ export const Field = ({
     case "fontawesome":
       return (
         <FieldShell
-          data={fieldData}
-          value={value}
+          settings={fieldData}
+          valueLength={value?.length}
           missingRequired={missingRequired}
         >
           <TextField
@@ -356,8 +332,8 @@ export const Field = ({
     case "link":
       return (
         <FieldShell
-          data={fieldData}
-          value={value}
+          settings={fieldData}
+          valueLength={value?.length}
           missingRequired={missingRequired}
           maxLength={2000}
           withLengthCounter
@@ -375,8 +351,8 @@ export const Field = ({
       //Note we should generate the UUID here if one does not exist
       return (
         <FieldShell
-          data={fieldData}
-          value={value}
+          settings={fieldData}
+          valueLength={value?.length}
           missingRequired={missingRequired}
         >
           <FieldTypeUUID
@@ -393,8 +369,8 @@ export const Field = ({
         <AITextFieldNew
           name={fieldData?.name}
           label={fieldData?.label}
-          value={value}
-          data={fieldData}
+          valueLength={value?.length}
+          settings={fieldData}
           onChange={(evt) => onChange(evt.target.value, name)}
           withLengthCounter
           missingRequired={missingRequired}
@@ -418,8 +394,8 @@ export const Field = ({
           <AITextFieldNew
             name={fieldData?.name}
             label={fieldData?.label}
-            value={value}
-            data={fieldData}
+            valueLength={value?.length}
+            settings={fieldData}
             onChange={onChange}
             missingRequired={missingRequired}
             aiType="paragraph"
@@ -458,8 +434,8 @@ export const Field = ({
           <AITextFieldNew
             name={fieldData?.name}
             label={fieldData?.label}
-            value={value}
-            data={fieldData}
+            valueLength={value?.length}
+            settings={fieldData}
             onChange={onChange}
             missingRequired={missingRequired}
             aiType="paragraph"
@@ -627,11 +603,7 @@ export const Field = ({
       }, [settings.options]);
 
       return (
-        <FieldShell
-          data={fieldData}
-          value={value ?? ""}
-          missingRequired={missingRequired}
-        >
+        <FieldShell settings={fieldData} missingRequired={missingRequired}>
           <Select
             name={name}
             variant="outlined"
@@ -975,8 +947,7 @@ export const Field = ({
     case "currency":
       return (
         <FieldShell
-          data={fieldData}
-          value={value ?? ""}
+          settings={fieldData}
           customTooltip={`View this value in different currencies based upon your locale "${window.navigator.language}"`}
           missingRequired={missingRequired}
         >
