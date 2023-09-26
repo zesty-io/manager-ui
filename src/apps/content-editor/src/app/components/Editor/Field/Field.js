@@ -40,21 +40,27 @@ import {
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
 import { MediaApp } from "../../../../../../media/src/app";
-import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
-import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
-import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
-import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
-import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
-import {
-  FieldTypeColor,
-  FieldTypeOneToOne,
-  FieldTypeOneToMany,
-  FieldTypeText,
-  FieldTypeDate,
-  FieldTypeDateTime,
-  FieldTypeSort,
-} from "@zesty-io/material";
+import { FieldTypeUUID } from "../../../../../../../shell/components/FieldTypeUUID";
+import { FieldTypeCurrency } from "../../../../../../../shell/components/FieldTypeCurrency";
+import { FieldTypeInternalLink } from "../../../../../../../shell/components/FieldTypeInternalLink";
+import { FieldTypeImage } from "../../../../../../../shell/components/FieldTypeImage";
+import { FieldTypeEditor } from "../../../../../../../shell/components/FieldTypeEditor";
+import { FieldTypeTinyMCE } from "../../../../../../../shell/components/FieldTypeTinyMCE";
+import { FieldTypeColor } from "../../../../../../../shell/components/FieldTypeColor";
+import { FieldTypeOneToMany } from "../../../../../../../shell/components/FieldTypeOneToMany";
+import { FieldTypeOneToOne } from "../../../../../../../shell/components/FieldTypeOneToOne";
+import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
+import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
+import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
+// import {
+//   FieldTypeColor,
+//   FieldTypeOneToOne,
+//   FieldTypeOneToMany,
+//   FieldTypeText,
+//   FieldTypeDate,
+//   FieldTypeDateTime,
+//   FieldTypeSort,
+// } from "@zesty-io/material";
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";

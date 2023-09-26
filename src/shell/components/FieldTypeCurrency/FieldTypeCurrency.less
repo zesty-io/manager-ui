@@ -1,0 +1,50 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.FieldTypeCurrency {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+
+  .FieldTypeCurrencyLabel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    font-size: @font-size-label;
+    span {
+      display: flex;
+    }
+  }
+
+  .CurrencyFields {
+    display: flex;
+    .SelectCurrency {
+      width: 100px;
+      span > span {
+        background: @zesty-tab-blue;
+        color: @white;
+        border: @zesty-tab-blue;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      // &:active,
+      // &:focus,
+      // &:hover {
+      //   span > span {
+      //     color: #5b667d;
+      //   }
+      // }
+
+      ul {
+        left: 0;
+        min-width: 320px;
+      }
+    }
+    .CurrencyInput {
+      width: 100%;
+      border: 1px solid #f2f4f7;
+      border-radius: 0px 8px 8px 0px;
+    }
+  }
+}
