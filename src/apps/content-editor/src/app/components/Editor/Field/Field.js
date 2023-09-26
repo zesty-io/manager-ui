@@ -256,7 +256,7 @@ export const Field = ({
         <AIFieldShell
           name={fieldData?.name}
           label={fieldData?.label}
-          valueLength={value?.length}
+          valueLength={value?.length ?? 0}
           settings={fieldData}
           onChange={(evt) => onChange(evt.target.value, name)}
           withLengthCounter
@@ -275,7 +275,7 @@ export const Field = ({
       return (
         <FieldShell
           settings={fieldData}
-          valueLength={value?.length}
+          valueLength={value?.length ?? 0}
           missingRequired={missingRequired}
         >
           <TextField
@@ -290,7 +290,7 @@ export const Field = ({
       return (
         <FieldShell
           settings={fieldData}
-          valueLength={value?.length}
+          valueLength={value?.length ?? 0}
           missingRequired={missingRequired}
           maxLength={2000}
           withLengthCounter
@@ -309,7 +309,7 @@ export const Field = ({
       return (
         <FieldShell
           settings={fieldData}
-          valueLength={value?.length}
+          valueLength={value?.length ?? 0}
           missingRequired={missingRequired}
         >
           <FieldTypeUUID
@@ -326,7 +326,7 @@ export const Field = ({
         <AIFieldShell
           name={fieldData?.name}
           label={fieldData?.label}
-          valueLength={value?.length}
+          valueLength={value?.length ?? 0}
           settings={fieldData}
           onChange={(evt) => onChange(evt.target.value, name)}
           withLengthCounter
@@ -351,7 +351,7 @@ export const Field = ({
           <AIFieldShell
             name={fieldData?.name}
             label={fieldData?.label}
-            valueLength={value?.length}
+            valueLength={value?.length ?? 0}
             settings={fieldData}
             onChange={onChange}
             missingRequired={missingRequired}
@@ -391,7 +391,7 @@ export const Field = ({
           <AIFieldShell
             name={fieldData?.name}
             label={fieldData?.label}
-            valueLength={value?.length}
+            valueLength={value?.length ?? 0}
             settings={fieldData}
             onChange={onChange}
             missingRequired={missingRequired}
