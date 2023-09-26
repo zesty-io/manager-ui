@@ -537,25 +537,7 @@ export const Field = ({
       if (settings.options) {
         const binaryFieldOpts = Object.values(settings.options);
         return (
-          <FormControl required={required}>
-            <FormLabel>
-              <Box
-                sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}
-              >
-                {settings.tooltip ? (
-                  <Tooltip
-                    placement="top-start"
-                    arrow
-                    title={settings.tooltip ? settings.tooltip : " "}
-                  >
-                    <InfoIcon fontSize="small" />
-                  </Tooltip>
-                ) : (
-                  " "
-                )}
-                {FieldTypeLabel}
-              </Box>
-            </FormLabel>
+          <FieldShell settings={fieldData} missingRequired={missingRequired}>
             <ToggleButtonGroup
               color="secondary"
               size="small"
@@ -570,10 +552,7 @@ export const Field = ({
                 {binaryFieldOpts[1] || "Yes"}{" "}
               </ToggleButton>
             </ToggleButtonGroup>
-            <Box component="p" sx={{ mt: 1 }}>
-              {description}
-            </Box>
-          </FormControl>
+          </FieldShell>
         );
       } else {
         return (
@@ -679,17 +658,15 @@ export const Field = ({
       );
 
       return (
-        <FieldTypeInternalLink
-          name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          required={required}
-          value={value}
-          onChange={onChange}
-          onSearch={onInternalLinkSearch}
-          options={internalLinkOptions}
-        />
+        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+          <FieldTypeInternalLink
+            name={name}
+            value={value}
+            onChange={onChange}
+            onSearch={onInternalLinkSearch}
+            options={internalLinkOptions}
+          />
+        </FieldShell>
       );
 
     case "one_to_one":
@@ -753,47 +730,30 @@ export const Field = ({
       }
 
       return (
-        <FieldTypeOneToOne
-          name={name}
-          label={
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                " "
-              )}
-
-              {FieldTypeLabel}
-            </Stack>
-          }
-          helperText={description}
-          required={required}
-          placeholder={"Select relationship..."}
-          value={
-            oneToOneOptions?.find((options) => options.value === value) || null
-          }
-          onChange={(_, option) => onChange(option.value, name)}
-          options={oneToOneOptions}
-          onOpen={onOneToOneOpen}
-          startAdornment={
-            value &&
-            value !== "0" && (
-              <AppLink to={`/content/${relatedModelZUID}/${value}`}>
-                <FontAwesomeIcon icon={faEdit} />
-              </AppLink>
-            )
-          }
-          endAdornment={
-            value &&
-            value !== "0" && <em>{getSelectedLang(allLanguages, langID)}</em>
-          }
-        />
+        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+          <FieldTypeOneToOne
+            name={name}
+            value={
+              oneToOneOptions?.find((options) => options.value === value) ||
+              null
+            }
+            onChange={(_, option) => onChange(option.value, name)}
+            options={oneToOneOptions}
+            onOpen={onOneToOneOpen}
+            startAdornment={
+              value &&
+              value !== "0" && (
+                <AppLink to={`/content/${relatedModelZUID}/${value}`}>
+                  <FontAwesomeIcon icon={faEdit} />
+                </AppLink>
+              )
+            }
+            endAdornment={
+              value &&
+              value !== "0" && <em>{getSelectedLang(allLanguages, langID)}</em>
+            }
+          />
+        </FieldShell>
       );
 
     case "one_to_many":
@@ -828,55 +788,37 @@ export const Field = ({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       return (
-        <FieldTypeOneToMany
-          name={name}
-          label={
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                " "
-              )}
-
-              {FieldTypeLabel}
-            </Stack>
-          }
-          helperText={description}
-          required={required}
-          placeholder={"Select relationships..."}
-          value={
-            (value &&
-              value
-                ?.split(",")
-                ?.map(
-                  (value) =>
-                    oneToManyOptions?.find(
-                      (options) => options.value === value
-                    ) || { value, inputLabel: value, component: value }
-                )) ||
-            []
-          }
-          onChange={(_, options) =>
-            onChange(options.map((option) => option.value).join(","), name)
-          }
-          options={oneToManyOptions}
-          onOpen={onOneToManyOpen}
-          renderTags={(tags, getTagProps) =>
-            tags.map((tag, index) => (
-              <Chip
-                size="small"
-                label={tag.component}
-                {...getTagProps({ index })}
-              />
-            ))
-          }
-        />
+        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+          <FieldTypeOneToMany
+            name={name}
+            value={
+              (value &&
+                value
+                  ?.split(",")
+                  ?.map(
+                    (value) =>
+                      oneToManyOptions?.find(
+                        (options) => options.value === value
+                      ) || { value, inputLabel: value, component: value }
+                  )) ||
+              []
+            }
+            onChange={(_, options) =>
+              onChange(options.map((option) => option.value).join(","), name)
+            }
+            options={oneToManyOptions}
+            onOpen={onOneToManyOpen}
+            renderTags={(tags, getTagProps) =>
+              tags.map((tag, index) => (
+                <Chip
+                  size="small"
+                  label={tag.component}
+                  {...getTagProps({ index })}
+                />
+              ))
+            }
+          />
+        </FieldShell>
       );
 
     case "color":
@@ -894,35 +836,19 @@ export const Field = ({
 
     case "number":
       return (
-        <FormControl fullWidth required={required}>
-          <FormLabel sx={{ display: "flex" }}>
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                " "
-              )}
-
-              {FieldTypeLabel}
-            </Stack>
-          </FormLabel>
+        <FieldShell settings={fieldData} missingRequired={missingRequired}>
           <TextField
             size="small"
             variant="outlined"
             type="number"
+            fullWidth
             value={value ? value.toString() : "0"}
             name={name}
             required={required}
             helperText={description}
             onChange={(evt) => onChange(evt.target.value, name)}
           />
-        </FormControl>
+        </FieldShell>
       );
 
     case "currency":
@@ -1019,33 +945,17 @@ export const Field = ({
 
     case "sort":
       return (
-        <FieldTypeSort
-          sx={{ maxWidth: "200px" }}
-          name={name}
-          label={
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                " "
-              )}
-
-              {FieldTypeLabel}
-            </Stack>
-          }
-          helperText={description}
-          required={required}
-          value={value?.toString() || ""}
-          onChange={(evt) => {
-            onChange(parseInt(evt.target.value), name);
-          }}
-        />
+        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+          <FieldTypeSort
+            sx={{ maxWidth: "200px" }}
+            name={name}
+            required={required}
+            value={value?.toString() || ""}
+            onChange={(evt) => {
+              onChange(parseInt(evt.target.value), name);
+            }}
+          />
+        </FieldShell>
       );
 
     default:

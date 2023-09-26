@@ -1,13 +1,5 @@
 import { ReactNode, useState } from "react";
-import {
-  AutocompleteProps,
-  FormControl,
-  FormLabel,
-  Popper,
-  styled,
-  TextField,
-  TextFieldProps,
-} from "@mui/material";
+import { AutocompleteProps, Popper, styled, TextField } from "@mui/material";
 import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
 import { ListboxComponent } from "../utils/virtualization";
 
@@ -16,10 +8,7 @@ export interface FieldTypeOneToManyProps
     AutocompleteProps<any, boolean, boolean, boolean>,
     "onOpen" | "renderInput"
   > {
-  label?: string;
-  helperText?: string;
   placeholder?: string;
-  error?: boolean;
   required?: boolean;
   /**
    * Callback to be fired upon opening the dropdown
@@ -45,10 +34,7 @@ export interface FieldTypeOneToManyProps
 }
 
 export const FieldTypeOneToMany = ({
-  label,
-  helperText,
-  placeholder,
-  error,
+  placeholder = "Select relationships...",
   onOpen,
   options,
   required,
@@ -68,33 +54,25 @@ export const FieldTypeOneToMany = ({
   };
 
   return (
-    <FormControl fullWidth required={required}>
-      <FormLabel>{label}</FormLabel>
-      <Autocomplete
-        onOpen={handleOpen}
-        loading={loading}
-        fullWidth
-        multiple
-        disableListWrap
-        disableClearable
-        disablePortal
-        size="small"
-        PopperComponent={StyledPopper}
-        ListboxComponent={ListboxComponent}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            helperText={helperText}
-            error={error}
-            placeholder={placeholder}
-          />
-        )}
-        options={loading ? [] : options}
-        getOptionLabel={(option) => option.inputLabel}
-        renderOption={(props, option) => [props, option.component]}
-        {...props}
-      />
-    </FormControl>
+    <Autocomplete
+      onOpen={handleOpen}
+      loading={loading}
+      fullWidth
+      multiple
+      disableListWrap
+      disableClearable
+      disablePortal
+      size="small"
+      PopperComponent={StyledPopper}
+      ListboxComponent={ListboxComponent}
+      renderInput={(params) => (
+        <TextField {...params} placeholder={placeholder} />
+      )}
+      options={loading ? [] : options}
+      getOptionLabel={(option) => option.inputLabel}
+      renderOption={(props, option) => [props, option.component]}
+      {...props}
+    />
   );
 };
 
