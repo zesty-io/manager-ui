@@ -3,7 +3,7 @@ import cx from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
-import { TextField } from "@mui/material";
+import { Input } from "@zesty-io/core/Input";
 
 import styles from "./FieldTypeUUID.less";
 
@@ -45,10 +45,9 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
           }}
         />
 
-        <TextField
-          InputProps={{
-            readOnly: true,
-          }}
+        <Input
+          type="text"
+          readOnly={true}
           required={props.required}
           defaultValue={props.value || ""}
         />
