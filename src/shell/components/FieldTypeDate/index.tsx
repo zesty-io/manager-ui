@@ -5,6 +5,7 @@ import { TextField } from "@mui/material";
 
 export interface FieldTypeDateProps
   extends Omit<DesktopDatePickerProps<Date, Date>, "renderInput"> {
+  name: string;
   required?: boolean;
 }
 

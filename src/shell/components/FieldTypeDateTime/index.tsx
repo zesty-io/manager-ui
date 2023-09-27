@@ -9,6 +9,7 @@ import { TextField } from "@mui/material";
 export interface FieldTypeDateTimeProps
   extends Omit<DesktopDateTimePickerProps<Date, Date>, "renderInput"> {
   required?: boolean;
+  name: string;
 }
 
 export const FieldTypeDateTime = ({
