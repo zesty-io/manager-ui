@@ -3,11 +3,26 @@ import { AutocompleteProps, Popper, styled, TextField } from "@mui/material";
 import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
 import { ListboxComponent } from "../utils/virtualization";
 
+export type OneToManyOptions = {
+  /**
+   * Component to be rendered in the dropdown
+   */
+  component: ReactNode | string;
+  /**
+   * Value of option
+   */
+  value: string;
+  /**
+   * Label that should display in the input when selected
+   */
+  inputLabel: string;
+};
 export interface FieldTypeOneToManyProps
   extends Omit<
     AutocompleteProps<any, boolean, boolean, boolean>,
     "onOpen" | "renderInput"
   > {
+  name: string;
   placeholder?: string;
   required?: boolean;
   /**
@@ -17,20 +32,7 @@ export interface FieldTypeOneToManyProps
   /**
    * Structure for option
    */
-  options: {
-    /**
-     * Component to be rendered in the dropdown
-     */
-    component: ReactNode | string;
-    /**
-     * Value of option
-     */
-    value: string;
-    /**
-     * Label that should display in the input when selected
-     */
-    inputLabel: string;
-  }[];
+  options: OneToManyOptions[];
 }
 
 export const FieldTypeOneToMany = ({

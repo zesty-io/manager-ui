@@ -8,12 +8,28 @@ import {
 } from "@mui/material";
 import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
 import { ListboxComponent } from "../utils/virtualization";
+import { store } from "../../store";
 
+export type OneToOneOptions = {
+  /**
+   * Component to be rendered in the dropdown
+   */
+  component: ReactNode | string;
+  /**
+   * Value of option
+   */
+  value: string;
+  /**
+   * Label that should display in the input when selected
+   */
+  inputLabel: string;
+};
 export interface FieldTypeOneToOneProps
   extends Omit<
     AutocompleteProps<any, boolean, boolean, boolean>,
     "onOpen" | "renderInput"
   > {
+  name: string;
   label?: string;
   helperText?: string;
   placeholder?: string;
@@ -24,24 +40,11 @@ export interface FieldTypeOneToOneProps
   /**
    * Callback to be fired upon opening the dropdown
    */
-  onOpen?: () => Promise<any>;
+  onOpen?: typeof store.dispatch;
   /**
    * Structure for option
    */
-  options: {
-    /**
-     * Component to be rendered in the dropdown
-     */
-    component: ReactNode | string;
-    /**
-     * Value of option
-     */
-    value: string;
-    /**
-     * Label that should display in the input when selected
-     */
-    inputLabel: string;
-  }[];
+  options: OneToOneOptions[];
 }
 
 export const FieldTypeOneToOne = ({

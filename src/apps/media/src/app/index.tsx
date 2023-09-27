@@ -25,7 +25,7 @@ import { UploadModal } from "./components/UploadModal";
 interface Props {
   limitSelected?: number;
   lockedToGroupId?: string;
-  showHeaderActions: boolean;
+  showHeaderActions?: boolean;
   isSelectDialog?: boolean;
   addImagesCallback?: (selectedFiles: File[]) => void;
 }
