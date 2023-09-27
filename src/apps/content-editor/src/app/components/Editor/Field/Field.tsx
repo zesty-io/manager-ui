@@ -67,41 +67,53 @@ import { useGetContentModelFieldsQuery } from "../../../../../../../shell/servic
 import { AppState } from "../../../../../../../shell/store/types";
 import {
   ContentItem,
+  ContentModelField,
   FieldSettings,
+  Language,
 } from "../../../../../../../shell/services/types";
 
 const AIFieldShell = withAI(FieldShell);
 
 // NOTE: Componetized so it can be memoized for input/render perf
-const ResolvedOption = memo((props: any) => {
-  return (
-    <span className={styles.ResolvedOption}>
-      <span onClick={(evt) => evt.stopPropagation()}>
-        <AppLink
-          className={styles.relatedItemLink}
-          to={`/content/${props.modelZUID}/${props.itemZUID}`}
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </AppLink>
+const ResolvedOption = memo(
+  ({
+    itemZUID,
+    modelZUID,
+    html,
+  }: {
+    itemZUID: string;
+    modelZUID: string;
+    html: any;
+  }) => {
+    return (
+      <span className={styles.ResolvedOption}>
+        <span onClick={(evt) => evt.stopPropagation()}>
+          <AppLink
+            className={styles.relatedItemLink}
+            to={`/content/${modelZUID}/${itemZUID}`}
+          >
+            <FontAwesomeIcon icon={faEdit} />
+          </AppLink>
+        </span>
+        &nbsp;{html}
       </span>
-      &nbsp;{props.html}
-    </span>
-  );
-});
+    );
+  }
+);
 
 // NOTE: Componetized so it can be memoized for input/render perf
-const LinkOption = memo((props: any) => {
-  return (
-    <>
-      <FontAwesomeIcon icon={faExclamationTriangle} />
-      &nbsp;
-      <AppLink to={`/content/${props.modelZUID}/${props.itemZUID}`}>
-        {props.itemZUID}
-      </AppLink>
-      <strong>&nbsp;is missing a meta title</strong>
-    </>
-  );
-});
+const LinkOption = memo(
+  ({ modelZUID, itemZUID }: { modelZUID: string; itemZUID: string }) => {
+    return (
+      <>
+        <FontAwesomeIcon icon={faExclamationTriangle} />
+        &nbsp;
+        <AppLink to={`/content/${modelZUID}/${itemZUID}`}>{itemZUID}</AppLink>
+        <strong>&nbsp;is missing a meta title</strong>
+      </>
+    );
+  }
+);
 
 function sortTitle(a: any, b: any) {
   const nameA = String(a.text) && String(a.text).toUpperCase(); // ignore upper and lowercase
@@ -129,11 +141,11 @@ function sortHTML(a: any, b: any) {
 }
 
 const resolveRelatedOptions = (
-  fields: any,
+  fields: Record<string, ContentModelField>,
   items: any,
-  fieldZUID: any,
-  modelZUID: any,
-  langID: any,
+  fieldZUID: string,
+  modelZUID: string,
+  langID: number,
   value: any
 ): OneToManyOptions[] | OneToOneOptions[] => {
   // guard against absent data in state
@@ -186,7 +198,7 @@ const resolveRelatedOptions = (
     .sort(sortTitle);
 };
 
-const getSelectedLang = (langs: any, langID: any) =>
+const getSelectedLang = (langs: Language[], langID: number) =>
   langs.find((lang: any) => lang.ID === langID).code;
 
 type FieldProps = {
