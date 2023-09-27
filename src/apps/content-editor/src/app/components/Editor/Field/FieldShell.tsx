@@ -17,7 +17,12 @@ import { InteractiveTooltip } from "../../../../../../../shell/components/Intera
 import { FieldTooltipBody } from "./FieldTooltipBody";
 import { ContentModelField } from "../../../../../../../shell/services/types";
 
-const EditorTypes: Record<string, string> = {
+export type EditorType =
+  | "markdown"
+  | "wysiwyg_basic"
+  | "article_writer"
+  | "html";
+const EditorTypes: Record<EditorType, string> = {
   markdown: "Markdown",
   wysiwyg_basic: "WYSIWYG",
   article_writer: "Inline",
@@ -30,13 +35,13 @@ const EditorTypes: Record<string, string> = {
 
 type FieldShellProps = {
   settings: ContentModelField;
-  valueLength: number;
+  valueLength?: number;
   endLabel?: JSX.Element;
   maxLength?: number;
   withLengthCounter?: boolean;
   missingRequired?: boolean;
   onEditorChange?: (editorType: string) => void;
-  editorType?: string;
+  editorType?: EditorType;
   customTooltip?: string;
   children: JSX.Element;
 };
