@@ -1,12 +1,22 @@
-import { memo, useMemo, useCallback, useState, useEffect } from "react";
+import {
+  memo,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+  ChangeEvent,
+} from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
 import zuid from "zuid";
 
-import { fetchFields } from "shell/store/fields";
-import { fetchItems, searchItems } from "shell/store/content";
-import { FieldShell } from "./FieldShell";
+import { fetchFields } from "../../../../../../../shell/store/fields";
+import {
+  fetchItems,
+  searchItems,
+} from "../../../../../../../shell/store/content";
+import { EditorType, FieldShell } from "./FieldShell";
 
 import {
   ToggleButtonGroup,
@@ -38,8 +48,14 @@ import { FieldTypeImage } from "../../../../../../../shell/components/FieldTypeI
 import { FieldTypeEditor } from "../../../../../../../shell/components/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "../../../../../../../shell/components/FieldTypeTinyMCE";
 import { FieldTypeColor } from "../../../../../../../shell/components/FieldTypeColor";
-import { FieldTypeOneToMany } from "../../../../../../../shell/components/FieldTypeOneToMany";
-import { FieldTypeOneToOne } from "../../../../../../../shell/components/FieldTypeOneToOne";
+import {
+  FieldTypeOneToMany,
+  OneToManyOptions,
+} from "../../../../../../../shell/components/FieldTypeOneToMany";
+import {
+  FieldTypeOneToOne,
+  OneToOneOptions,
+} from "../../../../../../../shell/components/FieldTypeOneToOne";
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
@@ -48,11 +64,12 @@ import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
+import { AppState } from "../../../../../../../shell/store/types";
 
 const AIFieldShell = withAI(FieldShell);
 
 // NOTE: Componetized so it can be memoized for input/render perf
-const ResolvedOption = memo((props) => {
+const ResolvedOption = memo((props: any) => {
   return (
     <span className={styles.ResolvedOption}>
       <span onClick={(evt) => evt.stopPropagation()}>
@@ -69,7 +86,7 @@ const ResolvedOption = memo((props) => {
 });
 
 // NOTE: Componetized so it can be memoized for input/render perf
-const LinkOption = memo((props) => {
+const LinkOption = memo((props: any) => {
   return (
     <>
       <FontAwesomeIcon icon={faExclamationTriangle} />
@@ -82,7 +99,7 @@ const LinkOption = memo((props) => {
   );
 });
 
-function sortTitle(a, b) {
+function sortTitle(a: any, b: any) {
   const nameA = String(a.text) && String(a.text).toUpperCase(); // ignore upper and lowercase
   const nameB = String(b.text) && String(b.text).toUpperCase(); // ignore upper and lowercase
   if (nameA < nameB) {
@@ -94,7 +111,7 @@ function sortTitle(a, b) {
   // names must be equal
   return 0;
 }
-function sortHTML(a, b) {
+function sortHTML(a: any, b: any) {
   const nameA = String(a.html) && String(a.html).toUpperCase(); // ignore upper and lowercase
   const nameB = String(b.html) && String(b.html).toUpperCase(); // ignore upper and lowercase
   if (nameA < nameB) {
@@ -107,14 +124,14 @@ function sortHTML(a, b) {
   return 0;
 }
 
-function resolveRelatedOptions(
-  fields,
-  items,
-  fieldZUID,
-  modelZUID,
-  langID,
-  value
-) {
+const resolveRelatedOptions = (
+  fields: any,
+  items: any,
+  fieldZUID: any,
+  modelZUID: any,
+  langID: any,
+  value: any
+): OneToManyOptions[] | OneToOneOptions[] => {
   // guard against absent data in state
   const field = fields && fields[fieldZUID];
   if (!field || !items) {
@@ -146,7 +163,6 @@ function resolveRelatedOptions(
       }
 
       return {
-        filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
         inputLabel: items[itemZUID].data[field.name] || "",
         component: (
@@ -164,10 +180,10 @@ function resolveRelatedOptions(
       };
     })
     .sort(sortTitle);
-}
+};
 
-const getSelectedLang = (langs, langID) =>
-  langs.find((lang) => lang.ID === langID).code;
+const getSelectedLang = (langs: any, langID: any) =>
+  langs.find((lang: any) => lang.ID === langID).code;
 
 export const Field = ({
   ZUID,
@@ -185,15 +201,15 @@ export const Field = ({
   onChange,
   onSave,
   missingRequired,
-}) => {
+}: any) => {
   const dispatch = useDispatch();
-  const allItems = useSelector((state) => state.content);
-  const allFields = useSelector((state) => state.fields);
-  const allLanguages = useSelector((state) => state.languages);
+  const allItems = useSelector((state: AppState) => state.content);
+  const allFields = useSelector((state: AppState) => state.fields);
+  const allLanguages = useSelector((state: AppState) => state.languages);
   const { data: fields } = useGetContentModelFieldsQuery(contentModelZUID);
 
-  const [imageModal, setImageModal] = useState();
-  const [editorType, setEditorType] = useState(datatype);
+  const [imageModal, setImageModal] = useState(null);
+  const [editorType, setEditorType] = useState<EditorType>(datatype);
 
   const value = item?.data?.[name];
   const version = item?.meta?.version;
@@ -224,7 +240,7 @@ export const Field = ({
               overflow: "hidden",
             },
           }}
-          onClose={() => setImageModal()}
+          onClose={() => setImageModal(null)}
         >
           <IconButton
             sx={{
@@ -232,16 +248,16 @@ export const Field = ({
               right: 15,
               top: 10,
             }}
-            onClick={() => setImageModal()}
+            onClick={() => setImageModal(null)}
           >
             <CloseIcon sx={{ color: "common.white" }} />
           </IconButton>
           <MediaApp
-            limitSelected={imageModal.limit}
+            limitSelected={imageModal?.limit}
             isSelectDialog={true}
             addImagesCallback={(images) => {
               imageModal.callback(images);
-              setImageModal();
+              setImageModal(null);
             }}
           />
         </Dialog>
@@ -258,7 +274,9 @@ export const Field = ({
           label={fieldData?.label}
           valueLength={value?.length ?? 0}
           settings={fieldData}
-          onChange={(evt) => onChange(evt.target.value, name)}
+          onChange={(evt: ChangeEvent<HTMLInputElement>) =>
+            onChange(evt.target.value, name)
+          }
           withLengthCounter
           missingRequired={missingRequired}
           aiType="text"
@@ -313,6 +331,7 @@ export const Field = ({
           missingRequired={missingRequired}
         >
           <FieldTypeUUID
+            // @ts-ignore component not typed
             name={name}
             placeholder="UUID field values are auto-generated"
             value={value}
@@ -328,7 +347,9 @@ export const Field = ({
           label={fieldData?.label}
           valueLength={value?.length ?? 0}
           settings={fieldData}
-          onChange={(evt) => onChange(evt.target.value, name)}
+          onChange={(evt: ChangeEvent<HTMLInputElement>) =>
+            onChange(evt.target.value, name)
+          }
           withLengthCounter
           missingRequired={missingRequired}
           aiType="paragraph"
@@ -359,6 +380,7 @@ export const Field = ({
             datatype={fieldData?.datatype}
           >
             <FieldTypeTinyMCE
+              // @ts-ignore component not typed
               name={name}
               value={value}
               version={version}
@@ -375,7 +397,7 @@ export const Field = ({
                   "/vendors/tinymce/plugins/formatpainter/plugin.js",
                 pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js",
               }}
-              mediaBrowser={(opts) => {
+              mediaBrowser={(opts: any) => {
                 setImageModal(opts);
               }}
             />
@@ -398,15 +420,16 @@ export const Field = ({
             aiType="paragraph"
             datatype={fieldData?.datatype}
             editorType={editorType}
-            onEditorChange={(value) => setEditorType(value)}
+            onEditorChange={(value: EditorType) => setEditorType(value)}
           >
             <FieldTypeEditor
+              // @ts-ignore component not typed
               name={name}
               value={value}
               version={version}
               onChange={onChange}
               datatype={datatype}
-              mediaBrowser={(opts) => {
+              mediaBrowser={(opts: any) => {
                 setImageModal(opts);
               }}
               editor={editorType}
@@ -419,13 +442,10 @@ export const Field = ({
     case "files":
     case "images":
       const images = useMemo(
-        () => (value || "").split(",").filter((el) => el),
+        () => (value || "").split(",").filter((el: string) => el),
         [value]
       );
-      const mediaAppProps = {};
-      if (settings && settings.group_id && settings.group_id !== "0") {
-        mediaAppProps.groupID = settings.group_id;
-      }
+
       return (
         <>
           <FieldShell settings={fieldData} missingRequired={missingRequired}>
@@ -438,10 +458,11 @@ export const Field = ({
               )}
               onChange={onChange}
               value={value}
-              resolveImage={(zuid, width, height) =>
+              resolveImage={(zuid: string, width: string, height: string) =>
+                // @ts-ignore
                 `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
               }
-              mediaBrowser={(opts) => {
+              mediaBrowser={(opts: any) => {
                 setImageModal(opts);
               }}
             />
@@ -458,7 +479,7 @@ export const Field = ({
                     overflow: "hidden",
                   },
                 }}
-                onClose={() => setImageModal()}
+                onClose={() => setImageModal(null)}
               >
                 <IconButton
                   sx={{
@@ -466,7 +487,7 @@ export const Field = ({
                     right: 5,
                     top: 0,
                   }}
-                  onClick={() => setImageModal()}
+                  onClick={() => setImageModal(null)}
                 >
                   <CloseIcon sx={{ color: "common.white" }} />
                 </IconButton>
@@ -481,7 +502,7 @@ export const Field = ({
                   }
                   addImagesCallback={(images) => {
                     imageModal.callback(images);
-                    setImageModal();
+                    setImageModal(null);
                   }}
                 />
               </Dialog>
@@ -605,7 +626,7 @@ export const Field = ({
         // insert placeholder
         internalLinkOptions.unshift({
           value: value,
-          text: `Selected item not found: ${value}`,
+          html: `Selected item not found: ${value}`,
         });
       }
 
@@ -617,6 +638,7 @@ export const Field = ({
       return (
         <FieldShell settings={fieldData} missingRequired={missingRequired}>
           <FieldTypeInternalLink
+            // @ts-ignore component not typed
             name={name}
             value={value}
             onChange={onChange}
@@ -635,7 +657,7 @@ export const Field = ({
         );
       }, [allLanguages.length, relatedModelZUID, langID]);
 
-      let oneToOneOptions = useMemo(() => {
+      let oneToOneOptions: OneToManyOptions[] = useMemo(() => {
         return [
           {
             inputLabel: "- None -",
@@ -667,7 +689,6 @@ export const Field = ({
       ) {
         //the related option is not in the array, we need to insert it
         oneToOneOptions.unshift({
-          filterValue: value,
           value: value,
           inputLabel: `Selected item not found: ${value}`,
           component: (
@@ -714,7 +735,7 @@ export const Field = ({
       );
 
     case "one_to_many":
-      const oneToManyOptions = useMemo(() => {
+      const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
         return resolveRelatedOptions(
           allFields,
           allItems,
@@ -753,14 +774,14 @@ export const Field = ({
                 value
                   ?.split(",")
                   ?.map(
-                    (value) =>
+                    (value: any) =>
                       oneToManyOptions?.find(
                         (options) => options.value === value
                       ) || { value, inputLabel: value, component: value }
                   )) ||
               []
             }
-            onChange={(_, options) =>
+            onChange={(_, options: OneToManyOptions[]) =>
               onChange(options.map((option) => option.value).join(","), name)
             }
             options={oneToManyOptions}
@@ -815,6 +836,7 @@ export const Field = ({
           missingRequired={missingRequired}
         >
           <FieldTypeCurrency
+            // @ts-ignore component not typed
             name={name}
             placeholder="0.00"
             value={value}
@@ -845,7 +867,7 @@ export const Field = ({
             <FieldTypeDate
               name={name}
               required={required}
-              value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
+              value={value ?? null}
               inputFormat="yyyy-MM-dd"
               onChange={(date) => onDateChange(date, name, datatype)}
             />
@@ -863,7 +885,7 @@ export const Field = ({
             <FieldTypeDateTime
               name={name}
               required={required}
-              value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
+              value={value ?? null}
               inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
               onChange={(date) => onDateTimeChange(date, name, datatype)}
             />
