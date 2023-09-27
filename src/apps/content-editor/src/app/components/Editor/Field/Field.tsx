@@ -65,6 +65,10 @@ import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 import { AppState } from "../../../../../../../shell/store/types";
+import {
+  ContentItem,
+  FieldSettings,
+} from "../../../../../../../shell/services/types";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -185,6 +189,22 @@ const resolveRelatedOptions = (
 const getSelectedLang = (langs: any, langID: any) =>
   langs.find((lang: any) => lang.ID === langID).code;
 
+type FieldProps = {
+  ZUID: string;
+  contentModelZUID: string;
+  item: Partial<ContentItem> & { dirty: boolean };
+  datatype: string;
+  required: boolean;
+  settings: FieldSettings;
+  label: string;
+  name: string;
+  relatedFieldZUID: string;
+  relatedModelZUID: string;
+  langID: number;
+  onChange: (value: any, name: string, datatype?: string) => void;
+  onSave: () => void;
+  missingRequired: boolean;
+};
 export const Field = ({
   ZUID,
   contentModelZUID,
@@ -193,7 +213,6 @@ export const Field = ({
   required,
   settings,
   label,
-  description,
   name,
   relatedFieldZUID,
   relatedModelZUID,
@@ -201,7 +220,7 @@ export const Field = ({
   onChange,
   onSave,
   missingRequired,
-}: any) => {
+}: FieldProps) => {
   const dispatch = useDispatch();
   const allItems = useSelector((state: AppState) => state.content);
   const allFields = useSelector((state: AppState) => state.fields);
@@ -209,7 +228,7 @@ export const Field = ({
   const { data: fields } = useGetContentModelFieldsQuery(contentModelZUID);
 
   const [imageModal, setImageModal] = useState(null);
-  const [editorType, setEditorType] = useState<EditorType>(datatype);
+  const [editorType, setEditorType] = useState<EditorType>();
 
   const value = item?.data?.[name];
   const version = item?.meta?.version;
@@ -272,7 +291,7 @@ export const Field = ({
         <AIFieldShell
           name={fieldData?.name}
           label={fieldData?.label}
-          valueLength={value?.length ?? 0}
+          valueLength={(value as string)?.length ?? 0}
           settings={fieldData}
           onChange={(evt: ChangeEvent<HTMLInputElement>) =>
             onChange(evt.target.value, name)
@@ -293,7 +312,7 @@ export const Field = ({
       return (
         <FieldShell
           settings={fieldData}
-          valueLength={value?.length ?? 0}
+          valueLength={(value as string)?.length ?? 0}
           missingRequired={missingRequired}
         >
           <TextField
@@ -308,7 +327,7 @@ export const Field = ({
       return (
         <FieldShell
           settings={fieldData}
-          valueLength={value?.length ?? 0}
+          valueLength={(value as string)?.length ?? 0}
           missingRequired={missingRequired}
           maxLength={2000}
           withLengthCounter
@@ -327,7 +346,7 @@ export const Field = ({
       return (
         <FieldShell
           settings={fieldData}
-          valueLength={value?.length ?? 0}
+          valueLength={(value as string)?.length ?? 0}
           missingRequired={missingRequired}
         >
           <FieldTypeUUID
@@ -345,7 +364,7 @@ export const Field = ({
         <AIFieldShell
           name={fieldData?.name}
           label={fieldData?.label}
-          valueLength={value?.length ?? 0}
+          valueLength={(value as string)?.length ?? 0}
           settings={fieldData}
           onChange={(evt: ChangeEvent<HTMLInputElement>) =>
             onChange(evt.target.value, name)
@@ -372,7 +391,7 @@ export const Field = ({
           <AIFieldShell
             name={fieldData?.name}
             label={fieldData?.label}
-            valueLength={value?.length ?? 0}
+            valueLength={(value as string)?.length ?? 0}
             settings={fieldData}
             onChange={onChange}
             missingRequired={missingRequired}
@@ -413,7 +432,7 @@ export const Field = ({
           <AIFieldShell
             name={fieldData?.name}
             label={fieldData?.label}
-            valueLength={value?.length ?? 0}
+            valueLength={(value as string)?.length ?? 0}
             settings={fieldData}
             onChange={onChange}
             missingRequired={missingRequired}
@@ -442,7 +461,7 @@ export const Field = ({
     case "files":
     case "images":
       const images = useMemo(
-        () => (value || "").split(",").filter((el: string) => el),
+        () => ((value as string) || "").split(",").filter((el: string) => el),
         [value]
       );
 
@@ -625,7 +644,7 @@ export const Field = ({
       ) {
         // insert placeholder
         internalLinkOptions.unshift({
-          value: value,
+          value: value as string,
           html: `Selected item not found: ${value}`,
         });
       }
@@ -689,7 +708,7 @@ export const Field = ({
       ) {
         //the related option is not in the array, we need to insert it
         oneToOneOptions.unshift({
-          value: value,
+          value: value as string,
           inputLabel: `Selected item not found: ${value}`,
           component: (
             <span>
@@ -771,7 +790,7 @@ export const Field = ({
             name={name}
             value={
               (value &&
-                value
+                (value as string)
                   ?.split(",")
                   ?.map(
                     (value: any) =>
@@ -867,7 +886,7 @@ export const Field = ({
             <FieldTypeDate
               name={name}
               required={required}
-              value={value ?? null}
+              value={value ? new Date(value) : null}
               inputFormat="yyyy-MM-dd"
               onChange={(date) => onDateChange(date, name, datatype)}
             />
@@ -885,7 +904,7 @@ export const Field = ({
             <FieldTypeDateTime
               name={name}
               required={required}
-              value={value ?? null}
+              value={value ? new Date(value) : null}
               inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
               onChange={(date) => onDateTimeChange(date, name, datatype)}
             />
