@@ -115,7 +115,7 @@ const LinkOption = memo(
   }
 );
 
-function sortTitle(a: any, b: any) {
+const sortTitle = (a: any, b: any) => {
   const nameA = String(a.text) && String(a.text).toUpperCase(); // ignore upper and lowercase
   const nameB = String(b.text) && String(b.text).toUpperCase(); // ignore upper and lowercase
   if (nameA < nameB) {
@@ -126,8 +126,9 @@ function sortTitle(a: any, b: any) {
   }
   // names must be equal
   return 0;
-}
-function sortHTML(a: any, b: any) {
+};
+
+const sortHTML = (a: any, b: any) => {
   const nameA = String(a.html) && String(a.html).toUpperCase(); // ignore upper and lowercase
   const nameB = String(b.html) && String(b.html).toUpperCase(); // ignore upper and lowercase
   if (nameA < nameB) {
@@ -138,7 +139,7 @@ function sortHTML(a: any, b: any) {
   }
   // names must be equal
   return 0;
-}
+};
 
 const resolveRelatedOptions = (
   fields: Record<string, ContentModelField>,
