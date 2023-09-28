@@ -72,35 +72,9 @@ import {
   Language,
 } from "../../../../../../../shell/services/types";
 import { ResolvedOption } from "./ResolvedOption";
+import { LinkOption } from "./LinkOption";
 
 const AIFieldShell = withAI(FieldShell);
-
-// NOTE: Componetized so it can be memoized for input/render perf
-const LinkOption = memo(
-  ({ modelZUID, itemZUID }: { modelZUID: string; itemZUID: string }) => {
-    return (
-      <>
-        <FontAwesomeIcon icon={faExclamationTriangle} />
-        &nbsp;
-        <AppLink to={`/content/${modelZUID}/${itemZUID}`}>{itemZUID}</AppLink>
-        <strong>&nbsp;is missing a meta title</strong>
-      </>
-    );
-  }
-);
-
-const sortTitle = (a: any, b: any) => {
-  const nameA = String(a.text) && String(a.text).toUpperCase(); // ignore upper and lowercase
-  const nameB = String(b.text) && String(b.text).toUpperCase(); // ignore upper and lowercase
-  if (nameA < nameB) {
-    return -1;
-  }
-  if (nameA > nameB) {
-    return 1;
-  }
-  // names must be equal
-  return 0;
-};
 
 const sortHTML = (a: any, b: any) => {
   const nameA = String(a.html) && String(a.html).toUpperCase(); // ignore upper and lowercase
@@ -170,7 +144,7 @@ const resolveRelatedOptions = (
         ),
       };
     })
-    .sort(sortTitle);
+    .sort((a, b) => (a.inputLabel > b.inputLabel ? 1 : -1));
 };
 
 const getSelectedLang = (langs: Language[], langID: number) =>
@@ -233,7 +207,7 @@ export const Field = ({
     }
   }, []);
 
-  function renderMediaModal() {
+  const renderMediaModal = () => {
     return ReactDOM.createPortal(
       <MemoryRouter>
         <Dialog
@@ -270,7 +244,7 @@ export const Field = ({
       </MemoryRouter>,
       document.getElementById("modalMount")
     );
-  }
+  };
 
   switch (datatype) {
     case "text":
