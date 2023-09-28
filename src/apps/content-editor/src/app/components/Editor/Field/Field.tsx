@@ -71,35 +71,9 @@ import {
   FieldSettings,
   Language,
 } from "../../../../../../../shell/services/types";
+import { ResolvedOption } from "./ResolvedOption";
 
 const AIFieldShell = withAI(FieldShell);
-
-// NOTE: Componetized so it can be memoized for input/render perf
-const ResolvedOption = memo(
-  ({
-    itemZUID,
-    modelZUID,
-    html,
-  }: {
-    itemZUID: string;
-    modelZUID: string;
-    html: any;
-  }) => {
-    return (
-      <span className={styles.ResolvedOption}>
-        <span onClick={(evt) => evt.stopPropagation()}>
-          <AppLink
-            className={styles.relatedItemLink}
-            to={`/content/${modelZUID}/${itemZUID}`}
-          >
-            <FontAwesomeIcon icon={faEdit} />
-          </AppLink>
-        </span>
-        &nbsp;{html}
-      </span>
-    );
-  }
-);
 
 // NOTE: Componetized so it can be memoized for input/render perf
 const LinkOption = memo(
