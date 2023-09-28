@@ -58,8 +58,6 @@ export default memo(function Editor({
   };
 
   const onChange = useCallback((value, name) => {
-    // console.log(value, name);
-    if (value === null || name === null) return;
     if (!name) {
       throw new Error("Input is missing name attribute");
     }

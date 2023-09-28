@@ -692,7 +692,7 @@ export const Field = ({
         return [
           {
             inputLabel: "- None -",
-            value: "0",
+            value: null,
             component: "- None -",
           },
           ...resolveRelatedOptions(
@@ -713,11 +713,7 @@ export const Field = ({
         value,
       ]);
 
-      if (
-        value &&
-        value != "0" &&
-        !oneToOneOptions.find((opt) => opt.value === value)
-      ) {
+      if (value && !oneToOneOptions.find((opt) => opt.value === value)) {
         //the related option is not in the array, we need to insert it
         oneToOneOptions.unshift({
           value: value as string,
@@ -750,16 +746,14 @@ export const Field = ({
             options={oneToOneOptions}
             onOpen={onOneToOneOpen}
             startAdornment={
-              value &&
-              value !== "0" && (
+              value && (
                 <AppLink to={`/content/${relatedModelZUID}/${value}`}>
                   <FontAwesomeIcon icon={faEdit} />
                 </AppLink>
               )
             }
             endAdornment={
-              value &&
-              value !== "0" && <em>{getSelectedLang(allLanguages, langID)}</em>
+              value && <em>{getSelectedLang(allLanguages, langID)}</em>
             }
           />
         </FieldShell>
@@ -812,9 +806,12 @@ export const Field = ({
                   )) ||
               []
             }
-            onChange={(_, options: OneToManyOptions[]) =>
-              onChange(options.map((option) => option.value).join(","), name)
-            }
+            onChange={(_, options: OneToManyOptions[]) => {
+              const selectedOptions = options?.length
+                ? options.map((option) => option.value).join(",")
+                : null;
+              onChange(selectedOptions, name);
+            }}
             options={oneToManyOptions}
             onOpen={onOneToManyOpen}
             renderTags={(tags, getTagProps) =>
