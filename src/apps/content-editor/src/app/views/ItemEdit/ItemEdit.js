@@ -42,6 +42,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import { ItemEditHeader } from "./components/ItemEditHeader";
 import { LayoutsWrapper } from "./LayoutsWrapper";
+import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -92,6 +93,9 @@ export default function ItemEdit() {
   const [saving, setSaving] = useState(false);
   const [notFound, setNotFound] = useState("");
   const [missingRequired, setMissingRequired] = useState([]);
+
+  const { isLoading: isLoadingFields } =
+    useGetContentModelFieldsQuery(modelZUID);
 
   useEffect(() => {
     setNotFound("");
@@ -259,7 +263,9 @@ export default function ItemEdit() {
         <NotFound message={notFound} />
       ) : (
         <WithLoader
-          condition={!loading && item && Object.keys(item).length}
+          condition={
+            !loading && item && Object.keys(item).length && !isLoadingFields
+          }
           message={
             model?.label ? `Loading ${model.label} Content` : "Loading Content"
           }
@@ -388,7 +394,6 @@ export default function ItemEdit() {
                     itemZUID={itemZUID}
                     item={item}
                     items={items}
-                    fields={fields}
                     user={user}
                     onSave={save}
                     dispatch={dispatch}
