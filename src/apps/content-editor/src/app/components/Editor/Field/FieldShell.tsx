@@ -28,6 +28,7 @@ const EditorTypes: Record<EditorType, string> = {
   article_writer: "Inline",
   html: "HTML",
 };
+export type Error = "MISSING_REQUIRED" | "EXCEEDING_MAXLENGTH";
 // const Errors: Record<string, string> = {
 //   MISSING_REQUIRED: "",
 //   EXCEEDING_MAXLENGTH: "",
@@ -44,7 +45,7 @@ type FieldShellProps = {
   editorType?: EditorType;
   customTooltip?: string;
   children: JSX.Element;
-  errors: string[];
+  errors: Error[];
 };
 export const FieldShell = ({
   settings,
@@ -54,26 +55,28 @@ export const FieldShell = ({
   withLengthCounter = false,
   onEditorChange,
   editorType = "markdown",
-  missingRequired,
   customTooltip,
   children,
   errors,
 }: FieldShellProps) => {
   // console.log("re-rendered text field");
-  const [error, setError] = useState("");
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
-  // useEffect(() => {
-  //   if (valueLength > maxLength && withLengthCounter) {
-  //     const amountExceeded = valueLength - maxLength;
+  const getErrorMessage = (errors: Error[]) => {
+    if (errors?.length) {
+      const errorCode = errors[errors.length - 1];
 
-  //     setError(`Exceeding by ${amountExceeded} characters.`);
-  //     // } else if (!valueLength && missingRequired) {
-  //     //   setError("Required Field. Please enter a value.");
-  //     // } else {
-  //     //   setError("");
-  //   }
-  // }, [valueLength, missingRequired]);
+      if (errorCode === "MISSING_REQUIRED") {
+        return "Required Field. Please enter a value.";
+      }
+
+      if (errorCode === "EXCEEDING_MAXLENGTH") {
+        return "xxx";
+      }
+    }
+
+    return "";
+  };
 
   return (
     <Stack gap={0.5}>
@@ -141,7 +144,7 @@ export const FieldShell = ({
       {children}
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="body2" color="error">
-          {errors}
+          {getErrorMessage(errors)}
         </Typography>
         {maxLength && withLengthCounter && (
           <Typography variant="body2" color="text.disabled">

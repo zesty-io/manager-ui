@@ -9,7 +9,7 @@ import {
   fetchItems,
   searchItems,
 } from "../../../../../../../shell/store/content";
-import { EditorType, FieldShell } from "./FieldShell";
+import { EditorType, FieldShell, Error } from "./FieldShell";
 
 import {
   ToggleButtonGroup,
@@ -157,7 +157,7 @@ type FieldProps = {
   langID: number;
   onChange: (value: any, name: string, datatype?: string) => void;
   onSave: () => void;
-  errors: string[];
+  errors: Error[];
 };
 export const Field = ({
   ZUID,
