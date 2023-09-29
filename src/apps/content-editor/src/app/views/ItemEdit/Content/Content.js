@@ -62,7 +62,6 @@ export default function Content(props) {
             model={props.model}
             itemZUID={props.itemZUID}
             item={props.item}
-            fields={props.fields}
             dispatch={props.dispatch}
             isDirty={props.item.dirty}
             onSave={props.onSave}

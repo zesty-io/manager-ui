@@ -44,16 +44,6 @@ import { ItemEditHeader } from "./components/ItemEditHeader";
 import { LayoutsWrapper } from "./LayoutsWrapper";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 
-const selectSortedModelFields = createSelector(
-  (state) => state.fields,
-  (_, modelZUID) => modelZUID,
-  (fields, modelZUID) =>
-    Object.keys(fields)
-      .filter((fieldZUID) => fields[fieldZUID].contentModelZUID === modelZUID)
-      .map((fieldZUID) => fields[fieldZUID])
-      .sort((a, b) => a.sort - b.sort)
-);
-
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
   (_, itemZUID) => itemZUID,
@@ -78,9 +68,6 @@ export default function ItemEdit() {
   const item = useSelector((state) => state.content[itemZUID]);
   const items = useSelector((state) => state.content);
   const model = useSelector((state) => state.models[modelZUID]);
-  const fields = useSelector((state) =>
-    selectSortedModelFields(state, modelZUID)
-  );
   const tags = useSelector((state) => selectItemHeadTags(state, itemZUID));
   const languages = useSelector((state) => state.languages);
   const user = useSelector((state) => state.user);
@@ -96,7 +83,7 @@ export default function ItemEdit() {
     []
   );
 
-  const { isLoading: isLoadingFields } =
+  const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
 
   useEffect(() => {
@@ -401,6 +388,7 @@ export default function ItemEdit() {
                     instance={instance}
                     modelZUID={modelZUID}
                     model={model}
+                    fields={fields}
                     itemZUID={itemZUID}
                     item={item}
                     items={items}
