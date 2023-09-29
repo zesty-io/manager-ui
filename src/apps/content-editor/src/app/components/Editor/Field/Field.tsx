@@ -157,7 +157,7 @@ type FieldProps = {
   langID: number;
   onChange: (value: any, name: string, datatype?: string) => void;
   onSave: () => void;
-  missingRequired: boolean;
+  errors: string[];
 };
 export const Field = ({
   ZUID,
@@ -173,7 +173,7 @@ export const Field = ({
   langID,
   onChange,
   onSave,
-  missingRequired,
+  errors,
 }: FieldProps) => {
   const dispatch = useDispatch();
   const allItems = useSelector((state: AppState) => state.content);
@@ -251,7 +251,7 @@ export const Field = ({
             onChange(evt.target.value, name)
           }
           withLengthCounter
-          missingRequired={missingRequired}
+          errors={errors}
           aiType="text"
         >
           <TextField
@@ -267,7 +267,7 @@ export const Field = ({
         <FieldShell
           settings={fieldData}
           valueLength={(value as string)?.length ?? 0}
-          missingRequired={missingRequired}
+          errors={errors}
         >
           <TextField
             value={value}
@@ -282,7 +282,7 @@ export const Field = ({
         <FieldShell
           settings={fieldData}
           valueLength={(value as string)?.length ?? 0}
-          missingRequired={missingRequired}
+          errors={errors}
           maxLength={2000}
           withLengthCounter
         >
@@ -301,7 +301,7 @@ export const Field = ({
         <FieldShell
           settings={fieldData}
           valueLength={(value as string)?.length ?? 0}
-          missingRequired={missingRequired}
+          errors={errors}
         >
           <FieldTypeUUID
             // @ts-ignore component not typed
@@ -324,7 +324,7 @@ export const Field = ({
             onChange(evt.target.value, name)
           }
           withLengthCounter
-          missingRequired={missingRequired}
+          errors={errors}
           aiType="paragraph"
           maxLength={16000}
         >
@@ -348,7 +348,7 @@ export const Field = ({
             valueLength={(value as string)?.length ?? 0}
             settings={fieldData}
             onChange={onChange}
-            missingRequired={missingRequired}
+            errors={errors}
             aiType="paragraph"
             datatype={fieldData?.datatype}
           >
@@ -389,7 +389,7 @@ export const Field = ({
             valueLength={(value as string)?.length ?? 0}
             settings={fieldData}
             onChange={onChange}
-            missingRequired={missingRequired}
+            errors={errors}
             aiType="paragraph"
             datatype={fieldData?.datatype}
             editorType={editorType}
@@ -421,7 +421,7 @@ export const Field = ({
 
       return (
         <>
-          <FieldShell settings={fieldData} missingRequired={missingRequired}>
+          <FieldShell settings={fieldData} errors={errors}>
             <FieldTypeImage
               images={images}
               name={name}
@@ -488,7 +488,7 @@ export const Field = ({
       if (settings.options) {
         const binaryFieldOpts = Object.values(settings.options);
         return (
-          <FieldShell settings={fieldData} missingRequired={missingRequired}>
+          <FieldShell settings={fieldData} errors={errors}>
             <ToggleButtonGroup
               color="secondary"
               size="small"
@@ -531,7 +531,7 @@ export const Field = ({
       }, [settings.options]);
 
       return (
-        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+        <FieldShell settings={fieldData} errors={errors}>
           <Select
             name={name}
             variant="outlined"
@@ -609,7 +609,7 @@ export const Field = ({
       );
 
       return (
-        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+        <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeInternalLink
             // @ts-ignore component not typed
             name={name}
@@ -677,7 +677,7 @@ export const Field = ({
       }
 
       return (
-        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+        <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeOneToOne
             name={name}
             value={
@@ -733,7 +733,7 @@ export const Field = ({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       return (
-        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+        <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeOneToMany
             name={name}
             value={
@@ -772,7 +772,7 @@ export const Field = ({
     case "color":
       return (
         <Box width={300}>
-          <FieldShell settings={fieldData} missingRequired={missingRequired}>
+          <FieldShell settings={fieldData} errors={errors}>
             <FieldTypeColor
               name={name}
               value={value || "#FFFFFF"}
@@ -784,7 +784,7 @@ export const Field = ({
 
     case "number":
       return (
-        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+        <FieldShell settings={fieldData} errors={errors}>
           <TextField
             size="small"
             variant="outlined"
@@ -803,7 +803,7 @@ export const Field = ({
         <FieldShell
           settings={fieldData}
           customTooltip={`View this value in different currencies based upon your locale "${window.navigator.language}"`}
-          missingRequired={missingRequired}
+          errors={errors}
         >
           <FieldTypeCurrency
             // @ts-ignore component not typed
@@ -832,7 +832,7 @@ export const Field = ({
       }, []);
 
       return (
-        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+        <FieldShell settings={fieldData} errors={errors}>
           <Box width={360}>
             <FieldTypeDate
               name={name}
@@ -850,7 +850,7 @@ export const Field = ({
         onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
       }, []);
       return (
-        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+        <FieldShell settings={fieldData} errors={errors}>
           <Box width={360}>
             <FieldTypeDateTime
               name={name}
@@ -865,7 +865,7 @@ export const Field = ({
 
     case "sort":
       return (
-        <FieldShell settings={fieldData} missingRequired={missingRequired}>
+        <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeSort
             sx={{ maxWidth: "200px" }}
             name={name}

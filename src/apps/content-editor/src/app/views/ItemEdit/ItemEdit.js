@@ -92,7 +92,9 @@ export default function ItemEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notFound, setNotFound] = useState("");
-  const [missingRequired, setMissingRequired] = useState([]);
+  const [missingRequiredFieldNames, setMissingRequiredFieldNames] = useState(
+    []
+  );
 
   const { isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
@@ -198,7 +200,15 @@ export default function ItemEdit() {
     try {
       const res = await dispatch(saveItem(itemZUID));
       if (res.err === "MISSING_REQUIRED") {
-        setMissingRequired(res.missingRequired ?? []);
+        const missingRequiredFieldNames = res.missingRequired?.reduce(
+          (acc, curr) => {
+            acc = [curr.name, ...acc];
+            return acc;
+          },
+          []
+        );
+        setMissingRequiredFieldNames(missingRequiredFieldNames);
+
         dispatch(
           notify({
             message: `You are missing data in ${res.missingRequired.map(
@@ -399,7 +409,7 @@ export default function ItemEdit() {
                     dispatch={dispatch}
                     loading={loading}
                     saving={saving}
-                    missingRequired={missingRequired}
+                    missingRequiredFieldNames={missingRequiredFieldNames}
                   />
                 )}
               />

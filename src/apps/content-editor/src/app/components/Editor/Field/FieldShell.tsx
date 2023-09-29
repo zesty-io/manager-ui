@@ -44,6 +44,7 @@ type FieldShellProps = {
   editorType?: EditorType;
   customTooltip?: string;
   children: JSX.Element;
+  errors: string[];
 };
 export const FieldShell = ({
   settings,
@@ -56,24 +57,23 @@ export const FieldShell = ({
   missingRequired,
   customTooltip,
   children,
+  errors,
 }: FieldShellProps) => {
-  console.log("re-rendered text field");
+  // console.log("re-rendered text field");
   const [error, setError] = useState("");
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (valueLength > maxLength) {
-      if (withLengthCounter) {
-        const amountExceeded = valueLength - maxLength;
+  // useEffect(() => {
+  //   if (valueLength > maxLength && withLengthCounter) {
+  //     const amountExceeded = valueLength - maxLength;
 
-        setError(`Exceeding by ${amountExceeded} characters.`);
-      }
-    } else if (!valueLength && missingRequired) {
-      setError("Required Field. Please enter a value.");
-    } else {
-      setError("");
-    }
-  }, [valueLength, missingRequired]);
+  //     setError(`Exceeding by ${amountExceeded} characters.`);
+  //     // } else if (!valueLength && missingRequired) {
+  //     //   setError("Required Field. Please enter a value.");
+  //     // } else {
+  //     //   setError("");
+  //   }
+  // }, [valueLength, missingRequired]);
 
   return (
     <Stack gap={0.5}>
@@ -141,7 +141,7 @@ export const FieldShell = ({
       {children}
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="body2" color="error">
-          {error}
+          {errors}
         </Typography>
         {maxLength && withLengthCounter && (
           <Typography variant="body2" color="text.disabled">
