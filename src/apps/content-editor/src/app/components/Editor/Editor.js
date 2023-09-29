@@ -15,6 +15,13 @@ import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/
 
 import styles from "./Editor.less";
 import { cloneDeep } from "lodash";
+
+export const MaxLengths = {
+  text: 150,
+  link: 2000,
+  textarea: 16000,
+};
+
 export default memo(function Editor({
   active,
   scrolled,
@@ -37,6 +44,7 @@ export default memo(function Editor({
   }, [active]);
 
   useEffect(() => {
+    // Show the required field error message
     if (missingRequiredFieldNames?.length) {
       const errors = cloneDeep(fieldErrors);
 
@@ -91,20 +99,34 @@ export default memo(function Editor({
         throw new Error("Input is missing name attribute");
       }
 
-      // console.log(
-      //   name,
-      //   activeFields.find((field) => field.name === name)
-      // );
-
       const isFieldRequired = activeFields.find(
         (field) => field.name === name
       )?.required;
+      const fieldDatatype = activeFields.find(
+        (field) => field.name === name
+      )?.datatype;
+      const fieldMaxLength = MaxLengths[fieldDatatype];
 
+      // Remove the required field error message when a value has been added
       if (isFieldRequired && value) {
         const errors = cloneDeep(fieldErrors);
         errors[name] = errors[name]?.filter(
           (error) => error !== "MISSING_REQUIRED"
         );
+
+        setFieldErrors(errors);
+      }
+
+      // Validate character length
+      if (fieldMaxLength) {
+        const errors = cloneDeep(fieldErrors);
+        if (value.length > fieldMaxLength) {
+          errors[name] = [...(errors[name] ?? []), "EXCEEDING_MAXLENGTH"];
+        } else {
+          errors[name] = errors[name]?.filter(
+            (error) => error !== "EXCEEDING_MAXLENGTH"
+          );
+        }
 
         setFieldErrors(errors);
       }
@@ -219,6 +241,7 @@ export default memo(function Editor({
                 item={item}
                 langID={item?.meta?.langID}
                 errors={fieldErrors[field.name]}
+                maxLength={MaxLengths[field.datatype]}
               />
             </div>
           );

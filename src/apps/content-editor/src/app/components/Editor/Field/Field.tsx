@@ -158,6 +158,7 @@ type FieldProps = {
   onChange: (value: any, name: string, datatype?: string) => void;
   onSave: () => void;
   errors: Error[];
+  maxLength: number;
 };
 export const Field = ({
   ZUID,
@@ -174,6 +175,7 @@ export const Field = ({
   onChange,
   onSave,
   errors,
+  maxLength,
 }: FieldProps) => {
   const dispatch = useDispatch();
   const allItems = useSelector((state: AppState) => state.content);
@@ -251,6 +253,7 @@ export const Field = ({
             onChange(evt.target.value, name)
           }
           withLengthCounter
+          maxLength={maxLength}
           errors={errors}
           aiType="text"
         >
@@ -283,7 +286,7 @@ export const Field = ({
           settings={fieldData}
           valueLength={(value as string)?.length ?? 0}
           errors={errors}
-          maxLength={2000}
+          maxLength={maxLength}
           withLengthCounter
         >
           <TextField
@@ -326,7 +329,7 @@ export const Field = ({
           withLengthCounter
           errors={errors}
           aiType="paragraph"
-          maxLength={16000}
+          maxLength={maxLength}
         >
           <TextField
             value={value}

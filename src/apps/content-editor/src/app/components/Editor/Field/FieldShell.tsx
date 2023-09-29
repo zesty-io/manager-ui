@@ -71,7 +71,8 @@ export const FieldShell = ({
       }
 
       if (errorCode === "EXCEEDING_MAXLENGTH") {
-        return "xxx";
+        const amountExceeded = valueLength - maxLength;
+        return `Exceeding by ${amountExceeded} characters.`;
       }
     }
 
