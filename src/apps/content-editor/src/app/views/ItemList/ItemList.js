@@ -670,84 +670,79 @@ export default connect((state, props) => {
         instance={props.instance}
       />
 
-      {!initialLoading && items.length === 1 ? (
-        filter.status !== "all" || filter.filterTerm ? (
-          <div className={styles.TableWrap}>
-            <SetColumns fields={fields} />
-            <div className={styles.FiltersDisplay}>
-              <h1>{`No ${
-                props.model && props.model.label
-              } items are displayed, filters are in place. `}</h1>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={clearFilters}
-                startIcon={<ClearIcon />}
-              >
-                Clear Filters
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className={styles.TableWrap}>
-            <SetColumns fields={fields} />
+      <div className={styles.TableWrap} ref={table}>
+        <WithLoader
+          message={`Loading ${props.model && props.model.label}`}
+          condition={(fields.length && items.length > 1) || !initialLoading}
+          height="80vh"
+        >
+          <PendingEditsModal
+            show={Boolean(props.dirtyItems.length)}
+            title="Unsaved Changes"
+            message="You have unsaved changes that will be lost if you leave this page."
+            saving={saving || initialLoading}
+            onSave={saveItems}
+            onDiscard={() => {
+              props.dispatch({
+                type: "UNMARK_ITEMS_DIRTY",
+                items: props.dirtyItems,
+              });
+              return Promise.resolve();
+            }}
+          />
+
+          <DragScroll height={height} width={width} childRef={list}>
+            <List
+              className={"ItemList"}
+              outerRef={list}
+              overscanCount={20}
+              itemCount={items?.length}
+              itemSize={getRowSize}
+              itemData={{
+                modelZUID: props.modelZUID,
+                model: props.model,
+                items,
+                allItems: props.allItems,
+                fields,
+                allFields: props.allFields,
+                onChange,
+                loadItem,
+                searchItem,
+                sortedBy: filter.sortedBy,
+                onSort,
+                reverseSort: filter.reverseSort,
+              }}
+              height={items?.length > 1 ? height : 55}
+              width="100%"
+              style={{ overflow: items?.length > 1 ? "auto" : "hidden" }}
+            >
+              {RowRender}
+            </List>
+          </DragScroll>
+          {items.length === 1 &&
+            (filter.status !== "all" || filter.filterTerm) && (
+              <div className={styles.FiltersDisplay}>
+                <h1>{`No ${
+                  props.model && props.model.label
+                } items are displayed, filters are in place. `}</h1>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={clearFilters}
+                  startIcon={<ClearIcon />}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            )}
+
+          {items.length === 1 && (
             <h1 className={styles.Display}>{`No ${
               props.model && props.model.label
             } items have been created`}</h1>
-          </div>
-        )
-      ) : (
-        <div className={styles.TableWrap} ref={table}>
-          <WithLoader
-            message={`Loading ${props.model && props.model.label}`}
-            condition={(fields.length && items.length > 1) || !initialLoading}
-            height="80vh"
-          >
-            <PendingEditsModal
-              show={Boolean(props.dirtyItems.length)}
-              title="Unsaved Changes"
-              message="You have unsaved changes that will be lost if you leave this page."
-              saving={saving || initialLoading}
-              onSave={saveItems}
-              onDiscard={() => {
-                props.dispatch({
-                  type: "UNMARK_ITEMS_DIRTY",
-                  items: props.dirtyItems,
-                });
-                return Promise.resolve();
-              }}
-            />
-
-            <DragScroll height={height} width={width} childRef={list}>
-              <List
-                className={"ItemList"}
-                outerRef={list}
-                overscanCount={20}
-                itemCount={items.length}
-                itemSize={getRowSize}
-                itemData={{
-                  modelZUID: props.modelZUID,
-                  model: props.model,
-                  items,
-                  allItems: props.allItems,
-                  fields,
-                  allFields: props.allFields,
-                  onChange,
-                  loadItem,
-                  searchItem,
-                  sortedBy: filter.sortedBy,
-                  onSort,
-                  reverseSort: filter.reverseSort,
-                }}
-                height={height}
-                width="100%"
-              >
-                {RowRender}
-              </List>
-            </DragScroll>
-          </WithLoader>
-        </div>
-      )}
+          )}
+        </WithLoader>
+      </div>
     </main>
   );
 });
