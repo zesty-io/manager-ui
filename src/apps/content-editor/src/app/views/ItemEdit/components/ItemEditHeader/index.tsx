@@ -22,7 +22,7 @@ import { AppState } from "../../../../../../../../shell/store/types";
 import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
 import { VersionSelector } from "./VersionSelector";
 import { LanguageSelector } from "./LanguageSelector";
-import { ItemEditBreadcrumbs } from "./ItemEditBreadcrumbs";
+import { ContentBreadcrumbs } from "../../../../components/ContentBreadcrumbs";
 import { DuoModeSwitch } from "./DuoModeToggle";
 import { MoreMenu } from "./MoreMenu";
 import { DuplicateItemDialog } from "./DuplicateItemDialog";
@@ -126,7 +126,7 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
             }}
           >
             <Box>
-              <ItemEditBreadcrumbs />
+              <ContentBreadcrumbs />
               <Typography
                 variant="h3"
                 fontWeight="700"
