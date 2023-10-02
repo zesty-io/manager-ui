@@ -41,11 +41,13 @@ import { notify } from "shell/store/notifications";
 
 import styles from "./favicon.less";
 import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
+import { useCreateHeadTagMutation } from "../../../shell/services/instance";
 
 export default connect((state) => {
   return {
     instance: state.instance,
     headTags: state.headTags,
+    ui: state.ui,
   };
 })(function favicon(props) {
   const [hover, setHover] = useState(false);
@@ -59,9 +61,20 @@ export default connect((state) => {
 
   const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
 
+  const [
+    createHeadTag,
+    { isFetching: isUpdatingFavicon, isSuccess: isFaviconUpdated },
+  ] = useCreateHeadTagMutation();
+
   useEffect(() => {
     props.dispatch(fetchHeadTags());
   }, []);
+
+  useEffect(() => {
+    if (isFaviconUpdated) {
+      props.onCloseFaviconModal();
+    }
+  }, [isFaviconUpdated]);
 
   useEffect(() => {
     const tag = Object.values(props.headTags).find((tag) =>
@@ -105,28 +118,21 @@ export default connect((state) => {
   };
 
   const handleSave = () => {
-    setLoading(true);
     if (headtagZUID) {
       onDelete();
     }
-    props
-      .dispatch(
-        createHeadTag({
-          type: "link",
-          resourceZUID: props.instance.ZUID,
-          attributes: {
-            rel: "icon",
-            type: "image/png",
-            sizes: "196x196",
-            href: faviconURL,
-          },
-          sort: 0,
-        })
-      )
-      .finally((_) => {
-        setOpen(false);
-        setLoading(false);
-      });
+
+    createHeadTag({
+      type: "link",
+      resourceZUID: props.instance.ZUID,
+      attributes: {
+        rel: "icon",
+        type: "image/png",
+        sizes: "196x196",
+        href: faviconURL,
+      },
+      sort: 0,
+    });
 
     // TODO make various favicon sizes and create head tags
     // const sizes = [32, 128, 152, 167, 180, 192, 196];
@@ -186,7 +192,7 @@ export default connect((state) => {
   return (
     <>
       <Modal
-        open={open}
+        open={props.ui.isUpdateFaviconModalOpen}
         className={styles.Modal}
         onClose={() => props.onCloseFaviconModal()}
       >
@@ -290,7 +296,7 @@ export default connect((state) => {
             data-cy="faviconSave"
             loadingPosition="start"
             onClick={handleSave}
-            loading={loading}
+            loading={loading || isUpdatingFavicon}
             startIcon={<SaveIcon />}
           >
             Save Favicon
