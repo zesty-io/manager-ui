@@ -68,7 +68,7 @@ export const MoreMenu = () => {
 
   const apiTypeEndpointMap: Partial<Record<ApiType, string>> = {
     "quick-access": `/-/instant/${itemZUID}.json`,
-    "site-generators": item ? `/${item?.web?.pathPart}/?toJSON` : "/?toJSON",
+    "site-generators": item ? `/${item?.web?.path}/?toJSON` : "/?toJSON",
   };
 
   const liveDomain = domains?.find((domain) => domain.branch == "live");
