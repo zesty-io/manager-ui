@@ -9,13 +9,7 @@ import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import LoadingButton from "@mui/lab/LoadingButton";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCog,
-  faBan,
-  faGlobe,
-  faSpinner,
-  faFileImage,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
 
@@ -26,13 +20,11 @@ import {
   ModalHeader,
 } from "@zesty-io/core/Modal";
 
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { MediaApp } from "../../../apps/media/src/app";
 
-import { deleteHeadTag } from "shell/store/headTags";
 import { notify } from "shell/store/notifications";
 
 import styles from "./favicon.less";
