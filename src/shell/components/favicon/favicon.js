@@ -40,6 +40,7 @@ import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
 import {
   useCreateHeadTagMutation,
   useGetHeadTagsQuery,
+  useDeleteHeadTagMutation,
 } from "../../../shell/services/instance";
 
 export default connect((state) => {
@@ -58,16 +59,29 @@ export default connect((state) => {
   const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
 
   const { data: headTags } = useGetHeadTagsQuery();
+  const [deleteHeadTag] = useDeleteHeadTagMutation();
   const [
     createHeadTag,
-    { isLoading: isUpdatingFavicon, isSuccess: isFaviconUpdated },
+    {
+      isLoading: isUpdatingFavicon,
+      isSuccess: isFaviconUpdated,
+      error: faviconUpdateError,
+    },
   ] = useCreateHeadTagMutation();
 
   useEffect(() => {
-    if (isFaviconUpdated) {
+    if (isFaviconUpdated || !!faviconUpdateError) {
       props.onCloseFaviconModal();
+      props.dispatch(
+        notify({
+          message: !!faviconUpdateError
+            ? faviconUpdateError.data.error
+            : "Favicon updated",
+          kind: !!faviconUpdateError ? "warn" : "success",
+        })
+      );
     }
-  }, [isFaviconUpdated]);
+  }, [isFaviconUpdated, faviconUpdateError]);
 
   useEffect(() => {
     if (headTags?.length) {
@@ -81,17 +95,6 @@ export default connect((state) => {
       }
     }
   }, [headTags]);
-
-  const onDelete = () => {
-    props.dispatch(deleteHeadTag(headtagZUID)).then((res) => {
-      props.dispatch(
-        notify({
-          message: res.data.error ? res.data.error : "Favicon updated",
-          kind: res.data.error ? "warn" : "success",
-        })
-      );
-    });
-  };
 
   const handleImage = (zuid) => {
     if (!zuid) {
@@ -110,7 +113,7 @@ export default connect((state) => {
 
   const handleSave = () => {
     if (headtagZUID) {
-      onDelete();
+      deleteHeadTag(headtagZUID);
     }
 
     createHeadTag({

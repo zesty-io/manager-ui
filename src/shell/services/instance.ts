@@ -257,6 +257,13 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["HeadTags"],
     }),
+    deleteHeadTag: builder.mutation<any, string>({
+      query: (headTagZUID) => ({
+        url: `/web/headtags/${headTagZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["HeadTags"],
+    }),
     createContentModelFromTemplate: builder.mutation<
       any,
       { instance_zuid: string; repository: string; parent_zuid: string }
@@ -589,4 +596,5 @@ export const {
   useUpdateContentItemMutation,
   useDeleteContentItemMutation,
   useCreateHeadTagMutation,
+  useDeleteHeadTagMutation,
 } = instanceApi;
