@@ -37,7 +37,7 @@ describe("Content List", () => {
   });
 
   it("Opens the add item view", () => {
-    cy.get("[data-cy=AddItemButton]").click();
-    cy.get("#CreateItemSaveButton").should("exist");
+    cy.getBySelector("AddItemButton").click();
+    cy.getBySelector("CreateItemSaveButton").should("exist");
   });
 });

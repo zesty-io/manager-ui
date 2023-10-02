@@ -22,6 +22,7 @@ import {
   fetchFonts,
   fetchFontsInstalled,
 } from "shell/store/settings";
+import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 const customTheme = createTheme(legacyTheme, {
@@ -116,7 +117,14 @@ export default connect((state) => ({
       <ThemeProvider theme={customTheme}>
         <section className={styles.Settings}>
           <div className={styles.AppWrap}>
-            <SettingsNav />
+            <ResizableContainer
+              id="settingsNav"
+              defaultWidth={220}
+              minWidth={220}
+              maxWidth={360}
+            >
+              <SettingsNav />
+            </ResizableContainer>
             <Box
               className={styles.OverflowWrap}
               sx={{

@@ -11,7 +11,7 @@ export function ReportingApp() {
     <Box sx={{ display: "flex", height: "100%" }}>
       <ResizableContainer
         id="reportsNav"
-        defaultWidth={300}
+        defaultWidth={220}
         minWidth={220}
         maxWidth={360}
       >

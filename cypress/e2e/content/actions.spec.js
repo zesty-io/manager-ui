@@ -130,7 +130,7 @@ describe("Actions in content editor", () => {
     });
 
     cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
-    cy.get("#CreateItemSaveButton").click();
+    cy.getBySelector("CreateItemSaveButton").click();
 
     cy.contains("Created new ", { timeout: 5000 }).should("exist");
   });

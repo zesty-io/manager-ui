@@ -108,6 +108,7 @@ export default class ScheduleFlyout extends Component {
         )
       )
       .finally(() => {
+        this.props.onScheduled?.();
         this.setState({
           scheduling: false,
         });
