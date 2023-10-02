@@ -3,9 +3,9 @@ import { Box, Typography } from "@mui/material";
 import notFound from "../../../public/images/notFoundTransparent.png";
 
 interface Props {
-  title: string;
+  title?: string;
   message: string;
-  button: ReactNode;
+  button?: ReactNode;
 }
 
 export const NotFound: FC<Props> = ({ title, message, button }) => {
@@ -20,9 +20,11 @@ export const NotFound: FC<Props> = ({ title, message, button }) => {
     >
       <Box width="400px">
         <img src={notFound} height="320px" />
-        <Typography sx={{ mt: 8 }} variant="h4" fontWeight={600}>
-          {title}
-        </Typography>
+        {title && (
+          <Typography sx={{ mt: 8 }} variant="h4" fontWeight={600}>
+            {title}
+          </Typography>
+        )}
         <>
           <Typography
             sx={{ mt: 1, mb: 3 }}

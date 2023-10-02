@@ -1,17 +1,17 @@
-import { Box, SvgIcon, Typography } from "@mui/material";
+import { Box, SvgIcon, Typography, Tooltip } from "@mui/material";
 import {
   useGetContentModelQuery,
   useGetContentNavItemsQuery,
-} from "../../../../../../../../shell/services/instance";
+} from "../../../../../shell/services/instance";
 import { Home } from "@zesty-io/material";
 import { useHistory, useParams } from "react-router";
 import { useMemo } from "react";
-import { ContentNavItem } from "../../../../../../../../shell/services/types";
-import { MODEL_ICON } from "../../../../../../../../shell/constants";
+import { ContentNavItem } from "../../../../../shell/services/types";
+import { MODEL_ICON } from "../../../../../shell/constants";
 import { Link } from "react-router-dom";
-import { CustomBreadcrumbs } from "../../../../../../../../shell/components/CustomBreadcrumbs";
+import { CustomBreadcrumbs } from "../../../../../shell/components/CustomBreadcrumbs";
 
-export const ItemEditBreadcrumbs = () => {
+export const ContentBreadcrumbs = () => {
   const { data: nav } = useGetContentNavItemsQuery();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -20,8 +20,17 @@ export const ItemEditBreadcrumbs = () => {
   const history = useHistory();
 
   const breadcrumbData = useMemo(() => {
-    let activeItem = nav?.find((item) => item.ZUID === itemZUID);
+    let activeItem: ContentNavItem;
     const crumbs = [];
+
+    if (itemZUID) {
+      // Edit content item
+      activeItem = nav?.find((item) => item.ZUID === itemZUID);
+    } else {
+      // Create content item
+      activeItem = nav?.find((item) => item.contentModelZUID === modelZUID);
+      crumbs.push(activeItem);
+    }
 
     // If nav item is not found that means that it is part of a dataset so we push that dataset onto the breadcrumb
     if (!activeItem) {
@@ -95,15 +104,27 @@ export const Breadcrumb = ({ contentNavItem }: BreadcrumbProps) => {
   );
 
   return (
-    <Box display="flex" gap={0.5}>
-      <SvgIcon
-        color="action"
-        fontSize="small"
-        component={MODEL_ICON[model?.type]}
-      />
-      <Typography variant="body2" color="text.secondary" noWrap maxWidth={100}>
-        {contentNavItem.label}
-      </Typography>
-    </Box>
+    <Tooltip
+      title={contentNavItem.label}
+      placement="top"
+      enterDelay={800}
+      enterNextDelay={800}
+    >
+      <Box display="flex" gap={0.5}>
+        <SvgIcon
+          color="action"
+          fontSize="small"
+          component={MODEL_ICON[model?.type]}
+        />
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          noWrap
+          maxWidth={100}
+        >
+          {contentNavItem.label}
+        </Typography>
+      </Box>
+    </Tooltip>
   );
 };

@@ -21,6 +21,7 @@ import {
   Script,
   Language,
   Data,
+  StyleCategory,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -525,6 +526,11 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["ContentNav"],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/web/stylesheets/variables/categories/#Get-Variable-Stylesheet-Categories
+    getInstanceStylesCategories: builder.query<StyleCategory[], void>({
+      query: () => `/web/stylesheets/variables/categories`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -568,4 +574,5 @@ export const {
   useGetContentItemVersionsQuery,
   useUpdateContentItemMutation,
   useDeleteContentItemMutation,
+  useGetInstanceStylesCategoriesQuery,
 } = instanceApi;

@@ -82,7 +82,7 @@ export const MediaApp = ({
       >
         <ResizableContainer
           id="mediaNav"
-          defaultWidth={300}
+          defaultWidth={220}
           minWidth={220}
           maxWidth={360}
         >

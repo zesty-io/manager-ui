@@ -141,7 +141,7 @@ export default function ContentEditor() {
             >
               <ResizableContainer
                 id="contentNav"
-                defaultWidth={300}
+                defaultWidth={220}
                 minWidth={220}
                 maxWidth={360}
               >
