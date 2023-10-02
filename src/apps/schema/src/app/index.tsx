@@ -26,7 +26,7 @@ export const SchemaApp = () => {
       >
         <ResizableContainer
           id="schemaNav"
-          defaultWidth={300}
+          defaultWidth={220}
           minWidth={220}
           maxWidth={360}
         >
