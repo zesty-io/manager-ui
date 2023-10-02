@@ -32,26 +32,22 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import { MediaApp } from "../../../apps/media/src/app";
 
-import {
-  fetchHeadTags,
-  createHeadTag,
-  deleteHeadTag,
-} from "shell/store/headTags";
+import { deleteHeadTag } from "shell/store/headTags";
 import { notify } from "shell/store/notifications";
 
 import styles from "./favicon.less";
 import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
-import { useCreateHeadTagMutation } from "../../../shell/services/instance";
+import {
+  useCreateHeadTagMutation,
+  useGetHeadTagsQuery,
+} from "../../../shell/services/instance";
 
 export default connect((state) => {
   return {
     instance: state.instance,
-    headTags: state.headTags,
     ui: state.ui,
   };
 })(function favicon(props) {
-  const [hover, setHover] = useState(false);
-  const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const [faviconZUID, setFaviconZUID] = useState("");
@@ -61,14 +57,11 @@ export default connect((state) => {
 
   const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
 
+  const { data: headTags } = useGetHeadTagsQuery();
   const [
     createHeadTag,
-    { isFetching: isUpdatingFavicon, isSuccess: isFaviconUpdated },
+    { isLoading: isUpdatingFavicon, isSuccess: isFaviconUpdated },
   ] = useCreateHeadTagMutation();
-
-  useEffect(() => {
-    props.dispatch(fetchHeadTags());
-  }, []);
 
   useEffect(() => {
     if (isFaviconUpdated) {
@@ -77,19 +70,17 @@ export default connect((state) => {
   }, [isFaviconUpdated]);
 
   useEffect(() => {
-    const tag = Object.values(props.headTags).find((tag) =>
-      tag.attributes.find(
-        (attr) => attr.key === "sizes" && attr.value === "196x196"
-      )
-    );
-    if (tag) {
-      setHeadTagZUID(tag.ZUID);
+    if (headTags?.length) {
+      const tag = Object.values(headTags).find(
+        (tag) => tag.attributes?.sizes === "196x196"
+      );
+
+      if (tag) {
+        setHeadTagZUID(tag.ZUID);
+        setFaviconURL(tag.attributes?.href);
+      }
     }
-    if (tag) {
-      const attr = tag.attributes.find((attr) => attr.key === "href");
-      setFaviconURL(attr.value);
-    }
-  }, [props.headTags]);
+  }, [headTags]);
 
   const onDelete = () => {
     props.dispatch(deleteHeadTag(headtagZUID)).then((res) => {
