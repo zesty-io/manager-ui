@@ -31,11 +31,12 @@ export default memo(function Editor({
   onSave,
   itemZUID,
   modelZUID,
-  missingRequiredFieldNames,
+  saveClicked,
+  onUpdateFieldErrors,
+  fieldErrors,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
-  const [fieldErrors, setFieldErrors] = useState({});
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
   useEffect(() => {
@@ -43,24 +44,6 @@ export default memo(function Editor({
       scrollToField(active);
     }
   }, [active]);
-
-  useEffect(() => {
-    // Show the required field error message
-    if (missingRequiredFieldNames?.length) {
-      const errors = cloneDeep(fieldErrors);
-
-      missingRequiredFieldNames?.forEach((fieldName) => {
-        errors[fieldName] = {
-          ...(errors[fieldName] ?? {}),
-          MISSING_REQUIRED: true,
-        };
-      });
-
-      setFieldErrors(errors);
-    } else {
-      setFieldErrors([]);
-    }
-  }, [missingRequiredFieldNames]);
 
   const activeFields = useMemo(() => {
     if (fields?.length) {
@@ -134,7 +117,8 @@ export default memo(function Editor({
         }
       }
 
-      setFieldErrors(errors);
+      onUpdateFieldErrors(errors);
+
       // Always dispatch the data update
       dispatch({
         type: "SET_ITEM_DATA",
@@ -223,7 +207,7 @@ export default memo(function Editor({
 
   return (
     <div className={styles.Fields}>
-      <FieldError errors={fieldErrors} fields={activeFields} />
+      {saveClicked && <FieldError errors={fieldErrors} fields={activeFields} />}
       {activeFields.length ? (
         activeFields.map((field) => {
           return (
