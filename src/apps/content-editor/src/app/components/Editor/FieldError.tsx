@@ -31,6 +31,7 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
   }, [errors, fields]);
 
   const hasErrors = fieldErrors?.some((error) => error.errorMessage);
+  const fieldsWithErrors = fieldErrors?.filter((error) => error.errorMessage);
 
   if (!hasErrors) {
     return <></>;
@@ -49,7 +50,7 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
           Item cannot be saved due to invalid field values.
         </Typography>
         <Typography variant="body2">
-          Please correct the following {fieldErrors?.length} fields before
+          Please correct the following {fieldsWithErrors?.length} fields before
           saving:
         </Typography>
         <Box component="ol" ml={2}>
