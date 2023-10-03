@@ -442,7 +442,9 @@ export function saveItem(itemZUID, action = "") {
         items: [itemZUID],
       });
 
-      await dispatch(fetchItem(item.meta.contentModelZUID, itemZUID));
+      if (res.status === 200) {
+        await dispatch(fetchItem(item.meta.contentModelZUID, itemZUID));
+      }
 
       zesty.trigger("PREVIEW_REFRESH");
 
