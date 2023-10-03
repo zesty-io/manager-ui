@@ -19,6 +19,8 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
         errorMessage = "Required Field. Please enter a value.";
       } else if (errors?.EXCEEDING_MAXLENGTH > 0) {
         errorMessage = `Exceeding by ${errors.EXCEEDING_MAXLENGTH} characters.`;
+      } else {
+        errorMessage = "";
       }
 
       return {
@@ -28,11 +30,18 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
     });
   }, [errors, fields]);
 
+  const hasErrors = fieldErrors?.some((error) => error.errorMessage);
+
+  if (!hasErrors) {
+    return <></>;
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Stack
         p={2}
         gap={1}
+        borderRadius={1}
         sx={{ backgroundColor: "red.50", color: "error.dark" }}
       >
         <DangerousRoundedIcon color="inherit" fontSize="small" />
@@ -40,14 +49,19 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
           Item cannot be saved due to invalid field values.
         </Typography>
         <Typography variant="body2">
-          Please correct the following 2 fields before saving:
+          Please correct the following {fieldErrors?.length} fields before
+          saving:
         </Typography>
-        <Box>
-          {fieldErrors?.map((error, index) => (
-            <Typography>
-              {index + 1}. {error.label} - {error.errorMessage}
-            </Typography>
-          ))}
+        <Box component="ol" ml={2}>
+          {fieldErrors?.map((error) => {
+            if (error.errorMessage) {
+              return (
+                <Typography component="li">
+                  {error.label} - {error.errorMessage}
+                </Typography>
+              );
+            }
+          })}
         </Box>
       </Stack>
     </ThemeProvider>

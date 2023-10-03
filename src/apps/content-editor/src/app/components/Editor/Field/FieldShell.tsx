@@ -61,7 +61,7 @@ export const FieldShell = ({
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
   const getErrorMessage = (errors: Error) => {
-    if (errors?.MISSING_REQUIRED) {
+    if (errors?.MISSING_REQUIRED && valueLength === 0) {
       return "Required Field. Please enter a value.";
     }
 

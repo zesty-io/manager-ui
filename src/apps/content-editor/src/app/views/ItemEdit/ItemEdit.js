@@ -9,6 +9,7 @@ import {
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
+import { cloneDeep, has } from "lodash";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -79,9 +80,8 @@ export default function ItemEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notFound, setNotFound] = useState("");
-  const [missingRequiredFieldNames, setMissingRequiredFieldNames] = useState(
-    []
-  );
+  const [saveClicked, setSaveClicked] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
@@ -93,12 +93,26 @@ export default function ItemEdit() {
     // lock item and load all item data
     lockItem(itemZUID);
     load(modelZUID, itemZUID);
+    setSaveClicked(false);
 
     // on unmount, release lock
     return () => {
       releaseLock(itemZUID);
     };
   }, [modelZUID, itemZUID]);
+
+  useEffect(() => {
+    const hasErrors = Object.values(fieldErrors)
+      ?.map((error) => {
+        return Object.values(error) ?? [];
+      })
+      ?.flat()
+      .some((error) => !!error);
+
+    if (!hasErrors) {
+      setSaveClicked(false);
+    }
+  }, [fieldErrors]);
 
   async function lockItem() {
     setCheckingLock(true);
@@ -164,7 +178,6 @@ export default function ItemEdit() {
     } finally {
       if (isMounted.current) {
         setLoading(false);
-        setMissingRequiredFieldNames([]);
       }
     }
   }
@@ -185,6 +198,7 @@ export default function ItemEdit() {
 
   async function save() {
     setSaving(true);
+    setSaveClicked(true);
     try {
       const res = await dispatch(saveItem(itemZUID));
       if (res.err === "MISSING_REQUIRED") {
@@ -195,7 +209,19 @@ export default function ItemEdit() {
           },
           []
         );
-        setMissingRequiredFieldNames(missingRequiredFieldNames);
+
+        if (missingRequiredFieldNames?.length) {
+          const errors = cloneDeep(fieldErrors);
+
+          missingRequiredFieldNames?.forEach((fieldName) => {
+            errors[fieldName] = {
+              ...(errors[fieldName] ?? {}),
+              MISSING_REQUIRED: true,
+            };
+          });
+
+          setFieldErrors(errors);
+        }
 
         dispatch(
           notify({
@@ -217,7 +243,6 @@ export default function ItemEdit() {
         return;
       }
 
-      setMissingRequired([]);
       dispatch(
         notify({
           message: `Saved a new ${
@@ -398,7 +423,11 @@ export default function ItemEdit() {
                     dispatch={dispatch}
                     loading={loading}
                     saving={saving}
-                    missingRequiredFieldNames={missingRequiredFieldNames}
+                    saveClicked={saveClicked}
+                    onUpdateFieldErrors={(errors) => {
+                      setFieldErrors(errors);
+                    }}
+                    fieldErrors={fieldErrors}
                   />
                 )}
               />
