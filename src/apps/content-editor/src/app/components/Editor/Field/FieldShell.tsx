@@ -28,11 +28,10 @@ const EditorTypes: Record<EditorType, string> = {
   article_writer: "Inline",
   html: "HTML",
 };
-export type Error = "MISSING_REQUIRED" | "EXCEEDING_MAXLENGTH";
-// const Errors: Record<string, string> = {
-//   MISSING_REQUIRED: "",
-//   EXCEEDING_MAXLENGTH: "",
-// }
+export type Error = {
+  MISSING_REQUIRED?: boolean;
+  EXCEEDING_MAXLENGTH?: number;
+};
 
 type FieldShellProps = {
   settings: ContentModelField;
@@ -45,7 +44,7 @@ type FieldShellProps = {
   editorType?: EditorType;
   customTooltip?: string;
   children: JSX.Element;
-  errors: Error[];
+  errors: Error;
 };
 export const FieldShell = ({
   settings,
@@ -59,21 +58,15 @@ export const FieldShell = ({
   children,
   errors,
 }: FieldShellProps) => {
-  // console.log("re-rendered text field");
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
-  const getErrorMessage = (errors: Error[]) => {
-    if (errors?.length) {
-      const errorCode = errors[errors.length - 1];
+  const getErrorMessage = (errors: Error) => {
+    if (errors?.MISSING_REQUIRED) {
+      return "Required Field. Please enter a value.";
+    }
 
-      if (errorCode === "MISSING_REQUIRED") {
-        return "Required Field. Please enter a value.";
-      }
-
-      if (errorCode === "EXCEEDING_MAXLENGTH") {
-        const amountExceeded = valueLength - maxLength;
-        return `Exceeding by ${amountExceeded} characters.`;
-      }
+    if (errors?.EXCEEDING_MAXLENGTH > 0) {
+      return `Exceeding by ${errors.EXCEEDING_MAXLENGTH} characters.`;
     }
 
     return "";
@@ -162,7 +155,6 @@ type FieldLabelProps = {
   customTooltip?: string;
 };
 const FieldLabel = memo(({ settings, customTooltip }: FieldLabelProps) => {
-  console.log("re-rendered field label");
   return (
     <Stack direction="row" gap={0.5} alignItems="center">
       <InteractiveTooltip

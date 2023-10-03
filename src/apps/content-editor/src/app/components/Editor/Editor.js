@@ -12,6 +12,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
+import { FieldError } from "./FieldError";
 
 import styles from "./Editor.less";
 import { cloneDeep } from "lodash";
@@ -49,7 +50,10 @@ export default memo(function Editor({
       const errors = cloneDeep(fieldErrors);
 
       missingRequiredFieldNames?.forEach((fieldName) => {
-        errors[fieldName] = [...(errors[fieldName] ?? []), "MISSING_REQUIRED"];
+        errors[fieldName] = {
+          ...(errors[fieldName] ?? {}),
+          MISSING_REQUIRED: true,
+        };
       });
 
       setFieldErrors(errors);
@@ -106,31 +110,29 @@ export default memo(function Editor({
         (field) => field.name === name
       )?.datatype;
       const fieldMaxLength = MaxLengths[fieldDatatype];
+      const errors = cloneDeep(fieldErrors);
 
       // Remove the required field error message when a value has been added
       if (isFieldRequired && value) {
-        const errors = cloneDeep(fieldErrors);
-        errors[name] = errors[name]?.filter(
-          (error) => error !== "MISSING_REQUIRED"
-        );
-
-        setFieldErrors(errors);
+        errors[name] = {
+          ...(errors[name] ?? {}),
+          MISSING_REQUIRED: false,
+        };
       }
 
       // Validate character length
       if (fieldMaxLength) {
-        const errors = cloneDeep(fieldErrors);
         if (value.length > fieldMaxLength) {
-          errors[name] = [...(errors[name] ?? []), "EXCEEDING_MAXLENGTH"];
+          errors[name] = {
+            ...(errors[name] ?? []),
+            EXCEEDING_MAXLENGTH: value.length - fieldMaxLength,
+          };
         } else {
-          errors[name] = errors[name]?.filter(
-            (error) => error !== "EXCEEDING_MAXLENGTH"
-          );
+          errors[name] = { ...(errors[name] ?? []), EXCEEDING_MAXLENGTH: 0 };
         }
-
-        setFieldErrors(errors);
       }
 
+      setFieldErrors(errors);
       // Always dispatch the data update
       dispatch({
         type: "SET_ITEM_DATA",
@@ -219,6 +221,7 @@ export default memo(function Editor({
 
   return (
     <div className={styles.Fields}>
+      <FieldError />
       {activeFields.length ? (
         activeFields.map((field) => {
           return (
