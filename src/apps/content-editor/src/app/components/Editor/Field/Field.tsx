@@ -157,7 +157,7 @@ type FieldProps = {
   langID: number;
   onChange: (value: any, name: string, datatype?: string) => void;
   onSave: () => void;
-  errors: Record<string, Error>;
+  errors: Error;
   maxLength: number;
 };
 export const Field = ({

@@ -164,6 +164,7 @@ export default function ItemEdit() {
     } finally {
       if (isMounted.current) {
         setLoading(false);
+        setMissingRequiredFieldNames([]);
       }
     }
   }

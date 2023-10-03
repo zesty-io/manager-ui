@@ -57,6 +57,8 @@ export default memo(function Editor({
       });
 
       setFieldErrors(errors);
+    } else {
+      setFieldErrors([]);
     }
   }, [missingRequiredFieldNames]);
 
@@ -221,7 +223,7 @@ export default memo(function Editor({
 
   return (
     <div className={styles.Fields}>
-      <FieldError />
+      <FieldError errors={fieldErrors} fields={activeFields} />
       {activeFields.length ? (
         activeFields.map((field) => {
           return (
