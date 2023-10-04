@@ -8,6 +8,7 @@ import {
   Typography,
   Link,
   Tooltip,
+  Select,
 } from "@mui/material";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -16,6 +17,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { ContentModel } from "../../../../../shell/services/types";
 import { useUpdateContentModelMutation } from "../../../../../shell/services/instance";
+import { SelectModelParentInput } from "./SelectModelParentInput";
 
 interface Props {
   model: ContentModel;
@@ -24,6 +26,15 @@ interface Props {
 export const FieldsListRight = ({ model }: Props) => {
   const [description, setDescription] = useState("");
   const [isCopied, setIsCopied] = useState(null);
+  const [newParentZUID, setNewParentZUID] = useState(null);
+  const [showSaveParentModelButton, setshowSaveParentModelButton] =
+    useState(false);
+
+  useEffect(() => {
+    if (model?.parentZUID) {
+      setNewParentZUID(model.parentZUID === "0" ? null : model.parentZUID);
+    }
+  }, [model]);
 
   const [updateContentModel, { isLoading }] = useUpdateContentModelMutation();
 
@@ -140,6 +151,31 @@ export const FieldsListRight = ({ model }: Props) => {
           ),
         }}
       />
+      <Box mt={3}>
+        <SelectModelParentInput
+          modelType={model?.type}
+          value={newParentZUID}
+          onChange={(value) => {
+            setshowSaveParentModelButton(value !== model?.parentZUID);
+            setNewParentZUID(value);
+          }}
+          withTooltip={false}
+          label="Model Parent"
+        />
+        {showSaveParentModelButton && (
+          <LoadingButton
+            color="primary"
+            loading={isLoading}
+            loadingPosition="start"
+            variant="contained"
+            onClick={handleSave}
+            sx={{ mt: 1.5 }}
+          >
+            Save
+          </LoadingButton>
+        )}
+      </Box>
+
       <InputLabel sx={{ mt: 3 }}>
         Description
         <Tooltip
