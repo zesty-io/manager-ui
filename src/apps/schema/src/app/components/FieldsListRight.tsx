@@ -36,13 +36,20 @@ export const FieldsListRight = ({ model }: Props) => {
     }
   }, [model]);
 
-  const [updateContentModel, { isLoading }] = useUpdateContentModelMutation();
+  const [updateContentModel, { isLoading, isSuccess }] =
+    useUpdateContentModelMutation();
 
   useEffect(() => {
     if (model?.description) {
       setDescription(model?.description || "");
     }
   }, [model]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setshowSaveParentModelButton(false);
+    }
+  }, [isSuccess]);
 
   const handleCopyClick = (data: string) => {
     navigator?.clipboard
@@ -58,11 +65,28 @@ export const FieldsListRight = ({ model }: Props) => {
       });
   };
 
-  const handleSave = () => {
-    const body = {
-      ...model,
-      description,
-    };
+  const handleSave = (type: "description" | "parentZUID") => {
+    let body = { ...model };
+
+    switch (type) {
+      case "description":
+        body = {
+          ...body,
+          description,
+        };
+        break;
+
+      case "parentZUID":
+        body = {
+          ...body,
+          parentZUID: newParentZUID,
+        };
+        break;
+
+      default:
+        break;
+    }
+
     updateContentModel({
       ZUID: model.ZUID,
       body,
@@ -166,9 +190,8 @@ export const FieldsListRight = ({ model }: Props) => {
           <LoadingButton
             color="primary"
             loading={isLoading}
-            loadingPosition="start"
             variant="contained"
-            onClick={handleSave}
+            onClick={() => handleSave("parentZUID")}
             sx={{ mt: 1.5 }}
           >
             Save
@@ -202,7 +225,7 @@ export const FieldsListRight = ({ model }: Props) => {
           startIcon={<SaveRoundedIcon />}
           loadingPosition="start"
           variant="contained"
-          onClick={handleSave}
+          onClick={() => handleSave("description")}
           sx={{ mt: 1.5 }}
         >
           Save
