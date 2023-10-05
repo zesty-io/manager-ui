@@ -79,7 +79,7 @@ export const FieldsListRight = ({ model }: Props) => {
       case "parentZUID":
         body = {
           ...body,
-          parentZUID: newParentZUID,
+          parentZUID: newParentZUID ?? "0",
         };
         break;
 
