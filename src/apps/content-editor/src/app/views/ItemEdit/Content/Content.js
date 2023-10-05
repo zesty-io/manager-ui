@@ -45,7 +45,11 @@ export default function Content(props) {
             !showDuoMode && !showSidebar ? "center" : "flex-start",
         }}
       >
-        <Box height="100%" width={showDuoMode ? 412 : 640}>
+        <Box
+          height="100%"
+          width={showDuoMode ? 412 : "unset"}
+          maxWidth={showDuoMode ? "unset" : 640}
+        >
           <Editor
             // active={this.state.makeActive}
             // scrolled={() => this.setState({ makeActive: "" })}
