@@ -39,18 +39,6 @@ describe("Content Specs", () => {
         }
       });
     });
-
-    it("Check Duo Mode Collapsed functionality", () => {
-      cy.getBySelector("DuoModeToggle")
-        .invoke("hasClass", "Mui-checked")
-        .then((hasClass) => {
-          if (hasClass) {
-            cy.get("[data-cy=DuoModeContainer] iframe").should("be.visible");
-          } else {
-            cy.log("Not Selected");
-          }
-        });
-    });
   });
 
   describe("editing content", () => {

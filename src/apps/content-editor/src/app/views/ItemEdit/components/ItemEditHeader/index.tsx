@@ -23,7 +23,6 @@ import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
 import { VersionSelector } from "./VersionSelector";
 import { LanguageSelector } from "./LanguageSelector";
 import { ContentBreadcrumbs } from "../../../../components/ContentBreadcrumbs";
-import { DuoModeSwitch } from "./DuoModeToggle";
 import { MoreMenu } from "./MoreMenu";
 import { DuplicateItemDialog } from "./DuplicateItemDialog";
 import { useState } from "react";
@@ -205,7 +204,6 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
               })}
             </Tabs>
             <Box display="flex" gap={2} alignItems="center">
-              <DuoModeSwitch />
               <LanguageSelector />
               <VersionSelector />
             </Box>

@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
-
+import { Box } from "@mui/material";
 import iphone14 from "../../../../../public/images/iphone-14.png";
 import iphone14cam from "../../../../../public/images/iphone-14-camera.png";
 import iphone14pro from "../../../../../public/images/iphone-14-pro.png";
@@ -88,9 +88,10 @@ export const templates = {
    */
   iphone14: {
     option: (
-      <span>
-        iPhone 14 <small>437x883</small>
-      </span>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <Box>iPhone 14</Box>
+        <Box>437x883</Box>
+      </Box>
     ),
     template: (props) => {
       return (
@@ -139,9 +140,10 @@ export const templates = {
   },
   iphone14pro: {
     option: (
-      <span>
-        iPhone 14 Pro <small>434x883</small>
-      </span>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <Box>iPhone 14 Pro</Box>
+        <Box>437x883</Box>
+      </Box>
     ),
     template: (props) => {
       return (
@@ -190,9 +192,10 @@ export const templates = {
   },
   ipad: {
     option: (
-      <span>
-        iPad Pro <small>1158x1494</small>
-      </span>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <Box>iPad Pro</Box>
+        <Box>1158x1494</Box>
+      </Box>
     ),
     template: (props) => {
       return (
@@ -234,9 +237,10 @@ export const templates = {
   },
   pixel7: {
     option: (
-      <span>
-        Pixel 7 <small>648x1373</small>
-      </span>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <Box>Pixel 7</Box>
+        <Box>648x1373</Box>
+      </Box>
     ),
     template: (props) => {
       return (

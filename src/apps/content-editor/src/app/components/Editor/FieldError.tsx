@@ -33,6 +33,13 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
   const hasErrors = fieldErrors?.some((error) => error.errorMessage);
   const fieldsWithErrors = fieldErrors?.filter((error) => error.errorMessage);
 
+  const handleErrorClick = () => {
+    const firstError = fieldsWithErrors?.[0];
+    const field = fields?.find((field) => field.label === firstError?.label);
+    const fieldElement = document.getElementById(field?.ZUID);
+    fieldElement?.scrollIntoView({ behavior: "smooth" });
+  };
+
   if (!hasErrors) {
     return <></>;
   }
@@ -58,7 +65,17 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
             if (error.errorMessage) {
               return (
                 <Typography component="li">
-                  {error.label} - {error.errorMessage}
+                  <Box
+                    sx={{
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    }}
+                    component="span"
+                    onClick={handleErrorClick}
+                  >
+                    {error.label}
+                  </Box>{" "}
+                  - <i>{error.errorMessage}</i>
                 </Typography>
               );
             }

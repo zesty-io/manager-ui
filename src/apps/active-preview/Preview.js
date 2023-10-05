@@ -1,36 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import cx from "classnames";
-
 import {
   Button,
-  Select,
   Link,
-  TextField,
   MenuItem,
   Box,
   IconButton,
   Menu,
   FormControlLabel,
   Switch,
+  Dialog,
+  Typography,
+  CircularProgress,
 } from "@mui/material";
-import SyncIcon from "@mui/icons-material/Sync";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   LinkRounded,
   RefreshRounded,
   PhoneIphoneRounded,
   OpenInNewRounded,
   CloseRounded,
+  CheckRounded,
+  SaveRounded,
 } from "@mui/icons-material";
-
-import { CopyButton } from "@zesty-io/material";
-
-import { WithLoader } from "@zesty-io/core/WithLoader";
-
-import { Notice } from "@zesty-io/core/Notice";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faEye } from "@fortawesome/free-solid-svg-icons";
 
 // import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
@@ -60,18 +50,35 @@ export function Preview(props) {
   const [version, setVersion] = useState(0);
   const [dirty, setDirty] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   // Track initial version sent. We use this to make a determination
   // on whether current content has changed or the different version was
   // picked for previewing
   const [initialVersion, setInitialVersion] = useState(props.version);
 
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyClick = (data) => {
+    navigator?.clipboard
+      ?.writeText(data)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 5000);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   // Listen for messages
   useEffect(() => {
     function receiveMessage(msg) {
+      setSaving(false);
       // Prevent malicious communication to this window
       if (msg.origin !== window.location.origin) {
-        console.error("Origin mismatch");
         return;
       }
 
@@ -85,7 +92,7 @@ export function Preview(props) {
         if (msg.data.refresh) {
           setRefresh(Date.now());
         }
-        if (msg.data.dirty) {
+        if (Object(msg.data).hasOwnProperty("dirty")) {
           setDirty(msg.data.dirty);
         }
         if (msg.data.version) {
@@ -131,18 +138,58 @@ export function Preview(props) {
     setAnchorEl(null);
   };
 
+  if (!domain) {
+    return (
+      <Box
+        height="100vh"
+        display="flex"
+        justifyContent={"center"}
+        alignItems={"center"}
+        flexDirection={"column"}
+      >
+        <CircularProgress />
+        <Typography variant="h5" fontWeight={600} mt={1.5}>
+          Finding Domain
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (saving) {
+    return (
+      <Box
+        height="100vh"
+        display="flex"
+        justifyContent={"center"}
+        alignItems={"center"}
+        flexDirection={"column"}
+      >
+        <CircularProgress />
+        <Typography variant="h5" fontWeight={600} mt={1.5}>
+          Saving
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
-    <WithLoader condition={domain} message="Finding Domain" height="100vh">
+    <>
       <Box
         bgcolor="grey.100"
         display="flex"
         gap={1}
         justifyContent="space-between"
         p={1}
+        sx={{
+          overflow: "auto",
+        }}
       >
         <Box display="flex" gap={0.25} alignItems="center">
-          <IconButton size="small">
-            <LinkRounded />
+          <IconButton
+            size="small"
+            onClick={() => handleCopyClick(`${domain}${route}`)}
+          >
+            {isCopied ? <CheckRounded /> : <LinkRounded />}
           </IconButton>
           <Link
             href={`${domain}${route}`}
@@ -185,6 +232,7 @@ export function Preview(props) {
                 </MenuItem>
               ))}
             <FormControlLabel
+              sx={{ mt: 2 }}
               value="start"
               control={
                 <Switch
@@ -213,195 +261,60 @@ export function Preview(props) {
           </IconButton>
         </Box>
       </Box>
-      {/*
-        <header className={styles.TopBar}>
-          <figure className={styles.Logo}>
-            <img
-              height="20px"
-              width="20px"
-              src="https://brand.zesty.io/zesty-io-logo-dark.svg"
-            />
-            &nbsp;
-            <figcaption>
-              <Link
-                underline="none"
-                color="secondary"
-                href={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-                target="_blank"
-                title="Open live link in standard browser window"
-              >
-                ActivePreview
-              </Link>
-            </figcaption>
-          </figure>
-          <div className={styles.ActionInfo}>
-            <div className={styles.Links}>
-              {instance.domain && (
-                <Link
-                  underline="none"
-                  color="secondary"
-                  href={`//${instance.domain}${route}`}
-                  target="_blank"
-                  title="Open live link in standard browser window"
-                  sx={{
-                    color: "#026AA2",
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={faExternalLinkAlt}
-                    style={{ color: "#0BA5EC" }}
-                  />
-                  &nbsp;Live
-                </Link>
-              )}
-              <Link
-                underline="none"
-                color="secondary"
-                href={`${domain}${route}`}
-                target="_blank"
-                title="Open preview link in standard browser window"
-                sx={{
-                  color: "#026AA2",
-                }}
-              >
-                <FontAwesomeIcon icon={faEye} style={{ color: "#0BA5EC" }} />
-                &nbsp;Preview
-              </Link>
-            </div>
-
-            <div className={styles.Url}>
-              <CopyButton
-                disableElevation
-                variant="contained"
-                value={`${domain}${route}`}
-                sx={{
-                  mr: 1,
-                  backgroundColor: "#F2F4F7",
-                  color: "text.secondary",
-
-                  "&:hover": {
-                    backgroundColor: "#E4E7EC",
-                    color: "text.secondary",
-                  },
-
-                  ".MuiButton-startIcon": {
-                    color: "#10182866",
-                  },
-                }}
-              >
-                URL
-              </CopyButton>
-              <Button
-                disableElevation
-                variant="contained"
-                onClick={() => setRefresh(Date.now())}
-                title="Reload current url in ActivePreview"
-                sx={{
-                  backgroundColor: "#F2F4F7",
-                  color: "text.secondary",
-
-                  "&:hover": {
-                    backgroundColor: "#E4E7EC",
-                    color: "text.secondary",
-                  },
-                }}
-              >
-                <SyncIcon fontSize="small" sx={{ fill: "#10182866" }} />
-              </Button>
-              <TextField
-                ref={input}
-                value={`${domain}${route}`}
-                size="small"
-                variant="outlined"
-                color="primary"
-                sx={{
-                  "@media (max-width: 650px)": {
-                    display: "none",
-                  },
-                }}
-                InputProps={{ sx: { flex: 1 } }}
-                fullWidth
-              />
-            </div>
-
-            <div className={styles.Device}>
-              <Select
-                className={styles.Select}
-                name="device"
-                value={device}
-                onChange={(evt) => setDevice(evt.target.value)}
-                size="small"
-              >
-                <MenuItem value="fullscreen">Device</MenuItem>
-                {Object.keys(templates)
-                  .slice(1)
-                  .map((template, index) => (
-                    <MenuItem key={index} value={template}>
-                      {templates[template].option}
-                    </MenuItem>
-                  ))}
-              </Select>
-              <Button
-                disableElevation
-                variant="contained"
-                onClick={() => setRotate(!rotate)}
-                title="Rotate device"
-                sx={{
-                  backgroundColor: "#F2F4F7",
-                  color: "text.secondary",
-
-                  "&:hover": {
-                    backgroundColor: "#E4E7EC",
-                    color: "text.secondary",
-                  },
-                }}
-              >
-                <MobileScreenShareIcon
-                  fontSize="small"
-                  sx={{
-                    transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
-                    fill: "#10182866",
-                  }}
-                />
-              </Button>
-            </div> */}
-
-      {/* <div className={styles.Menu}>
-              <Button
-                disableElevation
-                variant="contained"
-                onClick={() => setOpen(!open)}
-                title="Additional menu options"
-                sx={{
-                  backgroundColor: "#F2F4F7",
-                  color: "text.secondary",
-
-                  "&:hover": {
-                    backgroundColor: "#E4E7EC",
-                    color: "text.secondary",
-                  },
-                }}
-              >
-                <MoreVertIcon fontSize="small" sx={{ fill: "#10182866" }} />
-              </Button>
-              <Meta open={open} route={route} instanceZUID={ZUID} />
-            </div> */}
-      {/* </div>
-        </header> */}
       <Box
-        // className={cx(
-        //   styles.Preview,
-        //   device !== "fullscreen" ? styles.Mobile : null
-        // )}
         sx={{
           height: "calc(100% - 48px)",
           overflow: "auto",
         }}
       >
-        {initialVersion === version && dirty && (
-          <div className={styles.Overlay}>
-            <Notice>Save to update preview</Notice>
-          </div>
+        {dirty && (
+          <Dialog
+            disableAutoFocus
+            open
+            PaperProps={{
+              sx: {
+                p: 2,
+                alignItems: "center",
+                gap: 1.5,
+              },
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "deepOrange.200",
+                borderRadius: "100%",
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <SaveRounded
+                color="primary"
+                sx={{
+                  width: "24px",
+                  height: "24px",
+                }}
+              />
+            </Box>
+            <Typography variant="h6" fontWeight={600}>
+              Save to Update Preview
+            </Typography>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => {
+                setSaving(true);
+                sendMessage("save");
+              }}
+              sx={{
+                maxWidth: "54px",
+              }}
+            >
+              Save
+            </Button>
+          </Dialog>
         )}
 
         {!loading && domain && route ? (
@@ -427,6 +340,6 @@ export function Preview(props) {
           </div>
         )}
       </Box>
-    </WithLoader>
+    </>
   );
 }

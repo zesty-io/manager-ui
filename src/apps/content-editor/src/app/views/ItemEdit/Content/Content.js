@@ -1,27 +1,17 @@
-import { useSelector } from "react-redux";
-import cx from "classnames";
-
-import { useState } from "react";
 import { Editor } from "../../../components/Editor";
-import { Header2 } from "../components/ItemEditHeader";
-import { ItemVersioning } from "../components/Header/ItemVersioning";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
-import { ActionsDrawer } from "./ActionsDrawer";
-
-import styles from "./Content.less";
-import { Box, Stack, IconButton } from "@mui/material";
+import { Box, Stack, IconButton, Tooltip } from "@mui/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
 export default function Content(props) {
-  // const ui = useSelector((state) => state.ui);
   const [showSidebar, setShowSidebar] = useLocalStorage(
     "zesty:content:sidebarOpen",
     false
   );
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
     "zesty:content:duoModeOpen",
-    false
+    true
   );
 
   const showDuoMode = props?.model?.type === "dataset" ? false : showDuoModeLS;
@@ -75,26 +65,34 @@ export default function Content(props) {
       {!showDuoMode ? (
         <Box display="flex" gap={1}>
           <Stack gap={1.5}>
-            <IconButton
-              size="small"
-              onClick={() => setShowSidebar(!showSidebar)}
+            <Tooltip
+              title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
+              placement="left"
+              dark
             >
-              <StartRounded
-                fontSize="small"
-                sx={{
-                  transform: showSidebar ? "rotate(0deg)" : "rotate(180deg)",
-                }}
-              />
-            </IconButton>
-            {props.model?.type !== "dataset" && (
               <IconButton
                 size="small"
-                onClick={() => {
-                  setShowDuoModeLS(true);
-                }}
+                onClick={() => setShowSidebar(!showSidebar)}
               >
-                <DesktopMacRounded fontSize="small" />
+                <StartRounded
+                  fontSize="small"
+                  sx={{
+                    transform: showSidebar ? "rotate(0deg)" : "rotate(180deg)",
+                  }}
+                />
               </IconButton>
+            </Tooltip>
+            {props.model?.type !== "dataset" && (
+              <Tooltip title="Open DUO Mode" placement="left" dark>
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    setShowDuoModeLS(true);
+                  }}
+                >
+                  <DesktopMacRounded fontSize="small" />
+                </IconButton>
+              </Tooltip>
             )}
           </Stack>
           {showSidebar && (
@@ -118,21 +116,15 @@ export default function Content(props) {
           )}
         </Box>
       ) : (
-        <Box height="100%" flex={1} minWidth={360}>
+        <Box height="100%" flex={1}>
           <PreviewMode
             dirty={props.item.dirty}
             version={props.item.meta.version}
             onClose={() => setShowDuoModeLS(false)}
+            onSave={() => props.onSave()}
           />
         </Box>
       )}
-
-      {/* {ui.duoMode && (
-          <PreviewMode
-            dirty={props.item.dirty}
-            version={props.item.meta.version}
-          />
-        )} */}
     </Box>
   );
 }

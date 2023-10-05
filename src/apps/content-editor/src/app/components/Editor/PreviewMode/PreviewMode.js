@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
@@ -7,7 +7,6 @@ import styles from "./PreviewMode.less";
 import { theme } from "@zesty-io/material";
 export default function PreviewMode(props) {
   const origin = window.location.origin;
-
   const instance = useSelector((state) => state.instance);
   const content = useSelector((state) => state.content);
   const instanceSettings = useSelector((state) => state.settings.instance);
@@ -81,6 +80,9 @@ export default function PreviewMode(props) {
         switch (event.data.action) {
           case "close":
             props.onClose();
+            break;
+          case "save":
+            props.onSave();
             break;
           default:
             break;
