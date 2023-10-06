@@ -1,14 +1,9 @@
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import InfoIcon from "@mui/icons-material/InfoOutlined";
-import Tooltip from "@mui/material/Tooltip";
-
-import { FieldTypeText } from "@zesty-io/material";
+import { TextField } from "@mui/material";
 
 import { notify } from "shell/store/notifications";
+import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
 
 import styles from "./MetaDescription.less";
 export default connect()(function MetaDescription({
@@ -57,35 +52,26 @@ export default connect()(function MetaDescription({
 
   return (
     <article className={styles.MetaDescription} data-cy="metaDescription">
-      {/* Display errors */}
-      {error && (
-        <p className={styles.error}>
-          <FontAwesomeIcon icon={faExclamationTriangle} />
-          &nbsp;{error}
-        </p>
-      )}
-
-      <FieldTypeText
-        name="metaDescription"
-        label={
-          <>
-            <Tooltip
-              title="This is the description search engines should use in their results. This field is limited to 160 characters, the maximum amount search engines will display."
-              arrow
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" />
-            </Tooltip>
-            &nbsp;Meta Description
-          </>
-        }
-        value={meta_description}
-        placeholder="This is the description search engines should use in their results"
-        maxLength="160"
-        onChange={(evt) => onChange(evt.target.value, "metaDescription")}
-        multiline
-        rows={6}
-      />
+      <FieldShell
+        settings={{
+          label: "Meta Description",
+        }}
+        customTooltip="This is the description search engines should use in their results. This field is limited to 160 characters, the maximum amount search engines will display."
+        withInteractiveTooltip={false}
+        withLengthCounter
+        maxLength={160}
+        valueLength={meta_description?.length ?? 0}
+        errors={error ? { CUSTOM_ERROR: error } : {}}
+      >
+        <TextField
+          name="metaDescription"
+          value={meta_description}
+          placeholder="This is the description search engines should use in their results"
+          onChange={(evt) => onChange(evt.target.value, "metaDescription")}
+          multiline
+          rows={6}
+        />
+      </FieldShell>
     </article>
   );
 });

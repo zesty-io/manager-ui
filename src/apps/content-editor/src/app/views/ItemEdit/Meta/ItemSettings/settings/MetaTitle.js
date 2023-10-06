@@ -1,32 +1,29 @@
 import { memo } from "react";
 
-import { FieldTypeText } from "@zesty-io/material";
+import { TextField } from "@mui/material";
 
-import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/InfoOutlined";
-
+import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
 import styles from "./MetaTitle.less";
 export const MetaTitle = memo(function MetaTitle({ meta_title, onChange }) {
   return (
     <article className={styles.MetaTitle} data-cy="metaTitle">
-      <FieldTypeText
-        name="metaTitle"
-        label={
-          <label>
-            <Tooltip
-              title="This is the title search engines should use in their results. The maximum amount of characters search engines show is 65 characters, but your title can be longer."
-              arrow
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" />
-            </Tooltip>
-            &nbsp;Meta Title
-          </label>
-        }
-        value={meta_title}
-        placeholder="This is the title search engines should use in their results"
-        onChange={(evt) => onChange(evt.target.value, "metaTitle")}
-      />
+      <FieldShell
+        settings={{
+          label: "Meta Title",
+        }}
+        customTooltip="This is the title search engines should use in their results. The maximum amount of characters search engines show is 65 characters, but your title can be longer."
+        withInteractiveTooltip={false}
+        withLengthCounter
+        maxLength={150}
+        valueLength={meta_title?.length ?? 0}
+      >
+        <TextField
+          name="metaTitle"
+          value={meta_title}
+          placeholder="This is the title search engines should use in their results"
+          onChange={(evt) => onChange(evt.target.value, "metaTitle")}
+        />
+      </FieldShell>
     </article>
   );
 });

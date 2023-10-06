@@ -1,6 +1,5 @@
 import {
   Stack,
-  Box,
   Typography,
   TextField,
   Button,
@@ -20,7 +19,7 @@ import { FieldIcon } from "../../../../../../schema/src/app/components/Field/Fie
 import { TYPE_TEXT } from "../../../../../../schema/src/app/components/configs";
 
 type FieldTooltipBodyProps = {
-  data: ContentModelField;
+  data: Partial<ContentModelField>;
 };
 export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
   const history = useHistory();

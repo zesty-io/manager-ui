@@ -1,13 +1,10 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import {
   Stack,
   Typography,
   Tooltip,
-  FormLabel,
-  TextField,
   Menu,
   MenuItem,
-  ButtonGroup,
   Button,
 } from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -31,10 +28,11 @@ const EditorTypes: Record<EditorType, string> = {
 export type Error = {
   MISSING_REQUIRED?: boolean;
   EXCEEDING_MAXLENGTH?: number;
+  CUSTOM_ERROR?: string;
 };
 
 type FieldShellProps = {
-  settings: ContentModelField;
+  settings: Partial<ContentModelField>;
   valueLength?: number;
   endLabel?: JSX.Element;
   maxLength?: number;
@@ -45,6 +43,7 @@ type FieldShellProps = {
   customTooltip?: string;
   children: JSX.Element;
   errors: Error;
+  withInteractiveTooltip?: boolean;
 };
 export const FieldShell = ({
   settings,
@@ -57,6 +56,7 @@ export const FieldShell = ({
   customTooltip,
   children,
   errors,
+  withInteractiveTooltip = true,
 }: FieldShellProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
@@ -69,13 +69,21 @@ export const FieldShell = ({
       return `Exceeding by ${errors.EXCEEDING_MAXLENGTH} characters.`;
     }
 
+    if (errors?.CUSTOM_ERROR) {
+      return errors.CUSTOM_ERROR;
+    }
+
     return "";
   };
 
   return (
     <Stack gap={0.5}>
       <Stack direction="row" justifyContent="space-between">
-        <FieldLabel settings={settings} customTooltip={customTooltip} />
+        <FieldLabel
+          settings={settings}
+          customTooltip={customTooltip}
+          withInteractiveTooltip={withInteractiveTooltip}
+        />
         <Stack direction="row" gap={0.5}>
           {["article_writer", "markdown"].includes(settings?.datatype) && (
             <>
@@ -151,47 +159,60 @@ export const FieldShell = ({
 };
 
 type FieldLabelProps = {
-  settings: ContentModelField;
+  settings: Partial<ContentModelField>;
   customTooltip?: string;
+  withInteractiveTooltip?: boolean;
 };
-const FieldLabel = memo(({ settings, customTooltip }: FieldLabelProps) => {
-  return (
-    <Stack direction="row" gap={0.5} alignItems="center">
-      <InteractiveTooltip
-        slots={{
-          title: (
-            <Typography
-              variant="body2"
-              fontWeight={600}
-              color="text.primary"
-              sx={{
-                "&:hover": { textDecoration: "underline" },
-              }}
-            >
-              {settings?.label} {settings?.required && "*"}
-            </Typography>
-          ),
-          body: <FieldTooltipBody data={settings} />,
-        }}
-        TooltipProps={{
-          placement: "top-start",
-        }}
-        PaperProps={{
-          sx: {
-            width: 400,
-            mb: 1.25,
-            borderRadius: 2,
-          },
-        }}
-      />
-      {(!!customTooltip || settings?.settings?.tooltip) && (
-        <Tooltip
-          title={customTooltip ?? settings.settings.tooltip}
-          placement="top"
-        >
-          <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
-        </Tooltip>
-      )}
-    </Stack>
-  );
-});
+const FieldLabel = memo(
+  ({
+    settings,
+    customTooltip,
+    withInteractiveTooltip = true,
+  }: FieldLabelProps) => {
+    return (
+      <Stack direction="row" gap={0.5} alignItems="center">
+        {withInteractiveTooltip ? (
+          <InteractiveTooltip
+            slots={{
+              title: (
+                <Typography
+                  variant="body2"
+                  fontWeight={600}
+                  color="text.primary"
+                  sx={{
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                >
+                  {settings?.label} {settings?.required && "*"}
+                </Typography>
+              ),
+              body: <FieldTooltipBody data={settings} />,
+            }}
+            TooltipProps={{
+              placement: "top-start",
+            }}
+            PaperProps={{
+              sx: {
+                width: 400,
+                mb: 1.25,
+                borderRadius: 2,
+              },
+            }}
+          />
+        ) : (
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            {settings?.label} {settings?.required && "*"}
+          </Typography>
+        )}
+        {(!!customTooltip || settings?.settings?.tooltip) && (
+          <Tooltip
+            title={customTooltip ?? settings.settings.tooltip}
+            placement="top"
+          >
+            <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+          </Tooltip>
+        )}
+      </Stack>
+    );
+  }
+);
