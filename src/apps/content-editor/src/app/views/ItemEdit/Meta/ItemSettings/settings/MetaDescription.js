@@ -4,12 +4,14 @@ import { TextField } from "@mui/material";
 
 import { notify } from "shell/store/notifications";
 import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
+import { MaxLengths } from "../ItemSettings";
 
 import styles from "./MetaDescription.less";
 export default connect()(function MetaDescription({
   meta_description,
   onChange,
   dispatch,
+  errors,
 }) {
   const [error, setError] = useState("");
 
@@ -59,9 +61,13 @@ export default connect()(function MetaDescription({
         customTooltip="This is the description search engines should use in their results. This field is limited to 160 characters, the maximum amount search engines will display."
         withInteractiveTooltip={false}
         withLengthCounter
-        maxLength={160}
+        maxLength={MaxLengths.metaDescription}
         valueLength={meta_description?.length ?? 0}
-        errors={error ? { CUSTOM_ERROR: error } : {}}
+        errors={
+          error
+            ? { ...errors.metaDescription, CUSTOM_ERROR: error }
+            : errors?.metaDescription
+        }
       >
         <TextField
           name="metaDescription"

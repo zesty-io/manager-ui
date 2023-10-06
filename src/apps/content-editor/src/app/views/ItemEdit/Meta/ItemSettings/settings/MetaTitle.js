@@ -3,8 +3,13 @@ import { memo } from "react";
 import { TextField } from "@mui/material";
 
 import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
+import { MaxLengths } from "../ItemSettings";
 import styles from "./MetaTitle.less";
-export const MetaTitle = memo(function MetaTitle({ meta_title, onChange }) {
+export const MetaTitle = memo(function MetaTitle({
+  meta_title,
+  onChange,
+  errors,
+}) {
   return (
     <article className={styles.MetaTitle} data-cy="metaTitle">
       <FieldShell
@@ -14,8 +19,9 @@ export const MetaTitle = memo(function MetaTitle({ meta_title, onChange }) {
         customTooltip="This is the title search engines should use in their results. The maximum amount of characters search engines show is 65 characters, but your title can be longer."
         withInteractiveTooltip={false}
         withLengthCounter
-        maxLength={150}
+        maxLength={MaxLengths.metaTitle}
         valueLength={meta_title?.length ?? 0}
+        errors={errors?.metaTitle ?? {}}
       >
         <TextField
           name="metaTitle"

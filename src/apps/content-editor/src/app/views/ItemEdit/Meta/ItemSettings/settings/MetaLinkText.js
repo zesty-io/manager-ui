@@ -2,11 +2,13 @@ import { memo } from "react";
 
 import { TextField } from "@mui/material";
 import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
+import { MaxLengths } from "../ItemSettings";
 
 import styles from "./MetaLinkText.less";
 export const MetaLinkText = memo(function MetaLinkText({
   meta_link_text,
   onChange,
+  errors,
 }) {
   return (
     <article className={styles.MetaLinkText} data-cy="metaLinkText">
@@ -19,8 +21,9 @@ export const MetaLinkText = memo(function MetaLinkText({
           function."
         withInteractiveTooltip={false}
         withLengthCounter
-        maxLength={150}
+        maxLength={MaxLengths.metaLinkText}
         valueLength={meta_link_text?.length ?? 0}
+        errors={errors?.metaLinkText ?? {}}
       >
         <TextField
           name="metaLinkText"

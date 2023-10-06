@@ -1,4 +1,4 @@
-import { memo, Fragment, useCallback, useMemo } from "react";
+import { memo, Fragment, useCallback, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
@@ -21,6 +21,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import styles from "./ItemSettings.less";
 import { fetchGlobalItem } from "../../../../../../../../shell/store/content";
 
+export const MaxLengths = {
+  metaLinkText: 150,
+  metaTitle: 150,
+  metaDescription: 160,
+  metaKeywords: 255,
+};
+
 export const ItemSettings = memo(
   function ItemSettings(props) {
     const showSiteNameInMetaTitle = useSelector(
@@ -32,6 +39,7 @@ export const ItemSettings = memo(
     const dispatch = useDispatch();
     const domain = useDomain();
     let { data, meta, web } = props.item;
+    const [errors, setErrors] = useState({});
 
     data = data || {};
     meta = meta || {};
@@ -44,6 +52,19 @@ export const ItemSettings = memo(
         if (!name) {
           throw new Error("Input is missing name attribute");
         }
+
+        if (MaxLengths[name]) {
+          setErrors({
+            ...errors,
+            [name]: {
+              EXCEEDING_MAXLENGTH:
+                value?.length > MaxLengths[name]
+                  ? value?.length - MaxLengths[name]
+                  : 0,
+            },
+          });
+        }
+
         props.dispatch({
           type: "SET_ITEM_WEB",
           itemZUID: meta.ZUID,
@@ -51,7 +72,7 @@ export const ItemSettings = memo(
           value: value,
         });
       },
-      [meta.ZUID]
+      [meta.ZUID, errors]
     );
 
     return (
@@ -77,13 +98,26 @@ export const ItemSettings = memo(
               />
             </Fragment>
           )}
-          <MetaLinkText meta_link_text={web.metaLinkText} onChange={onChange} />
-          <MetaTitle meta_title={web.metaTitle} onChange={onChange} />
+          <MetaLinkText
+            meta_link_text={web.metaLinkText}
+            onChange={onChange}
+            errors={errors}
+          />
+          <MetaTitle
+            meta_title={web.metaTitle}
+            onChange={onChange}
+            errors={errors}
+          />
           <MetaDescription
             meta_description={web.metaDescription}
             onChange={onChange}
+            errors={errors}
           />
-          <MetaKeywords meta_keywords={web.metaKeywords} onChange={onChange} />
+          <MetaKeywords
+            meta_keywords={web.metaKeywords}
+            onChange={onChange}
+            errors={errors}
+          />
           <SitemapPriority
             sitemapPriority={web.sitemapPriority}
             onChange={onChange}

@@ -3,10 +3,12 @@ import { memo } from "react";
 import { TextField } from "@mui/material";
 
 import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
+import { MaxLengths } from "../ItemSettings";
 import styles from "./MetaKeywords.less";
 export const MetaKeywords = memo(function MetaKeywords({
   meta_keywords,
   onChange,
+  errors,
 }) {
   return (
     <article className={styles.MetaKeywords} data-cy="metaKeywords">
@@ -17,8 +19,9 @@ export const MetaKeywords = memo(function MetaKeywords({
         customTooltip="Keywords are comma separated words or phrase that describe your page. In 2011 Google denounced keywords; keywords are only used against your page ranking. Use them with caution."
         withInteractiveTooltip={false}
         withLengthCounter
-        maxLength={255}
+        maxLength={MaxLengths.metaKeywords}
         valueLength={meta_keywords?.length ?? 0}
+        errors={errors?.metaKeywords ?? {}}
       >
         <TextField
           name="metaKeywords"
