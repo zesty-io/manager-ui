@@ -9,13 +9,7 @@ import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import LoadingButton from "@mui/lab/LoadingButton";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCog,
-  faBan,
-  faGlobe,
-  faSpinner,
-  faFileImage,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
 
@@ -26,30 +20,27 @@ import {
   ModalHeader,
 } from "@zesty-io/core/Modal";
 
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { MediaApp } from "../../../apps/media/src/app";
 
-import {
-  fetchHeadTags,
-  createHeadTag,
-  deleteHeadTag,
-} from "shell/store/headTags";
 import { notify } from "shell/store/notifications";
 
 import styles from "./favicon.less";
 import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
+import {
+  useCreateHeadTagMutation,
+  useGetHeadTagsQuery,
+  useDeleteHeadTagMutation,
+} from "../../../shell/services/instance";
 
 export default connect((state) => {
   return {
     instance: state.instance,
-    headTags: state.headTags,
+    ui: state.ui,
   };
 })(function favicon(props) {
-  const [hover, setHover] = useState(false);
-  const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const [faviconZUID, setFaviconZUID] = useState("");
@@ -59,35 +50,43 @@ export default connect((state) => {
 
   const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
 
-  useEffect(() => {
-    props.dispatch(fetchHeadTags());
-  }, []);
+  const { data: headTags } = useGetHeadTagsQuery();
+  const [deleteHeadTag] = useDeleteHeadTagMutation();
+  const [
+    createHeadTag,
+    {
+      isLoading: isUpdatingFavicon,
+      isSuccess: isFaviconUpdated,
+      error: faviconUpdateError,
+    },
+  ] = useCreateHeadTagMutation();
 
   useEffect(() => {
-    const tag = Object.values(props.headTags).find((tag) =>
-      tag.attributes.find(
-        (attr) => attr.key === "sizes" && attr.value === "196x196"
-      )
-    );
-    if (tag) {
-      setHeadTagZUID(tag.ZUID);
-    }
-    if (tag) {
-      const attr = tag.attributes.find((attr) => attr.key === "href");
-      setFaviconURL(attr.value);
-    }
-  }, [props.headTags]);
-
-  const onDelete = () => {
-    props.dispatch(deleteHeadTag(headtagZUID)).then((res) => {
+    if (isFaviconUpdated || !!faviconUpdateError) {
+      props.onCloseFaviconModal();
       props.dispatch(
         notify({
-          message: res.data.error ? res.data.error : "Favicon updated",
-          kind: res.data.error ? "warn" : "success",
+          message: !!faviconUpdateError
+            ? faviconUpdateError.data.error
+            : "Favicon updated",
+          kind: !!faviconUpdateError ? "warn" : "success",
         })
       );
-    });
-  };
+    }
+  }, [isFaviconUpdated, faviconUpdateError]);
+
+  useEffect(() => {
+    if (headTags?.length) {
+      const tag = Object.values(headTags).find(
+        (tag) => tag.attributes?.sizes === "196x196"
+      );
+
+      if (tag) {
+        setHeadTagZUID(tag.ZUID);
+        setFaviconURL(tag.attributes?.href);
+      }
+    }
+  }, [headTags]);
 
   const handleImage = (zuid) => {
     if (!zuid) {
@@ -105,28 +104,21 @@ export default connect((state) => {
   };
 
   const handleSave = () => {
-    setLoading(true);
     if (headtagZUID) {
-      onDelete();
+      deleteHeadTag(headtagZUID);
     }
-    props
-      .dispatch(
-        createHeadTag({
-          type: "link",
-          resourceZUID: props.instance.ZUID,
-          attributes: {
-            rel: "icon",
-            type: "image/png",
-            sizes: "196x196",
-            href: faviconURL,
-          },
-          sort: 0,
-        })
-      )
-      .finally((_) => {
-        setOpen(false);
-        setLoading(false);
-      });
+
+    createHeadTag({
+      type: "link",
+      resourceZUID: props.instance.ZUID,
+      attributes: {
+        rel: "icon",
+        type: "image/png",
+        sizes: "196x196",
+        href: faviconURL,
+      },
+      sort: 0,
+    });
 
     // TODO make various favicon sizes and create head tags
     // const sizes = [32, 128, 152, 167, 180, 192, 196];
@@ -186,7 +178,7 @@ export default connect((state) => {
   return (
     <>
       <Modal
-        open={open}
+        open={props.ui.isUpdateFaviconModalOpen}
         className={styles.Modal}
         onClose={() => props.onCloseFaviconModal()}
       >
@@ -290,7 +282,7 @@ export default connect((state) => {
             data-cy="faviconSave"
             loadingPosition="start"
             onClick={handleSave}
-            loading={loading}
+            loading={loading || isUpdatingFavicon}
             startIcon={<SaveIcon />}
           >
             Save Favicon
