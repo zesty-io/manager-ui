@@ -16,20 +16,29 @@ describe("Instance", () => {
   });
 
   it("Developer", () => {
-    cy.get("[data-cy=SettingsNav]").contains("developer").click();
+    cy.getBySelector("InstanceSettingsTree")
+      .find(".MuiTreeItem-root")
+      .next()
+      .contains("Developer")
+      .click();
     cy.get('[data-cy=SubApp] input[type="text"]')
+      .last()
       .type("test test test")
       .clear();
 
-    cy.get("[data-cy=SubApp] button").first().click({ force: true });
+    cy.get("#saveSettings").click({ force: true });
 
     cy.get("#saveSettings").click({ force: true });
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 
   it("Contact Form", () => {
-    cy.get("[data-cy=SettingsNav]").contains("contact form").click();
-    cy.get("[data-cy=SubApp] input").first().type("fakeemail@example.com");
+    cy.getBySelector("InstanceSettingsTree")
+      .find(".MuiTreeItem-root")
+      .next()
+      .contains("Contact Form")
+      .click();
+    cy.get("[data-cy=SubApp] input").last().type("fakeemail@example.com");
 
     cy.get("#saveSettings").click();
     cy.contains(SAVED_MESSAGE).should("exist");
