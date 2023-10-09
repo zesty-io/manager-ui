@@ -23,13 +23,20 @@ export function Frame(props) {
         <iframe
           className={cx(
             styles.Frame,
-            props.blur ? styles.Blur : null,
-            frameLoading ? styles.FrameLoading : null
+            props.blur ? styles.Blur : null
+            // frameLoading ? styles.FrameLoading : null
           )}
           src={`${props.domain}${props.route}`}
           scrolling="yes"
           frameBorder="0"
           onLoad={() => setFrameLoading(false)}
+          style={{
+            transform: `scale(${props.zoom})`,
+            width: `${100 / props.zoom}%`,
+            height: `${100 / props.zoom}%`,
+            left: `${(100 - 100 / props.zoom) / 2}%`,
+            top: `${(100 - 100 / props.zoom) / 2}%`,
+          }}
         />
       ) : (
         <>
@@ -52,9 +59,16 @@ export function Frame(props) {
                     className={cx(
                       styles.Frame,
                       props.blur ? styles.Blur : null,
-                      frameLoading ? styles.FrameLoading : null,
+                      // frameLoading ? styles.FrameLoading : null,
                       styles.Device
                     )}
+                    style={{
+                      transform: `scale(${props.zoom})`,
+                      width: `${100 / props.zoom}%`,
+                      height: `${100 / props.zoom}%`,
+                      left: `${(100 - 100 / props.zoom) / 2}%`,
+                      top: `${(100 - 100 / props.zoom) / 2}%`,
+                    }}
                     src={`${props.domain}${props.route}`}
                     scrolling="yes"
                     frameBorder="0"
@@ -90,7 +104,7 @@ export const templates = {
     option: (
       <Box display="flex" justifyContent="space-between" width="100%">
         <Box>iPhone 14</Box>
-        <Box>437x883</Box>
+        <Box>437 x 883</Box>
       </Box>
     ),
     template: (props) => {
@@ -107,6 +121,7 @@ export const templates = {
               ? "rotate(-90deg) translateX(40%)"
               : "rotate(0deg)",
             transition: "transform 200ms",
+            marginTop: "16px",
           }}
         >
           <div
@@ -142,7 +157,7 @@ export const templates = {
     option: (
       <Box display="flex" justifyContent="space-between" width="100%">
         <Box>iPhone 14 Pro</Box>
-        <Box>437x883</Box>
+        <Box>437 x 883</Box>
       </Box>
     ),
     template: (props) => {
@@ -159,6 +174,7 @@ export const templates = {
               ? "rotate(-90deg) translateX(40%)"
               : "rotate(0deg)",
             transition: "transform 200ms",
+            marginTop: "16px",
           }}
         >
           <div
@@ -194,7 +210,7 @@ export const templates = {
     option: (
       <Box display="flex" justifyContent="space-between" width="100%">
         <Box>iPad Pro</Box>
-        <Box>1158x1494</Box>
+        <Box>1158 x 1494</Box>
       </Box>
     ),
     template: (props) => {
@@ -211,6 +227,7 @@ export const templates = {
               ? "rotate(-90deg) translateX(20%)"
               : "rotate(0deg)",
             transition: "transform 200ms",
+            marginTop: "16px",
           }}
         >
           <div
@@ -239,7 +256,7 @@ export const templates = {
     option: (
       <Box display="flex" justifyContent="space-between" width="100%">
         <Box>Pixel 7</Box>
-        <Box>648x1373</Box>
+        <Box>648 x 1373</Box>
       </Box>
     ),
     template: (props) => {
@@ -256,6 +273,7 @@ export const templates = {
               ? "rotate(-90deg) translateX(40%)"
               : "rotate(0deg)",
             transition: "transform 200ms",
+            marginTop: "16px",
           }}
         >
           <div

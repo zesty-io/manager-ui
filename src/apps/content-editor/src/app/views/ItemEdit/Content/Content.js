@@ -40,14 +40,16 @@ export default function Content(props) {
         height="100%"
         sx={{
           display: "flex",
-          flex: showDuoMode ? 0 : 1,
+          flex: showDuoMode ? "unset" : 1,
           justifyContent:
             !showDuoMode && !showSidebar ? "center" : "flex-start",
+          overflowY: "scroll",
+          overscrollBehavior: "none",
         }}
       >
         <Box
           height="100%"
-          width={showDuoMode ? 412 : "unset"}
+          width={showDuoMode ? 412 : "100%"}
           maxWidth={showDuoMode ? "unset" : 640}
         >
           <Editor
