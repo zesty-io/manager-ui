@@ -39,6 +39,7 @@ export const ResizableContainer = ({
     `zesty:collapsedContainer:${id}`,
     false
   );
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsResizing(true);
@@ -112,10 +113,16 @@ export const ResizableContainer = ({
           placement="right-start"
           enterDelay={1000}
           enterNextDelay={1000}
+          open={isTooltipOpen}
+          onOpen={() => setIsTooltipOpen(true)}
+          onClose={() => setIsTooltipOpen(false)}
         >
           <IconButton
             data-cy="collapseAppSideBar"
-            onClick={() => setCollapsed(!collapsed)}
+            onClick={() => {
+              setIsTooltipOpen(false);
+              setCollapsed(!collapsed);
+            }}
             sx={{
               borderRadius: "50%",
               borderColor: "grey.600",

@@ -18,9 +18,9 @@ import "./commands";
 import "cypress-iframe";
 
 // @see https://docs.cypress.io/api/cypress-api/cookies.html#Set-global-default-cookies
-Cypress.Cookies.defaults({
-  preserve: Cypress.env("COOKIE_NAME"),
-});
+// Cypress.Cookies.defaults({
+//   preserve: Cypress.env("COOKIE_NAME"),
+// });
 
 // Turn off fail on console errors
 Cypress.on("uncaught:exception", (err, runnable) => {
@@ -31,7 +31,11 @@ Cypress.on("uncaught:exception", (err, runnable) => {
 
 // Before spec is ran
 before(() => {
-  cy.login();
+  cy.session("COOKIE_NAME", cy.login, {
+    validate() {
+      cy.getCookies().should("have.length", 2);
+    },
+  });
 
   // NOTE: we program the app to always select state from the store when available
   // but often on an initial load that data is not present and deeply nested values will

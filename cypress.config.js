@@ -17,5 +17,6 @@ module.exports = defineConfig({
     },
     baseUrl: "http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080/",
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
+    testIsolation: false,
   },
 });
