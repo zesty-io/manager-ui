@@ -18,6 +18,7 @@ import { EmptyState } from "../components/EmptyState";
 import { filterByParams } from "utility/filterByParams";
 import { resolveUrlFromAudit } from "../../../../../../../utility/resolveResourceUrlFromAudit";
 import { CustomBreadcrumbs } from "../../../../../../../shell/components/CustomBreadcrumbs";
+import { ResourceHeaderTitle } from "../components/ResourceHeaderTitle";
 
 const Crumbs = [
   {
@@ -149,8 +150,12 @@ export const ResourceDetails = () => {
             }))}
           />
 
-          <Box sx={{ maxWidth: 640 }}>
-            <ResourceListItem
+          <ResourceHeaderTitle
+            affectedZUID={actionsByZuid[0]?.affectedZUID}
+            resourceType={actionsByZuid[0]?.resourceType}
+            updatedAt={actionsByZuid[0]?.updatedAt}
+          />
+          {/* <ResourceListItem
               resource={
                 actionsByZuid[0] || {
                   affectedZUID: zuid,
@@ -158,8 +163,7 @@ export const ResourceDetails = () => {
                 }
               }
               size="large"
-            />
-          </Box>
+            /> */}
         </Stack>
         <Stack flexDirection="row" gap={1}>
           <Button
