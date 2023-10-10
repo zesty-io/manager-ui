@@ -27,11 +27,11 @@ export const AddFieldDivider = ({
   return (
     <Box
       data-cy="InBetweenFieldAddFieldBtn"
-      py="5px"
       display="flex"
       alignItems={"center"}
       sx={styles}
       onClick={onDividerClick}
+      height={12}
     >
       <IconButton
         sx={{
@@ -49,7 +49,7 @@ export const AddFieldDivider = ({
       </IconButton>
       <Box
         visibility="hidden"
-        flex={1}
+        width="100%"
         sx={{
           height: "2px",
           backgroundColor: "primary.main",
