@@ -15,7 +15,7 @@ type SelectModelParentInputProps = {
   onChange: (value: string) => void;
   modelType: ModelType;
   label?: string;
-  withTooltip?: boolean;
+  tooltip?: string;
 };
 
 export const SelectModelParentInput = ({
@@ -23,7 +23,7 @@ export const SelectModelParentInput = ({
   onChange,
   modelType,
   label = "Select Model Parent",
-  withTooltip = true,
+  tooltip = "",
 }: SelectModelParentInputProps) => {
   const { data: navItems } = useGetContentNavItemsQuery();
 
@@ -48,11 +48,8 @@ export const SelectModelParentInput = ({
     <Box>
       <InputLabel>
         {label}
-        {withTooltip && (
-          <Tooltip
-            placement="top"
-            title="Selecting a parent affects default routing and content navigation in the UI"
-          >
+        {tooltip && (
+          <Tooltip placement="top" title={tooltip}>
             <InfoRoundedIcon
               sx={{ ml: 1, width: "10px", height: "10px" }}
               color="action"
