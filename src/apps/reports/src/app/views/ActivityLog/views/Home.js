@@ -9,8 +9,16 @@ import {
   CardContent,
   Stack,
   Skeleton,
+  SvgIcon,
 } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
+import {
+  CategoryRounded,
+  GroupsRounded,
+  ViewTimelineRounded,
+  InsightsRounded,
+} from "@mui/icons-material";
+
 import { instanceApi } from "shell/services/instance";
 import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
@@ -34,6 +42,25 @@ const filtersOnView = {
   timeline: ["action", , "resourceType", "actionByUserZUID"],
   insights: ["action", "actionByUserZUID"],
 };
+
+const TABS = [
+  {
+    name: "Resources",
+    icon: CategoryRounded,
+  },
+  {
+    name: "Users",
+    icon: GroupsRounded,
+  },
+  {
+    name: "Timeline",
+    icon: ViewTimelineRounded,
+  },
+  {
+    name: "Insights",
+    icon: InsightsRounded,
+  },
+];
 
 export const Home = () => {
   const history = useHistory();
@@ -321,34 +348,49 @@ export const Home = () => {
 
   return (
     <>
-      <Box sx={{ px: 3, pt: 3, mb: 1 }}>
-        <Typography variant="h4" fontWeight={600} sx={{ mb: 0.5 }}>
+      <Box px={4} pt={4} pb={2}>
+        <Typography variant="h3" fontWeight={700} sx={{ mb: 0.5 }}>
           Activity Log
         </Typography>
         <Typography variant="subtitle2" color="text.secondary">
           Your instance timeline by resources and users
         </Typography>
       </Box>
-      <Box sx={{ borderBottom: 1, borderColor: "border", pl: 2 }}>
+      <Box sx={{ borderBottom: 2, borderColor: "border" }}>
         <Tabs
           value={tabPaths.indexOf(activeView)}
           onChange={handleTabChange}
-          sx={{ position: "relative", top: "1px" }}
+          sx={{
+            position: "relative",
+            top: "2px",
+            px: 4,
+          }}
         >
-          <Tab label="RESOURCES" />
-          <Tab label="USERS" />
-          <Tab label="TIMELINE" />
-          <Tab label="INSIGHTS" />
+          {TABS.map((tab) => (
+            <Tab
+              icon={<SvgIcon component={tab.icon} fontSize="small" />}
+              iconPosition="start"
+              label={tab.name}
+              disableRipple
+            />
+          ))}
         </Tabs>
       </Box>
-      <Box sx={{ px: 3 }}>
+      <Box sx={{ px: 4, backgroundColor: "grey.50" }}>
         <Filters
           actions={actions}
           filters={filtersOnView[activeView] || []}
           showSkeletons={isLoading}
         />
       </Box>
-      <Box sx={{ px: 3, height: "100%", overflow: "auto" }}>
+      <Box
+        sx={{
+          px: 4,
+          height: "100%",
+          overflow: "auto",
+          backgroundColor: "grey.50",
+        }}
+      >
         {status === "rejected" ? (
           <Box
             sx={{
