@@ -376,7 +376,7 @@ export const Home = () => {
           ))}
         </Tabs>
       </Box>
-      <Box sx={{ px: 4, backgroundColor: "grey.50" }}>
+      <Box sx={{ px: 4, py: 0.5, backgroundColor: "grey.50" }}>
         <Filters
           actions={actions}
           filters={filtersOnView[activeView] || []}
