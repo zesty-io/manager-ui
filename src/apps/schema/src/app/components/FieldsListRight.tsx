@@ -183,7 +183,6 @@ export const FieldsListRight = ({ model }: Props) => {
             setshowSaveParentModelButton(value !== model?.parentZUID);
             setNewParentZUID(value);
           }}
-          withTooltip={false}
           label="Model Parent"
         />
         {showSaveParentModelButton && (
