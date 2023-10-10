@@ -48,6 +48,7 @@ export const instanceApi = createApi({
     "ContentNav",
     "ContentItem",
     "ItemVersions",
+    "HeadTags",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -237,6 +238,32 @@ export const instanceApi = createApi({
     getHeadTags: builder.query<HeadTag[], void>({
       query: () => "/web/headtags",
       transformResponse: getResponseData,
+      providesTags: ["HeadTags"],
+    }),
+    createHeadTag: builder.mutation<
+      HeadTag,
+      {
+        type: string;
+        resourceZUID: string;
+        attributes?: {
+          [key: string]: string;
+        };
+        sort?: number;
+      }
+    >({
+      query: (body) => ({
+        url: "/web/headtags",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["HeadTags"],
+    }),
+    deleteHeadTag: builder.mutation<any, string>({
+      query: (headTagZUID) => ({
+        url: `/web/headtags/${headTagZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["HeadTags"],
     }),
     createContentModelFromTemplate: builder.mutation<
       any,
@@ -574,5 +601,7 @@ export const {
   useGetContentItemVersionsQuery,
   useUpdateContentItemMutation,
   useDeleteContentItemMutation,
+  useCreateHeadTagMutation,
+  useDeleteHeadTagMutation,
   useGetInstanceStylesCategoriesQuery,
 } = instanceApi;

@@ -472,7 +472,7 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.FIELDS_LIST_NO_RESULTS).should("exist");
 
     // Clear filter keyword
-    cy.get("@fieldListFilter").should("exist").clear();
+    cy.get("@fieldListFilter").should("exist").type("{selectall} {backspace}");
   });
 
   it("Can update a field", () => {
