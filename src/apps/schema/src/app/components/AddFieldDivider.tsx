@@ -32,6 +32,7 @@ export const AddFieldDivider = ({
       sx={styles}
       onClick={onDividerClick}
       height={12}
+      pl={1.5}
     >
       <IconButton
         sx={{
