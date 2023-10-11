@@ -261,6 +261,9 @@ export const Field = ({
             value={value}
             onChange={(evt) => onChange(evt.target.value, name)}
             fullWidth
+            inputProps={{
+              name: fieldData?.name,
+            }}
           />
         </AIFieldShell>
       );

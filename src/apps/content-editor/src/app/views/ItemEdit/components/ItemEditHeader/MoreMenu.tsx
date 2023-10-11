@@ -76,6 +76,7 @@ export const MoreMenu = () => {
   return (
     <>
       <IconButton
+        data-cy="ContentItemMoreButton"
         size="small"
         onClick={(event) => {
           setAnchorEl(event.currentTarget);
@@ -165,6 +166,7 @@ export const MoreMenu = () => {
           Edit Template
         </MenuItem>
         <MenuItem
+          data-cy="DeleteContentItem"
           onClick={() => {
             setShowDeleteItemDialog(true);
             setAnchorEl(null);
