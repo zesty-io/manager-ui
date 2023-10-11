@@ -4,6 +4,8 @@ import { Box, Stack, IconButton, Tooltip } from "@mui/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 export default function Content(props) {
   const [showSidebar, setShowSidebar] = useLocalStorage(
     "zesty:content:sidebarOpen",
@@ -13,8 +15,26 @@ export default function Content(props) {
     "zesty:content:duoModeOpen",
     true
   );
+  const instanceSettings = useSelector((state) => state.settings.instance);
 
-  const showDuoMode = props?.model?.type === "dataset" ? false : showDuoModeLS;
+  const override = instanceSettings.find((setting) => {
+    // if any of these settings are present then DuoMode is unavailable
+    return (
+      (setting.key === "basic_content_api_key" && setting.value) ||
+      (setting.key === "headless_authorization_key" && setting.value) ||
+      (setting.key === "authorization_key" && setting.value) ||
+      (setting.key === "x_frame_options" && setting.value)
+    );
+  });
+
+  const showDuoMode =
+    props?.model?.type === "dataset" || override ? false : showDuoModeLS;
+
+  useEffect(() => {
+    if (override) {
+      setShowDuoModeLS(false);
+    }
+  }, [override]);
 
   return (
     <Box
@@ -75,6 +95,7 @@ export default function Content(props) {
               <IconButton
                 size="small"
                 onClick={() => setShowSidebar(!showSidebar)}
+                data-cy="ContentSidebarToggle"
               >
                 <StartRounded
                   fontSize="small"
@@ -84,7 +105,7 @@ export default function Content(props) {
                 />
               </IconButton>
             </Tooltip>
-            {props.model?.type !== "dataset" && (
+            {props.model?.type !== "dataset" && !override && (
               <Tooltip title="Open DUO Mode" placement="left" dark>
                 <IconButton
                   size="small"
@@ -107,6 +128,7 @@ export default function Content(props) {
                 borderLeft: (theme) => `1px solid ${theme.palette.grey[200]}`,
                 overflowY: "auto",
               }}
+              data-cy="ContentSidebar"
             >
               <Actions
                 {...props}
