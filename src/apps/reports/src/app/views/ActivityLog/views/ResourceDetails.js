@@ -151,9 +151,12 @@ export const ResourceDetails = () => {
           />
 
           <ResourceHeaderTitle
-            affectedZUID={actionsByZuid[0]?.affectedZUID}
-            resourceType={actionsByZuid[0]?.resourceType}
+            affectedZUID={actionsByZuid[0]?.affectedZUID ?? zuid}
+            resourceType={
+              actionsByZuid[0]?.resourceType ?? resolveResourceType(zuid)
+            }
             updatedAt={actionsByZuid[0]?.updatedAt}
+            isLoadingActions={isLoading}
           />
           {/* <ResourceListItem
               resource={
