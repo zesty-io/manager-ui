@@ -122,8 +122,8 @@ export const FolderMedia = ({
   }, [
     sortedGroupFiles,
     filetypeFilter,
-    dateRangeFilter.type,
-    dateRangeFilter.value,
+    dateRangeFilter?.type,
+    dateRangeFilter?.value,
   ]);
 
   const unsortedSubGroups = groupData?.groups;
