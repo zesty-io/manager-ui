@@ -493,7 +493,7 @@ export const Field = ({
         return (
           <FieldShell settings={fieldData} errors={errors}>
             <ToggleButtonGroup
-              color="secondary"
+              color="primary"
               size="small"
               value={value}
               exclusive
