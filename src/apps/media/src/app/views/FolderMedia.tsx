@@ -119,7 +119,12 @@ export const FolderMedia = ({
     } else {
       return sortedGroupFiles;
     }
-  }, [sortedGroupFiles, filetypeFilter, dateRangeFilter]);
+  }, [
+    sortedGroupFiles,
+    filetypeFilter,
+    dateRangeFilter.type,
+    dateRangeFilter.value,
+  ]);
 
   const unsortedSubGroups = groupData?.groups;
   const subgroups = useMemo(() => {
