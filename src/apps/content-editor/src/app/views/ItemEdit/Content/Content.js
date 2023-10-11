@@ -47,11 +47,7 @@ export default function Content(props) {
           overscrollBehavior: "none",
         }}
       >
-        <Box
-          height="100%"
-          width={showDuoMode ? 412 : "100%"}
-          maxWidth={showDuoMode ? "unset" : 640}
-        >
+        <Box height="100%" maxWidth={640} flex="0 1 auto">
           <Editor
             // active={this.state.makeActive}
             // scrolled={() => this.setState({ makeActive: "" })}
@@ -103,7 +99,8 @@ export default function Content(props) {
           </Stack>
           {showSidebar && (
             <Box
-              width={320}
+              maxWidth={320}
+              flex="0 1 auto"
               height="100%"
               pl={4}
               sx={{
@@ -122,7 +119,7 @@ export default function Content(props) {
           )}
         </Box>
       ) : (
-        <Box height="100%" flex={1}>
+        <Box height="100%" flex="1 1 auto">
           <PreviewMode
             dirty={props.item.dirty}
             version={props.item.meta.version}
