@@ -33,7 +33,7 @@ module.exports = {
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.webengine.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
-    URL_ACCOUNTS: "https://accounts.zesty.io",
+    URL_ACCOUNTS: "https://zesty.io",
     URL_MARKETPLACE: "https://zesty.io/marketplace/apps/",
     URL_APPS: "https://apps.zesty.io",
 
@@ -120,7 +120,7 @@ module.exports = {
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
     URL_PREVIEW_PROTOCOL: "http://",
-    URL_ACCOUNTS: "https://accounts.dev.zesty.io:9001",
+    URL_ACCOUNTS: "https://zesty.io",
     URL_MARKETPLACE:
       "https://kfg6bckb-dev.webengine.zesty.io/marketplace/apps/",
     URL_APPS: "https://apps.dev.zesty.io",

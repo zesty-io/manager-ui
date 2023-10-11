@@ -1,5 +1,5 @@
 import { FC, useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   Stack,
@@ -21,6 +21,7 @@ import slackIcon from "../../../../public/images/slackIcon.svg";
 import { User } from "../../services/types";
 import { AppState } from "../../store/types";
 import { useGetUsersRolesQuery } from "../../services/accounts";
+import { logout } from "../../store/auth";
 
 interface GlobalAccountMenuProps {
   open: boolean;
@@ -41,6 +42,8 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
     return roles?.find((role) => role.ZUID === user.ZUID)?.role?.name;
   }, [roles]);
 
+  const dispatch = useDispatch();
+
   const handleClickAction = ([action, location]: ClickAction) => {
     switch (action) {
       case "openUrl":
@@ -56,8 +59,7 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
         break;
 
       case "logOut":
-        // @ts-ignore
-        window.open(`${CONFIG.URL_ACCOUNTS}/logout`, "_self");
+        dispatch(logout());
         break;
 
       default:
