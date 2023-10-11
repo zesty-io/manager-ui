@@ -9,6 +9,8 @@ import React, {
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "@zesty-io/material";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
@@ -206,45 +208,53 @@ export default memo(function Editor({
   }, [isNewItem]);
 
   return (
-    <div className={styles.Fields}>
-      {saveClicked && <FieldError errors={fieldErrors} fields={activeFields} />}
-      {activeFields.length ? (
-        activeFields.map((field) => {
-          return (
-            <div key={`${field.ZUID}`} id={field.ZUID} className={styles.Field}>
-              <Field
-                ZUID={field.ZUID}
-                contentModelZUID={field.contentModelZUID}
-                active={active === field.ZUID}
-                name={field.name}
-                label={field.label}
-                description={field.description}
-                required={field.required}
-                relatedFieldZUID={field.relatedFieldZUID}
-                relatedModelZUID={field.relatedModelZUID}
-                datatype={field.datatype}
-                options={field.options}
-                settings={field.settings}
-                onChange={onChange}
-                onSave={onSave}
-                item={item}
-                langID={item?.meta?.langID}
-                errors={fieldErrors[field.name]}
-                maxLength={MaxLengths[field.datatype]}
-              />
-            </div>
-          );
-        })
-      ) : (
-        <div className={styles.NoFields}>
-          <h1 className={styles.Display}>No fields have been added</h1>
-          <h2 className={styles.SubHead}>
-            Use the{" "}
-            <AppLink to={`/schema/${modelZUID}`}>Schema Builder</AppLink> to
-            define your items content
-          </h2>
-        </div>
-      )}
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className={styles.Fields}>
+        {saveClicked && (
+          <FieldError errors={fieldErrors} fields={activeFields} />
+        )}
+        {activeFields.length ? (
+          activeFields.map((field) => {
+            return (
+              <div
+                key={`${field.ZUID}`}
+                id={field.ZUID}
+                className={styles.Field}
+              >
+                <Field
+                  ZUID={field.ZUID}
+                  contentModelZUID={field.contentModelZUID}
+                  active={active === field.ZUID}
+                  name={field.name}
+                  label={field.label}
+                  description={field.description}
+                  required={field.required}
+                  relatedFieldZUID={field.relatedFieldZUID}
+                  relatedModelZUID={field.relatedModelZUID}
+                  datatype={field.datatype}
+                  options={field.options}
+                  settings={field.settings}
+                  onChange={onChange}
+                  onSave={onSave}
+                  item={item}
+                  langID={item?.meta?.langID}
+                  errors={fieldErrors[field.name]}
+                  maxLength={MaxLengths[field.datatype]}
+                />
+              </div>
+            );
+          })
+        ) : (
+          <div className={styles.NoFields}>
+            <h1 className={styles.Display}>No fields have been added</h1>
+            <h2 className={styles.SubHead}>
+              Use the{" "}
+              <AppLink to={`/schema/${modelZUID}`}>Schema Builder</AppLink> to
+              define your items content
+            </h2>
+          </div>
+        )}
+      </div>
+    </ThemeProvider>
   );
 });
