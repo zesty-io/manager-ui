@@ -133,7 +133,7 @@ export const ItemSettings = memo(
         </main>
         <aside className={styles.MetaSide}>
           <Card
-            sx={{ m: 2, border: 1, borderColor: "grey.100" }}
+            sx={{ mb: 2, border: 1, borderColor: "grey.100" }}
             variant="outlined"
           >
             <CardHeader

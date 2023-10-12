@@ -2,8 +2,10 @@
 @import "~@zesty-io/core/typography.less";
 
 .Meta {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  // flex-direction: row;
   // margin: 32px;
 
   .DataSettings {
@@ -12,7 +14,8 @@
 
   .MetaMain {
     flex: 3;
-    margin-right: 32px;
+    // margin-right: 32px;
+    min-width: 0px;
 
     &.DataSettings {
       margin-right: 0;
@@ -26,6 +29,7 @@
   .MetaSide {
     flex: 2;
     margin: 16px 0;
+    min-width: 0px;
 
     .SearchResult {
       border-radius: 5px;
