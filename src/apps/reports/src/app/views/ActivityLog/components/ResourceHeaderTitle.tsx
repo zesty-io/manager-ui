@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Stack, Typography, SvgIcon, Skeleton } from "@mui/material";
 import { SettingsRounded, SvgIconComponent } from "@mui/icons-material";
+import { Database } from "@zesty-io/material";
 import { isEmpty } from "lodash";
 import moment from "moment";
 
@@ -68,10 +69,18 @@ export const ResourceHeaderTitle = ({
         data.title = `${affectedZUID} (Deleted)`;
         data.icon = null;
       }
+    } else if (resourceType === "schema") {
+      const modelData = contentModels?.find(
+        (model) => model.ZUID === affectedZUID
+      );
+
+      data.title = modelData?.label ?? `${affectedZUID} (Deleted)`;
+      data.subTitle.unshift("Content Model");
+      data.icon = Database as SvgIconComponent;
     }
 
     return data;
-  }, [resourceType, contentItem, contentModels]);
+  }, [resourceType, contentItem, contentModels, updatedAt]);
 
   return (
     <Stack gap={0.25}>
