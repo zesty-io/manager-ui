@@ -67,7 +67,7 @@ export default function Content(props) {
           overscrollBehavior: "none",
         }}
       >
-        <Box height="100%" maxWidth={640} flex="0 1 auto">
+        <Box width="100%" height="100%" maxWidth={640} flex="0 1 auto">
           <Editor
             // active={this.state.makeActive}
             // scrolled={() => this.setState({ makeActive: "" })}

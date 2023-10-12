@@ -84,7 +84,12 @@ export const FieldShell = ({
           customTooltip={customTooltip}
           withInteractiveTooltip={withInteractiveTooltip}
         />
-        <Stack direction="row" gap={0.5}>
+        <Stack
+          direction="row"
+          gap={0.5}
+          flexWrap="wrap"
+          justifyContent="flex-end"
+        >
           {["article_writer", "markdown"].includes(settings?.datatype) && (
             <>
               <Button

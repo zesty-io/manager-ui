@@ -128,10 +128,17 @@ const resolveRelatedOptions = (
             modelZUID={modelZUID}
             itemZUID={itemZUID}
             html={
-              <>
-                <span>{items[itemZUID].data[field.name]}</span>
+              <div
+                style={{
+                  display: "inline-grid",
+                  gridTemplateColumns: "minmax(50px, 100%) 41px",
+                }}
+              >
+                <span style={{ textOverflow: "ellipsis", overflow: "hidden" }}>
+                  {items[itemZUID].data[field.name]}
+                </span>
                 <em className={styles.Language}>&nbsp;{langCode}</em>
-              </>
+              </div>
             }
           />
         ),
