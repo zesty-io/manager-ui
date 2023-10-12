@@ -3,6 +3,7 @@ import debounce from "lodash/debounce";
 
 import { Select, Option } from "@zesty-io/core/Select";
 
+import styles from "./FieldTypeInternalLink.less";
 export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(
   props
 ) {
@@ -20,6 +21,10 @@ export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(
   return (
     <article className={props.className}>
       <Select
+        className={styles.FieldTypeInternalLink}
+        style={{
+          width: 100,
+        }}
         name={props.name}
         placeholder={props.placeholder}
         value={props.value || "0"}

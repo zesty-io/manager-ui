@@ -784,7 +784,7 @@ export const Field = ({
 
     case "color":
       return (
-        <Box width={300}>
+        <Box maxWidth={300}>
           <FieldShell settings={fieldData} errors={errors}>
             <FieldTypeColor
               name={name}
@@ -846,7 +846,7 @@ export const Field = ({
 
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <Box width={360}>
+          <Box maxWidth={360}>
             <FieldTypeDate
               name={name}
               required={required}
@@ -864,7 +864,7 @@ export const Field = ({
       }, []);
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <Box width={360}>
+          <Box maxWidth={360}>
             <FieldTypeDateTime
               name={name}
               required={required}
