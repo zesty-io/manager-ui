@@ -120,7 +120,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
 
             // If a content_css file is not provided tinymce will attempt
             // loading the default which is not available
-            content_css: props.contentCSS,
+            content_css: [
+              props.contentCSS,
+              "https://fonts.googleapis.com/css?family=Mulish",
+            ],
+
+            content_style: "body { font-family: 'Mulish', Arial, sans-serif  }",
 
             // Customize editor buttons and actions
             setup: function (editor) {

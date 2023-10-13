@@ -67,8 +67,12 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
                 <Typography variant="body2" component="li">
                   <Box
                     sx={{
-                      textDecoration: "underline",
+                      // textDecoration: "underline",
+                      borderBottom: 1,
+                      borderColor: "error.dark",
                       cursor: "pointer",
+                      height: 16,
+                      display: "inline-block",
                     }}
                     component="span"
                     onClick={handleErrorClick}
