@@ -57,14 +57,14 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
           Item cannot be saved due to invalid field values.
         </Typography>
         <Typography variant="body2">
-          Please correct the following {fieldsWithErrors?.length} fields before
-          saving:
+          Please correct the following {fieldsWithErrors?.length} field
+          {fieldsWithErrors?.length > 1 && "s"} before saving:
         </Typography>
         <Box component="ol" ml={2}>
           {fieldErrors?.map((error) => {
             if (error.errorMessage) {
               return (
-                <Typography component="li">
+                <Typography variant="body2" component="li">
                   <Box
                     sx={{
                       textDecoration: "underline",
