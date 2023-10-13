@@ -850,14 +850,17 @@ export const Field = ({
        * causing it to re-render as well. This `onChange` handler doesn't need
        * to change once created.
        */
-      const onDateChange = useCallback((value, name, datatype) => {
-        /**
-         * Flatpickr emits a utc timestamp, offset from users local time.
-         * Legacy behavior did not send utc but sent the value as is selected by the user
-         * this ensures that behavior is maintained.
-         */
-        onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
-      }, []);
+      const onDateChange = useCallback(
+        (value, name, datatype) => {
+          /**
+           * Flatpickr emits a utc timestamp, offset from users local time.
+           * Legacy behavior did not send utc but sent the value as is selected by the user
+           * this ensures that behavior is maintained.
+           */
+          onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
+        },
+        [onChange]
+      );
 
       return (
         <FieldShell settings={fieldData} errors={errors}>
@@ -875,9 +878,12 @@ export const Field = ({
       );
 
     case "datetime":
-      const onDateTimeChange = useCallback((value, name, datatype) => {
-        onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
-      }, []);
+      const onDateTimeChange = useCallback(
+        (value, name, datatype) => {
+          onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
+        },
+        [onChange]
+      );
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <Box maxWidth={360}>
