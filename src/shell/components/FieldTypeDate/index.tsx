@@ -7,15 +7,20 @@ export interface FieldTypeDateProps
   extends Omit<DesktopDatePickerProps<Date, Date>, "renderInput"> {
   name: string;
   required?: boolean;
+  error?: boolean;
 }
 
-export const FieldTypeDate = ({ required, ...props }: FieldTypeDateProps) => {
+export const FieldTypeDate = ({
+  required,
+  error,
+  ...props
+}: FieldTypeDateProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DesktopDatePicker
         data-testid="zds-date-picker"
         renderInput={(params) => (
-          <TextField {...params} fullWidth size="small" />
+          <TextField {...params} fullWidth size="small" error={error} />
         )}
         // Spread props at the end to allow prop overrides
         {...props}

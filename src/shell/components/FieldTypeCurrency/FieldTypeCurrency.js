@@ -45,6 +45,7 @@ export const FieldTypeCurrency = React.memo(function FieldTypeCurrency(props) {
           className={styles.CurrencyInput}
           type="number"
           value={monetaryValue}
+          error={props.error}
           onChange={(evt) => {
             const value = evt.target.value;
 

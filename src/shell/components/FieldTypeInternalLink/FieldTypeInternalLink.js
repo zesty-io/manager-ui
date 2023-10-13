@@ -34,6 +34,7 @@ export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(
         searchPlaceholder="Do not see the item you are looking for? Enter a term to search your API."
         searchLength="0"
         loading={loading}
+        error={props.error}
       >
         {/* You should always be able to unlink an internal link */}
         <Option

@@ -248,6 +248,10 @@ export const Field = ({
     );
   };
 
+  const hasErrors = (errors: Error) => {
+    return Object.values(errors)?.some((error) => !!error);
+  };
+
   switch (datatype) {
     case "text":
       return (
@@ -271,6 +275,7 @@ export const Field = ({
             inputProps={{
               name: fieldData?.name,
             }}
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </AIFieldShell>
       );
@@ -286,6 +291,7 @@ export const Field = ({
             value={value}
             onChange={(evt) => onChange(evt.target.value, name)}
             fullWidth
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );
@@ -304,6 +310,7 @@ export const Field = ({
             onChange={(evt) => onChange(evt.target.value, name)}
             fullWidth
             type="url"
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );
@@ -347,6 +354,7 @@ export const Field = ({
             fullWidth
             multiline
             rows={6}
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </AIFieldShell>
       );
@@ -551,6 +559,7 @@ export const Field = ({
             displayEmpty
             value={value || ""}
             onChange={(e) => onChange(e.target.value, name)}
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           >
             <MenuItem value="">Select</MenuItem>
             {dropdownOptions.map((dropdownOption, idx) => (
@@ -630,6 +639,7 @@ export const Field = ({
             onChange={onChange}
             onSearch={onInternalLinkSearch}
             options={internalLinkOptions}
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );
@@ -710,6 +720,7 @@ export const Field = ({
             endAdornment={
               value && <em>{getSelectedLang(allLanguages, langID)}</em>
             }
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );
@@ -778,6 +789,7 @@ export const Field = ({
                 />
               ))
             }
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );
@@ -790,6 +802,7 @@ export const Field = ({
               name={name}
               value={value || "#FFFFFF"}
               onChange={(evt) => onChange(evt.target.value, name)}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
             />
           </FieldShell>
         </Box>
@@ -807,6 +820,7 @@ export const Field = ({
             name={name}
             required={required}
             onChange={(evt) => onChange(evt.target.value, name)}
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );
@@ -824,6 +838,7 @@ export const Field = ({
             placeholder="0.00"
             value={value}
             onChange={onChange}
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );
@@ -853,6 +868,7 @@ export const Field = ({
               value={value ? new Date(value) : null}
               inputFormat="yyyy-MM-dd"
               onChange={(date) => onDateChange(date, name, datatype)}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
             />
           </Box>
         </FieldShell>
@@ -871,6 +887,7 @@ export const Field = ({
               value={value ? new Date(value) : null}
               inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
               onChange={(date) => onDateTimeChange(date, name, datatype)}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
             />
           </Box>
         </FieldShell>
@@ -887,6 +904,7 @@ export const Field = ({
             onChange={(evt) => {
               onChange(parseInt(evt.target.value), name);
             }}
+            error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );

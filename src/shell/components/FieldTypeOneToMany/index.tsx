@@ -33,6 +33,7 @@ export interface FieldTypeOneToManyProps
    * Structure for option
    */
   options: OneToManyOptions[];
+  error?: boolean;
 }
 
 export const FieldTypeOneToMany = ({
@@ -40,6 +41,7 @@ export const FieldTypeOneToMany = ({
   onOpen,
   options,
   required,
+  error,
   ...props
 }: FieldTypeOneToManyProps) => {
   const [loaded, setLoaded] = useState(false);
@@ -68,7 +70,7 @@ export const FieldTypeOneToMany = ({
       PopperComponent={StyledPopper}
       ListboxComponent={ListboxComponent}
       renderInput={(params) => (
-        <TextField {...params} placeholder={placeholder} />
+        <TextField {...params} placeholder={placeholder} error={error} />
       )}
       options={loading ? [] : options}
       getOptionLabel={(option) => option.inputLabel}

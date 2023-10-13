@@ -10,10 +10,12 @@ export interface FieldTypeDateTimeProps
   extends Omit<DesktopDateTimePickerProps<Date, Date>, "renderInput"> {
   required?: boolean;
   name: string;
+  error?: boolean;
 }
 
 export const FieldTypeDateTime = ({
   required,
+  error,
   ...props
 }: FieldTypeDateTimeProps) => {
   return (
@@ -21,7 +23,7 @@ export const FieldTypeDateTime = ({
       <DesktopDateTimePicker
         data-testid="zds-date-time-picker"
         renderInput={(params) => (
-          <TextField {...params} fullWidth size="small" />
+          <TextField {...params} fullWidth size="small" error={error} />
         )}
         // Spread props at the end to allow prop overrides
         {...props}

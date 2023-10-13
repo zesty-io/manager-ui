@@ -61,7 +61,7 @@ export const FieldShell = ({
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
   const getErrorMessage = (errors: Error) => {
-    if (errors?.MISSING_REQUIRED && valueLength === 0) {
+    if (errors?.MISSING_REQUIRED) {
       return "Required Field. Please enter a value.";
     }
 
@@ -150,7 +150,7 @@ export const FieldShell = ({
       )}
       {children}
       <Stack direction="row" justifyContent="space-between">
-        <Typography variant="body2" color="error">
+        <Typography variant="body2" color="error.dark">
           {getErrorMessage(errors)}
         </Typography>
         {maxLength && withLengthCounter && (
