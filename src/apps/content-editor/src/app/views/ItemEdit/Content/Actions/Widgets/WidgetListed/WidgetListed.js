@@ -28,7 +28,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
   return (
     <Card
       className={styles.WidgetListed}
-      sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+      sx={{ mb: 3, backgroundColor: "transparent" }}
       elevation={0}
     >
       <CardHeader

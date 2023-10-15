@@ -81,7 +81,7 @@ export function Preview(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [scaleAnchorEl, setScaleAnchorEl] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0.35);
 
   // Track initial version sent. We use this to make a determination
   // on whether current content has changed or the different version was
@@ -205,158 +205,155 @@ export function Preview(props) {
 
   return (
     <>
-      <Box
-        bgcolor="grey.100"
-        display="flex"
-        gap={1}
-        justifyContent="space-between"
-        p={1}
-        sx={{
-          overflow: "auto",
-        }}
-      >
-        <Box display="flex" gap={0.25} alignItems="center">
-          <IconButton
-            size="small"
-            onClick={() => handleCopyClick(`${domain}${route}`)}
+      <Box bgcolor="grey.100" display="flex" alignItems="center" p={1}>
+        <IconButton
+          size="small"
+          onClick={() => handleCopyClick(`${domain}${route}`)}
+          mr={0.25}
+        >
+          {isCopied ? <CheckRounded /> : <LinkRounded />}
+        </IconButton>
+
+        <Link
+          href={`${domain}${route}`}
+          target="_blank"
+          noWrap
+          sx={{
+            direction: "rtl",
+            maxWidth: "234px",
+            display: "block",
+            flex: "1",
+            mr: "auto",
+          }}
+        >
+          {`${domain}${route}`}
+        </Link>
+
+        <IconButton
+          size="small"
+          onClick={() => setRefresh(Date.now())}
+          sx={{
+            ml: 1,
+            mr: 0.5,
+          }}
+        >
+          <RefreshRounded />
+        </IconButton>
+        <IconButton
+          size="small"
+          onClick={(event) => setScaleAnchorEl(event.currentTarget)}
+          sx={{
+            mr: 0.5,
+          }}
+        >
+          <ZoomInRounded />
+        </IconButton>
+        <Menu
+          anchorEl={scaleAnchorEl}
+          open={Boolean(scaleAnchorEl)}
+          onClose={() => setScaleAnchorEl(null)}
+          PaperProps={{
+            sx: {
+              width: 184,
+            },
+          }}
+        >
+          {zoomLevels.map((level, index) => (
+            <MenuItem
+              key={index}
+              onClick={() => {
+                setZoom(level.value);
+                setScaleAnchorEl(null);
+              }}
+              selected={zoom === level.value}
+            >
+              {level.label}
+            </MenuItem>
+          ))}
+        </Menu>
+        <IconButton
+          size="small"
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+          sx={{
+            mr: 0.5,
+          }}
+        >
+          <PhoneIphoneRounded />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(null)}
+          PaperProps={{
+            sx: {
+              width: 320,
+            },
+          }}
+        >
+          <MenuItem
+            selected={device === "fullscreen"}
+            onClick={() => selectTemplate("fullscreen")}
           >
-            {isCopied ? <CheckRounded /> : <LinkRounded />}
-          </IconButton>
-          <Link
-            href={`${domain}${route}`}
-            target="_blank"
-            noWrap
-            sx={{
-              direction: "rtl",
-              maxWidth: "234px",
-            }}
-          >
-            {`${domain}${route}`}
-          </Link>
-        </Box>
-        <Box display="flex" gap={0.5} alignItems="center">
-          <IconButton size="small" onClick={() => setRefresh(Date.now())}>
-            <RefreshRounded />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={(event) => setScaleAnchorEl(event.currentTarget)}
-          >
-            <ZoomInRounded />
-          </IconButton>
-          <Menu
-            anchorEl={scaleAnchorEl}
-            open={Boolean(scaleAnchorEl)}
-            onClose={() => setScaleAnchorEl(null)}
-            PaperProps={{
-              sx: {
-                width: 184,
-              },
-            }}
-          >
-            {zoomLevels.map((level, index) => (
+            No Device
+          </MenuItem>
+          {Object.keys(templates)
+            .slice(1)
+            .map((template, index) => (
               <MenuItem
                 key={index}
-                onClick={() => {
-                  setZoom(level.value);
-                  setScaleAnchorEl(null);
-                }}
-                selected={zoom === level.value}
+                onClick={(evt) => selectTemplate(template)}
+                selected={template === device}
               >
-                {level.label}
+                {templates[template].option}
               </MenuItem>
             ))}
-            <FormControlLabel
-              value="start"
-              control={
-                <Switch
-                  color="primary"
-                  checked={rotate}
-                  onChange={(event) => setRotate(event.target.checked)}
-                />
-              }
-              label="Landscape Mode"
-              labelPlacement="start"
-              sx={{
-                mt: 2,
-                flexDirection: "row-reverse", // Reverse the direction
-                justifyContent: "space-between", // Optional, but this ensures the label takes up the full width and the checkbox is at the far right
-                width: "92%",
-              }}
-            />
-          </Menu>
-          <IconButton
-            size="small"
-            onClick={(event) => setAnchorEl(event.currentTarget)}
-          >
-            <PhoneIphoneRounded />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={() => setAnchorEl(null)}
-            PaperProps={{
-              sx: {
-                width: 320,
-              },
-            }}
-          >
-            <MenuItem
-              selected={device === "fullscreen"}
-              onClick={() => selectTemplate("fullscreen")}
-            >
-              No Device
-            </MenuItem>
-            {Object.keys(templates)
-              .slice(1)
-              .map((template, index) => (
-                <MenuItem
-                  key={index}
-                  onClick={(evt) => selectTemplate(template)}
-                  selected={template === device}
-                >
-                  {templates[template].option}
-                </MenuItem>
-              ))}
-            <FormControlLabel
-              value="start"
-              control={
-                <Switch
-                  color="primary"
-                  checked={rotate}
-                  onChange={(event) => setRotate(event.target.checked)}
-                />
-              }
-              label="Landscape Mode"
-              labelPlacement="start"
-              sx={{
-                mt: 2,
-                flexDirection: "row-reverse", // Reverse the direction
-                justifyContent: "space-between", // Optional, but this ensures the label takes up the full width and the checkbox is at the far right
-                width: "92%",
-              }}
-            />
-          </Menu>
-          <IconButton
-            size="small"
-            onClick={() =>
-              window.open(
-                `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`,
-                "_blank"
-              )
+          <FormControlLabel
+            value="start"
+            control={
+              <Switch
+                color="primary"
+                checked={rotate}
+                onChange={(event) => setRotate(event.target.checked)}
+              />
             }
-          >
-            <OpenInNewRounded />
-          </IconButton>
-          <IconButton size="small" onClick={() => sendMessage("close")}>
-            <CloseRounded />
-          </IconButton>
-        </Box>
+            label="Landscape Mode"
+            labelPlacement="start"
+            sx={{
+              mt: 2,
+              flexDirection: "row-reverse", // Reverse the direction
+              justifyContent: "space-between", // Optional, but this ensures the label takes up the full width and the checkbox is at the far right
+              width: "92%",
+            }}
+          />
+        </Menu>
+        <IconButton
+          sx={{
+            mr: 0.5,
+          }}
+          size="small"
+          onClick={() =>
+            window.open(
+              `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`,
+              "_blank"
+            )
+          }
+        >
+          <OpenInNewRounded />
+        </IconButton>
+        <IconButton size="small" onClick={() => sendMessage("close")}>
+          <CloseRounded />
+        </IconButton>
       </Box>
       <Box
         sx={{
           height: "calc(100% - 48px)",
           overflow: device === "fullscreen" ? "unset" : "auto",
+
+          scrollbarWidth: "none",
+          "-ms-overflow-style": "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
         }}
       >
         {dirty && (

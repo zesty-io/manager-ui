@@ -21,7 +21,7 @@ export const ContentLinks = memo(function ContentLinks(props) {
     <Fragment>
       <Card
         className={styles.ContentLinks}
-        sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+        sx={{ mb: 3, backgroundColor: "transparent" }}
         elevation={0}
       >
         <CardHeader

@@ -97,14 +97,14 @@ export function Actions(props) {
         />
       )}
 
-      {canDelete && (
+      {/* {canDelete && (
         <WidgetDeleteItem
           dispatch={props.dispatch}
           itemZUID={props.itemZUID}
           modelZUID={props.modelZUID}
           metaTitle={metaTitle}
         />
-      )}
+      )} */}
     </Fragment>
   );
 }

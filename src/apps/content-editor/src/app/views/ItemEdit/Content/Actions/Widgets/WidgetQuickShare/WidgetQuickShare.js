@@ -39,7 +39,7 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
   return (
     <Card
       id="WidgetQuickShare"
-      sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+      sx={{ mb: 3, backgroundColor: "transparent" }}
       elevation={0}
     >
       <CardHeader

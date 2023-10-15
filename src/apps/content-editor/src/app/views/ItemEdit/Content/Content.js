@@ -41,10 +41,9 @@ export default function Content(props) {
       bgcolor="grey.50"
       height="100%"
       overflow="hidden"
-      px={4}
       pt={2.5}
+      pr={3}
       display="flex"
-      gap={3}
       justifyContent="space-between"
       sx={{
         "*": {
@@ -65,28 +64,41 @@ export default function Content(props) {
             !showDuoMode && !showSidebar ? "center" : "flex-start",
           overflowY: "scroll",
           overscrollBehavior: "none",
+          maxWidth: showDuoMode ? 640 : "unset",
+          width: showDuoMode ? "100%" : "unset",
         }}
+        px={3}
       >
         <Box width="100%" height="100%" maxWidth={640} flex="0 1 auto">
-          <Editor
-            // active={this.state.makeActive}
-            // scrolled={() => this.setState({ makeActive: "" })}
-            model={props.model}
-            itemZUID={props.itemZUID}
-            item={props.item}
-            dispatch={props.dispatch}
-            isDirty={props.item.dirty}
-            onSave={props.onSave}
-            modelZUID={props.modelZUID}
-            saveClicked={props.saveClicked}
-            fieldErrors={props.fieldErrors}
-            onUpdateFieldErrors={props.onUpdateFieldErrors}
-          />
+          <Box width="100%">
+            <Editor
+              // active={this.state.makeActive}
+              // scrolled={() => this.setState({ makeActive: "" })}
+              model={props.model}
+              itemZUID={props.itemZUID}
+              item={props.item}
+              dispatch={props.dispatch}
+              isDirty={props.item.dirty}
+              onSave={props.onSave}
+              modelZUID={props.modelZUID}
+              saveClicked={props.saveClicked}
+              fieldErrors={props.fieldErrors}
+              onUpdateFieldErrors={props.onUpdateFieldErrors}
+            />
+          </Box>
         </Box>
       </Box>
       {!showDuoMode ? (
         <Box display="flex" gap={1}>
-          <Stack gap={1.5}>
+          <Stack
+            gap={1.5}
+            sx={{
+              ...(!showSidebar && {
+                position: "absolute",
+                right: "24px",
+              }),
+            }}
+          >
             <Tooltip
               title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
               placement="left"
@@ -127,6 +139,7 @@ export default function Content(props) {
               sx={{
                 borderLeft: (theme) => `1px solid ${theme.palette.grey[200]}`,
                 overflowY: "auto",
+                boxSizing: "border-box",
               }}
               data-cy="ContentSidebar"
             >
@@ -141,7 +154,7 @@ export default function Content(props) {
           )}
         </Box>
       ) : (
-        <Box height="100%" flex="1 1 auto">
+        <Box height="100%" flex="1 1 auto" minWidth={360}>
           <PreviewMode
             dirty={props.item.dirty}
             version={props.item.meta.version}
