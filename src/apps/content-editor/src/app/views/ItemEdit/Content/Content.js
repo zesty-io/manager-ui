@@ -63,7 +63,6 @@ export default function Content(props) {
           justifyContent:
             !showDuoMode && !showSidebar ? "center" : "flex-start",
           overflowY: "scroll",
-          overscrollBehavior: "none",
           maxWidth: showDuoMode ? 640 : "unset",
           width: showDuoMode ? "100%" : "unset",
         }}
