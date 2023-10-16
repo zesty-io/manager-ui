@@ -157,6 +157,7 @@ export const ResourceDetails = () => {
             }
             updatedAt={actionsByZuid[0]?.updatedAt}
             isLoadingActions={isLoading}
+            actionDescription={actionsByZuid[0]?.meta?.message ?? ""}
           />
           {/* <ResourceListItem
               resource={

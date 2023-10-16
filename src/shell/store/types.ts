@@ -1,6 +1,6 @@
 import { UIState } from "./ui";
 import { State as MediaRevampState } from "./media-revamp";
-import { InstalledApp } from "../services/types";
+import { InstalledApp, ModelType } from "../services/types";
 /*
   TODO
   The UI state is well typed but the rest of the application state is entirely
@@ -42,7 +42,13 @@ export type AppState = {
   listFilters: any;
   logsInView: any;
   // TODO: complete files
-  files: { dirty: boolean; ZUID: string; fileName: string; status: string }[];
+  files: {
+    dirty: boolean;
+    ZUID: string;
+    fileName: string;
+    status: string;
+    type: ModelType;
+  }[];
   status: any;
   auditTrail: any;
   headers: any;
