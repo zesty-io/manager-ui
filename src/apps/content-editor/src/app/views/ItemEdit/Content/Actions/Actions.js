@@ -15,6 +15,10 @@ import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
 import { ContentLinks } from "./Widgets/ContentLinks";
 import { ContentInfo } from "./Widgets/ContentInfo";
 
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+
 export function Actions(props) {
   if (!props.item.meta || !props.item.web) {
     console.error("Actions:missing item");
@@ -52,6 +56,120 @@ export function Actions(props) {
       <ContentLinks item={props.item} />
 
       {/* <Release item={props.item} /> */}
+
+      <Fragment>
+        <Card
+          sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+          elevation={0}
+        >
+          <CardHeader
+            sx={{
+              p: 0,
+              backgroundColor: "transparent",
+              fontSize: "16px",
+              color: "#10182866",
+              borderBottom: 1,
+              borderColor: "grey.200",
+            }}
+            titleTypographyProps={{
+              sx: {
+                fontWeight: 400,
+                fontSize: "12px",
+                lineHeight: "32px",
+                color: "#101828",
+              },
+            }}
+            title="Bounce Rate"
+          ></CardHeader>
+          <CardContent
+            sx={{
+              p: 0,
+              pt: 2,
+              "&:last-child": {
+                pb: 0,
+              },
+            }}
+          >
+            <iframe src="https://apps-beta.zesty.io/google-analytics-4/#/content/card/bounce-rate"></iframe>
+          </CardContent>
+        </Card>
+      </Fragment>
+
+      <Fragment>
+        <Card
+          sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+          elevation={0}
+        >
+          <CardHeader
+            sx={{
+              p: 0,
+              backgroundColor: "transparent",
+              fontSize: "16px",
+              color: "#10182866",
+              borderBottom: 1,
+              borderColor: "grey.200",
+            }}
+            titleTypographyProps={{
+              sx: {
+                fontWeight: 400,
+                fontSize: "12px",
+                lineHeight: "32px",
+                color: "#101828",
+              },
+            }}
+            title="Bounce Rate"
+          ></CardHeader>
+          <CardContent
+            sx={{
+              p: 0,
+              pt: 2,
+              "&:last-child": {
+                pb: 0,
+              },
+            }}
+          >
+            <iframe src="https://apps-beta.zesty.io/google-analytics-4/#/content/card/bounce-rate"></iframe>
+          </CardContent>
+        </Card>
+      </Fragment>
+
+      <Fragment>
+        <Card
+          sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
+          elevation={0}
+        >
+          <CardHeader
+            sx={{
+              p: 0,
+              backgroundColor: "transparent",
+              fontSize: "16px",
+              color: "#10182866",
+              borderBottom: 1,
+              borderColor: "grey.200",
+            }}
+            titleTypographyProps={{
+              sx: {
+                fontWeight: 400,
+                fontSize: "12px",
+                lineHeight: "32px",
+                color: "#101828",
+              },
+            }}
+            title="Bounce Rate"
+          ></CardHeader>
+          <CardContent
+            sx={{
+              p: 0,
+              pt: 2,
+              "&:last-child": {
+                pb: 0,
+              },
+            }}
+          >
+            <iframe src="https://apps-beta.zesty.io/google-analytics-4/#/content/card/bounce-rate"></iframe>
+          </CardContent>
+        </Card>
+      </Fragment>
 
       <WidgetPublishHistory
         dispatch={props.dispatch}
