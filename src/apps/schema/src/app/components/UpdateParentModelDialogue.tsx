@@ -81,6 +81,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
           modelType={model.type}
           value={newParentZUID}
           onChange={(value) => setNewParentZUID(value)}
+          tooltip="Selecting a parent affects default routing and content navigation in the UI"
         />
       </DialogContent>
       <DialogActions>

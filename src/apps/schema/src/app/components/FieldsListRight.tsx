@@ -8,6 +8,7 @@ import {
   Typography,
   Link,
   Tooltip,
+  Select,
 } from "@mui/material";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -16,6 +17,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { ContentModel } from "../../../../../shell/services/types";
 import { useUpdateContentModelMutation } from "../../../../../shell/services/instance";
+import { SelectModelParentInput } from "./SelectModelParentInput";
 
 interface Props {
   model: ContentModel;
@@ -24,14 +26,30 @@ interface Props {
 export const FieldsListRight = ({ model }: Props) => {
   const [description, setDescription] = useState("");
   const [isCopied, setIsCopied] = useState(null);
+  const [newParentZUID, setNewParentZUID] = useState(null);
+  const [showSaveParentModelButton, setshowSaveParentModelButton] =
+    useState(false);
 
-  const [updateContentModel, { isLoading }] = useUpdateContentModelMutation();
+  useEffect(() => {
+    if (model?.parentZUID) {
+      setNewParentZUID(model.parentZUID === "0" ? null : model.parentZUID);
+    }
+  }, [model]);
+
+  const [updateContentModel, { isLoading, isSuccess }] =
+    useUpdateContentModelMutation();
 
   useEffect(() => {
     if (model?.description) {
       setDescription(model?.description || "");
     }
   }, [model]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setshowSaveParentModelButton(false);
+    }
+  }, [isSuccess]);
 
   const handleCopyClick = (data: string) => {
     navigator?.clipboard
@@ -47,11 +65,28 @@ export const FieldsListRight = ({ model }: Props) => {
       });
   };
 
-  const handleSave = () => {
-    const body = {
-      ...model,
-      description,
-    };
+  const handleSave = (type: "description" | "parentZUID") => {
+    let body = { ...model };
+
+    switch (type) {
+      case "description":
+        body = {
+          ...body,
+          description,
+        };
+        break;
+
+      case "parentZUID":
+        body = {
+          ...body,
+          parentZUID: newParentZUID ?? "0",
+        };
+        break;
+
+      default:
+        break;
+    }
+
     updateContentModel({
       ZUID: model.ZUID,
       body,
@@ -140,6 +175,29 @@ export const FieldsListRight = ({ model }: Props) => {
           ),
         }}
       />
+      <Box mt={3}>
+        <SelectModelParentInput
+          modelType={model?.type}
+          value={newParentZUID}
+          onChange={(value) => {
+            setshowSaveParentModelButton(value !== model?.parentZUID);
+            setNewParentZUID(value);
+          }}
+          label="Model Parent"
+        />
+        {showSaveParentModelButton && (
+          <LoadingButton
+            color="primary"
+            loading={isLoading}
+            variant="contained"
+            onClick={() => handleSave("parentZUID")}
+            sx={{ mt: 1.5 }}
+          >
+            Save
+          </LoadingButton>
+        )}
+      </Box>
+
       <InputLabel sx={{ mt: 3 }}>
         Description
         <Tooltip
@@ -166,7 +224,7 @@ export const FieldsListRight = ({ model }: Props) => {
           startIcon={<SaveRoundedIcon />}
           loadingPosition="start"
           variant="contained"
-          onClick={handleSave}
+          onClick={() => handleSave("description")}
           sx={{ mt: 1.5 }}
         >
           Save
