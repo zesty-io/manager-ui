@@ -19,6 +19,10 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import Cookies from "js-cookie";
+
 export function Actions(props) {
   if (!props.item.meta || !props.item.web) {
     console.error("Actions:missing item");
@@ -35,6 +39,42 @@ export function Actions(props) {
   const { path, metaTitle, metaLinkText } = props.item.web;
   const { basicApi } = props.instance;
   const liveURL = domain ? `${domain}${path}` : "";
+
+  // function LoadApp(props) {
+  //   const dispatch = useDispatch();
+  //   const frame = useRef();
+  //   const app = useSelector((state) =>
+  //     state.apps.installed.find((app) => app.ZUID === props.match.params.zuid)
+  //   );
+
+  const instance = useSelector((state) => state.instance);
+  const [sessionToken] = useState(Cookies.get(CONFIG.COOKIE_NAME));
+
+  const frame = useRef();
+
+  useEffect(() => {
+    if (frame.current) {
+      // TODO need too rethink this. The goal was to allow posting messages from other locations within core
+      // but if not handled properly the reference to the frame could be a memory leak
+      // dispatch(registerFrame({
+      //   zuid: app.zuid,
+      //   frame: frame.current
+      // }));
+
+      frame.current.addEventListener("load", () => {
+        // Send users session into frame on load
+        frame.current?.contentWindow.postMessage(
+          {
+            source: "zesty",
+            sessionToken,
+            instance,
+            payload: {},
+          },
+          "https://apps-beta.zesty.io/google-analytics-4/#/content/card/bounce-rate"
+        );
+      });
+    }
+  }, [frame.current]);
 
   return (
     <Fragment>
@@ -90,12 +130,15 @@ export function Actions(props) {
               },
             }}
           >
-            <iframe src="https://apps-beta.zesty.io/google-analytics-4/#/content/card/bounce-rate"></iframe>
+            <iframe
+              ref={frame}
+              src="https://apps-beta.zesty.io/google-analytics-4/#/content/card/bounce-rate"
+            ></iframe>
           </CardContent>
         </Card>
       </Fragment>
 
-      <Fragment>
+      {/* <Fragment>
         <Card
           sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }}
           elevation={0}
@@ -169,7 +212,7 @@ export function Actions(props) {
             <iframe src="https://apps-beta.zesty.io/google-analytics-4/#/content/card/bounce-rate"></iframe>
           </CardContent>
         </Card>
-      </Fragment>
+      </Fragment> */}
 
       <WidgetPublishHistory
         dispatch={props.dispatch}
