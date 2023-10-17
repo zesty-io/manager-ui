@@ -189,7 +189,7 @@ export const ResourceDetails = () => {
           </Button>
         </Stack>
       </Stack>
-      <Box sx={{ px: 4, backgroundColor: "grey.50" }}>
+      <Box sx={{ px: 4, pt: 0.5, backgroundColor: "grey.50" }}>
         <Filters
           actions={actionsByZuid}
           filters={["action", "actionByUserZUID"]}
