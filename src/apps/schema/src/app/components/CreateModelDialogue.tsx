@@ -367,6 +367,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     parentZUID: value,
                   })
                 }
+                tooltip="Selecting a parent affects default routing and content navigation in the UI"
               />
               <Box>
                 <InputLabel>

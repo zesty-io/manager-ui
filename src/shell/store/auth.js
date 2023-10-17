@@ -228,7 +228,9 @@ export function logout() {
   return (dispatch) => {
     return request(`${CONFIG.SERVICE_AUTH}/logout`)
       .then(() => {
-        window.location = `${CONFIG.URL_ACCOUNTS}/login`;
+        dispatch({
+          type: "LOGOUT",
+        });
       })
       .catch((err) => {
         console.error(err);

@@ -66,7 +66,7 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
         </Button>
         <LoadingButton
           variant="contained"
-          color="primary"
+          color="error"
           onClick={() =>
             deleteContentItem({
               modelZUID: modelZUID,

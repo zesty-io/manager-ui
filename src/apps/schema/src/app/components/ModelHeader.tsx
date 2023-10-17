@@ -38,7 +38,7 @@ const TABS = [
     icon: SplitscreenRounded,
   },
   {
-    name: "API",
+    name: "APIs",
     value: "api",
     icon: ApiRounded,
   },
