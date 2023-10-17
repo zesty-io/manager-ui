@@ -159,15 +159,6 @@ export const ResourceDetails = () => {
             isLoadingActions={isLoading}
             actionDescription={actionsByZuid[0]?.meta?.message ?? ""}
           />
-          {/* <ResourceListItem
-              resource={
-                actionsByZuid[0] || {
-                  affectedZUID: zuid,
-                  resourceType: resolveResourceType(zuid),
-                }
-              }
-              size="large"
-            /> */}
         </Stack>
         <Stack flexDirection="row" gap={1}>
           <Button
