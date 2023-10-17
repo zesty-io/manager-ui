@@ -48,7 +48,7 @@ export const UserHeaderTitle = ({
         )}.jpg?s=40`,
         subTitle: [
           user?.role?.name,
-          `${actionCount} Actions`,
+          `${actionCount} Action${actionCount === 1 ? "" : "s"}`,
           `Last action @ ${moment(latestActionDateTime).format("hh:mm A")}`,
         ],
       };
@@ -83,19 +83,18 @@ export const UserHeaderTitle = ({
         {isLoading ? (
           <Skeleton
             variant="circular"
-            height={32}
-            width={32}
+            height={40}
+            width={40}
             sx={{ flexShrink: 0 }}
           />
         ) : (
           <Avatar
             alt={`${headerData?.name} Avatar`}
             src={headerData?.imageUrl}
-            sx={{ width: 32, height: 32 }}
           />
         )}
-        <Stack gap={0.5} width="100%">
-          <Typography variant="h5" fontWeight={700} maxWidth={640}>
+        <Stack gap={0.25} width="100%">
+          <Typography variant="h3" fontWeight={700} maxWidth={640}>
             {isLoading ? <Skeleton width="100%" /> : headerData?.name}
           </Typography>
           <Stack direction="row" gap={0.25}>

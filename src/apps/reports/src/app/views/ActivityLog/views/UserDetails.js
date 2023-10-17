@@ -3,6 +3,7 @@ import { Box, Button, Stack } from "@mui/material";
 import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
 import { instanceApi } from "shell/services/instance";
+import { Filters } from "../components/Filters";
 import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
 import { accountsApi } from "shell/services/accounts";
