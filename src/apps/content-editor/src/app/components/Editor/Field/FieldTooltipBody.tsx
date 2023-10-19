@@ -84,7 +84,7 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
           </Typography>
           <Link
             component={RouterLink}
-            to={`/reports/activity-log/resources/${data?.contentModelZUID}`}
+            to={`/schema/${data?.contentModelZUID}/activity-log`}
             color="text.secondary"
             underline="always"
             variant="body3"
