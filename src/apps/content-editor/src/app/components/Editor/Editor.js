@@ -101,14 +101,10 @@ export default memo(function Editor({
 
       // Remove the required field error message when a value has been added
       if (isFieldRequired && value) {
-        console.log(name);
-        console.log("before", errors);
         errors[name] = {
           ...(errors[name] ?? {}),
           MISSING_REQUIRED: false,
         };
-
-        console.log("after", errors);
       }
 
       // Validate character length
