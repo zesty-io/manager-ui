@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Stack,
   Typography,
@@ -11,6 +12,7 @@ import {
 import { Database } from "@zesty-io/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
+import CheckIcon from "@mui/icons-material/Check";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import moment from "moment-timezone";
 
@@ -109,6 +111,8 @@ type CopyFieldProps = {
   tooltip?: string;
 };
 const CopyField = ({ value, title, tooltip }: CopyFieldProps) => {
+  const [isCopied, setIsCopied] = useState(false);
+
   return (
     <Stack gap={0.5}>
       <Stack direction="row" gap={1} alignItems="center">
@@ -130,8 +134,27 @@ const CopyField = ({ value, title, tooltip }: CopyFieldProps) => {
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton size="small">
-                <ContentCopyRoundedIcon color="action" />
+              <IconButton
+                size="small"
+                onClick={() => {
+                  navigator?.clipboard
+                    ?.writeText(value)
+                    .then(() => {
+                      setIsCopied(true);
+                      setTimeout(() => {
+                        setIsCopied(false);
+                      }, 3000);
+                    })
+                    .catch((err) => {
+                      console.error(err);
+                    });
+                }}
+              >
+                {isCopied ? (
+                  <CheckIcon color="action" />
+                ) : (
+                  <ContentCopyRoundedIcon color="action" />
+                )}
               </IconButton>
             </InputAdornment>
           ),
