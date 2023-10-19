@@ -124,7 +124,7 @@ export const ResourceDetails = () => {
         flexDirection="row"
         justifyContent="space-between"
       >
-        <Stack>
+        <Stack gap={0.25}>
           <CustomBreadcrumbs
             items={Crumbs.map((crumb) => ({
               node: (

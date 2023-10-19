@@ -298,9 +298,13 @@ export const Home = () => {
         ];
         return (
           <Box>
-            <Stack direction="row" gap={1.5} sx={{ py: 3 }}>
+            <Stack direction="row" gap={1.5} sx={{ pb: 2 }}>
               {cards.map((card) => (
-                <Card>
+                <Card
+                  variant="outlined"
+                  elevation={0}
+                  sx={{ borderColor: "border", borderRadius: 2 }}
+                >
                   <CardHeader
                     title={
                       isFetching ? (
@@ -323,16 +327,37 @@ export const Home = () => {
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
-                gap: 7.5,
+                alignItems: "flex-start",
+                gap: 2,
               }}
             >
-              <Box sx={{ width: "100%" }}>
+              <Box
+                sx={{
+                  width: "100%",
+                  backgroundColor: "background.paper",
+                  border: 1,
+                  borderColor: "border",
+                  borderRadius: 2,
+                  py: 1,
+                  px: 2,
+                }}
+              >
                 <ActivityByResource
                   actions={filteredActions}
                   showSkeletons={isFetching}
                 />
               </Box>
-              <Box sx={{ width: "100%" }}>
+              <Box
+                sx={{
+                  width: "100%",
+                  backgroundColor: "background.paper",
+                  border: 1,
+                  borderColor: "border",
+                  borderRadius: 2,
+                  py: 1,
+                  px: 2,
+                }}
+              >
                 <Top5Users
                   actions={filteredActions}
                   showSkeletons={isFetching}
@@ -349,7 +374,7 @@ export const Home = () => {
   return (
     <>
       <Box px={4} pt={4} pb={2}>
-        <Typography variant="h3" fontWeight={700} sx={{ mb: 0.5 }}>
+        <Typography variant="h3" fontWeight={700} sx={{ mb: 0.25 }}>
           Activity Log
         </Typography>
         <Typography variant="subtitle2" color="text.secondary">

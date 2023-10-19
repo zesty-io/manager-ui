@@ -17,7 +17,7 @@ export function ReportingApp() {
       >
         <ReportingNav />
       </ResizableContainer>
-      <Box sx={{ flex: 1, overflowY: "scroll" }}>
+      <Box sx={{ flex: 1, overflowY: "auto" }}>
         <Switch>
           <Route path="/reports/activity-log" component={ActivityLog} />
           <Route path="/reports/metrics" component={Metrics} />
