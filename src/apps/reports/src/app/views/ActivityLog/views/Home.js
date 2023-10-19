@@ -29,7 +29,7 @@ import { Filters } from "../components/Filters";
 import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
 import { UsersList } from "../components/UsersList";
-import { Top5Users } from "../components/Top5Users";
+import { TopUsers } from "../components/TopUsers";
 import { isEmpty, omitBy, uniqBy } from "lodash";
 import { EmptyState } from "../components/EmptyState";
 import { ApiErrorState } from "../components/ApiErrorState";
@@ -213,7 +213,7 @@ export const Home = () => {
               showSkeletons={isLoading}
             />
             <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
-              <Top5Users actions={filteredActions} showSkeletons={isFetching} />
+              <TopUsers actions={filteredActions} showSkeletons={isFetching} />
             </Box>
           </Box>
         );
@@ -254,7 +254,7 @@ export const Home = () => {
               showSkeletons={isLoading}
             />
             <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
-              <Top5Users actions={filteredActions} showSkeletons={isFetching} />
+              <TopUsers actions={filteredActions} showSkeletons={isFetching} />
             </Box>
           </Box>
         );
@@ -358,7 +358,7 @@ export const Home = () => {
                   px: 2,
                 }}
               >
-                <Top5Users
+                <TopUsers
                   actions={filteredActions}
                   showSkeletons={isFetching}
                 />
