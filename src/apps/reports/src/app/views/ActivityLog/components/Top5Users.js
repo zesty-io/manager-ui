@@ -70,14 +70,14 @@ export const Top5Users = (props) => {
           filteredUserActions.length
         )}
       </Typography>
-      <Typography variant="subtitle2">
+      <Typography variant="subtitle2" color="text.secondary">
         {props.showSkeletons ? (
           <Skeleton variant="reactangular" width={52} height={12} />
         ) : (
           "Actions"
         )}
       </Typography>
-      <Box sx={{ height: 184, mt: 3, mb: 4 }}>
+      <Box sx={{ height: 184, py: 2 }}>
         {props.showSkeletons ? (
           Array(5)
             .fill({})
@@ -109,9 +109,9 @@ export const Top5Users = (props) => {
                 legend: { display: false },
                 datalabels: {
                   color: "#fff",
-                  anchor: "start",
-                  align: "end",
-                  padding: 8,
+                  anchor: "end",
+                  align: "start",
+                  offset: 8,
                   clip: true,
                 },
               },
