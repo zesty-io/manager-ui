@@ -12,7 +12,7 @@ type FieldErrorProps = {
 
 export const FieldError = ({ errors, fields }: FieldErrorProps) => {
   const fieldErrors = useMemo(() => {
-    return Object.entries(errors)?.map(([name, errors]) => {
+    const errorMap = Object.entries(errors)?.map(([name, errors]) => {
       let errorMessage = "";
 
       if (errors?.MISSING_REQUIRED) {
@@ -23,11 +23,16 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
         errorMessage = "";
       }
 
+      const fieldData = fields?.find((field) => field.name === name);
+
       return {
-        label: fields?.find((field) => field.name === name)?.label,
+        label: fieldData?.label,
         errorMessage,
+        sort: fieldData?.sort,
       };
     });
+
+    return errorMap.sort((a, b) => a.sort - b.sort);
   }, [errors, fields]);
 
   const hasErrors = fieldErrors?.some((error) => error.errorMessage);
