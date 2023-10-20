@@ -1,6 +1,5 @@
 import { Box, Tabs, Tab, Typography, IconButton } from "@mui/material";
-import { useGetContentModelQuery } from "../../../../../../../../shell/services/instance";
-import { ScreenShare, theme } from "@zesty-io/material";
+import { theme } from "@zesty-io/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import {
   ContentItem,
@@ -27,8 +26,8 @@ import { MoreMenu } from "./MoreMenu";
 import { DuplicateItemDialog } from "./DuplicateItemDialog";
 import { useState } from "react";
 import { PreviewMenu } from "./PreviewMenu";
-import { styled } from "@mui/system";
 import { useGetInstalledAppsQuery } from "../../../../../../../../shell/services/accounts";
+import { DuoModeSwitch } from "./DuoModeToggle";
 
 const tabs = [
   {
@@ -204,6 +203,7 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
               })}
             </Tabs>
             <Box display="flex" gap={2} alignItems="center">
+              <DuoModeSwitch />
               <LanguageSelector />
               <VersionSelector />
             </Box>

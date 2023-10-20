@@ -4,37 +4,19 @@ import { Box, Stack, IconButton, Tooltip } from "@mui/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useContext } from "react";
+import { DuoModeContext } from "../../../../../../../shell/contexts/duoModeContext";
 export default function Content(props) {
   const [showSidebar, setShowSidebar] = useLocalStorage(
     "zesty:content:sidebarOpen",
     false
   );
-  const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
-    "zesty:content:duoModeOpen",
-    true
-  );
-  const instanceSettings = useSelector((state) => state.settings.instance);
 
-  const override = instanceSettings.find((setting) => {
-    // if any of these settings are present then DuoMode is unavailable
-    return (
-      (setting.key === "basic_content_api_key" && setting.value) ||
-      (setting.key === "headless_authorization_key" && setting.value) ||
-      (setting.key === "authorization_key" && setting.value) ||
-      (setting.key === "x_frame_options" && setting.value)
-    );
-  });
-
-  const showDuoMode =
-    props?.model?.type === "dataset" || override ? false : showDuoModeLS;
-
-  useEffect(() => {
-    if (override) {
-      setShowDuoModeLS(false);
-    }
-  }, [override]);
+  const {
+    value: showDuoMode,
+    setValue: setShowDuoMode,
+    isDisabled,
+  } = useContext(DuoModeContext);
 
   return (
     <Box
@@ -116,12 +98,12 @@ export default function Content(props) {
                 />
               </IconButton>
             </Tooltip>
-            {props.model?.type !== "dataset" && !override && (
+            {!isDisabled && (
               <Tooltip title="Open DUO Mode" placement="left" dark>
                 <IconButton
                   size="small"
                   onClick={() => {
-                    setShowDuoModeLS(true);
+                    setShowDuoMode(true);
                   }}
                 >
                   <DesktopMacRounded fontSize="small" />
@@ -157,7 +139,7 @@ export default function Content(props) {
           <PreviewMode
             dirty={props.item.dirty}
             version={props.item.meta.version}
-            onClose={() => setShowDuoModeLS(false)}
+            onClose={() => setShowDuoMode(false)}
             onSave={() => props.onSave()}
           />
         </Box>
