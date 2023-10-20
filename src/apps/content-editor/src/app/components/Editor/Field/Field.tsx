@@ -394,6 +394,7 @@ export const Field = ({
               mediaBrowser={(opts: any) => {
                 setImageModal(opts);
               }}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
             />
           </AIFieldShell>
           {imageModal && renderMediaModal()}

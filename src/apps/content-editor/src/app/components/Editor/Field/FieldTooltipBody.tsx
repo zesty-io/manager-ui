@@ -75,8 +75,7 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
         <CopyField
           value={data?.ZUID}
           title="Field ZUID"
-          tooltip="Unique Hash assigned to each field. It can be used to access a field's information through our API.
-"
+          tooltip="Unique Hash assigned to each field. It can be used to access a field's information through our API."
         />
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body3" fontWeight={600} color="text.secondary">

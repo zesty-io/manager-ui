@@ -45,7 +45,13 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
   }, [props.version]);
 
   return (
-    <div className={cx(styles.FieldTypeTinyMCE, props.className)}>
+    <div
+      className={cx(
+        styles.FieldTypeTinyMCE,
+        props.className,
+        props.error ? styles.hasError : ""
+      )}
+    >
       <div className={styles.FieldTypeTinyMCEPM}>
         <Editor
           id={props.name}
