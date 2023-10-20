@@ -58,6 +58,10 @@ const zoomLevels = [
   },
 ];
 
+function isInIframe() {
+  return window.self !== window.top;
+}
+
 export function Preview(props) {
   const ZUID = window.location.host.split(".")[0];
   if (!ZUID) {
@@ -81,7 +85,9 @@ export function Preview(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [scaleAnchorEl, setScaleAnchorEl] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [zoom, setZoom] = useState(0.35);
+  const [zoom, setZoom] = useState(() => {
+    return isInIframe() ? 0.35 : 1;
+  });
 
   // Track initial version sent. We use this to make a determination
   // on whether current content has changed or the different version was
