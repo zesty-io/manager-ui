@@ -428,6 +428,7 @@ export const Field = ({
                 setImageModal(opts);
               }}
               editor={editorType}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
             />
           </AIFieldShell>
           {imageModal && renderMediaModal()}

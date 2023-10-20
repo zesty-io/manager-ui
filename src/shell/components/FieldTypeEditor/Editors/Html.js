@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import cx from "classnames";
+
 import styles from "./Html.less";
 import { html } from "js-beautify";
 import { Controlled as CodeMirror } from "react-codemirror2";
@@ -22,7 +24,7 @@ export function HtmlEditor(props) {
 
   return (
     <CodeMirror
-      className={styles.Html}
+      className={cx(styles.Html, props.error ? styles.hasError : "")}
       value={parsed}
       options={{
         autoCursor: false,

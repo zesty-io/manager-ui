@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
+import cx from "classnames";
 
 // import { HtmlEditor } from "@aeaton/react-prosemirror";
 import { HtmlEditor } from "./react-prosemirror/HtmlEditor";
@@ -66,7 +67,7 @@ export function BasicEditor(props) {
   }, [ref]);
 
   return (
-    <div className={styles.BasicEditor}>
+    <div className={cx(styles.BasicEditor, props.error ? styles.hasError : "")}>
       <HtmlEditor
         options={options}
         value={props.value}

@@ -24,6 +24,7 @@ export const FieldTypeEditor = React.memo(function FieldTypeEditor(props) {
           datatype={props.datatype}
           onChange={props.onChange}
           mediaBrowser={props.mediaBrowser}
+          error={props.error}
         />
       </div>
     </div>

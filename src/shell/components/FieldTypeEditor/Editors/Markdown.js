@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import cx from "classnames";
 import styles from "./Markdown.less";
 
 export function MarkdownEditor(props) {
@@ -16,7 +17,7 @@ export function MarkdownEditor(props) {
 
   return (
     <textarea
-      className={styles.Markdown}
+      className={cx(styles.Markdown, props.error ? styles.hasError : "")}
       placeholder={props.placeholder}
       value={value}
       onInput={onInput}

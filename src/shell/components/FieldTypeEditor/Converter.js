@@ -60,6 +60,7 @@ export const Converter = React.memo(function Converter(props) {
           version={props.version}
           mediaBrowser={props.mediaBrowser}
           onChange={onChange}
+          error={props.error}
         />
       )}
       {props.editor === "article_writer" && (
@@ -68,6 +69,7 @@ export const Converter = React.memo(function Converter(props) {
           version={props.version}
           mediaBrowser={props.mediaBrowser}
           onChange={onChange}
+          error={props.error}
         />
       )}
       {props.editor === "markdown" && (
@@ -75,6 +77,7 @@ export const Converter = React.memo(function Converter(props) {
           value={content}
           version={props.version}
           onChange={onChange}
+          error={props.error}
         />
       )}
       {props.editor === "html" && (
@@ -82,6 +85,7 @@ export const Converter = React.memo(function Converter(props) {
           value={content}
           version={props.version}
           onChange={onChange}
+          error={props.error}
         />
       )}
     </Fragment>

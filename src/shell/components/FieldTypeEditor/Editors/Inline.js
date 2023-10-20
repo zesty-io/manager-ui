@@ -1,5 +1,7 @@
 import React, { useMemo } from "react";
 
+import { Box } from "@mui/material";
+
 // import { HtmlEditor } from "@aeaton/react-prosemirror";
 import { HtmlEditor } from "./react-prosemirror/HtmlEditor";
 import { Floater } from "@aeaton/react-prosemirror";
@@ -23,33 +25,41 @@ export function InlineEditor(props) {
   }, [props.version]);
 
   return (
-    <HtmlEditor
-      options={options}
-      value={props.value}
-      version={props.version}
-      onChange={props.onChange}
-      render={({ editor, view }) => (
-        <section className={styles.InlineEditor}>
-          <Floater view={view}>
-            <MenuBar
-              menu={inline({ mediaBrowser: props.mediaBrowser })}
-              view={view}
-            />
-          </Floater>
-          {editor}
-        </section>
-      )}
-      nodeViews={{
-        image(node, view, getPos) {
-          return new ImageResizeView(node, view, getPos);
-        },
-        iframe(node, view, getPos) {
-          return new IframeResizeView(node, view, getPos);
-        },
-        video(node, view, getPos) {
-          return new VideoResizeView(node, view, getPos);
-        },
+    <Box
+      sx={{
+        width: "100%",
+        border: props.error ? 1 : 0,
+        borderColor: "error.main",
       }}
-    />
+    >
+      <HtmlEditor
+        options={options}
+        value={props.value}
+        version={props.version}
+        onChange={props.onChange}
+        render={({ editor, view }) => (
+          <section className={styles.InlineEditor}>
+            <Floater view={view}>
+              <MenuBar
+                menu={inline({ mediaBrowser: props.mediaBrowser })}
+                view={view}
+              />
+            </Floater>
+            {editor}
+          </section>
+        )}
+        nodeViews={{
+          image(node, view, getPos) {
+            return new ImageResizeView(node, view, getPos);
+          },
+          iframe(node, view, getPos) {
+            return new IframeResizeView(node, view, getPos);
+          },
+          video(node, view, getPos) {
+            return new VideoResizeView(node, view, getPos);
+          },
+        }}
+      />
+    </Box>
   );
 }
