@@ -72,7 +72,6 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
                 <Typography key={index} variant="body2" component="li">
                   <Box
                     sx={{
-                      // textDecoration: "underline",
                       borderBottom: 1,
                       borderColor: "error.dark",
                       cursor: "pointer",
