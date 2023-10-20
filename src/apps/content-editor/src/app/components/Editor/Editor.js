@@ -100,11 +100,18 @@ export default memo(function Editor({
       const errors = cloneDeep(fieldErrors);
 
       // Remove the required field error message when a value has been added
-      if (isFieldRequired && value) {
-        errors[name] = {
-          ...(errors[name] ?? {}),
-          MISSING_REQUIRED: false,
-        };
+      if (isFieldRequired) {
+        if (fieldDatatype === "yes_no" && value !== null) {
+          errors[name] = {
+            ...(errors[name] ?? {}),
+            MISSING_REQUIRED: false,
+          };
+        } else if (fieldDatatype !== "yes_no" && value) {
+          errors[name] = {
+            ...(errors[name] ?? {}),
+            MISSING_REQUIRED: false,
+          };
+        }
       }
 
       // Validate character length

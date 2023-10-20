@@ -66,10 +66,10 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
           {fieldsWithErrors?.length > 1 && "s"} before saving:
         </Typography>
         <Box component="ol" ml={2}>
-          {fieldErrors?.map((error) => {
+          {fieldErrors?.map((error, index) => {
             if (error.errorMessage) {
               return (
-                <Typography variant="body2" component="li">
+                <Typography key={index} variant="body2" component="li">
                   <Box
                     sx={{
                       // textDecoration: "underline",

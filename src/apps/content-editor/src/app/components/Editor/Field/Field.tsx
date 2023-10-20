@@ -510,6 +510,8 @@ export const Field = ({
     case "yes_no":
       if (settings.options) {
         const binaryFieldOpts = Object.values(settings.options);
+        const error = errors && Object.values(errors)?.some((error) => !!error);
+
         return (
           <FieldShell settings={fieldData} errors={errors}>
             <ToggleButtonGroup
@@ -519,10 +521,20 @@ export const Field = ({
               exclusive
               onChange={(_, val) => onChange(val, name)}
             >
-              <ToggleButton value={0}>
+              <ToggleButton
+                value={0}
+                sx={{
+                  borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",
+                }}
+              >
                 {binaryFieldOpts[0] || "No"}{" "}
               </ToggleButton>
-              <ToggleButton value={1}>
+              <ToggleButton
+                value={1}
+                sx={{
+                  borderColor: error ? "error.main" : "rgba(0, 0, 0, 0.12)",
+                }}
+              >
                 {binaryFieldOpts[1] || "Yes"}{" "}
               </ToggleButton>
             </ToggleButtonGroup>
