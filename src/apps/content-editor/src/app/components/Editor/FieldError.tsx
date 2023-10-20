@@ -29,6 +29,7 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
         label: fieldData?.label,
         errorMessage,
         sort: fieldData?.sort,
+        ZUID: fieldData?.ZUID,
       };
     });
 
@@ -38,10 +39,8 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
   const hasErrors = fieldErrors?.some((error) => error.errorMessage);
   const fieldsWithErrors = fieldErrors?.filter((error) => error.errorMessage);
 
-  const handleErrorClick = () => {
-    const firstError = fieldsWithErrors?.[0];
-    const field = fields?.find((field) => field.label === firstError?.label);
-    const fieldElement = document.getElementById(field?.ZUID);
+  const handleErrorClick = (fieldZUID: string) => {
+    const fieldElement = document.getElementById(fieldZUID);
     fieldElement?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -79,7 +78,7 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
                       display: "inline-block",
                     }}
                     component="span"
-                    onClick={handleErrorClick}
+                    onClick={() => handleErrorClick(error.ZUID)}
                   >
                     {error.label}
                   </Box>{" "}
