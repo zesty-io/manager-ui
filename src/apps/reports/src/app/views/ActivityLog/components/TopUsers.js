@@ -45,7 +45,6 @@ export const TopUsers = (props) => {
   );
 
   const chartContainerHeight = topUsers?.length ? topUsers.length * 40 : 400;
-  console.log(chartContainerHeight);
 
   return (
     <>
@@ -123,6 +122,7 @@ export const TopUsers = (props) => {
               scales: {
                 x: {
                   display: false,
+                  max: topUsers[0]?.count ?? 0,
                 },
                 y: {
                   grid: {
