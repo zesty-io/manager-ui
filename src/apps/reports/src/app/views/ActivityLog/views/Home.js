@@ -314,6 +314,7 @@ export const Home = () => {
                       )
                     }
                     sx={{ width: 200, backgroundColor: "common.white" }}
+                    titleTypographyProps={{ fontWeight: 600 }}
                   />
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
