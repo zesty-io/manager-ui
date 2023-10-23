@@ -17,7 +17,7 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import AutoRenewRoundedIcon from "@mui/icons-material/AutoRenewRounded";
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
@@ -313,7 +313,7 @@ export const Header = ({
                   onClick={() => addImagesCallback(selectedFiles)}
                   startIcon={
                     isReplace ? (
-                      <AutoRenewRoundedIcon fontSize="small" />
+                      <AutorenewRoundedIcon fontSize="small" />
                     ) : (
                       <CheckIcon fontSize="small" />
                     )
