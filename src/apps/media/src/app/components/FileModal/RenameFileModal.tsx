@@ -1,5 +1,6 @@
 import { FC, useEffect, useState, Dispatch } from "react";
 import {
+  Box,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -22,6 +23,7 @@ interface Props {
   isLoadingUpdate: boolean;
   resetUpdate: any;
   extension: string;
+  src: string;
 }
 
 export const RenameFileModal: FC<Props> = ({
@@ -33,6 +35,7 @@ export const RenameFileModal: FC<Props> = ({
   isLoadingUpdate,
   resetUpdate,
   extension,
+  src,
 }) => {
   const [renamedFilename, setRenamedFilename] = useState<string>(newFilename);
 
@@ -51,6 +54,18 @@ export const RenameFileModal: FC<Props> = ({
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
       <DialogTitle>
+        <Box
+          component="img"
+          src={`${src}?height=120&width=120&fit=bounds`}
+          width="120px"
+          height="120px"
+          bgcolor="grey.100"
+          sx={{
+            objectFit: "contain",
+            borderRadius: "8px",
+          }}
+          mb={1.5}
+        />
         <Typography variant="h5">Rename File</Typography>
       </DialogTitle>
       <DialogContent>

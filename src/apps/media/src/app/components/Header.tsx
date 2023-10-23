@@ -17,6 +17,7 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import AutoRenewRoundedIcon from "@mui/icons-material/AutoRenewRounded";
 import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
@@ -91,6 +92,9 @@ export const Header = ({
   );
   const limitSelected = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.limitSelected
+  );
+  const isReplace = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.isReplace
   );
   const dispatch = useDispatch();
   const [hiddenGroups, setHiddenGroups] = useLocalStorage(
@@ -231,45 +235,51 @@ export const Header = ({
             alignItems="center"
           >
             <Stack direction="row" spacing="2px" alignItems="center">
-              <IconButton
-                size="small"
-                onClick={() => dispatch(clearSelectedFiles())}
-                sx={{ height: "fit-content" }}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
+              {!isReplace && (
+                <IconButton
+                  size="small"
+                  onClick={() => dispatch(clearSelectedFiles())}
+                  sx={{ height: "fit-content" }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              )}
               <Typography variant="h3" fontWeight={700}>
-                {selectedFiles?.length}{" "}
-                {isSelectDialog && limitSelected
+                {!isReplace && selectedFiles?.length}{" "}
+                {!isReplace && isSelectDialog && limitSelected
                   ? ` / ${limitSelected} `
                   : null}
-                Selected
+                {isReplace && "Replacement File"} Selected
               </Typography>
             </Stack>
             <Box>
-              <Button
-                variant="outlined"
-                size="small"
-                color="inherit"
-                sx={{ mr: 1 }}
-                onClick={() => dispatch(clearSelectedFiles())}
-                startIcon={<CloseIcon color="action" fontSize="small" />}
-              >
-                Deselect All
-              </Button>
-              <Button
-                variant="outlined"
-                size="small"
-                color="inherit"
-                sx={{ mr: 1 }}
-                onClick={() => handleSelectAll()}
-                disabled={disableSelectAll()}
-                startIcon={
-                  <DoneAllRoundedIcon color="action" fontSize="small" />
-                }
-              >
-                Select All
-              </Button>
+              {!isReplace && (
+                <>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    color="inherit"
+                    sx={{ mr: 1 }}
+                    onClick={() => dispatch(clearSelectedFiles())}
+                    startIcon={<CloseIcon color="action" fontSize="small" />}
+                  >
+                    Deselect All
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    color="inherit"
+                    sx={{ mr: 1 }}
+                    onClick={() => handleSelectAll()}
+                    disabled={disableSelectAll()}
+                    startIcon={
+                      <DoneAllRoundedIcon color="action" fontSize="small" />
+                    }
+                  >
+                    Select All
+                  </Button>
+                </>
+              )}
               {showHeaderActions && (
                 <>
                   <Button
@@ -301,14 +311,24 @@ export const Header = ({
                   size="small"
                   color="primary"
                   onClick={() => addImagesCallback(selectedFiles)}
-                  startIcon={<CheckIcon fontSize="small" />}
+                  startIcon={
+                    isReplace ? (
+                      <AutoRenewRoundedIcon fontSize="small" />
+                    ) : (
+                      <CheckIcon fontSize="small" />
+                    )
+                  }
                   ref={doneButtonRef}
                 >
-                  Done
+                  {isReplace ? "Replace" : "Done"}
                 </Button>
               )}
             </Box>
           </Stack>
+        ) : isReplace ? (
+          <Typography variant="h3" fontWeight={700}>
+            Select Replacement File
+          </Typography>
         ) : (
           <Stack
             direction="row"

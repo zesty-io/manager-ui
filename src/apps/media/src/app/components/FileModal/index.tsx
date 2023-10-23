@@ -31,14 +31,18 @@ const styledModal = {
 
 interface Props {
   fileId: string;
-  onSetIsFileModalError: Dispatch<boolean>;
-  currentFiles: File[];
+  onSetIsFileModalError?: Dispatch<boolean>;
+  currentFiles?: string[];
+  onClose?: () => void;
+  onFileChange?: (fileId: string) => void;
 }
 
 export const FileModal: FC<Props> = ({
   fileId,
   onSetIsFileModalError,
   currentFiles,
+  onClose,
+  onFileChange,
 }) => {
   const history = useHistory();
   const location = useLocation();
@@ -53,11 +57,15 @@ export const FileModal: FC<Props> = ({
   const [imageSettings, setImageSettings] = useState<any>(null);
 
   const handleCloseModal = () => {
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.delete("fileId");
-    history.replace({
-      search: queryParams.toString(),
-    });
+    if (onClose) {
+      onClose();
+    } else {
+      const queryParams = new URLSearchParams(location.search);
+      queryParams.delete("fileId");
+      history.replace({
+        search: queryParams.toString(),
+      });
+    }
   };
 
   useEffect(() => {
@@ -66,11 +74,15 @@ export const FileModal: FC<Props> = ({
     }
   }, [isError]);
 
-  const currentIndex = currentFiles.findIndex((file) => file.id === fileId);
+  const currentIndex = currentFiles?.indexOf(fileId);
 
-  const handleArrow = (file: File) => {
-    if (file) {
-      setParams(file.id, "fileId");
+  const handleArrow = (fileId: string) => {
+    if (fileId) {
+      if (onFileChange) {
+        onFileChange(fileId);
+      } else {
+        setParams(fileId, "fileId");
+      }
       setShowEdit(false);
     }
   };
@@ -78,7 +90,7 @@ export const FileModal: FC<Props> = ({
   useEffect(() => {
     if (currentIndex !== -1) {
       const nextFile =
-        currentIndex < currentFiles.length - 1
+        currentIndex < currentFiles?.length - 1
           ? currentFiles[currentIndex + 1]
           : undefined;
 
@@ -95,7 +107,11 @@ export const FileModal: FC<Props> = ({
         case "ArrowLeft":
           setAdjacentFiles((adjacentFiles) => {
             if (adjacentFiles.prevFile) {
-              setParams(adjacentFiles.prevFile.id, "fileId");
+              if (onFileChange) {
+                onFileChange(adjacentFiles.prevFile);
+              } else {
+                setParams(adjacentFiles.prevFile, "fileId");
+              }
               setShowEdit(false);
             }
             return adjacentFiles;
@@ -104,7 +120,11 @@ export const FileModal: FC<Props> = ({
         case "ArrowRight":
           setAdjacentFiles((adjacentFiles) => {
             if (adjacentFiles.nextFile) {
-              setParams(adjacentFiles.nextFile.id, "fileId");
+              if (onFileChange) {
+                onFileChange(adjacentFiles.nextFile);
+              } else {
+                setParams(adjacentFiles.nextFile, "fileId");
+              }
               setShowEdit(false);
             }
             return adjacentFiles;

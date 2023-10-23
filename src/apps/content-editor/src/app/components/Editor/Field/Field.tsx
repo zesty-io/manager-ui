@@ -66,6 +66,7 @@ import {
 } from "../../../../../../../shell/services/types";
 import { ResolvedOption } from "./ResolvedOption";
 import { LinkOption } from "./LinkOption";
+import { FieldTypeMedia } from "../../FieldTypeMedia";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -441,26 +442,25 @@ export const Field = ({
         () => ((value as string) || "").split(",").filter((el: string) => el),
         [value]
       );
+      const error = errors && Object.values(errors)?.some((error) => !!error);
 
       return (
         <>
           <FieldShell settings={fieldData} errors={errors}>
-            <FieldTypeImage
-              images={images}
-              name={name}
+            <FieldTypeMedia
+              hasError={error}
               limit={(settings && settings.limit) || 1}
-              locked={Boolean(
-                settings && settings.group_id && settings.group_id != "0"
-              )}
-              onChange={onChange}
-              value={value}
-              resolveImage={(zuid: string, width: string, height: string) =>
-                // @ts-ignore
-                `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
-              }
-              mediaBrowser={(opts: any) => {
-                setImageModal(opts);
+              imageZUIDs={images}
+              openMediaBrowser={(opts: any) => {
+                setImageModal({
+                  ...opts,
+                  locked: Boolean(
+                    settings && settings.group_id && settings.group_id != "0"
+                  ),
+                });
               }}
+              name={name}
+              onChange={onChange}
             />
           </FieldShell>
           {imageModal && (
@@ -500,6 +500,7 @@ export const Field = ({
                     imageModal.callback(images);
                     setImageModal(null);
                   }}
+                  isReplace={imageModal.isReplace}
                 />
               </Dialog>
             </MemoryRouter>
