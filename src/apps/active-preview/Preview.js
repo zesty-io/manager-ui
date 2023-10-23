@@ -226,10 +226,9 @@ export function Preview(props) {
           noWrap
           sx={{
             direction: "rtl",
-            maxWidth: "234px",
             display: "block",
             flex: "1",
-            mr: "auto",
+            textAlign: "left",
           }}
         >
           {`${domain}${route}`}

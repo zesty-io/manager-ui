@@ -24,7 +24,7 @@ export default function Content(props) {
       height="100%"
       overflow="hidden"
       pt={2.5}
-      pr={3}
+      pr={4}
       display="flex"
       justifyContent="space-between"
       sx={{
@@ -48,7 +48,8 @@ export default function Content(props) {
           maxWidth: showDuoMode ? 640 : "unset",
           width: showDuoMode ? "100%" : "unset",
         }}
-        px={3}
+        pr={3}
+        pl={4}
       >
         <Box width="100%" height="100%" maxWidth={640} flex="0 1 auto">
           <Box width="100%">
