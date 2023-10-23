@@ -88,7 +88,7 @@ export const FieldTypeMedia = ({
   const replaceImage = (images: any[]) => {
     const imageZUID = images.map((image) => image.id)?.[0];
     let imageToReplace: string;
-    setImageToReplace((value) => {
+    setImageToReplace((value: string) => {
       imageToReplace = value;
       return "";
     });
