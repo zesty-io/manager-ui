@@ -25,7 +25,7 @@ export const CongratulationsDialog = ({ onClose }: Props) => {
           <Typography variant="body2" color="text.secondary">
             Please select the next step you’d like to take.
           </Typography>
-          <ResourcesCard isMature={false} hideHeader hideFooter />
+          <ResourcesCard hideHeader hideFooter />
         </DialogContent>
         <DialogActions>
           <Button variant="contained" onClick={onClose}>
