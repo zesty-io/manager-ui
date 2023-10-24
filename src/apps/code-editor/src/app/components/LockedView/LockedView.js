@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useHistory } from "react-router";
 import moment from "moment-timezone";
 
@@ -47,8 +47,13 @@ export function LockedView(props) {
   const [name, setName] = useState(props.name);
 
   const onClose = useCallback(() => {
-    history.goBack();
-  });
+    // FIXME: Doesn't trigger the gobac
+    console.log(isLocked);
+    if (isLocked) {
+      console.log("on close");
+      history.goBack();
+    }
+  }, [isLocked]);
 
   const assumeLock = useCallback(() => {
     return dispatch(unlock(props.ZUID)).then((_) => {
@@ -96,16 +101,18 @@ export function LockedView(props) {
     };
   }, [props.ZUID, props.name]);
 
+  const isLocked = useMemo(() => {
+    return (
+      zuid === props.ZUID &&
+      lockData.userZUID &&
+      lockData.userZUID !== currentUser.ZUID
+    );
+  }, [lockData, zuid, props.ZUID]);
+
+  console.log(isLocked);
+
   return (
-    <Modal
-      className={styles.LockedView}
-      open={
-        zuid === props.ZUID &&
-        lockData.userZUID &&
-        lockData.userZUID !== currentUser.ZUID
-      }
-      onClose={onClose}
-    >
+    <Modal className={styles.LockedView} open={isLocked} onClose={onClose}>
       <ModalHeader className={styles.ModalHeader}>
         <h2 className={styles.headline}>
           <FontAwesomeIcon icon={faLock} /> Locked
