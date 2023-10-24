@@ -435,7 +435,8 @@ const MediaItem = ({
     <>
       <Box
         maxWidth="640px"
-        display="flex"
+        display="grid"
+        gridTemplateColumns="repeat(2, min-content) 1fr"
         draggable={isDraggable}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
@@ -493,28 +494,31 @@ const MediaItem = ({
           ) : null}
         </Box>
         <Box
-          display="flex"
+          display="grid"
+          // TODO: should there be a min width for the label?
+          gridTemplateColumns="minmax(0px, auto) 112px"
           alignItems="center"
           px={2}
           py={2.25}
           gap={2}
           width="100%"
           justifyContent={"space-between"}
+          boxSizing="border-box"
           // sx={{
           //   overflow: 'hidden',
           // }}
         >
           {/* flex 1 breaks it hint?? */}
           {isURL ? (
-            <Typography variant="body2" color="text.primary">
+            <Typography variant="body2" color="text.primary" noWrap>
               {imageZUID}
             </Typography>
           ) : (
             <Box>
-              <Typography variant="body2" color="text.primary">
+              <Typography variant="body2" color="text.primary" noWrap>
                 {data?.filename}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" noWrap>
                 {data?.title}
               </Typography>
             </Box>
