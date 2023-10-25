@@ -6,6 +6,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { useMemo } from "react";
+import { useParams } from "react-router";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { useGetContentNavItemsQuery } from "../../../../../shell/services/instance";
 import { ContentNavItem, ModelType } from "../../../../../shell/services/types";
@@ -25,6 +26,7 @@ export const SelectModelParentInput = ({
   label = "Select Model Parent",
   tooltip = "",
 }: SelectModelParentInputProps) => {
+  const { id } = useParams<{ id: string }>();
   const { data: navItems } = useGetContentNavItemsQuery();
 
   const parents = useMemo(() => {
@@ -39,7 +41,9 @@ export const SelectModelParentInput = ({
         );
       }
 
-      return _navItems?.sort((a, b) => a.label.localeCompare(b.label));
+      return _navItems
+        ?.filter((item) => item.contentModelZUID !== id)
+        ?.sort((a, b) => a.label.localeCompare(b.label));
     }
 
     return [];
