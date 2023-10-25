@@ -9,8 +9,16 @@ import {
   CardContent,
   Stack,
   Skeleton,
+  SvgIcon,
 } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
+import {
+  CategoryRounded,
+  GroupsRounded,
+  ViewTimelineRounded,
+  InsightsRounded,
+} from "@mui/icons-material";
+
 import { instanceApi } from "shell/services/instance";
 import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
@@ -21,7 +29,7 @@ import { Filters } from "../components/Filters";
 import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
 import { UsersList } from "../components/UsersList";
-import { Top5Users } from "../components/Top5Users";
+import { TopUsers } from "../components/TopUsers";
 import { isEmpty, omitBy, uniqBy } from "lodash";
 import { EmptyState } from "../components/EmptyState";
 import { ApiErrorState } from "../components/ApiErrorState";
@@ -34,6 +42,25 @@ const filtersOnView = {
   timeline: ["action", , "resourceType", "actionByUserZUID"],
   insights: ["action", "actionByUserZUID"],
 };
+
+const TABS = [
+  {
+    name: "Resources",
+    icon: CategoryRounded,
+  },
+  {
+    name: "Users",
+    icon: GroupsRounded,
+  },
+  {
+    name: "Timeline",
+    icon: ViewTimelineRounded,
+  },
+  {
+    name: "Insights",
+    icon: InsightsRounded,
+  },
+];
 
 export const Home = () => {
   const history = useHistory();
@@ -186,7 +213,7 @@ export const Home = () => {
               showSkeletons={isLoading}
             />
             <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
-              <Top5Users actions={filteredActions} showSkeletons={isFetching} />
+              <TopUsers actions={filteredActions} showSkeletons={isFetching} />
             </Box>
           </Box>
         );
@@ -227,7 +254,7 @@ export const Home = () => {
               showSkeletons={isLoading}
             />
             <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
-              <Top5Users actions={filteredActions} showSkeletons={isFetching} />
+              <TopUsers actions={filteredActions} showSkeletons={isFetching} />
             </Box>
           </Box>
         );
@@ -271,9 +298,13 @@ export const Home = () => {
         ];
         return (
           <Box>
-            <Stack direction="row" gap={1.5} sx={{ py: 3 }}>
+            <Stack direction="row" gap={1.5} sx={{ pb: 2 }}>
               {cards.map((card) => (
-                <Card>
+                <Card
+                  variant="outlined"
+                  elevation={0}
+                  sx={{ borderColor: "border", borderRadius: 2 }}
+                >
                   <CardHeader
                     title={
                       isFetching ? (
@@ -283,6 +314,7 @@ export const Home = () => {
                       )
                     }
                     sx={{ width: 200, backgroundColor: "common.white" }}
+                    titleTypographyProps={{ fontWeight: 600 }}
                   />
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
@@ -296,17 +328,38 @@ export const Home = () => {
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
-                gap: 7.5,
+                alignItems: "flex-start",
+                gap: 2,
               }}
             >
-              <Box sx={{ width: "100%" }}>
+              <Box
+                sx={{
+                  width: "100%",
+                  backgroundColor: "background.paper",
+                  border: 1,
+                  borderColor: "border",
+                  borderRadius: 2,
+                  py: 1,
+                  px: 2,
+                }}
+              >
                 <ActivityByResource
                   actions={filteredActions}
                   showSkeletons={isFetching}
                 />
               </Box>
-              <Box sx={{ width: "100%" }}>
-                <Top5Users
+              <Box
+                sx={{
+                  width: "100%",
+                  backgroundColor: "background.paper",
+                  border: 1,
+                  borderColor: "border",
+                  borderRadius: 2,
+                  py: 1,
+                  px: 2,
+                }}
+              >
+                <TopUsers
                   actions={filteredActions}
                   showSkeletons={isFetching}
                 />
@@ -321,34 +374,49 @@ export const Home = () => {
 
   return (
     <>
-      <Box sx={{ px: 3, pt: 3, mb: 1 }}>
-        <Typography variant="h4" fontWeight={600} sx={{ mb: 0.5 }}>
+      <Box px={4} pt={4} pb={2}>
+        <Typography variant="h3" fontWeight={700} sx={{ mb: 0.25 }}>
           Activity Log
         </Typography>
         <Typography variant="subtitle2" color="text.secondary">
           Your instance timeline by resources and users
         </Typography>
       </Box>
-      <Box sx={{ borderBottom: 1, borderColor: "border", pl: 2 }}>
+      <Box sx={{ borderBottom: 2, borderColor: "border" }}>
         <Tabs
           value={tabPaths.indexOf(activeView)}
           onChange={handleTabChange}
-          sx={{ position: "relative", top: "1px" }}
+          sx={{
+            position: "relative",
+            top: "2px",
+            px: 4,
+          }}
         >
-          <Tab label="RESOURCES" />
-          <Tab label="USERS" />
-          <Tab label="TIMELINE" />
-          <Tab label="INSIGHTS" />
+          {TABS.map((tab) => (
+            <Tab
+              icon={<SvgIcon component={tab.icon} fontSize="small" />}
+              iconPosition="start"
+              label={tab.name}
+              disableRipple
+            />
+          ))}
         </Tabs>
       </Box>
-      <Box sx={{ px: 3 }}>
+      <Box sx={{ px: 4, py: 0.5, backgroundColor: "grey.50" }}>
         <Filters
           actions={actions}
           filters={filtersOnView[activeView] || []}
           showSkeletons={isLoading}
         />
       </Box>
-      <Box sx={{ px: 3, height: "100%", overflow: "auto" }}>
+      <Box
+        sx={{
+          px: 4,
+          height: "100%",
+          overflow: "auto",
+          backgroundColor: "grey.50",
+        }}
+      >
         {status === "rejected" ? (
           <Box
             sx={{

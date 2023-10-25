@@ -38,7 +38,7 @@ const actionBackgroundColorMap = {
 
 const actionIconColorMap = {
   1: "primary.main",
-  2: "info.light",
+  2: "info.main",
   3: "error.dark",
   4: "success.main",
   5: "warning.main",

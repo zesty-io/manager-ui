@@ -1,22 +1,19 @@
 import { useState, useEffect, useMemo } from "react";
-import { Box, Button, Link, Breadcrumbs } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
 import { instanceApi } from "shell/services/instance";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useHistory } from "react-router";
 import { Filters } from "../components/Filters";
 import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
-import { UserListItem } from "../components/UserListItem";
 import { accountsApi } from "shell/services/accounts";
 import { filterByParams } from "utility/filterByParams";
 import { notify } from "shell/store/notifications";
 import { useDispatch } from "react-redux";
 import EmailIcon from "@mui/icons-material/Email";
+import { UserHeaderTitle } from "../components/UserHeaderTitle";
 
 export const UserDetails = () => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
@@ -67,60 +64,32 @@ export const UserDetails = () => {
     [actionsByZuid, params]
   );
 
+  const actionCount = useMemo(() => {
+    if (usersRoles) {
+      return filteredActions?.filter(
+        (action) => action.actionByUserZUID === zuid
+      ).length;
+    }
+
+    return 0;
+  }, [usersRoles, filteredActions]);
+
   return (
-    <Box sx={{ pt: 3 }}>
-      <Breadcrumbs
-        separator={
-          <ChevronRightIcon fontSize="small" sx={{ color: "action.active" }} />
-        }
-        sx={{ px: 3 }}
+    <>
+      <Stack
+        px={4}
+        pt={4}
+        pb={2}
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="flex-start"
       >
-        <Link
-          underline="none"
-          variant="caption"
-          color="text.secondary"
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            history.push({
-              pathname: `/reports/activity-log/resources`,
-            });
-          }}
-        >
-          Activity Log
-        </Link>
-        <Link
-          underline="none"
-          variant="caption"
-          color="text.secondary"
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            history.push({
-              pathname: `/reports/activity-log/users`,
-            });
-          }}
-        >
-          Users
-        </Link>
-      </Breadcrumbs>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          px: 3,
-          borderBottom: "1px solid",
-          borderColor: "divider",
-          pb: 1,
-        }}
-      >
-        <UserListItem
-          action={actionsByZuid?.[0]}
-          actions={actionsByZuid}
-          size="large"
-          showSkeletons={isLoading}
+        <UserHeaderTitle
+          actionCount={actionCount}
+          latestActionDateTime={actionsByZuid?.[0]?.updatedAt}
+          isLoadingActions={isLoading}
         />
-        <Box sx={{ pt: 2 }}>
+        <Stack flexDirection="row" gap={1}>
           <Button
             startIcon={<EmailIcon />}
             variant="contained"
@@ -142,9 +111,9 @@ export const UserDetails = () => {
           >
             Message
           </Button>
-        </Box>
-      </Box>
-      <Box sx={{ px: 3 }}>
+        </Stack>
+      </Stack>
+      <Box sx={{ px: 4, pt: 0.5, backgroundColor: "grey.50" }}>
         <Filters
           actions={actionsByZuid}
           filters={["happenedAt", "resourceType"]}
@@ -160,6 +129,6 @@ export const UserDetails = () => {
           </Box>
         </Box>
       </Box>
-    </Box>
+    </>
   );
 };

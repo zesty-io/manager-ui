@@ -75,4 +75,38 @@ describe("Schema: Models", () => {
     cy.getBySelector("breadcrumbs").find(".MuiBreadcrumbs-li").first().click();
     cy.location("pathname").should("eq", "/schema");
   });
+  it("Cannot set its model parent to be itself", () => {
+    cy.waitOn(
+      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
+      () => {
+        cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
+          cy.waitOn("/v1/content/models", () => {
+            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+          });
+        });
+      }
+    );
+
+    cy.getBySelector("ModelParentSelector")
+      .find("input")
+      .type("Schema Fields Cypress Test DO NOT DELETE");
+    cy.get(".MuiAutocomplete-noOptions").contains("No options");
+  });
+  it("Can render a model that has parented itself", () => {
+    cy.waitOn(
+      "/v1/content/models/6-96e0f1a7fe-vkjt20/fields?showDeleted=true",
+      () => {
+        cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
+          cy.waitOn("/v1/content/models", () => {
+            cy.visit("/schema/6-96e0f1a7fe-vkjt20/fields");
+          });
+        });
+      }
+    );
+
+    cy.getBySelector("breadcrumbs")
+      .find(".MuiBreadcrumbs-li")
+      .eq(1)
+      .contains("Model parenting itself");
+  });
 });

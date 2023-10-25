@@ -6,7 +6,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useParams } from "shell/hooks/useParams";
 import { accountsApi } from "shell/services/accounts";
 
-export const Top5Users = (props) => {
+export const TopUsers = (props) => {
   const theme = useTheme();
   const [params] = useParams();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
@@ -25,7 +25,7 @@ export const Top5Users = (props) => {
     [props.actions, usersRoles, params]
   );
 
-  const top5Users = useMemo(
+  const topUsers = useMemo(
     () =>
       uniqBy(filteredUserActions, "actionByUserZUID")
         .filter((action) =>
@@ -40,9 +40,11 @@ export const Top5Users = (props) => {
           ).length,
         }))
         .sort((a, b) => b.count - a.count)
-        .slice(0, 5),
+        .slice(0, 10),
     [filteredUserActions, usersRoles]
   );
+
+  const chartContainerHeight = topUsers?.length ? topUsers.length * 40 : 400;
 
   return (
     <>
@@ -55,7 +57,7 @@ export const Top5Users = (props) => {
             sx={{ mb: 2.75 }}
           />
         ) : (
-          "TOP 5 ACTIVE USERS"
+          "TOP 10 ACTIVE USERS"
         )}
       </Typography>
       <Typography variant="h4" fontWeight={600}>
@@ -70,16 +72,16 @@ export const Top5Users = (props) => {
           filteredUserActions.length
         )}
       </Typography>
-      <Typography variant="subtitle2">
+      <Typography variant="subtitle2" color="text.secondary">
         {props.showSkeletons ? (
           <Skeleton variant="reactangular" width={52} height={12} />
         ) : (
           "Actions"
         )}
       </Typography>
-      <Box sx={{ height: 184, mt: 3, mb: 4 }}>
+      <Box sx={{ height: chartContainerHeight, my: 2 }}>
         {props.showSkeletons ? (
-          Array(5)
+          Array(10)
             .fill({})
             .map((_, idx) => (
               <Box
@@ -95,7 +97,7 @@ export const Top5Users = (props) => {
                 <Skeleton
                   variant="reactangular"
                   height={24}
-                  width={`${80 - 16 * idx}%`}
+                  width={`${80 - 8 * idx}%`}
                 />
               </Box>
             ))
@@ -109,9 +111,9 @@ export const Top5Users = (props) => {
                 legend: { display: false },
                 datalabels: {
                   color: "#fff",
-                  anchor: "start",
-                  align: "end",
-                  padding: 8,
+                  anchor: "end",
+                  align: "start",
+                  offset: 8,
                   clip: true,
                 },
               },
@@ -120,6 +122,7 @@ export const Top5Users = (props) => {
               scales: {
                 x: {
                   display: false,
+                  max: topUsers[0]?.count ?? 0,
                 },
                 y: {
                   grid: {
@@ -130,16 +133,16 @@ export const Top5Users = (props) => {
               },
             }}
             data={{
-              labels: top5Users.map((top5User) => {
+              labels: topUsers.map((topUser) => {
                 const user = usersRoles.find(
-                  (userRole) => userRole.ZUID === top5User.ZUID
+                  (userRole) => userRole.ZUID === topUser.ZUID
                 );
                 return `${user.firstName} ${user.lastName.charAt(0)}.`;
               }),
               datasets: [
                 {
                   label: "",
-                  data: top5Users.map((user) => user.count),
+                  data: topUsers.map((user) => user.count),
                   backgroundColor: theme.palette.primary.main,
                   barThickness: 24,
                 },
