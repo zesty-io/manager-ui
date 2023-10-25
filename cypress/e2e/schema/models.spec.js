@@ -75,4 +75,21 @@ describe("Schema: Models", () => {
     cy.getBySelector("breadcrumbs").find(".MuiBreadcrumbs-li").first().click();
     cy.location("pathname").should("eq", "/schema");
   });
+  it("Cannot set it's model parent to be itself", () => {
+    cy.waitOn(
+      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
+      () => {
+        cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
+          cy.waitOn("/v1/content/models", () => {
+            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+          });
+        });
+      }
+    );
+
+    cy.getBySelector("ModelParentSelector")
+      .find("input")
+      .type("Schema Fields Cypress Test DO NOT DELETE");
+    cy.get(".MuiAutocomplete-noOptions").contains("No options");
+  });
 });

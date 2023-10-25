@@ -62,6 +62,7 @@ export const SelectModelParentInput = ({
         )}
       </InputLabel>
       <Autocomplete
+        data-cy="ModelParentSelector"
         fullWidth
         renderInput={(params) => <TextField {...params} placeholder="None" />}
         value={navItems?.find((m) => m.ZUID === value) || null}
