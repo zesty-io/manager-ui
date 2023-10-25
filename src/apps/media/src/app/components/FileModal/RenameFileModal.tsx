@@ -12,7 +12,7 @@ import {
   InputLabel,
   Alert,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 
 interface Props {
   handleUpdateMutation: (renamedFilename: string) => void;
@@ -66,7 +66,9 @@ export const RenameFileModal: FC<Props> = ({
           }}
           mb={1.5}
         />
-        <Typography variant="h5">Rename File</Typography>
+        <Typography variant="h5" fontWeight="700">
+          Rename File
+        </Typography>
       </DialogTitle>
       <DialogContent>
         <InputLabel>New File Name</InputLabel>
@@ -95,7 +97,17 @@ export const RenameFileModal: FC<Props> = ({
             ),
           }}
         />
-        <Alert severity="warning" sx={{ mt: 2.5 }}>
+        <Alert
+          severity="warning"
+          sx={{
+            mt: 2.5,
+            bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
+            color: "#643a03",
+            ".MuiAlert-icon": {
+              color: "#643a03",
+            },
+          }}
+        >
           This will change the URL path and could break existing links
           referenced in production after a period of time.
         </Alert>

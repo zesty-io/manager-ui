@@ -193,18 +193,21 @@ export const FieldTypeMedia = ({
                 "Drop your files here to Upload"
               ) : (
                 <>
-                  Drag and Drop your files here <br /> or
+                  Drag and drop your files here <br /> or
                 </>
               )}
             </Typography>
             {!isDragActive && (
-              <Box display="flex" gap={1}>
+              <Box display="flex" gap={1} width="100%" justifyContent="center">
                 <Button
                   size="large"
                   variant="outlined"
                   onClick={open}
                   startIcon={<UploadRounded />}
                   fullWidth
+                  sx={{
+                    maxWidth: "196px",
+                  }}
                 >
                   Upload
                 </Button>
@@ -220,7 +223,7 @@ export const FieldTypeMedia = ({
                     });
                   }}
                   sx={{
-                    whiteSpace: "nowrap",
+                    maxWidth: "196px",
                   }}
                 >
                   Add from Media
@@ -260,7 +263,7 @@ export const FieldTypeMedia = ({
                   isReplace: true,
                 });
               }}
-              hideDrag={hideDrag}
+              hideDrag={hideDrag || limit === 1}
             />
           );
         })}
@@ -436,7 +439,9 @@ const MediaItem = ({
       <Box
         maxWidth="640px"
         display="grid"
-        gridTemplateColumns="repeat(2, min-content) 1fr"
+        gridTemplateColumns={
+          hideDrag ? "min-content 1fr" : "repeat(2, min-content) 1fr"
+        }
         draggable={isDraggable}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
@@ -472,7 +477,7 @@ const MediaItem = ({
             <DragIndicatorRounded fontSize="small" />
           </IconButton>
         )}
-        <Box position="relative" width="80px" height="80px" pl={hideDrag && 2}>
+        <Box position="relative" width="80px" height="80px" bgcolor="grey.100">
           {!isFetching ? (
             <Box
               component="img"
@@ -504,11 +509,7 @@ const MediaItem = ({
           width="100%"
           justifyContent={"space-between"}
           boxSizing="border-box"
-          // sx={{
-          //   overflow: 'hidden',
-          // }}
         >
-          {/* flex 1 breaks it hint?? */}
           {isURL ? (
             <Typography variant="body2" color="text.primary" noWrap>
               {imageZUID}
