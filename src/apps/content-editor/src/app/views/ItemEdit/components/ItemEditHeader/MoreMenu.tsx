@@ -30,6 +30,7 @@ import { ApiType } from "../../../../../../../schema/src/app/components/ModelApi
 import { useGetDomainsQuery } from "../../../../../../../../shell/services/accounts";
 import { useFilePath } from "../../../../../../../../shell/hooks/useFilePath";
 import { DeleteItemDialog } from "./DeleteItemDialog";
+import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
 
 export const MoreMenu = () => {
   const { modelZUID, itemZUID } = useParams<{
@@ -51,6 +52,9 @@ export const MoreMenu = () => {
   const instance = useSelector((state: AppState) => state.instance);
   const { data: domains } = useGetDomainsQuery();
   const codePath = useFilePath(modelZUID);
+  const { data: contentModels } = useGetContentModelsQuery();
+  const type =
+    contentModels?.find((model) => model.ZUID === modelZUID)?.type ?? "";
 
   const handleCopyClick = (data: string) => {
     navigator?.clipboard
@@ -132,18 +136,20 @@ export const MoreMenu = () => {
           View Quick Access API
           <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
         </MenuItem>
-        <MenuItem
-          onClick={(event) => {
-            setShowApiEndpoints(event.currentTarget);
-            setApiEndpointType("site-generators");
-          }}
-        >
-          <ListItemIcon>
-            <DataObjectRounded />
-          </ListItemIcon>
-          View Site Generators API
-          <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
-        </MenuItem>
+        {type !== "dataset" && (
+          <MenuItem
+            onClick={(event) => {
+              setShowApiEndpoints(event.currentTarget);
+              setApiEndpointType("site-generators");
+            }}
+          >
+            <ListItemIcon>
+              <DataObjectRounded />
+            </ListItemIcon>
+            View Site Generators API
+            <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
+          </MenuItem>
+        )}
         <MenuItem
           onClick={() => {
             history.push(`/schema/${modelZUID}`);
