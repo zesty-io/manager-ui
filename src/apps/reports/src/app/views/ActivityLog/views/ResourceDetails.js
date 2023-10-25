@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import { Box, Button, Link, Breadcrumbs } from "@mui/material";
+import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
 import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
 import { instanceApi } from "shell/services/instance";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { ScheduleRounded, CategoryRounded } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { ResourceListItem } from "../components/ResourceListItem";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -17,6 +17,21 @@ import { Filters } from "../components/Filters";
 import { EmptyState } from "../components/EmptyState";
 import { filterByParams } from "utility/filterByParams";
 import { resolveUrlFromAudit } from "../../../../../../../utility/resolveResourceUrlFromAudit";
+import { CustomBreadcrumbs } from "../../../../../../../shell/components/CustomBreadcrumbs";
+import { ResourceHeaderTitle } from "../components/ResourceHeaderTitle";
+
+const Crumbs = [
+  {
+    name: "Activity Log",
+    path: "/reports/activity-log/resources",
+    icon: ScheduleRounded,
+  },
+  {
+    name: "Resources",
+    path: "/reports/activity-log/resources",
+    icon: CategoryRounded,
+  },
+];
 
 export const ResourceDetails = () => {
   const history = useHistory();
@@ -102,63 +117,50 @@ export const ResourceDetails = () => {
 
   return (
     <>
-      <Breadcrumbs
-        separator={
-          <ChevronRightIcon fontSize="small" sx={{ color: "action.active" }} />
-        }
-        sx={{ px: 3, pt: 3 }}
+      <Stack
+        px={4}
+        pt={4}
+        pb={2}
+        flexDirection="row"
+        justifyContent="space-between"
       >
-        <Link
-          underline="none"
-          variant="caption"
-          color="text.secondary"
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            history.push({
-              pathname: `/reports/activity-log/resources`,
-            });
-          }}
-        >
-          Activity Log
-        </Link>
-        <Link
-          underline="none"
-          variant="caption"
-          color="text.secondary"
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            history.push({
-              pathname: `/reports/activity-log/resources`,
-            });
-          }}
-        >
-          Resources
-        </Link>
-      </Breadcrumbs>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          px: 3,
-          pb: 1,
-          borderBottom: "1px solid",
-          borderColor: "divider",
-        }}
-      >
-        <Box sx={{ maxWidth: 640 }}>
-          <ResourceListItem
-            resource={
-              actionsByZuid[0] || {
-                affectedZUID: zuid,
-                resourceType: resolveResourceType(zuid),
-              }
-            }
-            size="large"
+        <Stack gap={0.25}>
+          <CustomBreadcrumbs
+            items={Crumbs.map((crumb) => ({
+              node: (
+                <Stack direction="row" gap={0.5}>
+                  <SvgIcon
+                    component={crumb.icon}
+                    color="action"
+                    fontSize="small"
+                  />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    noWrap
+                    maxWidth={100}
+                  >
+                    {crumb.name}
+                  </Typography>
+                </Stack>
+              ),
+              onClick: () => {
+                history.push(crumb.path);
+              },
+            }))}
           />
-        </Box>
-        <Box sx={{ display: "flex", gap: 1.5, pt: 2 }}>
+
+          <ResourceHeaderTitle
+            affectedZUID={actionsByZuid[0]?.affectedZUID ?? zuid}
+            resourceType={
+              actionsByZuid[0]?.resourceType ?? resolveResourceType(zuid)
+            }
+            updatedAt={actionsByZuid[0]?.updatedAt}
+            isLoadingActions={isLoading}
+            actionDescription={actionsByZuid[0]?.meta?.message ?? ""}
+          />
+        </Stack>
+        <Stack flexDirection="row" gap={1}>
           <Button
             sx={{ height: "max-content" }}
             startIcon={<OpenInNewIcon />}
@@ -169,7 +171,7 @@ export const ResourceDetails = () => {
               history.push(resolveUrlFromAudit(actionsByZuid[0]));
             }}
           >
-            Open Resource
+            Open
           </Button>
           <Button
             sx={{ height: "max-content" }}
@@ -183,18 +185,18 @@ export const ResourceDetails = () => {
               );
             }}
           >
-            Export Audit Trail Report
+            View Audit Trail Report
           </Button>
-        </Box>
-      </Box>
-      <Box sx={{ px: 3 }}>
+        </Stack>
+      </Stack>
+      <Box sx={{ px: 4, pt: 0.5, backgroundColor: "grey.50" }}>
         <Filters
           actions={actionsByZuid}
           filters={["action", "actionByUserZUID"]}
           showSkeletons={isLoading}
         />
       </Box>
-      <Box sx={{ px: 3, height: "100%" }}>
+      <Box sx={{ px: 4, height: "100%", backgroundColor: "grey.50" }}>
         {!isLoading && !filteredActions?.length ? (
           <Box
             sx={{
