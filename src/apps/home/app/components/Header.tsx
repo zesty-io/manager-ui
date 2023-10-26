@@ -24,16 +24,11 @@ import { CreateContentItemDialog } from "../../../../shell/components/CreateCont
 interface Props {
   dateRange: number;
   onDateRangeChange: (dateRange: number) => void;
-  hideSubtitle?: boolean;
 }
 
 const dateRanges = [7, 14, 30, 90];
 
-export const Header = ({
-  hideSubtitle,
-  dateRange,
-  onDateRangeChange,
-}: Props) => {
+export const Header = ({ dateRange, onDateRangeChange }: Props) => {
   const userFirstName = useSelector((state: any) => state.user.firstName);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -88,11 +83,7 @@ export const Header = ({
         <Typography variant="h4" fontWeight={600}>
           Good Morning, {userFirstName}
         </Typography>
-        <Typography
-          variant="subtitle1"
-          marginTop={0.5}
-          sx={{ visibility: hideSubtitle && "hidden" }}
-        >
+        <Typography variant="subtitle1" marginTop={0.5}>
           Here is your instance summary of the{" "}
           <Box
             component="span"
