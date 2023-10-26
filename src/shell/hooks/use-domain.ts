@@ -15,9 +15,9 @@ export const useDomain: UseDomain = () => {
   const format = (domain: string): string => {
     try {
       const url = new URL(domain.includes("://") ? domain : `http://${domain}`);
-      return url.hostname;
+      return `http://${url.hostname}`;
     } catch (error) {
-      return domain; // fallback to the original input in case of error
+      return `http://${domain}`; // fallback to the original input with http:// in case of error
     }
   };
 
