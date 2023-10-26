@@ -26,12 +26,11 @@ import { useState } from "react";
 import InviteMembersModal from "../../../../shell/components/InviteMembersModal";
 
 interface Props {
-  isMature: boolean;
   hideHeader?: boolean;
   hideFooter?: boolean;
 }
 
-export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
+export const ResourcesCard = ({ hideHeader, hideFooter }: Props) => {
   const [showMeetModal, setShowMeetModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
 
@@ -147,117 +146,6 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
     );
   };
 
-  const newItems = () => {
-    const videos = [
-      {
-        url: "https://www.youtube.com/watch?v=Y2cux28b9q0",
-        title: "Build in Zesty using Next.js (Headless)",
-        length: "9:50",
-      },
-      {
-        url: "https://www.youtube.com/watch?v=vt7TB0ES-y0",
-        title: "Build in Zesty using Parsley",
-        length: "33:47",
-      },
-      {
-        url: "https://www.youtube.com/watch?v=cIBSt0emuvQ",
-        title: "Build in Zesty using a custom framework",
-        length: "1:25:01",
-      },
-    ];
-
-    return (
-      <>
-        <ListItemButton divider onClick={() => setShowMeetModal(true)}>
-          <ListItemIcon sx={{ minWidth: "36px" }}>
-            <img
-              width="24px"
-              style={{ borderRadius: "50%" }}
-              src="https://zestyio.media.zestyio.com/gisele-blair-zestyio.jpeg?width=48&height=48"
-            />
-          </ListItemIcon>
-          <ListItemText
-            primary="Schedule Onboarding Call"
-            secondary="We'll get you started in just 20 minutes"
-            primaryTypographyProps={{
-              variant: "body2",
-            }}
-          />
-        </ListItemButton>
-        <ListItemButton divider onClick={() => setShowInviteModal(true)}>
-          <ListItemIcon sx={{ minWidth: "36px" }}>
-            <GroupAddRoundedIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText
-            primary="Invite your Team"
-            secondary="Have your team give Zesty a try as well"
-            primaryTypographyProps={{
-              variant: "body2",
-            }}
-          />
-        </ListItemButton>
-        <Accordion sx={{ boxShadow: "none" }} disableGutters>
-          <AccordionSummary expandIcon={<KeyboardArrowUpIcon />}>
-            <Box display="flex" alignItems="center" gap={2}>
-              <CodeRoundedIcon color="info" />
-              <Box>
-                <Typography variant="body2">
-                  Connect to your Website or App
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Videos on how to build with Zesty
-                </Typography>
-              </Box>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box display="flex" gap={2} flexDirection="column">
-              {videos.map((video) => (
-                <Box
-                  display="flex"
-                  gap={2}
-                  onClick={() => window.open(video.url, "_blank")}
-                  sx={{ cursor: "pointer" }}
-                >
-                  <Box sx={{ borderRadius: 1 }}>
-                    <img
-                      width="96"
-                      height="64"
-                      src={`https://img.youtube.com/vi/${video.url
-                        ?.split("=")
-                        ?.pop()}/0.jpg`}
-                      style={{ borderRadius: "8px" }}
-                    ></img>
-                  </Box>
-                  <Box>
-                    <Typography variant="body2">{video.title}</Typography>
-                    <Typography variant="body3" color="text.secondary">
-                      {video.length}
-                    </Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion sx={{ boxShadow: "none" }} disableGutters>
-          <AccordionSummary expandIcon={<KeyboardArrowUpIcon />}>
-            <Box display="flex" alignItems="center" gap={2}>
-              <MenuBookRoundedIcon color="info" />
-              <Box>
-                <Typography variant="body2">Docs</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Learn about our platform &amp; API
-                </Typography>
-              </Box>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>{matureItems(true, true)}</AccordionDetails>
-        </Accordion>
-      </>
-    );
-  };
-
   return (
     <>
       {!hideHeader && (
@@ -275,7 +163,7 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
           </Typography>
         </Box>
       )}
-      {isMature ? matureItems(false, false) : newItems()}
+      {matureItems(false, false)}
       {!hideFooter && (
         <Box display="flex" justifyContent="space-between" padding={2}>
           <Typography variant="body3" color="text.secondary">
