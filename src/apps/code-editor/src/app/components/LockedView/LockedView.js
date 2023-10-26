@@ -47,13 +47,8 @@ export function LockedView(props) {
   const [name, setName] = useState(props.name);
 
   const onClose = useCallback(() => {
-    // FIXME: Doesn't trigger the gobac
-    console.log(isLocked);
-    if (isLocked) {
-      console.log("on close");
-      history.goBack();
-    }
-  }, [isLocked]);
+    history.goBack();
+  });
 
   const assumeLock = useCallback(() => {
     return dispatch(unlock(props.ZUID)).then((_) => {
@@ -101,57 +96,58 @@ export function LockedView(props) {
     };
   }, [props.ZUID, props.name]);
 
-  const isLocked = useMemo(() => {
+  const isLocked =
+    zuid === props.ZUID &&
+    lockData.userZUID &&
+    lockData.userZUID !== currentUser.ZUID;
+
+  if (isLocked) {
     return (
-      zuid === props.ZUID &&
-      lockData.userZUID &&
-      lockData.userZUID !== currentUser.ZUID
+      <Modal className={styles.LockedView} open onClose={onClose}>
+        <ModalHeader className={styles.ModalHeader}>
+          <h2 className={styles.headline}>
+            <FontAwesomeIcon icon={faLock} /> Locked
+          </h2>
+        </ModalHeader>
+        <ModalContent className={styles.ModalContent}>
+          <p className={styles.subheadline}>
+            <strong>
+              {lockData.firstName} {lockData.lastName}
+            </strong>{" "}
+            is viewing{" "}
+            <strong className={styles.ItemName}>
+              <em>{name}</em>
+            </strong>{" "}
+            since{" "}
+            {moment
+              .unix(lockData.timestamp)
+              .format("MMMM Do YYYY, [at] h:mm a")}
+            . Unlock this item to ignore this warning and possibly overwrite{" "}
+            {lockData.firstName}'s changes.
+          </p>
+        </ModalContent>
+        <ModalFooter className={styles.ModalFooter}>
+          <Button
+            variant="contained"
+            onClick={onClose}
+            startIcon={<SkipPreviousIcon />}
+          >
+            Go Back
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={userUnlock}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <LockOpenIcon />
+            }
+          >
+            Unlock
+          </Button>
+        </ModalFooter>
+      </Modal>
     );
-  }, [lockData, zuid, props.ZUID]);
+  }
 
-  console.log(isLocked);
-
-  return (
-    <Modal className={styles.LockedView} open={isLocked} onClose={onClose}>
-      <ModalHeader className={styles.ModalHeader}>
-        <h2 className={styles.headline}>
-          <FontAwesomeIcon icon={faLock} /> Locked
-        </h2>
-      </ModalHeader>
-      <ModalContent className={styles.ModalContent}>
-        <p className={styles.subheadline}>
-          <strong>
-            {lockData.firstName} {lockData.lastName}
-          </strong>{" "}
-          is viewing{" "}
-          <strong className={styles.ItemName}>
-            <em>{name}</em>
-          </strong>{" "}
-          since{" "}
-          {moment.unix(lockData.timestamp).format("MMMM Do YYYY, [at] h:mm a")}.
-          Unlock this item to ignore this warning and possibly overwrite{" "}
-          {lockData.firstName}'s changes.
-        </p>
-      </ModalContent>
-      <ModalFooter className={styles.ModalFooter}>
-        <Button
-          variant="contained"
-          onClick={onClose}
-          startIcon={<SkipPreviousIcon />}
-        >
-          Go Back
-        </Button>
-        <Button
-          variant="contained"
-          color="success"
-          onClick={userUnlock}
-          startIcon={
-            loading ? <CircularProgress size="20px" /> : <LockOpenIcon />
-          }
-        >
-          Unlock
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
+  return <></>;
 }
