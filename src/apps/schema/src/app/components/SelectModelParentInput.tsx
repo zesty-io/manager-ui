@@ -6,6 +6,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { useMemo } from "react";
+import { useParams } from "react-router";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { useGetContentNavItemsQuery } from "../../../../../shell/services/instance";
 import { ContentNavItem, ModelType } from "../../../../../shell/services/types";
@@ -14,13 +15,18 @@ type SelectModelParentInputProps = {
   value: string;
   onChange: (value: string) => void;
   modelType: ModelType;
+  label?: string;
+  tooltip?: string;
 };
 
 export const SelectModelParentInput = ({
   value,
   onChange,
   modelType,
+  label = "Select Model Parent",
+  tooltip = "",
 }: SelectModelParentInputProps) => {
+  const { id } = useParams<{ id: string }>();
   const { data: navItems } = useGetContentNavItemsQuery();
 
   const parents = useMemo(() => {
@@ -35,7 +41,9 @@ export const SelectModelParentInput = ({
         );
       }
 
-      return _navItems?.sort((a, b) => a.label.localeCompare(b.label));
+      return _navItems
+        ?.filter((item) => item.contentModelZUID !== id)
+        ?.sort((a, b) => a.label.localeCompare(b.label));
     }
 
     return [];
@@ -43,18 +51,18 @@ export const SelectModelParentInput = ({
   return (
     <Box>
       <InputLabel>
-        Select Model Parent
-        <Tooltip
-          placement="top"
-          title="Selecting a parent affects default routing and content navigation in the UI"
-        >
-          <InfoRoundedIcon
-            sx={{ ml: 1, width: "10px", height: "10px" }}
-            color="action"
-          />
-        </Tooltip>
+        {label}
+        {tooltip && (
+          <Tooltip placement="top" title={tooltip}>
+            <InfoRoundedIcon
+              sx={{ ml: 1, width: "10px", height: "10px" }}
+              color="action"
+            />
+          </Tooltip>
+        )}
       </InputLabel>
       <Autocomplete
+        data-cy="ModelParentSelector"
         fullWidth
         renderInput={(params) => <TextField {...params} placeholder="None" />}
         value={navItems?.find((m) => m.ZUID === value) || null}

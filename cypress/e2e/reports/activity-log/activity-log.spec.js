@@ -4,41 +4,41 @@ describe("Reports > Activity Log > Home", () => {
     it("Highlights tabs depending on URL", () => {
       cy.visit("/reports/activity-log/resources");
       cy.get(".MuiTabs-root")
-        .contains("RESOURCES")
+        .contains("Resources")
         .should("have.attr", "aria-selected", "true");
 
       cy.visit("/reports/activity-log/users");
       cy.get(".MuiTabs-root")
-        .contains("USERS")
+        .contains("Users")
         .should("have.attr", "aria-selected", "true");
 
       cy.visit("/reports/activity-log/timeline");
       cy.get(".MuiTabs-root")
-        .contains("TIMELINE")
+        .contains("Timeline")
         .should("have.attr", "aria-selected", "true");
 
       cy.visit("/reports/activity-log/insights");
       cy.get(".MuiTabs-root")
-        .contains("INSIGHTS")
+        .contains("Insights")
         .should("have.attr", "aria-selected", "true");
     });
 
     it("Navigates on tab click", () => {
       cy.visit("/reports/activity-log/resources");
 
-      cy.get(".MuiTabs-root").contains("USERS").click();
+      cy.get(".MuiTabs-root").contains("Users").click();
       cy.location("pathname").should("eq", "/reports/activity-log/users");
 
       cy.visit("/reports/activity-log/timeline");
-      cy.get(".MuiTabs-root").contains("TIMELINE").click();
+      cy.get(".MuiTabs-root").contains("Timeline").click();
       cy.location("pathname").should("eq", "/reports/activity-log/timeline");
 
       cy.visit("/reports/activity-log/insights");
-      cy.get(".MuiTabs-root").contains("INSIGHTS").click();
+      cy.get(".MuiTabs-root").contains("Insights").click();
       cy.location("pathname").should("eq", "/reports/activity-log/insights");
 
       cy.visit("/reports/activity-log/resources");
-      cy.get(".MuiTabs-root").contains("RESOURCES").click();
+      cy.get(".MuiTabs-root").contains("Resources").click();
       cy.location("pathname").should("eq", "/reports/activity-log/resources");
     });
   });

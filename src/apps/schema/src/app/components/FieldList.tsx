@@ -158,7 +158,6 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         flexDirection="column"
         height="100%"
         flex={1}
-        pl={4}
         pt={2}
         borderRight="1px solid"
         borderColor="border"
@@ -169,6 +168,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           alignItems="center"
           justifyContent="space-between"
           pr={2}
+          pl={4}
         >
           <TextField
             data-cy="FieldListFilter"
@@ -213,6 +213,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {isSystemFieldsVisible === "true" && !search && (
             <Box
               data-cy="SystemFields"
+              ml={4}
               pb={2}
               mb={1.5}
               borderBottom="1px solid"
@@ -272,7 +273,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {Boolean(filteredFields?.length) && (
             <>
               {isSystemFieldsVisible === "true" && (
-                <Box pb={2}>
+                <Box pl={4} pb={2}>
                   <Typography variant="h6" mb={1}>
                     User Fields
                   </Typography>
@@ -293,21 +294,23 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                         onDividerClick={() => onNewFieldModalClick(index)}
                       />
                     )}
-                    <Field
-                      index={index}
-                      field={field}
-                      setDraggedIndex={setDraggedIndex}
-                      setHoveredIndex={setHoveredIndex}
-                      onReorder={handleReorder}
-                      disableDrag={!!search}
-                      withDragIcon
-                      withMenu
-                      withHover
-                    />
+                    <Box pl={4}>
+                      <Field
+                        index={index}
+                        field={field}
+                        setDraggedIndex={setDraggedIndex}
+                        setHoveredIndex={setHoveredIndex}
+                        onReorder={handleReorder}
+                        disableDrag={!!search}
+                        withDragIcon
+                        withMenu
+                        withHover
+                      />
+                    </Box>
                   </Box>
                 );
               })}
-              <Box mb={!!deactivatedFields?.length ? 2 : 4}>
+              <Box pl={4} mb={!!deactivatedFields?.length ? 2 : 4}>
                 <Button
                   data-cy="EndOfListAddFieldBtn"
                   sx={{
@@ -339,7 +342,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {!Boolean(filteredFields?.length) &&
             Boolean(deactivatedFields?.length) &&
             !search && (
-              <Box pb={2}>
+              <Box pb={2} pl={4}>
                 <Typography variant="body2" color="text.secondary">
                   There are no active fields in this model.
                 </Typography>
@@ -348,7 +351,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
 
           {/* INACTIVE FIELDS ARE PRESENT */}
           {Boolean(deactivatedFields?.length) && !search && (
-            <Box mb={2} display="flex" flexDirection="column" gap={1.5}>
+            <Box mb={2} pl={4} display="flex" flexDirection="column" gap={1.5}>
               <Box>
                 <Typography variant="h6" mb={1}>
                   Deactivated Fields

@@ -42,7 +42,11 @@ export const ModelBreadcrumbs: FC<Props> = ({ modelZUID }) => {
               history.push(`/schema/${parentNavData.contentModelZUID}/fields`),
           });
 
-          parentNavZUID = parentContentModel?.parentZUID;
+          // Prevent infinite loop if the model's parent is itself
+          parentNavZUID =
+            parentContentModel?.parentZUID !== parentNavZUID
+              ? parentContentModel?.parentZUID
+              : null;
         } else {
           parentNavZUID = null;
         }

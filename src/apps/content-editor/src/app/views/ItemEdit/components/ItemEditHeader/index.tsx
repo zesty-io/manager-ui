@@ -28,6 +28,7 @@ import { useState } from "react";
 import { PreviewMenu } from "./PreviewMenu";
 import { useGetInstalledAppsQuery } from "../../../../../../../../shell/services/accounts";
 import { DuoModeSwitch } from "./DuoModeToggle";
+import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
 
 const tabs = [
   {
@@ -86,11 +87,15 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
   const history = useHistory();
   const [showDuplicateItemDialog, setShowDuplicateItemDialog] = useState(false);
   const { data: installedApps } = useGetInstalledAppsQuery();
+  const { data: contentModels } = useGetContentModelsQuery();
 
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
   );
+
+  const type =
+    contentModels?.find((model) => model.ZUID === modelZUID)?.type ?? "";
 
   const layoutsAppInstalled = installedApps?.find(
     (app) => app.appZUID === "80-d8abaff6ef-wxs830"
@@ -158,7 +163,7 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
               >
                 <ContentCopyRounded fontSize="small" />
               </IconButton>
-              <PreviewMenu />
+              {type !== "dataset" && <PreviewMenu />}
               <ItemEditHeaderActions saving={saving} onSave={onSave} />
             </Box>
           </Box>
