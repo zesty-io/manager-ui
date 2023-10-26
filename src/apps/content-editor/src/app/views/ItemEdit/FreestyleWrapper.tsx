@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { useParams } from "react-router";
 
-export const LayoutsWrapper = () => {
+export const FreestyleWrapper = () => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -28,14 +28,14 @@ export const LayoutsWrapper = () => {
         },
       },
       // @ts-expect-error CONFIG not typed
-      `${CONFIG.URL_APPS}/layouts/`
+      `${CONFIG.URL_APPS}/freestyle/`
     );
   };
 
   return (
     <iframe
       // @ts-expect-error CONFIG not typed
-      src={`${CONFIG.URL_APPS}/layouts/`}
+      src={`${CONFIG.URL_APPS}/freestyle/`}
       ref={iframeRef}
       allow="clipboard-write"
       height="100%"
