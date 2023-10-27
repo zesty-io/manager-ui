@@ -495,4 +495,5 @@ export type Announcement = {
   video_link: string;
   start_date_and_time: string;
   end_date_and_time: string;
+  created_at: string;
 };

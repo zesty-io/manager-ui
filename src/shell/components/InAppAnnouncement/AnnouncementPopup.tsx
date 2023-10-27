@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,42 +10,25 @@ import {
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ScheduledRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import { useLocalStorage } from "react-use";
-import moment from "moment";
 
 import { Announcement } from "../../services/types";
 
 type AnnouncementPopupProps = {
   announcementData: Announcement;
+  onIgnoreAnnouncement: (zuid: string) => void;
 };
 export const AnnouncementPopup = ({
   announcementData,
+  onIgnoreAnnouncement,
 }: AnnouncementPopupProps) => {
-  const [readAnnouncements, setReadAnnouncements] = useLocalStorage(
-    "zesty:readAnnouncements",
-    []
-  );
-  const isInPublishRange = moment().isBetween(
-    moment(announcementData?.start_date_and_time),
-    moment(announcementData?.end_date_and_time)
-  );
-
-  const onIgnoreAnnouncement = () => {
-    if (!readAnnouncements.includes(announcementData?.zuid)) {
-      setReadAnnouncements([...readAnnouncements, announcementData?.zuid]);
-    }
-  };
-
   const onReadAnnouncement = () => {
     window.open(announcementData?.announcement_link, "_blank");
   };
 
   return (
     <Dialog
-      open={
-        isInPublishRange && !readAnnouncements.includes(announcementData?.zuid)
-      }
-      onClose={onIgnoreAnnouncement}
+      open
+      onClose={() => onIgnoreAnnouncement(announcementData?.zuid)}
       maxWidth="md"
       PaperProps={{ sx: { width: 640 } }}
     >
@@ -83,7 +65,11 @@ export const AnnouncementPopup = ({
         </Stack>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "space-between" }}>
-        <Button variant="text" color="inherit" onClick={onIgnoreAnnouncement}>
+        <Button
+          variant="text"
+          color="inherit"
+          onClick={() => onIgnoreAnnouncement(announcementData?.zuid)}
+        >
           Ignore
         </Button>
         <Stack direction="row" gap={1}>

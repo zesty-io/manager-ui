@@ -41,6 +41,7 @@ export const announcementsApi = createApi({
                 video_link,
                 start_date_and_time,
                 end_date_and_time,
+                created_at: currVal?.version?.history?.data?.pop()?.createdAt,
               },
             ];
           }
