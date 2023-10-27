@@ -4,7 +4,7 @@ import { theme } from "@zesty-io/material";
 import { AnnouncementPopup } from "./AnnouncementPopup";
 import { useGetAnnouncementsQuery } from "../../services/announcements";
 
-export const InnAppAnnouncement = () => {
+export const InAppAnnouncement = () => {
   // TODO: Remove the temp zuid
   // const { data: announcements } = useGetAnnouncementsQuery(
   //   "6-90fbdcadfc-4lc0s5"
