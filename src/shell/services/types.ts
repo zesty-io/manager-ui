@@ -477,6 +477,7 @@ export type StyleCategory = {
 };
 
 export type Announcement = {
+  zuid: string;
   title: string;
   description: string;
   feature_image: {

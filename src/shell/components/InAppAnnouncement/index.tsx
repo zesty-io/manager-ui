@@ -10,7 +10,7 @@ export const InAppAnnouncement = () => {
   //   "6-90fbdcadfc-4lc0s5"
   // );
   const { data: announcements } = useGetAnnouncementsQuery(
-    "6-f4e8e0eca4-n329fs"
+    "6-f8afc7978a-nj3716"
   );
 
   // TODO: Figure out how to fetch data from the model dataset
@@ -20,7 +20,12 @@ export const InAppAnnouncement = () => {
   // Instant api url: https://www.zesty.io/-/instant/6-90fbdcadfc-4lc0s5.json
   return (
     <ThemeProvider theme={theme}>
-      <AnnouncementPopup />
+      {announcements?.map((announcement) => (
+        <AnnouncementPopup
+          key={announcement?.zuid}
+          announcementData={announcement}
+        />
+      ))}
     </ThemeProvider>
   );
 };

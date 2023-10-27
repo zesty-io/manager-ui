@@ -7,7 +7,7 @@ export const announcementsApi = createApi({
   // TODO: Remove the temp baseQuery url after testing
   // baseQuery: fetchBaseQuery({ baseUrl: "https://www.zesty.io/-/instant/" }),
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://8xbq19z1-dev.preview.dev.zesty.io/-/instant/",
+    baseUrl: "https://8xbq19z1-dev.webengine.zesty.io/-/instant/",
   }),
   endpoints: (builder) => ({
     getAnnouncements: builder.query<Announcement[], string>({
@@ -31,6 +31,7 @@ export const announcementsApi = createApi({
             return [
               ...accu,
               {
+                zuid: currVal?.meta.zuid,
                 title,
                 description,
                 feature_image,
