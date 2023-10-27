@@ -56,10 +56,6 @@ export const InAppAnnouncement = () => {
     }
   };
 
-  const onOpenTab = (url: string) => {
-    window.open(url, "_blank");
-  };
-
   const announcementData = unreadAnnouncements
     ? unreadAnnouncements[activeAnnouncementIndex]
     : null;
@@ -95,7 +91,9 @@ export const InAppAnnouncement = () => {
                 sx={{
                   cursor: "pointer",
                 }}
-                onClick={() => onOpenTab(announcementData?.announcement_link)}
+                onClick={() =>
+                  window.open(announcementData?.announcement_link, "_blank")
+                }
               />
             </Stack>
             <Stack gap={1} px={2.5} pb={2.5}>
@@ -119,7 +117,9 @@ export const InAppAnnouncement = () => {
               <Button
                 variant="outlined"
                 startIcon={<OpenInNewRoundedIcon />}
-                onClick={() => onOpenTab(announcementData?.announcement_link)}
+                onClick={() =>
+                  window.open(announcementData?.announcement_link, "_blank")
+                }
               >
                 Read Announcement
               </Button>
@@ -127,7 +127,9 @@ export const InAppAnnouncement = () => {
                 <Button
                   variant="contained"
                   startIcon={<PlayArrowRoundedIcon />}
-                  onClick={() => onOpenTab(announcementData?.video_link)}
+                  onClick={() =>
+                    window.open(announcementData?.video_link, "_blank")
+                  }
                 >
                   Show Video
                 </Button>
@@ -136,7 +138,9 @@ export const InAppAnnouncement = () => {
                 <Button
                   variant="contained"
                   startIcon={<ScheduledRoundedIcon />}
-                  onClick={() => onOpenTab(announcementData?.training_link)}
+                  onClick={() =>
+                    window.open(announcementData?.training_link, "_blank")
+                  }
                 >
                   Schedule Training
                 </Button>
