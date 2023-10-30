@@ -13,7 +13,7 @@ export const announcementsApi = createApi({
     getAnnouncements: builder.query<Announcement[], string>({
       query: (modelZUID) => `${modelZUID}.json`,
       transformResponse: (response: { data: any[] }) => {
-        // Filter out other languages if exists
+        // Filter out other languages if exists, this makes sure that announcements don't get repeatedly shown per language
         return response?.data?.reduce((accu, currVal) => {
           if (currVal?.content?.lang_id === "1") {
             const {

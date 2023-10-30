@@ -76,8 +76,10 @@ export const InAppAnnouncement = () => {
               m={2.5}
               p={3}
               width={600}
-              height={338}
-              sx={{ background: "linear-gradient(90deg, #ed4c0b, #fc8238)" }}
+              height={340}
+              sx={{
+                background: "linear-gradient(90deg, #EC4A0A 0%, #FD853A 100%)",
+              }}
               alignItems="center"
               justifyContent="center"
               boxSizing="border-box"
