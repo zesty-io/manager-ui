@@ -4,11 +4,7 @@ import { Announcement } from "./types";
 
 export const announcementsApi = createApi({
   reducerPath: "announcementsApi",
-  // TODO: Remove the temp baseQuery url after testing
-  // baseQuery: fetchBaseQuery({ baseUrl: "https://www.zesty.io/-/instant/" }),
-  baseQuery: fetchBaseQuery({
-    baseUrl: "https://8xbq19z1-dev.webengine.zesty.io/-/instant/",
-  }),
+  baseQuery: fetchBaseQuery({ baseUrl: "https://www.zesty.io/-/instant/" }),
   endpoints: (builder) => ({
     getAnnouncements: builder.query<Announcement[], string>({
       query: (modelZUID) => `${modelZUID}.json`,

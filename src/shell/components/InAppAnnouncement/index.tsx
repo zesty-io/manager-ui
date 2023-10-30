@@ -24,12 +24,8 @@ export const InAppAnnouncement = () => {
     "zesty:readAnnouncements",
     []
   );
-  // TODO: Remove the temp zuid
-  // const { data: announcements } = useGetAnnouncementsQuery(
-  //   "6-90fbdcadfc-4lc0s5"
-  // );
   const { data: announcements } = useGetAnnouncementsQuery(
-    "6-f8afc7978a-nj3716"
+    "6-90fbdcadfc-4lc0s5"
   );
 
   const unreadAnnouncements = useMemo(() => {
@@ -60,8 +56,6 @@ export const InAppAnnouncement = () => {
     ? unreadAnnouncements[activeAnnouncementIndex]
     : null;
 
-  // FIXME: Unpublished content items are also being provided here as well
-  // Instant api url: https://www.zesty.io/-/instant/6-90fbdcadfc-4lc0s5.json
   return (
     <ThemeProvider theme={theme}>
       {announcementData && (
