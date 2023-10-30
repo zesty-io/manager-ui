@@ -93,9 +93,11 @@ export const InAppAnnouncement = () => {
                 sx={{
                   cursor: "pointer",
                 }}
-                onClick={() =>
-                  window.open(announcementData?.announcement_link, "_blank")
-                }
+                onClick={() => {
+                  if (announcementData?.announcement_link) {
+                    window.open(announcementData?.announcement_link, "_blank");
+                  }
+                }}
               />
             </Stack>
             <Stack gap={1} px={2.5} pb={2.5}>
@@ -119,34 +121,37 @@ export const InAppAnnouncement = () => {
               <Button
                 variant="outlined"
                 startIcon={<OpenInNewRoundedIcon />}
+                disabled={!announcementData?.announcement_link}
                 onClick={() =>
                   window.open(announcementData?.announcement_link, "_blank")
                 }
               >
                 Read Announcement
               </Button>
-              {announcementData?.cta_type === "play_video" && (
-                <Button
-                  variant="contained"
-                  startIcon={<PlayArrowRoundedIcon />}
-                  onClick={() =>
-                    window.open(announcementData?.video_link, "_blank")
-                  }
-                >
-                  Show Video
-                </Button>
-              )}
-              {announcementData?.cta_type === "schedule_training" && (
-                <Button
-                  variant="contained"
-                  startIcon={<ScheduledRoundedIcon />}
-                  onClick={() =>
-                    window.open(announcementData?.training_link, "_blank")
-                  }
-                >
-                  Schedule Training
-                </Button>
-              )}
+              {announcementData?.cta_type === "play_video" &&
+                announcementData?.video_link && (
+                  <Button
+                    variant="contained"
+                    startIcon={<PlayArrowRoundedIcon />}
+                    onClick={() =>
+                      window.open(announcementData?.video_link, "_blank")
+                    }
+                  >
+                    Show Video
+                  </Button>
+                )}
+              {announcementData?.cta_type === "schedule_training" &&
+                announcementData?.training_link && (
+                  <Button
+                    variant="contained"
+                    startIcon={<ScheduledRoundedIcon />}
+                    onClick={() =>
+                      window.open(announcementData?.training_link, "_blank")
+                    }
+                  >
+                    Schedule Training
+                  </Button>
+                )}
             </Stack>
           </DialogActions>
         </Dialog>
