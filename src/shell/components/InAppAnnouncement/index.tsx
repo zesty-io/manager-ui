@@ -16,7 +16,7 @@ import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ScheduledRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 
-import { useGetAnnouncementsQuery } from "../../services/announcements";
+import { useGetAnnouncementsQuery } from "../../services/marketing";
 
 export const InAppAnnouncement = () => {
   const [activeAnnouncementIndex, setActiveAnnouncementIndex] = useState(0);
@@ -24,9 +24,7 @@ export const InAppAnnouncement = () => {
     "zesty:readAnnouncements",
     []
   );
-  const { data: announcements } = useGetAnnouncementsQuery(
-    "6-90fbdcadfc-4lc0s5"
-  );
+  const { data: announcements } = useGetAnnouncementsQuery();
 
   const unreadAnnouncements = useMemo(() => {
     if (announcements?.length) {

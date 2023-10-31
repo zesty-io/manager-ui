@@ -2,12 +2,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { Announcement } from "./types";
 
-export const announcementsApi = createApi({
-  reducerPath: "announcementsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "https://www.zesty.io/-/instant/" }),
+export const marketingApi = createApi({
+  reducerPath: "marketingApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "https://www.zesty.io/" }),
   endpoints: (builder) => ({
-    getAnnouncements: builder.query<Announcement[], string>({
-      query: (modelZUID) => `${modelZUID}.json`,
+    // Get announcements via instant api from the marketing instance
+    getAnnouncements: builder.query<Announcement[], void>({
+      query: () => "/-/instant/6-90fbdcadfc-4lc0s5.json",
       transformResponse: (response: { data: any[] }) => {
         // Filter out other languages if exists, this makes sure that announcements don't get repeatedly shown per language
         return response?.data?.reduce((accu, currVal) => {
@@ -49,4 +50,4 @@ export const announcementsApi = createApi({
   }),
 });
 
-export const { useGetAnnouncementsQuery } = announcementsApi;
+export const { useGetAnnouncementsQuery } = marketingApi;
