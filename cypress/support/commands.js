@@ -31,13 +31,6 @@ Cypress.Commands.add("waitOn", (path, cb) => {
   cy.wait("@waitingOn", {
     timeout: 30000,
   });
-
-  // Ensures that any announcement popups are closed prior to running tests
-  const announcementModal = cy.get("body").find("[data-cy=AnnouncementPopup]");
-
-  if (announcementModal) {
-    cy.getBySelector("IgnoreAnnouncementButton").click();
-  }
 });
 
 Cypress.Commands.add("assertClipboardValue", (value) => {
@@ -50,4 +43,10 @@ Cypress.Commands.add("assertClipboardValue", (value) => {
 
 Cypress.Commands.add("getBySelector", (selector, ...args) => {
   return cy.get(`[data-cy=${selector}]`, ...args);
+});
+
+Cypress.Commands.add("blockAnnouncements", () => {
+  cy.intercept("/-/instant/6-90fbdcadfc-4lc0s5.json", (req) => {
+    req.reply({});
+  });
 });
