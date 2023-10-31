@@ -138,12 +138,14 @@ describe("Reports > Activity Log > Home", () => {
 
   describe("Resources View", () => {
     before(() => {
+      cy.blockAnnouncements();
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
           "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
         );
       });
     });
+
     it("Navigates to Resource Detail on Resource Item click", () => {
       cy.getBySelector("resouce_list_item")
         .should("have.attr", "data-is-loading", "false")

@@ -3,6 +3,7 @@ describe("Content Specs", () => {
 
   describe("content drawer", () => {
     before(() => {
+      cy.blockAnnouncements();
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
@@ -55,6 +56,7 @@ describe("Content Specs", () => {
 
   describe("editing content", () => {
     before(() => {
+      cy.blockAnnouncements();
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });

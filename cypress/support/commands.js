@@ -46,7 +46,10 @@ Cypress.Commands.add("getBySelector", (selector, ...args) => {
 });
 
 Cypress.Commands.add("blockAnnouncements", () => {
-  cy.intercept("/-/instant/6-90fbdcadfc-4lc0s5.json", (req) => {
-    req.reply({});
-  });
+  cy.intercept(
+    "https://www.zesty.io/-/instant/6-90fbdcadfc-4lc0s5.json",
+    (req) => {
+      req.reply({});
+    }
+  );
 });
