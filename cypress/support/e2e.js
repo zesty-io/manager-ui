@@ -57,4 +57,7 @@ beforeEach(() => {
    * lock modal from displaying.
    */
   cy.blockLock();
+
+  // Blocks the api call to render the announcement popup
+  cy.blockAnnouncements();
 });

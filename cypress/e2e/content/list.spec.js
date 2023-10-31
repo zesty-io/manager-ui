@@ -1,5 +1,6 @@
 describe("Content List", () => {
   before(() => {
+    cy.blockAnnouncements();
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-0c960c-d1n0kx");
     });
