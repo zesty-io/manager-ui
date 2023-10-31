@@ -62,6 +62,7 @@ export const InAppAnnouncement = () => {
           onClose={() => onIgnoreAnnouncement(announcementData?.zuid)}
           maxWidth="md"
           PaperProps={{ sx: { width: 640 } }}
+          data-cy="AnnouncementPopup"
         >
           <DialogContent sx={{ p: 0 }}>
             <Stack
@@ -106,6 +107,7 @@ export const InAppAnnouncement = () => {
               variant="text"
               color="inherit"
               onClick={() => onIgnoreAnnouncement(announcementData?.zuid)}
+              data-cy="IgnoreAnnouncementButton"
             >
               Ignore
             </Button>

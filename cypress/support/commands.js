@@ -31,6 +31,13 @@ Cypress.Commands.add("waitOn", (path, cb) => {
   cy.wait("@waitingOn", {
     timeout: 30000,
   });
+
+  // Ensures that any announcement popups are closed prior to running tests
+  const announcementModal = cy.get("body").find("[data-cy=AnnouncementPopup]");
+
+  if (announcementModal) {
+    cy.getBySelector("IgnoreAnnouncementButton").click();
+  }
 });
 
 Cypress.Commands.add("assertClipboardValue", (value) => {
