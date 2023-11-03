@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import moment from "moment";
-import { useLocalStorage } from "react-use";
 import {
   Dialog,
   DialogContent,
@@ -15,15 +14,15 @@ import {
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ScheduledRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
+import { useCookie } from "react-use";
 
 import { useGetAnnouncementsQuery } from "../../services/marketing";
 
 export const InAppAnnouncement = () => {
-  const [readAnnouncements, setReadAnnouncements] = useLocalStorage(
-    "zesty:readAnnouncements",
-    []
-  );
   const { data: announcements } = useGetAnnouncementsQuery();
+  const [readAnnouncementsCookie, updateReadAnnouncementsCookie] = useCookie(
+    "READ_ANNOUNCEMENTS_ZUID"
+  );
 
   const latestAnnouncement = useMemo(() => {
     if (announcements?.length) {
@@ -33,9 +32,19 @@ export const InAppAnnouncement = () => {
     }
   }, [announcements]);
 
+  const readAnnouncements = useMemo(() => {
+    return readAnnouncementsCookie ? JSON.parse(readAnnouncementsCookie) : [];
+  }, [readAnnouncementsCookie]);
+
   const onIgnoreAnnouncement = (zuid: string) => {
-    if (!readAnnouncements.includes(zuid)) {
-      setReadAnnouncements([...readAnnouncements, zuid]);
+    if (!readAnnouncements?.includes(zuid)) {
+      updateReadAnnouncementsCookie(
+        JSON.stringify([...readAnnouncements, zuid]),
+        {
+          // @ts-ignore
+          domain: __CONFIG__.COOKIE_DOMAIN,
+        }
+      );
     }
   };
 
