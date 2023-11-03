@@ -67,7 +67,7 @@ export const InAppAnnouncement = () => {
           <DialogContent sx={{ p: 0 }}>
             <Stack
               m={2.5}
-              p={3}
+              p={2.5}
               width={600}
               height={340}
               sx={{
@@ -80,7 +80,10 @@ export const InAppAnnouncement = () => {
               <Box
                 component="img"
                 alt="announcement-banner-image"
-                src={announcementData?.feature_image?.data[0]?.url ?? ""}
+                src={
+                  `${announcementData?.feature_image?.data[0]?.url}?fit=cover&width=560&height=300` ??
+                  ""
+                }
                 maxWidth="100%"
                 maxHeight="100%"
                 sx={{
