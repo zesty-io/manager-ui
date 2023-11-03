@@ -42,6 +42,9 @@ before(() => {
   // throw undefined errors. To ensure these are caught during testing we always drop
   // indexdb before starting tests
   indexedDB.deleteDatabase("zesty");
+
+  // Blocks the api call to render the announcement popup
+  cy.blockAnnouncements();
 });
 
 // Before each test in spec

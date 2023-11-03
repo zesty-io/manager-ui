@@ -1,6 +1,5 @@
 describe("Single Page Analytics", () => {
   before(() => {
-    cy.blockAnnouncements();
     cy.waitOn("*getPropertyList*", () => {
       cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/analytics");
     });

@@ -1,7 +1,6 @@
 const SEARCH_TERM = `cypress ${Date.now()}`;
 describe("Schema: Models", () => {
   before(() => {
-    cy.blockAnnouncements();
     cy.waitOn("/v1/content/models", () => {
       cy.visit("/schema");
     });
