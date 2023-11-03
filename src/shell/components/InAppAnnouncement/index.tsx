@@ -66,6 +66,9 @@ export const InAppAnnouncement = () => {
         >
           <DialogContent sx={{ p: 0 }}>
             <Stack
+              component="a"
+              href={announcementData?.announcement_link}
+              target="_blank"
               m={2.5}
               p={2.5}
               width={600}
@@ -86,14 +89,6 @@ export const InAppAnnouncement = () => {
                 }
                 maxWidth="100%"
                 maxHeight="100%"
-                sx={{
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  if (announcementData?.announcement_link) {
-                    window.open(announcementData?.announcement_link, "_blank");
-                  }
-                }}
               />
             </Stack>
             <Stack gap={1} px={2.5} pb={2.5}>
@@ -119,9 +114,8 @@ export const InAppAnnouncement = () => {
                 variant="outlined"
                 startIcon={<OpenInNewRoundedIcon />}
                 disabled={!announcementData?.announcement_link}
-                onClick={() =>
-                  window.open(announcementData?.announcement_link, "_blank")
-                }
+                href={announcementData?.announcement_link}
+                target="_blank"
               >
                 Read Announcement
               </Button>
@@ -130,9 +124,8 @@ export const InAppAnnouncement = () => {
                   <Button
                     variant="contained"
                     startIcon={<PlayArrowRoundedIcon />}
-                    onClick={() =>
-                      window.open(announcementData?.video_link, "_blank")
-                    }
+                    href={announcementData?.video_link}
+                    target="_blank"
                   >
                     Show Video
                   </Button>
@@ -142,9 +135,8 @@ export const InAppAnnouncement = () => {
                   <Button
                     variant="contained"
                     startIcon={<ScheduledRoundedIcon />}
-                    onClick={() =>
-                      window.open(announcementData?.training_link, "_blank")
-                    }
+                    href={announcementData?.training_link}
+                    target="_blank"
                   >
                     Schedule Training
                   </Button>
