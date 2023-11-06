@@ -27,6 +27,7 @@ export const FieldEmptyState = ({ onAddField }: Props) => {
       alignItems="center"
       gap={7}
       justifyContent="space-between"
+      pl={4}
     >
       <Box>
         <Typography variant="h4" fontWeight={600}>

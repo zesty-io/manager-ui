@@ -475,3 +475,25 @@ export type StyleCategory = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type Announcement = {
+  zuid: string;
+  title: string;
+  description: string;
+  feature_image: {
+    type: string;
+    totalItems: number;
+    data: {
+      type: string;
+      zuid: string;
+      url: string;
+    }[];
+  };
+  cta_type: "play_video" | "schedule_training";
+  announcement_link: string;
+  training_link: string;
+  video_link: string;
+  start_date_and_time: string;
+  end_date_and_time: string;
+  created_at: string;
+};

@@ -1,6 +1,7 @@
 describe("Analytics dashboard", () => {
   before(() => {
     cy.waitOn("*getPropertyList*", () => {
+      cy.blockAnnouncements();
       cy.visit("/content");
     });
   });

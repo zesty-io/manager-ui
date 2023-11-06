@@ -1,5 +1,6 @@
 describe("Navigation through content editor", () => {
   before(() => {
+    cy.blockAnnouncements();
     cy.waitOn("/v1/env/nav", () => {
       cy.visit("/content");
     });

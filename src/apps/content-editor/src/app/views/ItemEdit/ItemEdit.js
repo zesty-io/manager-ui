@@ -41,7 +41,7 @@ import { theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import { ItemEditHeader } from "./components/ItemEditHeader";
-import { LayoutsWrapper } from "./LayoutsWrapper";
+import { FreestyleWrapper } from "./FreestyleWrapper";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -396,8 +396,8 @@ export default function ItemEdit() {
               />
               <Route
                 exact
-                path="/content/:modelZUID/:itemZUID/layouts"
-                render={() => <LayoutsWrapper />}
+                path="/content/:modelZUID/:itemZUID/freestyle"
+                render={() => <FreestyleWrapper />}
               />
             </Switch>
           </Box>

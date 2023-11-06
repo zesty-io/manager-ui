@@ -64,9 +64,9 @@ const tabs = [
     value: "publishings",
   },
   {
-    label: "Layouts",
+    label: "Freestyle",
     icon: WebRounded,
-    value: "layouts",
+    value: "freestyle",
   },
 ];
 
@@ -194,7 +194,7 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
               }}
             >
               {tabs.map((tab) => {
-                if (tab.label === "Layouts" && !layoutsAppInstalled) {
+                if (tab.label === "Freestyle" && !layoutsAppInstalled) {
                   return;
                 } else
                   return (
