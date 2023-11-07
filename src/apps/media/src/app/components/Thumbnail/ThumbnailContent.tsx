@@ -52,6 +52,11 @@ export const ThumbnailContent: FC<Props> = ({
                 fullWidth
                 disabled={!isEditable}
                 onChange={(e) => onFilenameChange(e.target.value)}
+                sx={{
+                  "& .MuiInputBase-root.MuiOutlinedInput-root": {
+                    borderRadius: 0,
+                  },
+                }}
                 InputProps={{
                   sx: {
                     height: "42px",
@@ -59,6 +64,16 @@ export const ThumbnailContent: FC<Props> = ({
                       fieldset: {
                         borderRight: "0 !important",
                         borderLeft: "0 !important",
+                      },
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "border",
+                        borderWidth: 1,
+                      },
+                      "&:hover": {
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "border",
+                          borderWidth: 1,
+                        },
                       },
                     },
                     fieldset: {
