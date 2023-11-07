@@ -55,8 +55,6 @@ export const ThumbnailContent: FC<Props> = ({
                 InputProps={{
                   sx: {
                     height: "42px",
-                    color: "text.secondary",
-                    borderRadius: 0,
                     "&.Mui-focused": {
                       fieldset: {
                         borderRight: "0 !important",
