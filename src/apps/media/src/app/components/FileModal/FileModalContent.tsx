@@ -360,7 +360,9 @@ export const FileModalContent: FC<Props> = ({
       <Box sx={{ px: 2 }}>
         <Box sx={{ mt: 2 }}>
           <InputLabel>Title</InputLabel>
-          <InputLabel>Can be used for alt-text and captions</InputLabel>
+          <InputLabel sx={{ color: "text.secondary" }}>
+            Can be used for alt-text and captions
+          </InputLabel>
           <TextField
             placeholder="Enter title"
             aria-label="Title TextField"
