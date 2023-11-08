@@ -62,9 +62,12 @@ export const UploadModal: FC = () => {
         open={Boolean(uploads.length)}
         fullWidth
         onClose={handleDismiss}
+        maxWidth={false}
         PaperProps={{
-          style: {
-            maxWidth: "1280px",
+          sx: {
+            mx: 10,
+            my: 2.5,
+            maxHeight: "fill-available",
           },
         }}
       >
@@ -88,7 +91,7 @@ export const UploadModal: FC = () => {
           sx={{
             mt: 2,
             display: "flex",
-            height: "489px",
+            // height: "489px",
             flexDirection: "column",
             gap: 2,
           }}
