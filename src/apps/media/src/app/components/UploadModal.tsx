@@ -11,7 +11,6 @@ import {
   DialogTitle,
   Typography,
   IconButton,
-  Grid,
   Alert,
   AlertTitle,
   CircularProgress,
@@ -60,14 +59,15 @@ export const UploadModal: FC = () => {
     <>
       <Dialog
         open={Boolean(uploads.length)}
-        fullWidth
+        // fullWidth
+        fullScreen
         onClose={handleDismiss}
-        maxWidth={false}
         PaperProps={{
           sx: {
             mx: 10,
             my: 2.5,
             maxHeight: "fill-available",
+            maxWidth: 3000,
           },
         }}
       >
@@ -91,7 +91,6 @@ export const UploadModal: FC = () => {
           sx={{
             mt: 2,
             display: "flex",
-            // height: "489px",
             flexDirection: "column",
             gap: 2,
           }}
@@ -107,23 +106,31 @@ export const UploadModal: FC = () => {
             }}
           >
             <UploadErrors />
-            <Grid container spacing={3}>
+            <Box
+              display="grid"
+              sx={{
+                width: "100%",
+                gap: 3,
+                "@media (min-width: 1280px)": {
+                  gridTemplateColumns: "repeat(3, 1fr)",
+                },
+                "@media (min-width: 1780px)": {
+                  gridTemplateColumns: "repeat(4, 1fr)",
+                },
+
+                "@media (min-width: 2280px)": {
+                  gridTemplateColumns: "repeat(5, 1fr)",
+                },
+              }}
+            >
               {filesToUpload.map((file) => {
                 return (
-                  <Grid
-                    item
-                    xs={4}
-                    key={file.uploadID}
-                    sx={{
-                      position: "relative",
-                      height: "442px",
-                    }}
-                  >
+                  <Box position="relative" key={file.uploadID}>
                     <UploadThumbnail file={file} />
-                  </Grid>
+                  </Box>
                 );
               })}
-            </Grid>
+            </Box>
           </DnDProvider>
         </DialogContent>
         <DialogActions
