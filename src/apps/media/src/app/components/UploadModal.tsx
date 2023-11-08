@@ -1,16 +1,27 @@
 import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../shell/store/types";
-import Dialog from "@mui/material/Dialog";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import {
+  Dialog,
+  Box,
+  Button,
+  Stack,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+  IconButton,
+  Grid,
+  Alert,
+  AlertTitle,
+  CircularProgress,
+} from "@mui/material";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { UploadThumbnail } from "./UploadThumbnail";
-import { dismissFileUploads } from "../../../../../shell/store/media-revamp";
-import { Typography, IconButton, Grid, Alert, AlertTitle } from "@mui/material";
+import {
+  Upload,
+  dismissFileUploads,
+} from "../../../../../shell/store/media-revamp";
 import { DnDProvider } from "./DnDProvider";
 import { UploadButton } from "./UploadButton";
 import CloseIcon from "@mui/icons-material/Close";
@@ -74,18 +85,9 @@ export const UploadModal: FC = () => {
             justifyContent: "space-between",
             alignItems: "center",
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
-            p: 2,
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton size="small" onClick={handleDismiss}>
-              <ArrowBackRoundedIcon fontSize="small" color="action" />
-            </IconButton>
-            <Typography variant="h5" color="text.primary" fontWeight={700}>
-              {filesToUpload.length} File{filesToUpload.length > 1 && "s"}{" "}
-              Selected for Upload
-            </Typography>
-          </Box>
+          <UploadHeaderText uploads={uploads} />
           <UploadButton {...ids} text="Upload More" variant="outlined" />
         </DialogTitle>
         <DialogContent
@@ -95,8 +97,6 @@ export const UploadModal: FC = () => {
             height: "489px",
             flexDirection: "column",
             gap: 2,
-            px: 2,
-            pb: 2,
           }}
         >
           <DnDProvider
@@ -184,5 +184,45 @@ const UploadErrors = () => {
         <Box sx={{ mt: 2 }}>Please check the file extensions and try again</Box>
       </>
     </Alert>
+  );
+};
+
+type UploadHeaderTextProps = {
+  uploads: Upload[];
+};
+const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
+  const filesUploading = uploads?.filter(
+    (upload) => upload.status === "inProgress"
+  );
+  const filesUploaded = uploads?.filter(
+    (upload) => upload.status === "success"
+  );
+  const filesProcessed = uploads?.filter(
+    (upload) => upload.status === "success" || upload.status === "failed"
+  );
+
+  if (filesUploading?.length > 0) {
+    return (
+      <Stack direction="row" alignItems="center" gap={1.5}>
+        <CircularProgress
+          variant="determinate"
+          value={(filesProcessed?.length / uploads?.length) * 100}
+          size={32}
+        />
+        <Typography variant="h5" color="text.primary" fontWeight={700}>
+          {filesUploading.length} File{filesUploading.length > 1 && "s"}{" "}
+          Uploading
+        </Typography>
+      </Stack>
+    );
+  }
+
+  return (
+    <Stack direction="row" alignItems="center" gap={1.5}>
+      <CheckCircleRoundedIcon color="success" />
+      <Typography variant="h5" color="text.primary" fontWeight={700}>
+        {filesUploaded.length} File{filesUploaded.length > 1 && "s"} Uploaded
+      </Typography>
+    </Stack>
   );
 };
