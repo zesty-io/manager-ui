@@ -68,17 +68,6 @@ export const UploadModal: FC = () => {
           },
         }}
       >
-        <IconButton
-          onClick={handleDismiss}
-          sx={{
-            position: "fixed",
-            zIndex: 999,
-            right: 5,
-            top: 0,
-          }}
-        >
-          <CloseIcon sx={{ color: "common.white" }} />
-        </IconButton>
         <DialogTitle
           sx={{
             display: "flex",
@@ -88,7 +77,12 @@ export const UploadModal: FC = () => {
           }}
         >
           <UploadHeaderText uploads={uploads} />
-          <UploadButton {...ids} text="Upload More" variant="outlined" />
+          <Stack direction="row" gap={1.5} alignItems="center">
+            <UploadButton {...ids} text="Upload More" variant="outlined" />
+            <IconButton onClick={handleDismiss} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Stack>
         </DialogTitle>
         <DialogContent
           sx={{
