@@ -19,6 +19,7 @@ import {
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@mui/material/styles";
 import { debounce } from "lodash";
 import EditIcon from "@mui/icons-material/Edit";
@@ -258,7 +259,7 @@ export const FileModalContent: FC<Props> = ({
           <Tooltip title={newFilename} placement="bottom-start">
             <Box
               sx={{
-                width: "300px",
+                width: "235px",
               }}
             >
               <Typography variant="body1" fontWeight={700} noWrap>
@@ -289,6 +290,13 @@ export const FileModalContent: FC<Props> = ({
               size="small"
             >
               <MoreVertIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={() => handleCloseModal()}
+              aria-label="Close Icon"
+            >
+              <CloseIcon fontSize="small" />
             </IconButton>
 
             {/* Settings Dropdown Menu */}

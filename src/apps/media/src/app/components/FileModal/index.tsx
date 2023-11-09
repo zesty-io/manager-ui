@@ -140,18 +140,6 @@ export const FileModal: FC<Props> = ({
             },
           }}
         >
-          <IconButton
-            onClick={() => handleCloseModal()}
-            aria-label="Close Icon"
-            sx={{
-              position: "fixed",
-              zIndex: 999,
-              right: 5,
-              top: 0,
-            }}
-          >
-            <CloseIcon sx={{ color: "common.white" }} />
-          </IconButton>
           {adjacentFiles.nextFile && (
             <IconButton
               size="large"
