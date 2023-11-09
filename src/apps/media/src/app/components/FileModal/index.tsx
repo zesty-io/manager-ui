@@ -127,15 +127,16 @@ export const FileModal: FC<Props> = ({
       {data && !isError && !isFetching ? (
         <Dialog
           open={data.url && !isLoading}
-          fullWidth
+          fullScreen
           maxWidth={false}
           onClose={handleCloseModal}
           PaperProps={{
-            style: {
-              height: "680px",
-              maxWidth: "1300px",
-              overflow: "visible",
-              width: "calc(100% - 168px)",
+            sx: {
+              mx: 10,
+              my: 2.5,
+              maxHeight: "fill-available",
+              maxWidth: 3000,
+              overflow: "hidden",
             },
           }}
         >
@@ -199,7 +200,7 @@ export const FileModal: FC<Props> = ({
             <Card
               elevation={0}
               sx={{
-                width: "1000px",
+                width: "100%",
                 overflow: "hidden",
 
                 // "@media screen and (max-width: 1440px)": {
