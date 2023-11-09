@@ -242,7 +242,7 @@ export const FileModalContent: FC<Props> = ({
       {/* Content Header */}
       <Box
         sx={{
-          p: 2,
+          p: 2.5,
           borderColor: "border",
           borderWidth: "0px",
           borderBottomWidth: "1px",
@@ -365,7 +365,7 @@ export const FileModalContent: FC<Props> = ({
       </Box>
 
       {/* Content Form */}
-      <Box sx={{ px: 2 }}>
+      <Box sx={{ px: 2.5 }}>
         <Box sx={{ mt: 2 }}>
           <InputLabel>Title</InputLabel>
           <InputLabel sx={{ color: "text.secondary" }}>
