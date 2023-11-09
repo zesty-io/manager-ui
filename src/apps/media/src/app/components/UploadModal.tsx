@@ -59,7 +59,6 @@ export const UploadModal: FC = () => {
     <>
       <Dialog
         open={Boolean(uploads.length)}
-        // fullWidth
         fullScreen
         onClose={handleDismiss}
         PaperProps={{
@@ -139,14 +138,6 @@ export const UploadModal: FC = () => {
             borderTop: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
-          {/* <Button
-            color="inherit"
-            variant="text"
-            disabled={loading}
-            onClick={handleDismiss}
-          >
-            Close
-          </Button> */}
           <Button
             color="primary"
             variant="contained"
