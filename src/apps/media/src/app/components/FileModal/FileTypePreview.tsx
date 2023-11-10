@@ -1,6 +1,12 @@
 import { FC, useState, useEffect } from "react";
 import { fileExtension } from "../../utils/fileUtils";
-import { Box, CardMedia, Typography, CircularProgress } from "@mui/material";
+import {
+  Box,
+  CardMedia,
+  Typography,
+  CircularProgress,
+  useMediaQuery,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
 
@@ -34,6 +40,8 @@ export const FileTypePreview: FC<Props> = ({
   imageSettings,
 }) => {
   const theme = useTheme();
+  const is1000 = useMediaQuery("(min-width:1000px)");
+  const is2000 = useMediaQuery("(min-width:2000px)");
 
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
@@ -78,6 +86,11 @@ export const FileTypePreview: FC<Props> = ({
       // with: 2580,
       // optimize: "high",
     };
+
+    if (is2000) {
+      defaultImageSettings.width = 2000;
+    }
+
     const imageSettingsToUse = { ...defaultImageSettings, ...imageSettings };
     const params = `${Object.keys(imageSettingsToUse)
       .filter(
