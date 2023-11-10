@@ -72,8 +72,11 @@ export const FileTypePreview: FC<Props> = ({
   };
 
   const genImageURL = () => {
+    // TODO: Make width dynamic based on screen width
     const defaultImageSettings = {
       width: 880,
+      // with: 2580,
+      // optimize: "high",
     };
     const imageSettingsToUse = { ...defaultImageSettings, ...imageSettings };
     const params = `${Object.keys(imageSettingsToUse)
