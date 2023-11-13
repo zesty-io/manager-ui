@@ -703,7 +703,9 @@ export function fetchItemPublishings() {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch item publishings`,
+              message: `${res.status}:Failed to fetch item publishings${
+                res.error && ": " + res.error
+              }`,
             })
           );
         }
