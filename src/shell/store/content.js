@@ -706,9 +706,6 @@ export function fetchItemPublishings() {
               message: `Failed to fetch item publishings`,
             })
           );
-          if (res.error) {
-            throw new Error(res.error);
-          }
         }
       },
     });
