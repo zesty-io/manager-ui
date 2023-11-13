@@ -84,7 +84,7 @@ export const FileTypePreview: FC<Props> = ({
     const defaultImageSettings = {
       width: 880,
       // with: 2580,
-      // optimize: "high",
+      optimize: "high",
     };
 
     if (is2000) {
