@@ -282,7 +282,7 @@ export const Field = ({
             fontWeight="700"
             noWrap
           >
-            {field.label} {(field as ContentModelField).required && "*"}
+            {field.label} {"required" in field && field.required && "*"}
           </Typography>
         </Tooltip>
         <Typography variant="body3" color="text.secondary">
