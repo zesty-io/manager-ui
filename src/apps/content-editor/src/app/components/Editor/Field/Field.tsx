@@ -385,13 +385,16 @@ export const Field = ({
               skin="oxide"
               skinURL="/vendors/tinymce/skins/ui/oxide"
               contentCSS="/vendors/tinymce/content.css"
-              externalPlugins={{
-                advcode: "/vendors/tinymce/plugins/advcode/plugin.js",
-                powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
-                formatpainter:
-                  "/vendors/tinymce/plugins/formatpainter/plugin.js",
-                pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js",
-              }}
+              // TODO: Add in premium plugins
+              externalPlugins={
+                {
+                  // advcode: "/vendors/tinymce/plugins/advcode/plugin.js",
+                  //   powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
+                  //   formatpainter:
+                  //     "/vendors/tinymce/plugins/formatpainter/plugin.js",
+                  //   pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js",
+                }
+              }
               mediaBrowser={(opts: any) => {
                 setImageModal(opts);
               }}
