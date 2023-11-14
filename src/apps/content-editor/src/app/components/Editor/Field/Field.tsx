@@ -383,8 +383,8 @@ export const Field = ({
               onSave={onSave}
               datatype={datatype}
               skin="oxide"
-              skinURL="/vendors/tinymce/skins/ui/oxide"
-              contentCSS="/vendors/tinymce/content.css"
+              // skinURL="/vendors/tinymce/skins/ui/oxide"
+              // contentCSS="/vendors/tinymce/content.css"
               // TODO: Add in premium plugins
               externalPlugins={
                 {
