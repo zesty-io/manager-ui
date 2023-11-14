@@ -13,6 +13,7 @@ import "tinymce/themes/silver";
 import "tinymce/icons/default";
 // Editor styles
 import "tinymce/skins/ui/oxide/skin.min.css";
+import "tinymce/skins/ui/tinymce-5/skin.min.css";
 
 // importing the plugin js.
 // if you use a plugin that is not listed here the editor will fail to load
@@ -127,13 +128,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
               emoticons searchreplace",
             contextmenu: "bold italic link | copy paste",
             toolbar_mode: "sliding",
-
             relative_urls: false,
-            // plugin settings
-            // TODO: Determine if this still works??
-            // powerpaste_word_import: "prompt",
-            // media_live_embeds: true,
-            image_advtab: true,
 
             // file_picker_callback: (callback, value, meta) => {
             //   console.log(callback, value, meta);
@@ -163,6 +158,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             quickbars_insert_toolbar: false,
             quickbars_image_toolbar: false,
 
+            // TODO: Determine if this still works??
+            // powerpaste_word_import: "prompt",
+            // media_live_embeds: true,
+            image_advtab: true,
+
             // Allows for embeds with script tags
             // extended_valid_elements: "script[src|async|defer|type|charset]",
             valid_elements: "*[*]",
@@ -175,8 +175,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
 
             // theme: "silver",
             // theme_url: "/ui/js/third_party/tinymce/themes/silver/theme.min.js",
-            skin: props.skin,
-            skin_url: props.skinURL,
+            // skin: props.skin,
+            // skin_url: props.skinURL,
+            // skin: "tinymce-5",
+            skin: "oxide",
 
             // If a content_css file is not provided tinymce will attempt
             // loading the default which is not available
