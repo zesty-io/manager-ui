@@ -40,7 +40,6 @@ export const FileTypePreview: FC<Props> = ({
   imageSettings,
 }) => {
   const theme = useTheme();
-  const is1280 = useMediaQuery("(min-width:1280px)");
   const is1440 = useMediaQuery("(min-width:1440px)");
   const is1920 = useMediaQuery("(min-width:1920px)");
 
