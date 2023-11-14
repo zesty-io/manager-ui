@@ -40,8 +40,9 @@ export const FileTypePreview: FC<Props> = ({
   imageSettings,
 }) => {
   const theme = useTheme();
-  const is1000 = useMediaQuery("(min-width:1000px)");
-  const is2000 = useMediaQuery("(min-width:2000px)");
+  const is1280 = useMediaQuery("(min-width:1280px)");
+  const is1440 = useMediaQuery("(min-width:1440px)");
+  const is1920 = useMediaQuery("(min-width:1920px)");
 
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
@@ -80,15 +81,17 @@ export const FileTypePreview: FC<Props> = ({
   };
 
   const genImageURL = () => {
-    // TODO: Make width dynamic based on screen width
     const defaultImageSettings = {
-      width: 880,
-      // with: 2580,
+      width: 800,
       optimize: "high",
     };
 
-    if (is2000) {
-      defaultImageSettings.width = 2000;
+    if (is1440) {
+      defaultImageSettings.width = 1000;
+    }
+
+    if (is1920) {
+      defaultImageSettings.width = 1600;
     }
 
     const imageSettingsToUse = { ...defaultImageSettings, ...imageSettings };
