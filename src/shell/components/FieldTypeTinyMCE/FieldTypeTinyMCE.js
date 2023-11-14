@@ -80,36 +80,51 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
           init={{
             plugins: [
               "advlist",
-              // "advcode",
-              "anchor",
-              "autolink",
-              "charmap",
-              "codesample",
-              "fullscreen",
-              "help",
-              // "hr",
-              "insertdatetime",
-              "link",
               "lists",
-              "media",
-              "preview",
+              "autolink",
+              // "autoresize",
+              "code",
+              "charmap",
+              "emoticons",
+              "fullscreen",
+              "quickbars",
               "searchreplace",
-              // "spellchecker", // TODO: Deprecated in latest version, find out replacement
+              "insertdatetime",
               "table",
+              "help",
+              "link",
+              "media",
               "visualblocks",
+              "codesample",
               "wordcount",
+
+              // "advcode",
+              // "anchor",
+              // "hr",
+              // "preview",
+              // "spellchecker", // TODO: Deprecated in latest version, find out replacement
             ],
 
             // NOTE: premium plugins are being loaded from a self hosted location
             // specific to our application. Making this component not usable outside of our context.
             // TODO: Find a way to make this work
             external_plugins: props.externalPlugins,
+            // TODO: Check with zosh the placement for other buttons not on his list
             toolbar:
-              "italic bold subscript superscript underline strikethrough link backcolor | \
-             alignleft aligncenter alignright alignjustify clearfloat | formatselect | \
-             codesample blockquote bullist numlist outdent indent | \
-             table zestyMediaApp media embed charmap insertdatetime | \
-             pastetext removeformat | fullscreen code help | undo redo",
+              "blocks | \
+              bold italic underline backcolor | \
+              zestyMediaApp media link code table | \
+              align bullist numlist outdent indent | \
+              fullscreen | \
+              superscript subscript strikethrough | \
+              insertdatetime charmap | \
+              undo redo | \
+              visualblocks help | \
+              clearfloat | formatselect | \
+              codesample blockquote | \
+              embed | \
+              pastetext removeformat | \
+              emoticons searchreplace",
             contextmenu: "bold italic link | copy paste",
             toolbar_mode: "sliding",
 
@@ -139,10 +154,14 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             //   });
             // },
 
-            // editor settings
+            // Editor Settings
             branding: false,
             menubar: false,
             object_resizing: true,
+
+            // Plugin Settings
+            quickbars_insert_toolbar: false,
+            quickbars_image_toolbar: false,
 
             // Allows for embeds with script tags
             // extended_valid_elements: "script[src|async|defer|type|charset]",
