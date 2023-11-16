@@ -389,10 +389,10 @@ export const Field = ({
               externalPlugins={
                 {
                   // advcode: "/vendors/tinymce/plugins/advcode/plugin.js",
-                  //   powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
-                  //   formatpainter:
-                  //     "/vendors/tinymce/plugins/formatpainter/plugin.js",
-                  //   pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js",
+                  // powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
+                  // formatpainter:
+                  //   "/vendors/tinymce/plugins/formatpainter/plugin.js",
+                  // pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js",
                 }
               }
               mediaBrowser={(opts: any) => {

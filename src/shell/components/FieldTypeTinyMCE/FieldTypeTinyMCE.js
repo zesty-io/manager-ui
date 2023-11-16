@@ -12,7 +12,7 @@ import "tinymce/themes/silver";
 // Toolbar icons
 import "tinymce/icons/default";
 // Editor styles
-import "tinymce/skins/ui/oxide/skin.min.css";
+// import "tinymce/skins/ui/oxide/skin.min.css";
 import "tinymce/skins/ui/tinymce-5/skin.min.css";
 
 // importing the plugin js.
@@ -103,12 +103,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
               // "anchor",
               // "hr",
               // "preview",
-              // "spellchecker", // TODO: Deprecated in latest version, find out replacement
+              // "spellchecker", // TODO: Deprecated in latest version, replace with the pro version
             ],
 
             // NOTE: premium plugins are being loaded from a self hosted location
             // specific to our application. Making this component not usable outside of our context.
-            // TODO: Find a way to make this work
+            // TODO: Premium plugins are not working on latest version of tinymce
             external_plugins: props.externalPlugins,
             // TODO: Check with zosh the placement for other buttons not on his list
             toolbar:
@@ -123,7 +123,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
               visualblocks help | \
               clearfloat | formatselect | \
               codesample blockquote | \
-              embed | \
+              embed   | \
               pastetext removeformat | \
               emoticons searchreplace",
             contextmenu: "bold italic link | copy paste",
@@ -170,20 +170,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // Autoresizer does not work with the resize handle.
             // Therefore we opt for the resize handle over auto resizing
             resize: true,
-            min_height: 800,
+            min_height: 560,
             // max_height: 2000,
 
-            // theme: "silver",
-            // theme_url: "/ui/js/third_party/tinymce/themes/silver/theme.min.js",
-            // skin: props.skin,
-            // skin_url: props.skinURL,
-            // skin: "tinymce-5",
-            skin: "oxide",
+            skin_url: "/vendors/tinymce/skins/ui/Zesty",
 
             // If a content_css file is not provided tinymce will attempt
             // loading the default which is not available
             content_css: [
-              props.contentCSS,
+              // props.contentCSS,
               "https://fonts.googleapis.com/css?family=Mulish",
             ],
 
