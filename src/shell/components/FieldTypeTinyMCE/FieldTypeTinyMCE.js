@@ -83,7 +83,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
               "advlist",
               "lists",
               "autolink",
-              // "autoresize",
               "code",
               "charmap",
               "emoticons",
@@ -113,19 +112,14 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // TODO: Check with zosh the placement for other buttons not on his list
             toolbar:
               "blocks | \
-              bold italic underline backcolor | \
-              zestyMediaApp media link code table | \
+              bold italic underline backcolor blockquote | \
+              zestyMediaApp media link embed table | \
               align bullist numlist outdent indent | \
               fullscreen | \
-              superscript subscript strikethrough | \
-              insertdatetime charmap | \
+              superscript subscript strikethrough removeformat | \
+              codesample insertdatetime charmap emoticons | \
               undo redo | \
-              visualblocks help | \
-              clearfloat | formatselect | \
-              codesample blockquote | \
-              embed   | \
-              pastetext removeformat | \
-              emoticons searchreplace",
+              searchreplace code visualblocks help ",
             contextmenu: "bold italic link | copy paste",
             toolbar_mode: "sliding",
             relative_urls: false,
