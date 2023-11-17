@@ -151,6 +151,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // Plugin Settings
             quickbars_insert_toolbar: false,
             quickbars_image_toolbar: false,
+            quickbars_selection_toolbar:
+              "blocks | bold italic underline backcolor superscript subscript strikethrough removeformat | align bullist numlist outdent indent",
+            help_accessibility: false,
 
             // TODO: Determine if this still works??
             // powerpaste_word_import: "prompt",
@@ -163,7 +166,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
 
             // Autoresizer does not work with the resize handle.
             // Therefore we opt for the resize handle over auto resizing
-            resize: true,
+            resize: false,
             min_height: 560,
             // max_height: 2000,
 
