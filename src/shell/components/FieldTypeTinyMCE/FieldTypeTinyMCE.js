@@ -94,7 +94,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
               "help",
               "link",
               "media",
-              "visualblocks",
+              // "visualblocks",
               "codesample",
               "wordcount",
 
@@ -119,7 +119,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
               superscript subscript strikethrough removeformat | \
               codesample insertdatetime charmap emoticons | \
               undo redo | \
-              searchreplace code visualblocks help ",
+              searchreplace code help",
             contextmenu: "bold italic link | copy paste",
             toolbar_mode: "sliding",
             relative_urls: false,
@@ -171,6 +171,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // max_height: 2000,
 
             skin_url: "/vendors/tinymce/skins/ui/Zesty",
+            icon_url: "/vendors/tinymce/icons/material-rounded/icons.js",
+            icons: "material-rounded",
 
             // If a content_css file is not provided tinymce will attempt
             // loading the default which is not available
@@ -246,7 +248,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
                * Custom Embed Button
                */
               editor.ui.registry.addButton("embed", {
-                text: "embed",
+                icon: "zesty-embed",
+                tooltip: "Embed a social media post",
                 onAction: function () {
                   editor.windowManager.open({
                     title: "Embed Social Media",
