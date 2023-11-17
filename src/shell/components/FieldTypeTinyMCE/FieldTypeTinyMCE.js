@@ -147,6 +147,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             branding: false,
             menubar: false,
             object_resizing: true,
+            block_formats:
+              "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
 
             // Plugin Settings
             quickbars_insert_toolbar: false,
@@ -154,8 +156,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             quickbars_selection_toolbar:
               "blocks | bold italic underline backcolor superscript subscript strikethrough removeformat | align bullist numlist outdent indent",
             help_accessibility: false,
-            block_formats:
-              "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
 
             // TODO: Determine if this still works??
             // powerpaste_word_import: "prompt",
@@ -171,6 +171,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             resize: false,
             min_height: 560,
             // max_height: 2000,
+            // code_dialog_height: 560,
 
             skin_url: "/vendors/tinymce/skins/ui/Zesty",
             icon_url: "/vendors/tinymce/icons/material-rounded/icons.js",
