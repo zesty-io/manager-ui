@@ -112,7 +112,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // TODO: Check with zosh the placement for other buttons not on his list
             toolbar:
               "blocks | \
-              bold italic underline backcolor blockquote | \
+              bold italic underline backcolor | \
               zestyMediaApp media link embed table | \
               align bullist numlist outdent indent | \
               fullscreen | \
@@ -154,6 +154,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             quickbars_selection_toolbar:
               "blocks | bold italic underline backcolor superscript subscript strikethrough removeformat | align bullist numlist outdent indent",
             help_accessibility: false,
+            block_formats:
+              "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
 
             // TODO: Determine if this still works??
             // powerpaste_word_import: "prompt",
