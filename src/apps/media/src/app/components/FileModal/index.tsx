@@ -136,7 +136,7 @@ export const FileModal: FC<Props> = ({
               my: 2.5,
               maxHeight: "fill-available",
               maxWidth: 3000,
-              overflow: "hidden",
+              overflow: "visible",
             },
           }}
         >
