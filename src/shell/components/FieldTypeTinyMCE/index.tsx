@@ -27,7 +27,7 @@ import "tinymce/plugins/codesample";
 import "tinymce/plugins/directionality";
 import "tinymce/plugins/emoticons";
 import "tinymce/plugins/fullscreen";
-// import "tinymce/plugins/help";
+import "tinymce/plugins/help";
 import "tinymce/plugins/image";
 import "tinymce/plugins/importcss";
 import "tinymce/plugins/insertdatetime";
