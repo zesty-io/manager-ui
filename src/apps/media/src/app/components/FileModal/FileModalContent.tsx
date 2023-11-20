@@ -24,7 +24,7 @@ import { useTheme } from "@mui/material/styles";
 import { debounce } from "lodash";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import ImageIcon from "@mui/icons-material/Image";
 import { MD5 } from "../../../../../../utility/md5";
 import {
@@ -269,6 +269,16 @@ export const FileModalContent: FC<Props> = ({
           </Tooltip>
           <Box sx={{ display: "flex", flexDirection: "row" }}>
             <IconButton
+              onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
+              aria-controls={openSettings ? "settingsMenu" : undefined}
+              aria-haspopup="true"
+              aria-label="Open settings menu"
+              aria-expanded={openSettings ? "true" : undefined}
+              size="small"
+            >
+              <MoreHorizRoundedIcon fontSize="small" />
+            </IconButton>
+            <IconButton
               size="small"
               onClick={() => setShowRenameFileModal(true)}
             >
@@ -280,16 +290,6 @@ export const FileModalContent: FC<Props> = ({
               onClick={() => setShowDeleteFileModal(true)}
             >
               <DeleteIcon fontSize="small" />
-            </IconButton>
-            <IconButton
-              onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
-              aria-controls={openSettings ? "settingsMenu" : undefined}
-              aria-haspopup="true"
-              aria-label="Open settings menu"
-              aria-expanded={openSettings ? "true" : undefined}
-              size="small"
-            >
-              <MoreVertIcon fontSize="small" />
             </IconButton>
             <IconButton
               size="small"
