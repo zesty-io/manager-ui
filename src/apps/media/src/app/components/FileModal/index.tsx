@@ -190,6 +190,7 @@ export const FileModal: FC<Props> = ({
               sx={{
                 width: "100%",
                 overflow: "hidden",
+                borderRadius: 0,
 
                 // "@media screen and (max-width: 1440px)": {
                 //   width: "1440px",
