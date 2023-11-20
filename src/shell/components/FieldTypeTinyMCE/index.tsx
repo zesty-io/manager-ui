@@ -50,6 +50,7 @@ import "tinymce/plugins/wordcount";
 import "tinymce/plugins/emoticons/js/emojis";
 
 import styles from "./FieldTypeTinyMCE.less";
+import { File } from "../../services/types";
 
 type FieldTypeTinyMCEProps = {
   value: any;
@@ -260,10 +261,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                 onAction: function () {
                   mediaBrowser({
                     limit: 10,
-                    callback: (images: any) => {
+                    callback: (images: File[]) => {
                       editor.insertContent(
                         images
-                          .map((image: any) => {
+                          .map((image: File) => {
                             return `<img src="${image.url}" data-id="${image.id}" title="${image.title}" alt="${image.title}" />`;
                           })
                           .join(" ")
