@@ -199,11 +199,27 @@ const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
   if (filesUploading?.length > 0) {
     return (
       <Stack direction="row" alignItems="center" gap={1.5}>
-        <CircularProgress
-          variant="determinate"
-          value={(filesProcessed?.length / uploads?.length) * 100}
-          size={32}
-        />
+        <Box position="relative">
+          <CircularProgress
+            variant="determinate"
+            sx={{
+              color: (theme) =>
+                theme.palette.grey[theme.palette.mode === "light" ? 200 : 800],
+            }}
+            size={32}
+            value={100}
+          />
+          <CircularProgress
+            disableShrink
+            variant="determinate"
+            value={(filesProcessed?.length / uploads?.length) * 100}
+            size={32}
+            sx={{
+              position: "absolute",
+              left: 0,
+            }}
+          />
+        </Box>
         <Typography variant="h5" color="text.primary" fontWeight={700}>
           {filesUploading.length} File{filesUploading.length > 1 && "s"}{" "}
           Uploading
