@@ -153,9 +153,10 @@ export const FieldShell = ({
         <Typography variant="body2" color="error.dark">
           {getErrorMessage(errors)}
         </Typography>
-        {maxLength && withLengthCounter && (
+        {withLengthCounter && (
           <Typography variant="body2" color="text.disabled">
-            {valueLength}/{maxLength}
+            {valueLength}
+            {!!maxLength && `/${maxLength}`}
           </Typography>
         )}
       </Stack>

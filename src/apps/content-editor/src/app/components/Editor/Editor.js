@@ -23,6 +23,8 @@ export const MaxLengths = {
   text: 150,
   link: 2000,
   textarea: 16000,
+  wysiwyg_basic: 0,
+  wysiwyg_advanced: 0,
 };
 
 export default memo(function Editor({

@@ -362,17 +362,21 @@ export const Field = ({
 
     case "wysiwyg_advanced":
     case "wysiwyg_basic":
+      const [characterCount, setCharacterCount] = useState(0);
+
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AIFieldShell
             name={fieldData?.name}
             label={fieldData?.label}
-            valueLength={(value as string)?.length ?? 0}
+            valueLength={characterCount}
             settings={fieldData}
             onChange={onChange}
             errors={errors}
             aiType="paragraph"
             datatype={fieldData?.datatype}
+            withLengthCounter
+            maxLength={maxLength}
           >
             <FieldTypeTinyMCE
               name={name}
@@ -380,6 +384,9 @@ export const Field = ({
               version={version}
               onChange={onChange}
               onSave={onSave}
+              onCharacterCountChange={(charCount: number) =>
+                setCharacterCount(charCount)
+              }
               datatype={datatype}
               // skinURL="/vendors/tinymce/skins/ui/oxide"
               // contentCSS="/vendors/tinymce/content.css"

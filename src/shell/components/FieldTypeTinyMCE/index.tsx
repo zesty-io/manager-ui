@@ -63,6 +63,7 @@ type FieldTypeTinyMCEProps = {
   externalPlugins: Record<string, string>;
   onSave: () => void;
   mediaBrowser: (opts: any) => void;
+  onCharacterCountChange: (charCount: number) => void;
 };
 export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   value,
@@ -76,6 +77,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   externalPlugins,
   onSave,
   mediaBrowser,
+  onCharacterCountChange,
 }: FieldTypeTinyMCEProps) {
   // NOTE: controlled component
   const [initialValue, setInitialValue] = useState(value);
@@ -98,8 +100,19 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         onFocusIn={onFocus}
         onFocusOut={onBlur}
         initialValue={initialValue}
-        onEditorChange={(content) => {
+        onEditorChange={(content, editor) => {
           onChange(content, name, datatype);
+
+          const charCount =
+            editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
+
+          onCharacterCountChange(charCount);
+        }}
+        onInit={(_, editor) => {
+          const charCount =
+            editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
+
+          onCharacterCountChange(charCount);
         }}
         init={{
           plugins: [
@@ -132,7 +145,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           // specific to our application. Making this component not usable outside of our context.
           // TODO: Premium plugins are not working on latest version of tinymce
           external_plugins: externalPlugins,
+
           // TODO: Check with zosh the placement for other buttons not on his list
+          // Editor Settings
           toolbar:
             "blocks | \
               bold italic underline backcolor | \
@@ -146,6 +161,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           contextmenu: "bold italic link | copy paste",
           toolbar_mode: "sliding",
           relative_urls: false,
+          branding: false,
+          menubar: false,
+          statusbar: false,
+          object_resizing: true,
+          block_formats:
+            "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
 
           // file_picker_callback: (callback, value, meta) => {
           //   console.log(callback, value, meta);
@@ -165,13 +186,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           //       .then(blob => resolve(blob));
           //   });
           // },
-
-          // Editor Settings
-          branding: false,
-          menubar: false,
-          object_resizing: true,
-          block_formats:
-            "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
 
           // Plugin Settings
           quickbars_insert_toolbar: false,
