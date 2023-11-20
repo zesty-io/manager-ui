@@ -3,8 +3,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import cx from "classnames";
 
 // TinyMCE so the global var exists
-// eslint-disable-next-line no-unused-vars
-import tinymce from "tinymce/tinymce";
+import "tinymce/tinymce";
 // DOM model
 import "tinymce/models/dom/model";
 // Theme
@@ -52,31 +51,58 @@ import "tinymce/plugins/emoticons/js/emojis";
 
 import styles from "./FieldTypeTinyMCE.less";
 
-export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
+type FieldTypeTinyMCEProps = {
+  value: any;
+  version: any;
+  className?: string;
+  error: boolean;
+  name: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  onChange: (content: string, name: string, datatype: string) => void;
+  datatype: "wysiwyg_advanced" | "wysiwyg_basic";
+  externalPlugins: Record<string, string>;
+  onSave: () => void;
+  mediaBrowser: (opts: any) => void;
+};
+export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
+  value,
+  version,
+  className,
+  name,
+  error,
+  onFocus,
+  onBlur,
+  onChange,
+  datatype,
+  externalPlugins,
+  onSave,
+  mediaBrowser,
+}: FieldTypeTinyMCEProps) {
   // NOTE: controlled component
-  const [initialValue, setInitialValue] = useState(props.value);
+  const [initialValue, setInitialValue] = useState(value);
 
   // NOTE: update if version changes
   useEffect(() => {
-    setInitialValue(props.value);
-  }, [props.version]);
+    setInitialValue(value);
+  }, [version]);
 
   return (
     <div
       className={cx(
         styles.FieldTypeTinyMCE,
-        props.className,
-        props.error ? styles.hasError : ""
+        className,
+        error ? styles.hasError : ""
       )}
     >
       <div className={styles.FieldTypeTinyMCEPM}>
         <Editor
-          id={props.name}
-          onFocusIn={props.onFocus}
-          onFocusOut={props.onBlur}
+          id={name}
+          onFocusIn={onFocus}
+          onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content) => {
-            props.onChange(content, props.name, props.datatype);
+            onChange(content, name, datatype);
           }}
           init={{
             plugins: [
@@ -108,7 +134,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // NOTE: premium plugins are being loaded from a self hosted location
             // specific to our application. Making this component not usable outside of our context.
             // TODO: Premium plugins are not working on latest version of tinymce
-            external_plugins: props.externalPlugins,
+            external_plugins: externalPlugins,
             // TODO: Check with zosh the placement for other buttons not on his list
             toolbar:
               "blocks | \
@@ -180,7 +206,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // If a content_css file is not provided tinymce will attempt
             // loading the default which is not available
             content_css: [
-              // props.contentCSS,
+              // contentCSS,
               "https://fonts.googleapis.com/css?family=Mulish",
             ],
 
@@ -191,7 +217,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
               /**
                * Handle save key command
                */
-              editor.shortcuts.add("meta+s", "Save item", props.onSave);
+              editor.shortcuts.add("meta+s", "Save item", onSave);
 
               /**
                * This does not work as the resizing action provides an element with the data attributes striped
@@ -232,12 +258,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
                 icon: "image",
                 tooltip: "Select media from your uploaded assets",
                 onAction: function () {
-                  props.mediaBrowser({
+                  mediaBrowser({
                     limit: 10,
-                    callback: (images) => {
+                    callback: (images: any) => {
                       editor.insertContent(
                         images
-                          .map((image) => {
+                          .map((image: any) => {
                             return `<img src="${image.url}" data-id="${image.id}" title="${image.title}" alt="${image.title}" />`;
                           })
                           .join(" ")

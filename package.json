@@ -121,6 +121,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
+    "@types/tinymce": "^4.6.8",
     "@types/uuid": "^8.3.4",
     "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^9.0.0",
