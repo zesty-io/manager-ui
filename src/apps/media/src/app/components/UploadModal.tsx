@@ -197,9 +197,9 @@ const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
     (upload) => upload.status === "success" || upload.status === "failed"
   );
 
-  if (filesUploading?.length > 0) {
-    return (
-      <Stack direction="row" alignItems="center" gap={1} alignSelf="flex-start">
+  return (
+    <Stack direction="row" alignItems="center" gap={1} alignSelf="flex-start">
+      {filesUploading?.length > 0 ? (
         <Box position="relative" height={32}>
           <CircularProgress
             variant="determinate"
@@ -211,7 +211,6 @@ const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
             value={100}
           />
           <CircularProgress
-            disableShrink
             variant="determinate"
             value={(filesProcessed?.length / uploads?.length) * 100}
             size={32}
@@ -221,19 +220,15 @@ const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
             }}
           />
         </Box>
-        <Typography variant="h5" color="text.primary" fontWeight={700}>
-          {filesUploading.length} File{filesUploading.length > 1 && "s"}{" "}
-          Uploading
-        </Typography>
-      </Stack>
-    );
-  }
-
-  return (
-    <Stack direction="row" alignItems="center" gap={1.5}>
-      <CheckCircleRoundedIcon color="success" />
+      ) : (
+        <CheckCircleRoundedIcon color="success" sx={{ p: 0.5 }} />
+      )}
       <Typography variant="h5" color="text.primary" fontWeight={700}>
-        {filesUploaded.length} File{filesUploaded.length > 1 && "s"} Uploaded
+        {filesUploading?.length > 0
+          ? filesUploading.length
+          : filesUploaded.length}{" "}
+        File{filesUploading.length > 1 && "s"}{" "}
+        {filesUploading?.length > 0 ? "Uploading" : "Uploaded"}
       </Typography>
     </Stack>
   );
