@@ -45,6 +45,8 @@ import "tinymce/plugins/template";
 import "tinymce/plugins/visualblocks";
 import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
+import "./plugins/slashcommands";
+import "./plugins/socialmediaembed";
 
 // importing plugin resources
 import "tinymce/plugins/emoticons/js/emojis";
@@ -133,6 +135,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // "visualblocks",
             "codesample",
             "wordcount",
+            "slashcommands",
+            "socialmediaembed",
 
             // "advcode",
             // "anchor",
@@ -149,9 +153,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           // TODO: Check with zosh the placement for other buttons not on his list
           // Editor Settings
           toolbar:
-            "blocks | \
+            "slashcommands blocks | \
               bold italic underline backcolor | \
-              zestyMediaApp media link embed table | \
+              zestyMediaApp media link socialmediaembed table | \
               align bullist numlist outdent indent | \
               fullscreen | \
               superscript subscript strikethrough removeformat | \
@@ -224,7 +228,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           content_style: "body { font-family: 'Mulish', Arial, sans-serif  }",
 
           // Customize editor buttons and actions
-          setup: (editor) => {
+          setup: (editor: any) => {
             /**
              * Handle save key command
              */
@@ -279,74 +283,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                         })
                         .join(" ")
                     );
-                  },
-                });
-              },
-            });
-
-            /**
-             * Custom Embed Button
-             */
-            editor.ui.registry.addButton("embed", {
-              icon: "zesty-embed",
-              tooltip: "Embed a social media post",
-              onAction: () => {
-                editor.windowManager.open({
-                  title: "Embed Social Media",
-                  body: {
-                    type: "panel",
-                    items: [
-                      {
-                        type: "selectbox",
-                        name: "service",
-                        label: "Service",
-                        items: [
-                          { text: "Instagram", value: "instagram" },
-                          { text: "YouTube", value: "youtube" },
-                          { text: "Twitframe", value: "twitframe" },
-                        ],
-                      },
-                      {
-                        type: "input",
-                        name: "id",
-                        label: "Unique Post ID",
-                      },
-                    ],
-                  },
-                  buttons: [
-                    {
-                      type: "cancel",
-                      text: "Close",
-                    },
-                    {
-                      type: "submit",
-                      text: "Save",
-                      primary: true,
-                    },
-                  ],
-                  onSubmit: function (api) {
-                    const data = api.getData();
-
-                    let iframe = "";
-                    switch (data.service) {
-                      case "instagram":
-                        iframe = `<iframe src="https://www.instagram.com/p/${data.id}/embed/captioned" height="600px" width="500px"></iframe>`;
-                        break;
-                      case "youtube":
-                        iframe = `<iframe src="https://www.youtube.com/embed/${data.id}?modestbranding=1&rel=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" height="315px" width="560px"></iframe>`;
-                        break;
-                      case "twitframe":
-                        iframe = `<iframe src="https://twitframe.com/show?url=${encodeURI(
-                          data.id
-                        )}" height="315px" width="560px"></iframe>`;
-                        break;
-                      default:
-                        iframe = `<iframe src="" height="315px" width="560px"></iframe>`;
-                    }
-
-                    // Insert content when the window form is submitted
-                    editor.insertContent(iframe);
-                    api.close();
                   },
                 });
               },
