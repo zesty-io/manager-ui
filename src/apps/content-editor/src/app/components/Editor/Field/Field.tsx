@@ -212,7 +212,13 @@ export const Field = ({
 
   const renderMediaModal = () => {
     return ReactDOM.createPortal(
-      <MemoryRouter>
+      <MemoryRouter
+        initialEntries={
+          imageModal?.filetype
+            ? [`/media?filetype=${imageModal.filetype}`]
+            : ["/media"]
+        }
+      >
         <Dialog
           open
           fullScreen

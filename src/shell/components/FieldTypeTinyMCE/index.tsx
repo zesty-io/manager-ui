@@ -267,26 +267,29 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             });
 
             /**
-             * Zesty Media App Button
+             * Zesty Media App
              */
+            const mediaBrowserDialog = (ui?: boolean, filetype?: string) => {
+              mediaBrowser({
+                limit: 10,
+                filetype,
+                callback: (images: File[]) => {
+                  editor.insertContent(
+                    images
+                      .map((image: File) => {
+                        return `<img src="${image.url}" data-id="${image.id}" title="${image.title}" alt="${image.title}" />`;
+                      })
+                      .join(" ")
+                  );
+                },
+              });
+            };
             editor.ui.registry.addButton("zestyMediaApp", {
               icon: "image",
               tooltip: "Select media from your uploaded assets",
-              onAction: () => {
-                mediaBrowser({
-                  limit: 10,
-                  callback: (images: File[]) => {
-                    editor.insertContent(
-                      images
-                        .map((image: File) => {
-                          return `<img src="${image.url}" data-id="${image.id}" title="${image.title}" alt="${image.title}" />`;
-                        })
-                        .join(" ")
-                    );
-                  },
-                });
-              },
+              onAction: mediaBrowserDialog,
             });
+            editor.addCommand("mceZestyMediaApp", mediaBrowserDialog);
           },
         }}
       />
