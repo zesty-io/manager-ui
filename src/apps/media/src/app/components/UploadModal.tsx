@@ -71,6 +71,7 @@ export const UploadModal: FC = () => {
         }}
       >
         <DialogTitle
+          component="div"
           sx={{
             display: "flex",
             justifyContent: "space-between",
@@ -198,8 +199,8 @@ const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
 
   if (filesUploading?.length > 0) {
     return (
-      <Stack direction="row" alignItems="center" gap={1.5}>
-        <Box position="relative">
+      <Stack direction="row" alignItems="center" gap={1} alignSelf="flex-start">
+        <Box position="relative" height={32}>
           <CircularProgress
             variant="determinate"
             sx={{
