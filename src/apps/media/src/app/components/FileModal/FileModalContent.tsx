@@ -15,6 +15,7 @@ import {
   Button,
   Tooltip,
   CircularProgress,
+  Stack,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -240,22 +241,15 @@ export const FileModalContent: FC<Props> = ({
       )}
 
       {/* Content Header */}
-      <Box
-        sx={{
-          p: 2.5,
-          borderColor: "border",
-          borderWidth: "0px",
-          borderBottomWidth: "1px",
-          borderStyle: "solid",
-        }}
+      <Stack
+        direction="row"
+        p={2.5}
+        borderBottom={1}
+        borderColor="border"
+        justifyContent="space-between"
+        alignItems="flex-start"
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <Stack gap={1}>
           <Tooltip title={newFilename} placement="bottom-start">
             <Box
               sx={{
@@ -267,102 +261,101 @@ export const FileModalContent: FC<Props> = ({
               </Typography>
             </Box>
           </Tooltip>
-          <Box sx={{ display: "flex", flexDirection: "row" }}>
-            <IconButton
-              onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
-              aria-controls={openSettings ? "settingsMenu" : undefined}
-              aria-haspopup="true"
-              aria-label="Open settings menu"
-              aria-expanded={openSettings ? "true" : undefined}
-              size="small"
-            >
-              <MoreHorizRoundedIcon fontSize="small" />
-            </IconButton>
-            <IconButton
-              size="small"
-              onClick={() => setShowRenameFileModal(true)}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-            <IconButton
-              size="small"
-              aria-label="Trash Button"
-              onClick={() => setShowDeleteFileModal(true)}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-            <IconButton
-              size="small"
-              onClick={() => handleCloseModal()}
-              aria-label="Close Icon"
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
+          <Chip
+            label={fileExtension(filename) || "No Extension"}
+            sx={{
+              textTransform: "uppercase",
+              backgroundColor: `${fileTypeToColor(
+                fileExtension(filename)
+              )}.100`,
+              color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              width: "fit-content",
+            }}
+            size="small"
+          />
+        </Stack>
+        <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <IconButton
+            onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
+            aria-controls={openSettings ? "settingsMenu" : undefined}
+            aria-haspopup="true"
+            aria-label="Open settings menu"
+            aria-expanded={openSettings ? "true" : undefined}
+            size="small"
+          >
+            <MoreHorizRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton size="small" onClick={() => setShowRenameFileModal(true)}>
+            <EditIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            aria-label="Trash Button"
+            onClick={() => setShowDeleteFileModal(true)}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => handleCloseModal()}
+            aria-label="Close Icon"
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
 
-            {/* Settings Dropdown Menu */}
-            <Menu
-              id="settingsMenu"
-              anchorEl={showSettingsDropdown}
-              open={Boolean(showSettingsDropdown)}
-              onClose={() => setShowSettingsDropdown(null)}
-              PaperProps={{
-                style: {
-                  width: "240px",
-                  marginLeft: "-50px",
-                },
-              }}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
+          {/* Settings Dropdown Menu */}
+          <Menu
+            id="settingsMenu"
+            anchorEl={showSettingsDropdown}
+            open={Boolean(showSettingsDropdown)}
+            onClose={() => setShowSettingsDropdown(null)}
+            PaperProps={{
+              style: {
+                width: "240px",
+                marginLeft: "-50px",
+              },
+            }}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                setShowRenameFileModal(true);
+                setShowSettingsDropdown(null);
               }}
             >
-              <MenuItem
-                onClick={() => {
-                  setShowRenameFileModal(true);
-                  setShowSettingsDropdown(null);
-                }}
-              >
-                <ListItemIcon>
-                  <DriveFileRenameOutlineRoundedIcon />
-                </ListItemIcon>
-                <ListItemText>Rename</ListItemText>
-              </MenuItem>
-              <MenuItem onClick={() => handleCopyClick(id, true)}>
-                <ListItemIcon>
-                  {isCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
-                </ListItemIcon>
-                <ListItemText>Copy ZUID</ListItemText>
-              </MenuItem>
-              <MenuItem onClick={() => setShowMoveFileDialog(true)}>
-                <ListItemIcon>
-                  <DriveFolderUploadRoundedIcon />
-                </ListItemIcon>
-                <ListItemText>Move to</ListItemText>
-              </MenuItem>
-              <MenuItem onClick={() => setShowDeleteFileModal(true)}>
-                <ListItemIcon>
-                  <DeleteRoundedIcon />
-                </ListItemIcon>
-                <ListItemText>Delete</ListItemText>
-              </MenuItem>
-            </Menu>
-          </Box>
+              <ListItemIcon>
+                <DriveFileRenameOutlineRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Rename</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => handleCopyClick(id, true)}>
+              <ListItemIcon>
+                {isCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
+              </ListItemIcon>
+              <ListItemText>Copy ZUID</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => setShowMoveFileDialog(true)}>
+              <ListItemIcon>
+                <DriveFolderUploadRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Move to</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => setShowDeleteFileModal(true)}>
+              <ListItemIcon>
+                <DeleteRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
+          </Menu>
         </Box>
-        <Chip
-          label={fileExtension(filename) || "No Extension"}
-          sx={{
-            mt: 1,
-            textTransform: "uppercase",
-            backgroundColor: `${fileTypeToColor(fileExtension(filename))}.100`,
-            color: `${fileTypeToColor(fileExtension(filename))}.600`,
-          }}
-          size="small"
-        />
-      </Box>
+      </Stack>
 
       {/* Content Form */}
       <Box sx={{ px: 2.5 }}>
