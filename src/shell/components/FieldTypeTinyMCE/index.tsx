@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import { Box } from "@mui/material";
+import { Box, alpha } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 // TinyMCE so the global var exists
 import "tinymce/tinymce";
@@ -95,6 +96,18 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         "& .tox.tox-tinymce": {
           borderColor: error && "error.main",
         },
+        "&:has(div.tox-fullscreen)": {
+          backgroundColor: alpha(theme.palette.grey[900], 0.5),
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 1200,
+        },
+      }}
+      onClick={(evt) => {
+        console.log("Editor bg clicked");
       }}
     >
       <Editor
@@ -225,7 +238,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             "https://fonts.googleapis.com/css?family=Mulish",
           ],
 
-          content_style: "body { font-family: 'Mulish', Arial, sans-serif  }",
+          content_style:
+            "body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 14px; }",
 
           // Customize editor buttons and actions
           setup: (editor: any) => {

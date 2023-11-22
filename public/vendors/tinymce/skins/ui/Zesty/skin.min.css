@@ -2088,6 +2088,11 @@ body.tox-dialog__disable-scroll {
 }
 .tox.tox-tinymce.tox-fullscreen {
   background-color: transparent;
+  border-radius: 8px;
+  height: -webkit-fill-available !important;
+  width: -webkit-fill-available !important;
+  margin: 20px 40px;
+  border: 1px solid #f2f4f7;
 }
 .tox-fullscreen .tox.tox-tinymce-aux,
 .tox-fullscreen ~ .tox.tox-tinymce-aux {
