@@ -1,5 +1,5 @@
 import React, { FC, HTMLAttributes } from "react";
-import { TreeItem } from "@mui/lab";
+import { TreeItem } from "@mui/x-tree-view";
 import { Stack, Box, Typography, Tooltip } from "@mui/material";
 
 import { TreeItem as TreeItemType } from "../index";
@@ -136,19 +136,19 @@ export const NavTreeItem: FC<Props> = React.memo(
           },
         }}
         ContentProps={{
-          onDragOver: (event) => {
+          onDragOver: (event: any) => {
             if (dragAndDrop) {
               event.preventDefault();
               event.currentTarget.style.backgroundColor = "#f6f6f7";
             }
           },
-          onDragLeave: (event) => {
+          onDragLeave: (event: any) => {
             if (dragAndDrop) {
               event.preventDefault();
               event.currentTarget.style.backgroundColor = "";
             }
           },
-          onDrop: (event) => {
+          onDrop: (event: any) => {
             if (dragAndDrop) {
               event.currentTarget.style.backgroundColor = "";
               const draggedItem = JSON.parse(
