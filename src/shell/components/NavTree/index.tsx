@@ -1,5 +1,5 @@
 import React, { FC, HTMLAttributes } from "react";
-import { TreeView } from "@mui/lab";
+import { TreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
 import { NavTreeItem } from "./components/NavTreeItem";
@@ -55,9 +55,11 @@ export const NavTree: FC<Readonly<Props>> = ({
         <TreeView
           data-cy={id}
           expanded={expandedItems}
+          //  @ts-ignore
           selected={selected}
           defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
           defaultExpandIcon={<ArrowRightRoundedIcon />}
+          //  @ts-ignore
           onNodeSelect={(evt: any, nodeIds: string) => {
             if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
               history.push(nodeIds);
