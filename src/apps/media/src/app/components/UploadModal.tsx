@@ -16,6 +16,8 @@ import {
   CircularProgress,
 } from "@mui/material";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import { theme } from "@zesty-io/material";
+
 import { UploadThumbnail } from "./UploadThumbnail";
 import {
   Upload,
@@ -111,14 +113,12 @@ export const UploadModal: FC = () => {
               sx={{
                 width: "100%",
                 gap: 3,
-                "@media (min-width: 1280px)": {
-                  gridTemplateColumns: "repeat(3, 1fr)",
-                },
-                "@media (min-width: 1780px)": {
+                gridTemplateRows: "max-content",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                [theme.breakpoints.up(1780)]: {
                   gridTemplateColumns: "repeat(4, 1fr)",
                 },
-
-                "@media (min-width: 2280px)": {
+                [theme.breakpoints.up(2280)]: {
                   gridTemplateColumns: "repeat(5, 1fr)",
                 },
               }}

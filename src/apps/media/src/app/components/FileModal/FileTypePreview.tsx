@@ -40,8 +40,8 @@ export const FileTypePreview: FC<Props> = ({
   imageSettings,
 }) => {
   const theme = useTheme();
-  const is1440 = useMediaQuery("(min-width:1440px)");
-  const is1920 = useMediaQuery("(min-width:1920px)");
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const isXtraLargeScreen = useMediaQuery(theme.breakpoints.up("xl"));
 
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
@@ -85,11 +85,11 @@ export const FileTypePreview: FC<Props> = ({
       optimize: "high",
     };
 
-    if (is1440) {
+    if (isLargeScreen) {
       defaultImageSettings.width = 1000;
     }
 
-    if (is1920) {
+    if (isXtraLargeScreen) {
       defaultImageSettings.width = 1600;
     }
 
