@@ -1,6 +1,5 @@
 describe("Media Folders", () => {
   before(() => {
-    cy.blockAnnouncements();
     cy.waitOn("*groups*", () => {
       cy.visit("/media");
     });
