@@ -4,7 +4,7 @@ import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
 
 // TinyMCE so the global var exists
-import "tinymce/tinymce";
+import tinymce from "tinymce/tinymce";
 // DOM model
 import "tinymce/models/dom/model";
 // Theme
@@ -92,6 +92,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
   return (
     <Box
+      id="tinyMceWrapper"
       sx={{
         "& .tox.tox-tinymce": {
           borderColor: error && "error.main",
@@ -107,7 +108,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         },
       }}
       onClick={(evt) => {
-        console.log("Editor bg clicked");
+        if (
+          evt.target instanceof Element &&
+          evt.target.id === "tinyMceWrapper"
+        ) {
+          tinymce.activeEditor.execCommand("mceFullScreen");
+        }
       }}
     >
       <Editor
