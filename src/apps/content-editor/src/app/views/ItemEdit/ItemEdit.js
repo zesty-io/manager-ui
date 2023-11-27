@@ -29,12 +29,10 @@ import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { Meta } from "./Meta";
 import { ItemHead } from "./ItemHead";
-import { HeadlessOptions } from "./HeadlessOptions";
 
 import { NotFound } from "../NotFound";
 
 import { PublishState } from "./PublishState.tsx";
-import { Header } from "./components/Header";
 import Analytics from "../Analytics";
 import { ApiDetails } from "../../../../../schema/src/app/components/ModelApi/ApiDetails";
 import { ApiCardList } from "../../../../../schema/src/app/components/ModelApi/ApiCardList";
@@ -42,13 +40,13 @@ import { theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import { ItemEditHeader } from "./components/ItemEditHeader";
-import { LayoutsWrapper } from "./LayoutsWrapper";
 import {
   useGetContentModelFieldsQuery,
   useGetInstanceSettingsQuery,
 } from "../../../../../../shell/services/instance";
 import { DuoModeContext } from "../../../../../../shell/contexts/duoModeContext";
 import { useLocalStorage } from "react-use";
+import { FreestyleWrapper } from "./FreestyleWrapper";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -467,8 +465,8 @@ export default function ItemEdit() {
                 />
                 <Route
                   exact
-                  path="/content/:modelZUID/:itemZUID/layouts"
-                  render={() => <LayoutsWrapper />}
+                  path="/content/:modelZUID/:itemZUID/freestyle"
+                  render={() => <FreestyleWrapper />}
                 />
               </Switch>
             </Box>

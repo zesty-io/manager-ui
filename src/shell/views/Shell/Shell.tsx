@@ -11,6 +11,7 @@ import GlobalSidebar from "../../components/global-sidebar";
 import GlobalTopbar from "../../components/GlobalTopbar";
 import Missing from "../../components/missing";
 import SearchPage from "../../views/SearchPage";
+import { InAppAnnouncement } from "../../components/InAppAnnouncement";
 
 import ContentApp from "../../../apps/content-editor/src";
 import DamApp from "../../../apps/media/src";
@@ -44,6 +45,7 @@ export default memo(function Shell() {
         backgroundColor: "background.paper",
       }}
     >
+      <InAppAnnouncement />
       <GlobalSidebar
         onClick={() => {
           dispatch(actions.setGlobalNav(!openNav));
