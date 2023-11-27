@@ -40,6 +40,21 @@ export const InstancesList = () => {
   const user: User = useSelector((state: AppState) => state.user);
   const { data: instances, isLoading } = useGetInstancesQuery();
 
+  const [menuFocused, setMenuFocused] = useState(false);
+
+  const handleArrowNavigation = (e: React.KeyboardEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (e.key === "ArrowDown" && !menuFocused) {
+      const menuItem = document.querySelector(
+        ".MuiListSubheader-root + div li:first-of-type"
+      );
+      (menuItem as HTMLElement)?.focus();
+      setMenuFocused(true);
+    }
+  };
+
   const favoriteInstances = useMemo(() => {
     if (user && instances?.length) {
       let data: Instance[] = [];
@@ -140,6 +155,7 @@ export const InstancesList = () => {
           <ArrowForwardIosRoundedIcon color="action" fontSize="small" />
         </>
       }
+      onKeyDown={handleArrowNavigation}
       PopperProps={{
         popperOptions: {
           modifiers: [
@@ -176,13 +192,6 @@ export const InstancesList = () => {
             height: 72,
             borderRadius: "8px 8px 0px 0px",
           }}
-          onKeyDown={(e: React.KeyboardEvent) => {
-            const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
-
-            if (!allowedKeys.includes(e.key)) {
-              e.stopPropagation();
-            }
-          }}
         >
           <TextField
             autoFocus
@@ -191,6 +200,16 @@ export const InstancesList = () => {
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             inputRef={searchField}
+            onFocus={() => {
+              setMenuFocused(false);
+            }}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
+
+              if (!allowedKeys.includes(e.key)) {
+                e.stopPropagation();
+              }
+            }}
           />
         </ListSubheader>
         {filter && !filteredInstances?.length ? (
