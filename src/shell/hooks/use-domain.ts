@@ -12,7 +12,14 @@ export const useDomain: UseDomain = () => {
   const { domains }: { domains: Domain[] } = state.instance;
 
   // Let WebEngine figure out https & www settings
-  const format = (domain: string) => `http://${domain}`;
+  const format = (domain: string): string => {
+    try {
+      const url = new URL(domain.includes("://") ? domain : `http://${domain}`);
+      return `http://${url.hostname}`;
+    } catch (error) {
+      return `http://${domain}`; // fallback to the original input with http:// in case of error
+    }
+  };
 
   if (Array.isArray(domains) && domains.length) {
     /**

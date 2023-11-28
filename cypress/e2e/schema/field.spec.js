@@ -53,7 +53,6 @@ describe("Schema: Fields", () => {
   const timestamp = Date.now();
 
   before(() => {
-    cy.blockAnnouncements();
     cy.waitOn(
       "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
       () => {

@@ -4,11 +4,16 @@ import { Announcement } from "./types";
 
 export const marketingApi = createApi({
   reducerPath: "marketingApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "https://www.zesty.io/" }),
+  baseQuery: fetchBaseQuery({
+    // @ts-ignore
+    baseUrl: `${__CONFIG__.MARKETING_INSTANCE_DOMAIN}`,
+  }),
   endpoints: (builder) => ({
     // Get announcements via instant api from the marketing instance
     getAnnouncements: builder.query<Announcement[], void>({
-      query: () => "/-/instant/6-90fbdcadfc-4lc0s5.json",
+      query: () =>
+        // @ts-ignore
+        `/-/instant/${__CONFIG__.MARKETING_ANNOUNCEMENT_MODEL_ZUID}.json`,
       transformResponse: (response: { data: any[] }) => {
         // Filter out other languages if exists, this makes sure that announcements don't get repeatedly shown per language
         return response?.data?.reduce((accu, currVal) => {

@@ -44,6 +44,9 @@ module.exports = {
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
     TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
+
+    MARKETING_INSTANCE_DOMAIN: "https://www.zesty.io/",
+    MARKETING_ANNOUNCEMENT_MODEL_ZUID: "6-90fbdcadfc-4lc0s5",
   },
   stage: {
     VERSION: pkg.version,
@@ -86,6 +89,9 @@ module.exports = {
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
     TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
+
+    MARKETING_INSTANCE_DOMAIN: "https://kfg6bckb-dev.preview.stage.zesty.io/",
+    MARKETING_ANNOUNCEMENT_MODEL_ZUID: "6-90fbdcadfc-4lc0s5",
   },
   development: {
     VERSION: pkg.version,
@@ -130,6 +136,9 @@ module.exports = {
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
     TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
+
+    MARKETING_INSTANCE_DOMAIN: "https://kfg6bckb-dev.preview.stage.zesty.io/",
+    MARKETING_ANNOUNCEMENT_MODEL_ZUID: "6-90fbdcadfc-4lc0s5",
   },
   local: {
     VERSION: pkg.version,
@@ -170,5 +179,8 @@ module.exports = {
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
     TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
+
+    MARKETING_INSTANCE_DOMAIN: "https://kfg6bckb-dev.preview.stage.zesty.io/",
+    MARKETING_ANNOUNCEMENT_MODEL_ZUID: "6-90fbdcadfc-4lc0s5",
   },
 };
