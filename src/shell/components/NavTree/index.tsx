@@ -55,11 +55,11 @@ export const NavTree: FC<Readonly<Props>> = ({
         <TreeView
           data-cy={id}
           expanded={expandedItems}
-          //  @ts-ignore
+          //  @ts-expect-error changed typed definition from mui/lab
           selected={selected}
           defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
           defaultExpandIcon={<ArrowRightRoundedIcon />}
-          //  @ts-ignore
+          //  @ts-expect-error changed typed definition from mui/lab
           onNodeSelect={(evt: any, nodeIds: string) => {
             if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
               history.push(nodeIds);
