@@ -96,55 +96,58 @@ export function LockedView(props) {
     };
   }, [props.ZUID, props.name]);
 
-  return (
-    <Modal
-      className={styles.LockedView}
-      open={
-        zuid === props.ZUID &&
-        lockData.userZUID &&
-        lockData.userZUID !== currentUser.ZUID
-      }
-      onClose={onClose}
-    >
-      <ModalHeader className={styles.ModalHeader}>
-        <h2 className={styles.headline}>
-          <FontAwesomeIcon icon={faLock} /> Locked
-        </h2>
-      </ModalHeader>
-      <ModalContent className={styles.ModalContent}>
-        <p className={styles.subheadline}>
-          <strong>
-            {lockData.firstName} {lockData.lastName}
-          </strong>{" "}
-          is viewing{" "}
-          <strong className={styles.ItemName}>
-            <em>{name}</em>
-          </strong>{" "}
-          since{" "}
-          {moment.unix(lockData.timestamp).format("MMMM Do YYYY, [at] h:mm a")}.
-          Unlock this item to ignore this warning and possibly overwrite{" "}
-          {lockData.firstName}'s changes.
-        </p>
-      </ModalContent>
-      <ModalFooter className={styles.ModalFooter}>
-        <Button
-          variant="contained"
-          onClick={onClose}
-          startIcon={<SkipPreviousIcon />}
-        >
-          Go Back
-        </Button>
-        <Button
-          variant="contained"
-          color="success"
-          onClick={userUnlock}
-          startIcon={
-            loading ? <CircularProgress size="20px" /> : <LockOpenIcon />
-          }
-        >
-          Unlock
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
+  const isLocked =
+    zuid === props.ZUID &&
+    lockData.userZUID &&
+    lockData.userZUID !== currentUser.ZUID;
+
+  if (isLocked) {
+    return (
+      <Modal className={styles.LockedView} open onClose={onClose}>
+        <ModalHeader className={styles.ModalHeader}>
+          <h2 className={styles.headline}>
+            <FontAwesomeIcon icon={faLock} /> Locked
+          </h2>
+        </ModalHeader>
+        <ModalContent className={styles.ModalContent}>
+          <p className={styles.subheadline}>
+            <strong>
+              {lockData.firstName} {lockData.lastName}
+            </strong>{" "}
+            is viewing{" "}
+            <strong className={styles.ItemName}>
+              <em>{name}</em>
+            </strong>{" "}
+            since{" "}
+            {moment
+              .unix(lockData.timestamp)
+              .format("MMMM Do YYYY, [at] h:mm a")}
+            . Unlock this item to ignore this warning and possibly overwrite{" "}
+            {lockData.firstName}'s changes.
+          </p>
+        </ModalContent>
+        <ModalFooter className={styles.ModalFooter}>
+          <Button
+            variant="contained"
+            onClick={onClose}
+            startIcon={<SkipPreviousIcon />}
+          >
+            Go Back
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={userUnlock}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <LockOpenIcon />
+            }
+          >
+            Unlock
+          </Button>
+        </ModalFooter>
+      </Modal>
+    );
+  }
+
+  return <></>;
 }

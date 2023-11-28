@@ -9,7 +9,6 @@ import {
   pollTwoFactor,
   verify,
 } from "shell/store/auth";
-import { useSSO } from "../../hooks/useSSO";
 import {
   Alert,
   Box,
@@ -26,28 +25,8 @@ import PasswordRoundedIcon from "@mui/icons-material/PasswordRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
-import googleIcon from "../../../../public/images/googleIcon.svg";
-import microsoftIcon from "../../../../public/images/microsoftIcon.svg";
-import githubIcon from "../../../../public/images/githubIcon.svg";
 import { LoadingButton } from "@mui/lab";
-
-const ssoOptions = [
-  {
-    service: "google",
-    name: "Google",
-    icon: googleIcon,
-  },
-  {
-    service: "azure",
-    name: "Microsoft",
-    icon: microsoftIcon,
-  },
-  {
-    service: "github",
-    name: "Github",
-    icon: githubIcon,
-  },
-];
+import { SSOButton, SSOButtonGroup } from "@zesty-io/material";
 
 export default connect((state) => {
   return {
@@ -59,7 +38,8 @@ export default connect((state) => {
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
-    const [initiate, isAuthenticated, ssoError] = useSSO();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [ssoError, setSSOError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = (evt) => {
@@ -190,19 +170,19 @@ export default connect((state) => {
                 Start empowering the world with content again
               </Typography>
             </Box>
-            {ssoOptions.map((option) => (
-              <Button
-                key={option.service}
-                size="large"
-                variant="outlined"
-                color="inherit"
-                onClick={() => initiate(option.service)}
-                startIcon={<img src={option.icon} />}
-                sx={{ justifyContent: "flex-start" }}
-              >
-                Continue with {option.name}
-              </Button>
-            ))}
+            <SSOButtonGroup
+              authServiceUrl={CONFIG.SERVICE_AUTH}
+              onSuccess={() => {
+                setIsAuthenticated(true);
+              }}
+              onError={(err) => {
+                setSSOError(err);
+              }}
+            >
+              <SSOButton service="google" />
+              <SSOButton service="azure" />
+              <SSOButton service="github" />
+            </SSOButtonGroup>
             <Box
               display="flex"
               alignItems="center"

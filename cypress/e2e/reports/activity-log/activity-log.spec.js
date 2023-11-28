@@ -144,6 +144,7 @@ describe("Reports > Activity Log > Home", () => {
         );
       });
     });
+
     it("Navigates to Resource Detail on Resource Item click", () => {
       cy.getBySelector("resouce_list_item")
         .should("have.attr", "data-is-loading", "false")
