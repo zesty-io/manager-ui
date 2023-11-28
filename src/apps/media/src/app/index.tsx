@@ -8,6 +8,7 @@ import {
   setIsSelectDialog,
   clearSelectedFiles,
   setShowHeaderActions,
+  setIsReplace,
 } from "../../../../shell/store/media-revamp";
 
 import { AllMedia } from "./views/AllMedia";
@@ -25,9 +26,10 @@ import { UploadModal } from "./components/UploadModal";
 interface Props {
   limitSelected?: number;
   lockedToGroupId?: string;
-  showHeaderActions: boolean;
+  showHeaderActions?: boolean;
   isSelectDialog?: boolean;
   addImagesCallback?: (selectedFiles: File[]) => void;
+  isReplace?: boolean;
 }
 
 export const MediaApp = ({
@@ -36,6 +38,7 @@ export const MediaApp = ({
   isSelectDialog = false,
   addImagesCallback,
   limitSelected,
+  isReplace = false,
 }: Props) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -50,6 +53,7 @@ export const MediaApp = ({
     dispatch(setShowHeaderActions(showHeaderActions));
     dispatch(setIsSelectDialog(isSelectDialog));
     dispatch(setLimitSelected(limitSelected));
+    dispatch(setIsReplace(isReplace));
   }, [lockedToGroupId, isSelectDialog, showHeaderActions]);
 
   useEffect(() => {
@@ -57,6 +61,7 @@ export const MediaApp = ({
       dispatch(setIsSelectDialog(false));
       dispatch(clearSelectedFiles());
       dispatch(setLimitSelected(null));
+      dispatch(setIsReplace(false));
     };
   }, []);
 
@@ -103,7 +108,7 @@ export const MediaApp = ({
                 <FileModal
                   fileId={fileId}
                   onSetIsFileModalError={setIsFileModalError}
-                  currentFiles={currentFiles}
+                  currentFiles={currentFiles.map((file) => file.id)}
                 />
               );
             } else {

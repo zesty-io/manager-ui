@@ -32,9 +32,14 @@ export function InstantUrl(props) {
             target="_blank"
             title="Instant API"
             href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.item.meta.ZUID}.json`}
+            sx={{
+              color: "info.dark",
+            }}
           >
-            <FontAwesomeIcon icon={faBolt} />
-            &nbsp;
+            <FontAwesomeIcon
+              icon={faBolt}
+              style={{ color: "#0BA5EC", marginRight: "8px" }}
+            />
             {`/-/instant/${props.item.meta.ZUID}.json`}
           </Link>
         </ListItem>

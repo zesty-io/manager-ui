@@ -37,7 +37,7 @@ export const QuickView = memo(function QuickView(props) {
     <Fragment>
       <Card
         className={styles.QuickView}
-        sx={{ mx: 2, mb: 3, mt: 2, backgroundColor: "transparent" }}
+        sx={{ mb: 3, backgroundColor: "transparent" }}
         elevation={0}
       >
         <CardHeader

@@ -1,0 +1,32 @@
+@import "~@zesty-io/core/typography.less";
+
+.FieldTypeEditor {
+  .FieldTypeEditorLabel {
+    display: flex;
+    margin-bottom: 3px;
+    align-items: flex-end;
+    font-size: @font-size-label;
+    justify-content: space-between;
+
+    .FieldTypeEditorLabel__right {
+      display: flex;
+      gap: 8px;
+    }
+
+    & span:first-child {
+      flex: 1;
+    }
+
+    .EditorSelection {
+      min-width: 150px;
+      // height: 30px;
+    }
+  }
+
+  .FieldTypeEditorPM {
+    background: @appBkgColor;
+    border: 1px solid @appBkgColor;
+    border-radius: 4px;
+    display: flex;
+  }
+}

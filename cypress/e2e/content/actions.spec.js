@@ -149,10 +149,15 @@ describe("Actions in content editor", () => {
 
   it("Deletes an item", () => {
     cy.contains(timestamp).click();
-    cy.get("#DeleteItemButton").click();
-    cy.get("#deleteConfirmButton").should("exist");
-    cy.get("#deleteConfirmButton").click();
-    cy.contains("Successfully deleted item", { timeout: 5000 }).should("exist");
+    cy.getBySelector("ContentItemMoreButton").click();
+    cy.getBySelector("DeleteContentItem").click();
+    cy.getBySelector("DeleteContentItemConfirmButton").click();
+
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0");
+    });
+
+    cy.contains(timestamp).should("not.exist");
   });
 
   // TODO: Workflow request doesn't work

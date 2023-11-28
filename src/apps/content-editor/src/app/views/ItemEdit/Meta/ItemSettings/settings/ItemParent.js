@@ -6,10 +6,9 @@ import { notify } from "shell/store/notifications";
 import { Select, Option } from "@zesty-io/core/Select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
-import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { searchItems } from "shell/store/content";
+import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
 
 import styles from "./ItemParent.less";
 export const ItemParent = connect((state) => {
@@ -144,49 +143,50 @@ export const ItemParent = connect((state) => {
 
       return (
         <article className={styles.ItemParent} data-cy="itemParent">
-          <label>
-            <Tooltip
-              title="Set which page this one will be nested beneath. This effects both automatically generated navigation and the URL structure for this page."
-              arrow
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" />
-            </Tooltip>
-            &nbsp;Select this Page's Parent
-          </label>
-
-          {/*
+          <FieldShell
+            settings={{
+              label: "Select this Page's Parent",
+            }}
+            customTooltip="Set which page this one will be nested beneath. This effects both automatically generated navigation and the URL structure for this page."
+            withInteractiveTooltip={false}
+          >
+            {/*
             Delay rendering select until we have a parent.
             Sometimes we have to resolve the parent from the API asynchronously
           */}
-          {!parent ? (
-            "Loading item parent"
-          ) : (
-            <Select
-              name="parentZUID"
-              placeholder={props.placeholder}
-              value={parent.meta.ZUID}
-              onSelect={props.onChange}
-              onFilter={onSearch}
-              // always render search input
-              searchPlaceholder="Do not see the path you are looking for? Enter a path to search your API."
-              searchLength="0"
-              loading={loading}
-            >
-              <Option
-                value="0"
-                component={
-                  <Fragment>
-                    <FontAwesomeIcon icon={faHome} />
-                    &nbsp;/
-                  </Fragment>
-                }
-              />
-              {parents.map((item) => (
-                <Option key={item.value} value={item.value} text={item.text} />
-              ))}
-            </Select>
-          )}
+            {!parent ? (
+              "Loading item parent"
+            ) : (
+              <Select
+                name="parentZUID"
+                placeholder={props.placeholder}
+                value={parent.meta.ZUID}
+                onSelect={props.onChange}
+                onFilter={onSearch}
+                // always render search input
+                searchPlaceholder="Do not see the path you are looking for? Enter a path to search your API."
+                searchLength="0"
+                loading={loading}
+              >
+                <Option
+                  value="0"
+                  component={
+                    <Fragment>
+                      <FontAwesomeIcon icon={faHome} />
+                      &nbsp;/
+                    </Fragment>
+                  }
+                />
+                {parents.map((item) => (
+                  <Option
+                    key={item.value}
+                    value={item.value}
+                    text={item.text}
+                  />
+                ))}
+              </Select>
+            )}
+          </FieldShell>
         </article>
       );
     },

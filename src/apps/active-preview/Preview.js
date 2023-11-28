@@ -1,19 +1,27 @@
 import { useEffect, useRef, useState } from "react";
-import cx from "classnames";
-
-import { Button, Select, Link, TextField, MenuItem } from "@mui/material";
-import SyncIcon from "@mui/icons-material/Sync";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import MobileScreenShareIcon from "@mui/icons-material/MobileScreenShare";
-
-import { CopyButton } from "@zesty-io/material";
-
-import { WithLoader } from "@zesty-io/core/WithLoader";
-
-import { Notice } from "@zesty-io/core/Notice";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+  Button,
+  Link,
+  MenuItem,
+  Box,
+  IconButton,
+  Menu,
+  FormControlLabel,
+  Switch,
+  Dialog,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
+import {
+  LinkRounded,
+  RefreshRounded,
+  PhoneIphoneRounded,
+  OpenInNewRounded,
+  CloseRounded,
+  CheckRounded,
+  SaveRounded,
+  ZoomInRounded,
+} from "@mui/icons-material";
 
 // import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
@@ -22,6 +30,38 @@ import { Frame, templates } from "./components/Frame";
 import api from "./api";
 
 import styles from "./Preview.less";
+
+const zoomLevels = [
+  {
+    label: "35%",
+    value: 0.35,
+  },
+  {
+    label: "50%",
+    value: 0.5,
+  },
+  {
+    label: "75%",
+    value: 0.75,
+  },
+  {
+    label: "100%",
+    value: 1,
+  },
+  {
+    label: "125%",
+    value: 1.25,
+  },
+  {
+    label: "150%",
+    value: 1.5,
+  },
+];
+
+function isInIframe() {
+  return window.self !== window.top;
+}
+
 export function Preview(props) {
   const ZUID = window.location.host.split(".")[0];
   if (!ZUID) {
@@ -42,18 +82,40 @@ export function Preview(props) {
   const [refresh, setRefresh] = useState(Date.now());
   const [version, setVersion] = useState(0);
   const [dirty, setDirty] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [scaleAnchorEl, setScaleAnchorEl] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [zoom, setZoom] = useState(() => {
+    return isInIframe() ? 0.35 : 1;
+  });
 
   // Track initial version sent. We use this to make a determination
   // on whether current content has changed or the different version was
   // picked for previewing
   const [initialVersion, setInitialVersion] = useState(props.version);
 
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyClick = (data) => {
+    navigator?.clipboard
+      ?.writeText(data)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 5000);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   // Listen for messages
   useEffect(() => {
     function receiveMessage(msg) {
+      setSaving(false);
       // Prevent malicious communication to this window
       if (msg.origin !== window.location.origin) {
-        console.error("Origin mismatch");
         return;
       }
 
@@ -67,7 +129,7 @@ export function Preview(props) {
         if (msg.data.refresh) {
           setRefresh(Date.now());
         }
-        if (msg.data.dirty) {
+        if (Object(msg.data).hasOwnProperty("dirty")) {
           setDirty(msg.data.dirty);
         }
         if (msg.data.version) {
@@ -101,223 +163,278 @@ export function Preview(props) {
       .finally(() => setLoading(false));
   }, []);
 
+  const sendMessage = (action) => {
+    window.parent.postMessage({
+      source: "zesty",
+      action,
+    });
+  };
+
+  const selectTemplate = (template) => {
+    setDevice(template);
+    setAnchorEl(null);
+  };
+
+  if (!domain) {
+    return (
+      <Box
+        height="100vh"
+        display="flex"
+        justifyContent={"center"}
+        alignItems={"center"}
+        flexDirection={"column"}
+      >
+        <CircularProgress />
+        <Typography variant="h5" fontWeight={600} mt={1.5}>
+          Finding Domain
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (saving) {
+    return (
+      <Box
+        height="100vh"
+        display="flex"
+        justifyContent={"center"}
+        alignItems={"center"}
+        flexDirection={"column"}
+      >
+        <CircularProgress />
+        <Typography variant="h5" fontWeight={600} mt={1.5}>
+          Saving
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
-    <WithLoader condition={domain} message="Finding Domain" height="100vh">
-      <section className={styles.ActivePreview}>
-        <header className={styles.TopBar}>
-          <figure className={styles.Logo}>
-            <img
-              height="20px"
-              width="20px"
-              src="https://brand.zesty.io/zesty-io-logo-dark.svg"
-            />
-            &nbsp;
-            <figcaption>
-              <Link
-                underline="none"
-                color="secondary"
-                href={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-                target="_blank"
-                title="Open live link in standard browser window"
-              >
-                ActivePreview
-              </Link>
-            </figcaption>
-          </figure>
-          <div className={styles.ActionInfo}>
-            <div className={styles.Links}>
-              {instance.domain && (
-                <Link
-                  underline="none"
-                  color="secondary"
-                  href={`//${instance.domain}${route}`}
-                  target="_blank"
-                  title="Open live link in standard browser window"
-                  sx={{
-                    color: "#026AA2",
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={faExternalLinkAlt}
-                    style={{ color: "#0BA5EC" }}
-                  />
-                  &nbsp;Live
-                </Link>
-              )}
-              <Link
-                underline="none"
-                color="secondary"
-                href={`${domain}${route}`}
-                target="_blank"
-                title="Open preview link in standard browser window"
-                sx={{
-                  color: "#026AA2",
-                }}
-              >
-                <FontAwesomeIcon icon={faEye} style={{ color: "#0BA5EC" }} />
-                &nbsp;Preview
-              </Link>
-            </div>
+    <>
+      <Box bgcolor="grey.100" display="flex" alignItems="center" p={1}>
+        <IconButton
+          size="small"
+          onClick={() => handleCopyClick(`${domain}${route}`)}
+          mr={0.25}
+        >
+          {isCopied ? <CheckRounded /> : <LinkRounded />}
+        </IconButton>
 
-            <div className={styles.Url}>
-              <CopyButton
-                disableElevation
-                variant="contained"
-                value={`${domain}${route}`}
-                sx={{
-                  mr: 1,
-                  backgroundColor: "#F2F4F7",
-                  color: "text.secondary",
+        <Link
+          href={`${domain}${route}`}
+          target="_blank"
+          noWrap
+          sx={{
+            direction: "rtl",
+            display: "block",
+            flex: "1",
+            textAlign: "left",
+          }}
+        >
+          {`${domain}${route}`}
+        </Link>
 
-                  "&:hover": {
-                    backgroundColor: "#E4E7EC",
-                    color: "text.secondary",
-                  },
-
-                  ".MuiButton-startIcon": {
-                    color: "#10182866",
-                  },
-                }}
+        <IconButton
+          size="small"
+          onClick={() => setRefresh(Date.now())}
+          sx={{
+            ml: 1,
+            mr: 0.5,
+          }}
+        >
+          <RefreshRounded />
+        </IconButton>
+        <IconButton
+          size="small"
+          onClick={(event) => setScaleAnchorEl(event.currentTarget)}
+          sx={{
+            mr: 0.5,
+          }}
+        >
+          <ZoomInRounded />
+        </IconButton>
+        <Menu
+          anchorEl={scaleAnchorEl}
+          open={Boolean(scaleAnchorEl)}
+          onClose={() => setScaleAnchorEl(null)}
+          PaperProps={{
+            sx: {
+              width: 184,
+            },
+          }}
+        >
+          {zoomLevels.map((level, index) => (
+            <MenuItem
+              key={index}
+              onClick={() => {
+                setZoom(level.value);
+                setScaleAnchorEl(null);
+              }}
+              selected={zoom === level.value}
+            >
+              {level.label}
+            </MenuItem>
+          ))}
+        </Menu>
+        <IconButton
+          size="small"
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+          sx={{
+            mr: 0.5,
+          }}
+        >
+          <PhoneIphoneRounded />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(null)}
+          PaperProps={{
+            sx: {
+              width: 320,
+            },
+          }}
+        >
+          <MenuItem
+            selected={device === "fullscreen"}
+            onClick={() => selectTemplate("fullscreen")}
+          >
+            No Device
+          </MenuItem>
+          {Object.keys(templates)
+            .slice(1)
+            .map((template, index) => (
+              <MenuItem
+                key={index}
+                onClick={(evt) => selectTemplate(template)}
+                selected={template === device}
               >
-                URL
-              </CopyButton>
-              <Button
-                disableElevation
-                variant="contained"
-                onClick={() => setRefresh(Date.now())}
-                title="Reload current url in ActivePreview"
-                sx={{
-                  backgroundColor: "#F2F4F7",
-                  color: "text.secondary",
+                {templates[template].option}
+              </MenuItem>
+            ))}
+          <FormControlLabel
+            value="start"
+            control={
+              <Switch
+                color="primary"
+                checked={rotate}
+                onChange={(event) => setRotate(event.target.checked)}
+              />
+            }
+            label="Landscape Mode"
+            labelPlacement="start"
+            sx={{
+              mt: 2,
+              flexDirection: "row-reverse", // Reverse the direction
+              justifyContent: "space-between", // Optional, but this ensures the label takes up the full width and the checkbox is at the far right
+              width: "92%",
+            }}
+          />
+        </Menu>
+        <IconButton
+          sx={{
+            mr: 0.5,
+          }}
+          size="small"
+          onClick={() =>
+            window.open(
+              `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`,
+              "_blank"
+            )
+          }
+        >
+          <OpenInNewRounded />
+        </IconButton>
+        <IconButton size="small" onClick={() => sendMessage("close")}>
+          <CloseRounded />
+        </IconButton>
+      </Box>
+      <Box
+        sx={{
+          height: "calc(100% - 48px)",
+          overflow: device === "fullscreen" ? "unset" : "auto",
 
-                  "&:hover": {
-                    backgroundColor: "#E4E7EC",
-                    color: "text.secondary",
-                  },
-                }}
-              >
-                <SyncIcon fontSize="small" sx={{ fill: "#10182866" }} />
-              </Button>
-              <TextField
-                ref={input}
-                value={`${domain}${route}`}
-                size="small"
-                variant="outlined"
+          scrollbarWidth: "none",
+          "-ms-overflow-style": "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
+      >
+        {dirty && (
+          <Dialog
+            disableAutoFocus
+            open
+            PaperProps={{
+              sx: {
+                p: 2,
+                alignItems: "center",
+                gap: 1.5,
+              },
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "deepOrange.200",
+                borderRadius: "100%",
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <SaveRounded
                 color="primary"
                 sx={{
-                  "@media (max-width: 650px)": {
-                    display: "none",
-                  },
+                  width: "24px",
+                  height: "24px",
                 }}
-                InputProps={{ sx: { flex: 1 } }}
-                fullWidth
               />
-            </div>
+            </Box>
+            <Typography variant="h6" fontWeight={600}>
+              Save to Update Preview
+            </Typography>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => {
+                setSaving(true);
+                sendMessage("save");
+              }}
+              sx={{
+                maxWidth: "54px",
+              }}
+            >
+              Save
+            </Button>
+          </Dialog>
+        )}
 
-            <div className={styles.Device}>
-              <Select
-                className={styles.Select}
-                name="device"
-                value={device}
-                onChange={(evt) => setDevice(evt.target.value)}
-                size="small"
-              >
-                <MenuItem value="fullscreen">Device</MenuItem>
-                {/*
-            Generate available options from templates,
-            except the initial "No Template" template
-            */}
-                {Object.keys(templates)
-                  .slice(1)
-                  .map((template, index) => (
-                    <MenuItem key={index} value={template}>
-                      {templates[template].option}
-                    </MenuItem>
-                  ))}
-              </Select>
-              <Button
-                disableElevation
-                variant="contained"
-                onClick={() => setRotate(!rotate)}
-                title="Rotate device"
-                sx={{
-                  backgroundColor: "#F2F4F7",
-                  color: "text.secondary",
-
-                  "&:hover": {
-                    backgroundColor: "#E4E7EC",
-                    color: "text.secondary",
-                  },
-                }}
-              >
-                <MobileScreenShareIcon
-                  fontSize="small"
-                  sx={{
-                    transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
-                    fill: "#10182866",
-                  }}
-                />
-              </Button>
-            </div>
-
-            {/* <div className={styles.Menu}>
-              <Button
-                disableElevation
-                variant="contained"
-                onClick={() => setOpen(!open)}
-                title="Additional menu options"
-                sx={{
-                  backgroundColor: "#F2F4F7",
-                  color: "text.secondary",
-
-                  "&:hover": {
-                    backgroundColor: "#E4E7EC",
-                    color: "text.secondary",
-                  },
-                }}
-              >
-                <MoreVertIcon fontSize="small" sx={{ fill: "#10182866" }} />
-              </Button>
-              <Meta open={open} route={route} instanceZUID={ZUID} />
-            </div> */}
-          </div>
-        </header>
-        <main
-          className={cx(
-            styles.Preview,
-            device !== "fullscreen" ? styles.Mobile : null
-          )}
-        >
-          {initialVersion === version && dirty && (
-            <div className={styles.Overlay}>
-              <Notice>Save to update preview</Notice>
-            </div>
-          )}
-
-          {!loading && domain && route ? (
-            route.includes(".json") ? (
-              <JSONPreview src={`${domain}${route}`} settings={settings} />
-            ) : (
-              <Frame
-                key={refresh}
-                device={device}
-                domain={domain}
-                route={route}
-                rotate={rotate}
-                blur={initialVersion === version && dirty}
-              />
-            )
+        {!loading && domain && route ? (
+          route.includes(".json") ? (
+            <JSONPreview src={`${domain}${route}`} settings={settings} />
           ) : (
-            <div className={styles.NoDomain}>
-              <h1 className={styles.headline}>
-                {!authenticated
-                  ? "Your session is not active. Please login to Zesty.io"
-                  : "Disconnected from preview domain"}
-              </h1>
-            </div>
-          )}
-        </main>
-      </section>
-    </WithLoader>
+            <Frame
+              key={refresh}
+              device={device}
+              domain={domain}
+              route={route}
+              rotate={rotate}
+              blur={initialVersion === version && dirty}
+              zoom={zoom}
+            />
+          )
+        ) : (
+          <div className={styles.NoDomain}>
+            <h1 className={styles.headline}>
+              {!authenticated
+                ? "Your session is not active. Please login to Zesty.io"
+                : "Disconnected from preview domain"}
+            </h1>
+          </div>
+        )}
+      </Box>
+    </>
   );
 }

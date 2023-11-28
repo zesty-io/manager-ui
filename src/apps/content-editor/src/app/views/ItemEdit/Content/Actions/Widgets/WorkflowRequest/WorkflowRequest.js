@@ -124,7 +124,7 @@ ${
   }
 
   return (
-    <Box sx={{ mx: 2, mb: 3 }}>
+    <Box sx={{ mb: 3 }}>
       <Accordion elevation={0} sx={{ backgroundColor: "transparent" }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}

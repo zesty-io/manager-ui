@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { Box } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
 
 import styles from "./PreviewMode.less";
+import { theme } from "@zesty-io/material";
 export default function PreviewMode(props) {
   const origin = window.location.origin;
-
   const instance = useSelector((state) => state.instance);
   const content = useSelector((state) => state.content);
   const instanceSettings = useSelector((state) => state.settings.instance);
@@ -72,14 +74,46 @@ export default function PreviewMode(props) {
     }
   }, [props.itemZUID, props.version, props.dirty]);
 
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data.source === "zesty") {
+        switch (event.data.action) {
+          case "close":
+            props.onClose();
+            break;
+          case "save":
+            props.onSave();
+            break;
+          default:
+            break;
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
   return (
-    <div data-cy="DuoModeContainer" className={styles.DMContainer}>
-      <iframe
+    // <div data-cy="DuoModeContainer" className={styles.DMContainer}>
+    <ThemeProvider theme={theme}>
+      <Box
+        height="100%"
+        width="100%"
+        sx={{
+          border: (theme) => `1px solid ${theme.palette.border}`,
+          borderRadius: "8px",
+        }}
+        component="iframe"
         ref={preview}
-        // src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-        src={`https://${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+        src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+        // src={`https://${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
         frameBorder="0"
-      ></iframe>
-    </div>
+      ></Box>
+    </ThemeProvider>
+    // </div>
   );
 }
