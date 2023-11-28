@@ -309,14 +309,8 @@ export const FileModalContent: FC<Props> = ({
             anchorEl={showSettingsDropdown}
             open={Boolean(showSettingsDropdown)}
             onClose={() => setShowSettingsDropdown(null)}
-            PaperProps={{
-              style: {
-                width: "240px",
-                marginLeft: "-50px",
-              },
-            }}
             anchorOrigin={{
-              vertical: "top",
+              vertical: "bottom",
               horizontal: "left",
             }}
             transformOrigin={{
