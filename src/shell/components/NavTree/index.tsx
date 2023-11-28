@@ -31,6 +31,7 @@ interface Props {
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
 }
+
 export const NavTree: FC<Readonly<Props>> = ({
   id,
   HeaderComponent,
