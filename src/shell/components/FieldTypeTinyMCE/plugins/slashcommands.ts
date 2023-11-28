@@ -88,7 +88,7 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
     },
     {
       text: "Time",
-      icon: "ordered-list",
+      icon: "insert-time",
       action: () => {
         editor.execCommand("mceInsertTime");
       },
