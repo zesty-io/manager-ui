@@ -47,50 +47,63 @@ export const UsersDoughnutChart = ({
     }
   };
 
-  const newVsReturningUsers = [
+  const dataRange0Users = [
     +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] || 0,
     +findValuesForDimensions(data?.rows, ["date_range_0", "returning"])?.[0] ||
       0,
   ];
-  const totalUsers = [
+  const dateRange1Users = [
     shouldCompare
       ? +findValuesForDimensions(compareData?.rows, ["new"])?.[0] ||
         0 + +findValuesForDimensions(compareData?.rows, ["returning"])?.[0] ||
         0
-      : +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] ||
-        0 +
-          +findValuesForDimensions(data?.rows, [
-            "date_range_1",
-            "returning",
-          ])?.[0] ||
-        0,
-    +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] ||
-      0 +
-        +findValuesForDimensions(data?.rows, [
-          "date_range_0",
-          "returning",
-        ])?.[0] ||
+      : +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] || 0,
+    +findValuesForDimensions(data?.rows, ["date_range_1", "returning"])?.[0] ||
       0,
   ];
 
+  // const totalUsers = [
+  //   shouldCompare
+  //     ? +findValuesForDimensions(compareData?.rows, ["new"])?.[0] ||
+  //       0 + +findValuesForDimensions(compareData?.rows, ["returning"])?.[0] ||
+  //       0
+  //     : +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] ||
+  //       0 +
+  //         +findValuesForDimensions(data?.rows, [
+  //           "date_range_1",
+  //           "returning",
+  //         ])?.[0] ||
+  //       0,
+  //   +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] ||
+  //     0 +
+  //       +findValuesForDimensions(data?.rows, [
+  //         "date_range_0",
+  //         "returning",
+  //       ])?.[0] ||
+  //     0,
+  // ];
+  // console.log(dataRange0Users);
+  // console.log(totalUsers);
+
+  // TODO: May need to update this c/o Zosh
   const datasetIndexMap = {
     "00": {
-      title: "New Users",
+      title: `New Users for ${dateRange0Label}`,
       description:
         "New users are users who have never visited your website or app before.",
     },
     "01": {
-      title: "Returning Users",
+      title: `Returning Users for ${dateRange0Label}`,
       description:
         "Returning users are users who have visited your website or app before.",
     },
     "10": {
-      title: `Users for ${dateRange1Label}`,
+      title: `New Users for ${dateRange1Label}`,
       description:
         "Users are visitors who have initiated at least one session with your website or app within the specified period of time.",
     },
     "11": {
-      title: `Users for ${dateRange0Label}`,
+      title: `Returning Users for ${dateRange1Label}`,
       description:
         "These are visitors who have initiated at least one session with your website or app within the specified period of time.",
     },
@@ -135,7 +148,7 @@ export const UsersDoughnutChart = ({
             datasets: [
               {
                 label: "New vs Returning Users",
-                data: newVsReturningUsers,
+                data: dataRange0Users,
                 backgroundColor: [
                   theme.palette.info.light,
                   theme.palette.info.main,
@@ -144,7 +157,7 @@ export const UsersDoughnutChart = ({
               },
               {
                 label: "Total Users",
-                data: totalUsers,
+                data: dateRange1Users,
                 backgroundColor: [
                   theme.palette.grey[200],
                   theme.palette.grey[500],
@@ -235,8 +248,8 @@ export const UsersDoughnutChart = ({
           </Typography>
           <Typography variant="h4" fontWeight="600">
             {(tooltipModel?.datasetIndex === 0
-              ? newVsReturningUsers[tooltipModel?.dataIndex]
-              : totalUsers[tooltipModel?.dataIndex]
+              ? dataRange0Users[tooltipModel?.dataIndex]
+              : dateRange1Users[tooltipModel?.dataIndex]
             )?.toLocaleString()}
           </Typography>
           <Typography

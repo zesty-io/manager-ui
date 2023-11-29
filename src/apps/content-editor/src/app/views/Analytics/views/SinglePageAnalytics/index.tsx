@@ -89,6 +89,8 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
     usersByDayReport,
   ] = ga4Data?.reports || [];
 
+  console.log(metricsReport);
+
   const { data: compareGa4Data, isFetching: isFetchingCompare } =
     useGetAnalyticsPropertyDataByQueryQuery(
       generateReportRequests(
