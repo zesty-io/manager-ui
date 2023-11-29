@@ -93,6 +93,9 @@ export const FieldTypeMedia = ({
       return "";
     });
 
+    // if selected replacement image is already in the list of images, do nothing
+    if (imageZUIDs.includes(imageZUID)) return;
+
     const newImageZUIDs = imageZUIDs.map((zuid) => {
       if (zuid === imageToReplace) {
         return imageZUID;
@@ -258,7 +261,6 @@ export const FieldTypeMedia = ({
               onReplace={(imageZUID) => {
                 setImageToReplace(imageZUID);
                 openMediaBrowser({
-                  limit: limit + 1,
                   callback: replaceImage,
                   isReplace: true,
                 });

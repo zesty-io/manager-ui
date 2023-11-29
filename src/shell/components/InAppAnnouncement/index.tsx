@@ -26,9 +26,18 @@ export const InAppAnnouncement = () => {
 
   const latestAnnouncement = useMemo(() => {
     if (announcements?.length) {
-      return [...announcements].sort((a, b) =>
+      const latest = [...announcements].sort((a, b) =>
         moment(b.created_at).diff(moment(a.created_at))
       )?.[0];
+
+      if (
+        moment().isBetween(
+          moment(latest?.start_date_and_time),
+          moment(latest?.end_date_and_time)
+        )
+      ) {
+        return latest;
+      }
     }
   }, [announcements]);
 
