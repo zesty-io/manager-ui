@@ -77,7 +77,12 @@ export const FieldTypeMedia = ({
   const addImage = (images: any[]) => {
     const newImageZUIDs = images.map((image) => image.id);
 
-    onChange([...imageZUIDs, ...newImageZUIDs].join(","), name);
+    // remove any duplicates
+    const filteredImageZUIDs = newImageZUIDs.filter(
+      (zuid) => !imageZUIDs.includes(zuid)
+    );
+
+    onChange([...imageZUIDs, ...filteredImageZUIDs].join(","), name);
   };
 
   const removeImage = (imageZUID: string) => {
