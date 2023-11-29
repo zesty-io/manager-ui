@@ -93,7 +93,7 @@ export const FieldTypeMedia = ({
       return "";
     });
 
-    // if selected image is already in the list of images, do nothing
+    // if selected replacement image is already in the list of images, do nothing
     if (imageZUIDs.includes(imageZUID)) return;
 
     const newImageZUIDs = imageZUIDs.map((zuid) => {
