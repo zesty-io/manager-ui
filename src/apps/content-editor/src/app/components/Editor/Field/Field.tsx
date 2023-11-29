@@ -488,7 +488,9 @@ export const Field = ({
                   <CloseIcon sx={{ color: "common.white" }} />
                 </IconButton>
                 <MediaApp
-                  limitSelected={imageModal.limit - images.length}
+                  limitSelected={
+                    imageModal.isReplace ? 1 : imageModal.limit - images.length
+                  }
                   isSelectDialog={true}
                   showHeaderActions={false}
                   lockedToGroupId={

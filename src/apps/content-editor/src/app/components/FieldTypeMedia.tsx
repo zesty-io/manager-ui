@@ -258,7 +258,6 @@ export const FieldTypeMedia = ({
               onReplace={(imageZUID) => {
                 setImageToReplace(imageZUID);
                 openMediaBrowser({
-                  limit: limit + 1,
                   callback: replaceImage,
                   isReplace: true,
                 });
