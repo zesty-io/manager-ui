@@ -171,6 +171,11 @@ export function Preview(props) {
   };
 
   const selectTemplate = (template) => {
+    if (template === "fullscreen") {
+      setZoom(0.35);
+    } else {
+      setZoom(1);
+    }
     setDevice(template);
     setAnchorEl(null);
   };
