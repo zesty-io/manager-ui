@@ -94,6 +94,9 @@ export const generateReportRequests = (
           {
             name: "conversions",
           },
+          {
+            name: "userEngagementDuration",
+          },
         ],
         dateRanges: [
           ...(withPrior
