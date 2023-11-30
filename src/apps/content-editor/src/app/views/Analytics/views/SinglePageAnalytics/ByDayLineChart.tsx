@@ -121,6 +121,19 @@ export const ByDayLineChart = ({
     }
   };
 
+  const getAverageEngagementTime = (daterange: string) => {
+    const engagementTime = findValuesForDimensions(data?.rows, [daterange], 1);
+    const totalUsers = findValuesForDimensions(data?.rows, [daterange], 3);
+
+    return engagementTime?.map((et, index) => {
+      if (totalUsers[index] !== "0") {
+        return (+et / +totalUsers[index]).toString() ?? "0";
+      }
+
+      return "0";
+    });
+  };
+
   const dateChartLabels = useMemo(
     () => getDatesArray(startDate, endDate),
     [startDate, endDate]
@@ -131,37 +144,29 @@ export const ByDayLineChart = ({
 
     // Calculate average engagement times
     if (type === 1) {
-      const engagementTime = findValuesForDimensions(
-        data?.rows,
-        ["date_range_0"],
-        1
-      );
-      const totalUsers = findValuesForDimensions(
-        data?.rows,
-        ["date_range_0"],
-        3
-      );
-      console.log(engagementTime?.length, totalUsers?.length);
-      result = engagementTime?.map((et, index) => {
-        if (totalUsers[index] !== "0") {
-          return (+et / +totalUsers[index]).toString() ?? "0";
-        }
-
-        return "0";
-      });
+      result = getAverageEngagementTime("date_range_0");
     }
+
     if (result.length === 1 || result.length === 2) {
       return [result.pop()];
     }
+
     return padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
       endDate.diff(startDate, "days") + 1
     );
   }, [data, type]);
 
   const priorData = useMemo(() => {
-    const result = shouldCompare
-      ? findValuesForDimensions(compareData?.rows, [], type)
-      : findValuesForDimensions(data?.rows, ["date_range_1"], type);
+    let result = findValuesForDimensions(data?.rows, ["date_range_1"], type);
+
+    // Calculate average engagement times
+    if (type === 1) {
+      result = getAverageEngagementTime("date_range_1");
+    }
+
+    if (shouldCompare) {
+      result = findValuesForDimensions(compareData?.rows, [], type);
+    }
 
     if (result?.length === 1 || result?.length === 2) {
       return [result[0]];
