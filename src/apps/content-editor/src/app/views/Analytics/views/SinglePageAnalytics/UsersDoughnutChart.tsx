@@ -16,7 +16,13 @@ export const UsersDoughnutChart = ({
   loading,
 }: any) => {
   const chartRef = useRef(null);
-  const [tooltipModel, setTooltipModel] = useState(null);
+  const [tooltipModel, setTooltipModel] = useState({
+    datasetIndex: 0,
+    dataIndex: 1,
+    x: -168,
+    y: 19,
+  });
+  // const [tooltipModel, setTooltipModel] = useState(null);
 
   const handleHover = (event: ChartEvent, chartElement: Array<any>) => {
     if (chartElement.length === 0) {
@@ -88,24 +94,24 @@ export const UsersDoughnutChart = ({
   // TODO: May need to update this c/o Zosh
   const datasetIndexMap = {
     "00": {
-      title: `New Users for ${dateRange0Label}`,
+      title: `New Users for the ${dateRange0Label}`,
       description:
-        "New users are users who have never visited your website or app before.",
+        "New users are users who have never visited your website or app before",
     },
     "01": {
-      title: `Returning Users for ${dateRange0Label}`,
+      title: `Returning Users for the ${dateRange0Label}`,
       description:
-        "Returning users are users who have visited your website or app before.",
+        "Returning users are users who have never visited your website or app before",
     },
     "10": {
-      title: `New Users for ${dateRange1Label}`,
+      title: `New Users for the ${dateRange1Label}`,
       description:
-        "Users are visitors who have initiated at least one session with your website or app within the specified period of time.",
+        "New users are users who have never visited your website or app before",
     },
     "11": {
-      title: `Returning Users for ${dateRange1Label}`,
+      title: `Returning Users for the ${dateRange1Label}`,
       description:
-        "These are visitors who have initiated at least one session with your website or app within the specified period of time.",
+        "Returning users are users who have never visited your website or app before",
     },
   };
 
@@ -256,7 +262,7 @@ export const UsersDoughnutChart = ({
             variant="body3"
             fontWeight="500"
             color="text.secondary"
-            sx={{ mb: 1, fontSize: "10px" }}
+            sx={{ mb: 1, fontSize: "10px", lineHeight: "14px" }}
           >
             {
               datasetIndexMap[
