@@ -45,7 +45,7 @@ describe("Content Specs", () => {
     it("Date Field", () => {
       cy.get("#12-63ab04-0nkwcc button").click();
 
-      cy.get('[aria-label="Mar 4, 2019"]');
+      cy.get('[aria-label="Mar 4, 2019"]').click();
 
       cy.get("#12-63ab04-0nkwcc input").should("have.value", "2019-03-04");
     });
