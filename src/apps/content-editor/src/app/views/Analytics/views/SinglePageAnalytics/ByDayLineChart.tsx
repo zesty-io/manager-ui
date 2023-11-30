@@ -49,7 +49,7 @@ function getDatesArray(start: Moment, end: Moment) {
   return datesArray;
 }
 
-const typeLabelMap = ["Sessions", "Avg. Duration", "Bounce Rate", "Users"];
+const typeLabelMap = ["Views", "Avg. Engagement Time", "Bounce Rate", "Users"];
 
 export const ByDayLineChart = ({
   auditData,
@@ -253,7 +253,7 @@ export const ByDayLineChart = ({
               color="inherit"
               onClick={() => setType(0)}
             >
-              Sessions
+              Views
             </Button>
             <Button
               variant={type === 1 ? "contained" : "outlined"}

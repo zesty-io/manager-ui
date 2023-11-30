@@ -111,6 +111,9 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
     comparedUsersByDayReport,
   ] = compareGa4Data?.reports || [];
 
+  console.log("metrics", comparedMetricsReport);
+  console.log("total", comparedTotalUsersReport);
+
   const { data: auditData } = useGetAuditsQuery({
     // Start of content item version support in audit
     start_date: "05/25/2023",
@@ -162,7 +165,12 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
       dr1TotalUsers !== 0 ? dr1EngagementTime / dr1TotalUsers : 0;
 
     return [dr0AvgEngagementTime, dr1AvgEngagementTime];
-  }, [metricsReport, totalUsersReport]);
+  }, [
+    metricsReport,
+    totalUsersReport,
+    comparedMetricsReport,
+    comparedTotalUsersReport,
+  ]);
 
   if (isError) {
     return (
@@ -268,7 +276,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
         >
           <Metric
             loading={isLoading}
-            title="Sessions"
+            title="Views"
             value={
               +(
                 findValuesForDimensions(
@@ -289,7 +297,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                     ) || 0
                   )
             }
-            description="A session in Google Analytics is a period of time in which a user interacts with your website."
+            description="A pageview is defined as a view of a page on your site that is being tracked by the Analytics tracking code. If a user clicks reload after reaching the page or navigates to a different page and then returns to the original page, then this is counted as an additional page view."
           />
           <Divider orientation="vertical" flexItem />
           <Metric

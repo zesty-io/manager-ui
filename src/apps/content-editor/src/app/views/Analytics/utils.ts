@@ -83,7 +83,7 @@ export const generateReportRequests = (
         ],
         metrics: [
           {
-            name: "sessions",
+            name: "screenPageViews",
           },
           {
             name: "averageSessionDuration",
