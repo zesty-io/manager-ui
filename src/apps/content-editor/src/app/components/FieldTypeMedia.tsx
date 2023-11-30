@@ -77,7 +77,12 @@ export const FieldTypeMedia = ({
   const addImage = (images: any[]) => {
     const newImageZUIDs = images.map((image) => image.id);
 
-    onChange([...imageZUIDs, ...newImageZUIDs].join(","), name);
+    // remove any duplicates
+    const filteredImageZUIDs = newImageZUIDs.filter(
+      (zuid) => !imageZUIDs.includes(zuid)
+    );
+
+    onChange([...imageZUIDs, ...filteredImageZUIDs].join(","), name);
   };
 
   const removeImage = (imageZUID: string) => {
@@ -92,6 +97,9 @@ export const FieldTypeMedia = ({
       imageToReplace = value;
       return "";
     });
+
+    // if selected replacement image is already in the list of images, do nothing
+    if (imageZUIDs.includes(imageZUID)) return;
 
     const newImageZUIDs = imageZUIDs.map((zuid) => {
       if (zuid === imageToReplace) {
@@ -258,7 +266,6 @@ export const FieldTypeMedia = ({
               onReplace={(imageZUID) => {
                 setImageToReplace(imageZUID);
                 openMediaBrowser({
-                  limit: limit + 1,
                   callback: replaceImage,
                   isReplace: true,
                 });
