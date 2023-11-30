@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Button,
   Box,
@@ -89,7 +89,8 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
     usersByDayReport,
   ] = ga4Data?.reports || [];
 
-  console.log(metricsReport);
+  console.log("metrics", metricsReport);
+  console.log("total users", totalUsersReport);
 
   const { data: compareGa4Data, isFetching: isFetchingCompare } =
     useGetAnalyticsPropertyDataByQueryQuery(
@@ -121,6 +122,50 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
 
   const isLoading =
     isFetching || instanceSettingsFetching || isFetchingCompare || loading;
+
+  const averageEngagementTime = useMemo(() => {
+    // Get all user count
+    const dr0New =
+      +findValuesForDimensions(
+        totalUsersReport?.rows,
+        ["date_range_0", "new"],
+        0
+      ) ?? 0;
+    const dr0Returning =
+      +findValuesForDimensions(
+        totalUsersReport?.rows,
+        ["date_range_0", "returning"],
+        0
+      ) ?? 0;
+    const dr1New =
+      +findValuesForDimensions(
+        totalUsersReport?.rows,
+        ["date_range_1", "new"],
+        0
+      ) ?? 0;
+    const dr1Returning =
+      +findValuesForDimensions(
+        totalUsersReport?.rows,
+        ["date_range_1", "returning"],
+        0
+      ) ?? 0;
+    const dr0TotalUsers = dr0New + dr0Returning ?? 0;
+    const dr1TotalUsers = dr1New + dr1Returning ?? 0;
+
+    // Get total engagement time
+    const dr0EngagementTime =
+      +findValuesForDimensions(metricsReport?.rows, ["date_range_0"], 4) ?? 0;
+    const dr1EngagementTime =
+      +findValuesForDimensions(metricsReport?.rows, ["date_range_1"], 4) ?? 0;
+
+    // Calculate avg engagement time
+    const dr0AvgEngagementTime =
+      dr0TotalUsers !== 0 ? dr0EngagementTime / dr0TotalUsers : 0;
+    const dr1AvgEngagementTime =
+      dr1TotalUsers !== 0 ? dr1EngagementTime / dr1TotalUsers : 0;
+
+    return [dr0AvgEngagementTime, dr1AvgEngagementTime];
+  }, [metricsReport, totalUsersReport]);
 
   if (isError) {
     return (
@@ -252,29 +297,15 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
           <Divider orientation="vertical" flexItem />
           <Metric
             loading={isLoading}
-            title="Avg. Duration"
+            title="Average Engagement Time"
             formatter={convertSecondsToMinutesAndSeconds}
-            value={
-              +(
-                findValuesForDimensions(
-                  metricsReport?.rows,
-                  ["date_range_0"],
-                  1
-                ) || 0
-              )
-            }
+            value={averageEngagementTime[0]}
             priorValue={
               compareItemZUID
                 ? +comparedMetricsReport?.rows[0]?.metricValues?.[1]?.value || 0
-                : +(
-                    findValuesForDimensions(
-                      metricsReport?.rows,
-                      ["date_range_1"],
-                      1
-                    ) || 0
-                  )
+                : averageEngagementTime[1]
             }
-            description="Session duration is the time frame during which there are users interactions occurring on the website."
+            description="Average engagement time is the average time that your website was in focus in a user's browser or a mobile app was in the foreground on a user's device."
           />
           <Divider orientation="vertical" flexItem />
           <Metric
