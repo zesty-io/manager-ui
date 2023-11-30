@@ -16,13 +16,7 @@ export const UsersDoughnutChart = ({
   loading,
 }: any) => {
   const chartRef = useRef(null);
-  const [tooltipModel, setTooltipModel] = useState({
-    datasetIndex: 0,
-    dataIndex: 1,
-    x: -168,
-    y: 19,
-  });
-  // const [tooltipModel, setTooltipModel] = useState(null);
+  const [tooltipModel, setTooltipModel] = useState(null);
 
   const handleHover = (event: ChartEvent, chartElement: Array<any>) => {
     if (chartElement.length === 0) {
@@ -68,30 +62,6 @@ export const UsersDoughnutChart = ({
       0,
   ];
 
-  // const totalUsers = [
-  //   shouldCompare
-  //     ? +findValuesForDimensions(compareData?.rows, ["new"])?.[0] ||
-  //       0 + +findValuesForDimensions(compareData?.rows, ["returning"])?.[0] ||
-  //       0
-  //     : +findValuesForDimensions(data?.rows, ["date_range_1", "new"])?.[0] ||
-  //       0 +
-  //         +findValuesForDimensions(data?.rows, [
-  //           "date_range_1",
-  //           "returning",
-  //         ])?.[0] ||
-  //       0,
-  //   +findValuesForDimensions(data?.rows, ["date_range_0", "new"])?.[0] ||
-  //     0 +
-  //       +findValuesForDimensions(data?.rows, [
-  //         "date_range_0",
-  //         "returning",
-  //       ])?.[0] ||
-  //     0,
-  // ];
-  // console.log(dataRange0Users);
-  // console.log(totalUsers);
-
-  // TODO: May need to update this c/o Zosh
   const datasetIndexMap = {
     "00": {
       title: `New Users for the ${dateRange0Label}`,
