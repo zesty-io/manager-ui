@@ -423,6 +423,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                 />
               </ListItemAvatar>
               <ListItemText
+                data-cy="loggedInGa4Account"
                 primary={`${data?.given_name} ${data?.family_name}`}
                 secondary={data?.email}
               />
