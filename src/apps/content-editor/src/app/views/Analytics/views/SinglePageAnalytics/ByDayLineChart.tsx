@@ -545,7 +545,7 @@ export const ByDayLineChart = ({
                       .add(tooltipModel?.dataIndex, "days")
                       .format("ddd D MMM")}
               </Typography>
-              <Typography variant="h2" fontWeight={600}>
+              <Typography variant="h2" fontWeight={600} noWrap>
                 {lastData?.[tooltipModel?.dataIndex]?.toLocaleString()}
               </Typography>
               <Typography
