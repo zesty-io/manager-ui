@@ -124,6 +124,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
     isFetching || instanceSettingsFetching || isFetchingCompare || loading;
 
   const averageEngagementTime = useMemo(() => {
+    // TODO: calculate compared avg engagement time
     // Get all user count
     const dr0New =
       +findValuesForDimensions(
