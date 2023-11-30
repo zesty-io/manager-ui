@@ -31,8 +31,12 @@ export const InAppAnnouncement = () => {
 
   useEffect(() => {
     // Initializes and keeps on bumping the read announcements cookie to permanently keep it on the browser
+    const parsedAnnouncementZuids = readAnnouncementsCookie
+      ? JSON.parse(readAnnouncementsCookie)
+      : [];
+
     updateReadAnnouncementsCookie(
-      JSON.stringify(readAnnouncements ?? []),
+      JSON.stringify(parsedAnnouncementZuids),
       cookieOptions
     );
   }, []);
