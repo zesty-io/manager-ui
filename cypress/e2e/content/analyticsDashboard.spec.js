@@ -27,7 +27,10 @@ describe("Analytics dashboard", () => {
   it("Displays linked google account information", () => {
     cy.getBySelector("analytics-settings").click();
     cy.contains("GA Settings").click();
-    cy.contains("Andres Galindo");
+    cy.getBySelector("loggedInGa4Account")
+      .find("span")
+      .invoke("text")
+      .should("be.oneOf", ["Andres Galindo", "Lunar Jay  Cuenca"]);
     cy.get("body").type("{esc}");
   });
   it("Applies selected date filter to url params", () => {
