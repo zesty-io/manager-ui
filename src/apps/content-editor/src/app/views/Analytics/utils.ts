@@ -250,7 +250,7 @@ export const generateReportRequests = (
             name: "sessions",
           },
           {
-            name: "averageSessionDuration",
+            name: "userEngagementDuration",
           },
           {
             name: "bounceRate",

@@ -127,7 +127,29 @@ export const ByDayLineChart = ({
   );
 
   const lastData = useMemo(() => {
-    const result = findValuesForDimensions(data?.rows, ["date_range_0"], type);
+    let result = findValuesForDimensions(data?.rows, ["date_range_0"], type);
+
+    // Calculate average engagement times
+    if (type === 1) {
+      const engagementTime = findValuesForDimensions(
+        data?.rows,
+        ["date_range_0"],
+        1
+      );
+      const totalUsers = findValuesForDimensions(
+        data?.rows,
+        ["date_range_0"],
+        3
+      );
+      console.log(engagementTime?.length, totalUsers?.length);
+      result = engagementTime?.map((et, index) => {
+        if (totalUsers[index] !== "0") {
+          return (+et / +totalUsers[index]).toString() ?? "0";
+        }
+
+        return "0";
+      });
+    }
     if (result.length === 1 || result.length === 2) {
       return [result.pop()];
     }
@@ -233,7 +255,7 @@ export const ByDayLineChart = ({
               color="inherit"
               onClick={() => setType(1)}
             >
-              Avg. Duration
+              Avg. Engagement Time
             </Button>
             <Button
               variant={type === 2 ? "contained" : "outlined"}
