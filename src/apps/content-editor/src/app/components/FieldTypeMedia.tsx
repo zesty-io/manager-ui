@@ -220,6 +220,7 @@ export const FieldTypeMedia = ({
                   Upload
                 </Button>
                 <Button
+                  data-cy="selectFromMediaButton"
                   fullWidth
                   size="large"
                   startIcon={<AddRounded />}
