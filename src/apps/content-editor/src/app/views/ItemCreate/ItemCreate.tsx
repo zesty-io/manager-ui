@@ -4,6 +4,7 @@ import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
+import { cloneDeep } from "lodash";
 
 import { Divider, Box } from "@mui/material";
 
@@ -28,6 +29,8 @@ import {
   useGetContentItemQuery,
 } from "../../../../../../shell/services/instance";
 import { ScheduleFlyout } from "../ItemEdit/components/Header/ItemVersioning/ScheduleFlyout";
+import { Error } from "../../components/Editor/Field/FieldShell";
+import { ContentModelField } from "../../../../../../shell/services/types";
 
 export type ActionAfterSave =
   | ""
@@ -46,6 +49,10 @@ const selectSortedModelFields = createSelector(
       .map((fieldZUID) => fields[fieldZUID])
       .sort((a, b) => a.sort - b.sort)
 );
+
+type FieldError = {
+  [key: string]: Error;
+};
 
 export const ItemCreate = () => {
   const history = useHistory();
@@ -66,6 +73,8 @@ export const ItemCreate = () => {
   const [newItemZUID, setNewItemZUID] = useState();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [willRedirect, setWillRedirect] = useState(true);
+  const [fieldErrors, setFieldErrors] = useState<FieldError>({});
+  const [saveClicked, setSaveClicked] = useState(false);
 
   const [
     createPublishing,
@@ -98,6 +107,19 @@ export const ItemCreate = () => {
     }
   }, [isPublishing, isPublished, publishedItem, willRedirect]);
 
+  useEffect(() => {
+    const hasErrors = Object.values(fieldErrors)
+      ?.map((error) => {
+        return Object.values(error) ?? [];
+      })
+      ?.flat()
+      .some((error) => !!error);
+
+    if (!hasErrors) {
+      setSaveClicked(false);
+    }
+  }, [fieldErrors]);
+
   const loadItemFields = async (modelZUID: string) => {
     setLoading(true);
     try {
@@ -114,10 +136,32 @@ export const ItemCreate = () => {
 
   const save = async (action: ActionAfterSave) => {
     setSaving(true);
+    setSaveClicked(true);
     try {
       const res: any = await dispatch(createItem(modelZUID, itemZUID));
       if (res.err || res.error) {
         if (res.missingRequired) {
+          const missingRequiredFieldNames: string[] =
+            res.missingRequired?.reduce(
+              (acc: string[], curr: ContentModelField) => {
+                acc = [curr.name, ...acc];
+                return acc;
+              },
+              []
+            );
+
+          if (missingRequiredFieldNames?.length) {
+            const errors = cloneDeep(fieldErrors);
+
+            missingRequiredFieldNames?.forEach((fieldName) => {
+              errors[fieldName] = {
+                ...(errors[fieldName] ?? {}),
+                MISSING_REQUIRED: true,
+              };
+            });
+
+            setFieldErrors(errors);
+          }
           dispatch(
             notify({
               message: `You are missing data in ${res.missingRequired
@@ -255,6 +299,12 @@ export const ItemCreate = () => {
               loading={loading}
               saving={saving}
               isDirty={item?.dirty}
+              saveClicked={saveClicked}
+              fieldErrors={fieldErrors}
+              // @ts-ignore  untyped component
+              onUpdateFieldErrors={(errors: FieldError) => {
+                setFieldErrors(errors);
+              }}
             />
 
             <div className={styles.Meta}>

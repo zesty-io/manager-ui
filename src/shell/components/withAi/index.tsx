@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { Popover, IconButton } from "@mui/material";
 import { Brain, theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
@@ -97,9 +98,9 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
                     handleClick(event);
                   }
                 }}
-                size="small"
+                size="xxsmall"
               >
-                <Brain fontSize="small" />
+                <Brain sx={{ fontSize: 16 }} />
               </IconButton>
             </ThemeProvider>
           }

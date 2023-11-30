@@ -65,6 +65,7 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
           Cancel
         </Button>
         <LoadingButton
+          data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="error"
           onClick={() =>

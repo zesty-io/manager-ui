@@ -1,0 +1,94 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.bar {
+  margin: 5px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.group {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.button {
+  background: #fff;
+  border: none;
+  font-size: inherit;
+  cursor: pointer;
+  color: #777;
+  border-radius: 0;
+  padding: 5px 10px;
+
+  font-size: @svg-icon;
+  line-height: 21px;
+}
+
+.button:hover {
+  color: #000;
+  background: #f6f6f6;
+}
+
+.button.active {
+  color: #000;
+}
+
+.button:disabled {
+  color: #ccc;
+}
+
+.dropdown,
+.dropdown-menu-row {
+  display: inline-block;
+  position: relative;
+}
+.dropdown .dropdown-menu,
+.dropdown-menu-row .dropdown-menu {
+  display: none;
+  position: absolute;
+  background: white;
+  color: #666;
+  border: 1px solid #aaa;
+  padding: 2px;
+  z-index: 15;
+  min-width: 6em;
+
+  font-size: @svg-icon;
+}
+
+.dropdown-control {
+  cursor: pointer;
+  position: relative;
+  padding-right: 15px;
+}
+.dropdown-control:after {
+  content: "";
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid currentColor;
+  opacity: 0.6;
+  position: absolute;
+  right: 4px;
+  top: calc(50% - 2px);
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown .dropdown-control:hover + .dropdown-menu,
+.dropdown .dropdown-menu:hover {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: auto;
+}
+.dropdown.dropdown-menu-row:hover .dropdown-menu,
+.dropdown.dropdown-menu-row .dropdown-control:hover + .dropdown-menu,
+.dropdown.dropdown-menu-row .dropdown-menu:hover {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 35em;
+}

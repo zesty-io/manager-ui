@@ -119,6 +119,7 @@ export type State = {
   filetypeFilter: Filetype | null;
   dateRangeFilter: DateRange | null;
   currentMediaView: string;
+  isReplace: boolean;
 };
 const initialState: State = {
   uploads: [],
@@ -131,6 +132,7 @@ const initialState: State = {
   filetypeFilter: null,
   dateRangeFilter: null,
   currentMediaView: "grid",
+  isReplace: false,
 };
 
 const mediaSlice = createSlice({
@@ -264,6 +266,9 @@ const mediaSlice = createSlice({
     setLimitSelected(state, action: { payload: number }) {
       state.limitSelected = action.payload;
     },
+    setIsReplace(state, action: { payload: boolean }) {
+      state.isReplace = action.payload;
+    },
     selectFile(state, action: { payload: FileBase }) {
       if (
         state.limitSelected &&
@@ -307,6 +312,7 @@ export const {
   clearSelectedFiles,
   setLimitSelected,
   setCurrentMediaView,
+  setIsReplace,
 } = mediaSlice.actions;
 
 /*

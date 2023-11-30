@@ -1,5 +1,6 @@
 import { FC, useEffect, useState, Dispatch } from "react";
 import {
+  Box,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -11,7 +12,7 @@ import {
   InputLabel,
   Alert,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 
 interface Props {
   handleUpdateMutation: (renamedFilename: string) => void;
@@ -22,6 +23,7 @@ interface Props {
   isLoadingUpdate: boolean;
   resetUpdate: any;
   extension: string;
+  src: string;
 }
 
 export const RenameFileModal: FC<Props> = ({
@@ -33,6 +35,7 @@ export const RenameFileModal: FC<Props> = ({
   isLoadingUpdate,
   resetUpdate,
   extension,
+  src,
 }) => {
   const [renamedFilename, setRenamedFilename] = useState<string>(newFilename);
 
@@ -51,7 +54,21 @@ export const RenameFileModal: FC<Props> = ({
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
       <DialogTitle>
-        <Typography variant="h5">Rename File</Typography>
+        <Box
+          component="img"
+          src={`${src}?height=120&width=120&fit=bounds`}
+          width="120px"
+          height="120px"
+          bgcolor="grey.100"
+          sx={{
+            objectFit: "contain",
+            borderRadius: "8px",
+          }}
+          mb={1.5}
+        />
+        <Typography variant="h5" fontWeight="700">
+          Rename File
+        </Typography>
       </DialogTitle>
       <DialogContent>
         <InputLabel>New File Name</InputLabel>
@@ -80,7 +97,17 @@ export const RenameFileModal: FC<Props> = ({
             ),
           }}
         />
-        <Alert severity="warning" sx={{ mt: 2.5 }}>
+        <Alert
+          severity="warning"
+          sx={{
+            mt: 2.5,
+            bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
+            color: "#643a03",
+            ".MuiAlert-icon": {
+              color: "#643a03",
+            },
+          }}
+        >
           This will change the URL path and could break existing links
           referenced in production after a period of time.
         </Alert>

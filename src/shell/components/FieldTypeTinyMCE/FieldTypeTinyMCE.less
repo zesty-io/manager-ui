@@ -1,0 +1,21 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.FieldTypeTinyMCE {
+  .FieldTypeTinyMCELabel {
+    display: flex;
+    align-items: flex-end;
+    font-size: @font-size-label;
+    justify-content: space-between;
+  }
+
+  & span:first-child {
+    flex: 1;
+  }
+
+  &.hasError {
+    div[role="application"] {
+      border: 1px solid #f04438;
+    }
+  }
+}

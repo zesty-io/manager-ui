@@ -1,58 +1,6 @@
 describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
-  describe("content drawer", () => {
-    before(() => {
-      cy.waitOn("/v1/content/models*", () => {
-        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-      });
-    });
-
-    it("Check Actions Collapsed functionality", () => {
-      cy.get("[data-cy=ActionsContent]").then((content) => {
-        if (content.is(":visible")) {
-          cy.get("[data-cy=ActionsContent]", { timeout: 5000 }).should(
-            "be.visible"
-          );
-        } else {
-          cy.get("[data-cy=ActionsContent]").should("not.be.visible");
-        }
-      });
-    });
-
-    it("Check Actions Collapse persist when clicking on other Applications", () => {
-      cy.get("[data-cy=ActionsContent]").then((content) => {
-        if (content.is(":visible")) {
-          cy.get("[data-cy=ActionsContent]").should("be.visible");
-
-          cy.visit("/code");
-          cy.waitOn("/v1/content/models*", () => {
-            cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          });
-          cy.get("[data-cy=ActionsContent]").should("be.visible");
-        } else {
-          cy.visit("/code");
-          cy.waitOn("/v1/content/models*", () => {
-            cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          });
-          cy.get("[data-cy=ActionsContent]").should("not.be.visible");
-        }
-      });
-    });
-
-    it("Check Duo Mode Collapsed functionality", () => {
-      cy.getBySelector("DuoModeToggle")
-        .invoke("hasClass", "Mui-checked")
-        .then((hasClass) => {
-          if (hasClass) {
-            cy.get("[data-cy=DuoModeContainer] iframe").should("be.visible");
-          } else {
-            cy.log("Not Selected");
-          }
-        });
-    });
-  });
-
   describe("editing content", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
@@ -97,9 +45,9 @@ describe("Content Specs", () => {
     it("Date Field", () => {
       cy.get("#12-63ab04-0nkwcc button").click();
 
-      cy.get('[aria-label="Choose date, selected date is Mar 5, 2019"]');
+      cy.get('[aria-label="Mar 4, 2019"]').click();
 
-      cy.get("#12-63ab04-0nkwcc input").should("have.value", "2019-03-05");
+      cy.get("#12-63ab04-0nkwcc input").should("have.value", "2019-03-04");
     });
 
     it("Date & Time Field", () => {

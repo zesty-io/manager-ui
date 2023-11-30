@@ -1,0 +1,54 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.FieldTypeUUID {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .DateFieldTypeInput {
+    display: flex;
+    .Icon {
+      background-color: @zesty-grey;
+      border: 1px solid @zesty-grey;
+      border-top-left-radius: 3px;
+      border-bottom-left-radius: 3px;
+      color: @zesty-light-blue;
+      line-height: inherit;
+
+      font-size: @svg-icon;
+      flex-basis: 32px;
+      flex-grow: 0;
+      flex-shrink: 0;
+      justify-content: center;
+      transition: all 0.2s ease;
+      align-items: center;
+      display: flex;
+      padding: 10px;
+      &:hover,
+      &:focus {
+        box-shadow: @boxShadow;
+        outline: none;
+        cursor: copy;
+      }
+      &:active {
+        background-color: @zesty-light-grey;
+      }
+    }
+    input {
+      flex: 1;
+      border: 1px solid #f2f4f7;
+      border-radius: 0px 8px 8px 0px;
+      width: 100%;
+    }
+  }
+}
+
+.FieldTypeUUID.Error {
+  span {
+    color: @zesty-red;
+  }
+  input {
+    background: @zesty-red;
+  }
+}

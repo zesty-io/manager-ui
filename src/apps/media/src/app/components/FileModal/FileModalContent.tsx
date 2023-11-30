@@ -215,6 +215,7 @@ export const FileModalContent: FC<Props> = ({
       {/* Rename File Modal */}
       {showRenameFileModal && (
         <RenameFileModal
+          src={src}
           handleUpdateMutation={handleUpdateMutation}
           onSetNewFilename={setNewFilename}
           onClose={() => setShowRenameFileModal(false)}

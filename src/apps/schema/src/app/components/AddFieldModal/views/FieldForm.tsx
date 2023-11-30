@@ -176,7 +176,7 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings[field.name];
         } else if (field.name === "options") {
           // Convert the options object to an Array of objects for easier rendering
-          const options = Object.entries(fieldData.settings.options).map(
+          const options = Object.entries(fieldData.settings.options ?? {})?.map(
             ([key, value]) => {
               return {
                 [key]: value,

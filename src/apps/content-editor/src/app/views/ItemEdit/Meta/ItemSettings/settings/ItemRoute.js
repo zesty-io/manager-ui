@@ -6,14 +6,13 @@ import { notify } from "shell/store/notifications";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/InfoOutlined";
 import TextField from "@mui/material/TextField";
 import { InputIcon } from "@zesty-io/core/InputIcon";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemRoute.less";
 import { withCursorPosition } from "../../../../../../../../../shell/components/withCursorPosition";
+import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
 export const ItemRoute = connect((state) => {
@@ -134,56 +133,53 @@ export const ItemRoute = connect((state) => {
 
     return (
       <article className={styles.ItemRoute} data-cy="itemRoute">
-        <label>
-          <Tooltip
-            title="Path parts must be unique within your instance, lowercased and can not contain non-alphnumeric characters. This ensures you create SEO friendly structured and crawlable URLs."
-            arrow
-            placement="top-start"
-          >
-            <InfoIcon fontSize="small" />
-          </Tooltip>
-          &nbsp;URL Path Part
-        </label>
+        <FieldShell
+          settings={{
+            label: "URL Path Part",
+          }}
+          customTooltip="Path parts must be unique within your instance, lowercased and can not contain non-alphnumeric characters. This ensures you create SEO friendly structured and crawlable URLs."
+          withInteractiveTooltip={false}
+        >
+          <div className={styles.Path}>
+            {props.path_part === "zesty_home" ? (
+              <h1>
+                <FontAwesomeIcon icon={faHome} />
+                &nbsp;Homepage
+              </h1>
+            ) : (
+              <Fragment>
+                <TextFieldWithCursorPosition
+                  type="text"
+                  name="pathPart"
+                  value={pathPart}
+                  onChange={onChange}
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
+                />
 
-        <div className={styles.Path}>
-          {props.path_part === "zesty_home" ? (
-            <h1>
-              <FontAwesomeIcon icon={faHome} />
-              &nbsp;Homepage
-            </h1>
-          ) : (
-            <Fragment>
-              <TextFieldWithCursorPosition
-                type="text"
-                name="pathPart"
-                value={pathPart}
-                onChange={onChange}
-                size="small"
-                variant="outlined"
-                color="primary"
-                fullWidth
-              />
+                {loading && (
+                  <InputIcon className={styles.Checking}>
+                    <FontAwesomeIcon icon={faSpinner} spin />
+                  </InputIcon>
+                )}
 
-              {loading && (
-                <InputIcon className={styles.Checking}>
-                  <FontAwesomeIcon icon={faSpinner} spin />
-                </InputIcon>
-              )}
+                {!loading && unique && (
+                  <InputIcon className={styles.Valid}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </InputIcon>
+                )}
 
-              {!loading && unique && (
-                <InputIcon className={styles.Valid}>
-                  <FontAwesomeIcon icon={faCheck} />
-                </InputIcon>
-              )}
-
-              {!loading && !unique && (
-                <InputIcon className={styles.Invalid}>
-                  <FontAwesomeIcon icon={faTimes} />
-                </InputIcon>
-              )}
-            </Fragment>
-          )}
-        </div>
+                {!loading && !unique && (
+                  <InputIcon className={styles.Invalid}>
+                    <FontAwesomeIcon icon={faTimes} />
+                  </InputIcon>
+                )}
+              </Fragment>
+            )}
+          </div>
+        </FieldShell>
       </article>
     );
   })

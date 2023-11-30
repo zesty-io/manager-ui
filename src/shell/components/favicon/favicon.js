@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { MemoryRouter } from "react-router";
 import { connect } from "react-redux";
 import { Dialog, IconButton, Button } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
 
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
@@ -34,6 +35,8 @@ import {
   useGetHeadTagsQuery,
   useDeleteHeadTagMutation,
 } from "../../../shell/services/instance";
+import { FieldTypeMedia } from "../../../apps/content-editor/src/app/components/FieldTypeMedia";
+import { theme } from "@zesty-io/material";
 
 export default connect((state) => {
   return {
@@ -175,6 +178,8 @@ export default connect((state) => {
 
   const images = faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : [];
 
+  console.log("testing images", images);
+
   return (
     <>
       <Modal
@@ -186,7 +191,7 @@ export default connect((state) => {
           <h1 className={styles.headline}>Select Instance Favicon</h1>
         </ModalHeader>
         <ModalContent>
-          <FieldTypeImage
+          {/* <FieldTypeImage
             data-cy="FieldTypeImage"
             name="favicon"
             label="Image to be used as instance favicon"
@@ -205,43 +210,58 @@ export default connect((state) => {
             mediaBrowser={(opts) => {
               setImageModal(opts);
             }}
-          />
-          {imageModal && (
-            <MemoryRouter>
-              <Dialog
-                open
-                fullScreen
-                sx={{ my: 2.5, mx: 10 }}
-                PaperProps={{
-                  style: {
-                    overflow: "hidden",
-                  },
-                }}
-                onClose={() => setImageModal()}
-              >
-                <IconButton
-                  sx={{
-                    position: "fixed",
-                    right: 5,
-                    top: 0,
+          /> */}
+          <ThemeProvider theme={theme}>
+            <FieldTypeMedia
+              limit={1}
+              imageZUIDs={images}
+              openMediaBrowser={(opts) => {
+                setImageModal({
+                  ...opts,
+                });
+              }}
+              name={"favicon"}
+              onChange={handleImage}
+              hideDrag
+            />
+            {imageModal && (
+              <MemoryRouter>
+                <Dialog
+                  open
+                  fullScreen
+                  sx={{ my: 2.5, mx: 10 }}
+                  PaperProps={{
+                    style: {
+                      overflow: "hidden",
+                    },
                   }}
-                  onClick={() => setImageModal()}
+                  onClose={() => setImageModal()}
                 >
-                  <CloseIcon sx={{ color: "common.white" }} />
-                </IconButton>
-                <MediaApp
-                  limitSelected={1}
-                  isSelectDialog={true}
-                  showHeaderActions={false}
-                  addImagesCallback={(images) => {
-                    if (!isImage(images[0])) return;
-                    imageModal.callback(images);
-                    setImageModal();
-                  }}
-                />
-              </Dialog>
-            </MemoryRouter>
-          )}
+                  <IconButton
+                    sx={{
+                      position: "fixed",
+                      right: 5,
+                      top: 0,
+                    }}
+                    onClick={() => setImageModal()}
+                  >
+                    <CloseIcon sx={{ color: "common.white" }} />
+                  </IconButton>
+                  <MediaApp
+                    limitSelected={1}
+                    isSelectDialog={true}
+                    showHeaderActions={false}
+                    addImagesCallback={(images) => {
+                      if (!isImage(images[0])) return;
+                      imageModal.callback(images);
+                      setImageModal();
+                    }}
+                    isReplace={imageModal.isReplace}
+                  />
+                </Dialog>
+              </MemoryRouter>
+            )}
+          </ThemeProvider>
 
           {faviconZUID && (
             <section className={styles.Sizes}>

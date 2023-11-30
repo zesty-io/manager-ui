@@ -1,49 +1,28 @@
 import { Switch, SwitchProps } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { AppState } from "../../../../../../../../shell/store/types";
-import { useGetInstanceSettingsQuery } from "../../../../../../../../shell/services/instance";
-import { useEffect } from "react";
-import { actions } from "../../../../../../../../shell/store/ui";
+import { useContext } from "react";
 import { styled } from "@mui/material/styles";
+import { DuoModeContext } from "../../../../../../../../shell/contexts/duoModeContext";
 
 export const DuoModeSwitch = () => {
-  const ui = useSelector((state: AppState) => state.ui);
-  const dispatch = useDispatch();
-  const instanceSettings2 = useSelector(
-    (state: AppState) => state.settings.instance
-  );
-  const { data: instanceSettings, isFetching } = useGetInstanceSettingsQuery();
-  const shouldHide = instanceSettings?.find((setting: any) => {
-    // if any of these settings are present then DuoMode is unavailable
-    return (
-      (setting.key === "basic_content_api_key" && setting.value) ||
-      (setting.key === "headless_authorization_key" && setting.value) ||
-      (setting.key === "authorization_key" && setting.value) ||
-      (setting.key === "x_frame_options" && setting.value)
-    );
-  });
+  const {
+    value: showDuoMode,
+    setValue: setShowDuoMode,
+    isDisabled,
+  } = useContext(DuoModeContext);
 
-  useEffect(() => {
-    if (shouldHide) {
-      dispatch(actions.setDuoMode(false));
-    }
-  }, [instanceSettings, shouldHide]);
-
-  if (shouldHide || isFetching) {
+  if (isDisabled) {
     return null;
   }
 
   return (
     <IOSSwitch
       data-cy="DuoModeToggle"
-      checked={ui.duoMode}
+      checked={showDuoMode}
       onChange={(event) => {
         if (event.target.checked) {
-          dispatch(actions.setDuoMode(true));
-          dispatch(actions.setContentActions(false));
+          setShowDuoMode(true);
         } else {
-          dispatch(actions.setDuoMode(false));
-          dispatch(actions.setContentActions(true));
+          setShowDuoMode(false);
         }
       }}
     />

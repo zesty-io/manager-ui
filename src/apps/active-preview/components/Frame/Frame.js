@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
-
+import { Box } from "@mui/material";
 import iphone14 from "../../../../../public/images/iphone-14.png";
 import iphone14cam from "../../../../../public/images/iphone-14-camera.png";
 import iphone14pro from "../../../../../public/images/iphone-14-pro.png";
@@ -23,13 +23,20 @@ export function Frame(props) {
         <iframe
           className={cx(
             styles.Frame,
-            props.blur ? styles.Blur : null,
-            frameLoading ? styles.FrameLoading : null
+            props.blur ? styles.Blur : null
+            // frameLoading ? styles.FrameLoading : null
           )}
           src={`${props.domain}${props.route}`}
           scrolling="yes"
           frameBorder="0"
           onLoad={() => setFrameLoading(false)}
+          style={{
+            transform: `scale(${props.zoom})`,
+            width: `${100 / props.zoom}%`,
+            height: `${100 / props.zoom}%`,
+            left: `${(100 - 100 / props.zoom) / 2}%`,
+            top: `${(100 - 100 / props.zoom) / 2}%`,
+          }}
         />
       ) : (
         <>
@@ -52,9 +59,16 @@ export function Frame(props) {
                     className={cx(
                       styles.Frame,
                       props.blur ? styles.Blur : null,
-                      frameLoading ? styles.FrameLoading : null,
+                      // frameLoading ? styles.FrameLoading : null,
                       styles.Device
                     )}
+                    style={{
+                      transform: `scale(${props.zoom})`,
+                      width: `${100 / props.zoom}%`,
+                      height: `${100 / props.zoom}%`,
+                      left: `${(100 - 100 / props.zoom) / 2}%`,
+                      top: `${(100 - 100 / props.zoom) / 2}%`,
+                    }}
                     src={`${props.domain}${props.route}`}
                     scrolling="yes"
                     frameBorder="0"
@@ -88,9 +102,10 @@ export const templates = {
    */
   iphone14: {
     option: (
-      <span>
-        iPhone 14 <small>437x883</small>
-      </span>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <Box>iPhone 14</Box>
+        <Box>437 x 883</Box>
+      </Box>
     ),
     template: (props) => {
       return (
@@ -106,6 +121,7 @@ export const templates = {
               ? "rotate(-90deg) translateX(40%)"
               : "rotate(0deg)",
             transition: "transform 200ms",
+            marginTop: "16px",
           }}
         >
           <div
@@ -139,9 +155,10 @@ export const templates = {
   },
   iphone14pro: {
     option: (
-      <span>
-        iPhone 14 Pro <small>434x883</small>
-      </span>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <Box>iPhone 14 Pro</Box>
+        <Box>437 x 883</Box>
+      </Box>
     ),
     template: (props) => {
       return (
@@ -157,6 +174,7 @@ export const templates = {
               ? "rotate(-90deg) translateX(40%)"
               : "rotate(0deg)",
             transition: "transform 200ms",
+            marginTop: "16px",
           }}
         >
           <div
@@ -190,9 +208,10 @@ export const templates = {
   },
   ipad: {
     option: (
-      <span>
-        iPad Pro <small>1158x1494</small>
-      </span>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <Box>iPad Pro</Box>
+        <Box>1158 x 1494</Box>
+      </Box>
     ),
     template: (props) => {
       return (
@@ -208,6 +227,7 @@ export const templates = {
               ? "rotate(-90deg) translateX(20%)"
               : "rotate(0deg)",
             transition: "transform 200ms",
+            marginTop: "16px",
           }}
         >
           <div
@@ -234,9 +254,10 @@ export const templates = {
   },
   pixel7: {
     option: (
-      <span>
-        Pixel 7 <small>648x1373</small>
-      </span>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <Box>Pixel 7</Box>
+        <Box>648 x 1373</Box>
+      </Box>
     ),
     template: (props) => {
       return (
@@ -252,6 +273,7 @@ export const templates = {
               ? "rotate(-90deg) translateX(40%)"
               : "rotate(0deg)",
             transition: "transform 200ms",
+            marginTop: "16px",
           }}
         >
           <div
