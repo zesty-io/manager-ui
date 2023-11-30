@@ -139,6 +139,19 @@ export const ByDayLineChart = ({
     [startDate, endDate]
   );
 
+  const getTooltipDataText = (source: string) => {
+    switch (type) {
+      case 1:
+        return source ? convertSecondsToMinutesAndSeconds(+source) : "0m 00s";
+
+      case 2:
+        return source ? `${Math.floor(+source * 100)}%` : "0%";
+
+      default:
+        return source ? source?.toLocaleString() : "0";
+    }
+  };
+
   const lastData = useMemo(() => {
     let result = findValuesForDimensions(data?.rows, ["date_range_0"], type);
 
@@ -546,7 +559,7 @@ export const ByDayLineChart = ({
                       .format("ddd D MMM")}
               </Typography>
               <Typography variant="h2" fontWeight={600} noWrap>
-                {lastData?.[tooltipModel?.dataIndex]?.toLocaleString()}
+                {getTooltipDataText(lastData?.[tooltipModel?.dataIndex])}
               </Typography>
               <Typography
                 variant="body3"
@@ -554,7 +567,7 @@ export const ByDayLineChart = ({
                 fontWeight={600}
                 sx={{ mt: 1 }}
               >
-                {priorData?.[tooltipModel?.dataIndex]?.toLocaleString() + " "}
+                {getTooltipDataText(priorData?.[tooltipModel?.dataIndex]) + " "}
                 <Typography
                   variant="body3"
                   color={
