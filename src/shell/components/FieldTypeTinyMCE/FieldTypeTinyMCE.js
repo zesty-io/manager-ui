@@ -132,7 +132,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             ],
 
             content_style:
-              "body { font-family: 'Mulish', Arial, sans-serif;  } img { max-width: 100%; } h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }",
+              "body { font-family: 'Mulish', Arial, sans-serif;  } img { width: 100%; } h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }",
 
             // Customize editor buttons and actions
             setup: function (editor) {
