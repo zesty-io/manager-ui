@@ -107,7 +107,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // editor settings
             branding: false,
             menubar: false,
-            object_resizing: true,
+            object_resizing: "table",
 
             // Allows for embeds with script tags
             // extended_valid_elements: "script[src|async|defer|type|charset]",
