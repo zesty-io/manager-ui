@@ -128,7 +128,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // loading the default which is not available
             content_css: [
               props.contentCSS,
-              "https://fonts.googleapis.com/css?family=Mulish:wght@400;500;600;700",
+              "https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700",
             ],
 
             content_style:
