@@ -131,7 +131,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
               "https://fonts.googleapis.com/css?family=Mulish",
             ],
 
-            content_style: "body { font-family: 'Mulish', Arial, sans-serif  }",
+            content_style:
+              "body { font-family: 'Mulish', Arial, sans-serif;  } img { max-width: 100%; } h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }",
 
             // Customize editor buttons and actions
             setup: function (editor) {
