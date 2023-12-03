@@ -220,6 +220,7 @@ export const FieldTypeMedia = ({
                   Upload
                 </Button>
                 <Button
+                  data-cy="selectFromMediaButton"
                   fullWidth
                   size="large"
                   startIcon={<AddRounded />}
@@ -497,6 +498,7 @@ const MediaItem = ({
               ref={imageEl}
               onLoad={handleImageLoad}
               onError={handleImageError}
+              draggable={false}
             />
           ) : (
             <Box width="80px" height="80px"></Box>
@@ -523,7 +525,12 @@ const MediaItem = ({
             </Typography>
           ) : (
             <Box>
-              <Typography variant="body2" color="text.primary" noWrap>
+              <Typography
+                variant="body2"
+                color="text.primary"
+                fontWeight={600}
+                noWrap
+              >
                 {data?.filename}
               </Typography>
               <Typography variant="body2" color="text.secondary" noWrap>
@@ -531,7 +538,7 @@ const MediaItem = ({
               </Typography>
             </Box>
           )}
-          <Box display="flex" gap={1}>
+          <Box display="flex" gap={1} justifyContent="flex-end">
             <Tooltip title="Replace File" placement="bottom" enterDelay={800}>
               <IconButton
                 size="small"
