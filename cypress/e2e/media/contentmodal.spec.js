@@ -15,9 +15,7 @@ describe("Content media selection modal", () => {
     //cy.wait(500);
     cy.waitOn("/bin/1-6c9618c-r26pt/files", () => {
       // TODO improve selectors
-      cy.get(".FieldTypeImageContent--EDuUS button")
-        .last()
-        .click({ force: true });
+      cy.getBySelector("selectFromMediaButton").last().click({ force: true });
     });
     // Test that modal popped up
     cy.getBySelector("appSidebarHeaderTitle").contains("Insert from Media");
@@ -70,7 +68,7 @@ describe("Content media selection modal", () => {
       cy.visit("/content/6-852490-2mhz4v/new");
     });
     cy.contains("2x Images");
-    cy.get("figure button").last().click({ force: true });
+    cy.getBySelector("selectFromMediaButton").last().click({ force: true });
     cy.getBySelector("appSidebarHeaderTitle").contains("Insert from Media");
     cy.getBySelector("media-main-nav").find("li").should("have.length", 1);
   });

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import moment from "moment";
@@ -23,6 +23,23 @@ export const InAppAnnouncement = () => {
   const [readAnnouncementsCookie, updateReadAnnouncementsCookie] = useCookie(
     "READ_ANNOUNCEMENTS_ZUID"
   );
+  const cookieOptions = {
+    // @ts-ignore
+    domain: __CONFIG__.COOKIE_DOMAIN,
+    expires: moment().add(1, "year").toDate(),
+  };
+
+  useEffect(() => {
+    // Initializes and keeps on bumping the read announcements cookie to permanently keep it on the browser
+    const parsedAnnouncementZuids = readAnnouncementsCookie
+      ? JSON.parse(readAnnouncementsCookie)
+      : [];
+
+    updateReadAnnouncementsCookie(
+      JSON.stringify(parsedAnnouncementZuids),
+      cookieOptions
+    );
+  }, []);
 
   const latestAnnouncement = useMemo(() => {
     if (announcements?.length) {
@@ -49,10 +66,7 @@ export const InAppAnnouncement = () => {
     if (!readAnnouncements?.includes(zuid)) {
       updateReadAnnouncementsCookie(
         JSON.stringify([...readAnnouncements, zuid]),
-        {
-          // @ts-ignore
-          domain: __CONFIG__.COOKIE_DOMAIN,
-        }
+        cookieOptions
       );
     }
   };
