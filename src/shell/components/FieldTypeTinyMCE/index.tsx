@@ -241,11 +241,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           // loading the default which is not available
           content_css: [
             // contentCSS,
-            "https://fonts.googleapis.com/css?family=Mulish",
+            "https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700",
           ],
 
           content_style:
-            "body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 14px; }",
+            "body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 14px; } img { width: 100%; } h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }",
 
           // Customize editor buttons and actions
           setup: (editor: any) => {
