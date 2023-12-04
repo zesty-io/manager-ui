@@ -399,6 +399,7 @@ export const ByDayLineChart = ({
                   backgroundColor: theme.palette.info.main,
                   borderColor: theme.palette.info.main,
                   pointRadius: lastData.length <= 2 ? 4 : 0,
+                  pointHitRadius: 3,
                   datalabels: {
                     display: false,
                   },
@@ -411,6 +412,7 @@ export const ByDayLineChart = ({
                   backgroundColor: theme.palette.grey[300],
                   borderColor: theme.palette.grey[300],
                   pointRadius: priorData.length <= 2 ? 4 : 0,
+                  pointHitRadius: 3,
                   datalabels: {
                     display: false,
                   },
