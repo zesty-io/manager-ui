@@ -150,22 +150,41 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
         ["date_range_1", "returning"],
         0
       ) ?? 0;
+    const comparedNew =
+      +findValuesForDimensions(comparedTotalUsersReport?.rows, ["new"], 0) ?? 0;
+    const comparedReturning =
+      +findValuesForDimensions(
+        comparedTotalUsersReport?.rows,
+        ["returning"],
+        0
+      ) ?? 0;
     const dr0TotalUsers = dr0New + dr0Returning ?? 0;
     const dr1TotalUsers = dr1New + dr1Returning ?? 0;
+    const comparedTotalUsers = comparedNew + comparedReturning ?? 0;
 
     // Get total engagement time
     const dr0EngagementTime =
       +findValuesForDimensions(metricsReport?.rows, ["date_range_0"], 4) ?? 0;
     const dr1EngagementTime =
       +findValuesForDimensions(metricsReport?.rows, ["date_range_1"], 4) ?? 0;
+    const comparedEngagementTime =
+      +comparedMetricsReport?.rows?.[0].metricValues?.[4]?.value ?? 0;
 
     // Calculate avg engagement time
     const dr0AvgEngagementTime =
       dr0TotalUsers !== 0 ? dr0EngagementTime / dr0TotalUsers : 0;
     const dr1AvgEngagementTime =
       dr1TotalUsers !== 0 ? dr1EngagementTime / dr1TotalUsers : 0;
+    const comparedAvgEngagementTime =
+      comparedTotalUsers !== 0
+        ? comparedEngagementTime / comparedTotalUsers
+        : 0;
 
-    return [dr0AvgEngagementTime, dr1AvgEngagementTime];
+    return [
+      dr0AvgEngagementTime,
+      dr1AvgEngagementTime,
+      comparedAvgEngagementTime,
+    ];
   }, [
     metricsReport,
     totalUsersReport,
@@ -308,7 +327,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
             value={averageEngagementTime[0]}
             priorValue={
               compareItemZUID
-                ? +comparedMetricsReport?.rows[0]?.metricValues?.[1]?.value || 0
+                ? averageEngagementTime[2] ?? 0
                 : averageEngagementTime[1]
             }
             description="Average engagement time is the average time that your website was in focus in a user's browser or a mobile app was in the foreground on a user's device."
