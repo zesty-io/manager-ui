@@ -104,7 +104,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           left: 0,
           width: "100%",
           height: "100%",
-          zIndex: 1200,
+          zIndex: (theme) => theme.zIndex.drawer,
         },
       }}
       onClick={(evt) => {
