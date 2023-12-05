@@ -111,9 +111,6 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
     comparedUsersByDayReport,
   ] = compareGa4Data?.reports || [];
 
-  console.log("metrics", comparedMetricsReport);
-  console.log("total", comparedTotalUsersReport);
-
   const { data: auditData } = useGetAuditsQuery({
     // Start of content item version support in audit
     start_date: "05/25/2023",

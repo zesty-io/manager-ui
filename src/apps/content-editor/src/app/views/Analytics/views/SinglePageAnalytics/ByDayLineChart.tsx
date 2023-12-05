@@ -369,7 +369,9 @@ export const ByDayLineChart = ({
                   fill: false,
                   backgroundColor: theme.palette.success.main,
                   borderColor: "transparent",
-                  pointRadius: (ctx) => (ctx.raw === 0 ? 0 : 4),
+                  pointRadius: (ctx) =>
+                    itemPublishesByDayArray[ctx.dataIndex] ? 4 : 0,
+                  // pointRadius: 4,
                   datalabels: {
                     display: true,
                     color: theme.palette.text.disabled,
@@ -382,7 +384,7 @@ export const ByDayLineChart = ({
                     },
                     formatter: (value: any, ctx: any, ...rest) => {
                       if (
-                        value === 0 ||
+                        !itemPublishesByDayArray[ctx.dataIndex] ||
                         !itemPublishesByDayArray[ctx.dataIndex]?.version
                       )
                         return "";
