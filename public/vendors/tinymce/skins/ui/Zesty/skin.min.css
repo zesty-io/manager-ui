@@ -2842,7 +2842,8 @@ body.tox-dialog__disable-scroll {
   overflow: hidden;
   padding: 0;
   text-transform: none;
-  width: 34px;
+  width: 28px;
+  height: 28px;
 }
 .tox .tox-tbtn svg {
   display: block;
@@ -2944,8 +2945,9 @@ body.tox-dialog__disable-scroll {
   white-space: nowrap;
 }
 .tox .tox-tbtn--select {
-  margin: 2px 0 3px 0;
-  padding: 0 4px;
+  /* margin: 2px 0 3px 0; */
+  margin: 0px;
+  padding: 0px;
   width: auto;
 }
 .tox .tox-tbtn__select-label {
@@ -3026,6 +3028,7 @@ body.tox-dialog__disable-scroll {
   flex-shrink: 0;
   flex-wrap: wrap;
   padding: 0 0;
+  border-bottom: 1px solid #ccc;
 }
 .tox .tox-toolbar__overflow.tox-toolbar__overflow--closed {
   height: 0;
@@ -3194,4 +3197,7 @@ body.tox-dialog__disable-scroll {
 }
 .tox .tox-image-tools__sidebar {
   height: 60px;
+}
+button.tox-tbtn.tox-tbtn--select.tox-tbtn--bespoke[aria-label="Blocks"] {
+  width: 96px !important;
 }
