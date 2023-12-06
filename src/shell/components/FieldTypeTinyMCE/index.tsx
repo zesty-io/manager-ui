@@ -18,33 +18,20 @@ import "tinymce/skins/ui/tinymce-5/skin.min.css";
 // importing the plugin js.
 // if you use a plugin that is not listed here the editor will fail to load
 import "tinymce/plugins/advlist";
-import "tinymce/plugins/anchor";
 import "tinymce/plugins/autolink";
-import "tinymce/plugins/autoresize";
-import "tinymce/plugins/autosave";
 import "tinymce/plugins/charmap";
 import "tinymce/plugins/code";
 import "tinymce/plugins/codesample";
-import "tinymce/plugins/directionality";
 import "tinymce/plugins/emoticons";
 import "tinymce/plugins/fullscreen";
 import "tinymce/plugins/help";
-import "tinymce/plugins/image";
-import "tinymce/plugins/importcss";
 import "tinymce/plugins/insertdatetime";
 import "tinymce/plugins/link";
 import "tinymce/plugins/lists";
 import "tinymce/plugins/media";
-import "tinymce/plugins/nonbreaking";
-import "tinymce/plugins/pagebreak";
-import "tinymce/plugins/preview";
 import "tinymce/plugins/quickbars";
-import "tinymce/plugins/save";
 import "tinymce/plugins/searchreplace";
 import "tinymce/plugins/table";
-import "tinymce/plugins/template";
-import "tinymce/plugins/visualblocks";
-import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
 import "./plugins/slashcommands";
 import "./plugins/socialmediaembed";
@@ -63,7 +50,7 @@ type FieldTypeTinyMCEProps = {
   onBlur?: () => void;
   onChange: (content: string, name: string, datatype: string) => void;
   datatype: "wysiwyg_advanced" | "wysiwyg_basic";
-  externalPlugins: Record<string, string>;
+  externalPlugins?: Record<string, string>;
   onSave: () => void;
   mediaBrowser: (opts: any) => void;
   onCharacterCountChange: (charCount: number) => void;
@@ -138,30 +125,23 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         init={{
           plugins: [
             "advlist",
-            "lists",
             "autolink",
-            "code",
             "charmap",
+            "code",
+            "codesample",
             "emoticons",
             "fullscreen",
+            "help",
+            "insertdatetime",
+            "link",
+            "lists",
+            "media",
             "quickbars",
             "searchreplace",
-            "insertdatetime",
             "table",
-            "help",
-            "link",
-            "media",
-            // "visualblocks",
-            "codesample",
             "wordcount",
             "slashcommands",
             "socialmediaembed",
-
-            // "advcode",
-            // "anchor",
-            // "hr",
-            // "preview",
-            // "spellchecker", // TODO: Deprecated in latest version, replace with the pro version
           ],
 
           // NOTE: premium plugins are being loaded from a self hosted location
