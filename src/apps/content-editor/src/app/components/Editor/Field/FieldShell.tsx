@@ -147,7 +147,7 @@ export const FieldShell = ({
         <Typography
           variant="body2"
           color="text.secondary"
-          sx={{ overflowWrap: "break-word" }}
+          sx={{ overflowWrap: "break-word", wordBreak: "break-word" }}
         >
           {settings?.description}
         </Typography>
