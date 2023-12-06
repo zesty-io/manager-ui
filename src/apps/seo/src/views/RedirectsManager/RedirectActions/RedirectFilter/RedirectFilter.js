@@ -30,7 +30,7 @@ export function RedirectFilter(props) {
         ),
       }}
       onChange={(evt) => {
-        const term = evt.target.value.trim().toLowerCase();
+        const term = evt.target.value.trim();
         handleFilter(term);
       }}
     />
