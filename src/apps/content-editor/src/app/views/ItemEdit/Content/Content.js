@@ -1,6 +1,6 @@
 import { Editor } from "../../../components/Editor";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
-import { Box, Stack, IconButton, Tooltip } from "@mui/material";
+import { Box, Stack, IconButton, Tooltip, useMediaQuery } from "@mui/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
@@ -17,6 +17,8 @@ export default function Content(props) {
     setValue: setShowDuoMode,
     isDisabled,
   } = useContext(DuoModeContext);
+
+  const xLarge = useMediaQuery((theme) => theme.breakpoints.up("xl"));
 
   return (
     <Box
@@ -43,7 +45,7 @@ export default function Content(props) {
           display: "flex",
           flex: showDuoMode ? "unset" : 1,
           justifyContent:
-            !showDuoMode && !showSidebar ? "center" : "flex-start",
+            (!showDuoMode && !showSidebar) || xLarge ? "center" : "flex-start",
           overflowY: "scroll",
           maxWidth: showDuoMode ? 640 : "unset",
           width: showDuoMode ? "100%" : "unset",
@@ -51,7 +53,7 @@ export default function Content(props) {
         pr={3}
         pl={4}
       >
-        <Box width="100%" height="100%" maxWidth={640} flex="0 1 auto">
+        <Box width="60%" height="100%" minWidth={640} flex="0 1 auto">
           <Box width="100%">
             <Editor
               // active={this.state.makeActive}

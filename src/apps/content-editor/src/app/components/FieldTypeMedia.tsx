@@ -445,7 +445,6 @@ const MediaItem = ({
   return (
     <>
       <Box
-        maxWidth="640px"
         display="grid"
         gridTemplateColumns={
           hideDrag ? "min-content 1fr" : "repeat(2, min-content) 1fr"
