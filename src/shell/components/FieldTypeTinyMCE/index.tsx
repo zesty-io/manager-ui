@@ -220,7 +220,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           ],
 
           content_style:
-            "body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 14px; } img { width: 100%; } h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }",
+            "body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 14px; } img { width: 100%; } h1, h2, h3, h4, h5, h6, strong { font-weight: 700; } span.mce-preview-object.mce-object-video { width: 100%; height: 100% } video { width: 100%; height: 100%; object-fill: fill; aspect-ratio: auto;}",
 
           // Customize editor buttons and actions
           setup: (editor: any) => {
@@ -245,11 +245,54 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               mediaBrowser({
                 limit: 10,
                 filetype,
-                callback: (images: File[]) => {
+                callback: (files: File[]) => {
+                  const imageFileTypes = [
+                    ".jpg",
+                    ".jpeg",
+                    ".gif",
+                    ".webp",
+                    ".png",
+                    ".svg",
+                    ".ico",
+                  ];
+                  const videoFileTypes = [
+                    ".mp4",
+                    ".mov",
+                    ".avi",
+                    ".wmv",
+                    ".mkv",
+                    ".webm",
+                    ".flv",
+                    ".f4v",
+                    ".swf",
+                    ".avch",
+                    ".html5",
+                  ];
+
                   editor.insertContent(
-                    images
-                      .map((image: File) => {
-                        return `<img src="${image.url}" data-id="${image.id}" title="${image.title}" alt="${image.title}" />`;
+                    files
+                      .map((file: File) => {
+                        if (
+                          imageFileTypes.some((fileType) =>
+                            file.filename?.includes(fileType)
+                          )
+                        ) {
+                          return `<img src="${file.url}" data-id="${file.id}" title="${file.title}" alt="${file.title}" />`;
+                        }
+
+                        if (
+                          videoFileTypes.some((fileType) =>
+                            file.filename?.includes(fileType)
+                          )
+                        ) {
+                          return `
+                            <video controls src="${file.url}"/>
+                          `;
+                        }
+
+                        return `
+                            <a href="${file.url}" target="_blank" rel="noopener">${file.filename}</a>
+                        `;
                       })
                       .join(" ")
                   );
