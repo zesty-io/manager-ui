@@ -1265,7 +1265,7 @@ button::-moz-focus-inner {
   z-index: 1100;
 }
 .tox .tox-dialog-wrap__backdrop {
-  background-color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(16, 24, 40, 0.5);
   bottom: 0;
   left: 0;
   position: absolute;
@@ -3219,4 +3219,7 @@ button.tox-button.tox-button--icon.tox-button--naked {
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
+}
+.tox-toolbar__overflow.tox-toolbar__overflow--open:empty {
+  border-bottom: none;
 }
