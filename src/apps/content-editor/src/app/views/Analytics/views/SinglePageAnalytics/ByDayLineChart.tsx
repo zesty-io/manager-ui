@@ -94,25 +94,21 @@ export const ByDayLineChart = ({
     }
 
     const chart = chartRef.current;
-    const activeElement = chart.getElementsAtEventForMode(
+    const activeElements = chart.getElementsAtEventForMode(
       event.native,
       "nearest",
-      { intersect: true },
+      { intersect: false, axis: "x" },
       false
-    )[0];
-    const datasetIndex = activeElement?.datasetIndex;
-    const index = activeElement?.index;
-    if (
-      typeof datasetIndex === "number" &&
-      typeof index === "number"
-      // datasetIndex === 0 &&
-      // itemPublishesByDayArray[index]?.version
-    ) {
+    );
+    const index = activeElements?.[0]?.index;
+    if (typeof index === "number") {
       const model = {
-        datasetIndex,
         dataIndex: index,
-        x: event.x - 180,
-        y: event.y - 100,
+        x: activeElements?.[0]?.element?.x,
+        y: Math.round(
+          (activeElements?.[1]?.element?.y + activeElements?.[2]?.element?.y) /
+            2
+        ),
       };
       if (!isEqual(tooltipModel, model)) {
         setTooltipModel(model);
@@ -355,7 +351,14 @@ export const ByDayLineChart = ({
           </Box>
         </Box>
       ) : (
-        <Box position="relative" height="387px">
+        <Box
+          position="relative"
+          height="387px"
+          onMouseLeave={() => {
+            setIsTooltipEntered(false);
+            setTooltipModel(null);
+          }}
+        >
           <Line
             ref={chartRef}
             data={{
@@ -371,7 +374,7 @@ export const ByDayLineChart = ({
                   borderColor: "transparent",
                   pointRadius: (ctx) =>
                     itemPublishesByDayArray[ctx.dataIndex] ? 4 : 0,
-                  // pointRadius: 4,
+                  pointHoverRadius: 0,
                   datalabels: {
                     display: true,
                     color: theme.palette.text.disabled,
@@ -422,8 +425,44 @@ export const ByDayLineChart = ({
                 },
               ],
             }}
-            plugins={[ChartDataLabels]}
+            plugins={[
+              ChartDataLabels,
+              {
+                id: "verticalLine",
+                afterDraw: (chart: {
+                  tooltip?: any;
+                  scales?: any;
+                  ctx?: any;
+                }) => {
+                  // eslint-disable-next-line no-underscore-dangle
+                  if (chart.tooltip._active && chart.tooltip._active.length) {
+                    // find coordinates of tooltip
+                    const activePoint = chart.tooltip._active[0];
+                    const { ctx } = chart;
+                    const { x } = activePoint.element;
+                    const topY = chart.scales.y.top;
+                    const bottomY = chart.scales.y.bottom;
+
+                    // draw vertical line
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(x, topY);
+                    ctx.lineTo(x, bottomY);
+                    ctx.setLineDash([4, 4]);
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = theme.palette.grey[300];
+                    ctx.stroke();
+                    ctx.restore();
+                  }
+                },
+              },
+            ]}
             options={{
+              hover: {
+                mode: "nearest",
+                axis: "x",
+                intersect: false,
+              },
               layout: {
                 padding: {
                   top: 16,
@@ -435,6 +474,9 @@ export const ByDayLineChart = ({
               plugins: {
                 tooltip: {
                   enabled: false,
+                  intersect: false,
+                  mode: "nearest",
+                  axis: "x",
                 },
                 legend: {
                   display: true,
@@ -530,8 +572,10 @@ export const ByDayLineChart = ({
             sx={{
               display: tooltipModel ? "block" : "none",
               position: "absolute",
-              top: tooltipModel?.y,
+              // top: tooltipModel?.y,
+              top: 50,
               left: tooltipModel?.x,
+              transform: "translateX(-50%)",
               width: 258,
               zIndex: theme.zIndex.tooltip,
             }}
