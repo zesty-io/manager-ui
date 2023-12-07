@@ -402,12 +402,13 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
             />
           </Box>
         </Box>
-        <Box display="flex" mt={2.5} gap={2} bgcolor="background.paper">
+        <Box display="flex" mt={2.5} gap={2}>
           <Box
             width="40%"
             borderRadius={"8px"}
             p={2}
             border={(theme) => `1px solid ${theme.palette.border}`}
+            bgcolor="background.paper"
           >
             <UsersBarChart
               loading={isLoading}
