@@ -65,16 +65,6 @@ export const ThumbnailContent: FC<Props> = ({
                         borderRight: "0 !important",
                         borderLeft: "0 !important",
                       },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "border",
-                        borderWidth: 1,
-                      },
-                      "&:hover": {
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "border",
-                          borderWidth: 1,
-                        },
-                      },
                     },
                     fieldset: {
                       borderRight: 0,
