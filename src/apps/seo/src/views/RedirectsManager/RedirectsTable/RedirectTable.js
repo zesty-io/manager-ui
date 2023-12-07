@@ -150,18 +150,16 @@ export default function RedirectTable(props) {
 
   const rows = useMemo(
     () =>
+      // case insensitive search on path, code, target, and ZUID
       Object.values(props.redirects)
         .filter((redirect) => {
-          if (
-            redirect.path.indexOf(props.redirectsFilter) !== -1 ||
-            String(redirect.code).indexOf(props.redirectsFilter) !== -1 ||
-            redirect.ZUID.indexOf(props.redirectsFilter) !== -1 ||
-            redirect.target.indexOf(props.redirectsFilter) !== -1
-          ) {
-            return true;
-          } else {
-            return false;
-          }
+          const normalizedFilter = props.redirectsFilter?.toLowerCase() || "";
+          return (
+            redirect.path.toLowerCase().includes(normalizedFilter) ||
+            String(redirect.code).toLowerCase().includes(normalizedFilter) ||
+            redirect.ZUID.toLowerCase().includes(normalizedFilter) ||
+            redirect.target.toLowerCase().includes(normalizedFilter)
+          );
         })
         .map((redirect) => ({
           ...redirect,
