@@ -49,7 +49,7 @@ export const DeleteFileModal: FC<Props> = ({
         >
           <DeleteRoundedIcon sx={{ color: "red.600" }} />
         </Box>
-        <Typography variant="h5" sx={{ mt: 2 }}>
+        <Typography variant="h5" fontWeight={700} sx={{ mt: 2 }}>
           {fileCount > 1 ? `Delete ${fileCount} Files?` : "Delete File"}
         </Typography>
       </DialogTitle>
