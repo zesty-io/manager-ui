@@ -47,6 +47,7 @@ export const InAppAnnouncement = () => {
         moment(b.created_at).diff(moment(a.created_at))
       )?.[0];
 
+      // TODO: Convert all moment values below to UTC+0
       if (
         moment().isBetween(
           moment(latest?.start_date_and_time),
