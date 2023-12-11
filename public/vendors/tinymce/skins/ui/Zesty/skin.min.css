@@ -1263,6 +1263,8 @@ button::-moz-focus-inner {
   right: 0;
   top: 0;
   z-index: 1100;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 .tox .tox-dialog-wrap__backdrop {
   background-color: rgba(16, 24, 40, 0.5);
@@ -1395,7 +1397,7 @@ button::-moz-focus-inner {
   flex: 1;
   flex-direction: column;
   -ms-flex-preferred-size: auto;
-  max-height: 650px;
+  max-height: 610px;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   padding: 20px;

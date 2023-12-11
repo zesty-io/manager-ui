@@ -1263,9 +1263,11 @@ button::-moz-focus-inner {
   right: 0;
   top: 0;
   z-index: 1100;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 .tox .tox-dialog-wrap__backdrop {
-  background-color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(16, 24, 40, 0.5);
   bottom: 0;
   left: 0;
   position: absolute;
@@ -1395,7 +1397,7 @@ button::-moz-focus-inner {
   flex: 1;
   flex-direction: column;
   -ms-flex-preferred-size: auto;
-  max-height: 650px;
+  max-height: 610px;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   padding: 20px;
@@ -3219,4 +3221,7 @@ button.tox-button.tox-button--icon.tox-button--naked {
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
+}
+.tox-toolbar__overflow.tox-toolbar__overflow--open:empty {
+  border-bottom: none;
 }
