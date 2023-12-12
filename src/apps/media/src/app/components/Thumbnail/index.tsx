@@ -12,7 +12,7 @@ import {
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import { fileExtension, fileTypeToColor } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
@@ -136,7 +136,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               textAlign: "center",
             }}
           >
-            <CloseRoundedIcon
+            <DeleteRoundedIcon
               fontSize="small"
               sx={{
                 mt: 0.3,

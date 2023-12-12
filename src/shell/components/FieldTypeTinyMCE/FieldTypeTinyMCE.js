@@ -107,7 +107,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // editor settings
             branding: false,
             menubar: false,
-            object_resizing: true,
+            object_resizing: "table",
 
             // Allows for embeds with script tags
             // extended_valid_elements: "script[src|async|defer|type|charset]",
@@ -128,10 +128,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE(props) {
             // loading the default which is not available
             content_css: [
               props.contentCSS,
-              "https://fonts.googleapis.com/css?family=Mulish",
+              "https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700",
             ],
 
-            content_style: "body { font-family: 'Mulish', Arial, sans-serif  }",
+            content_style:
+              "body { font-family: 'Mulish', Arial, sans-serif;  } img { width: 100%; } h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }",
 
             // Customize editor buttons and actions
             setup: function (editor) {
