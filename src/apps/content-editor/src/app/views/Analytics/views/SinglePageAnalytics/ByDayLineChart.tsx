@@ -578,6 +578,7 @@ export const ByDayLineChart = ({
               transform: "translate(-50%, -100%)",
               width: 258,
               zIndex: theme.zIndex.tooltip,
+              pointerEvents: "none",
             }}
             onMouseLeave={() => {
               setIsTooltipEntered(false);
