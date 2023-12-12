@@ -17,6 +17,7 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
 import { useEffect, useState } from "react";
+
 import {
   ContentItem,
   Publishing,
@@ -288,7 +289,6 @@ export const ItemEditHeaderActions = ({
                     onSave();
                   } else {
                     setIsConfirmPublishModalOpen(true);
-                    // handlePublish();
                   }
                 }}
                 loading={publishing || publishAfterSave || isFetching}
