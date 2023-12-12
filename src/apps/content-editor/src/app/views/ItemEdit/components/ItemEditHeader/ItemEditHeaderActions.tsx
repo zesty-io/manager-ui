@@ -107,7 +107,7 @@ export const ItemEditHeaderActions = ({
       setPublishAfterSave(true);
       onSave();
     } else {
-      handlePublish();
+      setIsConfirmPublishModalOpen(true);
     }
   });
 
@@ -165,7 +165,7 @@ export const ItemEditHeaderActions = ({
       activePublishing?.version !== item?.meta.version &&
       !saving
     ) {
-      handlePublish();
+      setIsConfirmPublishModalOpen(true);
       setPublishAfterSave(false);
     }
   }, [item, publishAfterSave, saving, activePublishing]);
