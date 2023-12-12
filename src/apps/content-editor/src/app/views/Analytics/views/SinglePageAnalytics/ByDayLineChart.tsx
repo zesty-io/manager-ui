@@ -105,10 +105,11 @@ export const ByDayLineChart = ({
       const model = {
         dataIndex: index,
         x: activeElements?.[0]?.element?.x,
-        y: Math.round(
-          (activeElements?.[1]?.element?.y + activeElements?.[2]?.element?.y) /
-            2
-        ),
+        y: activeElements?.[1]?.element?.y - 16,
+        // y: Math.round(
+        //   (activeElements?.[1]?.element?.y + activeElements?.[2]?.element?.y) /
+        //     2
+        // ),
       };
       if (!isEqual(tooltipModel, model)) {
         setTooltipModel(model);
@@ -572,10 +573,9 @@ export const ByDayLineChart = ({
             sx={{
               display: tooltipModel ? "block" : "none",
               position: "absolute",
-              // top: tooltipModel?.y,
-              top: 50,
+              top: tooltipModel?.y,
               left: tooltipModel?.x,
-              transform: "translateX(-50%)",
+              transform: "translate(-50%, -100%)",
               width: 258,
               zIndex: theme.zIndex.tooltip,
             }}
