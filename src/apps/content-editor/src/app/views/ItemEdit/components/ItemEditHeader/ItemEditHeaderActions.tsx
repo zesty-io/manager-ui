@@ -42,6 +42,7 @@ import { ScheduleFlyout } from "../Header/ItemVersioning/ScheduleFlyout";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import { ContentItemWithDirtyAndPublishing } from ".";
+import { ConfirmPublishModal } from "./ConfirmPublishModal";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -72,6 +73,8 @@ export const ItemEditHeaderActions = ({
   const [scheduledPublishDialogOpen, setScheduledPublishDialogOpen] =
     useState(false);
   const [scheduleAfterSave, setScheduleAfterSave] = useState(false);
+  const [isConfirmPublishModalOpen, setIsConfirmPublishModalOpen] =
+    useState(false);
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
@@ -284,7 +287,8 @@ export const ItemEditHeaderActions = ({
                     setPublishAfterSave(true);
                     onSave();
                   } else {
-                    handlePublish();
+                    setIsConfirmPublishModalOpen(true);
+                    // handlePublish();
                   }
                 }}
                 loading={publishing || publishAfterSave || isFetching}
@@ -389,7 +393,7 @@ export const ItemEditHeaderActions = ({
         setScheduleAfterSave={setScheduleAfterSave}
         setUnpublishDialogOpen={setUnpublishDialogOpen}
         setScheduledPublishDialogOpen={setScheduledPublishDialogOpen}
-        handlePublish={handlePublish}
+        handlePublish={() => setIsConfirmPublishModalOpen(true)}
       />
       {unpublishDialogOpen && (
         <UnpublishDialog
@@ -404,6 +408,15 @@ export const ItemEditHeaderActions = ({
         item={item}
         dispatch={dispatch}
         toggleOpen={() => setScheduledPublishDialogOpen(false)}
+      />
+      <ConfirmPublishModal
+        contentTitle={item?.web?.metaTitle}
+        onCancel={() => setIsConfirmPublishModalOpen(false)}
+        onConfirm={() => {
+          setIsConfirmPublishModalOpen(false);
+          handlePublish();
+        }}
+        open={isConfirmPublishModalOpen}
       />
     </>
   );
