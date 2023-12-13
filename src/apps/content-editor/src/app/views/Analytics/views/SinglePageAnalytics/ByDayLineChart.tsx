@@ -100,6 +100,12 @@ export const ByDayLineChart = ({
       { intersect: false, axis: "x" },
       false
     );
+
+    if (activeElements?.length !== 3) {
+      setTooltipModel(null);
+      return;
+    }
+
     const index = activeElements?.[0]?.index;
     if (typeof index === "number") {
       const model = {
