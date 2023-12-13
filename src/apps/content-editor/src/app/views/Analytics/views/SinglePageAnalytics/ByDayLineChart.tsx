@@ -263,7 +263,7 @@ export const ByDayLineChart = ({
             />
           </Box>
         ) : (
-          <ButtonGroup size="small">
+          <ButtonGroup size="small" sx={{ flexShrink: 0 }}>
             <Button
               variant={type === 0 ? "contained" : "outlined"}
               color="inherit"
