@@ -637,7 +637,7 @@ export const ByDayLineChart = ({
               </Typography>
               {itemPublishesByDayArray[tooltipModel?.dataIndex]?.version ? (
                 <Button
-                  sx={{ display: "block", mt: 1.5 }}
+                  sx={{ display: "block", mt: 1.5, pointerEvents: "auto" }}
                   size="small"
                   variant="contained"
                   color="inherit"
