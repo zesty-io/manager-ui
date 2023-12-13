@@ -23,7 +23,7 @@ export const ConfirmPublishModal = ({
   onConfirm,
 }: ConfirmPublishModal) => {
   return (
-    <Dialog open={open} onClose={onCancel}>
+    <Dialog open={open} onClose={onCancel} data-cy="ConfirmPublishModal">
       <DialogTitle component="div" sx={{ pb: 1 }}>
         <Stack
           height={40}
@@ -60,6 +60,7 @@ export const ConfirmPublishModal = ({
           color="success"
           sx={{ color: "common.white" }}
           onClick={onConfirm}
+          data-cy="ConfirmPublishButton"
         >
           Publish Item
         </Button>
