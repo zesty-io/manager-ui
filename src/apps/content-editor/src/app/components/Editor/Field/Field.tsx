@@ -902,9 +902,6 @@ export const Field = ({
         [onChange]
       );
 
-      // Convert the UCT+0 date and time value to local date and time
-      const localDateTime = value ? moment.utc(value).local().toDate() : null;
-
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <Box maxWidth={360}>
