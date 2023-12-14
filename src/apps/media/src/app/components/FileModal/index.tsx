@@ -147,30 +147,19 @@ export const FileModal: FC<Props> = ({
       {data && !isError && !isFetching ? (
         <Dialog
           open={data.url && !isLoading}
-          fullWidth
+          fullScreen
           maxWidth={false}
           onClose={handleCloseModal}
           PaperProps={{
-            style: {
-              height: "680px",
-              maxWidth: "1300px",
+            sx: {
+              mx: 10,
+              my: 2.5,
+              maxHeight: "fill-available",
+              maxWidth: 3000,
               overflow: "visible",
-              width: "calc(100% - 168px)",
             },
           }}
         >
-          <IconButton
-            onClick={() => handleCloseModal()}
-            aria-label="Close Icon"
-            sx={{
-              position: "fixed",
-              zIndex: 999,
-              right: 5,
-              top: 0,
-            }}
-          >
-            <CloseIcon sx={{ color: "common.white" }} />
-          </IconButton>
           {adjacentFiles.nextFile && (
             <IconButton
               size="large"
@@ -219,12 +208,9 @@ export const FileModal: FC<Props> = ({
             <Card
               elevation={0}
               sx={{
-                width: "1000px",
+                width: "100%",
                 overflow: "hidden",
-
-                // "@media screen and (max-width: 1440px)": {
-                //   width: "1440px",
-                // },
+                borderRadius: "8px 0px 0px 8px",
               }}
             >
               <FileTypePreview
