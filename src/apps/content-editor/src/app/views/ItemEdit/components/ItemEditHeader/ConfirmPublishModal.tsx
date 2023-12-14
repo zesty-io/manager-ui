@@ -12,18 +12,16 @@ import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 
 type ConfirmPublishModal = {
   contentTitle: string;
-  open: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 };
 export const ConfirmPublishModal = ({
   contentTitle,
-  open,
   onCancel,
   onConfirm,
 }: ConfirmPublishModal) => {
   return (
-    <Dialog open={open} onClose={onCancel} data-cy="ConfirmPublishModal">
+    <Dialog open data-cy="ConfirmPublishModal">
       <DialogTitle component="div" sx={{ pb: 1 }}>
         <Stack
           height={40}

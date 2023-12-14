@@ -417,15 +417,16 @@ export const ItemEditHeaderActions = ({
         dispatch={dispatch}
         toggleOpen={() => setScheduledPublishDialogOpen(false)}
       />
-      <ConfirmPublishModal
-        contentTitle={item?.web?.metaTitle}
-        onCancel={() => setIsConfirmPublishModalOpen(false)}
-        onConfirm={() => {
-          setIsConfirmPublishModalOpen(false);
-          handlePublish();
-        }}
-        open={isConfirmPublishModalOpen}
-      />
+      {isConfirmPublishModalOpen && (
+        <ConfirmPublishModal
+          contentTitle={item?.web?.metaTitle}
+          onCancel={() => setIsConfirmPublishModalOpen(false)}
+          onConfirm={() => {
+            setIsConfirmPublishModalOpen(false);
+            handlePublish();
+          }}
+        />
+      )}
     </>
   );
 };
