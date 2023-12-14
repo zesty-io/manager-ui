@@ -110,7 +110,7 @@ export const UsersBarChart = ({
         {loading ? (
           <Skeleton variant="rectangular" width="147px" height="28px" />
         ) : (
-          <Typography variant="h5" fontWeight={600}>
+          <Typography variant="h5" fontWeight={700}>
             Users By {type}
           </Typography>
         )}
