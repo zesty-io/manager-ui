@@ -901,7 +901,6 @@ export const Field = ({
         },
         [onChange]
       );
-
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <Box maxWidth={360}>
