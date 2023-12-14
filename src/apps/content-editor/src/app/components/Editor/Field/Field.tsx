@@ -897,16 +897,7 @@ export const Field = ({
     case "datetime":
       const onDateTimeChange = useCallback(
         (value, name, datatype) => {
-          const utc0DateTime = moment.utc(value).format("YYYY-MM-DD HH:mm:ss");
-
-          console.log("utc 0", utc0DateTime);
-          console.log(
-            "utc 0 to local time",
-            moment.utc(utc0DateTime).local().format("YYYY-MM-DD HH:mm:ss")
-          );
-
-          // Date and time values converted to UTC+0
-          onChange(utc0DateTime, name, datatype);
+          onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
         },
         [onChange]
       );
@@ -920,7 +911,7 @@ export const Field = ({
             <FieldTypeDateTime
               name={name}
               required={required}
-              value={localDateTime}
+              value={value ? new Date(value) : null}
               inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
               onChange={(date) => onDateTimeChange(date, name, datatype)}
               error={errors && Object.values(errors)?.some((error) => !!error)}
