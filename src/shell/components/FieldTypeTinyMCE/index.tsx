@@ -122,6 +122,28 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
           onCharacterCountChange(charCount);
         }}
+        onKeyDown={(evt) => {
+          // Makes sure that when scrolling through a collection group, it
+          // autoscrolls highlighted items that are out of view
+          if (evt.code === "ArrowDown" || evt.code === "ArrowUp") {
+            const autocompleterEl =
+              document.getElementsByClassName("tox-autocompleter");
+
+            if (autocompleterEl.length) {
+              const activeAutocompleteItem =
+                autocompleterEl[0].getElementsByClassName(
+                  "tox-collection__item--active"
+                );
+
+              // Needed to scroll to view the first and last item when scroll wrapping
+              setTimeout(() => {
+                activeAutocompleteItem?.[0]?.scrollIntoView({
+                  block: "center",
+                });
+              }, 100);
+            }
+          }
+        }}
         init={{
           plugins: [
             "advlist",
