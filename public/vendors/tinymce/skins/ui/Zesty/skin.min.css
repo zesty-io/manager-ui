@@ -585,6 +585,10 @@ button::-moz-focus-inner {
   overflow-y: auto;
   padding: 0;
 }
+.tox .tox-autocompleter .tox-collection--list .tox-collection__group {
+  max-height: 280px;
+  width: 240px;
+}
 .tox .tox-collection--list .tox-collection__group {
   border-bottom-width: 0;
   border-color: #ccc;
