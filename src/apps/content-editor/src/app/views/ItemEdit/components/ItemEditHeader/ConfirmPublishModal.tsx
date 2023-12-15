@@ -21,7 +21,11 @@ export const ConfirmPublishModal = ({
   onConfirm,
 }: ConfirmPublishModal) => {
   return (
-    <Dialog open data-cy="ConfirmPublishModal">
+    <Dialog
+      open
+      data-cy="ConfirmPublishModal"
+      PaperProps={{ sx: { width: 480 } }}
+    >
       <DialogTitle component="div" sx={{ pb: 1 }}>
         <Stack
           height={40}
@@ -39,14 +43,14 @@ export const ConfirmPublishModal = ({
             Publish Content Item:
           </Typography>{" "}
           <Typography variant="h5" display="inline">
-            {contentTitle}
+            {contentTitle}?
           </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary">
-          This will make the it immediately available on all of your platforms.
-          You can always unpublish this item later if needed.
+          This will make the item immediately available on all of your
+          platforms. You can always unpublish this item later if needed.
         </Typography>
       </DialogContent>
       <DialogActions>
