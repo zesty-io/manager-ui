@@ -3,6 +3,20 @@ import tinymce from "tinymce/tinymce";
 tinymce.PluginManager.add("slashcommands", (editor) => {
   const insertActions = [
     {
+      text: "Image",
+      icon: "image",
+      action: () => {
+        editor.execCommand("mceZestyMediaApp", false, "Image");
+      },
+    },
+    {
+      text: "Video",
+      icon: "emoji",
+      action: () => {
+        editor.execCommand("mceZestyMediaApp", false, "Video");
+      },
+    },
+    {
       text: "Paragraph",
       icon: "p",
       action: () => {
@@ -59,13 +73,6 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
       },
     },
     {
-      text: "Link",
-      icon: "link",
-      action: () => {
-        editor.execCommand("mceLink");
-      },
-    },
-    {
       text: "Quote",
       icon: "quote",
       action: () => {
@@ -80,10 +87,38 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
       },
     },
     {
+      text: "Link",
+      icon: "link",
+      action: () => {
+        editor.execCommand("mceLink");
+      },
+    },
+    {
+      text: "Embed",
+      icon: "zesty-embed",
+      action: () => {
+        editor.execCommand("mceSocialMediaEmbed");
+      },
+    },
+    {
+      text: "Table",
+      icon: "table",
+      action: () => {
+        editor.execCommand("mceInsertTableDialog");
+      },
+    },
+    {
       text: "Bulleted list",
       icon: "unordered-list",
       action: () => {
         editor.execCommand("InsertUnorderedList");
+      },
+    },
+    {
+      text: "Numbered list",
+      icon: "ordered-list",
+      action: () => {
+        editor.execCommand("InsertOrderedList");
       },
     },
     {
@@ -105,34 +140,6 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
       icon: "emoji",
       action: () => {
         editor.execCommand("mceEmoticons");
-      },
-    },
-    {
-      text: "Image",
-      icon: "image",
-      action: () => {
-        editor.execCommand("mceZestyMediaApp", false, "Image");
-      },
-    },
-    {
-      text: "Video",
-      icon: "emoji",
-      action: () => {
-        editor.execCommand("mceZestyMediaApp", false, "Video");
-      },
-    },
-    {
-      text: "Table",
-      icon: "table",
-      action: () => {
-        editor.execCommand("mceInsertTableDialog");
-      },
-    },
-    {
-      text: "Embed",
-      icon: "zesty-embed",
-      action: () => {
-        editor.execCommand("mceSocialMediaEmbed");
       },
     },
   ];
