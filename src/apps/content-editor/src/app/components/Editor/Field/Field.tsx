@@ -885,7 +885,12 @@ export const Field = ({
             <FieldTypeDate
               name={name}
               required={required}
-              value={value ? new Date(value) : null}
+              // use moment to create a UTC date object
+              value={
+                value
+                  ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
+                  : null
+              }
               inputFormat="yyyy-MM-dd"
               onChange={(date) => onDateChange(date, name, datatype)}
               error={errors && Object.values(errors)?.some((error) => !!error)}
