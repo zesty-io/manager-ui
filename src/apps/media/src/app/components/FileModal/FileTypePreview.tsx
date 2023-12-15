@@ -1,6 +1,12 @@
 import { FC, useState, useEffect } from "react";
 import { fileExtension } from "../../utils/fileUtils";
-import { Box, CardMedia, Typography, CircularProgress } from "@mui/material";
+import {
+  Box,
+  CardMedia,
+  Typography,
+  CircularProgress,
+  useMediaQuery,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
 
@@ -34,6 +40,8 @@ export const FileTypePreview: FC<Props> = ({
   imageSettings,
 }) => {
   const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const isXtraLargeScreen = useMediaQuery(theme.breakpoints.up("xl"));
 
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
@@ -73,8 +81,18 @@ export const FileTypePreview: FC<Props> = ({
 
   const genImageURL = () => {
     const defaultImageSettings = {
-      width: 880,
+      width: 800,
+      optimize: "high",
     };
+
+    if (isLargeScreen) {
+      defaultImageSettings.width = 1000;
+    }
+
+    if (isXtraLargeScreen) {
+      defaultImageSettings.width = 1600;
+    }
+
     const imageSettingsToUse = { ...defaultImageSettings, ...imageSettings };
     const params = `${Object.keys(imageSettingsToUse)
       .filter(
