@@ -48,10 +48,12 @@ export const InAppAnnouncement = () => {
       )?.[0];
 
       if (
-        moment().isBetween(
-          moment(latest?.start_date_and_time),
-          moment(latest?.end_date_and_time)
-        )
+        moment
+          .utc()
+          .isBetween(
+            moment.utc(latest?.start_date_and_time),
+            moment.utc(latest?.end_date_and_time)
+          )
       ) {
         return latest;
       }
