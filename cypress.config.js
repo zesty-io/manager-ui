@@ -15,13 +15,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       on("before:browser:launch", (browser, launchOptions) => {
         if (browser.name === "chrome" && browser.isHeadless) {
-          launchOptions.args = launchOptions.args.map((arg) => {
-            if (arg === "--headless") {
-              return "--headless=old";
-            }
-
-            return arg;
-          });
+          launchOptions.args.push("--headless=old");
         }
 
         return launchOptions;
