@@ -17,7 +17,7 @@ module.exports = defineConfig({
         if (browser.name === "chrome" && browser.isHeadless) {
           launchOptions.args = launchOptions.args.map((arg) => {
             if (arg === "--headless") {
-              return "--headless=new";
+              return "--headless=old";
             }
 
             return arg;
