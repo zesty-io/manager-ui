@@ -49,7 +49,7 @@ function getDatesArray(start: Moment, end: Moment) {
   return datesArray;
 }
 
-const typeLabelMap = ["Sessions", "Avg. Duration", "Bounce Rate", "Users"];
+const typeLabelMap = ["Views", "Avg. Engagement Time", "Bounce Rate", "Users"];
 
 export const ByDayLineChart = ({
   auditData,
@@ -94,25 +94,28 @@ export const ByDayLineChart = ({
     }
 
     const chart = chartRef.current;
-    const activeElement = chart.getElementsAtEventForMode(
+    const activeElements = chart.getElementsAtEventForMode(
       event.native,
       "nearest",
-      { intersect: true },
+      { intersect: false, axis: "x" },
       false
-    )[0];
-    const datasetIndex = activeElement?.datasetIndex;
-    const index = activeElement?.index;
-    if (
-      typeof datasetIndex === "number" &&
-      typeof index === "number"
-      // datasetIndex === 0 &&
-      // itemPublishesByDayArray[index]?.version
-    ) {
+    );
+
+    if (activeElements?.length !== 3) {
+      setTooltipModel(null);
+      return;
+    }
+
+    const index = activeElements?.[0]?.index;
+    if (typeof index === "number") {
       const model = {
-        datasetIndex,
         dataIndex: index,
-        x: event.x - 180,
-        y: event.y - 100,
+        x: activeElements?.[0]?.element?.x,
+        y: activeElements?.[1]?.element?.y - 16,
+        // y: Math.round(
+        //   (activeElements?.[1]?.element?.y + activeElements?.[2]?.element?.y) /
+        //     2
+        // ),
       };
       if (!isEqual(tooltipModel, model)) {
         setTooltipModel(model);
@@ -121,25 +124,65 @@ export const ByDayLineChart = ({
     }
   };
 
+  const getAverageEngagementTime = (daterange: string) => {
+    const engagementTime = findValuesForDimensions(data?.rows, [daterange], 1);
+    const totalUsers = findValuesForDimensions(data?.rows, [daterange], 3);
+
+    return engagementTime?.map((et, index) => {
+      if (totalUsers[index] !== "0") {
+        return (+et / +totalUsers[index]).toString() ?? "0";
+      }
+
+      return "0";
+    });
+  };
+
   const dateChartLabels = useMemo(
     () => getDatesArray(startDate, endDate),
     [startDate, endDate]
   );
 
+  const getTooltipDataText = (source: string) => {
+    switch (type) {
+      case 1:
+        return source ? convertSecondsToMinutesAndSeconds(+source) : "0m 00s";
+
+      case 2:
+        return source ? `${Math.floor(+source * 100)}%` : "0%";
+
+      default:
+        return source ? source?.toLocaleString() : "0";
+    }
+  };
+
   const lastData = useMemo(() => {
-    const result = findValuesForDimensions(data?.rows, ["date_range_0"], type);
+    let result = findValuesForDimensions(data?.rows, ["date_range_0"], type);
+
+    // Calculate average engagement times
+    if (type === 1) {
+      result = getAverageEngagementTime("date_range_0");
+    }
+
     if (result.length === 1 || result.length === 2) {
       return [result.pop()];
     }
+
     return padArray(result, (endDate.diff(startDate, "days") + 1) * 2)?.slice(
       endDate.diff(startDate, "days") + 1
     );
   }, [data, type]);
 
   const priorData = useMemo(() => {
-    const result = shouldCompare
-      ? findValuesForDimensions(compareData?.rows, [], type)
-      : findValuesForDimensions(data?.rows, ["date_range_1"], type);
+    let result = findValuesForDimensions(data?.rows, ["date_range_1"], type);
+
+    // Calculate average engagement times
+    if (type === 1) {
+      result = getAverageEngagementTime("date_range_1");
+    }
+
+    if (shouldCompare) {
+      result = findValuesForDimensions(compareData?.rows, [], type);
+    }
 
     if (result?.length === 1 || result?.length === 2) {
       return [result[0]];
@@ -190,7 +233,7 @@ export const ByDayLineChart = ({
         {loading ? (
           <Skeleton variant="rectangular" width="147px" height="28px" />
         ) : (
-          <Typography variant="h5" fontWeight={600}>
+          <Typography variant="h5" fontWeight={700}>
             {typeLabelMap[type]} By Day
           </Typography>
         )}
@@ -220,20 +263,20 @@ export const ByDayLineChart = ({
             />
           </Box>
         ) : (
-          <ButtonGroup size="small">
+          <ButtonGroup size="small" sx={{ flexShrink: 0 }}>
             <Button
               variant={type === 0 ? "contained" : "outlined"}
               color="inherit"
               onClick={() => setType(0)}
             >
-              Sessions
+              Views
             </Button>
             <Button
               variant={type === 1 ? "contained" : "outlined"}
               color="inherit"
               onClick={() => setType(1)}
             >
-              Avg. Duration
+              Avg. Engagement Time
             </Button>
             <Button
               variant={type === 2 ? "contained" : "outlined"}
@@ -315,7 +358,14 @@ export const ByDayLineChart = ({
           </Box>
         </Box>
       ) : (
-        <Box position="relative" height="387px">
+        <Box
+          position="relative"
+          height="387px"
+          onMouseLeave={() => {
+            setIsTooltipEntered(false);
+            setTooltipModel(null);
+          }}
+        >
           <Line
             ref={chartRef}
             data={{
@@ -329,7 +379,9 @@ export const ByDayLineChart = ({
                   fill: false,
                   backgroundColor: theme.palette.success.main,
                   borderColor: "transparent",
-                  pointRadius: (ctx) => (ctx.raw === 0 ? 0 : 4),
+                  pointRadius: (ctx) =>
+                    itemPublishesByDayArray[ctx.dataIndex] ? 4 : 0,
+                  pointHoverRadius: 0,
                   datalabels: {
                     display: true,
                     color: theme.palette.text.disabled,
@@ -342,7 +394,7 @@ export const ByDayLineChart = ({
                     },
                     formatter: (value: any, ctx: any, ...rest) => {
                       if (
-                        value === 0 ||
+                        !itemPublishesByDayArray[ctx.dataIndex] ||
                         !itemPublishesByDayArray[ctx.dataIndex]?.version
                       )
                         return "";
@@ -359,6 +411,7 @@ export const ByDayLineChart = ({
                   backgroundColor: theme.palette.info.main,
                   borderColor: theme.palette.info.main,
                   pointRadius: lastData.length <= 2 ? 4 : 0,
+                  pointHitRadius: 3,
                   datalabels: {
                     display: false,
                   },
@@ -371,6 +424,7 @@ export const ByDayLineChart = ({
                   backgroundColor: theme.palette.grey[300],
                   borderColor: theme.palette.grey[300],
                   pointRadius: priorData.length <= 2 ? 4 : 0,
+                  pointHitRadius: 3,
                   datalabels: {
                     display: false,
                   },
@@ -378,8 +432,44 @@ export const ByDayLineChart = ({
                 },
               ],
             }}
-            plugins={[ChartDataLabels]}
+            plugins={[
+              ChartDataLabels,
+              {
+                id: "verticalLine",
+                afterDraw: (chart: {
+                  tooltip?: any;
+                  scales?: any;
+                  ctx?: any;
+                }) => {
+                  // eslint-disable-next-line no-underscore-dangle
+                  if (chart.tooltip._active && chart.tooltip._active.length) {
+                    // find coordinates of tooltip
+                    const activePoint = chart.tooltip._active[0];
+                    const { ctx } = chart;
+                    const { x } = activePoint.element;
+                    const topY = chart.scales.y.top;
+                    const bottomY = chart.scales.y.bottom;
+
+                    // draw vertical line
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(x, topY);
+                    ctx.lineTo(x, bottomY);
+                    ctx.setLineDash([4, 4]);
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = theme.palette.grey[300];
+                    ctx.stroke();
+                    ctx.restore();
+                  }
+                },
+              },
+            ]}
             options={{
+              hover: {
+                mode: "nearest",
+                axis: "x",
+                intersect: false,
+              },
               layout: {
                 padding: {
                   top: 16,
@@ -391,6 +481,9 @@ export const ByDayLineChart = ({
               plugins: {
                 tooltip: {
                   enabled: false,
+                  intersect: false,
+                  mode: "nearest",
+                  axis: "x",
                 },
                 legend: {
                   display: true,
@@ -488,8 +581,10 @@ export const ByDayLineChart = ({
               position: "absolute",
               top: tooltipModel?.y,
               left: tooltipModel?.x,
+              transform: "translate(-50%, -100%)",
               width: 258,
               zIndex: theme.zIndex.tooltip,
+              pointerEvents: "none",
             }}
             onMouseLeave={() => {
               setIsTooltipEntered(false);
@@ -518,8 +613,8 @@ export const ByDayLineChart = ({
                       .add(tooltipModel?.dataIndex, "days")
                       .format("ddd D MMM")}
               </Typography>
-              <Typography variant="h2" fontWeight={600}>
-                {lastData?.[tooltipModel?.dataIndex]?.toLocaleString()}
+              <Typography variant="h2" fontWeight={600} noWrap>
+                {getTooltipDataText(lastData?.[tooltipModel?.dataIndex])}
               </Typography>
               <Typography
                 variant="body3"
@@ -527,7 +622,7 @@ export const ByDayLineChart = ({
                 fontWeight={600}
                 sx={{ mt: 1 }}
               >
-                {priorData?.[tooltipModel?.dataIndex]?.toLocaleString() + " "}
+                {getTooltipDataText(priorData?.[tooltipModel?.dataIndex]) + " "}
                 <Typography
                   variant="body3"
                   color={
@@ -548,7 +643,7 @@ export const ByDayLineChart = ({
               </Typography>
               {itemPublishesByDayArray[tooltipModel?.dataIndex]?.version ? (
                 <Button
-                  sx={{ display: "block", mt: 1.5 }}
+                  sx={{ display: "block", mt: 1.5, pointerEvents: "auto" }}
                   size="small"
                   variant="contained"
                   color="inherit"

@@ -83,7 +83,7 @@ export const generateReportRequests = (
         ],
         metrics: [
           {
-            name: "sessions",
+            name: "screenPageViews",
           },
           {
             name: "averageSessionDuration",
@@ -93,6 +93,9 @@ export const generateReportRequests = (
           },
           {
             name: "conversions",
+          },
+          {
+            name: "userEngagementDuration",
           },
         ],
         dateRanges: [
@@ -247,7 +250,7 @@ export const generateReportRequests = (
             name: "sessions",
           },
           {
-            name: "averageSessionDuration",
+            name: "userEngagementDuration",
           },
           {
             name: "bounceRate",

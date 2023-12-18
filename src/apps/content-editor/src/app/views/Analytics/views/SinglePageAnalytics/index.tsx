@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Button,
   Box,
@@ -120,6 +120,75 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
   const isLoading =
     isFetching || instanceSettingsFetching || isFetchingCompare || loading;
 
+  const averageEngagementTime = useMemo(() => {
+    // TODO: calculate compared avg engagement time
+    // Get all user count
+    const dr0New =
+      +findValuesForDimensions(
+        totalUsersReport?.rows,
+        ["date_range_0", "new"],
+        0
+      ) ?? 0;
+    const dr0Returning =
+      +findValuesForDimensions(
+        totalUsersReport?.rows,
+        ["date_range_0", "returning"],
+        0
+      ) ?? 0;
+    const dr1New =
+      +findValuesForDimensions(
+        totalUsersReport?.rows,
+        ["date_range_1", "new"],
+        0
+      ) ?? 0;
+    const dr1Returning =
+      +findValuesForDimensions(
+        totalUsersReport?.rows,
+        ["date_range_1", "returning"],
+        0
+      ) ?? 0;
+    const comparedNew =
+      +findValuesForDimensions(comparedTotalUsersReport?.rows, ["new"], 0) ?? 0;
+    const comparedReturning =
+      +findValuesForDimensions(
+        comparedTotalUsersReport?.rows,
+        ["returning"],
+        0
+      ) ?? 0;
+    const dr0TotalUsers = dr0New + dr0Returning ?? 0;
+    const dr1TotalUsers = dr1New + dr1Returning ?? 0;
+    const comparedTotalUsers = comparedNew + comparedReturning ?? 0;
+
+    // Get total engagement time
+    const dr0EngagementTime =
+      +findValuesForDimensions(metricsReport?.rows, ["date_range_0"], 4) ?? 0;
+    const dr1EngagementTime =
+      +findValuesForDimensions(metricsReport?.rows, ["date_range_1"], 4) ?? 0;
+    const comparedEngagementTime =
+      +comparedMetricsReport?.rows?.[0].metricValues?.[4]?.value ?? 0;
+
+    // Calculate avg engagement time
+    const dr0AvgEngagementTime =
+      dr0TotalUsers !== 0 ? dr0EngagementTime / dr0TotalUsers : 0;
+    const dr1AvgEngagementTime =
+      dr1TotalUsers !== 0 ? dr1EngagementTime / dr1TotalUsers : 0;
+    const comparedAvgEngagementTime =
+      comparedTotalUsers !== 0
+        ? comparedEngagementTime / comparedTotalUsers
+        : 0;
+
+    return [
+      dr0AvgEngagementTime,
+      dr1AvgEngagementTime,
+      comparedAvgEngagementTime,
+    ];
+  }, [
+    metricsReport,
+    totalUsersReport,
+    comparedMetricsReport,
+    comparedTotalUsersReport,
+  ]);
+
   if (isError) {
     return (
       <NotFound
@@ -224,7 +293,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
         >
           <Metric
             loading={isLoading}
-            title="Sessions"
+            title="Views"
             value={
               +(
                 findValuesForDimensions(
@@ -245,34 +314,20 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                     ) || 0
                   )
             }
-            description="A session in Google Analytics is a period of time in which a user interacts with your website."
+            description="A pageview is defined as a view of a page on your site that is being tracked by the Analytics tracking code. If a user clicks reload after reaching the page or navigates to a different page and then returns to the original page, then this is counted as an additional page view."
           />
           <Divider orientation="vertical" flexItem />
           <Metric
             loading={isLoading}
-            title="Avg. Duration"
+            title="Average Engagement Time"
             formatter={convertSecondsToMinutesAndSeconds}
-            value={
-              +(
-                findValuesForDimensions(
-                  metricsReport?.rows,
-                  ["date_range_0"],
-                  1
-                ) || 0
-              )
-            }
+            value={averageEngagementTime[0]}
             priorValue={
               compareItemZUID
-                ? +comparedMetricsReport?.rows[0]?.metricValues?.[1]?.value || 0
-                : +(
-                    findValuesForDimensions(
-                      metricsReport?.rows,
-                      ["date_range_1"],
-                      1
-                    ) || 0
-                  )
+                ? averageEngagementTime[2] ?? 0
+                : averageEngagementTime[1]
             }
-            description="Session duration is the time frame during which there are users interactions occurring on the website."
+            description="Average engagement time is the average time that your website was in focus in a user's browser or a mobile app was in the foreground on a user's device."
           />
           <Divider orientation="vertical" flexItem />
           <Metric
@@ -347,12 +402,13 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
             />
           </Box>
         </Box>
-        <Box display="flex" mt={2.5} gap={2} bgcolor="background.paper">
+        <Box display="flex" mt={2.5} gap={2}>
           <Box
             width="40%"
             borderRadius={"8px"}
             p={2}
             border={(theme) => `1px solid ${theme.palette.border}`}
+            bgcolor="background.paper"
           >
             <UsersBarChart
               loading={isLoading}
