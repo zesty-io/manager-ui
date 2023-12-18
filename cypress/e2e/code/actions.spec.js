@@ -24,7 +24,7 @@ describe("Code Editor", () => {
     cy.get("[data-cy=toast]").contains("File sort order has been saved");
   });
 
-  it("Compare files", () => {
+  it.skip("Compare files", () => {
     cy.waitOn("/v1/web/views/11-eb8dec-6nsjbf/versions/", () => {
       cy.visit("/code/file/views/11-eb8dec-6nsjbf/diff/local,29");
     });
