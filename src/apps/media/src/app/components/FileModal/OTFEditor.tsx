@@ -18,6 +18,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RotateRightRoundedIcon from "@mui/icons-material/RotateRightRounded";
 import { FlipHorizontal, FlipVertical } from "@zesty-io/material";
 import BlurOnRoundedIcon from "@mui/icons-material/BlurOnRounded";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckIcon from "@mui/icons-material/Check";
 import { isEmpty, omitBy } from "lodash";
 
@@ -381,9 +382,20 @@ export const OTFEditor = ({
             },
           }}
         />
-        <Alert severity="info" sx={{ mt: 2 }}>
-          These changes will not be saved to the original file or file URL
-        </Alert>
+        <Stack
+          bgcolor="blue.100"
+          direction="row"
+          gap={1.5}
+          py={1.75}
+          px={2}
+          mt={1.5}
+          borderRadius={1}
+        >
+          <InfoOutlinedIcon fontSize="medium" color="info" />
+          <Typography color="info.dark" variant="body2">
+            These changes will not be saved to the original file or file URL
+          </Typography>
+        </Stack>
       </Box>
     </Box>
   );
