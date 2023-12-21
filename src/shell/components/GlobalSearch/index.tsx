@@ -451,8 +451,19 @@ export const GlobalSearch = () => {
               return;
             }
 
-            // string represents search term entered
             if (typeof newVal === "string") {
+              // The user has pressed enter while highlighting a search accelerator option
+              if (newVal === "SearchAccelerator") {
+                const isSearchAcceleratorSupportedApp =
+                  Object.keys(SEARCH_ACCELERATORS)?.includes(mainApp);
+
+                if (isSearchAcceleratorSupportedApp) {
+                  setChipSearchAccelerator(mainApp as ResourceType);
+                  return;
+                }
+              }
+
+              // The user has pressed enter while typing a query and has NOT highlighted any option
               if (AdditionalDropdownOptions.includes(newVal)) {
                 return;
               }
