@@ -623,7 +623,11 @@ export const GlobalSearch = () => {
                     }}
                     key={option}
                   >
-                    Recent Modified {types[chipSearchAccelerator]}
+                    Recently{" "}
+                    {chipSearchAccelerator === "media"
+                      ? "Uploaded"
+                      : "Modified"}{" "}
+                    {types[chipSearchAccelerator]}
                   </ListSubheader>
                 );
               }
