@@ -663,11 +663,7 @@ export const GlobalSearch = () => {
                 fullWidth
                 data-cy="global-search-textfield"
                 variant="outlined"
-                placeholder={
-                  Boolean(chipSearchAccelerator)
-                    ? ""
-                    : `Search Instance ${shortcutHelpText}`
-                }
+                placeholder={`Search Instance ${shortcutHelpText}`}
                 sx={{
                   height: "40px",
                   "& .Mui-focused": {
@@ -713,7 +709,7 @@ export const GlobalSearch = () => {
                   ...params.InputProps,
                   startAdornment: (
                     <InputAdornment position="start" sx={{ marginRight: 0 }}>
-                      {Boolean(chipSearchAccelerator) && open ? (
+                      {Boolean(chipSearchAccelerator) ? (
                         <Chip
                           data-cy={`active-global-search-accelerator-${chipSearchAccelerator}`}
                           variant="filled"
