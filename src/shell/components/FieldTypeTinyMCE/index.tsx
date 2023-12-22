@@ -187,7 +187,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           branding: false,
           menubar: false,
           statusbar: false,
-          object_resizing: true,
+          object_resizing: "table",
           block_formats:
             "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
           color_default_background: "none",
@@ -242,8 +242,21 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             "https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700",
           ],
 
-          content_style:
-            "body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 14px; } img { width: 100%; } h1, h2, h3, h4, h5, h6, strong { font-weight: 700; } span.mce-preview-object.mce-object-video { width: 100%; height: 100% } video { width: 100%; height: 100%; object-fill: fill; aspect-ratio: auto;}",
+          content_style: `body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 16px; }\ 
+            img { max-width: 100%; }\ 
+            h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }\ 
+            h1, h2, h3, h4, h5, h6 { margin-top: 0px; margin-bottom: 16px; }\ 
+            p, pre, blockquote { color: #475467; margin-top: 0px; margin-bottom: 16px; }\ 
+            h1 { font-size: 36px; line-height: 44px }\ 
+            h2 { font-size: 32px; line-height: 40px }\ 
+            h3 { font-size: 28px; line-height: 36px }\ 
+            h4 { font-size: 24px; line-height: 32px }\ 
+            h5 { font-size: 20px; line-height: 28px }\ 
+            h6 { font-size: 16px; line-height: 22px }\ 
+            p { font-size: 16px; line-height: 24px; }\ 
+            span.mce-preview-object.mce-object-video { width: 100%; height: 100% }\ 
+            video { width: 100%; height: 100%; object-fill: fill; aspect-ratio: auto;}\ 
+            #tinymce { margin: 16px }`,
 
           // Customize editor buttons and actions
           setup: (editor: any) => {
