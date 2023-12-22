@@ -11,14 +11,14 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
     },
     {
       text: "Video",
-      icon: "emoji",
+      icon: "embed",
       action: () => {
-        editor.execCommand("mceZestyMediaApp", false, "Video");
+        editor.execCommand("mceMedia", false);
       },
     },
     {
       text: "Paragraph",
-      icon: "p",
+      icon: "paragraph",
       action: () => {
         editor.execCommand("mceInsertContent", false, "<p>Paragraph</p>");
         editor.selection.select(editor.selection.getNode());
@@ -26,7 +26,7 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
     },
     {
       text: "Heading 1",
-      icon: "h1",
+      icon: "heading1",
       action: () => {
         editor.execCommand("mceInsertContent", false, "<h1>Heading 1</h1>");
         editor.selection.select(editor.selection.getNode());
@@ -34,7 +34,7 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
     },
     {
       text: "Heading 2",
-      icon: "h2",
+      icon: "heading2",
       action: () => {
         editor.execCommand("mceInsertContent", false, "<h2>Heading 2</h2>");
         editor.selection.select(editor.selection.getNode());
@@ -42,7 +42,7 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
     },
     {
       text: "Heading 3",
-      icon: "h3",
+      icon: "heading3",
       action: () => {
         editor.execCommand("mceInsertContent", false, "<h3>Heading 3</h3>");
         editor.selection.select(editor.selection.getNode());
@@ -50,7 +50,7 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
     },
     {
       text: "Heading 4",
-      icon: "h4",
+      icon: "heading4",
       action: () => {
         editor.execCommand("mceInsertContent", false, "<h4>Heading 4</h4>");
         editor.selection.select(editor.selection.getNode());
@@ -58,7 +58,7 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
     },
     {
       text: "Heading 5",
-      icon: "h5",
+      icon: "heading5",
       action: () => {
         editor.execCommand("mceInsertContent", false, "<h5>Heading 5</h5>");
         editor.selection.select(editor.selection.getNode());
@@ -66,7 +66,7 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
     },
     {
       text: "Heading 6",
-      icon: "h6",
+      icon: "heading6",
       action: () => {
         editor.execCommand("mceInsertContent", false, "<h6>Heading 6</h6>");
         editor.selection.select(editor.selection.getNode());
@@ -94,7 +94,7 @@ tinymce.PluginManager.add("slashcommands", (editor) => {
       },
     },
     {
-      text: "Embed",
+      text: "Embed Social Media",
       icon: "zesty-embed",
       action: () => {
         editor.execCommand("mceSocialMediaEmbed");
