@@ -57,27 +57,27 @@ describe("Actions in content editor", () => {
     cy.get("[data-cy=toast]").contains("Saved a new ");
   });
 
-  // TODO: get publishing working in Dev environment
-  it.skip("Publishes an item", () => {
-    cy.get("#PublishButton").click();
-    cy.contains("Published version", { timeout: 5000 }).should("exist");
-    cy.get("#PublishButton").should("be.disabled");
-    // TODO: fix race condition
-    // TODO: fix isScheduled/isPublished race condition so it never appears as isScheduled here
-    // cy.get("#PublishScheduleButton").should("be.disabled");
+  it("Publishes an item", () => {
+    cy.getBySelector("PublishButton").click();
+    cy.getBySelector("ConfirmPublishModal").should("exist");
+    cy.getBySelector("ConfirmPublishButton").click();
+
+    cy.intercept("GET", "**/publishings").as("publish");
+    cy.wait("@publish");
+
+    cy.getBySelector("ContentPublishedIndicator").should("exist");
   });
 
-  // TODO: get publishing working in Dev environment
-  it.skip("Unpublishes an item", () => {
-    // go to Content Tab
-    cy.get("[data-cy=SubApp]").click();
-    cy.get("article.Unpublish").click();
-    // TODO: fix race condition so unpublish will not be disabled
-    // cy.get("#UnpublishItemButton").should.not("be.disabled");
-    cy.get("#UnpublishItemButton").click({ force: true });
-    cy.contains("Unpublished Item", {
-      timeout: 5000,
-    }).should("exist");
+  it("Unpublishes an item", () => {
+    cy.getBySelector("ContentPublishedIndicator").should("exist");
+    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("UnpublishContentButton").click({ force: true });
+    cy.getBySelector("ConfirmUnpublishButton").click();
+
+    cy.intercept("GET", "**/publishings").as("publish");
+    cy.wait("@publish");
+
+    cy.getBySelector("PublishButton").should("exist");
   });
 
   // TODO: fix race condition so schedule publish will work
