@@ -180,6 +180,28 @@ export function Preview(props) {
     setAnchorEl(null);
   };
 
+  const handleOpenInNewTab = () => {
+    const newTab = window.open(
+      `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`,
+      "_blank"
+    );
+
+    if (newTab) {
+      newTab.addEventListener("load", () => {
+        newTab.postMessage(
+          {
+            source: "zesty",
+            route,
+            settings,
+            version,
+            dirty,
+          },
+          window.location.origin
+        );
+      });
+    }
+  };
+
   if (!domain) {
     return (
       <Box
@@ -341,12 +363,7 @@ export function Preview(props) {
             mr: 0.5,
           }}
           size="small"
-          onClick={() =>
-            window.open(
-              `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`,
-              "_blank"
-            )
-          }
+          onClick={handleOpenInNewTab}
         >
           <OpenInNewRounded />
         </IconButton>
