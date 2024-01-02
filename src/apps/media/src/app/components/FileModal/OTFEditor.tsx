@@ -18,6 +18,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RotateRightRoundedIcon from "@mui/icons-material/RotateRightRounded";
 import { FlipHorizontal, FlipVertical } from "@zesty-io/material";
 import BlurOnRoundedIcon from "@mui/icons-material/BlurOnRounded";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckIcon from "@mui/icons-material/Check";
 import { isEmpty, omitBy } from "lodash";
 

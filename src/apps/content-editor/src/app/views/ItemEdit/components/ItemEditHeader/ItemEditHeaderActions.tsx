@@ -17,6 +17,7 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
 import { useEffect, useState } from "react";
+
 import {
   ContentItem,
   Publishing,
@@ -42,6 +43,7 @@ import { ScheduleFlyout } from "../Header/ItemVersioning/ScheduleFlyout";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import { ContentItemWithDirtyAndPublishing } from ".";
+import { ConfirmPublishModal } from "./ConfirmPublishModal";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -72,6 +74,8 @@ export const ItemEditHeaderActions = ({
   const [scheduledPublishDialogOpen, setScheduledPublishDialogOpen] =
     useState(false);
   const [scheduleAfterSave, setScheduleAfterSave] = useState(false);
+  const [isConfirmPublishModalOpen, setIsConfirmPublishModalOpen] =
+    useState(false);
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
@@ -104,7 +108,7 @@ export const ItemEditHeaderActions = ({
       setPublishAfterSave(true);
       onSave();
     } else {
-      handlePublish();
+      setIsConfirmPublishModalOpen(true);
     }
   });
 
@@ -162,7 +166,7 @@ export const ItemEditHeaderActions = ({
       activePublishing?.version !== item?.meta.version &&
       !saving
     ) {
-      handlePublish();
+      setIsConfirmPublishModalOpen(true);
       setPublishAfterSave(false);
     }
   }, [item, publishAfterSave, saving, activePublishing]);
@@ -284,13 +288,14 @@ export const ItemEditHeaderActions = ({
                     setPublishAfterSave(true);
                     onSave();
                   } else {
-                    handlePublish();
+                    setIsConfirmPublishModalOpen(true);
                   }
                 }}
                 loading={publishing || publishAfterSave || isFetching}
                 color="success"
                 variant="contained"
                 id="PublishButton"
+                data-cy="PublishButton"
               >
                 {itemState === ITEM_STATES.dirty ? "Save & Publish" : "Publish"}
               </LoadingButton>
@@ -311,7 +316,13 @@ export const ItemEditHeaderActions = ({
               </Button>
             </ButtonGroup>
           ) : (
-            <Box display="flex" alignItems="center" pl="10px" pr="4px">
+            <Box
+              data-cy="ContentPublishedIndicator"
+              display="flex"
+              alignItems="center"
+              pl="10px"
+              pr="4px"
+            >
               <Box display="flex" gap={1} alignItems="center">
                 <CheckCircleRounded fontSize="small" color="success" />
                 <Typography
@@ -324,6 +335,7 @@ export const ItemEditHeaderActions = ({
                 </Typography>
               </Box>
               <IconButton
+                data-cy="PublishMenuButton"
                 size="small"
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);
@@ -389,7 +401,7 @@ export const ItemEditHeaderActions = ({
         setScheduleAfterSave={setScheduleAfterSave}
         setUnpublishDialogOpen={setUnpublishDialogOpen}
         setScheduledPublishDialogOpen={setScheduledPublishDialogOpen}
-        handlePublish={handlePublish}
+        handlePublish={() => setIsConfirmPublishModalOpen(true)}
       />
       {unpublishDialogOpen && (
         <UnpublishDialog
@@ -405,6 +417,16 @@ export const ItemEditHeaderActions = ({
         dispatch={dispatch}
         toggleOpen={() => setScheduledPublishDialogOpen(false)}
       />
+      {isConfirmPublishModalOpen && (
+        <ConfirmPublishModal
+          contentTitle={item?.web?.metaTitle}
+          onCancel={() => setIsConfirmPublishModalOpen(false)}
+          onConfirm={() => {
+            setIsConfirmPublishModalOpen(false);
+            handlePublish();
+          }}
+        />
+      )}
     </>
   );
 };
@@ -471,6 +493,9 @@ const PublishingMenu = ({
 
           onClose();
         }}
+        data-cy={
+          itemState === ITEM_STATES.published ? "UnpublishContentButton" : ""
+        }
       >
         <ListItemIcon>
           {itemState === ITEM_STATES.dirty ? (
