@@ -682,7 +682,7 @@ button::-moz-focus-inner {
 }
 .tox .tox-collection__item-checkmark svg,
 .tox .tox-collection__item-icon svg {
-  fill: currentColor;
+  fill: rgba(16, 24, 40, 0.56);
 }
 .tox .tox-collection--toolbar-lg .tox-collection__item-icon {
   height: 48px;
