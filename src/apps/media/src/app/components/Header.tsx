@@ -333,7 +333,7 @@ export const Header = ({
           <Stack
             direction="row"
             justifyContent="space-between"
-            alignItems="baseline"
+            alignItems="center"
           >
             <Stack gap={0.25}>
               {showBreadcrumbs && id && <MediaBreadcrumbs id={id} />}

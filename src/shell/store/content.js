@@ -860,8 +860,8 @@ function parsePublishState(records) {
       If `publishAt` is set but unpublishAt is not you only need to determine if `nowGMT` is after `publishAt`. a.k.a is it live
       If both `publishAt` and `unpublishAt` are set you need determine all 3 states.
     **/
-    const nowGMT = moment.utc();
-    const publishAtGMT = moment(record.publishAt);
+    const nowGMT = moment.utc().startOf("minute");
+    const publishAtGMT = moment(record.publishAt).startOf("minute");
     const unpublishAtGMT = moment(record.unpublishAt);
 
     // Current time is before publishAt so it is scheduled

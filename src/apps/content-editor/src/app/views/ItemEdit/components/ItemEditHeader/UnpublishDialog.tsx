@@ -55,6 +55,7 @@ export const UnpublishDialog = ({
           Cancel
         </Button>
         <LoadingButton
+          data-cy="ConfirmUnpublishButton"
           variant="contained"
           color="error"
           aria-label="Delete Button"
