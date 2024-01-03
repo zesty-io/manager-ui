@@ -287,6 +287,14 @@ export const GlobalSearch = () => {
     setMediaFolderKeyword(apiQueryTerm);
   }, [apiQueryTerm]);
 
+  useEffect(() => {
+    const paramsSearchKeyword = params?.get("q");
+
+    if (paramsSearchKeyword) {
+      setSearchKeyword(paramsSearchKeyword);
+    }
+  }, [params]);
+
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
     textfieldRef.current?.querySelector("input").focus();
