@@ -65,7 +65,10 @@ export default connect()(function MetaDescription({
         valueLength={meta_description?.length ?? 0}
         errors={
           error
-            ? { ...errors.metaDescription, CUSTOM_ERROR: error }
+            ? {
+                ...(errors?.metaDescription ? errors.metaDescription : {}),
+                CUSTOM_ERROR: error,
+              }
             : errors?.metaDescription
         }
       >
