@@ -287,6 +287,14 @@ export const GlobalSearch = () => {
     setMediaFolderKeyword(apiQueryTerm);
   }, [apiQueryTerm]);
 
+  useEffect(() => {
+    const paramsSearchKeyword = params?.get("q");
+
+    if (paramsSearchKeyword) {
+      setSearchKeyword(paramsSearchKeyword);
+    }
+  }, [params]);
+
   //@ts-ignore TODO fix typing for useMetaKey
   const shortcutHelpText = useMetaKey("k", () => {
     textfieldRef.current?.querySelector("input").focus();
@@ -451,8 +459,19 @@ export const GlobalSearch = () => {
               return;
             }
 
-            // string represents search term entered
             if (typeof newVal === "string") {
+              // The user has pressed enter while highlighting a search accelerator option
+              if (newVal === "SearchAccelerator") {
+                const isSearchAcceleratorSupportedApp =
+                  Object.keys(SEARCH_ACCELERATORS)?.includes(mainApp);
+
+                if (isSearchAcceleratorSupportedApp) {
+                  setChipSearchAccelerator(mainApp as ResourceType);
+                  return;
+                }
+              }
+
+              // The user has pressed enter while typing a query and has NOT highlighted any option
               if (AdditionalDropdownOptions.includes(newVal)) {
                 return;
               }
@@ -612,7 +631,11 @@ export const GlobalSearch = () => {
                     }}
                     key={option}
                   >
-                    Recent Modified {types[chipSearchAccelerator]}
+                    Recently{" "}
+                    {chipSearchAccelerator === "media"
+                      ? "Uploaded"
+                      : "Modified"}{" "}
+                    {types[chipSearchAccelerator]}
                   </ListSubheader>
                 );
               }
@@ -652,11 +675,7 @@ export const GlobalSearch = () => {
                 fullWidth
                 data-cy="global-search-textfield"
                 variant="outlined"
-                placeholder={
-                  Boolean(chipSearchAccelerator)
-                    ? ""
-                    : `Search Instance ${shortcutHelpText}`
-                }
+                placeholder={`Search Instance ${shortcutHelpText}`}
                 sx={{
                   height: "40px",
                   "& .Mui-focused": {
@@ -702,7 +721,7 @@ export const GlobalSearch = () => {
                   ...params.InputProps,
                   startAdornment: (
                     <InputAdornment position="start" sx={{ marginRight: 0 }}>
-                      {Boolean(chipSearchAccelerator) && open ? (
+                      {Boolean(chipSearchAccelerator) ? (
                         <Chip
                           data-cy={`active-global-search-accelerator-${chipSearchAccelerator}`}
                           variant="filled"

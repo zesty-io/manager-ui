@@ -341,7 +341,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             alignItems="center"
             justifyContent="space-between"
           >
-            <Typography variant="h5" fontWeight={600}>
+            <Typography variant="h5" fontWeight={700}>
               Advanced Search
             </Typography>
             <IconButton size="small" onClick={onClose}>
@@ -376,6 +376,40 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
                 value={searchData.keyword}
                 onChange={(e) => updateSearchData({ keyword: e.target.value })}
               />
+            </Box>
+            <Box>
+              <InputLabel>
+                Resource Type
+                <Tooltip
+                  placement="top"
+                  title="Use this filter when you want to only view search results for a single resource type such as a content item, model (schema), or code file."
+                >
+                  <InfoRoundedIcon
+                    sx={{ ml: 1, width: "12px", height: "12px" }}
+                    color="action"
+                  />
+                </Tooltip>
+              </InputLabel>
+              <Select
+                data-cy="AdvanceSearchResourceType"
+                displayEmpty
+                fullWidth
+                value={searchData.resourceType || ""}
+                onChange={(e) => {
+                  const { value } = e.target;
+
+                  updateSearchData({
+                    resourceType: value as ResourceType,
+                  });
+                }}
+              >
+                <MenuItem value="">Any Type</MenuItem>
+                {Object.entries(RESOURCE_TYPES).map(([value, text]) => (
+                  <MenuItem key={value} value={value}>
+                    {text}
+                  </MenuItem>
+                ))}
+              </Select>
             </Box>
             <Box>
               <InputLabel>
@@ -434,41 +468,7 @@ export const AdvancedSearch: FC<AdvancedSearch> = ({
             </Box>
             <Box>
               <InputLabel>
-                Resource Type
-                <Tooltip
-                  placement="top"
-                  title="Use this filter when you want to only view search results for a single resource type such as a content item, model (schema), or code file."
-                >
-                  <InfoRoundedIcon
-                    sx={{ ml: 1, width: "12px", height: "12px" }}
-                    color="action"
-                  />
-                </Tooltip>
-              </InputLabel>
-              <Select
-                data-cy="AdvanceSearchResourceType"
-                displayEmpty
-                fullWidth
-                value={searchData.resourceType || ""}
-                onChange={(e) => {
-                  const { value } = e.target;
-
-                  updateSearchData({
-                    resourceType: value as ResourceType,
-                  });
-                }}
-              >
-                <MenuItem value="">Any Type</MenuItem>
-                {Object.entries(RESOURCE_TYPES).map(([value, text]) => (
-                  <MenuItem key={value} value={value}>
-                    {text}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
-            <Box>
-              <InputLabel>
-                Date
+                Date Modified
                 <Tooltip
                   placement="top"
                   title="Select the date range for which you want to see results for."

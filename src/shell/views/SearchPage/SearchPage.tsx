@@ -306,7 +306,7 @@ export const SearchPage: FC = () => {
             backgroundColor: "background.paper",
           }}
         >
-          <Typography variant="h6" color="text.primary">
+          <Typography variant="h6" color="text.primary" fontWeight={700}>
             {isLoading ? (
               <Skeleton variant="text" width={200} />
             ) : (
