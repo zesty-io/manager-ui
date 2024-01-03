@@ -1,7 +1,14 @@
-import { ComponentType, useEffect, useState, useRef } from "react";
+import {
+  ComponentType,
+  useEffect,
+  useState,
+  useRef,
+  forwardRef,
+  MutableRefObject,
+} from "react";
 
-export const withCursorPosition =
-  (WrappedComponent: ComponentType) => (props: any) => {
+export const withCursorPosition = (WrappedComponent: ComponentType) =>
+  forwardRef((props: any, ref: MutableRefObject<any>) => {
     const [cursorPosition, setCursorPosition] = useState<number>(0);
     const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -18,8 +25,9 @@ export const withCursorPosition =
     return (
       <WrappedComponent
         {...props}
+        ref={ref}
         inputRef={inputRef}
         onChange={handleChange}
       />
     );
-  };
+  });

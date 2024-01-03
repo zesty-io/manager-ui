@@ -58,6 +58,7 @@ export const ConfirmPublishModal = ({
           Cancel
         </Button>
         <Button
+          autoFocus
           variant="contained"
           color="success"
           sx={{ color: "common.white" }}
