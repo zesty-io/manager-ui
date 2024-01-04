@@ -144,6 +144,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             }
           }
         }}
+        onObjectResized={(evt) => {
+          evt.target.src = `${evt.target.currentSrc}?width=${evt.width}&height=${evt.height}`
+        }}
         init={{
           plugins: [
             "advlist",
@@ -187,7 +190,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           branding: false,
           menubar: false,
           statusbar: false,
-          object_resizing: "table",
+          object_resizing: true,
           block_formats:
             "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquoute=blockquote; Preformatted=pre",
           color_default_background: "none",
