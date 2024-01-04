@@ -12,7 +12,6 @@ import "tinymce/themes/silver";
 // Toolbar icons
 import "tinymce/icons/default";
 // Editor styles
-// import "tinymce/skins/ui/oxide/skin.min.css";
 import "tinymce/skins/ui/tinymce-5/skin.min.css";
 
 // importing the plugin js.
@@ -195,7 +194,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               searchreplace code help | \
               fullscreen",
           contextmenu: "bold italic link | copy paste",
-          toolbar_mode: "sliding",
+          toolbar_mode: "wrap",
           relative_urls: false,
           branding: false,
           menubar: false,
