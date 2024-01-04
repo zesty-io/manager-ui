@@ -145,7 +145,17 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           }
         }}
         onObjectResized={(evt) => {
-          evt.target.src = `${evt.target.currentSrc}?width=${evt.width}&height=${evt.height}`
+          const currentValue = tinymce?.activeEditor?.getContent() ?? "";
+          const newImageUrl = `${
+            evt.target.currentSrc?.split("?")?.[0]
+          }?width=${evt.width}&height=${evt.height}`;
+
+          tinymce?.activeEditor?.setContent(
+            currentValue.replace(
+              evt.target.currentSrc?.replaceAll("&", "&amp;"),
+              newImageUrl
+            )
+          );
         }}
         init={{
           plugins: [
