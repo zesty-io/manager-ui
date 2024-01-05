@@ -34,6 +34,7 @@ import "tinymce/plugins/table";
 import "tinymce/plugins/wordcount";
 import "./plugins/slashcommands";
 import "./plugins/socialmediaembed";
+import "./plugins/imageresizer";
 
 // importing plugin resources
 import "tinymce/plugins/emoticons/js/emojis";
@@ -180,6 +181,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             "wordcount",
             "slashcommands",
             "socialmediaembed",
+            "imageresizer",
           ],
 
           // NOTE: premium plugins are being loaded from a self hosted location
