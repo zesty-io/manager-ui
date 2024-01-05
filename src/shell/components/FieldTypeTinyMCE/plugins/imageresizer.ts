@@ -28,7 +28,6 @@ tinymce.PluginManager.add("imageresizer", (editor) => {
             type: "sizeinput",
             name: "dimensions",
             label: "Constrain proportions",
-            constrain: true,
           },
         ],
       },
@@ -39,11 +38,39 @@ tinymce.PluginManager.add("imageresizer", (editor) => {
           primary: true,
         },
       ],
-      onChange(api, details) {
-        console.log(api.getData());
-        console.log(details);
+      onSubmit(api) {
+        const { width, height } = api.getData()?.dimensions;
+        const currentValue = tinymce?.activeEditor?.getContent() ?? "";
+        const clonedCurrentNode = <HTMLImageElement>currentNode.cloneNode();
+
+        // Remove attributes that are not included in the editor value to make replacing easier
+        clonedCurrentNode.removeAttribute("data-mce-src");
+        clonedCurrentNode.removeAttribute("data-mce-selected");
+
+        const newImageNode = <HTMLImageElement>clonedCurrentNode.cloneNode();
+
+        // Replace the image's width and height
+        newImageNode.src = `${newImageNode.src.split("?")?.[0]}?width=${width}`;
+        newImageNode.width = Number(width);
+        newImageNode.height = Number(height);
+
+        // Update the content with the new image data
+        tinymce?.activeEditor?.setContent(
+          currentValue.replace(
+            clonedCurrentNode.outerHTML?.replaceAll("&", "&amp;"),
+            newImageNode.outerHTML
+          )
+        );
+
+        api.close();
       },
     });
+
+    // HACK: Prevents the input field from being autofocused when dialog opens
+    document
+      .querySelector(".tox-dialog__body-content input.tox-textfield")
+      // @ts-ignore
+      .blur();
   };
 
   // imageresizer context toolbar
