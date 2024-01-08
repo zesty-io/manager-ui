@@ -50,14 +50,21 @@ tinymce.PluginManager.add("imageresizer", (editor) => {
         const newImageNode = <HTMLImageElement>clonedCurrentNode.cloneNode();
 
         // Replace the image's width and height
-        newImageNode.src = `${newImageNode.src.split("?")?.[0]}?width=${width}`;
+        newImageNode.src = `${
+          newImageNode.src.split("?")?.[0]
+        }?width=${width}&height=${height}`;
         newImageNode.width = Number(width);
         newImageNode.height = Number(height);
+
+        console.log(currentValue);
+        console.log(
+          clonedCurrentNode.outerHTML?.replaceAll(/&(?!amp;)/g, "&amp;")
+        );
 
         // Update the content with the new image data
         tinymce?.activeEditor?.setContent(
           currentValue.replace(
-            clonedCurrentNode.outerHTML?.replaceAll("&", "&amp;"),
+            clonedCurrentNode.outerHTML?.replaceAll(/&(?!amp;)/g, "&amp;"),
             newImageNode.outerHTML
           )
         );

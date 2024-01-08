@@ -149,15 +149,29 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             return;
           }
 
-          const currentValue = tinymce?.activeEditor?.getContent() ?? "";
-          const newImageUrl = `${
-            evt.target.currentSrc?.split("?")?.[0]
-          }?width=${evt.width}`;
+          const clonedCurrentNode = evt.target.cloneNode();
 
+          // Remove attributes that are not included in the editor value to make replacing easier
+          clonedCurrentNode.removeAttribute("data-mce-src");
+          clonedCurrentNode.removeAttribute("data-mce-selected");
+
+          const newImageNode = clonedCurrentNode.cloneNode();
+
+          // Replace the image's width and height
+          newImageNode.src = `${newImageNode.src.split("?")?.[0]}?width=${
+            evt.width
+          }`;
+          newImageNode.width = Number(evt.width);
+          // We want the width to automatically be set to preserve the image proportions
+          newImageNode.removeAttribute("height");
+
+          const currentValue = tinymce?.activeEditor?.getContent() ?? "";
+
+          // Update the content with the new image data
           tinymce?.activeEditor?.setContent(
             currentValue.replace(
-              evt.target.currentSrc?.replaceAll("&", "&amp;"),
-              newImageUrl
+              clonedCurrentNode.outerHTML?.replaceAll("&", "&amp;"),
+              newImageNode.outerHTML
             )
           );
         }}
@@ -261,7 +275,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           ],
 
           content_style: `body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 16px; }\ 
-            img { max-width: 100%; height: auto; }\ 
+            img { max-width: 100%; }\ 
             h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }\ 
             h1, h2, h3, h4, h5, h6 { margin-top: 0px; margin-bottom: 16px; }\ 
             p, pre, blockquote { color: #475467; margin-top: 0px; margin-bottom: 16px; }\ 
