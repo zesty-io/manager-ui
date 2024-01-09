@@ -208,7 +208,6 @@ export const ItemCreate = () => {
             break;
 
           case "publishAddNew":
-            console.log("testing here", res.data.ZUID);
             // Publish but stay on page
             handlePublish(res.data.ZUID);
             setWillRedirect(false);
