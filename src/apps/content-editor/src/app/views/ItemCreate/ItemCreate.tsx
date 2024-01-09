@@ -260,7 +260,7 @@ export const ItemCreate = () => {
       },
     }).then(() => {
       // Retain non rtk-query fetch of item publishing for legacy code
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
+      dispatch(fetchItemPublishing(modelZUID, newItemZUID));
     });
   };
 
