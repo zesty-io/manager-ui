@@ -77,8 +77,9 @@ export type ContentItemWithDirtyAndPublishing = ContentItem & {
 type HeaderProps = {
   saving: boolean;
   onSave: () => void;
+  hasError: boolean;
 };
-export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
+export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -164,7 +165,11 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
                 <ContentCopyRounded fontSize="small" />
               </IconButton>
               {type !== "dataset" && <PreviewMenu />}
-              <ItemEditHeaderActions saving={saving} onSave={onSave} />
+              <ItemEditHeaderActions
+                saving={saving}
+                onSave={onSave}
+                hasError={hasError}
+              />
             </Box>
           </Box>
           <Box

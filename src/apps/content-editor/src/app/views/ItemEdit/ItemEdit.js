@@ -352,7 +352,11 @@ export default function ItemEdit() {
               component="section"
               sx={{ display: "flex", flexDirection: "column", height: "100%" }}
             >
-              <ItemEditHeader onSave={save} saving={saving} />
+              <ItemEditHeader
+                onSave={save}
+                saving={saving}
+                hasError={Object.keys(fieldErrors)?.length}
+              />
               <Switch>
                 <Route
                   exact
