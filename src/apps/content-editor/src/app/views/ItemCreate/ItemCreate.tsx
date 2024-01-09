@@ -208,6 +208,7 @@ export const ItemCreate = () => {
             break;
 
           case "publishAddNew":
+            console.log("testing here", res.data.ZUID);
             // Publish but stay on page
             handlePublish(res.data.ZUID);
             setWillRedirect(false);
@@ -260,7 +261,7 @@ export const ItemCreate = () => {
       },
     }).then(() => {
       // Retain non rtk-query fetch of item publishing for legacy code
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
+      dispatch(fetchItemPublishing(modelZUID, newItemZUID));
     });
   };
 
