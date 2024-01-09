@@ -274,7 +274,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             "https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700",
           ],
 
-          content_style: `body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 16px; }\ 
+          content_style: `
+            html { justify-content: center }\ 
+            body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 16px; }\ 
             img { max-width: 100%; }\ 
             h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }\ 
             h1, h2, h3, h4, h5, h6 { margin-top: 0px; margin-bottom: 16px; }\ 
@@ -292,6 +294,17 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
           // Customize editor buttons and actions
           setup: (editor: any) => {
+            // Limits the content width to 640px when in fullscreen
+            editor.on("FullscreenStateChanged", (evt: any) => {
+              if (evt.state) {
+                editor.contentDocument.documentElement.style.display = "flex";
+                editor.contentDocument.body.style.width = "640px";
+              } else {
+                editor.contentDocument.documentElement.style.display = "block";
+                editor.contentDocument.body.style.width = "auto";
+              }
+            });
+
             /**
              * Handle save key command
              */
