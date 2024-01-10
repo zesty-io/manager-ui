@@ -11,16 +11,6 @@ export const MetaLinkText = memo(function MetaLinkText({
   onChange,
   errors,
 }) {
-  const [value, setValue] = useState(meta_link_text);
-
-  useDebounce(
-    () => {
-      onChange(value, "metaLinkText");
-    },
-    250,
-    [value]
-  );
-
   return (
     <article className={styles.MetaLinkText} data-cy="metaLinkText">
       <FieldShell
@@ -38,9 +28,9 @@ export const MetaLinkText = memo(function MetaLinkText({
       >
         <TextField
           name="metaLinkText"
-          value={value}
+          value={meta_link_text}
           placeholder={"This text is used in application navigation"}
-          onChange={(evt) => setValue(evt.target.value)}
+          onChange={(evt) => onChange(evt.target.value, "metaLinkText")}
         />
       </FieldShell>
     </article>
