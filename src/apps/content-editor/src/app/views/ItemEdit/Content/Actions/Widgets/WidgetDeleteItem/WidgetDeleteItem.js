@@ -29,7 +29,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
 
   return (
     <>
-      <Card sx={{ mx: 2, mb: 3, backgroundColor: "transparent" }} elevation={0}>
+      <Card sx={{ mb: 3, backgroundColor: "transparent" }} elevation={0}>
         <CardHeader
           sx={{
             p: 0,
