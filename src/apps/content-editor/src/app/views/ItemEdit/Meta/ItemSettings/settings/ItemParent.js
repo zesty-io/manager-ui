@@ -28,7 +28,7 @@ export const ItemParent = connect((state) => {
       });
 
       const [parents, setParents] = useState(
-        parentOptions(props.currentItemLangID, props.path, items, "useState")
+        parentOptions(props.currentItemLangID, props.path, items)
       );
 
       const onSearch = debounce((term) => {
