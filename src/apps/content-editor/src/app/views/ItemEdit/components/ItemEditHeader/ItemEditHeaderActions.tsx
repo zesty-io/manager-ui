@@ -55,11 +55,13 @@ const ITEM_STATES = {
 type ItemEditHeaderActionsProps = {
   saving: boolean;
   onSave: () => void;
+  hasError: boolean;
 };
 
 export const ItemEditHeaderActions = ({
   saving,
   onSave,
+  hasError,
 }: ItemEditHeaderActionsProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -182,6 +184,12 @@ export const ItemEditHeaderActions = ({
       setScheduleAfterSave(false);
     }
   }, [item, scheduleAfterSave, saving, activePublishing]);
+
+  useEffect(() => {
+    if (!saving && hasError) {
+      setPublishAfterSave(false);
+    }
+  }, [hasError, saving]);
 
   return (
     <>

@@ -97,7 +97,6 @@ let customTheme = createTheme(legacyTheme, {
 
 export default function ContentEditor() {
   const navContent = useSelector((state) => state.navContent);
-  const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(true);
@@ -130,15 +129,7 @@ export default function ContentEditor() {
               </AppLink>
             </div>
           ) : (
-            <section
-              className={cx(
-                styles.ContentEditor,
-                ui.contentNav ? styles.ContentGridOpen : "",
-                ui.contentNavHover && !ui.contentNav
-                  ? styles.ContentGridHover
-                  : ""
-              )}
-            >
+            <section className={cx(styles.ContentEditor)}>
               <ResizableContainer
                 id="contentNav"
                 defaultWidth={220}
@@ -147,12 +138,7 @@ export default function ContentEditor() {
               >
                 <ContentNav />
               </ResizableContainer>
-              <div
-                className={cx(
-                  styles.Content,
-                  ui.openNav ? styles.GlobalOpen : styles.GlobalClosed
-                )}
-              >
+              <div className={cx(styles.Content)}>
                 <div className={styles.ContentWrap}>
                   <Switch>
                     {/* <Route path="/content/releases" component={ReleaseApp} /> */}
