@@ -53,7 +53,6 @@ export default memo(function GlobalTabs() {
   const { data: models } = useGetContentModelsQuery();
   const apps = useSelector((state: AppState) => state.apps.installed);
 
-  const content = useSelector((state: AppState) => state.content);
   const files = useSelector((state: AppState) => state.files);
   const users = useSelector((state: AppState) => state.users);
   const [tabBarWidth, setTabBarWidth] = useState(0);
@@ -95,7 +94,7 @@ export default memo(function GlobalTabs() {
     if (loadedTabs) {
       dispatch(rebuildTabs(queryData));
     }
-  }, [loadedTabs, models, content, files, queryData, apps, users]);
+  }, [loadedTabs, models, files, queryData, apps, users]);
 
   useEffect(() => {
     setTabs(pinnedTabs);

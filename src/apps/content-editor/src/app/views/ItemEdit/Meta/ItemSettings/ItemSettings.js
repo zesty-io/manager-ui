@@ -83,7 +83,6 @@ export const ItemSettings = memo(
               <ItemParent
                 itemZUID={meta.ZUID}
                 modelZUID={props.modelZUID}
-                content={props.content}
                 parentZUID={web.parentZUID}
                 path={web.path}
                 onChange={onChange}
