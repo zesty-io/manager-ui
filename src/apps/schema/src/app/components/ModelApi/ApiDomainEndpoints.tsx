@@ -34,9 +34,7 @@ export const ApiDomainEndpoints = ({ type }: Props) => {
     "quick-access": `/-/instant/${
       contentItemZUID ? contentItemZUID : contentModelZUID
     }.json`,
-    "site-generators": itemData
-      ? `/${itemData?.web?.pathPart}/?toJSON`
-      : "/?toJSON",
+    "site-generators": itemData ? `${itemData?.web?.path}?toJSON` : "/?toJSON",
     graphql: `/-/gql/${modelData?.name}.json`,
     "backend-coding": `https://${
       instance.ZUID
