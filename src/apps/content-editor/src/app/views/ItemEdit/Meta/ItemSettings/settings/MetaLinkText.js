@@ -1,4 +1,5 @@
-import { memo } from "react";
+import { memo, useState } from "react";
+import { useDebounce } from "react-use";
 
 import { TextField } from "@mui/material";
 import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
@@ -10,6 +11,16 @@ export const MetaLinkText = memo(function MetaLinkText({
   onChange,
   errors,
 }) {
+  const [value, setValue] = useState(meta_link_text);
+
+  useDebounce(
+    () => {
+      onChange(value, "metaLinkText");
+    },
+    250,
+    [value]
+  );
+
   return (
     <article className={styles.MetaLinkText} data-cy="metaLinkText">
       <FieldShell
@@ -27,9 +38,9 @@ export const MetaLinkText = memo(function MetaLinkText({
       >
         <TextField
           name="metaLinkText"
-          value={meta_link_text}
+          value={value}
           placeholder={"This text is used in application navigation"}
-          onChange={(evt) => onChange(evt.target.value, "metaLinkText")}
+          onChange={(evt) => setValue(evt.target.value)}
         />
       </FieldShell>
     </article>
