@@ -48,6 +48,7 @@ type FieldTypeMediaProps = {
   onChange: (value: string, name: string) => void;
   hasError?: boolean;
   hideDrag?: boolean;
+  lockedToGroupId: string | null;
 };
 
 export const FieldTypeMedia = ({
@@ -58,6 +59,7 @@ export const FieldTypeMedia = ({
   name,
   hasError,
   hideDrag,
+  lockedToGroupId,
 }: FieldTypeMediaProps) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -125,7 +127,7 @@ export const FieldTypeMedia = ({
             return {
               file,
               bin_id: defaultBin.id,
-              group_id: defaultBin.id,
+              group_id: lockedToGroupId ? lockedToGroupId : defaultBin.id,
             };
           })
         )
