@@ -278,7 +278,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           content_style: `
             html { justify-content: center }\ 
             body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 16px; }\ 
-            img { max-width: 100%; }\ 
+            img { max-width: 100%; height: auto}\ 
             h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }\ 
             h1, h2, h3, h4, h5, h6 { margin-top: 0px; margin-bottom: 16px; }\ 
             p, pre, blockquote { color: #475467; margin-top: 0px; margin-bottom: 16px; }\ 
