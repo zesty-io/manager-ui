@@ -461,6 +461,11 @@ export const Field = ({
               }}
               name={name}
               onChange={onChange}
+              lockedToGroupId={
+                settings?.group_id && settings?.group_id !== "0"
+                  ? settings.group_id
+                  : null
+              }
             />
           </FieldShell>
           {imageModal && (
