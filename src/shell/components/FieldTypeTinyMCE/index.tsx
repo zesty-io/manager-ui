@@ -208,10 +208,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               bold italic underline backcolor | \
               zestyMediaApp media link socialmediaembed table | \
               align bullist numlist outdent indent | \
+              searchreplace | \
               superscript subscript strikethrough removeformat | \
               codesample insertdatetime charmap emoticons | \
               undo redo | \
-              searchreplace code help | \
+              code help | \
               fullscreen",
           contextmenu: "bold italic link | copy paste",
           toolbar_mode: "wrap",
