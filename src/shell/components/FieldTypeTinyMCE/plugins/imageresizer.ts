@@ -56,11 +56,6 @@ tinymce.PluginManager.add("imageresizer", (editor) => {
         newImageNode.width = Number(width);
         newImageNode.height = Number(height);
 
-        console.log(currentValue);
-        console.log(
-          clonedCurrentNode.outerHTML?.replaceAll(/&(?!amp;)/g, "&amp;")
-        );
-
         // Update the content with the new image data
         tinymce?.activeEditor?.setContent(
           currentValue.replace(
