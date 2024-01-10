@@ -1,6 +1,6 @@
 import { memo, Fragment, useState, useEffect } from "react";
-import { connect } from "react-redux";
-import debounce from "lodash/debounce";
+import { connect, useSelector } from "react-redux";
+import { debounce, uniqBy } from "lodash";
 import { notify } from "shell/store/notifications";
 
 import { Select, Option } from "@zesty-io/core/Select";
@@ -18,6 +18,7 @@ export const ItemParent = connect((state) => {
 })(
   memo(
     function ItemParent(props) {
+      const items = useSelector((state) => state.content);
       const [loading, setLoading] = useState(false);
       const [parent, setParent] = useState({
         meta: {
@@ -27,7 +28,7 @@ export const ItemParent = connect((state) => {
       });
 
       const [parents, setParents] = useState(
-        parentOptions(props.currentItemLangID, props.path, props.content)
+        parentOptions(props.currentItemLangID, props.path, items)
       );
 
       const onSearch = debounce((term) => {
@@ -37,7 +38,7 @@ export const ItemParent = connect((state) => {
             setLoading(false);
             setParents(
               parentOptions(props.currentItemLangID, props.path, {
-                ...props.content,
+                ...items,
                 ...res?.data,
               })
             );
@@ -89,7 +90,7 @@ export const ItemParent = connect((state) => {
 
         // Try to preselect parent
         if (parentZUID && parentZUID != "0" && parentZUID !== null) {
-          const item = props.content[parentZUID];
+          const item = items[parentZUID];
           if (item && item.meta && item.meta.ZUID && item.meta.path) {
             setParent(item);
           } else {
@@ -108,7 +109,7 @@ export const ItemParent = connect((state) => {
                      */
                     setParents(
                       parentOptions(props.currentItemLangID, props.path, {
-                        ...props.content,
+                        ...items,
                         [res.data[0].meta.ZUID]: res.data[0],
                       })
                     );
@@ -177,7 +178,7 @@ export const ItemParent = connect((state) => {
                     </Fragment>
                   }
                 />
-                {parents.map((item) => (
+                {parents?.map((item) => (
                   <Option
                     key={item.value}
                     value={item.value}
@@ -203,60 +204,39 @@ export const ItemParent = connect((state) => {
         }
       });
 
-      let prevItemsLen = Object.keys(prevProps["content"]).length;
-      let nextItemsLen = Object.keys(nextProps["content"]).length;
-
-      // Compare content length to see if new ones where added
-      if (prevItemsLen !== nextItemsLen) {
-        isEqual = false;
-      }
-
       return isEqual;
     }
   )
 );
 
 function parentOptions(currentItemLangID, path, items) {
-  return (
-    Object.keys(items)
-      // Filter items into list of zuids
-      .filter(
-        (itemZUID) =>
-          itemZUID.slice(0, 3) !== "new" && // Exclude new items
-          items[itemZUID].meta &&
-          items[itemZUID].meta.ZUID && // must have a ZUID
-          items[itemZUID].web &&
-          items[itemZUID].web.path && // must have a path
-          items[itemZUID].web.path !== "/" && // Exclude homepage
-          items[itemZUID].web.path !== path && // Exclude current item
-          items[itemZUID].meta.langID === currentItemLangID // display only relevant language options
-      )
-      // De-dupe list of zuids & convert to item objects
-      .reduce((acc, zuid) => {
-        let exists = acc.find((el) => el.meta.ZUID === zuid);
+  const options = Object.entries(items)
+    ?.reduce((acc, [itemZUID, itemData]) => {
+      if (
+        itemZUID.slice(0, 3) !== "new" && // Exclude new items
+        itemData?.meta?.ZUID && // must have a ZUID
+        itemData?.web?.path && // must have a path
+        itemData?.web.path !== "/" && // Exclude homepage
+        itemData?.web.path !== path && // Exclude current item
+        itemData?.meta?.langID === currentItemLangID // display only relevant language options
+      ) {
+        acc.push({
+          value: itemZUID,
+          text: itemData.web.path,
+        });
+      }
 
-        if (!exists) {
-          acc.push(items[zuid]);
-        }
+      return acc;
+    }, [])
+    .sort((a, b) => {
+      if (a.text > b.text) {
+        return 1;
+      } else if (a.text < b.text) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
 
-        return acc;
-      }, [])
-      // Convert items to options object
-      .map((item) => {
-        return {
-          value: item.meta.ZUID,
-          text: item.web.path,
-        };
-      })
-      // Put items in alphabetical descending order
-      .sort((a, b) => {
-        if (a.text > b.text) {
-          return 1;
-        } else if (a.text < b.text) {
-          return -1;
-        } else {
-          return 0;
-        }
-      })
-  );
+  return uniqBy(options, "value");
 }
