@@ -31,6 +31,8 @@ export const ResizableContainer = ({
   const [isResizing, setIsResizing] = useState(false);
   const [initialPos, setInitialPos] = useState(0);
   const [initialWidth, setInitialWidth] = useState(0);
+  const [isHoveringCollapseButton, setIsHoveringCollapseButton] =
+    useState(false);
   const [width, setWidth] = useLocalStorage(
     `zesty:resizableContainer:${id}`,
     defaultWidth
@@ -113,7 +115,7 @@ export const ResizableContainer = ({
           placement="right-start"
           enterDelay={1000}
           enterNextDelay={1000}
-          open={isTooltipOpen}
+          open={isTooltipOpen && isHoveringCollapseButton}
           onOpen={() => setIsTooltipOpen(true)}
           onClose={() => setIsTooltipOpen(false)}
         >
@@ -122,7 +124,9 @@ export const ResizableContainer = ({
             onClick={() => {
               setIsTooltipOpen(false);
               setCollapsed(!collapsed);
+              setIsHoveringCollapseButton(false);
             }}
+            onMouseOver={() => setIsHoveringCollapseButton(true)}
             sx={{
               borderRadius: "50%",
               borderColor: "grey.600",

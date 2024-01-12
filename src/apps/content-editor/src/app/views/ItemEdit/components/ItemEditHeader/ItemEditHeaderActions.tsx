@@ -252,8 +252,14 @@ export const ItemEditHeaderActions = ({
               </div>
             ) : (
               <div>
-                v{activePublishing?.version} published on <br />
-                by {formatDate(activePublishing?.publishAt)} <br />
+                v{activePublishing?.version} published{" "}
+                {formatDate(activePublishing?.publishAt).includes("Today") ||
+                formatDate(activePublishing?.publishAt).includes("Yesterday")
+                  ? ""
+                  : "on"}
+                <br />
+                {formatDate(activePublishing?.publishAt)} <br />
+                by{" "}
                 {
                   users?.find(
                     (user: any) =>
