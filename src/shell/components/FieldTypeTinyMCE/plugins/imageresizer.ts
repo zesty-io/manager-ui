@@ -68,22 +68,29 @@ tinymce.PluginManager.add("imageresizer", (editor) => {
       },
     });
 
+    const dialogEl = document.querySelector(".tox-dialog");
+
     // HACK: Prevents the input field from being autofocused when dialog opens
     document
       .querySelector(".tox-dialog__body-content input.tox-textfield")
       // @ts-ignore
       .blur();
 
-    document
-      .querySelector(".tox-dialog")
-      ?.addEventListener("keydown", (evt: KeyboardEvent) => {
-        console.log(evt.key);
-        if (evt.key.toLowerCase() === "enter") {
-          document
-            .querySelector<HTMLButtonElement>('button.tox-button[title="Save"')
-            ?.click();
-        }
-      });
+    // HACK: Enable save on enter
+    dialogEl?.addEventListener("keydown", (evt: KeyboardEvent) => {
+      if (evt.key.toLowerCase() === "enter") {
+        document
+          .querySelector<HTMLButtonElement>('button.tox-button[title="Save"')
+          ?.click();
+      }
+    });
+
+    // HACK: Change all input fields to type="number"
+    const inputFields = dialogEl?.querySelectorAll(".tox-textfield");
+
+    if (inputFields?.length) {
+      inputFields.forEach((field) => field?.setAttribute("type", "number"));
+    }
   };
 
   // imageresizer context toolbar
