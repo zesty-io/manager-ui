@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import { Box, alpha } from "@mui/material";
+import { Box, alpha, Skeleton } from "@mui/material";
 import { theme } from "@zesty-io/material";
 
 // TinyMCE so the global var exists
@@ -71,11 +71,21 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 }: FieldTypeTinyMCEProps) {
   // NOTE: controlled component
   const [initialValue, setInitialValue] = useState(value);
+  const [isSkinLoaded, setIsSkinLoaded] = useState(false);
+  const editor = useRef(null);
 
   // NOTE: update if version changes
   useEffect(() => {
     setInitialValue(value);
   }, [version]);
+
+  /**
+   * NOTE: We're doing this instead of doing a ternary operator to render
+   * the skeleton and editor to avoid an infinite loop
+   */
+  useEffect(() => {
+    editor?.current?.style?.display(isSkinLoaded ? "block" : "none");
+  }, [isSkinLoaded]);
 
   return (
     <Box
@@ -103,7 +113,16 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         }
       }}
     >
+      <Skeleton
+        variant="rounded"
+        height={650}
+        width="100%"
+        sx={{
+          display: isSkinLoaded ? "none" : "block",
+        }}
+      />
       <Editor
+        ref={editor}
         id={name}
         onFocusIn={onFocus}
         onFocusOut={onBlur}
@@ -265,6 +284,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           resize: false,
           min_height: 560,
 
+          // skin: false,
           skin_url: "/vendors/tinymce/skins/ui/Zesty",
           icon_url: "/vendors/tinymce/icons/material-rounded/icons.js",
           icons: "material-rounded",
@@ -293,8 +313,20 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             video { width: 100%; height: 100%; object-fill: fill; aspect-ratio: auto;}\ 
             #tinymce { margin: 16px }`,
 
+          // init_instance_callback: (editor) => {
+          //   tinymce.DOM.styleSheetLoader
+          //     .load("/vendors/tinymce/skins/ui/Zesty/skin.min.css")
+          //     .then(() => editor.render());
+          //   console.log(editor.dom.st);
+          // },
+
           // Customize editor buttons and actions
           setup: (editor: any) => {
+            editor.on("SkinLoaded", () => {
+              console.log("skin loaded");
+              setIsSkinLoaded(true);
+            });
+
             // Limits the content width to 640px when in fullscreen
             editor.on("FullscreenStateChanged", (evt: any) => {
               if (evt.state) {
