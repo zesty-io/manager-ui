@@ -73,6 +73,17 @@ tinymce.PluginManager.add("imageresizer", (editor) => {
       .querySelector(".tox-dialog__body-content input.tox-textfield")
       // @ts-ignore
       .blur();
+
+    document
+      .querySelector(".tox-dialog")
+      ?.addEventListener("keydown", (evt: KeyboardEvent) => {
+        console.log(evt.key);
+        if (evt.key.toLowerCase() === "enter") {
+          document
+            .querySelector<HTMLButtonElement>('button.tox-button[title="Save"')
+            ?.click();
+        }
+      });
   };
 
   // imageresizer context toolbar
