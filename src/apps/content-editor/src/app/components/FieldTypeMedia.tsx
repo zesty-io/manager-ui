@@ -393,7 +393,9 @@ const MediaItem = ({
   };
 
   const isURL = imageZUID.substr(0, 4) === "http";
+  console.log(imageZUID);
 
+  // TODO: Modify this to show icons if the file is not an image
   const imageSrc = isURL
     ? imageZUID
     : `${data?.url}?width=80&height=80&fit=bounds`;
