@@ -41,6 +41,8 @@ import "tinymce/plugins/emoticons/js/emojis";
 
 import { File } from "../../services/types";
 
+const EDITOR_HEIGHT = 560;
+
 type FieldTypeTinyMCEProps = {
   value: any;
   version: any;
@@ -81,16 +83,17 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
   /**
    * NOTE: We're doing this instead of doing a ternary operator to render
-   * the skeleton and editor to avoid an infinite loop
+   * the skeleton and editor since that causes an infinite loop
    */
   useEffect(() => {
-    editor?.current?.style?.display(isSkinLoaded ? "block" : "none");
+    editor?.current?.style?.visibility(isSkinLoaded ? "visible" : "hidden");
   }, [isSkinLoaded]);
 
   return (
     <Box
       id="tinyMceWrapper"
       sx={{
+        minHeight: EDITOR_HEIGHT,
         "& .tox.tox-tinymce": {
           borderColor: error && "error.main",
         },
@@ -113,14 +116,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
         }
       }}
     >
-      <Skeleton
-        variant="rounded"
-        height={650}
-        width="100%"
-        sx={{
-          display: isSkinLoaded ? "none" : "block",
-        }}
-      />
       <Editor
         ref={editor}
         id={name}
@@ -282,7 +277,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           // Autoresizer does not work with the resize handle.
           // Therefore we opt for the resize handle over auto resizing
           resize: false,
-          min_height: 560,
+          min_height: EDITOR_HEIGHT,
 
           // skin: false,
           skin_url: "/vendors/tinymce/skins/ui/Zesty",
