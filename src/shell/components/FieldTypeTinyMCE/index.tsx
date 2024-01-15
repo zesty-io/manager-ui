@@ -296,7 +296,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             img { max-width: 100%; height: auto}\ 
             h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }\ 
             h1, h2, h3, h4, h5, h6 { margin-top: 0px; margin-bottom: 16px; }\ 
-            p, pre, blockquote { color: #475467; margin-top: 0px; margin-bottom: 16px; }\ 
+            p, pre, blockquote, ol, ul { color: #475467; margin-top: 0px; margin-bottom: 16px; }\ 
             h1 { font-size: 36px; line-height: 44px }\ 
             h2 { font-size: 32px; line-height: 40px }\ 
             h3 { font-size: 28px; line-height: 36px }\ 
@@ -318,7 +318,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           // Customize editor buttons and actions
           setup: (editor: any) => {
             editor.on("SkinLoaded", () => {
-              console.log("skin loaded");
               setIsSkinLoaded(true);
             });
 
