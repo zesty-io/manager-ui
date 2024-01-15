@@ -1,6 +1,14 @@
 import { Editor } from "../../../components/Editor";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
-import { Box, Stack, IconButton, Tooltip, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Stack,
+  IconButton,
+  Tooltip,
+  useMediaQuery,
+  ThemeProvider,
+} from "@mui/material";
+import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
@@ -74,46 +82,49 @@ export default function Content(props) {
       </Box>
       {!showDuoMode ? (
         <Box display="flex" gap={1}>
-          <Stack
-            gap={1.5}
-            sx={{
-              ...(!showSidebar && {
-                position: "absolute",
-                right: "24px",
-              }),
-            }}
-          >
-            <Tooltip
-              title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
-              placement="left"
-              dark
+          <ThemeProvider theme={theme}>
+            <Stack
+              gap={1.5}
+              sx={{
+                ...(!showSidebar && {
+                  position: "absolute",
+                  right: "24px",
+                }),
+              }}
             >
-              <IconButton
-                size="small"
-                onClick={() => setShowSidebar(!showSidebar)}
-                data-cy="ContentSidebarToggle"
+              <Tooltip
+                title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
+                placement="left"
               >
-                <StartRounded
-                  fontSize="small"
-                  sx={{
-                    transform: showSidebar ? "rotate(0deg)" : "rotate(180deg)",
-                  }}
-                />
-              </IconButton>
-            </Tooltip>
-            {!isDisabled && (
-              <Tooltip title="Open DUO Mode" placement="left" dark>
                 <IconButton
                   size="small"
-                  onClick={() => {
-                    setShowDuoMode(true);
-                  }}
+                  onClick={() => setShowSidebar(!showSidebar)}
+                  data-cy="ContentSidebarToggle"
                 >
-                  <DesktopMacRounded fontSize="small" />
+                  <StartRounded
+                    fontSize="small"
+                    sx={{
+                      transform: showSidebar
+                        ? "rotate(0deg)"
+                        : "rotate(180deg)",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
-            )}
-          </Stack>
+              {!isDisabled && (
+                <Tooltip title="Open DUO Mode" placement="left" dark>
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      setShowDuoMode(true);
+                    }}
+                  >
+                    <DesktopMacRounded fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Stack>
+          </ThemeProvider>
           {showSidebar && (
             <Box
               maxWidth={320}
