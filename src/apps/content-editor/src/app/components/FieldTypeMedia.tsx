@@ -561,11 +561,6 @@ const MediaItem = ({
     return thumbnailData;
   };
 
-  // TODO: Modify this to show icons if the file is not an image
-  const imageSrc = isURL
-    ? imageZUID
-    : `${data?.url}?width=80&height=80&fit=bounds`;
-
   const handleDragStart = (e: React.DragEvent) => {
     setIsDragging(true);
     setDraggedIndex(index);
