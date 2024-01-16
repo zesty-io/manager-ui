@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ElementType,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -422,6 +429,7 @@ const MediaItem = ({
     let thumbnailData = {
       src: "",
       sx: {},
+      component: "img",
     };
 
     if (isURL) {
@@ -493,9 +501,9 @@ const MediaItem = ({
       case "swf":
       case "avchd":
       case "html5":
-        // TODO: What to show here??
-        thumbnailData.src = fileBroken;
-        thumbnailData.sx = iconDefaultStyles;
+        thumbnailData.src = data?.url;
+        thumbnailData.sx = imageDefaultStyles;
+        thumbnailData.component = "video";
         break;
 
       case "iso":
@@ -649,14 +657,15 @@ const MediaItem = ({
         <Box position="relative" width="80px" height="80px" bgcolor="grey.100">
           {!isFetching ? (
             <Box
-              component="img"
-              src={isImageError ? fileBroken : generateThumbnailData()?.src}
+              component={generateThumbnailData()?.component as ElementType<any>}
+              src={generateThumbnailData()?.src}
               sx={{
                 objectFit: "contain",
                 ...generateThumbnailData()?.sx,
               }}
               ref={imageEl}
               onLoad={handleImageLoad}
+              onLoadedData={handleImageLoad}
               onError={handleImageError}
               draggable={false}
             />
