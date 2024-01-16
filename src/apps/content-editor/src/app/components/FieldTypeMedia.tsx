@@ -40,6 +40,21 @@ import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
 import styles from "../../../../media/src/app/components/Thumbnail/Loading.less";
 import cx from "classnames";
 
+// file icons import
+import wordImg from "../../../../../../public/images/wordImg.png";
+import excelImg from "../../../../../../public/images/excelImg.png";
+import pdfImg from "../../../../../../public/images/pdfImg.png";
+import pptImg from "../../../../../../public/images/pptImg.png";
+import mpImg from "../../../../../../public/images/mpImg.png";
+import csvImg from "../../../../../../public/images/csvImg.png";
+import zipImg from "../../../../../../public/images/zipImg.png";
+import numberImg from "../../../../../../public/images/numberImg.png";
+import defaultImg from "../../../../../../public/images/defaultImg.png";
+import jsIcon from "../../../../../../public/images/jsIcon.svg";
+import htmlIcon from "../../../../../../public/images/htmlIcon.svg";
+import cssIcon from "../../../../../../public/images/cssIcon.svg";
+import fontDownloadIcon from "../../../../../../public/images/fontDownloadIcon.svg";
+
 type FieldTypeMediaProps = {
   imageZUIDs: string[];
   limit: number;
@@ -393,7 +408,150 @@ const MediaItem = ({
   };
 
   const isURL = imageZUID.substr(0, 4) === "http";
-  console.log(imageZUID);
+
+  const generateThumbnailData = () => {
+    const imageDefaultStyles = {
+      width: 80,
+      height: 80,
+    };
+    const iconDefaultStyles = {
+      height: 40,
+      width: 40,
+      padding: 2.5,
+    };
+    let thumbnailData = {
+      src: "",
+      sx: {},
+    };
+
+    if (isURL) {
+      thumbnailData.src = imageZUID;
+      thumbnailData.sx = imageDefaultStyles;
+      return thumbnailData;
+    }
+
+    switch (fileExtension(data?.filename)) {
+      case "jpg":
+      case "jpeg":
+      case "gif":
+      case "webp":
+      case "png":
+      case "svg":
+      case "ico":
+        thumbnailData.src = `${data?.url}?width=80&height=80&fit=bounds`;
+        thumbnailData.sx = imageDefaultStyles;
+        break;
+
+      case "ots":
+      case "xls":
+      case "xlsx":
+        thumbnailData.src = excelImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "csv":
+        thumbnailData.src = csvImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "docx":
+      case "doc":
+      case "rtf":
+        thumbnailData.src = wordImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "pdf":
+        thumbnailData.src = pdfImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "ppt":
+      case "pptx":
+      case "pptm":
+        thumbnailData.src = pptImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "aac":
+      case "aiff":
+      case "mid":
+      case "mp3":
+      case "wav":
+        thumbnailData.src = mpImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "mp4":
+      case "mov":
+      case "avi":
+      case "wmv":
+      case "mkv":
+      case "webm":
+      case "flv":
+      case "f4v":
+      case "swf":
+      case "avchd":
+      case "html5":
+        // TODO: What to show here??
+        thumbnailData.src = fileBroken;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "iso":
+      case "rar":
+      case "tgz":
+      case "zip":
+        thumbnailData.src = zipImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "ai":
+      case "bmp":
+      case "eps":
+      case "psd":
+      case "tiff":
+      case "tif":
+        thumbnailData.src = defaultImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "numbers":
+        thumbnailData.src = numberImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "js":
+        thumbnailData.src = jsIcon;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "css":
+        thumbnailData.src = cssIcon;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "html":
+        thumbnailData.src = htmlIcon;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      case "otf":
+      case "ttf":
+      case "woff":
+      case "woff2":
+        thumbnailData.src = fontDownloadIcon;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+
+      default:
+        thumbnailData.src = defaultImg;
+        thumbnailData.sx = iconDefaultStyles;
+        break;
+    }
+
+    return thumbnailData;
+  };
 
   // TODO: Modify this to show icons if the file is not an image
   const imageSrc = isURL
@@ -492,11 +650,10 @@ const MediaItem = ({
           {!isFetching ? (
             <Box
               component="img"
-              width="80px"
-              height="80px"
-              src={isImageError ? fileBroken : imageSrc}
+              src={isImageError ? fileBroken : generateThumbnailData()?.src}
               sx={{
                 objectFit: "contain",
+                ...generateThumbnailData()?.sx,
               }}
               ref={imageEl}
               onLoad={handleImageLoad}
