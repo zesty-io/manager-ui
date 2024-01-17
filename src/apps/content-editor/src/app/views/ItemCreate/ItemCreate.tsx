@@ -172,9 +172,6 @@ export const ItemCreate = () => {
           );
 
           // scroll to required field
-          if (isMounted.current) {
-            setActive(res.missingRequired[0].ZUID);
-          }
         }
         if (res.error) {
           dispatch(
