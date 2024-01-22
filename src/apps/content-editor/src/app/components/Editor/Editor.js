@@ -43,12 +43,6 @@ export default memo(function Editor({
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
-  useEffect(() => {
-    if (active) {
-      scrollToField(active);
-    }
-  }, [active]);
-
   const activeFields = useMemo(() => {
     if (fields?.length) {
       return fields.filter((field) => !field.deletedAt);
@@ -74,17 +68,6 @@ export default memo(function Editor({
       );
     }
   });
-
-  const scrollToField = (fieldZUID) => {
-    const node = document.getElementById(fieldZUID);
-    if (node) {
-      node.scrollIntoView({ behavior: "auto", block: "start" });
-      node.querySelector("input") && node.querySelector("input").focus();
-
-      //reset the active prop from the parent
-      scrolled();
-    }
-  };
 
   const onChange = useCallback(
     (value, name) => {
@@ -135,7 +118,8 @@ export default memo(function Editor({
         type: "SET_ITEM_DATA",
         itemZUID: itemZUID,
         key: name,
-        value: value,
+        // convert empty strings to null
+        value: value || null,
       });
 
       // If we are working with a new item
