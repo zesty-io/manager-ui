@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
+import { debounce } from "lodash";
 
 // TinyMCE so the global var exists
 import tinymce from "tinymce/tinymce";
@@ -80,6 +81,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
     setInitialValue(value);
   }, [version]);
 
+  const debouncedOnChange = debounce((content: string) => {
+    onChange(content, name, datatype);
+  }, 250);
+
   return (
     <Box
       id="tinyMceWrapper"
@@ -114,7 +119,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
-            onChange(content, name, datatype);
+            debouncedOnChange(content);
 
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
