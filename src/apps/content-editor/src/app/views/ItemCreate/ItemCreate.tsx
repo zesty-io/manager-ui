@@ -291,26 +291,11 @@ export const ItemCreate = () => {
             >
               <Editor
                 // @ts-ignore no types
-                // active={active}
-                // scrolled={setActive}
                 itemZUID={itemZUID}
-                // item={item}
-                // items={content}
-                // instance={instance}
                 modelZUID={modelZUID}
                 model={model}
-                // fields={fields}
-                // onSave={save}
                 dispatch={dispatch}
-                // loading={loading}
-                // saving={saving}
-                // isDirty={item?.dirty}
                 saveClicked={saveClicked}
-                // fieldErrors={fieldErrors}
-                // @ts-ignore  untyped component
-                // onUpdateFieldErrors={(errors: FieldError) => {
-                //   setFieldErrors(errors);
-                // }}
               />
             </ContentFieldErrorsContext.Provider>
 
