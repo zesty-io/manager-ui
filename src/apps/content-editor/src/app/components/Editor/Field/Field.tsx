@@ -237,7 +237,7 @@ export const Field = memo(
       });
 
       // If we are working with a new item
-      if (itemZUID?.slice(0, 3) === "new") {
+      if (_itemZUID?.slice(0, 3) === "new") {
         if (isFirstTextField) {
           dispatch({
             type: "SET_ITEM_WEB",
