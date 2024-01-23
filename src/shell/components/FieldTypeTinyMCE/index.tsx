@@ -53,7 +53,7 @@ type FieldTypeTinyMCEProps = {
   onChange: (content: string, name: string, datatype: string) => void;
   datatype: "wysiwyg_advanced" | "wysiwyg_basic";
   externalPlugins?: Record<string, string>;
-  onSave: () => void;
+  // onSave: () => void;
   mediaBrowser: (opts: any) => void;
   onCharacterCountChange: (charCount: number) => void;
 };
@@ -67,7 +67,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   onChange,
   datatype,
   externalPlugins,
-  onSave,
+  // onSave,
   mediaBrowser,
   onCharacterCountChange,
 }: FieldTypeTinyMCEProps) {
@@ -328,7 +328,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               /**
                * Handle save key command
                */
-              editor.shortcuts.add("meta+s", "Save item", onSave);
+              // editor.shortcuts.add("meta+s", "Save item", onSave);
 
               /**
                * This does not work as the resizing action provides an element with the data attributes striped

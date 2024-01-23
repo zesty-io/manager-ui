@@ -47,6 +47,7 @@ import {
 import { DuoModeContext } from "../../../../../../shell/contexts/duoModeContext";
 import { useLocalStorage } from "react-use";
 import { FreestyleWrapper } from "./FreestyleWrapper";
+import { ContentFieldErrorsContext } from "../../../../../../shell/contexts/contentFieldErrorsContext";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -348,132 +349,136 @@ export default function ItemEdit() {
               isDisabled: duoModeDisabled,
             }}
           >
-            <Box
-              component="section"
-              sx={{ display: "flex", flexDirection: "column", height: "100%" }}
+            <ContentFieldErrorsContext.Provider
+              value={{
+                fieldErrors: fieldErrors,
+                updateFieldErrors: (fieldName, errors) => {
+                  console.log(fieldErrors);
+                  setFieldErrors({ ...fieldErrors, [fieldName]: errors });
+                },
+              }}
             >
-              <ItemEditHeader
-                onSave={save}
-                saving={saving}
-                hasError={Object.keys(fieldErrors)?.length}
-              />
-              <Switch>
-                <Route
-                  exact
-                  path="/content/:modelZUID/:itemZUID/head"
-                  render={({ match }) => {
-                    // All roles except contributor are allowed to edit the document head
-                    return userRole.name !== "Contributor" ? (
-                      <ItemHead
+              <Box
+                component="section"
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "100%",
+                }}
+              >
+                <ItemEditHeader onSave={save} saving={saving} />
+                <Switch>
+                  <Route
+                    exact
+                    path="/content/:modelZUID/:itemZUID/head"
+                    render={({ match }) => {
+                      // All roles except contributor are allowed to edit the document head
+                      return userRole.name !== "Contributor" ? (
+                        <ItemHead
+                          instance={instance}
+                          modelZUID={modelZUID}
+                          model={model}
+                          itemZUID={itemZUID}
+                          item={item}
+                          tags={tags}
+                          dispatch={dispatch}
+                        />
+                      ) : (
+                        <Redirect
+                          to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
+                        />
+                      );
+                    }}
+                  />
+                  <Route
+                    exact
+                    path="/content/:modelZUID/:itemZUID/meta"
+                    render={() => (
+                      <Meta
                         instance={instance}
                         modelZUID={modelZUID}
                         model={model}
                         itemZUID={itemZUID}
                         item={item}
-                        tags={tags}
+                        items={items}
+                        fields={fields}
+                        user={user}
+                        onSave={save}
                         dispatch={dispatch}
+                        saving={saving}
                       />
-                    ) : (
-                      <Redirect
-                        to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/content/:modelZUID/:itemZUID/analytics"
+                    render={() => <Analytics item={item} />}
+                  />
+                  <Route
+                    path="/content/:contentModelZUID/:contentItemZUID/api"
+                    render={() => (
+                      <ThemeProvider theme={theme}>
+                        <Box
+                          sx={{
+                            color: "text.primary",
+                            flex: "1",
+                            overflow: "hidden",
+                            "*": {
+                              boxSizing: "border-box",
+                            },
+                            bgcolor: "grey.50",
+                          }}
+                        >
+                          <Route
+                            exact
+                            path="/content/:contentModelZUID/:contentItemZUID/api/:type"
+                            component={ApiDetails}
+                          />
+                          <Route
+                            exact
+                            path="/content/:contentModelZUID/:contentItemZUID/api"
+                            component={ApiCardList}
+                          />
+                        </Box>
+                      </ThemeProvider>
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/content/:modelZUID/:itemZUID/publishings"
+                    render={() => (
+                      <PublishState
+                        reloadItem={() => load(modelZUID, itemZUID)}
                       />
-                    );
-                  }}
-                />
-                <Route
-                  exact
-                  path="/content/:modelZUID/:itemZUID/meta"
-                  render={() => (
-                    <Meta
-                      instance={instance}
-                      modelZUID={modelZUID}
-                      model={model}
-                      itemZUID={itemZUID}
-                      item={item}
-                      items={items}
-                      fields={fields}
-                      user={user}
-                      onSave={save}
-                      dispatch={dispatch}
-                      saving={saving}
-                    />
-                  )}
-                />
-                <Route
-                  exact
-                  path="/content/:modelZUID/:itemZUID/analytics"
-                  render={() => <Analytics item={item} />}
-                />
-                <Route
-                  path="/content/:contentModelZUID/:contentItemZUID/api"
-                  render={() => (
-                    <ThemeProvider theme={theme}>
-                      <Box
-                        sx={{
-                          color: "text.primary",
-                          flex: "1",
-                          overflow: "hidden",
-                          "*": {
-                            boxSizing: "border-box",
-                          },
-                          bgcolor: "grey.50",
-                        }}
-                      >
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api/:type"
-                          component={ApiDetails}
-                        />
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api"
-                          component={ApiCardList}
-                        />
-                      </Box>
-                    </ThemeProvider>
-                  )}
-                />
-                <Route
-                  exact
-                  path="/content/:modelZUID/:itemZUID/publishings"
-                  render={() => (
-                    <PublishState
-                      reloadItem={() => load(modelZUID, itemZUID)}
-                    />
-                  )}
-                />
-                <Route
-                  exact
-                  path="/content/:modelZUID/:itemZUID"
-                  render={() => (
-                    <Content
-                      instance={instance}
-                      modelZUID={modelZUID}
-                      model={model}
-                      fields={fields}
-                      itemZUID={itemZUID}
-                      item={item}
-                      items={items}
-                      user={user}
-                      onSave={save}
-                      dispatch={dispatch}
-                      loading={loading}
-                      saving={saving}
-                      saveClicked={saveClicked}
-                      onUpdateFieldErrors={(errors) => {
-                        setFieldErrors(errors);
-                      }}
-                      fieldErrors={fieldErrors}
-                    />
-                  )}
-                />
-                <Route
-                  exact
-                  path="/content/:modelZUID/:itemZUID/freestyle"
-                  render={() => <FreestyleWrapper />}
-                />
-              </Switch>
-            </Box>
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/content/:modelZUID/:itemZUID"
+                    render={() => (
+                      <Content
+                        instance={instance}
+                        modelZUID={modelZUID}
+                        model={model}
+                        fields={fields}
+                        itemZUID={itemZUID}
+                        user={user}
+                        // onSave={save}
+                        dispatch={dispatch}
+                        loading={loading}
+                        saving={saving}
+                        saveClicked={saveClicked}
+                      />
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/content/:modelZUID/:itemZUID/freestyle"
+                    render={() => <FreestyleWrapper />}
+                  />
+                </Switch>
+              </Box>
+            </ContentFieldErrorsContext.Provider>
           </DuoModeContext.Provider>
         </WithLoader>
       )}

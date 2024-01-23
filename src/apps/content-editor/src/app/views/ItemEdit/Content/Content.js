@@ -68,14 +68,10 @@ export default function Content(props) {
               // scrolled={() => this.setState({ makeActive: "" })}
               model={props.model}
               itemZUID={props.itemZUID}
-              item={props.item}
               dispatch={props.dispatch}
-              isDirty={props.item.dirty}
-              onSave={props.onSave}
+              // onSave={props.onSave}
               modelZUID={props.modelZUID}
               saveClicked={props.saveClicked}
-              fieldErrors={props.fieldErrors}
-              onUpdateFieldErrors={props.onUpdateFieldErrors}
             />
           </Box>
         </Box>
@@ -151,8 +147,6 @@ export default function Content(props) {
       ) : (
         <Box height="100%" flex="1 1 auto" minWidth={360}>
           <PreviewMode
-            dirty={props.item.dirty}
-            version={props.item.meta.version}
             onClose={() => setShowDuoMode(false)}
             onSave={() => props.onSave()}
           />

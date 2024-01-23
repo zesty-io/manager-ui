@@ -16,7 +16,7 @@ import {
   useGetItemPublishingsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import {
   ContentItem,
@@ -44,6 +44,7 @@ import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import { ContentItemWithDirtyAndPublishing } from ".";
 import { ConfirmPublishModal } from "./ConfirmPublishModal";
+import { ContentFieldErrorsContext } from "../../../../../../../../shell/contexts/contentFieldErrorsContext";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -55,18 +56,17 @@ const ITEM_STATES = {
 type ItemEditHeaderActionsProps = {
   saving: boolean;
   onSave: () => void;
-  hasError: boolean;
 };
 
 export const ItemEditHeaderActions = ({
   saving,
   onSave,
-  hasError,
 }: ItemEditHeaderActionsProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
   }>();
+  const { fieldErrors } = useContext(ContentFieldErrorsContext);
   const dispatch = useDispatch();
   const canPublish = usePermission("PUBLISH");
   const canUpdate = usePermission("UPDATE");
@@ -113,6 +113,7 @@ export const ItemEditHeaderActions = ({
       setIsConfirmPublishModalOpen(true);
     }
   });
+  const hasError = Object.keys(fieldErrors)?.length;
 
   const itemState = (() => {
     if (item?.dirty) {

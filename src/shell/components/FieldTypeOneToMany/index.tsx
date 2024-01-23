@@ -1,7 +1,10 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { AutocompleteProps, Popper, styled, TextField } from "@mui/material";
 import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
 import { ListboxComponent } from "../utils/virtualization";
+import { useSelector } from "react-redux";
+import { AppState } from "../../store/types";
+import { resolveRelatedOptions } from "./util";
 
 export type OneToManyOptions = {
   /**
@@ -20,7 +23,7 @@ export type OneToManyOptions = {
 export interface FieldTypeOneToManyProps
   extends Omit<
     AutocompleteProps<any, boolean, boolean, boolean>,
-    "onOpen" | "renderInput"
+    "onOpen" | "renderInput" | "options"
   > {
   name: string;
   placeholder?: string;
@@ -32,20 +35,50 @@ export interface FieldTypeOneToManyProps
   /**
    * Structure for option
    */
-  options: OneToManyOptions[];
   error?: boolean;
+  relatedFieldZUID: string;
+  relatedModelZUID: string;
+  langID: number;
+  value: any;
 }
 
 export const FieldTypeOneToMany = ({
   placeholder = "Select relationships...",
   onOpen,
-  options,
   required,
   error,
+  relatedFieldZUID,
+  relatedModelZUID,
+  langID,
+  value,
   ...props
 }: FieldTypeOneToManyProps) => {
+  const allItems = useSelector(
+    (state: AppState) => state.content,
+    (prevState, nextState) =>
+      Object.keys(prevState)?.length === Object.keys(nextState)?.length
+  );
+  const allFields = useSelector((state: AppState) => state.fields);
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
+    return resolveRelatedOptions(
+      allFields,
+      allItems,
+      relatedFieldZUID,
+      relatedModelZUID,
+      langID,
+      value
+    );
+  }, [
+    Object.keys(allFields).length,
+    Object.keys(allItems).length,
+    relatedModelZUID,
+    relatedFieldZUID,
+    langID,
+    value,
+  ]);
 
   const handleOpen = () => {
     if (!loaded && onOpen) {
@@ -72,9 +105,21 @@ export const FieldTypeOneToMany = ({
       renderInput={(params) => (
         <TextField {...params} placeholder={placeholder} error={error} />
       )}
-      options={loading ? [] : options}
+      options={loading ? [] : oneToManyOptions}
       getOptionLabel={(option) => option.inputLabel}
       renderOption={(props, option) => [props, option.component]}
+      value={
+        (value &&
+          (value as string)
+            ?.split(",")
+            ?.map(
+              (value: any) =>
+                oneToManyOptions?.find(
+                  (options) => options.value === value
+                ) || { value, inputLabel: value, component: value }
+            )) ||
+        []
+      }
       {...props}
     />
   );

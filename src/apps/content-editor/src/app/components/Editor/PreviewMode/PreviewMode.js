@@ -2,13 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
+import { useParams } from "react-router";
 
 import styles from "./PreviewMode.less";
 import { theme } from "@zesty-io/material";
 export default function PreviewMode(props) {
   const origin = window.location.origin;
+  const { itemZUID } = useParams();
   const instance = useSelector((state) => state.instance);
   const content = useSelector((state) => state.content);
+  const item = useSelector((state) => state.content[itemZUID]);
   const instanceSettings = useSelector((state) => state.settings.instance);
   const previewLock = useSelector((state) =>
     state.settings.instance.find(
@@ -37,7 +40,7 @@ export default function PreviewMode(props) {
           ? `${item.web.path}`
           : `/-/instant/${item.meta.ZUID}.json`;
 
-        url = `${url}?_bypassError=true&__version=${props.version}`;
+        url = `${url}?_bypassError=true&__version=${item?.meta?.version}`;
 
         if (previewLock) {
           url = `${url}&zpw=${previewLock.value}`;
@@ -61,7 +64,7 @@ export default function PreviewMode(props) {
     if (preview.current) {
       // ActivePreview iframe is loading, send route when ready
       preview.current.addEventListener("load", () =>
-        route(props.itemZUID, props.version, props.dirty)
+        route(props.itemZUID, item?.meta?.version, item?.dirty)
       );
 
       // ActivePreview iframe is loaded, send route updates
@@ -69,10 +72,10 @@ export default function PreviewMode(props) {
         preview.current.contentDocument ||
         preview.current.contentWindow.document;
       if (doc.readyState === "complete") {
-        route(props.itemZUID, props.version, props.dirty);
+        route(props.itemZUID, item?.meta?.version, item?.dirty);
       }
     }
-  }, [props.itemZUID, props.version, props.dirty]);
+  }, [props.itemZUID, item?.meta?.version, item?.dirty]);
 
   useEffect(() => {
     const handleMessage = (event) => {

@@ -77,9 +77,8 @@ export type ContentItemWithDirtyAndPublishing = ContentItem & {
 type HeaderProps = {
   saving: boolean;
   onSave: () => void;
-  hasError: boolean;
 };
-export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
+export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -165,11 +164,7 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
                 <ContentCopyRounded fontSize="small" />
               </IconButton>
               {type !== "dataset" && <PreviewMenu />}
-              <ItemEditHeaderActions
-                saving={saving}
-                onSave={onSave}
-                hasError={hasError}
-              />
+              <ItemEditHeaderActions saving={saving} onSave={onSave} />
             </Box>
           </Box>
           <Box
@@ -215,7 +210,8 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
             <Box display="flex" gap={2} alignItems="center">
               <DuoModeSwitch />
               <LanguageSelector />
-              <VersionSelector />
+              {/* TODO: FIXME */}
+              {/* <VersionSelector /> */}
             </Box>
           </Box>
         </Box>
