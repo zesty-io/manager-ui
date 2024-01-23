@@ -210,8 +210,7 @@ export const ItemEditHeader = ({ saving, onSave }: HeaderProps) => {
             <Box display="flex" gap={2} alignItems="center">
               <DuoModeSwitch />
               <LanguageSelector />
-              {/* TODO: FIXME */}
-              {/* <VersionSelector /> */}
+              <VersionSelector />
             </Box>
           </Box>
         </Box>

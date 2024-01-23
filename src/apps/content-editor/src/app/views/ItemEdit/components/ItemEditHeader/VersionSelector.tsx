@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Button, Menu, MenuItem, Box } from "@mui/material";
 import {
   useGetContentItemVersionsQuery,
@@ -11,7 +12,7 @@ import { ContentItem } from "../../../../../../../../shell/services/types";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { formatDate } from "../../../../../../../../utility/formatDate";
 
-export const VersionSelector = () => {
+export const VersionSelector = memo(() => {
   const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -30,7 +31,10 @@ export const VersionSelector = () => {
   });
 
   const item = useSelector(
-    (state: AppState) => state.content[itemZUID] as ContentItem
+    (state: AppState) => state.content[itemZUID] as ContentItem,
+    (prevState, nextState) => {
+      return prevState.meta.version === nextState.meta.version;
+    }
   );
 
   const onSelect = (version: ContentItem) => {
@@ -112,4 +116,4 @@ export const VersionSelector = () => {
       </Menu>
     </>
   );
-};
+});
