@@ -14,7 +14,7 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
     // NOTE may want to add a check to ensure the itemZUID is 'new'
     if (props.name && !props.value) {
       // there is no UUID and it needs to be generated
-      props.onChange(uuidv4());
+      props.onChange(uuidv4(), props.name);
     }
   }, []);
 
