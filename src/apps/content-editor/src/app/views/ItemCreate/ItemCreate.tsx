@@ -31,6 +31,7 @@ import {
 import { ScheduleFlyout } from "../ItemEdit/components/Header/ItemVersioning/ScheduleFlyout";
 import { Error } from "../../components/Editor/Field/FieldShell";
 import { ContentModelField } from "../../../../../../shell/services/types";
+import { ContentFieldErrorsContext } from "../../../../../../shell/contexts/contentFieldErrorsContext";
 
 export type ActionAfterSave =
   | ""
@@ -153,7 +154,7 @@ export const ItemCreate = () => {
           if (missingRequiredFieldNames?.length) {
             const errors = cloneDeep(fieldErrors);
 
-            missingRequiredFieldNames?.forEach((fieldName) => {
+            missingRequiredFieldNames?.forEach((fieldName: string) => {
               errors[fieldName] = {
                 ...(errors[fieldName] ?? {}),
                 MISSING_REQUIRED: true,
@@ -280,29 +281,38 @@ export const ItemCreate = () => {
           sx={{ backgroundColor: "grey.50" }}
         >
           <div className={styles.Editor}>
-            <Editor
-              // @ts-ignore no types
-              active={active}
-              scrolled={setActive}
-              itemZUID={itemZUID}
-              item={item}
-              items={content}
-              instance={instance}
-              modelZUID={modelZUID}
-              model={model}
-              fields={fields}
-              onSave={save}
-              dispatch={dispatch}
-              loading={loading}
-              saving={saving}
-              isDirty={item?.dirty}
-              saveClicked={saveClicked}
-              fieldErrors={fieldErrors}
-              // @ts-ignore  untyped component
-              onUpdateFieldErrors={(errors: FieldError) => {
-                setFieldErrors(errors);
+            <ContentFieldErrorsContext.Provider
+              value={{
+                fieldErrors: fieldErrors,
+                updateFieldErrors: (fieldName, errors) => {
+                  setFieldErrors({ ...fieldErrors, [fieldName]: errors });
+                },
               }}
-            />
+            >
+              <Editor
+                // @ts-ignore no types
+                // active={active}
+                // scrolled={setActive}
+                itemZUID={itemZUID}
+                // item={item}
+                // items={content}
+                // instance={instance}
+                modelZUID={modelZUID}
+                model={model}
+                // fields={fields}
+                // onSave={save}
+                dispatch={dispatch}
+                // loading={loading}
+                // saving={saving}
+                // isDirty={item?.dirty}
+                saveClicked={saveClicked}
+                // fieldErrors={fieldErrors}
+                // @ts-ignore  untyped component
+                // onUpdateFieldErrors={(errors: FieldError) => {
+                //   setFieldErrors(errors);
+                // }}
+              />
+            </ContentFieldErrorsContext.Provider>
 
             <div className={styles.Meta}>
               <Divider

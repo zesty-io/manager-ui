@@ -1,8 +1,12 @@
 import { createContext } from "react";
 import { Error } from "../../apps/content-editor/src/app/components/Editor/Field/FieldShell";
 
+type FieldError = {
+  [key: string]: Error;
+};
+
 type ContentFieldErrorsContext = {
-  fieldErrors: Record<string, string[]>;
+  fieldErrors: FieldError;
   updateFieldErrors: (fieldName: string, error: Error) => void;
 };
 

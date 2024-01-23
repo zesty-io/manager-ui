@@ -116,7 +116,7 @@ export const Field = memo(
     version,
   }: FieldProps) => {
     const dispatch = useDispatch();
-    const { itemZUID } = useParams<{
+    const { modelZUID, itemZUID } = useParams<{
       modelZUID: string;
       itemZUID: string;
     }>();
@@ -195,6 +195,7 @@ export const Field = memo(
       }
 
       let currentErrors = cloneDeep(errors) ?? {};
+      const _itemZUID = itemZUID ?? `new:${modelZUID}`;
 
       // Remove the required field error message when a value has been added
       if (required) {
@@ -229,7 +230,7 @@ export const Field = memo(
       // Always dispatch the data update
       dispatch({
         type: "SET_ITEM_DATA",
-        itemZUID,
+        itemZUID: _itemZUID,
         key: name,
         // convert empty strings to null
         value: value || null,
@@ -240,13 +241,13 @@ export const Field = memo(
         if (isFirstTextField) {
           dispatch({
             type: "SET_ITEM_WEB",
-            itemZUID,
+            itemZUID: _itemZUID,
             key: "metaLinkText",
             value: value,
           });
           dispatch({
             type: "SET_ITEM_WEB",
-            itemZUID,
+            itemZUID: _itemZUID,
             key: "metaTitle",
             value: value,
           });
@@ -255,7 +256,7 @@ export const Field = memo(
           if (isDataSet) {
             dispatch({
               type: "SET_ITEM_WEB",
-              itemZUID,
+              itemZUID: _itemZUID,
               key: "pathPart",
               value: value
                 .trim()
@@ -283,7 +284,7 @@ export const Field = memo(
         if (isFirstContentField) {
           dispatch({
             type: "SET_ITEM_WEB",
-            itemZUID,
+            itemZUID: _itemZUID,
             key: "metaDescription",
             value: value.replace(/<[^>]*>/g, "").slice(0, 160),
           });

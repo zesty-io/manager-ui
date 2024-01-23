@@ -353,7 +353,6 @@ export default function ItemEdit() {
               value={{
                 fieldErrors: fieldErrors,
                 updateFieldErrors: (fieldName, errors) => {
-                  console.log(fieldErrors);
                   setFieldErrors({ ...fieldErrors, [fieldName]: errors });
                 },
               }}
