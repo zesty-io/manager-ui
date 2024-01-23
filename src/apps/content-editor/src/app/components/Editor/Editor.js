@@ -26,12 +26,6 @@ export const Editor = memo(
     const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
     const item = useSelector((state) => state.content[itemZUID]);
 
-    useEffect(() => {
-      if (active) {
-        scrollToField(active);
-      }
-    }, [active]);
-
     const activeFields = useMemo(() => {
       if (fields?.length) {
         return fields.filter((field) => !field.deletedAt);
@@ -57,17 +51,6 @@ export const Editor = memo(
         );
       }
     });
-
-    const scrollToField = (fieldZUID) => {
-      const node = document.getElementById(fieldZUID);
-      if (node) {
-        node.scrollIntoView({ behavior: "auto", block: "start" });
-        node.querySelector("input") && node.querySelector("input").focus();
-
-        //reset the active prop from the parent
-        scrolled();
-      }
-    };
 
     const applyDefaultValuesToItemData = useCallback(() => {
       activeFields.forEach((field) => {

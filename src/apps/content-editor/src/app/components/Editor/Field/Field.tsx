@@ -231,7 +231,8 @@ export const Field = memo(
         type: "SET_ITEM_DATA",
         itemZUID,
         key: name,
-        value: value,
+        // convert empty strings to null
+        value: value || null,
       });
 
       // If we are working with a new item
