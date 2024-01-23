@@ -225,7 +225,6 @@ export const Field = memo(
       }
 
       updateFieldErrors(name, currentErrors);
-      // onUpdateFieldErrors(errors);
 
       // Always dispatch the data update
       dispatch({
