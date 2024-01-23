@@ -19,7 +19,7 @@ export const MaxLengths = {
 };
 
 export const Editor = memo(
-  ({ active, scrolled, model, itemZUID, modelZUID, saveClicked }) => {
+  ({ active, scrolled, model, itemZUID, modelZUID, saveClicked, onSave }) => {
     const dispatch = useDispatch();
     const { fieldErrors } = useContext(ContentFieldErrorsContext);
     const isNewItem = itemZUID.slice(0, 3) === "new";
@@ -98,7 +98,7 @@ export const Editor = memo(
                     datatype={field.datatype}
                     options={field.options}
                     settings={field.settings}
-                    // onSave={onSave}
+                    onSave={onSave}
                     value={item?.data?.[field.name]}
                     version={item?.meta?.version}
                     langID={item?.meta?.langID}

@@ -94,6 +94,7 @@ type FieldProps = {
   isFirstContentField: boolean;
   value: string | number;
   version: number;
+  onSave: () => void;
 };
 export const Field = memo(
   ({
@@ -114,6 +115,7 @@ export const Field = memo(
     isFirstContentField,
     value,
     version,
+    onSave,
   }: FieldProps) => {
     const dispatch = useDispatch();
     const { modelZUID, itemZUID } = useParams<{
@@ -421,7 +423,7 @@ export const Field = memo(
                 value={value}
                 version={version}
                 onChange={handleValueChanged}
-                // onSave={onSave}
+                onSave={onSave}
                 onCharacterCountChange={(charCount: number) =>
                   setCharacterCount(charCount)
                 }

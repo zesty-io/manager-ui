@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 import {
   Switch,
   Route,
@@ -221,7 +221,7 @@ export default function ItemEdit() {
     setLockState({ userZUID: user.ZUID });
   }
 
-  async function save() {
+  const save = useCallback(async () => {
     setSaving(true);
     setSaveClicked(true);
     try {
@@ -292,7 +292,7 @@ export default function ItemEdit() {
         setSaving(false);
       }
     }
-  }
+  }, [fieldErrors]);
 
   function discard() {
     dispatch({
@@ -462,7 +462,7 @@ export default function ItemEdit() {
                         fields={fields}
                         itemZUID={itemZUID}
                         user={user}
-                        // onSave={save}
+                        onSave={save}
                         dispatch={dispatch}
                         loading={loading}
                         saving={saving}

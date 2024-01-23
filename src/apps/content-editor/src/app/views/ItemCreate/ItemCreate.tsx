@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
@@ -135,117 +135,120 @@ export const ItemCreate = () => {
     }
   };
 
-  const save = async (action: ActionAfterSave) => {
-    setSaving(true);
-    setSaveClicked(true);
-    try {
-      const res: any = await dispatch(createItem(modelZUID, itemZUID));
-      if (res.err || res.error) {
-        if (res.missingRequired) {
-          const missingRequiredFieldNames: string[] =
-            res.missingRequired?.reduce(
-              (acc: string[], curr: ContentModelField) => {
-                acc = [curr.name, ...acc];
-                return acc;
-              },
-              []
+  const save = useCallback(
+    async (action: ActionAfterSave) => {
+      setSaving(true);
+      setSaveClicked(true);
+      try {
+        const res: any = await dispatch(createItem(modelZUID, itemZUID));
+        if (res.err || res.error) {
+          if (res.missingRequired) {
+            const missingRequiredFieldNames: string[] =
+              res.missingRequired?.reduce(
+                (acc: string[], curr: ContentModelField) => {
+                  acc = [curr.name, ...acc];
+                  return acc;
+                },
+                []
+              );
+
+            if (missingRequiredFieldNames?.length) {
+              const errors = cloneDeep(fieldErrors);
+
+              missingRequiredFieldNames?.forEach((fieldName: string) => {
+                errors[fieldName] = {
+                  ...(errors[fieldName] ?? {}),
+                  MISSING_REQUIRED: true,
+                };
+              });
+
+              setFieldErrors(errors);
+            }
+            dispatch(
+              notify({
+                message: `You are missing data in ${res.missingRequired
+                  .map((f: any) => f.label)
+                  .join(", ")}`,
+                kind: "error",
+              })
             );
 
-          if (missingRequiredFieldNames?.length) {
-            const errors = cloneDeep(fieldErrors);
-
-            missingRequiredFieldNames?.forEach((fieldName: string) => {
-              errors[fieldName] = {
-                ...(errors[fieldName] ?? {}),
-                MISSING_REQUIRED: true,
-              };
-            });
-
-            setFieldErrors(errors);
+            // scroll to required field
           }
+          if (res.error) {
+            dispatch(
+              notify({
+                message: res.error,
+                kind: "warn",
+              })
+            );
+          }
+        } else if (res.data && res.data.ZUID) {
+          // fetch item we just saved
+          await dispatch(fetchItem(modelZUID, res.data.ZUID));
+
+          setNewItemZUID(res.data.ZUID);
+
+          switch (action) {
+            case "addNew":
+              // Do nothing, just stay on the same page
+              break;
+
+            case "publishNow":
+              // Make an api call to publish now
+              handlePublish(res.data.ZUID);
+              setWillRedirect(true);
+              break;
+
+            case "schedulePublish":
+              // Open schedule publish flyout and redirect to item once done
+              setIsScheduleDialogOpen(true);
+              setWillRedirect(true);
+              break;
+
+            case "publishAddNew":
+              // Publish but stay on page
+              handlePublish(res.data.ZUID);
+              setWillRedirect(false);
+
+              break;
+
+            case "schedulePublishAddNew":
+              // Open schedule publish flyout but stay on page once done
+              setIsScheduleDialogOpen(true);
+              setWillRedirect(false);
+              break;
+
+            default:
+              // Redirect to new item
+              history.push(`/content/${modelZUID}/${res.data.ZUID}`);
+              break;
+          }
+
           dispatch(
             notify({
-              message: `You are missing data in ${res.missingRequired
-                .map((f: any) => f.label)
-                .join(", ")}`,
-              kind: "error",
+              message: `Created new ${model.label} item`,
+              kind: "success",
             })
           );
-
-          // scroll to required field
-        }
-        if (res.error) {
+        } else {
           dispatch(
             notify({
-              message: res.error,
+              message: "Unknown issue creating new item",
               kind: "warn",
             })
           );
         }
-      } else if (res.data && res.data.ZUID) {
-        // fetch item we just saved
-        await dispatch(fetchItem(modelZUID, res.data.ZUID));
-
-        setNewItemZUID(res.data.ZUID);
-
-        switch (action) {
-          case "addNew":
-            // Do nothing, just stay on the same page
-            break;
-
-          case "publishNow":
-            // Make an api call to publish now
-            handlePublish(res.data.ZUID);
-            setWillRedirect(true);
-            break;
-
-          case "schedulePublish":
-            // Open schedule publish flyout and redirect to item once done
-            setIsScheduleDialogOpen(true);
-            setWillRedirect(true);
-            break;
-
-          case "publishAddNew":
-            // Publish but stay on page
-            handlePublish(res.data.ZUID);
-            setWillRedirect(false);
-
-            break;
-
-          case "schedulePublishAddNew":
-            // Open schedule publish flyout but stay on page once done
-            setIsScheduleDialogOpen(true);
-            setWillRedirect(false);
-            break;
-
-          default:
-            // Redirect to new item
-            history.push(`/content/${modelZUID}/${res.data.ZUID}`);
-            break;
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (isMounted.current) {
+          setSaving(false);
         }
-
-        dispatch(
-          notify({
-            message: `Created new ${model.label} item`,
-            kind: "success",
-          })
-        );
-      } else {
-        dispatch(
-          notify({
-            message: "Unknown issue creating new item",
-            kind: "warn",
-          })
-        );
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      if (isMounted.current) {
-        setSaving(false);
-      }
-    }
-  };
+    },
+    [fieldErrors]
+  );
 
   const handlePublish = async (newItemZUID: string) => {
     createPublishing({
@@ -296,6 +299,7 @@ export const ItemCreate = () => {
                 model={model}
                 dispatch={dispatch}
                 saveClicked={saveClicked}
+                onSave={save}
               />
             </ContentFieldErrorsContext.Provider>
 

@@ -69,7 +69,7 @@ export default function Content(props) {
               model={props.model}
               itemZUID={props.itemZUID}
               dispatch={props.dispatch}
-              // onSave={props.onSave}
+              onSave={props.onSave}
               modelZUID={props.modelZUID}
               saveClicked={props.saveClicked}
             />
