@@ -470,6 +470,13 @@ export function createItem(modelZUID, itemZUID) {
     // Temp timestamp for sorting
     delete item.meta.createdAt;
 
+    // Remove content item data keys that are not in the fields list, this handles the case where a field is deleted/renamed from the model while the item is being created
+    Object.keys(item.data).forEach((key) => {
+      if (!fields.find((field) => field.name === key)) {
+        delete item.data[key];
+      }
+    });
+
     // cover cases where the creating user zuid is missing
     if (!item.meta.createdByUserZUID) {
       item.meta.createdByUserZUID = state.user.user_zuid;
