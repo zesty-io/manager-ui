@@ -36,6 +36,8 @@ import { IconButton, ImageSync, theme } from "@zesty-io/material";
 import { FileModal } from "../../../../media/src/app/components/FileModal";
 import RenameFileModal from "../../../../media/src/app/components/FileModal/RenameFileModal";
 import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
+import styles from "../../../../media/src/app/components/Thumbnail/Loading.less";
+import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
 
 type FieldTypeMediaProps = {
@@ -343,7 +345,7 @@ const MediaItem = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { data } = useGetFileQuery(imageZUID);
+  const { data, isFetching } = useGetFileQuery(imageZUID);
   const [showRenameFileModal, setShowRenameFileModal] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
@@ -469,11 +471,15 @@ const MediaItem = ({
           </IconButton>
         )}
         <Box position="relative" width="80px" height="80px" bgcolor="grey.100">
-          <FileTypePreview
-            src={isURL ? imageZUID : data?.url}
-            filename={data?.filename}
-            isMediaThumbnail
-          />
+          {isFetching ? (
+            <div className={cx(styles.Load, styles.Loading)}></div>
+          ) : (
+            <FileTypePreview
+              src={isURL ? imageZUID : data?.url}
+              filename={data?.filename}
+              isMediaThumbnail
+            />
+          )}
         </Box>
         <Box
           display="grid"
