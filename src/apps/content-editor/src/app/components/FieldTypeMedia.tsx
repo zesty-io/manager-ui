@@ -438,6 +438,12 @@ const MediaItem = ({
       return thumbnailData;
     }
 
+    if (!data) {
+      thumbnailData.src = fileBroken;
+      thumbnailData.sx = imageDefaultStyles;
+      return thumbnailData;
+    }
+
     switch (fileExtension(data?.filename)) {
       case "jpg":
       case "jpeg":

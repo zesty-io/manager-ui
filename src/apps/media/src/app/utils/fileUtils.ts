@@ -3,7 +3,7 @@ import { Filetype, DateRange } from "../../../../../shell/store/media-revamp";
 import moment from "moment-timezone";
 export function fileExtension(url: string) {
   let extension = "No Extension";
-  if (url.includes(".")) {
+  if (url?.includes(".")) {
     extension =
       url.substring(url.lastIndexOf(".") + 1, url.length).toLowerCase() ||
       "No Extension";
