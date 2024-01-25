@@ -212,7 +212,13 @@ export const Field = ({
 
   const renderMediaModal = () => {
     return ReactDOM.createPortal(
-      <MemoryRouter>
+      <MemoryRouter
+        initialEntries={
+          imageModal?.filetype
+            ? [`/media?filetype=${imageModal.filetype}`]
+            : ["/media"]
+        }
+      >
         <Dialog
           open
           fullScreen
@@ -362,36 +368,32 @@ export const Field = ({
 
     case "wysiwyg_advanced":
     case "wysiwyg_basic":
+      const [characterCount, setCharacterCount] = useState(0);
+
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AIFieldShell
             name={fieldData?.name}
             label={fieldData?.label}
-            valueLength={(value as string)?.length ?? 0}
+            valueLength={characterCount}
             settings={fieldData}
             onChange={onChange}
             errors={errors}
             aiType="paragraph"
             datatype={fieldData?.datatype}
+            withLengthCounter
+            maxLength={maxLength}
           >
             <FieldTypeTinyMCE
-              // @ts-ignore component not typed
               name={name}
               value={value}
               version={version}
               onChange={onChange}
               onSave={onSave}
+              onCharacterCountChange={(charCount: number) =>
+                setCharacterCount(charCount)
+              }
               datatype={datatype}
-              skin="oxide"
-              skinURL="/vendors/tinymce/skins/ui/oxide"
-              contentCSS="/vendors/tinymce/content.css"
-              externalPlugins={{
-                advcode: "/vendors/tinymce/plugins/advcode/plugin.js",
-                powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
-                formatpainter:
-                  "/vendors/tinymce/plugins/formatpainter/plugin.js",
-                pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js",
-              }}
               mediaBrowser={(opts: any) => {
                 setImageModal(opts);
               }}
