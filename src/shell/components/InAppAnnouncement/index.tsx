@@ -109,7 +109,7 @@ export const InAppAnnouncement = () => {
               component="img"
               alt="announcement-banner-image"
               src={
-                `${latestAnnouncement?.feature_image?.data[0]?.url}?fit=cover&width=560&height=300` ??
+                `${latestAnnouncement?.feature_image?.data[0]?.url}?fit=cover&width=1280` ??
                 ""
               }
               maxWidth="100%"
