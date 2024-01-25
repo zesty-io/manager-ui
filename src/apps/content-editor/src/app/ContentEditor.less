@@ -24,6 +24,11 @@
     z-index: 1;
     width: 100%;
 
+    &:has(div:global(.tox-fullscreen)) {
+      // Makes sure that when tinymce is on full screen, the app sidebar button doesn't overlap it
+      z-index: 1200;
+    }
+
     .ContentWrap {
       display: flex;
       flex-direction: column;
