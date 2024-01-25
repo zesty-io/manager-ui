@@ -6,7 +6,7 @@ import Login from "shell/components/login";
 import { notify } from "shell/store/notifications";
 import { verify } from "shell/store/auth";
 import { Staging } from "../Staging";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Box } from "@mui/material";
 
 export default connect((state) => {
   return {
@@ -70,13 +70,20 @@ export default connect((state) => {
     });
     return (
       <>
-        {props.auth.valid ? (
-          props.children
-        ) : (
+        {props.children}
+
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            zIndex: 99999, // Needs to be on top of everything
+            display: props.auth.valid ? "none" : "block",
+          }}
+        >
           <Staging>
             {props.auth.checking ? <CircularProgress /> : <Login />}
           </Staging>
-        )}
+        </Box>
       </>
     );
   })
