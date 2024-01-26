@@ -375,7 +375,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                         .map((file: File) => {
                           if (
                             imageFileTypes.some((fileType) =>
-                              file.filename?.includes(fileType)
+                              file.filename?.toLowerCase().includes(fileType)
                             )
                           ) {
                             return `<img src="${file.url}" data-id="${file.id}" title="${file.title}" alt="${file.title}" />`;
@@ -383,7 +383,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
                           if (
                             videoFileTypes.some((fileType) =>
-                              file.filename?.includes(fileType)
+                              file.filename?.toLowerCase().includes(fileType)
                             )
                           ) {
                             return `
