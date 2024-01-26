@@ -267,7 +267,7 @@ export const ItemCreate = () => {
 
   return (
     <WithLoader condition={!loading && item} message="Creating New Item">
-      <section>
+      <Box component="section">
         <Header
           onSave={save}
           model={model}
@@ -328,7 +328,7 @@ export const ItemCreate = () => {
             )}
           </Box>
         </Stack>
-      </section>
+      </Box>
       <ScheduleFlyout
         isOpen={!isLoadingNewItem && isScheduleDialogOpen}
         item={newItemData}
