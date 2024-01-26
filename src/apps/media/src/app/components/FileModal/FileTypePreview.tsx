@@ -64,8 +64,8 @@ export const FileTypePreview: FC<Props> = ({
 
   const styledDocfileThumbnail = {
     overflow: "hidden",
-    width: "60px",
-    height: "60px",
+    width: isMediaThumbnail ? "40px" : "60px",
+    height: isMediaThumbnail ? "40px" : "60px",
     m: "auto",
     display: "table-cell",
     verticalAlign: "bottom",
