@@ -85,7 +85,7 @@ export const CreateContentItemDialog = ({
               mb: 1.5,
             }}
           />
-          <Typography variant="h5" fontWeight={600} mb={1}>
+          <Typography variant="h5" fontWeight={700} mb={1}>
             Create Content Item
           </Typography>
           <Typography variant="body2" color="text.secondary">
