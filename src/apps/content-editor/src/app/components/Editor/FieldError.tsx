@@ -57,14 +57,6 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
   return (
     <ThemeProvider theme={theme}>
       <Stack
-        // when errors are present, scroll to the top of the error message
-        // ref={(el) => {
-        //   el?.scrollIntoView({
-        //     behavior: "smooth",
-        //     block: "center",
-        //     inline: "center",
-        //   });
-        // }}
         ref={errorContainerEl}
         p={2}
         gap={1}

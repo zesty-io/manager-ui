@@ -284,8 +284,6 @@ export const ItemCreate = () => {
           <div className={styles.Editor}>
             <Editor
               // @ts-ignore no types
-              // active={active}
-              // scrolled={setActive}
               hasErrors={hasErrors}
               itemZUID={itemZUID}
               item={item}
