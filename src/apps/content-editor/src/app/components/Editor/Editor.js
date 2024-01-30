@@ -38,6 +38,7 @@ export default memo(function Editor({
   saveClicked,
   onUpdateFieldErrors,
   fieldErrors,
+  hasErrors,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
@@ -203,7 +204,7 @@ export default memo(function Editor({
   return (
     <ThemeProvider theme={theme}>
       <div className={styles.Fields}>
-        {saveClicked && (
+        {saveClicked && hasErrors && (
           <FieldError errors={fieldErrors} fields={activeFields} />
         )}
         {activeFields.length ? (

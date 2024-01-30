@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
@@ -107,7 +107,7 @@ export const ItemCreate = () => {
     }
   }, [isPublishing, isPublished, publishedItem, willRedirect]);
 
-  useEffect(() => {
+  const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
       ?.map((error) => {
         return Object.values(error) ?? [];
@@ -118,6 +118,8 @@ export const ItemCreate = () => {
     if (!hasErrors) {
       setSaveClicked(false);
     }
+
+    return hasErrors;
   }, [fieldErrors]);
 
   const loadItemFields = async (modelZUID: string) => {
@@ -282,8 +284,9 @@ export const ItemCreate = () => {
           <div className={styles.Editor}>
             <Editor
               // @ts-ignore no types
-              active={active}
-              scrolled={setActive}
+              // active={active}
+              // scrolled={setActive}
+              hasErrors={hasErrors}
               itemZUID={itemZUID}
               item={item}
               items={content}
