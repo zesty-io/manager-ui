@@ -64,7 +64,7 @@ export const FileTypePreview: FC<Props> = ({
 
   const styledDocfileThumbnail = {
     overflow: "hidden",
-    width: isMediaThumbnail ? "40px" : "60px",
+    width: isMediaThumbnail ? "auto" : "60px",
     height: isMediaThumbnail ? "40px" : "60px",
     m: "auto",
     display: "table-cell",
@@ -467,7 +467,7 @@ export const FileTypePreview: FC<Props> = ({
             data-src={cssIcon}
             image={cssIcon}
             loading="lazy"
-            sx={{ ...styledDocfileThumbnail, height: "80px" }}
+            sx={styledDocfileThumbnail}
           />
         </Box>
       );
