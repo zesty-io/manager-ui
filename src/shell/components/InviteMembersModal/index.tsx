@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Autocomplete,
   Button,
@@ -21,7 +21,10 @@ import GroupAddRoundedIcon from "@mui/icons-material/GroupAddRounded";
 import MailIcon from "@mui/icons-material/Mail";
 import { RoleAccessInfo } from "./RoleAccessInfo";
 import { RoleSelectModal } from "./RoleSelectModal";
-import { useCreateUserInviteMutation } from "../../services/accounts";
+import {
+  useCreateUserInviteMutation,
+  useGetCurrentUserRolesQuery,
+} from "../../services/accounts";
 import { LoadingButton } from "@mui/lab";
 import { NoPermission } from "./NoPermission";
 
@@ -61,6 +64,15 @@ const InviteMembersModal = ({ onClose }: Props) => {
 
   const [createUserInvite, { isError: createUserInviteError }] =
     useCreateUserInviteMutation();
+  const { data: currentUserRoles } = useGetCurrentUserRolesQuery();
+
+  const canInvite = useMemo(() => {
+    if (currentUserRoles?.length) {
+      return currentUserRoles.some((role) =>
+        ["admin", "owner"].includes(role.name?.toLowerCase())
+      );
+    }
+  }, [currentUserRoles]);
 
   const handleInvites = async () => {
     setSendingEmails(true);
@@ -75,6 +87,10 @@ const InviteMembersModal = ({ onClose }: Props) => {
     setEmails([]);
     setSendingEmails(false);
   };
+
+  if (!canInvite) {
+    return <NoPermission onClose={onClose} />;
+  }
 
   return (
     <>
@@ -249,7 +265,6 @@ const InviteMembersModal = ({ onClose }: Props) => {
           onClose={() => setShowRoleSelectModal(false)}
         />
       )}
-      {createUserInviteError && <NoPermission onClose={onClose} />}
     </>
   );
 };

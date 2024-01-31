@@ -24,6 +24,7 @@ import { loadOpenNav } from "../../store/ui";
 import styles from "./LoadInstance.less";
 import { Staging } from "../Staging";
 import { CircularProgress } from "@mui/material";
+import { useGetCurrentUserRolesQuery } from "../../services/accounts";
 
 export default connect((state) => {
   return {
@@ -37,6 +38,8 @@ export default connect((state) => {
 })(
   memo(function LoadInstance(props) {
     const [error, setError] = useState("");
+    const { data: currentUserRoles } = useGetCurrentUserRolesQuery();
+
     useEffect(() => {
       props.dispatch(fetchInstance()).then((res) => {
         if (res.status !== 200) {
