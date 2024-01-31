@@ -53,6 +53,8 @@ const roles = [
   },
 ];
 
+const emailAddressRegexp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 const InviteMembersModal = ({ onClose }: Props) => {
   const [emails, setEmails] = useState<string[]>([]);
   const [emailError, setEmailError] = useState(false);
@@ -75,17 +77,43 @@ const InviteMembersModal = ({ onClose }: Props) => {
   }, [currentUserRoles]);
 
   const handleInvites = async () => {
-    setSendingEmails(true);
-    const invites = emails.map((email) =>
-      createUserInvite({
-        inviteeEmail: email,
-        accessLevel: roleIndex,
-      }).unwrap()
-    );
-    await Promise.allSettled(invites);
-    setSentEmails([...emails]);
-    setEmails([]);
-    setSendingEmails(false);
+    if (emails?.length) {
+      setSendingEmails(true);
+      const invites = emails.map((email) =>
+        createUserInvite({
+          inviteeEmail: email,
+          accessLevel: roleIndex,
+        }).unwrap()
+      );
+      await Promise.allSettled(invites);
+      setSentEmails([...emails]);
+      setEmails([]);
+      setSendingEmails(false);
+    } else {
+      // This is if the user just free types an email address instead of pressing "," or "Enter"
+      if (inputValue) {
+        // TODO: Confirm with Zosh if pressing space should just add this email as a chip instead
+        const inputAsEmails = [...new Set(inputValue.split(" "))];
+
+        if (inputAsEmails.every((email) => email.match(emailAddressRegexp))) {
+          setSendingEmails(true);
+          const invites = inputAsEmails.map((email) =>
+            createUserInvite({
+              inviteeEmail: email,
+              accessLevel: roleIndex,
+            }).unwrap()
+          );
+          await Promise.allSettled(invites);
+          setSentEmails([...inputAsEmails]);
+          setEmails([]);
+          setSendingEmails(false);
+        } else {
+          setEmailError(true);
+        }
+      } else {
+        setEmailError(true);
+      }
+    }
   };
 
   if (!canInvite) {
@@ -134,14 +162,13 @@ const InviteMembersModal = ({ onClose }: Props) => {
                 rows={3}
                 error={emailError}
                 placeholder="e.g. name@zesty.io"
-                helperText={emailError ? "Invalid email format" : " "}
+                helperText={
+                  emailError ? "Please enter a valid email address." : " "
+                }
                 onKeyDown={(event) => {
                   setEmailError(false);
                   if (event.key === "Enter" || event.key === ",") {
-                    if (
-                      inputValue &&
-                      inputValue.match(/^[^@]+@[^@]+\.[^@]+$/)
-                    ) {
+                    if (inputValue && inputValue.match(emailAddressRegexp)) {
                       setEmails([...new Set([...emails, inputValue])]);
                       setInputValue("");
                     } else {
@@ -196,7 +223,6 @@ const InviteMembersModal = ({ onClose }: Props) => {
           <LoadingButton
             variant="contained"
             onClick={handleInvites}
-            disabled={!emails?.length}
             loading={sendingEmails}
           >
             Invite
