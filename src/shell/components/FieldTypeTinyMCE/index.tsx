@@ -74,6 +74,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   // NOTE: controlled component
   const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   // NOTE: update if version changes
   useEffect(() => {
@@ -147,6 +148,9 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                   });
                 }, 100);
               }
+            } else if (evt.code === "Escape") {
+              if (isFullScreen)
+                tinymce.activeEditor.execCommand("mceFullScreen");
             }
           }}
           onObjectResized={(evt) => {
@@ -202,7 +206,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               "socialmediaembed",
               "imageresizer",
             ],
-
             // NOTE: premium plugins are being loaded from a self hosted location
             // specific to our application. Making this component not usable outside of our context.
             external_plugins: externalPlugins ?? {},
@@ -316,9 +319,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               // Limits the content width to 640px when in fullscreen
               editor.on("FullscreenStateChanged", (evt: any) => {
                 if (evt.state) {
+                  setIsFullScreen(true);
                   editor.contentDocument.documentElement.style.display = "flex";
                   editor.contentDocument.body.style.width = "640px";
                 } else {
+                  setIsFullScreen(false);
                   editor.contentDocument.documentElement.style.display =
                     "block";
                   editor.contentDocument.body.style.width = "auto";
