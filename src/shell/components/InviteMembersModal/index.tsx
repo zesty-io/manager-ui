@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import PersonAddRoundedIcon from "@mui/icons-material/PersonAddRounded";
+import GroupAddRoundedIcon from "@mui/icons-material/GroupAddRounded";
 import MailIcon from "@mui/icons-material/Mail";
 import { RoleAccessInfo } from "./RoleAccessInfo";
 import { RoleSelectModal } from "./RoleSelectModal";
@@ -82,7 +83,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
         maxWidth={"xs"}
       >
         <DialogTitle>
-          <PersonAddRoundedIcon
+          <GroupAddRoundedIcon
             color="primary"
             sx={{
               padding: 1,
@@ -91,7 +92,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
               display: "block",
             }}
           />
-          <Box sx={{ mt: 1.5 }}>Invite Members </Box>
+          <Box sx={{ mt: 1.5, fontWeight: 700 }}>Invite Members </Box>
           <Typography sx={{ mt: 1 }} variant="body2" color="text.secondary">
             These invites will be sent as emails
           </Typography>
