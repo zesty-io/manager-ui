@@ -16,6 +16,8 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { Box } from "@mui/system";
 import { LoadingButton } from "@mui/lab";
+import idb from "../../../../../../../../utility/idb";
+import { store } from "../../../../../../../../shell/store";
 
 type DuplicateItemProps = {
   onClose: () => void;
@@ -68,12 +70,21 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="error"
-          onClick={() =>
+          onClick={() => {
             deleteContentItem({
               modelZUID: modelZUID,
               itemZUID: itemZUID,
-            }).then(() => history.push(`/content/${modelZUID}`))
-          }
+            }).then(() => {
+              /**
+               * Remove the item from the store before redirecting
+               */
+              store.dispatch({
+                type: "REMOVE_ITEM",
+                itemZUID,
+              });
+              history.push(`/content/${modelZUID}`);
+            });
+          }}
           loading={isLoading}
         >
           Delete Item
