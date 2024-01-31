@@ -297,7 +297,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             p { font-size: 16px; line-height: 24px; }\ 
             span.mce-preview-object.mce-object-video { width: 100%; height: 100% }\ 
             video { width: 100%; height: 100%; object-fill: fill; aspect-ratio: auto;}\ 
-            #tinymce { margin: 16px }`,
+            #tinymce { margin: 16px; }\
+            ul, ol { line-height: 24px; }`,
 
             // init_instance_callback: (editor) => {
             //   tinymce.DOM.styleSheetLoader
