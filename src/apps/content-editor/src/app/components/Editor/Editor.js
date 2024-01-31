@@ -41,7 +41,11 @@ export default memo(function Editor({
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
-  const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+  const {
+    data: fields,
+    isSuccess,
+    isFetching,
+  } = useGetContentModelFieldsQuery(modelZUID);
 
   const activeFields = useMemo(() => {
     if (fields?.length) {
@@ -206,47 +210,50 @@ export default memo(function Editor({
         {saveClicked && (
           <FieldError errors={fieldErrors} fields={activeFields} />
         )}
-        {activeFields.length ? (
-          activeFields.map((field) => {
-            return (
-              <div
-                key={`${field.ZUID}`}
-                id={field.ZUID}
-                className={styles.Field}
-              >
-                <Field
-                  ZUID={field.ZUID}
-                  contentModelZUID={field.contentModelZUID}
-                  active={active === field.ZUID}
-                  name={field.name}
-                  label={field.label}
-                  description={field.description}
-                  required={field.required}
-                  relatedFieldZUID={field.relatedFieldZUID}
-                  relatedModelZUID={field.relatedModelZUID}
-                  datatype={field.datatype}
-                  options={field.options}
-                  settings={field.settings}
-                  onChange={onChange}
-                  onSave={onSave}
-                  item={item}
-                  langID={item?.meta?.langID}
-                  errors={fieldErrors[field.name]}
-                  maxLength={MaxLengths[field.datatype]}
-                />
-              </div>
-            );
-          })
-        ) : (
-          <div className={styles.NoFields}>
-            <h1 className={styles.Display}>No fields have been added</h1>
-            <h2 className={styles.SubHead}>
-              Use the{" "}
-              <AppLink to={`/schema/${modelZUID}`}>Schema Builder</AppLink> to
-              define your items content
-            </h2>
-          </div>
-        )}
+
+        {!isFetching &&
+          isSuccess &&
+          (activeFields.length ? (
+            activeFields.map((field) => {
+              return (
+                <div
+                  key={`${field.ZUID}`}
+                  id={field.ZUID}
+                  className={styles.Field}
+                >
+                  <Field
+                    ZUID={field.ZUID}
+                    contentModelZUID={field.contentModelZUID}
+                    active={active === field.ZUID}
+                    name={field.name}
+                    label={field.label}
+                    description={field.description}
+                    required={field.required}
+                    relatedFieldZUID={field.relatedFieldZUID}
+                    relatedModelZUID={field.relatedModelZUID}
+                    datatype={field.datatype}
+                    options={field.options}
+                    settings={field.settings}
+                    onChange={onChange}
+                    onSave={onSave}
+                    item={item}
+                    langID={item?.meta?.langID}
+                    errors={fieldErrors[field.name]}
+                    maxLength={MaxLengths[field.datatype]}
+                  />
+                </div>
+              );
+            })
+          ) : (
+            <div className={styles.NoFields}>
+              <h1 className={styles.Display}>No fields have been added</h1>
+              <h2 className={styles.SubHead}>
+                Use the{" "}
+                <AppLink to={`/schema/${modelZUID}`}>Schema Builder</AppLink> to
+                define your items content
+              </h2>
+            </div>
+          ))}
       </div>
     </ThemeProvider>
   );
