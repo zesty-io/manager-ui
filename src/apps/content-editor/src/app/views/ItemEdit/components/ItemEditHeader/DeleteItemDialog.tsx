@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
 import { useHistory, useParams } from "react-router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItem } from "../../../../../../../../shell/services/types";
 import {
@@ -16,13 +16,13 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { Box } from "@mui/system";
 import { LoadingButton } from "@mui/lab";
-import { store } from "../../../../../../../../shell/store";
 
 type DuplicateItemProps = {
   onClose: () => void;
 };
 
 export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
+  const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -77,7 +77,7 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
               /**
                * Remove the item from the store before redirecting
                */
-              store.dispatch({
+              dispatch({
                 type: "REMOVE_ITEM",
                 itemZUID,
               });
