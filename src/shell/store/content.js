@@ -259,7 +259,6 @@ export function fetchItem(modelZUID, itemZUID) {
             itemZUID,
           });
         }
-        console.log(res);
         return res;
       },
     });

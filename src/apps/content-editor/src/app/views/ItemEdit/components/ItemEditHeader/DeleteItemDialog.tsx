@@ -16,7 +16,6 @@ import {
 } from "../../../../../../../../shell/services/instance";
 import { Box } from "@mui/system";
 import { LoadingButton } from "@mui/lab";
-import idb from "../../../../../../../../utility/idb";
 import { store } from "../../../../../../../../shell/store";
 
 type DuplicateItemProps = {
