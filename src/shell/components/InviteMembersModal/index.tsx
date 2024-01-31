@@ -23,6 +23,7 @@ import { RoleAccessInfo } from "./RoleAccessInfo";
 import { RoleSelectModal } from "./RoleSelectModal";
 import { useCreateUserInviteMutation } from "../../services/accounts";
 import { LoadingButton } from "@mui/lab";
+import { NoPermission } from "./NoPermission";
 
 interface Props {
   onClose: () => void;
@@ -58,7 +59,8 @@ const InviteMembersModal = ({ onClose }: Props) => {
   const [sentEmails, setSentEmails] = useState([]);
   const [sendingEmails, setSendingEmails] = useState(false);
 
-  const [createUserInvite] = useCreateUserInviteMutation();
+  const [createUserInvite, { isError: createUserInviteError }] =
+    useCreateUserInviteMutation();
 
   const handleInvites = async () => {
     setSendingEmails(true);
@@ -109,7 +111,9 @@ const InviteMembersModal = ({ onClose }: Props) => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                sx={{ ".MuiOutlinedInput-root ": { alignItems: "baseline" } }}
+                sx={{
+                  ".MuiOutlinedInput-root ": { alignItems: "baseline" },
+                }}
                 multiline
                 rows={3}
                 error={emailError}
@@ -184,7 +188,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
         </DialogActions>
       </Dialog>
       <Dialog
-        open={!!sentEmails.length}
+        open={!!sentEmails.length && !createUserInviteError}
         onClose={onClose}
         fullWidth
         maxWidth={"xs"}
@@ -245,6 +249,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
           onClose={() => setShowRoleSelectModal(false)}
         />
       )}
+      {createUserInviteError && <NoPermission onClose={onClose} />}
     </>
   );
 };
