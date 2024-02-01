@@ -167,8 +167,14 @@ const InviteMembersModal = ({ onClose }: Props) => {
                 }
                 onKeyDown={(event) => {
                   setEmailError(false);
-                  if (event.key === "Enter" || event.key === ",") {
+                  if (
+                    event.key === "Enter" ||
+                    event.key === "," ||
+                    event.key === " "
+                  ) {
                     if (inputValue && inputValue.match(emailAddressRegexp)) {
+                      event.preventDefault();
+
                       setEmails([...new Set([...emails, inputValue])]);
                       setInputValue("");
                     } else {
