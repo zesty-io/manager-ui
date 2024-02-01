@@ -312,7 +312,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                 setIsSkinLoaded(true);
               });
 
-              editor.on("keydown", function (evt: any) {
+              editor.on("keydown", (evt: any) => {
                 if (evt.key === "Escape") {
                   if (editor.plugins.fullscreen.isFullscreen()) {
                     editor.execCommand("mceFullScreen");
