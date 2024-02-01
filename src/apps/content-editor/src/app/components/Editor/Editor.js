@@ -13,11 +13,11 @@ import { ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
-import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { FieldError } from "./FieldError";
 
 import styles from "./Editor.less";
 import { cloneDeep } from "lodash";
+import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 
 export const MaxLengths = {
   text: 150,
@@ -38,22 +38,20 @@ export default memo(function Editor({
   saveClicked,
   onUpdateFieldErrors,
   fieldErrors,
+  newModelFields,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
-  const {
-    data: fields,
-    isSuccess,
-    isFetching,
-  } = useGetContentModelFieldsQuery(modelZUID);
+  const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+  const currentFields = isNewItem ? newModelFields : fields;
 
   const activeFields = useMemo(() => {
-    if (fields?.length) {
-      return fields.filter((field) => !field.deletedAt);
+    if (currentFields?.length) {
+      return currentFields.filter((field) => !field.deletedAt);
     }
 
     return [];
-  }, [fields]);
+  }, [currentFields]);
 
   const firstTextField = useMemo(() => {
     if (activeFields?.length) {
@@ -211,49 +209,47 @@ export default memo(function Editor({
           <FieldError errors={fieldErrors} fields={activeFields} />
         )}
 
-        {!isFetching &&
-          isSuccess &&
-          (activeFields.length ? (
-            activeFields.map((field) => {
-              return (
-                <div
-                  key={`${field.ZUID}`}
-                  id={field.ZUID}
-                  className={styles.Field}
-                >
-                  <Field
-                    ZUID={field.ZUID}
-                    contentModelZUID={field.contentModelZUID}
-                    active={active === field.ZUID}
-                    name={field.name}
-                    label={field.label}
-                    description={field.description}
-                    required={field.required}
-                    relatedFieldZUID={field.relatedFieldZUID}
-                    relatedModelZUID={field.relatedModelZUID}
-                    datatype={field.datatype}
-                    options={field.options}
-                    settings={field.settings}
-                    onChange={onChange}
-                    onSave={onSave}
-                    item={item}
-                    langID={item?.meta?.langID}
-                    errors={fieldErrors[field.name]}
-                    maxLength={MaxLengths[field.datatype]}
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <div className={styles.NoFields}>
-              <h1 className={styles.Display}>No fields have been added</h1>
-              <h2 className={styles.SubHead}>
-                Use the{" "}
-                <AppLink to={`/schema/${modelZUID}`}>Schema Builder</AppLink> to
-                define your items content
-              </h2>
-            </div>
-          ))}
+        {activeFields.length ? (
+          activeFields.map((field) => {
+            return (
+              <div
+                key={`${field.ZUID}`}
+                id={field.ZUID}
+                className={styles.Field}
+              >
+                <Field
+                  ZUID={field.ZUID}
+                  contentModelZUID={field.contentModelZUID}
+                  active={active === field.ZUID}
+                  name={field.name}
+                  label={field.label}
+                  description={field.description}
+                  required={field.required}
+                  relatedFieldZUID={field.relatedFieldZUID}
+                  relatedModelZUID={field.relatedModelZUID}
+                  datatype={field.datatype}
+                  options={field.options}
+                  settings={field.settings}
+                  onChange={onChange}
+                  onSave={onSave}
+                  item={item}
+                  langID={item?.meta?.langID}
+                  errors={fieldErrors[field.name]}
+                  maxLength={MaxLengths[field.datatype]}
+                />
+              </div>
+            );
+          })
+        ) : (
+          <div className={styles.NoFields}>
+            <h1 className={styles.Display}>No fields have been added</h1>
+            <h2 className={styles.SubHead}>
+              Use the{" "}
+              <AppLink to={`/schema/${modelZUID}`}>Schema Builder</AppLink> to
+              define your items content
+            </h2>
+          </div>
+        )}
       </div>
     </ThemeProvider>
   );
