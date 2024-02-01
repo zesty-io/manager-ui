@@ -38,20 +38,18 @@ export default memo(function Editor({
   saveClicked,
   onUpdateFieldErrors,
   fieldErrors,
-  newModelFields,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
-  const currentFields = isNewItem ? newModelFields : fields;
 
   const activeFields = useMemo(() => {
-    if (currentFields?.length) {
-      return currentFields.filter((field) => !field.deletedAt);
+    if (fields?.length) {
+      return fields.filter((field) => !field.deletedAt);
     }
 
     return [];
-  }, [currentFields]);
+  }, [fields]);
 
   const firstTextField = useMemo(() => {
     if (activeFields?.length) {

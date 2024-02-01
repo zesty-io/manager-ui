@@ -87,7 +87,6 @@ export const ItemCreate = () => {
     });
 
   const {
-    data: newModelFields,
     isSuccess: isSuccessNewModelFields,
     isFetching: isFetchingNewModelFields,
   } = useGetContentModelFieldsQuery(modelZUID);
@@ -314,7 +313,6 @@ export const ItemCreate = () => {
               onUpdateFieldErrors={(errors: FieldError) => {
                 setFieldErrors(errors);
               }}
-              newModelFields={newModelFields}
             />
 
             <div className={styles.Meta}>
