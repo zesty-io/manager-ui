@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Autocomplete,
   Button,
@@ -63,6 +63,8 @@ const InviteMembersModal = ({ onClose }: Props) => {
   const [showRoleSelectModal, setShowRoleSelectModal] = useState(false);
   const [sentEmails, setSentEmails] = useState([]);
   const [sendingEmails, setSendingEmails] = useState(false);
+  const emailChipsRef = useRef([]);
+  const autocompleteRef = useRef(null);
 
   const [createUserInvite, { isError: createUserInviteError }] =
     useCreateUserInviteMutation();
@@ -158,6 +160,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
                 sx={{
                   ".MuiOutlinedInput-root ": { alignItems: "baseline" },
                 }}
+                ref={autocompleteRef}
                 multiline
                 rows={3}
                 error={emailError}
@@ -181,6 +184,18 @@ const InviteMembersModal = ({ onClose }: Props) => {
                       setEmailError(true);
                     }
                   }
+
+                  if (event.key === "Backspace" && !inputValue) {
+                    event.stopPropagation();
+
+                    // HACK: Needed to prevent the default behavior of autocomplete which autodeletes the right most tag on backspace
+                    setTimeout(() => {
+                      emailChipsRef.current?.[
+                        emailChipsRef.current?.filter((ref) => !!ref)?.length -
+                          1
+                      ]?.focus({ visible: true });
+                    }, 100);
+                  }
                 }}
                 onChange={(event) => {
                   if (event.target.value?.split("").pop() === ",") return;
@@ -193,6 +208,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
               emails.map((email, index) => (
                 <Chip
                   {...getTagProps({ index })}
+                  ref={(el) => (emailChipsRef.current[index] = el)}
                   size="small"
                   color="default"
                   clickable={false}
@@ -203,9 +219,20 @@ const InviteMembersModal = ({ onClose }: Props) => {
                     borderStyle: "solid",
                   }}
                   label={email}
-                  onDelete={() =>
-                    setEmails(emails.filter((_, i) => i !== index))
-                  }
+                  onDelete={() => {
+                    setEmails(emails.filter((_, i) => i !== index));
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Backspace") {
+                      // HACK: Needed to override the default behavior of autocomplete where it automatically selects the next tag after deleting a diff tag via backspace
+                      setTimeout(() => {
+                        setEmails(emails.filter((_, i) => i !== index));
+                        autocompleteRef.current
+                          ?.querySelector("textarea")
+                          ?.focus();
+                      }, 150);
+                    }
+                  }}
                 />
               ))
             }
