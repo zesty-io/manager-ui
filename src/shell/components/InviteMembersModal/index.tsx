@@ -161,7 +161,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
                 multiline
                 rows={3}
                 error={emailError}
-                placeholder="e.g. name@zesty.io"
+                placeholder="Email, comma or space separated"
                 helperText={
                   emailError ? "Please enter a valid email address." : " "
                 }
