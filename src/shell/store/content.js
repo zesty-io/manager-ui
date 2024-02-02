@@ -57,8 +57,10 @@ export function content(state = {}, action) {
     case "LOADED_LOCAL_ITEMS":
       if (action.data) {
         let items = { ...state };
+
         Object.keys(action.data).forEach((itemZUID) => {
           // Ensure all items include meta, web & data
+
           if (
             action.data[itemZUID] &&
             action.data[itemZUID].meta &&
@@ -408,7 +410,7 @@ export function saveItem(itemZUID, action = "") {
       item.web.metaDescription = item.web.metaDescription.slice(0, 160);
     }
 
-    /* 
+    /*
       Nav item will not be found if item does exist in the nav such is the case
       when the item is in a dataset
     */

@@ -751,9 +751,18 @@ export const Field = ({
 
     case "one_to_many":
       const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
+        /**
+         * Exclude from the options items that are not saved / created / published / scheduled
+         */
+        let options = Object.fromEntries(
+          Object.entries<any>(allItems).filter(
+            ([, value]) => value.publishing || value.siblings
+          )
+        );
+
         return resolveRelatedOptions(
           allFields,
-          allItems,
+          options,
           relatedFieldZUID,
           relatedModelZUID,
           langID,
@@ -770,7 +779,7 @@ export const Field = ({
 
       // Delay loading options until user opens dropdown
       const onOneToManyOpen = useCallback(() => {
-        return Promise.all([
+        const resp = Promise.all([
           dispatch(fetchFields(relatedModelZUID)),
           dispatch(
             fetchItems(relatedModelZUID, {
@@ -778,6 +787,8 @@ export const Field = ({
             })
           ),
         ]);
+
+        return resp;
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       return (
