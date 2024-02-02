@@ -16,6 +16,7 @@ import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import RecommendRoundedIcon from "@mui/icons-material/RecommendRounded";
 
 import { useGetCurrentUserRolesQuery } from "../../services/accounts";
+import instanceZUID from "../../../utility/instanceZUID";
 
 const roles = [
   {
@@ -101,9 +102,9 @@ export const RoleSelectModal = ({ role, onSelect, onClose }: Props) => {
 
   const isOwner = useMemo(() => {
     if (currentUserRoles?.length) {
-      return currentUserRoles.some((role) =>
-        ["owner"].includes(role.name?.toLowerCase())
-      );
+      return currentUserRoles
+        .filter((role) => role.entityZUID === instanceZUID)
+        .some((role) => ["owner"].includes(role.name?.toLowerCase()));
     }
   }, [currentUserRoles]);
 

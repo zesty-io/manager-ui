@@ -27,6 +27,7 @@ import {
 } from "../../services/accounts";
 import { LoadingButton } from "@mui/lab";
 import { NoPermission } from "./NoPermission";
+import instanzeZUID from "../../../utility/instanceZUID";
 
 interface Props {
   onClose: () => void;
@@ -72,9 +73,9 @@ const InviteMembersModal = ({ onClose }: Props) => {
 
   const canInvite = useMemo(() => {
     if (currentUserRoles?.length) {
-      return currentUserRoles.some((role) =>
-        ["admin", "owner"].includes(role.name?.toLowerCase())
-      );
+      return currentUserRoles
+        .filter((role) => role.entityZUID === instanzeZUID)
+        .some((role) => ["admin", "owner"].includes(role.name?.toLowerCase()));
     }
   }, [currentUserRoles]);
 
