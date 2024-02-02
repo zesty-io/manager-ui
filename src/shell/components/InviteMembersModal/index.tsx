@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Autocomplete,
   Button,
@@ -118,6 +118,12 @@ const InviteMembersModal = ({ onClose }: Props) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (emailError) {
+      autocompleteRef.current?.querySelector("textarea")?.focus();
+    }
+  }, [emailError]);
 
   if (!canInvite) {
     return <NoPermission onClose={onClose} />;
