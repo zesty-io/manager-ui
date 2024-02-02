@@ -209,6 +209,7 @@ export default connect((state, props) => {
           })
         ),
       ]);
+
       if (_isMounted.current) {
         // render 1st page of results
         setShouldRunFilters(true);
@@ -220,6 +221,7 @@ export default connect((state, props) => {
           // re-render after all pages fetched
           setShouldRunFilters(true);
         }
+
         setBackgroundLoading(false);
       }
     } catch (err) {
