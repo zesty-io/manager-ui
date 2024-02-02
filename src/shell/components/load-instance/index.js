@@ -38,7 +38,7 @@ export default connect((state) => {
 })(
   memo(function LoadInstance(props) {
     const [error, setError] = useState("");
-    const { data: currentUserRoles } = useGetCurrentUserRolesQuery();
+    const { refetch: refetchCurrentUserRoles } = useGetCurrentUserRolesQuery();
 
     useEffect(() => {
       props.dispatch(fetchInstance()).then((res) => {
@@ -57,6 +57,7 @@ export default connect((state) => {
         props.dispatch(fetchProducts());
       });
 
+      refetchCurrentUserRoles();
       props.dispatch(fetchDomains());
       props.dispatch(fetchUsers());
       props.dispatch(detectPlatform());
