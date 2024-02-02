@@ -6,7 +6,7 @@ import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 import { cloneDeep } from "lodash";
 
-import { Divider, Box } from "@mui/material";
+import { Divider, Box, Stack } from "@mui/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
@@ -269,19 +269,20 @@ export const ItemCreate = () => {
 
   return (
     <WithLoader condition={!loading && item} message="Creating New Item">
-      <section>
+      <Box component="section">
         <Header
           onSave={save}
           model={model}
           isLoading={saving || isPublishing || isLoadingNewItem}
           isDirty={item?.dirty}
         />
-        <Box
+        <Stack
           component="main"
           className={styles.ItemCreate}
-          sx={{ backgroundColor: "grey.50" }}
+          bgcolor="grey.50"
+          alignItems="center"
         >
-          <div className={styles.Editor}>
+          <Box minWidth={640} width="60%">
             <Editor
               // @ts-ignore no types
               hasErrors={hasErrors}
@@ -304,31 +305,31 @@ export const ItemCreate = () => {
                 setFieldErrors(errors);
               }}
             />
+          </Box>
 
-            <div className={styles.Meta}>
-              <Divider
-                sx={{
-                  mt: 4,
-                  mb: 2,
-                }}
+          <Box className={styles.Meta} minWidth={640} width="60%">
+            <Divider
+              sx={{
+                mt: 4,
+                mb: 2,
+              }}
+            />
+            <h2 className={styles.title}>Meta Settings</h2>
+            {model && model?.type === "dataset" ? (
+              <DataSettings item={item} dispatch={dispatch} />
+            ) : (
+              <ItemSettings
+                // @ts-ignore no types
+                instance={instance}
+                modelZUID={modelZUID}
+                item={item}
+                content={content}
+                dispatch={dispatch}
               />
-              <h2 className={styles.title}>Meta Settings</h2>
-              {model && model?.type === "dataset" ? (
-                <DataSettings item={item} dispatch={dispatch} />
-              ) : (
-                <ItemSettings
-                  // @ts-ignore no types
-                  instance={instance}
-                  modelZUID={modelZUID}
-                  item={item}
-                  content={content}
-                  dispatch={dispatch}
-                />
-              )}
-            </div>
-          </div>
-        </Box>
-      </section>
+            )}
+          </Box>
+        </Stack>
+      </Box>
       <ScheduleFlyout
         isOpen={!isLoadingNewItem && isScheduleDialogOpen}
         item={newItemData}
