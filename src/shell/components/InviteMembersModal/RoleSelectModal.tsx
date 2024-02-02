@@ -100,13 +100,9 @@ export const RoleSelectModal = ({ role, onSelect, onClose }: Props) => {
   const { data: currentUserRoles } = useGetCurrentUserRolesQuery();
   const [hoveredRoleIndex, setHoveredRoleIndex] = useState(role);
 
-  const isOwner = useMemo(() => {
-    if (currentUserRoles?.length) {
-      return currentUserRoles
-        .filter((role) => role.entityZUID === instanceZUID)
-        .some((role) => ["owner"].includes(role.name?.toLowerCase()));
-    }
-  }, [currentUserRoles]);
+  const isOwner = currentUserRoles
+    ?.filter((role) => role.entityZUID === instanceZUID)
+    ?.some((role) => ["owner"].includes(role.name?.toLowerCase()));
 
   return (
     <Dialog open={true} onClose={onClose} fullWidth maxWidth={"xs"}>

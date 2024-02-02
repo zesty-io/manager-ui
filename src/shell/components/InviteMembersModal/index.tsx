@@ -71,13 +71,9 @@ const InviteMembersModal = ({ onClose }: Props) => {
     useCreateUserInviteMutation();
   const { data: currentUserRoles } = useGetCurrentUserRolesQuery();
 
-  const canInvite = useMemo(() => {
-    if (currentUserRoles?.length) {
-      return currentUserRoles
-        .filter((role) => role.entityZUID === instanzeZUID)
-        .some((role) => ["admin", "owner"].includes(role.name?.toLowerCase()));
-    }
-  }, [currentUserRoles]);
+  const canInvite = currentUserRoles
+    ?.filter((role) => role.entityZUID === instanzeZUID)
+    ?.some((role) => ["admin", "owner"].includes(role.name?.toLowerCase()));
 
   const handleInvites = async () => {
     if (emails?.length) {
