@@ -752,7 +752,7 @@ export const Field = ({
     case "one_to_many":
       const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
         /**
-         * Exclude from the options items that are not saved / created / published / scheduled
+         * Only show in the options, items that are saved / published / scheduled
          */
         let options = Object.fromEntries(
           Object.entries<any>(allItems).filter(
