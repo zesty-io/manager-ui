@@ -32,12 +32,14 @@ interface Props {
   src: string;
   filename: string;
   imageSettings?: any;
+  isMediaThumbnail?: boolean;
 }
 
 export const FileTypePreview: FC<Props> = ({
   src,
   filename,
   imageSettings,
+  isMediaThumbnail,
 }) => {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
@@ -62,8 +64,8 @@ export const FileTypePreview: FC<Props> = ({
 
   const styledDocfileThumbnail = {
     overflow: "hidden",
-    width: "60px",
-    height: "60px",
+    width: isMediaThumbnail ? "auto" : "60px",
+    height: isMediaThumbnail ? "40px" : "60px",
     m: "auto",
     display: "table-cell",
     verticalAlign: "bottom",
@@ -91,6 +93,10 @@ export const FileTypePreview: FC<Props> = ({
 
     if (isXtraLargeScreen) {
       defaultImageSettings.width = 1600;
+    }
+
+    if (isMediaThumbnail) {
+      defaultImageSettings.width = 80;
     }
 
     const imageSettingsToUse = { ...defaultImageSettings, ...imageSettings };
@@ -166,7 +172,7 @@ export const FileTypePreview: FC<Props> = ({
           data-cy="file-preview"
           sx={{
             ...styledCheckerBoard,
-            p: 1,
+            p: isMediaThumbnail ? 0 : 1,
             overflow: "hidden",
             backgroundColor:
               fileExtension(filename) !== "png" &&
@@ -461,7 +467,7 @@ export const FileTypePreview: FC<Props> = ({
             data-src={cssIcon}
             image={cssIcon}
             loading="lazy"
-            sx={{ ...styledDocfileThumbnail, height: "80px" }}
+            sx={styledDocfileThumbnail}
           />
         </Box>
       );
