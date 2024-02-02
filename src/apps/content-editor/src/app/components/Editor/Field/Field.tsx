@@ -779,7 +779,7 @@ export const Field = ({
 
       // Delay loading options until user opens dropdown
       const onOneToManyOpen = useCallback(() => {
-        const resp = Promise.all([
+        return Promise.all([
           dispatch(fetchFields(relatedModelZUID)),
           dispatch(
             fetchItems(relatedModelZUID, {
@@ -787,8 +787,6 @@ export const Field = ({
             })
           ),
         ]);
-
-        return resp;
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       return (
