@@ -178,13 +178,16 @@ const InviteMembersModal = ({ onClose }: Props) => {
                     event.key === "," ||
                     event.key === " "
                   ) {
-                    if (inputValue && inputValue.match(emailAddressRegexp)) {
-                      event.preventDefault();
-
-                      setEmails([...new Set([...emails, inputValue])]);
-                      setInputValue("");
+                    if (inputValue && !inputValue.match(/^\s+$/)) {
+                      if (inputValue.trim().match(emailAddressRegexp)) {
+                        event.preventDefault();
+                        setEmails([...new Set([...emails, inputValue.trim()])]);
+                        setInputValue("");
+                      } else {
+                        setEmailError(true);
+                      }
                     } else {
-                      setEmailError(true);
+                      setEmailError(false);
                     }
                   }
 
