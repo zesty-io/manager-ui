@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useEffect } from "react";
 
 import { TextField } from "@mui/material";
 import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
@@ -9,7 +9,14 @@ export const MetaLinkText = memo(function MetaLinkText({
   meta_link_text,
   onChange,
   errors,
+  isSaving,
 }) {
+  useEffect(() => {
+    if (isSaving) {
+      onChange(meta_link_text, "metaLinkText");
+    }
+  }, [meta_link_text]);
+
   return (
     <article className={styles.MetaLinkText} data-cy="metaLinkText">
       <FieldShell

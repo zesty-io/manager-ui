@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useEffect } from "react";
 
 import { TextField } from "@mui/material";
 
@@ -9,7 +9,13 @@ export const MetaTitle = memo(function MetaTitle({
   meta_title,
   onChange,
   errors,
+  isSaving,
 }) {
+  useEffect(() => {
+    if (isSaving) {
+      onChange(meta_title, "metaTitle");
+    }
+  }, [meta_title]);
   return (
     <article className={styles.MetaTitle} data-cy="metaTitle">
       <FieldShell

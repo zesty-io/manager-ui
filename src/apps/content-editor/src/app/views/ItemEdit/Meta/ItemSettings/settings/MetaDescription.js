@@ -12,6 +12,7 @@ export default connect()(function MetaDescription({
   onChange,
   dispatch,
   errors,
+  isSaving,
 }) {
   const [error, setError] = useState("");
 
@@ -40,6 +41,10 @@ export default connect()(function MetaDescription({
       }
 
       setError(message);
+
+      if (isSaving) {
+        onChange(meta_description, "metaDescription");
+      }
     }
   }, [meta_description]);
 
