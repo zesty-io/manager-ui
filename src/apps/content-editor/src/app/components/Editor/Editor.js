@@ -120,7 +120,7 @@ export default memo(function Editor({
         itemZUID: itemZUID,
         key: name,
         // convert empty strings to null
-        value: value || null,
+        value: value === "" ? null : value,
       });
 
       // If we are working with a new item
