@@ -143,7 +143,7 @@ describe("Content Specs", () => {
     // TODO: Need to confirm toggling of value
     it("Yes/No Field", () => {
       // Click the "Yes" button to select it
-      cy.get("#12-575f7c-trw1w3 button").contains("Yes").click();
+      cy.get("#12-575f7c-trw1w3 button").contains("Yes").click({ force: true });
 
       // Check if the "Yes" button has the ".Mui-selected" class
       cy.get("#12-575f7c-trw1w3 button")
