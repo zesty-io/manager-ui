@@ -19,14 +19,7 @@ import {
   Checkbox,
   ThemeProvider,
 } from "@mui/material";
-import {
-  useEffect,
-  useReducer,
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-} from "react";
+import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -36,7 +29,6 @@ import { theme } from "@zesty-io/material";
 import {
   useCreateContentModelMutation,
   useCreateContentItemMutation,
-  useGetContentNavItemsQuery,
 } from "../../../../../shell/services/instance";
 import { ContentModel, User } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
@@ -48,7 +40,6 @@ import { withCursorPosition } from "../../../../../shell/components/withCursorPo
 import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
 import { SelectModelParentInput } from "./SelectModelParentInput";
-import { FormControl } from "@mui/base";
 
 interface Props {
   onClose: () => void;
