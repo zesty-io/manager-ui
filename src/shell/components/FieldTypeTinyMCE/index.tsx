@@ -206,7 +206,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               "socialmediaembed",
               "imageresizer",
             ],
-
             // NOTE: premium plugins are being loaded from a self hosted location
             // specific to our application. Making this component not usable outside of our context.
             external_plugins: externalPlugins ?? {},
@@ -315,6 +314,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             setup: (editor: any) => {
               editor.on("SkinLoaded", () => {
                 setIsSkinLoaded(true);
+              });
+
+              editor.on("keydown", (evt: any) => {
+                if (evt.key === "Escape") {
+                  if (editor.plugins.fullscreen.isFullscreen()) {
+                    editor.execCommand("mceFullScreen");
+                    evt.preventDefault();
+                  }
+                }
               });
 
               // Limits the content width to 640px when in fullscreen
