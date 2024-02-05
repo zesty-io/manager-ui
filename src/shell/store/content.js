@@ -259,7 +259,6 @@ export function fetchItem(modelZUID, itemZUID) {
             itemZUID,
           });
         }
-
         return res;
       },
     });
@@ -408,7 +407,7 @@ export function saveItem(itemZUID, action = "") {
       item.web.metaDescription = item.web.metaDescription.slice(0, 160);
     }
 
-    /* 
+    /*
       Nav item will not be found if item does exist in the nav such is the case
       when the item is in a dataset
     */

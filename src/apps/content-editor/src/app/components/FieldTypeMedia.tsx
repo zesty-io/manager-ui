@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -11,7 +11,6 @@ import {
   MenuItem,
   Tooltip,
 } from "@mui/material";
-import fileBroken from "../../../../../../public/images/fileBroken.jpg";
 import {
   AttachmentRounded,
   DragIndicatorRounded,
@@ -39,6 +38,7 @@ import RenameFileModal from "../../../../media/src/app/components/FileModal/Rena
 import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
 import styles from "../../../../media/src/app/components/Thumbnail/Loading.less";
 import cx from "classnames";
+import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
 
 type FieldTypeMediaProps = {
   imageZUIDs: string[];
@@ -350,9 +350,6 @@ const MediaItem = ({
   const [isCopied, setIsCopied] = useState(false);
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
   const [newFilename, setNewFilename] = useState("");
-  const [lazyLoading, setLazyLoading] = useState(true);
-  const imageEl = useRef<any>(null);
-  const [isImageError, setIsImageError] = useState(false);
   const [
     updateFile,
     {
@@ -394,10 +391,6 @@ const MediaItem = ({
 
   const isURL = imageZUID.substr(0, 4) === "http";
 
-  const imageSrc = isURL
-    ? imageZUID
-    : `${data?.url}?width=80&height=80&fit=bounds`;
-
   const handleDragStart = (e: React.DragEvent) => {
     setIsDragging(true);
     setDraggedIndex(index);
@@ -433,15 +426,6 @@ const MediaItem = ({
         filename: `${renamedFilename}${constructedFileType}`,
       },
     });
-  };
-
-  const handleImageLoad = () => {
-    setLazyLoading(false);
-  };
-
-  const handleImageError = () => {
-    setLazyLoading(false);
-    setIsImageError(true);
   };
 
   return (
@@ -487,26 +471,15 @@ const MediaItem = ({
           </IconButton>
         )}
         <Box position="relative" width="80px" height="80px" bgcolor="grey.100">
-          {!isFetching ? (
-            <Box
-              component="img"
-              width="80px"
-              height="80px"
-              src={isImageError ? fileBroken : imageSrc}
-              sx={{
-                objectFit: "contain",
-              }}
-              ref={imageEl}
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-              draggable={false}
-            />
-          ) : (
-            <Box width="80px" height="80px"></Box>
-          )}
-          {lazyLoading ? (
+          {isFetching ? (
             <div className={cx(styles.Load, styles.Loading)}></div>
-          ) : null}
+          ) : (
+            <FileTypePreview
+              src={isURL ? imageZUID : data?.url}
+              filename={data?.filename}
+              isMediaThumbnail
+            />
+          )}
         </Box>
         <Box
           display="grid"

@@ -74,6 +74,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   // NOTE: controlled component
   const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   // NOTE: update if version changes
   useEffect(() => {
@@ -114,13 +115,16 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           onFocusOut={onBlur}
           initialValue={initialValue}
           onEditorChange={(content, editor) => {
-            onChange(content, name, datatype);
+            if (isDirty) {
+              onChange(content, name, datatype);
 
-            const charCount =
-              editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
+              const charCount =
+                editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
 
-            onCharacterCountChange(charCount);
+              onCharacterCountChange(charCount);
+            }
           }}
+          onDirty={() => setIsDirty(true)}
           onInit={(_, editor) => {
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
@@ -297,7 +301,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             p { font-size: 16px; line-height: 24px; }\ 
             span.mce-preview-object.mce-object-video { width: 100%; height: 100% }\ 
             video { width: 100%; height: 100%; object-fill: fill; aspect-ratio: auto;}\ 
-            #tinymce { margin: 16px }`,
+            #tinymce { margin: 16px; }\
+            ul, ol { line-height: 24px; }`,
 
             // init_instance_callback: (editor) => {
             //   tinymce.DOM.styleSheetLoader
@@ -309,7 +314,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // Customize editor buttons and actions
             setup: (editor: any) => {
               editor.on("SkinLoaded", () => {
-                console.log("skin loaded");
                 setIsSkinLoaded(true);
               });
 

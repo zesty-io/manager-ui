@@ -54,6 +54,7 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
           parentZUID: item.web.parentZUID,
           metaLinkText: item.web.metaLinkText + " (copy)",
           metaTitle: item.web.metaTitle + " (copy)",
+          metaDescription: item.web.metaDescription + " (copy)",
           pathPart: item.web.pathPart
             ? item.web.pathPart + `-${new Date().toISOString()}`
             : undefined,

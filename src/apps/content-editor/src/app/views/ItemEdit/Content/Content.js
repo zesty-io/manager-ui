@@ -76,6 +76,7 @@ export default function Content(props) {
               saveClicked={props.saveClicked}
               fieldErrors={props.fieldErrors}
               onUpdateFieldErrors={props.onUpdateFieldErrors}
+              hasErrors={props.hasErrors}
             />
           </Box>
         </Box>
