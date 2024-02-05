@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { Stack, Typography, Box, ThemeProvider } from "@mui/material";
 import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
 import { theme } from "@zesty-io/material";
@@ -11,6 +11,17 @@ type FieldErrorProps = {
 };
 
 export const FieldError = ({ errors, fields }: FieldErrorProps) => {
+  const errorContainerEl = useRef(null);
+
+  // Scroll to the errors on mount
+  useEffect(() => {
+    errorContainerEl?.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
+    });
+  }, []);
+
   const fieldErrors = useMemo(() => {
     const errorMap = Object.entries(errors)?.map(([name, errors]) => {
       let errorMessage = "";
@@ -36,7 +47,6 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
     return errorMap.sort((a, b) => a.sort - b.sort);
   }, [errors, fields]);
 
-  const hasErrors = fieldErrors?.some((error) => error.errorMessage);
   const fieldsWithErrors = fieldErrors?.filter((error) => error.errorMessage);
 
   const handleErrorClick = (fieldZUID: string) => {
@@ -44,21 +54,10 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
     fieldElement?.scrollIntoView({ behavior: "smooth" });
   };
 
-  if (!hasErrors) {
-    return <></>;
-  }
-
   return (
     <ThemeProvider theme={theme}>
       <Stack
-        // when errors are present, scroll to the top of the error message
-        ref={(el) =>
-          el?.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-            inline: "center",
-          })
-        }
+        ref={errorContainerEl}
         p={2}
         gap={1}
         borderRadius={1}

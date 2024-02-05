@@ -19,7 +19,7 @@ import {
   Checkbox,
   ThemeProvider,
 } from "@mui/material";
-import { useEffect, useReducer, useState, useMemo } from "react";
+import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -29,7 +29,6 @@ import { theme } from "@zesty-io/material";
 import {
   useCreateContentModelMutation,
   useCreateContentItemMutation,
-  useGetContentNavItemsQuery,
 } from "../../../../../shell/services/instance";
 import { ContentModel, User } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
@@ -274,7 +273,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       );
     } else {
       return (
-        <>
+        <Box component="form">
           <DialogTitle component="div">
             <Stack
               direction="row"
@@ -424,6 +423,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               Cancel
             </Button>
             <LoadingButton
+              type="submit"
               variant="contained"
               disabled={!model.name || !model.label}
               loading={!!isCreatingModel || !!isCreatingContentItem}
@@ -436,7 +436,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               Create Model
             </LoadingButton>
           </DialogActions>
-        </>
+        </Box>
       );
     }
   };

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useMemo } from "react";
 import {
   Switch,
   Route,
@@ -125,7 +125,7 @@ export default function ItemEdit() {
     };
   }, [modelZUID, itemZUID]);
 
-  useEffect(() => {
+  const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
       ?.map((error) => {
         return Object.values(error) ?? [];
@@ -136,6 +136,8 @@ export default function ItemEdit() {
     if (!hasErrors) {
       setSaveClicked(false);
     }
+
+    return hasErrors;
   }, [fieldErrors]);
 
   async function lockItem() {
@@ -464,6 +466,7 @@ export default function ItemEdit() {
                         setFieldErrors(errors);
                       }}
                       fieldErrors={fieldErrors}
+                      hasErrors={hasErrors}
                     />
                   )}
                 />

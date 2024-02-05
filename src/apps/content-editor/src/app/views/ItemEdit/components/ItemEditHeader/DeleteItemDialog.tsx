@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
 import { useHistory, useParams } from "react-router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItem } from "../../../../../../../../shell/services/types";
 import {
@@ -22,6 +22,7 @@ type DuplicateItemProps = {
 };
 
 export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
+  const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -68,12 +69,21 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
           color="error"
-          onClick={() =>
+          onClick={() => {
             deleteContentItem({
               modelZUID: modelZUID,
               itemZUID: itemZUID,
-            }).then(() => history.push(`/content/${modelZUID}`))
-          }
+            }).then(() => {
+              /**
+               * Remove the item from the store before redirecting
+               */
+              dispatch({
+                type: "REMOVE_ITEM",
+                itemZUID,
+              });
+              history.push(`/content/${modelZUID}`);
+            });
+          }}
           loading={isLoading}
         >
           Delete Item

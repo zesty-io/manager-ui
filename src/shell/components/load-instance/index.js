@@ -34,6 +34,7 @@ export default connect((state) => {
     languages: state.languages,
     files: state.files,
     role: state.userRole.systemRole.name,
+    auth: state.auth,
   };
 })(
   memo(function LoadInstance(props) {
@@ -41,6 +42,10 @@ export default connect((state) => {
     const { refetch: refetchCurrentUserRoles } = useGetCurrentUserRolesQuery();
 
     useEffect(() => {
+      if (!props.auth.valid) {
+        return;
+      }
+
       props.dispatch(fetchInstance()).then((res) => {
         if (res.status !== 200) {
           setError("You do not have permission to access this instance");
@@ -70,7 +75,7 @@ export default connect((state) => {
       props.dispatch(fetchFiles("views"));
       props.dispatch(fetchFiles("stylesheets"));
       props.dispatch(fetchFiles("scripts"));
-    }, []);
+    }, [props.auth]);
 
     useEffect(() => {
       if (

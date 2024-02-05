@@ -31,6 +31,7 @@ export function HtmlEditor(props) {
         mode: "htmlmixed",
         // theme: "material",
         lineNumbers: true,
+        lineWrapping: true,
       }}
       onBeforeChange={(editor, data, value) => {
         setParsed(value.trim());
