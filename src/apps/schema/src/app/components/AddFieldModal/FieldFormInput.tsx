@@ -163,7 +163,7 @@ export const FieldFormInput = ({
               </Typography>
             )}
             {fieldConfig.tooltip && (
-              <Tooltip placement="top" title={fieldConfig.tooltip}>
+              <Tooltip placement="right" title={fieldConfig.tooltip}>
                 <InfoRoundedIcon
                   sx={{ ml: 1, width: "12px", height: "12px" }}
                   color="action"
