@@ -50,6 +50,8 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
     }
   };
 
+  console.log(viewMode);
+
   return (
     <Dialog
       data-cy="AddFieldModal"
