@@ -108,18 +108,14 @@ const InviteMembersModal = ({ onClose }: Props) => {
           setSendingEmails(false);
         } else {
           setEmailError(true);
+          autocompleteRef.current?.querySelector("textarea")?.focus();
         }
       } else {
         setEmailError(true);
+        autocompleteRef.current?.querySelector("textarea")?.focus();
       }
     }
   };
-
-  useEffect(() => {
-    if (emailError) {
-      autocompleteRef.current?.querySelector("textarea")?.focus();
-    }
-  }, [emailError]);
 
   if (!canInvite) {
     return <NoPermission onClose={onClose} />;
