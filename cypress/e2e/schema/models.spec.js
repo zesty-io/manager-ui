@@ -30,9 +30,12 @@ describe("Schema: Models", () => {
       .next()
       .find("input")
       .should("have.value", "cypress_test_model");
+
     cy.contains("Select Model Parent")
       .next()
-      .type("Homepage{downArrow}{enter}");
+      .type("Cypress")
+      .wait(10000)
+      .type("{downarrow}{enter}");
     cy.contains("Description").next().type("Cypress test model description");
     cy.get(".MuiDialog-container").within(() => {
       cy.contains("Create Model").click();
