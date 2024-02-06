@@ -39,7 +39,7 @@ export const NoPermission = ({ onClose }: NoPermissionProps) => {
   }, [users]);
 
   return (
-    <Dialog open onClose={onClose}>
+    <Dialog open onClose={onClose} maxWidth="xs">
       <DialogTitle>
         <ErrorRoundedIcon
           color="error"
@@ -54,14 +54,17 @@ export const NoPermission = ({ onClose }: NoPermissionProps) => {
           You do not have permission to invite users to this instance.
         </Box>
         <Typography color="text.secondary" variant="body2">
-          Contact the instance owner or administrators listed below to upgrade
+          Contact the instance owners or administrators listed below to upgrade
           your role to Admin or Owner for the invite capability.
         </Typography>
       </DialogTitle>
       <DialogContent>
         <List>
-          {ownersAndAdmins?.map((user, index) => (
+          {ownersAndAdmins?.map((user) => (
             <ListItem
+              key={user.ZUID}
+              dense
+              disableGutters
               sx={{
                 borderBottom: "1px solid",
                 borderColor: "border",
@@ -77,6 +80,11 @@ export const NoPermission = ({ onClose }: NoPermissionProps) => {
               </ListItemAvatar>
               <ListItemText
                 primary={`${user.firstName} ${user.lastName}`}
+                primaryTypographyProps={{
+                  sx: {
+                    color: "text.primary",
+                  },
+                }}
                 secondary={`${user.role.name} • ${user.email}`}
               />
             </ListItem>
