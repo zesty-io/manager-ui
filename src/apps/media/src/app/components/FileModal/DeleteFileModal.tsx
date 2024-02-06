@@ -54,7 +54,7 @@ export const DeleteFileModal: FC<Props> = ({
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Typography>
+        <Typography sx={{ wordBreak: "break-all" }}>
           {fileCount > 1
             ? "You will not be able to recover these files."
             : `${filename} will be deleted forever`}
