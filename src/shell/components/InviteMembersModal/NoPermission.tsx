@@ -27,9 +27,14 @@ export const NoPermission = ({ onClose }: NoPermissionProps) => {
 
   const ownersAndAdmins = useMemo(() => {
     if (users?.length) {
-      return users.filter((user) =>
-        ["admin", "owner"].includes(user.role?.name?.toLowerCase())
-      );
+      const owners = users
+        .filter((user) => user.role?.name?.toLowerCase() === "owner")
+        .sort((a, b) => a.firstName.localeCompare(b.firstName));
+      const admins = users
+        .filter((user) => user.role?.name?.toLowerCase() === "admin")
+        .sort((a, b) => a.firstName.localeCompare(b.firstName));
+
+      return [...owners, ...admins];
     }
   }, [users]);
 
