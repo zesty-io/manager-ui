@@ -259,6 +259,21 @@ export const Field = ({
     return Object.values(errors)?.some((error) => !!error);
   };
 
+  /**
+   * @description This function filters out items that are only saved in memory.
+   * has not been saved, published or scheduled.
+   */
+  const filterValidItems = (allItems: any) => {
+    // filter out items that are only saved in memory
+    const filteredValidItems = Object.entries<any>(allItems).filter(
+      ([, value]) => value.publishing || value.siblings
+    );
+    // Reshape the array back into an object
+    let options = Object.fromEntries(filteredValidItems);
+
+    return options;
+  };
+
   switch (datatype) {
     case "text":
       return (
@@ -678,6 +693,8 @@ export const Field = ({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions: OneToManyOptions[] = useMemo(() => {
+        const options = filterValidItems(allItems);
+
         return [
           {
             inputLabel: "- None -",
@@ -686,7 +703,7 @@ export const Field = ({
           },
           ...resolveRelatedOptions(
             allFields,
-            allItems,
+            options,
             relatedFieldZUID,
             relatedModelZUID,
             langID,
@@ -751,14 +768,7 @@ export const Field = ({
 
     case "one_to_many":
       const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
-        /**
-         * Only show in the options, items that are saved / published / scheduled
-         */
-        let options = Object.fromEntries(
-          Object.entries<any>(allItems).filter(
-            ([, value]) => value.publishing || value.siblings
-          )
-        );
+        const options = filterValidItems(allItems);
 
         return resolveRelatedOptions(
           allFields,
