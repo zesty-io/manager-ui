@@ -225,6 +225,11 @@ const InviteMembersModal = ({ onClose }: Props) => {
                     borderStyle: "solid",
                   }}
                   label={email}
+                  onDelete={(evt) => {
+                    if (evt.type === "click") {
+                      setEmails(emails.filter((_, i) => i !== index));
+                    }
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === "Backspace") {
                       // HACK: Needed to override the default behavior of autocomplete where it automatically selects the next tag after deleting a diff tag via backspace
