@@ -105,6 +105,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
           await Promise.allSettled(invites);
           setSentEmails([...inputAsEmails]);
           setEmails([]);
+          setInputValue("");
           setSendingEmails(false);
         } else {
           setEmailError(true);
@@ -163,7 +164,9 @@ const InviteMembersModal = ({ onClose }: Props) => {
                 multiline
                 rows={3}
                 error={emailError}
-                placeholder="Email, comma or space separated"
+                placeholder={
+                  emails.length ? "" : "Email, comma or space separated"
+                }
                 helperText={
                   emailError ? "Please enter a valid email address." : " "
                 }
