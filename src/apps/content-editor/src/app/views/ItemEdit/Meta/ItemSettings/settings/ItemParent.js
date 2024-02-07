@@ -218,7 +218,8 @@ function parentOptions(currentItemLangID, path, items) {
         itemData?.web?.path && // must have a path
         itemData?.web.path !== "/" && // Exclude homepage
         itemData?.web.path !== path && // Exclude current item
-        itemData?.meta?.langID === currentItemLangID // display only relevant language options
+        itemData?.meta?.langID === currentItemLangID && // display only relevant language options
+        itemZUID === itemData?.meta?.ZUID // must be equal to ensure the itemZUID is correct zuid format
       ) {
         acc.push({
           value: itemZUID,
