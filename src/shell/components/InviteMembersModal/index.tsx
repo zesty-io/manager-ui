@@ -77,21 +77,34 @@ const InviteMembersModal = ({ onClose }: Props) => {
 
   const handleInvites = async () => {
     if (emails?.length) {
+      let _emails = [...emails];
+      // Check if aside from the email chips the user also left any other input
+      if (
+        inputValue &&
+        !inputValue.match(emailAddressRegexp) &&
+        !inputValue.match(/^\s+$/)
+      ) {
+        setEmailError(true);
+        return;
+      } else {
+        _emails = [...new Set([..._emails, inputValue])];
+      }
+
       setSendingEmails(true);
-      const invites = emails.map((email) =>
+      const invites = _emails.map((email) =>
         createUserInvite({
           inviteeEmail: email,
           accessLevel: roleIndex,
         }).unwrap()
       );
       await Promise.allSettled(invites);
-      setSentEmails([...emails]);
+      setSentEmails([..._emails]);
       setEmails([]);
       setSendingEmails(false);
+      setInputValue("");
     } else {
-      // This is if the user just free types an email address instead of pressing "," or "Enter"
+      // This is if the user just free types an email address instead of pressing "," "space" or "Enter"
       if (inputValue) {
-        // TODO: Confirm with Zosh if pressing space should just add this email as a chip instead
         const inputAsEmails = [...new Set(inputValue.split(" "))];
 
         if (inputAsEmails.every((email) => email.match(emailAddressRegexp))) {
