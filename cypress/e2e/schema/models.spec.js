@@ -1,7 +1,7 @@
 const SEARCH_TERM = `cypress ${Date.now()}`;
 describe("Schema: Models", () => {
   before(() => {
-    cy.waitOn("/v1/content/models", () => {
+    cy.waitOn("/v1/content/models*", () => {
       cy.visit("/schema");
     });
   });
@@ -31,11 +31,17 @@ describe("Schema: Models", () => {
       .find("input")
       .should("have.value", "cypress_test_model");
 
-    cy.contains("Select Model Parent")
-      .next()
-      .type("Cypress")
-      .wait(10000)
-      .type("{downarrow}{enter}");
+    cy.contains("Select Model Parent").next().click();
+    cy.waitOn("/v1/env/nav", () => {
+      cy.contains("Select Model Parent")
+        .next()
+        .type("A Parent Cypress Schema Do Not Delete");
+
+      cy.get(".MuiAutocomplete-popper")
+        .contains("A Parent Cypress Schema Do Not Delete")
+        .click();
+    });
+
     cy.contains("Description").next().type("Cypress test model description");
     cy.get(".MuiDialog-container").within(() => {
       cy.contains("Create Model").click();
@@ -43,6 +49,7 @@ describe("Schema: Models", () => {
     cy.intercept("POST", "/models");
     cy.intercept("GET", "/models");
   });
+
   it("Renames model", () => {
     cy.getBySelector(`model-header-menu`).click();
     cy.contains("Rename Model").click();
