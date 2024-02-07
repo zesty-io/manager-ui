@@ -163,6 +163,7 @@ export default function Content(props) {
             version={props.item.meta.version}
             onClose={() => setShowDuoMode(false)}
             onSave={() => props.onSave()}
+            hasErrors={props.hasErrors}
           />
         </Box>
       )}
