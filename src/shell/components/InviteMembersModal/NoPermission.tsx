@@ -51,11 +51,12 @@ export const NoPermission = ({ onClose }: NoPermissionProps) => {
           }}
         />
         <Box fontWeight={700} mb={1} mt={1.5}>
-          You do not have permission to invite users to this instance.
+          You do not have permission to invite users
         </Box>
         <Typography color="text.secondary" variant="body2">
-          Contact the instance owners or administrators listed below to upgrade
-          your role to Admin or Owner for the invite capability.
+          Contact your instance owners or administrators listed below to change
+          your role to Admin or Owner on this instance for user invitation
+          priveleges.
         </Typography>
       </DialogTitle>
       <DialogContent>
