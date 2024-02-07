@@ -118,17 +118,7 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
             containerType: "inline-size",
           }}
         >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            gap={15}
-            sx={{
-              "@container (max-width: 900px)": {
-                flexWrap: "wrap",
-                gap: "16px",
-              },
-            }}
-          >
+          <Box display="flex" justifyContent="space-between" gap={4}>
             <Box>
               <ContentBreadcrumbs />
               <Typography

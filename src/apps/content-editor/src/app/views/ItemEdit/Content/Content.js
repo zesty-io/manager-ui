@@ -28,6 +28,8 @@ export default function Content(props) {
 
   const xLarge = useMediaQuery((theme) => theme.breakpoints.up("xl"));
 
+  const isFocusMode = !showDuoMode && !showSidebar;
+
   return (
     <Box
       bgcolor="grey.50"
@@ -61,7 +63,12 @@ export default function Content(props) {
         pr={3}
         pl={4}
       >
-        <Box width="60%" height="100%" minWidth={640} flex="0 1 auto">
+        <Box
+          width={isFocusMode ? "60%" : "100%"}
+          height="100%"
+          minWidth={isFocusMode && 640}
+          flex="0 1 auto"
+        >
           <Box width="100%">
             <Editor
               // active={this.state.makeActive}
