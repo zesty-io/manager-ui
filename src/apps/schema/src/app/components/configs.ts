@@ -166,8 +166,8 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
   numeric: [
     {
       type: "number",
-      name: "Number",
-      shortDescription: "Whole numbers and floats",
+      name: "Integer",
+      shortDescription: "Whole numbers",
       description: "This field is for when you want the input to be a number.",
       commonUses: [
         "Quantity of Products in Inventory",
