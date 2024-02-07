@@ -109,11 +109,11 @@ const InviteMembersModal = ({ onClose }: Props) => {
           setSendingEmails(false);
         } else {
           setEmailError(true);
-          autocompleteRef.current?.querySelector("textarea")?.focus();
+          autocompleteRef.current?.querySelector("input")?.focus();
         }
       } else {
         setEmailError(true);
-        autocompleteRef.current?.querySelector("textarea")?.focus();
+        autocompleteRef.current?.querySelector("input")?.focus();
       }
     }
   };
@@ -158,11 +158,12 @@ const InviteMembersModal = ({ onClose }: Props) => {
               <TextField
                 {...params}
                 sx={{
-                  ".MuiOutlinedInput-root ": { alignItems: "baseline" },
+                  ".MuiOutlinedInput-root ": {
+                    alignItems: "baseline",
+                    minHeight: 93,
+                  },
                 }}
                 ref={autocompleteRef}
-                multiline
-                rows={3}
                 error={emailError}
                 placeholder={
                   emails.length ? "" : "Email, comma or space separated"
@@ -230,7 +231,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
                       setTimeout(() => {
                         setEmails(emails.filter((_, i) => i !== index));
                         autocompleteRef.current
-                          ?.querySelector("textarea")
+                          ?.querySelector("input")
                           ?.focus();
                       }, 150);
                     }
