@@ -32,15 +32,14 @@ describe("Schema: Models", () => {
       .should("have.value", "cypress_test_model");
 
     cy.contains("Select Model Parent").next().click();
-    cy.waitOn("/v1/env/nav", () => {
-      cy.contains("Select Model Parent")
-        .next()
-        .type("A Parent Cypress Schema Do Not Delete");
+    cy.waitOn("/v1/env/nav", () => {});
+    cy.contains("Select Model Parent")
+      .next()
+      .type("A Parent Cypress Schema Do Not Delete");
 
-      cy.get(".MuiAutocomplete-popper")
-        .contains("A Parent Cypress Schema Do Not Delete")
-        .click();
-    });
+    cy.get(".MuiAutocomplete-popper")
+      .contains("A Parent Cypress Schema Do Not Delete")
+      .click();
 
     cy.contains("Description").next().type("Cypress test model description");
     cy.get(".MuiDialog-container").within(() => {
