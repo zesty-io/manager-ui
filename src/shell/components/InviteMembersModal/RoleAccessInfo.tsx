@@ -61,7 +61,7 @@ export const RoleAccessInfo = ({ role }: Props) => {
     <Box
       component="ul"
       sx={{
-        listStylePosition: "inside",
+        pl: 2,
         li: {
           marginTop: 2,
         },
@@ -70,7 +70,7 @@ export const RoleAccessInfo = ({ role }: Props) => {
       <Typography component="li" variant="body2" sx={{ marginBottom: 2 }}>
         Has access to:
       </Typography>
-      <Box display="flex" flexWrap="wrap" gap={2} ml={2}>
+      <Box display="flex" flexWrap="wrap" gap={2}>
         {roleAccess[role].map((access) => (
           <Box display="flex" width={120} alignItems="center">
             {accessIcon[access as keyof typeof accessIcon]}
