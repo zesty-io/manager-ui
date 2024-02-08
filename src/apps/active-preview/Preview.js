@@ -395,16 +395,17 @@ export function Preview(props) {
             open
             PaperProps={{
               sx: {
-                p: 2,
+                p: 2.5,
                 alignItems: "center",
                 gap: 1.5,
-                width: 210,
+                width: 240,
+                boxSizing: "border-box",
               },
             }}
           >
             <Box
               sx={{
-                backgroundColor: hasErrors ? "red.100" : "deepOrange.200",
+                backgroundColor: hasErrors ? "red.100" : "deepOrange.50",
                 borderRadius: "100%",
                 width: "40px",
                 height: "40px",
@@ -422,7 +423,7 @@ export function Preview(props) {
                 }}
               />
             </Box>
-            <Typography variant="h6" fontWeight={600}>
+            <Typography variant="h6" fontWeight={700} align="center">
               {hasErrors
                 ? "Resolve invalid field values to save and update preview"
                 : "Save to Update Preview"}
