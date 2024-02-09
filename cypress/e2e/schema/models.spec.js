@@ -35,10 +35,10 @@ describe("Schema: Models", () => {
 
     cy.contains("Select Model Parent")
       .next()
-      .type("A Parent Cypress Schema Do Not Delete");
+      .type("Cypress test (Group with visible fields in list)");
 
     cy.get(".MuiAutocomplete-popper")
-      .contains("A Parent Cypress Schema Do Not Delete")
+      .contains("Cypress test (Group with visible fields in list)")
       .click();
 
     cy.contains("Description").next().type("Cypress test model description");
