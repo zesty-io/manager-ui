@@ -102,7 +102,7 @@ export const RoleSelectModal = ({ role, onSelect, onClose }: Props) => {
 
   const isOwner = currentUserRoles
     ?.filter((role) => role.entityZUID === instanceZUID)
-    ?.some((role) => ["owner"].includes(role.name?.toLowerCase()));
+    ?.some((role) => role.name?.toLowerCase() === "owner");
 
   return (
     <Dialog open={true} onClose={onClose} fullWidth maxWidth={"xs"}>
