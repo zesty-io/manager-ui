@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Autocomplete,
   Button,
@@ -9,16 +9,11 @@ import {
   DialogContent,
   DialogTitle,
   InputLabel,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Select,
   TextField,
   Typography,
 } from "@mui/material";
-import PersonAddRoundedIcon from "@mui/icons-material/PersonAddRounded";
 import GroupAddRoundedIcon from "@mui/icons-material/GroupAddRounded";
-import MailIcon from "@mui/icons-material/Mail";
 import { RoleAccessInfo } from "./RoleAccessInfo";
 import { RoleSelectModal } from "./RoleSelectModal";
 import {
@@ -28,6 +23,7 @@ import {
 import { LoadingButton } from "@mui/lab";
 import { NoPermission } from "./NoPermission";
 import instanzeZUID from "../../../utility/instanceZUID";
+import { ConfirmationModal } from "./ConfirmationDialog";
 
 interface Props {
   onClose: () => void;
@@ -153,7 +149,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
               display: "block",
             }}
           />
-          <Box sx={{ mt: 1.5, fontWeight: 700 }}>Invite Members </Box>
+          <Box sx={{ mt: 1.5, fontWeight: 700 }}>Invite Users</Box>
           <Typography sx={{ mt: 1 }} variant="body2" color="text.secondary">
             These invites will be sent as emails
           </Typography>
@@ -283,58 +279,13 @@ const InviteMembersModal = ({ onClose }: Props) => {
           </LoadingButton>
         </DialogActions>
       </Dialog>
-      <Dialog
-        open={!!sentEmails.length && !createUserInviteError}
+      <ConfirmationModal
+        roleName={roles[roleIndex].name}
         onClose={onClose}
-        fullWidth
-        maxWidth={"xs"}
-      >
-        <DialogTitle>
-          <PersonAddRoundedIcon
-            color="primary"
-            sx={{
-              padding: 1,
-              borderRadius: "20px",
-              backgroundColor: "deepOrange.50",
-              display: "block",
-            }}
-          />
-          <Box sx={{ mt: 1.5 }}>
-            You've invited {sentEmails?.length} people to be{" "}
-            {roles[roleIndex].name}
-          </Box>
-          <Typography sx={{ mt: 1 }} variant="body2" color="text.secondary">
-            These invites have been sent to their emails
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          {sentEmails.map((email) => (
-            <ListItem divider>
-              <ListItemIcon sx={{ minWidth: "36px" }}>
-                <MailIcon color="action" />
-              </ListItemIcon>
-              <ListItemText
-                primary={email}
-                primaryTypographyProps={{
-                  variant: "body1",
-                }}
-              />
-            </ListItem>
-          ))}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            color="inherit"
-            variant="outlined"
-            onClick={() => setSentEmails([])}
-          >
-            Invite More People
-          </Button>
-          <Button color="primary" variant="contained" onClick={() => onClose()}>
-            Done
-          </Button>
-        </DialogActions>
-      </Dialog>
+        sentEmails={sentEmails}
+        error={createUserInviteError}
+        onResetSentEmails={() => setSentEmails([])}
+      />
       {showRoleSelectModal && (
         <RoleSelectModal
           role={roleIndex}
