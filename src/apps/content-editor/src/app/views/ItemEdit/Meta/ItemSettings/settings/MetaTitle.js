@@ -15,7 +15,7 @@ export const MetaTitle = memo(function MetaTitle({
     if (isSaving) {
       onChange(meta_title, "metaTitle");
     }
-  }, [meta_title]);
+  }, [meta_title, isSaving]);
   return (
     <article className={styles.MetaTitle} data-cy="metaTitle">
       <FieldShell

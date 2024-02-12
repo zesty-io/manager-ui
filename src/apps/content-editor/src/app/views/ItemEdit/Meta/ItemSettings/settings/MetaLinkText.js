@@ -15,7 +15,7 @@ export const MetaLinkText = memo(function MetaLinkText({
     if (isSaving) {
       onChange(meta_link_text, "metaLinkText");
     }
-  }, [meta_link_text]);
+  }, [meta_link_text, isSaving]);
 
   return (
     <article className={styles.MetaLinkText} data-cy="metaLinkText">

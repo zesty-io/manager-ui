@@ -46,7 +46,7 @@ export default connect()(function MetaDescription({
         onChange(meta_description, "metaDescription");
       }
     }
-  }, [meta_description]);
+  }, [meta_description, isSaving]);
 
   if (error) {
     dispatch(
