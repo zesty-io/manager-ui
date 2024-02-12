@@ -15,21 +15,21 @@ import MailIcon from "@mui/icons-material/Mail";
 
 type ConfirmationModalProps = {
   sentEmails: string[];
-  error: boolean;
   onClose: () => void;
   onResetSentEmails: () => void;
   roleName: string;
+  failedInvites: Record<string, string>;
 };
 export const ConfirmationModal = ({
   sentEmails,
-  error,
   onClose,
   onResetSentEmails,
   roleName,
+  failedInvites,
 }: ConfirmationModalProps) => {
   return (
     <Dialog
-      open={!!sentEmails.length && !error}
+      open={!!sentEmails.length && !Object.keys(failedInvites)?.length}
       onClose={onClose}
       fullWidth
       maxWidth={"xs"}

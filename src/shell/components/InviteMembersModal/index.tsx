@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useReducer, useRef, useState } from "react";
 import {
   Autocomplete,
   Button,
@@ -63,8 +63,31 @@ const InviteMembersModal = ({ onClose }: Props) => {
   const emailChipsRef = useRef([]);
   const autocompleteRef = useRef(null);
 
-  const [createUserInvite, { isError: createUserInviteError }] =
-    useCreateUserInviteMutation();
+  const [failedInvites, updateFailedInvites] = useReducer(
+    (
+      state: Record<string, string>,
+      action:
+        | { type: "update"; value: Record<string, string> }
+        | { type: "reset" }
+    ) => {
+      switch (action.type) {
+        case "update":
+          return {
+            ...state,
+            ...action.value,
+          };
+
+        case "reset":
+          return {};
+
+        default:
+          return state;
+      }
+    },
+    {}
+  );
+
+  const [createUserInvite] = useCreateUserInviteMutation();
   const { data: currentUserRoles } = useGetCurrentUserRolesQuery();
 
   const canInvite = currentUserRoles
@@ -83,7 +106,11 @@ const InviteMembersModal = ({ onClose }: Props) => {
         setEmailError(true);
         return;
       } else {
-        _emails = [...new Set([..._emails, inputValue])];
+        if (inputValue) {
+          _emails = [...new Set([..._emails, inputValue])];
+        } else {
+          _emails = [...new Set([...emails])];
+        }
       }
 
       setSendingEmails(true);
@@ -91,8 +118,26 @@ const InviteMembersModal = ({ onClose }: Props) => {
         createUserInvite({
           inviteeEmail: email,
           accessLevel: roleIndex,
-        }).unwrap()
+        })
+          .unwrap()
+          .catch((error) => {
+            let errorMsg = "";
+
+            if (error?.data?.error?.includes("already invited")) {
+              errorMsg = "Invite already sent";
+            } else if (
+              error?.data?.error?.includes("already has a role associated")
+            ) {
+              errorMsg = "Already part of instance";
+            }
+
+            updateFailedInvites({
+              type: "update",
+              value: { [email]: errorMsg },
+            });
+          })
       );
+
       await Promise.allSettled(invites);
       setSentEmails([..._emails]);
       setEmails([]);
@@ -281,9 +326,12 @@ const InviteMembersModal = ({ onClose }: Props) => {
       </Dialog>
       <ConfirmationModal
         roleName={roles[roleIndex].name}
-        onClose={onClose}
+        onClose={() => {
+          updateFailedInvites({ type: "reset" });
+          onClose();
+        }}
         sentEmails={sentEmails}
-        error={createUserInviteError}
+        failedInvites={failedInvites}
         onResetSentEmails={() => setSentEmails([])}
       />
       {showRoleSelectModal && (
