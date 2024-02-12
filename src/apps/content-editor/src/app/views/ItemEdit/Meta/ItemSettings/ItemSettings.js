@@ -115,25 +115,21 @@ export const ItemSettings = memo(
             meta_link_text={web.metaLinkText}
             onChange={onChange}
             errors={errors}
-            isSaving={props.saving}
           />
           <MetaTitle
             meta_title={web.metaTitle}
             onChange={onChange}
             errors={errors}
-            isSaving={props.saving}
           />
           <MetaDescription
             meta_description={web.metaDescription}
             onChange={onChange}
             errors={errors}
-            isSaving={props.saving}
           />
           <MetaKeywords
             meta_keywords={web.metaKeywords}
             onChange={onChange}
             errors={errors}
-            isSaving={props.saving}
           />
           <SitemapPriority
             sitemapPriority={web.sitemapPriority}
