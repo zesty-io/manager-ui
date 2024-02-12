@@ -294,4 +294,22 @@ describe("Content Specs", () => {
       cy.get("[data-cy=toast]").contains("Saved a new ").should("exist");
     });
   });
+
+  describe("Media field image template", () => {
+    before(() => {
+      cy.intercept("**/search/*", { fixture: "template-media-file.json" }).as(
+        "getContentData"
+      );
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht");
+      });
+    });
+
+    it("renders an image with a url from a template", () => {
+      cy.get("#12-d39a38-85sqdt")
+        .find('[data-testid="ReportGmailerrorredIcon"]')
+        .should("not.exist");
+      cy.get("#12-d39a38-85sqdt").find("img").should("exist");
+    });
+  });
 });

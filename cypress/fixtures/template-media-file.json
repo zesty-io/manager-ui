@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "timestamp": "2024-02-12T01:36:54.63311244Z",
+    "totalResults": 1,
+    "start": 0,
+    "offset": 0,
+    "limit": 1
+  },
+  "data": [
+    {
+      "web": {
+        "version": 211,
+        "versionZUID": "9-acc2a1c3ab-p4k426",
+        "metaDescription": "This is an item meta description",
+        "metaTitle": "Homepage",
+        "metaLinkText": "Homepage",
+        "metaKeywords": null,
+        "parentZUID": null,
+        "pathPart": "zesty_home",
+        "path": "/",
+        "sitemapPriority": 0,
+        "canonicalTagMode": 0,
+        "canonicalQueryParamWhitelist": null,
+        "canonicalTagCustomValue": null,
+        "createdByUserZUID": "5-9087cdedfb-fvlb68",
+        "createdAt": "2024-02-12T00:36:33Z",
+        "updatedAt": "2024-02-12T00:36:33Z"
+      },
+      "meta": {
+        "ZUID": "7-a1be38-1b42ht",
+        "zid": 506,
+        "masterZUID": "7-a1be38-1b42ht",
+        "contentModelZUID": "6-a1a600-k0b6f0",
+        "contentModelName": null,
+        "sort": 0,
+        "listed": false,
+        "version": 211,
+        "langID": 1,
+        "createdAt": "2018-08-10T20:05:36Z",
+        "updatedAt": "2024-02-12T00:36:32Z"
+      },
+      "siblings": {
+        "cs-CZ": "7-e756cc7-525666",
+        "en-US": "7-a1be38-1b42ht",
+        "es": "7-cd66074-172961"
+      },
+      "data": {
+        "content": "Hello world",
+        "david_uuid": "a2425b43-f053-4804-8d36-b268ba37c19a",
+        "habibi": "7-76ba7b3-gxcg19",
+        "image": "https://4rb42634.media.zestyio.com/brainstorming-businesswoman-collaborate-1229359.rJO5q8bvB.jpg",
+        "image_1": "",
+        "image_2": null,
+        "image_3": null,
+        "image_4": null,
+        "image_5": null,
+        "title": "Hello World Test"
+      },
+      "publishAt": null
+    }
+  ]
+}
