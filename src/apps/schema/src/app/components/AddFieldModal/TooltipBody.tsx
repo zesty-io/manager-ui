@@ -67,7 +67,7 @@ export const TooltipBody = ({
           {description}
         </Typography>
         <Box py={2}>
-          <Typography color="text.primary" variant="body2" fontWeight="700">
+          <Typography variant="body2" fontWeight="700">
             Common Uses
           </Typography>
           <Box pl={2} component="ul">
@@ -83,7 +83,7 @@ export const TooltipBody = ({
             ))}
           </Box>
         </Box>
-        <Typography color="text.primary" variant="body2" fontWeight="700">
+        <Typography variant="body2" fontWeight="700">
           Pro Tip
         </Typography>
         <Typography variant="body3" color="text.secondary">
