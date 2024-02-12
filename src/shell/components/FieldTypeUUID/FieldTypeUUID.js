@@ -1,15 +1,18 @@
 import React, { useEffect } from "react";
 import cx from "classnames";
 import { v4 as uuidv4 } from "uuid";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClipboard } from "@fortawesome/free-solid-svg-icons";
-import { Input } from "@zesty-io/core/Input";
-
+import {
+  TextField,
+  InputAdornment,
+  Tooltip,
+  IconButton,
+  tooltipClasses,
+} from "@mui/material";
 import styles from "./FieldTypeUUID.less";
+import TagIcon from "@mui/icons-material/Tag";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 
 export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
-  // console.log("FieldTypeUUID:render");
-
   useEffect(() => {
     // NOTE may want to add a check to ensure the itemZUID is 'new'
     if (props.name && !props.value) {
@@ -20,37 +23,69 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
 
   return (
     <label className={cx(styles.FieldTypeUUID, props.className)}>
-      <div className={styles.DateFieldTypeInput}>
-        <FontAwesomeIcon
-          className={styles.Icon}
-          icon={faClipboard}
-          aria-hidden="true"
-          title="Click to Copy"
-          onClick={(e) => {
-            const input = document.createElement("input");
-            document.body.appendChild(input);
-            input.value = props.value;
-            input.focus();
-            input.select();
-            const result = document.execCommand("copy");
-            input.remove();
-            if (result === "unsuccessful") {
-              return props.dispatch(
-                notify({
-                  type: "error",
-                  message: "Failed to copy the team ID to your clipboard",
-                })
-              );
-            }
+      <div>
+        <Tooltip
+          slotProps={{
+            popper: {
+              /**
+               * This is a custom style that is being applied to the tooltip
+               to adjust it's position not supported by Tooltip default props
+               */
+              sx: {
+                [`&.${tooltipClasses.popper}[data-popper-placement*="top"] .${tooltipClasses.tooltip}`]:
+                  {
+                    position: "relative",
+                    top: "47px",
+                  },
+              },
+            },
           }}
-        />
-
-        <Input
-          type="text"
-          readOnly={true}
-          required={props.required}
-          defaultValue={props.value || ""}
-        />
+          placement="top"
+          title="This field cannot be edited"
+        >
+          <TextField
+            disabled
+            required={props.required}
+            defaultValue={props.value || ""}
+            readOnly={true}
+            fullWidth
+            type="text"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <TagIcon fontSize="small" />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      const input = document.createElement("input");
+                      document.body.appendChild(input);
+                      input.value = props.value;
+                      input.focus();
+                      input.select();
+                      const result = document.execCommand("copy");
+                      input.remove();
+                      if (result === "unsuccessful") {
+                        return props.dispatch(
+                          notify({
+                            type: "error",
+                            message:
+                              "Failed to copy the team ID to your clipboard",
+                          })
+                        );
+                      }
+                    }}
+                  >
+                    <ContentCopyRoundedIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Tooltip>
       </div>
     </label>
   );
