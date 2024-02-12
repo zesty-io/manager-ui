@@ -27,6 +27,7 @@ export const ConfirmationModal = ({
   roleName,
   failedInvites,
 }: ConfirmationModalProps) => {
+  // TODO: Check with zosh what the ui looks like when there are successful and failed invites
   return (
     <Dialog
       open={!!sentEmails.length && !Object.keys(failedInvites)?.length}
