@@ -260,11 +260,12 @@ export const Field = ({
   };
 
   /**
-   * @description This function filters out items that are only saved in memory.
-   * has not been saved, published or scheduled.
+   * @description This function remove items that are only saved in memory.
+   * This means that we only shows in the options all items that are saved, published or scheduled.
+   *
    */
   const filterValidItems = (allItems: any) => {
-    // filter out items that are only saved in memory
+    // remove items that are only saved in memory
     const filteredValidItems = Object.entries<any>(allItems).filter(
       ([, value]) => value.publishing || value.siblings
     );
@@ -768,6 +769,7 @@ export const Field = ({
 
     case "one_to_many":
       const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
+        console.log(allItems);
         const options = filterValidItems(allItems);
 
         return resolveRelatedOptions(
