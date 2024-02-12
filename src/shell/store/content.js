@@ -413,7 +413,7 @@ export function saveItem(itemZUID, action = "") {
       item.web.metaLinkText = item.web.metaLinkText.slice(0, 150);
     }
     if (item.web.metaKeywords) {
-      item.web.metaKeywords = item.web.metaKeywords.slice(0, 250);
+      item.web.metaKeywords = item.web.metaKeywords.slice(0, 255);
     }
     /*
       Nav item will not be found if item does exist in the nav such is the case
