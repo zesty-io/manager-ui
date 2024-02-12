@@ -1,4 +1,4 @@
-import { memo, useEffect } from "react";
+import { memo } from "react";
 
 import { TextField } from "@mui/material";
 import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
