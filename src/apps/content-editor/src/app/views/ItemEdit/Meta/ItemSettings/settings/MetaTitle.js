@@ -9,13 +9,7 @@ export const MetaTitle = memo(function MetaTitle({
   meta_title,
   onChange,
   errors,
-  isSaving,
 }) {
-  useEffect(() => {
-    if (isSaving) {
-      onChange(meta_title, "metaTitle");
-    }
-  }, [meta_title, isSaving]);
   return (
     <article className={styles.MetaTitle} data-cy="metaTitle">
       <FieldShell

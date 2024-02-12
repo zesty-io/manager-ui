@@ -9,13 +9,7 @@ export const MetaKeywords = memo(function MetaKeywords({
   meta_keywords,
   onChange,
   errors,
-  isSaving,
 }) {
-  useEffect(() => {
-    if (isSaving) {
-      onChange(meta_keywords, "metaKeywords");
-    }
-  }, [meta_keywords, isSaving]);
   return (
     <article className={styles.MetaKeywords} data-cy="metaKeywords">
       <FieldShell

@@ -9,14 +9,7 @@ export const MetaLinkText = memo(function MetaLinkText({
   meta_link_text,
   onChange,
   errors,
-  isSaving,
 }) {
-  useEffect(() => {
-    if (isSaving) {
-      onChange(meta_link_text, "metaLinkText");
-    }
-  }, [meta_link_text, isSaving]);
-
   return (
     <article className={styles.MetaLinkText} data-cy="metaLinkText">
       <FieldShell
