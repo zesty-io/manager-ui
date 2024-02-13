@@ -14,6 +14,7 @@ export default connect((state) => {
   };
 })(
   memo(function PrivateRoute(props) {
+    console.log(props.auth);
     useEffect(() => {
       const checkSession = () => {
         props.dispatch(verify()).catch(() => {
@@ -76,7 +77,7 @@ export default connect((state) => {
           sx={{
             zIndex: (theme) => theme.zIndex.tooltip + 10, // Needs to be on top of everything
           }}
-          open={!props.auth.valid}
+          open={!props.auth.valid && !props.auth.checking}
         >
           <Staging>
             {props.auth.checking ? <CircularProgress /> : <Login />}
