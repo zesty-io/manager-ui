@@ -52,6 +52,7 @@ import {
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
+import { NumberFormatInput } from "../../../../../../../shell/components/NumberFormatInput";
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
@@ -67,6 +68,7 @@ import {
 import { ResolvedOption } from "./ResolvedOption";
 import { LinkOption } from "./LinkOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
+import { NumericFormat } from "react-number-format";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -838,13 +840,19 @@ export const Field = ({
           <TextField
             size="small"
             variant="outlined"
-            type="number"
             fullWidth
             value={value ? value.toString() : "0"}
             name={name}
             required={required}
             onChange={(evt) => onChange(evt.target.value, name)}
             error={errors && Object.values(errors)?.some((error) => !!error)}
+            InputProps={{
+              inputComponent: NumberFormatInput as any,
+              inputProps: {
+                thousandSeparator: true,
+                valueIsNumericString: true,
+              },
+            }}
           />
         </FieldShell>
       );
