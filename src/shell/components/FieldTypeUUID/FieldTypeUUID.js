@@ -27,17 +27,14 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
         <Tooltip
           slotProps={{
             popper: {
-              /**
-               * This is a custom style that is being applied to the tooltip
-               to adjust it's position not supported by Tooltip default props
-               */
-              sx: {
-                [`&.${tooltipClasses.popper}[data-popper-placement*="top"] .${tooltipClasses.tooltip}`]:
-                  {
-                    position: "relative",
-                    top: "47px",
+              modifiers: [
+                {
+                  name: "offset",
+                  options: {
+                    offset: [0, -47],
                   },
-              },
+                },
+              ],
             },
           }}
           placement="top"
