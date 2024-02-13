@@ -14,7 +14,6 @@ export default connect((state) => {
   };
 })(
   memo(function PrivateRoute(props) {
-    console.log(props.auth);
     useEffect(() => {
       const checkSession = () => {
         props.dispatch(verify()).catch(() => {
