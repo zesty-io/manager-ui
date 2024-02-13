@@ -265,7 +265,6 @@ export const Field = ({
    *
    */
   const filterValidItems = (items: any) => {
-    console.log(items);
     // remove items that are only saved in memory
     const filteredValidItems = Object.entries<any>(items).filter(
       ([, value]) => value.web.version
