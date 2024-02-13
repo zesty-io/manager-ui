@@ -264,10 +264,11 @@ export const Field = ({
    * This means that we only shows in the options all items that are saved, published or scheduled.
    *
    */
-  const filterValidItems = (allItems: any) => {
+  const filterValidItems = (items: any) => {
+    console.log(items);
     // remove items that are only saved in memory
-    const filteredValidItems = Object.entries<any>(allItems).filter(
-      ([, value]) => value.publishing || value.siblings
+    const filteredValidItems = Object.entries<any>(items).filter(
+      ([, value]) => value.web.version
     );
     // Reshape the array back into an object
     let options = Object.fromEntries(filteredValidItems);
