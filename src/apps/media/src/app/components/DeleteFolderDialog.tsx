@@ -51,6 +51,7 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
             backgroundColor: "red.100",
             display: "block",
             mb: 2,
+            fontWeight: 700,
           }}
         />
         Delete Folder?

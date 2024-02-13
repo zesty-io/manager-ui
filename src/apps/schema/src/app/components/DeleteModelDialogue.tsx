@@ -88,7 +88,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
         >
           <DeleteRoundedIcon color="error" />
         </Box>
-        <Typography variant="h5" sx={{ mt: 1.5 }}>
+        <Typography variant="h5" fontWeight={700} sx={{ mt: 1.5 }}>
           Delete Model?
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">

@@ -159,7 +159,7 @@ export default connect((state) => {
         ) : (
           <Box display="flex" flexDirection="column" gap={2}>
             <Box>
-              <Typography variant="h4" fontWeight={600} sx={{ mb: "2px" }}>
+              <Typography variant="h4" fontWeight={700} sx={{ mb: "2px" }}>
                 Hi, Welcome Back!
               </Typography>
               <Typography

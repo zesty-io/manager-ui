@@ -57,7 +57,7 @@ export const RenameFolderDialog = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <DialogTitle>Rename Folder</DialogTitle>
+      <DialogTitle fontWeight={700}>Rename Folder</DialogTitle>
       <DialogContent>
         <InputLabel>New Folder Name</InputLabel>
         <TextField

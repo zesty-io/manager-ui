@@ -124,7 +124,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <DialogTitle>New Folder</DialogTitle>
+      <DialogTitle fontWeight={700}>New Folder</DialogTitle>
       <DialogContent>
         <InputLabel>Parent Folder</InputLabel>
         <Autocomplete
