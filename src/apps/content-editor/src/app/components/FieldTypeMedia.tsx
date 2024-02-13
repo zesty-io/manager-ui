@@ -345,7 +345,9 @@ const MediaItem = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { data, isFetching } = useGetFileQuery(imageZUID);
+  const { data, isFetching } = useGetFileQuery(imageZUID, {
+    skip: imageZUID?.substr(0, 4) === "http",
+  });
   const [showRenameFileModal, setShowRenameFileModal] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
