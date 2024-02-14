@@ -19,7 +19,6 @@ export const FieldTypeSort = ({
     <MuiTextField
       size="small"
       variant="outlined"
-      type="number"
       value={value}
       onChange={onChange}
       InputProps={{
@@ -75,6 +74,9 @@ export const FieldTypeSort = ({
         ),
         // Spread props at the end to allow Input prop overrides
         ...InputProps,
+      }}
+      inputProps={{
+        pattern: "[0-9]",
       }}
       // Spread props at the end to allow prop overrides
       {...props}

@@ -935,9 +935,9 @@ export const Field = ({
             sx={{ maxWidth: "200px" }}
             name={name}
             required={required}
-            value={value?.toString() || ""}
+            value={value?.toString() || "0"}
             onChange={(evt) => {
-              onChange(parseInt(evt.target.value), name);
+              onChange(parseInt(evt.target.value) || 0, name);
             }}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />
