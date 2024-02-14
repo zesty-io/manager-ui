@@ -1,8 +1,8 @@
 import { ChangeEvent } from "react";
 import MuiTextField, { OutlinedTextFieldProps } from "@mui/material/TextField";
-import { Button, InputAdornment } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
+import { InputAdornment, IconButton } from "@mui/material";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
 
 export interface FieldTypeSortProps
   extends Omit<OutlinedTextFieldProps, "variant"> {
@@ -17,16 +17,14 @@ export const FieldTypeSort = ({
 }: FieldTypeSortProps) => {
   return (
     <MuiTextField
-      size="small"
       variant="outlined"
       value={value}
       onChange={onChange}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <Button
+            <IconButton
               size="small"
-              variant="contained"
               onClick={(e) => {
                 e.stopPropagation();
                 // References input via click event in order to obtain its value
@@ -43,15 +41,14 @@ export const FieldTypeSort = ({
                   );
               }}
             >
-              <RemoveIcon fontSize="small" />
-            </Button>
+              <RemoveRoundedIcon fontSize="small" />
+            </IconButton>
           </InputAdornment>
         ),
         endAdornment: (
           <InputAdornment position="end">
-            <Button
+            <IconButton
               size="small"
-              variant="contained"
               onClick={(e) => {
                 e.stopPropagation();
                 // References input via click event in order to obtain its value
@@ -68,8 +65,8 @@ export const FieldTypeSort = ({
                   );
               }}
             >
-              <AddIcon fontSize="small" />
-            </Button>
+              <AddRoundedIcon fontSize="small" />
+            </IconButton>
           </InputAdornment>
         ),
         // Spread props at the end to allow Input prop overrides
