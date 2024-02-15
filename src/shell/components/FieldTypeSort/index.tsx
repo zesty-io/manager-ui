@@ -41,7 +41,8 @@ export const FieldTypeSort = ({
   return (
     <MuiTextField
       variant="outlined"
-      value={value}
+      // Only changes how the minus sign is rendered on the input field, doesn't affect the value at all
+      value={value.replace("-", "−")}
       onChange={onChange}
       InputProps={{
         startAdornment: (
