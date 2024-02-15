@@ -1,7 +1,10 @@
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDatePicker, DesktopDatePickerProps } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 import { TextField } from "@mui/material";
+import {
+  DesktopDatePicker,
+  DesktopDatePickerProps,
+} from "@mui/x-date-pickers/DesktopDatePicker";
 
 export interface FieldTypeDateProps
   extends Omit<DesktopDatePickerProps<Date, Date>, "renderInput"> {
@@ -18,10 +21,12 @@ export const FieldTypeDate = ({
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DesktopDatePicker
+        InputAdornmentProps={{ position: "start" }}
         data-testid="zds-date-picker"
-        renderInput={(params) => (
-          <TextField {...params} fullWidth size="small" error={error} />
-        )}
+        renderInput={(params) => {
+          params.inputProps.placeholder = "Mon DD YYYY";
+          return <TextField {...params} fullWidth size="small" error={error} />;
+        }}
         // Spread props at the end to allow prop overrides
         {...props}
       />

@@ -67,6 +67,8 @@ import {
 import { ResolvedOption } from "./ResolvedOption";
 import { LinkOption } from "./LinkOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers-pro";
+import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -257,6 +259,22 @@ export const Field = ({
 
   const hasErrors = (errors: Error) => {
     return Object.values(errors)?.some((error) => !!error);
+  };
+
+  /**
+   * @description This function remove items that are only saved in memory.
+   * This means that we only shows in the options all items that are saved, published or scheduled.
+   *
+   */
+  const filterValidItems = (items: any) => {
+    // remove items that are only saved in memory
+    const filteredValidItems = Object.entries<any>(items).filter(
+      ([, value]) => value.web.version
+    );
+    // Reshape the array back into an object
+    let options = Object.fromEntries(filteredValidItems);
+
+    return options;
   };
 
   switch (datatype) {
@@ -678,6 +696,8 @@ export const Field = ({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions: OneToManyOptions[] = useMemo(() => {
+        const options = filterValidItems(allItems);
+
         return [
           {
             inputLabel: "- None -",
@@ -686,7 +706,7 @@ export const Field = ({
           },
           ...resolveRelatedOptions(
             allFields,
-            allItems,
+            options,
             relatedFieldZUID,
             relatedModelZUID,
             langID,
@@ -751,9 +771,12 @@ export const Field = ({
 
     case "one_to_many":
       const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
+        console.log(allItems);
+        const options = filterValidItems(allItems);
+
         return resolveRelatedOptions(
           allFields,
-          allItems,
+          options,
           relatedFieldZUID,
           relatedModelZUID,
           langID,
@@ -876,6 +899,7 @@ export const Field = ({
        */
       const onDateChange = useCallback(
         (value, name, datatype) => {
+          console.log(value, name, datatype);
           /**
            * Flatpickr emits a utc timestamp, offset from users local time.
            * Legacy behavior did not send utc but sent the value as is selected by the user
@@ -886,22 +910,45 @@ export const Field = ({
         [onChange]
       );
 
+      // return (
+      //   <FieldShell settings={fieldData} errors={errors}>
+      //     <Box maxWidth={360}>
+      //       <FieldTypeDate
+      //         name={name}
+      //         required={required}
+      //         // use moment to create a UTC date object
+      //         value={
+      //           value
+      //             ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
+      //             : null
+      //         }
+      //         inputFormat="MM-dd-yyyy"
+      //         onChange={(date) => onDateChange(date, name, datatype)}
+      //         error={errors && Object.values(errors)?.some((error) => !!error)}
+      //       />
+      //     </Box>
+      //   </FieldShell>
+      // );
+
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <Box maxWidth={360}>
-            <FieldTypeDate
-              name={name}
-              required={required}
-              // use moment to create a UTC date object
-              value={
-                value
-                  ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
-                  : null
-              }
-              inputFormat="yyyy-MM-dd"
-              onChange={(date) => onDateChange(date, name, datatype)}
-              error={errors && Object.values(errors)?.some((error) => !!error)}
-            />
+          <Box maxWidth={160}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                format="MM dd yyyy"
+                value={
+                  value
+                    ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
+                    : null
+                }
+                onChange={(date) => onDateChange(date, name, datatype)}
+                slotProps={{
+                  inputAdornment: {
+                    position: "start",
+                  },
+                }}
+              />
+            </LocalizationProvider>
           </Box>
         </FieldShell>
       );
