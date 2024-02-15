@@ -932,7 +932,6 @@ export const Field = ({
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeSort
-            sx={{ maxWidth: 112 }}
             name={name}
             required={required}
             value={value?.toString() || "0"}

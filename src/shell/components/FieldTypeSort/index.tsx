@@ -73,7 +73,15 @@ export const FieldTypeSort = ({
         ...InputProps,
       }}
       inputProps={{
-        pattern: "[0-9]",
+        pattern: "[0-9]-",
+      }}
+      sx={{
+        maxWidth: "100%",
+        width: "fit-content",
+
+        "& .MuiInputBase-input.MuiOutlinedInput-input": {
+          width: value?.length + "ch",
+        },
       }}
       // Spread props at the end to allow prop overrides
       {...props}
