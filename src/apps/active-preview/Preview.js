@@ -11,6 +11,7 @@ import {
   Dialog,
   Typography,
   CircularProgress,
+  SvgIcon,
 } from "@mui/material";
 import {
   LinkRounded,
@@ -21,6 +22,7 @@ import {
   CheckRounded,
   SaveRounded,
   ZoomInRounded,
+  DangerousRounded,
 } from "@mui/icons-material";
 
 // import { Meta } from "./components/Meta";
@@ -88,6 +90,7 @@ export function Preview(props) {
   const [zoom, setZoom] = useState(() => {
     return isInIframe() ? 0.35 : 1;
   });
+  const [hasErrors, setHasErrors] = useState(false);
 
   // Track initial version sent. We use this to make a determination
   // on whether current content has changed or the different version was
@@ -137,6 +140,9 @@ export function Preview(props) {
           if (!initialVersion) {
             setInitialVersion(msg.data.version);
           }
+        }
+        if (Object(msg.data).hasOwnProperty("hasErrors")) {
+          setHasErrors(msg.data.hasErrors);
         }
       }
     }
@@ -389,15 +395,17 @@ export function Preview(props) {
             open
             PaperProps={{
               sx: {
-                p: 2,
+                p: 2.5,
                 alignItems: "center",
                 gap: 1.5,
+                width: 240,
+                boxSizing: "border-box",
               },
             }}
           >
             <Box
               sx={{
-                backgroundColor: "deepOrange.200",
+                backgroundColor: hasErrors ? "red.100" : "deepOrange.50",
                 borderRadius: "100%",
                 width: "40px",
                 height: "40px",
@@ -406,30 +414,35 @@ export function Preview(props) {
                 alignItems: "center",
               }}
             >
-              <SaveRounded
-                color="primary"
+              <SvgIcon
+                component={hasErrors ? DangerousRounded : SaveRounded}
+                color={hasErrors ? "error" : "primary"}
                 sx={{
                   width: "24px",
                   height: "24px",
                 }}
               />
             </Box>
-            <Typography variant="h6" fontWeight={600}>
-              Save to Update Preview
+            <Typography variant="h6" fontWeight={700} align="center">
+              {hasErrors
+                ? "Resolve invalid field values to save and update preview"
+                : "Save to Update Preview"}
             </Typography>
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => {
-                setSaving(true);
-                sendMessage("save");
-              }}
-              sx={{
-                maxWidth: "54px",
-              }}
-            >
-              Save
-            </Button>
+            {!hasErrors && (
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  setSaving(true);
+                  sendMessage("save");
+                }}
+                sx={{
+                  maxWidth: "54px",
+                }}
+              >
+                Save
+              </Button>
+            )}
           </Dialog>
         )}
 

@@ -57,8 +57,10 @@ export function content(state = {}, action) {
     case "LOADED_LOCAL_ITEMS":
       if (action.data) {
         let items = { ...state };
+
         Object.keys(action.data).forEach((itemZUID) => {
           // Ensure all items include meta, web & data
+
           if (
             action.data[itemZUID] &&
             action.data[itemZUID].meta &&
