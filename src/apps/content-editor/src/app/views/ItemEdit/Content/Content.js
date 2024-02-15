@@ -14,6 +14,7 @@ import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
 import { useContext } from "react";
 import { DuoModeContext } from "../../../../../../../shell/contexts/duoModeContext";
+
 export default function Content(props) {
   const [showSidebar, setShowSidebar] = useLocalStorage(
     "zesty:content:sidebarOpen",
@@ -163,6 +164,7 @@ export default function Content(props) {
             version={props.item.meta.version}
             onClose={() => setShowDuoMode(false)}
             onSave={() => props.onSave()}
+            hasErrors={props.hasErrors}
           />
         </Box>
       )}

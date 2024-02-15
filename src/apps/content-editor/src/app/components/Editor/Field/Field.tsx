@@ -261,6 +261,22 @@ export const Field = ({
     return Object.values(errors)?.some((error) => !!error);
   };
 
+  /**
+   * @description This function remove items that are only saved in memory.
+   * This means that we only shows in the options all items that are saved, published or scheduled.
+   *
+   */
+  const filterValidItems = (items: any) => {
+    // remove items that are only saved in memory
+    const filteredValidItems = Object.entries<any>(items).filter(
+      ([, value]) => value.web.version
+    );
+    // Reshape the array back into an object
+    let options = Object.fromEntries(filteredValidItems);
+
+    return options;
+  };
+
   switch (datatype) {
     case "text":
       return (
@@ -680,6 +696,8 @@ export const Field = ({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions: OneToManyOptions[] = useMemo(() => {
+        const options = filterValidItems(allItems);
+
         return [
           {
             inputLabel: "- None -",
@@ -688,7 +706,7 @@ export const Field = ({
           },
           ...resolveRelatedOptions(
             allFields,
-            allItems,
+            options,
             relatedFieldZUID,
             relatedModelZUID,
             langID,
@@ -753,9 +771,12 @@ export const Field = ({
 
     case "one_to_many":
       const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
+        console.log(allItems);
+        const options = filterValidItems(allItems);
+
         return resolveRelatedOptions(
           allFields,
-          allItems,
+          options,
           relatedFieldZUID,
           relatedModelZUID,
           langID,
