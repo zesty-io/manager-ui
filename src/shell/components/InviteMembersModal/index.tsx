@@ -58,10 +58,30 @@ const InviteMembersModal = ({ onClose }: Props) => {
   const [inputValue, setInputValue] = useState("");
   const [roleIndex, setRoleIndex] = useState(1);
   const [showRoleSelectModal, setShowRoleSelectModal] = useState(false);
-  const [sentEmails, setSentEmails] = useState([]);
+  // const [sentEmails, setSentEmails] = useState([]);
   const [sendingEmails, setSendingEmails] = useState(false);
+  const [isDoneSendingEmails, setIsDoneSendingEmails] = useState(false);
   const emailChipsRef = useRef([]);
   const autocompleteRef = useRef(null);
+
+  const [sentEmails, updateSentEmails] = useReducer(
+    (
+      state: string[],
+      action: { type: "update"; value: string } | { type: "reset" }
+    ) => {
+      switch (action.type) {
+        case "update":
+          return [...state, action.value];
+
+        case "reset":
+          return [];
+
+        default:
+          return state;
+      }
+    },
+    []
+  );
 
   const [failedInvites, updateFailedInvites] = useReducer(
     (
@@ -120,6 +140,11 @@ const InviteMembersModal = ({ onClose }: Props) => {
           accessLevel: roleIndex,
         })
           .unwrap()
+          .then((res) => {
+            if (res?.data) {
+              updateSentEmails({ type: "update", value: email });
+            }
+          })
           .catch((error) => {
             let errorMsg = "";
 
@@ -139,10 +164,11 @@ const InviteMembersModal = ({ onClose }: Props) => {
       );
 
       await Promise.allSettled(invites);
-      setSentEmails([..._emails]);
+      // setSentEmails([..._emails]);
       setEmails([]);
       setSendingEmails(false);
       setInputValue("");
+      setIsDoneSendingEmails(true);
     } else {
       // This is if the user just free types an email address instead of pressing "," "space" or "Enter"
       if (inputValue) {
@@ -154,13 +180,36 @@ const InviteMembersModal = ({ onClose }: Props) => {
             createUserInvite({
               inviteeEmail: email,
               accessLevel: roleIndex,
-            }).unwrap()
+            })
+              .unwrap()
+              .then((res) => {
+                if (res?.data) {
+                  updateSentEmails({ type: "update", value: email });
+                }
+              })
+              .catch((error) => {
+                let errorMsg = "";
+
+                if (error?.data?.error?.includes("already invited")) {
+                  errorMsg = "Invite already sent";
+                } else if (
+                  error?.data?.error?.includes("already has a role associated")
+                ) {
+                  errorMsg = "Already part of instance";
+                }
+
+                updateFailedInvites({
+                  type: "update",
+                  value: { [email]: errorMsg },
+                });
+              })
           );
+
           await Promise.allSettled(invites);
-          setSentEmails([...inputAsEmails]);
           setEmails([]);
           setInputValue("");
           setSendingEmails(false);
+          setIsDoneSendingEmails(true);
         } else {
           setEmailError(true);
           autocompleteRef.current?.querySelector("input")?.focus();
@@ -179,7 +228,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
   return (
     <>
       <Dialog
-        open={!sentEmails.length}
+        open={!isDoneSendingEmails}
         onClose={onClose}
         fullWidth
         maxWidth={"xs"}
@@ -324,16 +373,24 @@ const InviteMembersModal = ({ onClose }: Props) => {
           </LoadingButton>
         </DialogActions>
       </Dialog>
-      <ConfirmationModal
-        roleName={roles[roleIndex].name}
-        onClose={() => {
-          updateFailedInvites({ type: "reset" });
-          onClose();
-        }}
-        sentEmails={sentEmails}
-        failedInvites={failedInvites}
-        onResetSentEmails={() => setSentEmails([])}
-      />
+      {isDoneSendingEmails && (
+        <ConfirmationModal
+          roleName={roles[roleIndex].name}
+          onClose={() => {
+            updateFailedInvites({ type: "reset" });
+            setIsDoneSendingEmails(false);
+            updateSentEmails({ type: "reset" });
+            onClose();
+          }}
+          sentEmails={sentEmails}
+          failedInvites={failedInvites}
+          onResetSentEmails={() => {
+            updateFailedInvites({ type: "reset" });
+            setIsDoneSendingEmails(false);
+            updateSentEmails({ type: "reset" });
+          }}
+        />
+      )}
       {showRoleSelectModal && (
         <RoleSelectModal
           role={roleIndex}
