@@ -238,23 +238,17 @@ describe("Content Specs", () => {
     });
 
     it("Sort Field", () => {
-      cy.get("#12-4e1914-kcqznz input[type='number']")
+      cy.get("#12-4e1914-kcqznz input[type='text']")
         .clear()
         .type("{rightArrow}12");
 
       cy.get("#12-4e1914-kcqznz button").first().click();
 
-      cy.get("#12-4e1914-kcqznz input[type='number']").should(
-        "have.value",
-        "11"
-      );
+      cy.get("#12-4e1914-kcqznz input[type='text']").should("have.value", "11");
 
       cy.get("#12-4e1914-kcqznz button").last().click();
 
-      cy.get("#12-4e1914-kcqznz input[type='number']").should(
-        "have.value",
-        "12"
-      );
+      cy.get("#12-4e1914-kcqznz input[type='text']").should("have.value", "12");
     });
 
     // Skipping relationship tests due to current fetching flow limitation
