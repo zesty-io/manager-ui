@@ -545,7 +545,11 @@ export const Field = ({
               size="small"
               value={value}
               exclusive
-              onChange={(_, val) => onChange(val, name)}
+              onChange={(_, val) => {
+                if (val !== null) {
+                  onChange(val, name);
+                }
+              }}
             >
               <ToggleButton
                 value={0}
