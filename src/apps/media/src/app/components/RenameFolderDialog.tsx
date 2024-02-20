@@ -7,6 +7,7 @@ import {
   DialogTitle,
   InputLabel,
   TextField,
+  Typography,
 } from "@mui/material";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 
@@ -57,7 +58,11 @@ export const RenameFolderDialog = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <DialogTitle fontWeight={700}>Rename Folder</DialogTitle>
+      <DialogTitle>
+        <Typography variant="h5" fontWeight="700">
+          Rename Folder
+        </Typography>
+      </DialogTitle>
       <DialogContent>
         <InputLabel>New Folder Name</InputLabel>
         <TextField
