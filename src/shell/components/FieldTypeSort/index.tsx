@@ -1,8 +1,8 @@
 import { ChangeEvent } from "react";
 import MuiTextField, { OutlinedTextFieldProps } from "@mui/material/TextField";
-import { Button, InputAdornment } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
+import { InputAdornment, IconButton } from "@mui/material";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
 
 export interface FieldTypeSortProps
   extends Omit<OutlinedTextFieldProps, "variant"> {
@@ -15,66 +15,91 @@ export const FieldTypeSort = ({
   onChange,
   ...props
 }: FieldTypeSortProps) => {
+  const modifyValue = (action: "increment" | "decrement") => {
+    let newValue = +value;
+
+    switch (action) {
+      case "increment":
+        newValue++;
+        break;
+
+      case "decrement":
+        newValue--;
+        break;
+
+      default:
+        break;
+    }
+
+    // Mocks an event change
+    const event = { target: { value: newValue.toString() } };
+
+    onChange &&
+      onChange(event as ChangeEvent<HTMLTextAreaElement | HTMLInputElement>);
+  };
+
   return (
     <MuiTextField
-      size="small"
       variant="outlined"
-      type="number"
-      value={value}
+      // Only changes how the minus sign is rendered on the input field, doesn't affect the value at all
+      value={value.replace("-", "−")}
       onChange={onChange}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <Button
+            <IconButton
               size="small"
-              variant="contained"
               onClick={(e) => {
                 e.stopPropagation();
-                // References input via click event in order to obtain its value
-                const input = e.currentTarget?.parentElement?.parentElement
-                  ?.childNodes?.[1] as HTMLInputElement;
-                const newValue = String(+input.value - 1);
-                // Updates internal input value in case component is not controlled
-                input.value = newValue;
-                // Mocks an event change
-                const event = { target: { value: newValue } };
-                onChange &&
-                  onChange(
-                    event as ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-                  );
+                modifyValue("decrement");
               }}
             >
-              <RemoveIcon fontSize="small" />
-            </Button>
+              <RemoveRoundedIcon fontSize="small" />
+            </IconButton>
           </InputAdornment>
         ),
         endAdornment: (
           <InputAdornment position="end">
-            <Button
+            <IconButton
               size="small"
-              variant="contained"
               onClick={(e) => {
                 e.stopPropagation();
-                // References input via click event in order to obtain its value
-                const input = e.currentTarget?.parentElement?.parentElement
-                  ?.childNodes?.[1] as HTMLInputElement;
-                const newValue = String(+input.value + 1);
-                // Updates internal input value in case component is not controlled
-                input.value = newValue;
-                // Mocks an event change
-                const event = { target: { value: newValue } };
-                onChange &&
-                  onChange(
-                    event as ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-                  );
+                modifyValue("increment");
               }}
             >
-              <AddIcon fontSize="small" />
-            </Button>
+              <AddRoundedIcon fontSize="small" />
+            </IconButton>
           </InputAdornment>
         ),
         // Spread props at the end to allow Input prop overrides
         ...InputProps,
+      }}
+      inputProps={{
+        pattern: "[0-9]-",
+      }}
+      sx={{
+        maxWidth: "100%",
+        width: "fit-content",
+
+        "& .MuiInputBase-input.MuiOutlinedInput-input": {
+          width: value?.length + "ch",
+        },
+      }}
+      onKeyDown={(evt) => {
+        switch (evt.code) {
+          case "ArrowUp":
+            evt.preventDefault();
+            modifyValue("increment");
+            break;
+
+          case "ArrowDown":
+            evt.preventDefault();
+            modifyValue("decrement");
+            break;
+
+          default:
+            break;
+        }
       }}
       // Spread props at the end to allow prop overrides
       {...props}
