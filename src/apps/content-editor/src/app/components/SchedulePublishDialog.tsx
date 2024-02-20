@@ -10,8 +10,16 @@ import {
   Box,
   Stack,
   Skeleton,
+  IconButton,
 } from "@mui/material";
+import {
+  DateField,
+  TimeField,
+  LocalizationProvider,
+} from "@mui/x-date-pickers-pro";
+import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
+import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import moment from "moment";
 import { useParams } from "react-router";
 
@@ -86,7 +94,39 @@ export const SchedulePublishDialog = ({
           )}
         </Typography>
       </DialogTitle>
-      <DialogContent></DialogContent>
+      <DialogContent>
+        <Stack gap={1.5}>
+          <Typography variant="body2" fontWeight={600}>
+            Publish on
+          </Typography>
+          <Stack direction="row" gap={0.5}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateField
+                name="publishDate"
+                required
+                sx={{
+                  width: 140,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <IconButton size="small">
+                      <CalendarTodayRoundedIcon fontSize="small" />
+                    </IconButton>
+                  ),
+                }}
+              />
+              <TimeField
+                name="publishTime"
+                required
+                sx={{
+                  width: 96,
+                }}
+              />
+            </LocalizationProvider>
+            <Select name="publishTimezone" sx={{ flex: 1 }}></Select>
+          </Stack>
+        </Stack>
+      </DialogContent>
       <DialogActions></DialogActions>
     </Dialog>
   );
