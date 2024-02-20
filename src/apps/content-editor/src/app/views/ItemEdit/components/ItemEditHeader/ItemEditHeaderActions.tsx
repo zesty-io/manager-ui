@@ -40,6 +40,7 @@ import { LoadingButton } from "@mui/lab";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
 import { ScheduleFlyout } from "../Header/ItemVersioning/ScheduleFlyout";
+import { SchedulePublishDialog } from "../../../../components/SchedulePublishDialog";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import { ContentItemWithDirtyAndPublishing } from ".";
@@ -361,7 +362,6 @@ export const ItemEditHeaderActions = ({
           )}
         </Tooltip>
       )}
-
       {itemState === ITEM_STATES.scheduled && canPublish && (
         <Tooltip
           enterDelay={1000}
@@ -405,7 +405,6 @@ export const ItemEditHeaderActions = ({
           </Box>
         </Tooltip>
       )}
-
       <PublishingMenu
         itemState={itemState}
         onSave={onSave}
@@ -425,12 +424,19 @@ export const ItemEditHeaderActions = ({
           loading={unpublishing}
         />
       )}
-      <ScheduleFlyout
+      {scheduledPublishDialogOpen && (
+        <SchedulePublishDialog
+          contentItem={item}
+          onClose={() => setScheduledPublishDialogOpen(false)}
+        />
+      )}
+      {/*      <ScheduleFlyout
         isOpen={scheduledPublishDialogOpen}
         item={item}
         dispatch={dispatch}
         toggleOpen={() => setScheduledPublishDialogOpen(false)}
       />
+*/}
       {isConfirmPublishModalOpen && (
         <ConfirmPublishModal
           contentTitle={item?.web?.metaTitle}
