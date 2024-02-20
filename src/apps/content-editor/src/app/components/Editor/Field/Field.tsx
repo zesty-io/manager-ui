@@ -67,8 +67,6 @@ import {
 import { ResolvedOption } from "./ResolvedOption";
 import { LinkOption } from "./LinkOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers-pro";
-import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -933,22 +931,19 @@ export const Field = ({
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <Box maxWidth={160}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                format="MM dd yyyy"
-                value={
-                  value
-                    ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
-                    : null
-                }
-                onChange={(date) => onDateChange(date, name, datatype)}
-                slotProps={{
-                  inputAdornment: {
-                    position: "start",
-                  },
-                }}
-              />
-            </LocalizationProvider>
+            <FieldTypeDate
+              name={name}
+              required={required}
+              // use moment to create a UTC date object
+              value={
+                value
+                  ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
+                  : null
+              }
+              format="MMM dd, yyyy"
+              onChange={(date) => onDateChange(date, name, datatype)}
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
           </Box>
         </FieldShell>
       );
