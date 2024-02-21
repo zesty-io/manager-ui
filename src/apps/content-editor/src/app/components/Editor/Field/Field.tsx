@@ -547,7 +547,11 @@ export const Field = ({
               size="small"
               value={value}
               exclusive
-              onChange={(_, val) => onChange(val, name)}
+              onChange={(_, val) => {
+                if (val !== null) {
+                  onChange(val, name);
+                }
+              }}
             >
               <ToggleButton
                 value={0}
@@ -771,7 +775,6 @@ export const Field = ({
 
     case "one_to_many":
       const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
-        console.log(allItems);
         const options = filterValidItems(allItems);
 
         return resolveRelatedOptions(
@@ -961,12 +964,11 @@ export const Field = ({
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeSort
-            sx={{ maxWidth: "200px" }}
             name={name}
             required={required}
-            value={value?.toString() || ""}
+            value={value?.toString() || "0"}
             onChange={(evt) => {
-              onChange(parseInt(evt.target.value), name);
+              onChange(parseInt(evt.target.value) || 0, name);
             }}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />
