@@ -18,6 +18,7 @@ import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import pluralizeWord from "../../../utility/pluralizeWord";
 
 type ConfirmationModalProps = {
   sentEmails: string[];
@@ -40,15 +41,23 @@ export const ConfirmationModal = ({
     if (hasFailedInvites && hasSuccessfulInvites) {
       return `Invites set to ${Object.keys(failedInvites).length} out of ${
         Object.keys(failedInvites).length + sentEmails.length
-      } users (via email)`;
+      } ${pluralizeWord(
+        "user",
+        Object.keys(failedInvites).length + sentEmails.length
+      )} (via email)`;
     }
 
     if (hasFailedInvites && !hasSuccessfulInvites) {
-      return `Unable to invite ${Object.keys(failedInvites).length} users`;
+      return `Unable to invite ${
+        Object.keys(failedInvites).length
+      } ${pluralizeWord("user", Object.keys(failedInvites).length)}`;
     }
 
     if (!hasFailedInvites && hasSuccessfulInvites) {
-      return `Invite sent to ${sentEmails.length} users (via email)`;
+      return `Invite sent to ${pluralizeWord(
+        "user",
+        sentEmails.length
+      )} (via email)`;
     }
   };
 
@@ -65,7 +74,9 @@ export const ConfirmationModal = ({
             display: "block",
           }}
         />
-        <Box sx={{ mt: 1.5 }}>{generateHeaderText()}</Box>
+        <Typography variant="h5" fontWeight={700} sx={{ mt: 1.5 }}>
+          {generateHeaderText()}
+        </Typography>
 
         <Typography sx={{ mt: 1 }} variant="body2" color="text.secondary">
           See list below
