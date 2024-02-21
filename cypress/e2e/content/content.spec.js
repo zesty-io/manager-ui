@@ -199,7 +199,7 @@ describe("Content Specs", () => {
       // limit is 4294967295
       cy.get("#12-9b96ec-tll2gn input[type=number]")
         .focus()
-        /* 
+        /*
           input type='number 'cannot be empty so rather than whitespace, it'd have a value of 0
           to solve for this {selectall} is used to overwrite value as opposed to clear()
         */
@@ -297,19 +297,21 @@ describe("Content Specs", () => {
 
   describe("Media field image template", () => {
     before(() => {
-      cy.intercept("**/search/*", { fixture: "template-media-file.json" }).as(
-        "getContentData"
-      );
       cy.waitOn("/v1/content/models*", () => {
-        cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht");
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
     });
 
     it("renders an image with a url from a template", () => {
-      cy.get("#12-d39a38-85sqdt")
-        .find('[data-testid="ReportGmailerrorredIcon"]')
-        .should("not.exist");
-      cy.get("#12-d39a38-85sqdt").find("img").should("exist");
+      cy.get("#12-1c94d4-pg8dvx")
+        .find('[data-cy="file-preview"]')
+        .last()
+        .find("img")
+        .should(
+          "have.attr",
+          "src",
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/1200px-SNice.svg.png?width=80&optimize=high"
+        );
     });
   });
 });
