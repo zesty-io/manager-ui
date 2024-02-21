@@ -39,7 +39,14 @@ export const ItemParent = connect((state) => {
             setParents(
               parentOptions(props.currentItemLangID, props.path, {
                 ...items,
-                ...res?.data,
+                // needs to reduce and converts this data as the same format of the items to
+                // prevent having an issue on having an itemZUID with an incorrect format
+                // the reason is that the item has a format of {[itemZUID]:data}
+                // while the res.data has a value of an array which cause the needs of converting
+                // the response to an object with a zuid as a key
+                ...res?.data.reduce((acc, curr) => {
+                  return { ...acc, [curr.meta.ZUID]: curr };
+                }, {}),
               })
             );
           });
@@ -107,6 +114,7 @@ export const ItemParent = connect((state) => {
                      * or a performance issue. To work around this we maintain the `parents` state internal and add the new parent we load from the
                      * API to allow it to be pre-selected while avoiding re-renders on changes to this item.
                      */
+
                     setParents(
                       parentOptions(props.currentItemLangID, props.path, {
                         ...items,
@@ -218,8 +226,7 @@ function parentOptions(currentItemLangID, path, items) {
         itemData?.web?.path && // must have a path
         itemData?.web.path !== "/" && // Exclude homepage
         itemData?.web.path !== path && // Exclude current item
-        itemData?.meta?.langID === currentItemLangID && // display only relevant language options
-        itemZUID === itemData?.meta?.ZUID // must be equal to ensure the itemZUID is correct zuid format
+        itemData?.meta?.langID === currentItemLangID // display only relevant language options
       ) {
         acc.push({
           value: itemZUID,
