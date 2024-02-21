@@ -130,7 +130,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
           let errorMsg = "";
 
           if (error?.data?.error?.includes("already invited")) {
-            errorMsg = "Invite already sent";
+            errorMsg = "Invite previously sent";
           } else if (
             error?.data?.error?.includes("already has a role associated") ||
             error?.data?.error?.includes("cannot invite self")
