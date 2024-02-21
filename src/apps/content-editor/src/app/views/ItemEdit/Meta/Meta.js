@@ -18,6 +18,7 @@ export function Meta(props) {
             item={props.item}
             content={props.items}
             dispatch={props.dispatch}
+            saving={props.saving}
           />
         )}
       </div>
