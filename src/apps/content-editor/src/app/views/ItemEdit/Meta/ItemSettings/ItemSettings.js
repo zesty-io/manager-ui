@@ -1,4 +1,11 @@
-import { memo, Fragment, useCallback, useMemo, useState } from "react";
+import {
+  memo,
+  Fragment,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
@@ -74,6 +81,13 @@ export const ItemSettings = memo(
       },
       [meta.ZUID, errors]
     );
+
+    useEffect(() => {
+      if (props.saving) {
+        setErrors({});
+        return;
+      }
+    }, [props.saving]);
 
     return (
       <section className={styles.Meta}>
