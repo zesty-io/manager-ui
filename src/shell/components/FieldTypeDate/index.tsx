@@ -4,6 +4,82 @@ import {
   DatePickerProps,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
+import { useEffect, useState } from "react";
+import Button from "@mui/material/Button";
+import { Typography, Stack, Box } from "@mui/material";
+
+export interface FieldTypeDateProps extends DatePickerProps<Date> {
+  name: string;
+  required?: boolean;
+  error?: boolean;
+}
+
+export const FieldTypeDate = ({
+  required,
+  error,
+  value,
+  ...props
+}: FieldTypeDateProps) => {
+  const [dateValue, setValue] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setValue(value);
+  }, [value]);
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Stack direction={"row"}>
+        <Box maxWidth={160}>
+          <DatePicker
+            value={dateValue}
+            {...props}
+            disableHighlightToday={!!value}
+            slotProps={{
+              day: {
+                // sx: {
+                //   "&.MuiPickersDay-today": {
+                //     background: "#FF5D0A",
+                //     border: "none",
+                //     color: "white",
+                //   },
+                // },
+              },
+              textField: {
+                placeholder: "Mon DD YYYY",
+              },
+              inputAdornment: {
+                position: "start",
+              },
+            }}
+          />
+        </Box>
+
+        <Button
+          sx={{
+            "&:hover": {
+              background: "transparent",
+            },
+            minWidth: 54,
+          }}
+          variant="text"
+          size="small"
+          disableRipple
+          onClick={() => {
+            setValue(null);
+          }}
+        >
+          <Typography
+            color={"text.secondary"}
+            fontWeight={500}
+            variant="caption"
+          >
+            Clear
+          </Typography>
+        </Button>
+      </Stack>
+    </LocalizationProvider>
+  );
+};
 
 // export interface FieldTypeDateProps
 //   extends Omit<DesktopDatePickerProps<Date, Date>, "renderInput"> {
@@ -32,41 +108,3 @@ import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 //     </LocalizationProvider>
 //   );
 // };
-
-export interface FieldTypeDateProps extends DatePickerProps<Date> {
-  name: string;
-  required?: boolean;
-  error?: boolean;
-}
-
-export const FieldTypeDate = ({
-  required,
-  error,
-  ...props
-}: FieldTypeDateProps) => {
-  return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <DatePicker
-        {...props}
-        slotProps={{
-          day: {
-            sx: {
-              "&.MuiPickersDay-root.Mui-selected": {
-                backgroundColor: "red",
-              },
-              "&.Mui-selected": {
-                backgroundColor: "red",
-              },
-            },
-          },
-          textField: {
-            placeholder: "Mon DD YYYY",
-          },
-          inputAdornment: {
-            position: "start",
-          },
-        }}
-      />
-    </LocalizationProvider>
-  );
-};

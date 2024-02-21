@@ -930,21 +930,19 @@ export const Field = ({
 
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <Box maxWidth={160}>
-            <FieldTypeDate
-              name={name}
-              required={required}
-              // use moment to create a UTC date object
-              value={
-                value
-                  ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
-                  : null
-              }
-              format="MMM dd, yyyy"
-              onChange={(date) => onDateChange(date, name, datatype)}
-              error={errors && Object.values(errors)?.some((error) => !!error)}
-            />
-          </Box>
+          <FieldTypeDate
+            name={name}
+            required={required}
+            // use moment to create a UTC date object
+            value={
+              value
+                ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
+                : null
+            }
+            format="MMM dd, yyyy"
+            onChange={(date) => onDateChange(date, name, datatype)}
+            error={errors && Object.values(errors)?.some((error) => !!error)}
+          />
         </FieldShell>
       );
 
