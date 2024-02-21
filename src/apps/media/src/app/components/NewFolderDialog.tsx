@@ -9,7 +9,6 @@ import {
   TextField,
   Autocomplete,
   createFilterOptions,
-  Typography,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useSelector } from "react-redux";
@@ -125,11 +124,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <DialogTitle>
-        <Typography variant="h5" fontWeight="700">
-          New Folder
-        </Typography>
-      </DialogTitle>
+      <DialogTitle>New Folder</DialogTitle>
       <DialogContent>
         <InputLabel>Parent Folder</InputLabel>
         <Autocomplete

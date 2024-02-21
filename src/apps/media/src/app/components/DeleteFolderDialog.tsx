@@ -7,7 +7,6 @@ import {
   DialogTitle,
   DialogContentText,
   IconButton,
-  Typography,
 } from "@mui/material";
 import {
   useDeleteGroupMutation,
@@ -54,9 +53,7 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
             mb: 2,
           }}
         />
-        <Typography variant="h5" fontWeight={700}>
-          Delete Folder?
-        </Typography>
+        Delete Folder?
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
