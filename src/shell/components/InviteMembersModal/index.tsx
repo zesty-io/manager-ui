@@ -281,7 +281,34 @@ const InviteMembersModal = ({ onClose }: Props) => {
                 }}
                 onChange={(event) => {
                   if (event.target.value?.split("").pop() === ",") return;
-                  setInputValue(event.target.value);
+
+                  // Handle pasted value if it contains comma or space separated emails
+                  const pastedValue = event.target?.value.replaceAll(",", " ");
+
+                  if (pastedValue.includes(" ")) {
+                    event.preventDefault();
+                    const validEmails: string[] = [];
+                    const invalidEmails: string[] = [];
+
+                    pastedValue.split(" ").forEach((email) => {
+                      if (email) {
+                        if (email.match(emailAddressRegexp)) {
+                          validEmails.push(email);
+                        } else {
+                          invalidEmails.push(email);
+                        }
+                      }
+                    });
+
+                    setEmails([...new Set([...emails, ...validEmails])]);
+
+                    if (invalidEmails?.length) {
+                      setEmailError(true);
+                      setInputValue(invalidEmails.join(", "));
+                    }
+                  } else {
+                    setInputValue(event.target.value);
+                  }
                 }}
                 value={inputValue}
               />
