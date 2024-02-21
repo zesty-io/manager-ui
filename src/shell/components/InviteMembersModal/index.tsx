@@ -114,6 +114,38 @@ const InviteMembersModal = ({ onClose }: Props) => {
     ?.filter((role) => role.entityZUID === instanzeZUID)
     ?.some((role) => ["admin", "owner"].includes(role.name?.toLowerCase()));
 
+  const sendEmailInvites = (emails: string[]) => {
+    return emails.map((email) =>
+      createUserInvite({
+        inviteeEmail: email,
+        accessLevel: roleIndex,
+      })
+        .unwrap()
+        .then((res) => {
+          if (res?.data) {
+            updateSentEmails({ type: "update", value: email });
+          }
+        })
+        .catch((error) => {
+          let errorMsg = "";
+
+          if (error?.data?.error?.includes("already invited")) {
+            errorMsg = "Invite already sent";
+          } else if (
+            error?.data?.error?.includes("already has a role associated") ||
+            error?.data?.error?.includes("cannot invite self")
+          ) {
+            errorMsg = "Already part of instance";
+          }
+
+          updateFailedInvites({
+            type: "update",
+            value: { [email]: errorMsg },
+          });
+        })
+    );
+  };
+
   const handleInvites = async () => {
     if (emails?.length) {
       let _emails = [...emails];
@@ -134,37 +166,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
       }
 
       setSendingEmails(true);
-      const invites = _emails.map((email) =>
-        createUserInvite({
-          inviteeEmail: email,
-          accessLevel: roleIndex,
-        })
-          .unwrap()
-          .then((res) => {
-            if (res?.data) {
-              updateSentEmails({ type: "update", value: email });
-            }
-          })
-          .catch((error) => {
-            let errorMsg = "";
-
-            if (error?.data?.error?.includes("already invited")) {
-              errorMsg = "Invite already sent";
-            } else if (
-              error?.data?.error?.includes("already has a role associated")
-            ) {
-              errorMsg = "Already part of instance";
-            }
-
-            updateFailedInvites({
-              type: "update",
-              value: { [email]: errorMsg },
-            });
-          })
-      );
-
-      await Promise.allSettled(invites);
-      // setSentEmails([..._emails]);
+      await Promise.allSettled(sendEmailInvites(_emails));
       setEmails([]);
       setSendingEmails(false);
       setInputValue("");
@@ -176,36 +178,7 @@ const InviteMembersModal = ({ onClose }: Props) => {
 
         if (inputAsEmails.every((email) => email.match(emailAddressRegexp))) {
           setSendingEmails(true);
-          const invites = inputAsEmails.map((email) =>
-            createUserInvite({
-              inviteeEmail: email,
-              accessLevel: roleIndex,
-            })
-              .unwrap()
-              .then((res) => {
-                if (res?.data) {
-                  updateSentEmails({ type: "update", value: email });
-                }
-              })
-              .catch((error) => {
-                let errorMsg = "";
-
-                if (error?.data?.error?.includes("already invited")) {
-                  errorMsg = "Invite already sent";
-                } else if (
-                  error?.data?.error?.includes("already has a role associated")
-                ) {
-                  errorMsg = "Already part of instance";
-                }
-
-                updateFailedInvites({
-                  type: "update",
-                  value: { [email]: errorMsg },
-                });
-              })
-          );
-
-          await Promise.allSettled(invites);
+          await Promise.allSettled(sendEmailInvites(inputAsEmails));
           setEmails([]);
           setInputValue("");
           setSendingEmails(false);
