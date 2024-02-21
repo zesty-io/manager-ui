@@ -773,7 +773,6 @@ export const Field = ({
 
     case "one_to_many":
       const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
-        console.log(allItems);
         const options = filterValidItems(allItems);
 
         return resolveRelatedOptions(
