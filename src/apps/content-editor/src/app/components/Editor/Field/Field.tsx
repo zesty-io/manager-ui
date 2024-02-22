@@ -21,9 +21,12 @@ import {
   TextField,
   Dialog,
   IconButton,
+  Stack,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
+import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -859,18 +862,52 @@ export const Field = ({
       );
 
     case "number":
+      const modifyNumberValue = (action: "increment" | "decrement") => {
+        const numberValue = value.toString().split(".");
+
+        switch (action) {
+          case "increment":
+            numberValue[0] = (+numberValue[0] + 1).toString();
+            onChange(+numberValue.join("."), name);
+            break;
+
+          case "decrement":
+            numberValue[0] = (+numberValue[0] - 1).toString();
+            onChange(+numberValue.join("."), name);
+            break;
+
+          default:
+            break;
+        }
+      };
+
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <TextField
-            size="small"
             variant="outlined"
             fullWidth
             value={value ? value.toString() : "0"}
             name={name}
             required={required}
-            onChange={(evt) => onChange(evt.target.value, name)}
+            onChange={(evt) => onChange(+evt.target.value, name)}
             error={errors && Object.values(errors)?.some((error) => !!error)}
             InputProps={{
+              endAdornment: (
+                <Stack direction="row" gap={1}>
+                  <IconButton
+                    size="small"
+                    onClick={() => modifyNumberValue("decrement")}
+                  >
+                    <RemoveRoundedIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={() => modifyNumberValue("increment")}
+                  >
+                    <AddRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Stack>
+              ),
               inputComponent: NumberFormatInput as any,
               inputProps: {
                 thousandSeparator: true,
