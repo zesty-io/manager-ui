@@ -900,36 +900,15 @@ export const Field = ({
        */
       const onDateChange = useCallback(
         (value, name, datatype) => {
-          console.log(value, name, datatype);
           /**
            * Flatpickr emits a utc timestamp, offset from users local time.
            * Legacy behavior did not send utc but sent the value as is selected by the user
            * this ensures that behavior is maintained.
            */
-          onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
+          onChange(value, name, datatype);
         },
         [onChange]
       );
-
-      // return (
-      //   <FieldShell settings={fieldData} errors={errors}>
-      //     <Box maxWidth={360}>
-      //       <FieldTypeDate
-      //         name={name}
-      //         required={required}
-      //         // use moment to create a UTC date object
-      //         value={
-      //           value
-      //             ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
-      //             : null
-      //         }
-      //         inputFormat="MM-dd-yyyy"
-      //         onChange={(date) => onDateChange(date, name, datatype)}
-      //         error={errors && Object.values(errors)?.some((error) => !!error)}
-      //       />
-      //     </Box>
-      //   </FieldShell>
-      // );
 
       return (
         <FieldShell settings={fieldData} errors={errors}>
@@ -937,11 +916,7 @@ export const Field = ({
             name={name}
             required={required}
             // use moment to create a UTC date object
-            value={
-              value
-                ? new Date(moment(value).format("YYYY-MM-DD HH:mm:ss"))
-                : null
-            }
+            value={value ? new Date(value) : null}
             format="MMM dd, yyyy"
             onChange={(date) => onDateChange(date, name, datatype)}
             error={errors && Object.values(errors)?.some((error) => !!error)}
