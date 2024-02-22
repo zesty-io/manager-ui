@@ -863,17 +863,13 @@ export const Field = ({
 
     case "number":
       const modifyNumberValue = (action: "increment" | "decrement") => {
-        const numberValue = value.toString().split(".");
-
         switch (action) {
           case "increment":
-            numberValue[0] = (+numberValue[0] + 1).toString();
-            onChange(+numberValue.join("."), name);
+            onChange(+(+value + 1).toFixed(10), name);
             break;
 
           case "decrement":
-            numberValue[0] = (+numberValue[0] - 1).toString();
-            onChange(+numberValue.join("."), name);
+            onChange(+(+value - 1).toFixed(10), name);
             break;
 
           default:
@@ -889,7 +885,7 @@ export const Field = ({
             value={value ? value.toString() : "0"}
             name={name}
             required={required}
-            onChange={(evt) => onChange(+evt.target.value, name)}
+            onChange={(evt) => onChange(evt.target.value, name)}
             error={errors && Object.values(errors)?.some((error) => !!error)}
             InputProps={{
               endAdornment: (
