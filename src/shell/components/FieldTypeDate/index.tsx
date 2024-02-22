@@ -47,6 +47,11 @@ export const FieldTypeDate = ({
             {...props}
             disableHighlightToday={!!props.value}
             slotProps={{
+              desktopPaper: {
+                sx: {
+                  mt: 1,
+                },
+              },
               day: {
                 /*
                  * Override the default today's background color to match with the theme
