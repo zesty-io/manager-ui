@@ -23,7 +23,7 @@ export const NumberFormatInput = forwardRef<
         onChange({
           target: {
             name: props.name,
-            value: values.value,
+            value: values.value || "0",
           },
         });
       }}
