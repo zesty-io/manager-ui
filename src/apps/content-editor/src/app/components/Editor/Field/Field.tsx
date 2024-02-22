@@ -1,4 +1,11 @@
-import { useMemo, useCallback, useState, useEffect, ChangeEvent } from "react";
+import {
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+  ChangeEvent,
+  useRef,
+} from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
@@ -72,8 +79,10 @@ import { ResolvedOption } from "./ResolvedOption";
 import { LinkOption } from "./LinkOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { NumericFormat } from "react-number-format";
+import { withCursorPosition } from "../../../../../../../shell/components/withCursorPosition";
 
 const AIFieldShell = withAI(FieldShell);
+const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
 const sortHTML = (a: any, b: any) => {
   const nameA = String(a.html) && String(a.html).toUpperCase(); // ignore upper and lowercase
@@ -877,15 +886,34 @@ export const Field = ({
         }
       };
 
+      const numberInputRef = useRef(null);
+
+      useEffect(() => {
+        if (value === 0) {
+          numberInputRef.current?.setSelectionRange(1, 1);
+        }
+      }, [value]);
+
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <TextField
+            inputRef={numberInputRef}
             variant="outlined"
             fullWidth
-            value={value ? value.toString() : "0"}
+            value={value?.toString() || "0"}
             name={name}
             required={required}
-            onChange={(evt) => onChange(evt.target.value, name)}
+            onChange={(evt) => {
+              onChange(isNaN(+evt.target.value) ? 0 : +evt.target.value, name);
+            }}
+            onKeyDown={(evt) => {
+              if (
+                (evt.key === "Backspace" || evt.key === "Delete") &&
+                value === 0
+              ) {
+                evt.preventDefault();
+              }
+            }}
             error={errors && Object.values(errors)?.some((error) => !!error)}
             InputProps={{
               endAdornment: (
