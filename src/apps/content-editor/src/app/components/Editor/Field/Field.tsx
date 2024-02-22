@@ -63,6 +63,7 @@ import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDa
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
 import { NumberFormatInput } from "../../../../../../../shell/components/NumberFormatInput";
+import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
@@ -871,73 +872,14 @@ export const Field = ({
       );
 
     case "number":
-      const modifyNumberValue = (action: "increment" | "decrement") => {
-        switch (action) {
-          case "increment":
-            onChange(+(+value + 1).toFixed(10), name);
-            break;
-
-          case "decrement":
-            onChange(+(+value - 1).toFixed(10), name);
-            break;
-
-          default:
-            break;
-        }
-      };
-
-      const numberInputRef = useRef(null);
-
-      useEffect(() => {
-        if (value === 0) {
-          numberInputRef.current?.setSelectionRange(1, 1);
-        }
-      }, [value]);
-
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <TextField
-            inputRef={numberInputRef}
-            variant="outlined"
-            fullWidth
-            value={value?.toString() || "0"}
+          <FieldTypeNumber
+            value={+value || 0}
             name={name}
             required={required}
-            onChange={(evt) => {
-              onChange(isNaN(+evt.target.value) ? 0 : +evt.target.value, name);
-            }}
-            onKeyDown={(evt) => {
-              if (
-                (evt.key === "Backspace" || evt.key === "Delete") &&
-                value === 0
-              ) {
-                evt.preventDefault();
-              }
-            }}
-            error={errors && Object.values(errors)?.some((error) => !!error)}
-            InputProps={{
-              endAdornment: (
-                <Stack direction="row" gap={1}>
-                  <IconButton
-                    size="small"
-                    onClick={() => modifyNumberValue("decrement")}
-                  >
-                    <RemoveRoundedIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={() => modifyNumberValue("increment")}
-                  >
-                    <AddRoundedIcon fontSize="small" />
-                  </IconButton>
-                </Stack>
-              ),
-              inputComponent: NumberFormatInput as any,
-              inputProps: {
-                thousandSeparator: true,
-                valueIsNumericString: true,
-              },
-            }}
+            onChange={onChange}
+            hasError={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );
