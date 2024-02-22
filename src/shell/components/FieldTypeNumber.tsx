@@ -3,7 +3,6 @@ import { IconButton, Stack, TextField } from "@mui/material";
 import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
-import { Error } from "../../apps/content-editor/src/app/components/Editor/Field/FieldShell";
 import { NumberFormatInput } from "./NumberFormatInput";
 
 type FieldTypeNumberProps = {

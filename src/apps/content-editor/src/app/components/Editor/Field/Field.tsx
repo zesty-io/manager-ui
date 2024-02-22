@@ -1,11 +1,4 @@
-import {
-  useMemo,
-  useCallback,
-  useState,
-  useEffect,
-  ChangeEvent,
-  useRef,
-} from "react";
+import { useMemo, useCallback, useState, useEffect, ChangeEvent } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
@@ -28,12 +21,9 @@ import {
   TextField,
   Dialog,
   IconButton,
-  Stack,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
-import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -62,7 +52,6 @@ import {
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
-import { NumberFormatInput } from "../../../../../../../shell/components/NumberFormatInput";
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
 
 import styles from "./Field.less";
@@ -79,11 +68,8 @@ import {
 import { ResolvedOption } from "./ResolvedOption";
 import { LinkOption } from "./LinkOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
-import { NumericFormat } from "react-number-format";
-import { withCursorPosition } from "../../../../../../../shell/components/withCursorPosition";
 
 const AIFieldShell = withAI(FieldShell);
-const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
 const sortHTML = (a: any, b: any) => {
   const nameA = String(a.html) && String(a.html).toUpperCase(); // ignore upper and lowercase
