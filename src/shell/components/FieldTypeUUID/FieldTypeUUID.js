@@ -11,8 +11,10 @@ import {
 import styles from "./FieldTypeUUID.less";
 import TagIcon from "@mui/icons-material/Tag";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
+import CheckIcon from "@mui/icons-material/Check";
 
 export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
+  const [isCopied, setIsCopied] = React.useState(false);
   useEffect(() => {
     // NOTE may want to add a check to ensure the itemZUID is 'new'
     if (props.name && !props.value) {
@@ -20,6 +22,17 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
       props.onChange(uuidv4(), props.name, props.datatype);
     }
   }, []);
+
+  // Set isCopied to false after 5 seconds
+  useEffect(() => {
+    if (isCopied) {
+      const timeout = setTimeout(() => {
+        setIsCopied(false);
+      }, 5000);
+      // Clear timeout if the component is unmounted
+      return () => clearTimeout(timeout);
+    }
+  }, [isCopied]);
 
   return (
     <label className={cx(styles.FieldTypeUUID, props.className)}>
@@ -41,18 +54,21 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
           title="This field cannot be edited"
         >
           <TextField
-            disabled
             required={props.required}
-            defaultValue={props.value || ""}
+            value={props.value || ""}
             readOnly={true}
             fullWidth
             type="text"
+            sx={{
+              caretColor: "transparent", // This is to hide the cursor in the input field
+            }}
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start">
+                <InputAdornment position="start" sx={{ marginRight: 0 }}>
                   <TagIcon fontSize="small" />
                 </InputAdornment>
               ),
+
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
@@ -74,9 +90,14 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
                           })
                         );
                       }
+                      setIsCopied(true);
                     }}
                   >
-                    <ContentCopyRoundedIcon fontSize="small" />
+                    {isCopied ? (
+                      <CheckIcon fontSize="small" />
+                    ) : (
+                      <ContentCopyRoundedIcon fontSize="small" />
+                    )}
                   </IconButton>
                 </InputAdornment>
               ),
