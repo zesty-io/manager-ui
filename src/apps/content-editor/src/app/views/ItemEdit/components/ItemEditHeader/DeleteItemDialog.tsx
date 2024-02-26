@@ -51,10 +51,13 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
           <DeleteRounded color="error" />
         </Box>
         <Typography variant="h5" sx={{ mt: 1.5 }}>
-          <Typography variant="inherit" display="inline" fontWeight={600}>
+          <Typography variant="inherit" display="inline" fontWeight={700}>
             Delete Content Item:
           </Typography>{" "}
-          {item?.web?.metaTitle || item?.web?.metaLinkText}
+          <Typography variant="inherit" display="inline" fontWeight={600}>
+            {" "}
+            {item?.web?.metaTitle || item?.web?.metaLinkText}
+          </Typography>
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           Deleting this item will remove it from all locations throughout your

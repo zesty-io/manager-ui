@@ -42,7 +42,7 @@ export const ConfirmPublishModal = ({
           <Typography fontWeight={700} variant="h5" display="inline">
             Publish Content Item:
           </Typography>{" "}
-          <Typography variant="h5" display="inline">
+          <Typography fontWeight={600} variant="h5" display="inline">
             {contentTitle}?
           </Typography>
         </Box>
