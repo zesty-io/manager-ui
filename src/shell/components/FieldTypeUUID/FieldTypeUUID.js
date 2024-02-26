@@ -23,17 +23,20 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
     }
   }, []);
 
-  // Set isCopied to false after 5 seconds
-  useEffect(() => {
-    if (isCopied) {
-      const timeout = setTimeout(() => {
-        setIsCopied(false);
-      }, 5000);
-      // Clear timeout if the component is unmounted
-      return () => clearTimeout(timeout);
-    }
-  }, [isCopied]);
-
+  const handleCopyClick = (value) => {
+    navigator.clipboard
+      ?.writeText(value)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 5000);
+      })
+      .catch((err) => {
+        // Handle errors
+        console.error(err);
+      });
+  };
   return (
     <label className={cx(styles.FieldTypeUUID, props.className)}>
       <div>
@@ -56,7 +59,6 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
           <TextField
             required={props.required}
             value={props.value || ""}
-            readOnly={true}
             fullWidth
             type="text"
             sx={{
@@ -73,25 +75,7 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
                 <InputAdornment position="end">
                   <IconButton
                     size="small"
-                    onClick={() => {
-                      const input = document.createElement("input");
-                      document.body.appendChild(input);
-                      input.value = props.value;
-                      input.focus();
-                      input.select();
-                      const result = document.execCommand("copy");
-                      input.remove();
-                      if (result === "unsuccessful") {
-                        return props.dispatch(
-                          notify({
-                            type: "error",
-                            message:
-                              "Failed to copy the team ID to your clipboard",
-                          })
-                        );
-                      }
-                      setIsCopied(true);
-                    }}
+                    onClick={() => handleCopyClick(props.value)}
                   >
                     {isCopied ? (
                       <CheckIcon fontSize="small" />
