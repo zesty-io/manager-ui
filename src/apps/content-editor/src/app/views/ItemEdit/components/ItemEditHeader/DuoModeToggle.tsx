@@ -1,4 +1,4 @@
-import { Switch, SwitchProps } from "@mui/material";
+import { Switch, SwitchProps, Tooltip, Box } from "@mui/material";
 import { useContext } from "react";
 import { styled } from "@mui/material/styles";
 import { DuoModeContext } from "../../../../../../../../shell/contexts/duoModeContext";
@@ -15,17 +15,26 @@ export const DuoModeSwitch = () => {
   }
 
   return (
-    <IOSSwitch
-      data-cy="DuoModeToggle"
-      checked={showDuoMode}
-      onChange={(event) => {
-        if (event.target.checked) {
-          setShowDuoMode(true);
-        } else {
-          setShowDuoMode(false);
-        }
-      }}
-    />
+    <Tooltip
+      title={`Switch ${showDuoMode ? "off" : "on"} DUO Mode`}
+      enterDelay={1000}
+      enterNextDelay={1000}
+      placement="top-start"
+    >
+      <Box>
+        <IOSSwitch
+          data-cy="DuoModeToggle"
+          checked={showDuoMode}
+          onChange={(event) => {
+            if (event.target.checked) {
+              setShowDuoMode(true);
+            } else {
+              setShowDuoMode(false);
+            }
+          }}
+        />
+      </Box>
+    </Tooltip>
   );
 };
 
