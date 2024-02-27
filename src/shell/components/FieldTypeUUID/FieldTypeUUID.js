@@ -61,10 +61,17 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
             value={props.value || ""}
             fullWidth
             type="text"
+            /**
+             * Readonly Props override the default color for the inputs
+             * This reset the color to the default text color
+             */
             sx={{
-              caretColor: "transparent", // This is to hide the cursor in the input field
+              ".MuiInputBase-readOnly": {
+                color: "text.primary",
+              },
             }}
             InputProps={{
+              readOnly: true,
               startAdornment: (
                 <InputAdornment position="start" sx={{ marginRight: 0 }}>
                   <TagIcon fontSize="small" />
