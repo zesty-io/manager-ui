@@ -24,6 +24,7 @@ import { loadOpenNav } from "../../store/ui";
 import styles from "./LoadInstance.less";
 import { Staging } from "../Staging";
 import { CircularProgress } from "@mui/material";
+import { useGetCurrentUserRolesQuery } from "../../services/accounts";
 
 export default connect((state) => {
   return {
@@ -38,6 +39,8 @@ export default connect((state) => {
 })(
   memo(function LoadInstance(props) {
     const [error, setError] = useState("");
+    const { refetch: refetchCurrentUserRoles } = useGetCurrentUserRolesQuery();
+
     useEffect(() => {
       if (!props.auth.valid) {
         return;
@@ -59,6 +62,7 @@ export default connect((state) => {
         props.dispatch(fetchProducts());
       });
 
+      refetchCurrentUserRoles();
       props.dispatch(fetchDomains());
       props.dispatch(fetchUsers());
       props.dispatch(detectPlatform());
