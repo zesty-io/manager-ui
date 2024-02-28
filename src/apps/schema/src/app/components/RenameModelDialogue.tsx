@@ -77,7 +77,7 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
         >
           <DriveFileRenameOutlineRoundedIcon color="info" />
         </Box>
-        <Typography variant="h5" fontWeight={700} sx={{ mt: 1.5 }}>
+        <Typography variant="h5" fontWeight="inherit" sx={{ mt: 1.5 }}>
           Rename Model
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
