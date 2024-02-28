@@ -93,7 +93,7 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
             >
               <WarningAmberRounded color="warning" />
             </Box>
-            <Typography variant="h5" fontWeight="inherit" sx={{ mt: 1.5 }}>
+            <Typography variant="inherit" fontWeight="inherit" sx={{ mt: 1.5 }}>
               Unsaved Changes
             </Typography>
 
