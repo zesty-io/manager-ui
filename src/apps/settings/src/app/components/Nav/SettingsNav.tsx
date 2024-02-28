@@ -60,12 +60,23 @@ export const SettingsNav = () => {
         categories.add(setting.category)
       );
 
-      return Array.from(categories)?.map((category) => ({
-        label: startCase(category.replace(/_|-/g, " ")),
-        path: `/settings/instance/${category}`,
+      const instancecSettingsCategories = Array.from(categories)?.map(
+        (category) => ({
+          label: startCase(category.replace(/_|-/g, " ")),
+          path: `/settings/instance/${category}`,
+          icon: SettingsRoundedIcon,
+          children: [],
+        })
+      );
+
+      instancecSettingsCategories.push({
+        label: "Bynder",
+        path: "/settings/instance/bynder",
         icon: SettingsRoundedIcon,
         children: [],
-      }));
+      });
+
+      return instancecSettingsCategories;
     }
 
     return [];
