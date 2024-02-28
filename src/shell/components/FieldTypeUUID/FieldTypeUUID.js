@@ -9,9 +9,9 @@ import {
   tooltipClasses,
 } from "@mui/material";
 import styles from "./FieldTypeUUID.less";
-import TagIcon from "@mui/icons-material/Tag";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CheckIcon from "@mui/icons-material/Check";
+import TagRoundedIcon from "@mui/icons-material/TagRounded";
 
 export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
   const [isCopied, setIsCopied] = React.useState(false);
@@ -38,64 +38,45 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
       });
   };
   return (
-    <label className={cx(styles.FieldTypeUUID, props.className)}>
-      <div>
-        <Tooltip
-          slotProps={{
-            popper: {
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, -47],
-                  },
-                },
-              ],
-            },
-          }}
-          placement="top"
-          title="This field cannot be edited"
-        >
-          <TextField
-            required={props.required}
-            value={props.value || ""}
-            fullWidth
-            type="text"
-            /**
-             * Readonly Props override the default color for the inputs
-             * This reset the color to the default text color
-             */
-            sx={{
-              ".MuiInputBase-readOnly": {
-                color: "text.primary",
-              },
-            }}
-            InputProps={{
-              readOnly: true,
-              startAdornment: (
-                <InputAdornment position="start" sx={{ marginRight: 0 }}>
-                  <TagIcon fontSize="small" />
-                </InputAdornment>
-              ),
+    <Tooltip followCursor title="This field cannot be edited">
+      <TextField
+        required={props.required}
+        value={props.value || ""}
+        fullWidth
+        type="text"
+        /**
+         * Readonly Props override the default color for the inputs
+         * This reset the color to the default text color
+         */
+        sx={{
+          ".MuiInputBase-readOnly": {
+            color: "text.primary",
+          },
+        }}
+        InputProps={{
+          readOnly: true,
+          startAdornment: (
+            <InputAdornment position="start">
+              <TagRoundedIcon fontSize="small" />
+            </InputAdornment>
+          ),
 
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    onClick={() => handleCopyClick(props.value)}
-                  >
-                    {isCopied ? (
-                      <CheckIcon fontSize="small" />
-                    ) : (
-                      <ContentCopyRoundedIcon fontSize="small" />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Tooltip>
-      </div>
-    </label>
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                size="small"
+                onClick={() => handleCopyClick(props.value)}
+              >
+                {isCopied ? (
+                  <CheckIcon fontSize="small" />
+                ) : (
+                  <ContentCopyRoundedIcon fontSize="small" />
+                )}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+    </Tooltip>
   );
 });
