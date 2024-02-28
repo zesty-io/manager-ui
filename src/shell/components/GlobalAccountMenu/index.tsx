@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -36,6 +36,7 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
   onShowDocsMenu,
 }) => {
   const user: User = useSelector((state: AppState) => state.user);
+  const auth = useSelector((state: AppState) => state.auth);
   const { data: roles, isLoading: isLoadingRoles } = useGetUsersRolesQuery();
 
   const userRole = useMemo(() => {
@@ -43,6 +44,12 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
   }, [roles]);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!auth.valid) {
+      onClose();
+    }
+  }, [auth.valid]);
 
   const handleClickAction = ([action, location]: ClickAction) => {
     switch (action) {

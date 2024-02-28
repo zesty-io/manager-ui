@@ -75,7 +75,7 @@ export default connect((state) => {
       props.dispatch(fetchFiles("views"));
       props.dispatch(fetchFiles("stylesheets"));
       props.dispatch(fetchFiles("scripts"));
-    }, [props.auth]);
+    }, [props.auth.valid]);
 
     useEffect(() => {
       if (
