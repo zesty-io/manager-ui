@@ -1,15 +1,20 @@
 import React, { useEffect } from "react";
 import cx from "classnames";
 import { v4 as uuidv4 } from "uuid";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClipboard } from "@fortawesome/free-solid-svg-icons";
-import { Input } from "@zesty-io/core/Input";
-
+import {
+  TextField,
+  InputAdornment,
+  Tooltip,
+  IconButton,
+  tooltipClasses,
+} from "@mui/material";
 import styles from "./FieldTypeUUID.less";
+import TagIcon from "@mui/icons-material/Tag";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
+import CheckIcon from "@mui/icons-material/Check";
 
 export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
-  // console.log("FieldTypeUUID:render");
-
+  const [isCopied, setIsCopied] = React.useState(false);
   useEffect(() => {
     // NOTE may want to add a check to ensure the itemZUID is 'new'
     if (props.name && !props.value) {
@@ -18,39 +23,78 @@ export const FieldTypeUUID = React.memo(function FieldTypeUUID(props) {
     }
   }, []);
 
+  const handleCopyClick = (value) => {
+    navigator.clipboard
+      ?.writeText(value)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 5000);
+      })
+      .catch((err) => {
+        // Handle errors
+        console.error(err);
+      });
+  };
   return (
     <label className={cx(styles.FieldTypeUUID, props.className)}>
-      <div className={styles.DateFieldTypeInput}>
-        <FontAwesomeIcon
-          className={styles.Icon}
-          icon={faClipboard}
-          aria-hidden="true"
-          title="Click to Copy"
-          onClick={(e) => {
-            const input = document.createElement("input");
-            document.body.appendChild(input);
-            input.value = props.value;
-            input.focus();
-            input.select();
-            const result = document.execCommand("copy");
-            input.remove();
-            if (result === "unsuccessful") {
-              return props.dispatch(
-                notify({
-                  type: "error",
-                  message: "Failed to copy the team ID to your clipboard",
-                })
-              );
-            }
+      <div>
+        <Tooltip
+          slotProps={{
+            popper: {
+              modifiers: [
+                {
+                  name: "offset",
+                  options: {
+                    offset: [0, -47],
+                  },
+                },
+              ],
+            },
           }}
-        />
+          placement="top"
+          title="This field cannot be edited"
+        >
+          <TextField
+            required={props.required}
+            value={props.value || ""}
+            fullWidth
+            type="text"
+            /**
+             * Readonly Props override the default color for the inputs
+             * This reset the color to the default text color
+             */
+            sx={{
+              ".MuiInputBase-readOnly": {
+                color: "text.primary",
+              },
+            }}
+            InputProps={{
+              readOnly: true,
+              startAdornment: (
+                <InputAdornment position="start" sx={{ marginRight: 0 }}>
+                  <TagIcon fontSize="small" />
+                </InputAdornment>
+              ),
 
-        <Input
-          type="text"
-          readOnly={true}
-          required={props.required}
-          defaultValue={props.value || ""}
-        />
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleCopyClick(props.value)}
+                  >
+                    {isCopied ? (
+                      <CheckIcon fontSize="small" />
+                    ) : (
+                      <ContentCopyRoundedIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Tooltip>
       </div>
     </label>
   );
