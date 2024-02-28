@@ -97,7 +97,7 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
         horizontal: "left",
       }}
     >
-      <Stack direction="row" gap={1.5} py={2.5} px={2} alignItems="center">
+      <Stack direction="row" gap={1.5} py={2} px={2} alignItems="center">
         <Avatar
           alt={`${user?.firstName} ${user?.lastName} Avatar`}
           src={`https://www.gravatar.com/avatar/${user?.emailHash}.jpg?&s=40`}
