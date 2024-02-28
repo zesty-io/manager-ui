@@ -60,6 +60,7 @@ export const TooltipBody = ({
       </ListItem>
       <Box px={2} py={1}>
         <Typography
+          component={"p"}
           variant="body3"
           color="text.secondary"
           whiteSpace="pre-line"
@@ -87,7 +88,12 @@ export const TooltipBody = ({
         <Typography variant="body2" fontWeight="700" pb={1}>
           Pro Tip
         </Typography>
-        <Typography fontWeight={400} variant="body3" color="text.secondary">
+        <Typography
+          component={"p"}
+          fontWeight={400}
+          variant="body3"
+          color="text.secondary"
+        >
           {proTip}
         </Typography>
       </Box>
