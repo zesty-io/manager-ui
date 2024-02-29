@@ -150,17 +150,6 @@ describe("Content Specs", () => {
         .contains("Yes")
         .should("have.class", "Mui-selected");
 
-      // Click the "Yes" button again to deselect it
-      cy.get("#12-575f7c-trw1w3 button").contains("Yes").click();
-
-      // Check if neither "Yes" nor "No" buttons have the ".Mui-selected" class
-      cy.get("#12-575f7c-trw1w3 button")
-        .contains("Yes")
-        .should("not.have.class", "Mui-selected");
-      cy.get("#12-575f7c-trw1w3 button")
-        .contains("No")
-        .should("not.have.class", "Mui-selected");
-
       // Click the "No" button to select it
       cy.get("#12-575f7c-trw1w3 button").contains("No").click();
 
@@ -168,8 +157,10 @@ describe("Content Specs", () => {
       cy.get("#12-575f7c-trw1w3 button")
         .contains("No")
         .should("have.class", "Mui-selected");
+    });
 
-      // Click the "No" button again to deselect it
+    it("Yes/No Field: Does not allow user to deselect value", () => {
+      // Click the "No" button to deselect it
       cy.get("#12-575f7c-trw1w3 button").contains("No").click();
 
       // Check again if neither "Yes" nor "No" buttons have the ".Mui-selected" class
@@ -178,7 +169,7 @@ describe("Content Specs", () => {
         .should("not.have.class", "Mui-selected");
       cy.get("#12-575f7c-trw1w3 button")
         .contains("No")
-        .should("not.have.class", "Mui-selected");
+        .should("have.class", "Mui-selected");
     });
 
     // TODO: Need to confirm toggling of value
@@ -199,7 +190,7 @@ describe("Content Specs", () => {
       // limit is 4294967295
       cy.get("#12-9b96ec-tll2gn input[type=number]")
         .focus()
-        /* 
+        /*
           input type='number 'cannot be empty so rather than whitespace, it'd have a value of 0
           to solve for this {selectall} is used to overwrite value as opposed to clear()
         */
@@ -238,23 +229,17 @@ describe("Content Specs", () => {
     });
 
     it("Sort Field", () => {
-      cy.get("#12-4e1914-kcqznz input[type='number']")
+      cy.get("#12-4e1914-kcqznz input[type='text']")
         .clear()
         .type("{rightArrow}12");
 
       cy.get("#12-4e1914-kcqznz button").first().click();
 
-      cy.get("#12-4e1914-kcqznz input[type='number']").should(
-        "have.value",
-        "11"
-      );
+      cy.get("#12-4e1914-kcqznz input[type='text']").should("have.value", "11");
 
       cy.get("#12-4e1914-kcqznz button").last().click();
 
-      cy.get("#12-4e1914-kcqznz input[type='number']").should(
-        "have.value",
-        "12"
-      );
+      cy.get("#12-4e1914-kcqznz input[type='text']").should("have.value", "12");
     });
 
     // Skipping relationship tests due to current fetching flow limitation
@@ -292,6 +277,26 @@ describe("Content Specs", () => {
       // cy.wait('@saveItem')
 
       cy.get("[data-cy=toast]").contains("Saved a new ").should("exist");
+    });
+  });
+
+  describe("Media field image template", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+      });
+    });
+
+    it("renders an image with a url from a template", () => {
+      cy.get("#12-1c94d4-pg8dvx")
+        .find('[data-cy="file-preview"]')
+        .last()
+        .find("img")
+        .should(
+          "have.attr",
+          "src",
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/1200px-SNice.svg.png?width=80&optimize=high"
+        );
     });
   });
 });

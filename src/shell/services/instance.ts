@@ -130,8 +130,9 @@ export const instanceApi = createApi({
             : action.affectedZUID;
 
           // Sets action number to 6 for scheduled publishes in order differentiate publish types
+          const [publishAt] = action?.meta?.message.split(" ").slice(-1);
           const normalizedAction =
-            action.action === 4 && action?.meta?.message.includes("scheduled")
+            action.action === 4 && publishAt !== action.happenedAt
               ? 6
               : action.action;
           return {
