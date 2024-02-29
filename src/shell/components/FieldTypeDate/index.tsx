@@ -4,7 +4,7 @@ import {
   DatePickerProps,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
-import { useRef } from "react";
+import { Ref, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box } from "@mui/material";
 
@@ -19,7 +19,9 @@ export const FieldTypeDate = ({
   error,
   ...props
 }: FieldTypeDateProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const triggerPickerRef = useRef<HTMLButtonElement>(null);
+  const textFieldRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
 
   const handleClear = () => {
     /**
@@ -43,7 +45,8 @@ export const FieldTypeDate = ({
       <Stack direction={"row"}>
         <Box maxWidth={160}>
           <DatePicker
-            ref={inputRef}
+            // open={open}
+            // onClose={() => setOpen(false)}
             {...props}
             disableHighlightToday={!!props.value}
             slotProps={{
@@ -65,12 +68,17 @@ export const FieldTypeDate = ({
                 },
               },
               textField: {
+                ref: textFieldRef,
+                onClick: () => {
+                  triggerPickerRef.current?.click();
+                  textFieldRef.current?.focus();
+                },
                 placeholder: "Mon DD YYYY",
               },
+              openPickerButton: {
+                ref: triggerPickerRef,
+              },
               inputAdornment: {
-                sx: {
-                  margin: "0px",
-                },
                 position: "start",
               },
             }}
