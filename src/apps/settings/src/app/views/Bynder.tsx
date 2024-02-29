@@ -15,8 +15,8 @@ import { useCookie } from "react-use";
 import bynderPreview from "../../../../../../public/images/bynder-preview.png";
 import bynderLogo from "../../../../../../public/images/bynder-logo.svg";
 
-// TODO: Check with zosh if we still needs this since it's redundant due to how bynder's component handles the cookie
-// TODO: If still needed, figure out a way to listen for cookie changes to determine if the user has logged in to bynder yet
+// TODO: Get the the cvad from local storage to determine the bynder url
+// NOTE: cvrt is the bynder refresh token, determines if user is logged in or not
 export const Bynder = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [bynderCookie] = useCookie("bynder");
