@@ -59,7 +59,7 @@
     "@tinymce/tinymce-react": "^4.3.0",
     "@welldone-software/why-did-you-render": "^6.1.1",
     "@zesty-io/core": "1.10.0",
-    "@zesty-io/material": "^0.12.0",
+    "@zesty-io/material": "^0.12.4",
     "chart.js": "^3.8.0",
     "chartjs-adapter-moment": "^1.0.1",
     "chartjs-plugin-datalabels": "^2.0.0",

@@ -39,10 +39,9 @@ export const ConfirmPublishModal = ({
           <CloudUploadRoundedIcon color="success" />
         </Stack>
         <Box>
-          <Typography fontWeight={700} variant="h5" display="inline">
-            Publish Content Item:
-          </Typography>{" "}
+          Publish Content Item:
           <Typography fontWeight={600} variant="h5" display="inline">
+            {" "}
             {contentTitle}?
           </Typography>
         </Box>

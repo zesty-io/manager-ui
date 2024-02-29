@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogTitle,
   Typography,
+  Stack,
 } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
 import { useHistory, useParams } from "react-router";
@@ -50,15 +51,13 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
         >
           <DeleteRounded color="error" />
         </Box>
-        <Typography variant="h5" sx={{ mt: 1.5 }}>
-          <Typography variant="inherit" display="inline" fontWeight={700}>
-            Delete Content Item:
-          </Typography>{" "}
-          <Typography variant="inherit" display="inline" fontWeight={600}>
+        <Stack mt={1.5} display="inline">
+          Delete Content Item:
+          <Typography variant="inherit" fontWeight={600}>
             {" "}
             {item?.web?.metaTitle || item?.web?.metaLinkText}
           </Typography>
-        </Typography>
+        </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           Deleting this item will remove it from all locations throughout your
           site and make it unavailable to API requests. This cannot be undone.
