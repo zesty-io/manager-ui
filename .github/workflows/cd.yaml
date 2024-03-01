@@ -1,4 +1,4 @@
-name: cd
+name: cd-v2
 
 on:
   # Uncomment to work on CD in development mode.
