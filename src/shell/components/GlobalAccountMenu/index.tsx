@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -36,6 +36,7 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
   onShowDocsMenu,
 }) => {
   const user: User = useSelector((state: AppState) => state.user);
+  const auth = useSelector((state: AppState) => state.auth);
   const { data: roles, isLoading: isLoadingRoles } = useGetUsersRolesQuery();
 
   const userRole = useMemo(() => {
@@ -43,6 +44,12 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
   }, [roles]);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!auth.valid) {
+      onClose();
+    }
+  }, [auth.valid]);
 
   const handleClickAction = ([action, location]: ClickAction) => {
     switch (action) {
@@ -97,7 +104,7 @@ export const GlobalAccountMenu: FC<GlobalAccountMenuProps> = ({
         horizontal: "left",
       }}
     >
-      <Stack direction="row" gap={1.5} py={2.5} px={2} alignItems="center">
+      <Stack direction="row" gap={1.5} py={2} px={2} alignItems="center">
         <Avatar
           alt={`${user?.firstName} ${user?.lastName} Avatar`}
           src={`https://www.gravatar.com/avatar/${user?.emailHash}.jpg?&s=40`}

@@ -16,7 +16,11 @@ export type AppState = {
     frames: any;
     installed: InstalledApp[];
   };
-  auth: any;
+  auth: {
+    checking: boolean;
+    valid: boolean;
+    sessionEnding: boolean;
+  };
   user: any;
   users: any;
   releases: any;
