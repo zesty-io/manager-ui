@@ -51,8 +51,6 @@ export const FieldTypeDate = memo(
       }
     }, [triggerPickerRef, textFieldRef]);
 
-    console.log("rerender");
-
     return (
       <LocalizationProvider
         localeText={{
