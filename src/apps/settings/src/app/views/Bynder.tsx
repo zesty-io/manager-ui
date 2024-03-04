@@ -72,11 +72,25 @@ export const Bynder = () => {
               </Typography>
             </Box>
             <Stack direction="row" gap={1}>
-              <Button variant="outlined">Change Bynder Portal</Button>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  // Remove the bynder dam url and bynder refresh token
+                  localStorage.removeItem("cvad");
+                  localStorage.removeItem("cvrt");
+                  setIsLoginOpen(true);
+                }}
+              >
+                Change Bynder Portal
+              </Button>
               <Button
                 startIcon={<PersonRemoveRoundedIcon />}
                 color="error"
                 variant="contained"
+                onClick={() => {
+                  // Remove the bynder refresh token
+                  localStorage.removeItem("cvrt");
+                }}
               >
                 Disconnect
               </Button>
