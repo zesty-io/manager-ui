@@ -73,13 +73,12 @@ export const RenameModelDialogue = ({ onClose, model }: Props) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            mb: 1.5,
           }}
         >
           <DriveFileRenameOutlineRoundedIcon color="info" />
         </Box>
-        <Typography variant="h5" sx={{ mt: 1.5 }}>
-          Rename Model
-        </Typography>
+        Rename Model
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
           This will update the model's Display Name and Reference ID that is
           shown to content editors & developers

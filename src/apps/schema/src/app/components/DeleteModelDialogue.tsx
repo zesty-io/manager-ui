@@ -84,13 +84,12 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            mb: 1.5,
           }}
         >
           <DeleteRoundedIcon color="error" />
         </Box>
-        <Typography variant="h5" sx={{ mt: 1.5 }}>
-          Delete Model?
-        </Typography>
+        Delete Model?
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
           Deleting the “{model.label}” model will also delete all of it&apos;s
           content items. This cannot be undone.

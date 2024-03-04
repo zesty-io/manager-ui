@@ -89,14 +89,12 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                mb: 1.5,
               }}
             >
               <WarningAmberRounded color="warning" />
             </Box>
-            <Typography variant="h5" sx={{ mt: 1.5 }}>
-              Unsaved Changes
-            </Typography>
-
+            Unsaved Changes
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               You have unsaved changes that will be lost if you leave this page.
             </Typography>
