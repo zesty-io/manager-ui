@@ -4,9 +4,10 @@ import {
   DatePickerProps,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
-import { Ref, useRef, useState } from "react";
+import { Ref, memo, useCallback, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box } from "@mui/material";
+import { parse } from "date-fns";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
@@ -14,98 +15,121 @@ export interface FieldTypeDateProps extends DatePickerProps<Date> {
   error?: boolean;
 }
 
-export const FieldTypeDate = ({
-  required,
-  error,
-  ...props
-}: FieldTypeDateProps) => {
-  const triggerPickerRef = useRef<HTMLButtonElement>(null);
-  const textFieldRef = useRef<HTMLInputElement>(null);
-  const [open, setOpen] = useState(false);
+export const FieldTypeDate = memo(
+  ({ required, error, ...props }: FieldTypeDateProps) => {
+    const triggerPickerRef = useRef<HTMLButtonElement>(null);
+    const textFieldRef = useRef<HTMLInputElement>(null);
 
-  const handleClear = () => {
+    const handleClear = () => {
+      /**
+       * Clear the input value
+       */
+      if (props.onChange) props.onChange(null, null);
+    };
+
     /**
-     * Clear the input value
+     * This function is used to open the date picker when the input field is clicked
+     * and refocus the input field when the date picker is opened
      */
-    if (props.onChange) props.onChange(null, null);
-  };
+    const handleOpen = useCallback(() => {
+      /**
+       * Step 1: Open the date picker
+       */
 
-  return (
-    <LocalizationProvider
-      localeText={{
-        fieldMonthPlaceholder: () => {
+      if (triggerPickerRef.current) triggerPickerRef.current?.click();
+      /**
+       * Step 2: Refocus the input field
+       */
+
+      if (textFieldRef.current) {
+        /**
+         * Add delay to ensure the picker is rendered before refocusing the input field
+         */
+        setTimeout(() => {
+          textFieldRef.current.focus();
+        }, 0);
+      }
+    }, [triggerPickerRef, textFieldRef]);
+
+    console.log("rerender");
+
+    return (
+      <LocalizationProvider
+        localeText={{
           /**
-           * Enforce the placeholder to be "Mon" instead of "MMM"
+           * This Enforce the placeholder to be in the format of "Mon DD YYYY"
            */
-          return "Mon";
-        },
-      }}
-      dateAdapter={AdapterDateFns}
-    >
-      <Stack direction={"row"}>
-        <Box maxWidth={160}>
-          <DatePicker
-            // open={open}
-            // onClose={() => setOpen(false)}
-            {...props}
-            disableHighlightToday={!!props.value}
-            slotProps={{
-              desktopPaper: {
-                sx: {
-                  mt: 1,
-                },
-              },
-              day: {
-                /*
-                 * Override the default today's background color to match with the theme
-                 */
-                sx: {
-                  "&.MuiPickersDay-today": {
-                    background: "#FF5D0A",
-                    border: "none",
-                    color: "white",
+          fieldMonthPlaceholder: () => {
+            return "Mon";
+          },
+          fieldDayPlaceholder: () => {
+            return "DD";
+          },
+          fieldYearPlaceholder: () => {
+            return "YYYY";
+          },
+        }}
+        dateAdapter={AdapterDateFns}
+      >
+        <Stack direction={"row"}>
+          <Box maxWidth={160}>
+            <DatePicker
+              {...props}
+              inputRef={textFieldRef}
+              disableHighlightToday={!!props.value}
+              slotProps={{
+                desktopPaper: {
+                  sx: {
+                    mt: 1,
                   },
                 },
-              },
-              textField: {
-                ref: textFieldRef,
-                onClick: () => {
-                  triggerPickerRef.current?.click();
-                  textFieldRef.current?.focus();
+                day: {
+                  /*
+                   * Override the default today's background color to match with the theme
+                   */
+                  sx: {
+                    "&.MuiPickersDay-today": {
+                      background: "#FF5D0A",
+                      border: "none",
+                      color: "white",
+                    },
+                  },
                 },
-                placeholder: "Mon DD YYYY",
-              },
-              openPickerButton: {
-                ref: triggerPickerRef,
-              },
-              inputAdornment: {
-                position: "start",
-              },
-            }}
-          />
-        </Box>
+                textField: {
+                  onClick: handleOpen,
+                },
+                openPickerButton: {
+                  ref: triggerPickerRef,
+                },
+                inputAdornment: {
+                  position: "start",
+                },
+              }}
+            />
+          </Box>
 
-        <Button
-          sx={{
-            "&:hover": {
-              background: "transparent",
-            },
-            minWidth: 45,
-          }}
-          variant="text"
-          size="small"
-          disableRipple
-          onClick={handleClear}
-        >
-          <Typography
-            color={"text.secondary"}
-            fontWeight={500}
-            variant="caption"
+          <Button
+            sx={{
+              "&:hover": {
+                background: "transparent",
+              },
+              minWidth: 45,
+            }}
+            variant="text"
+            size="small"
+            disableRipple
+            onClick={handleClear}
           >
-            Clear
-          </Typography>
-        </Button>
-      </Stack>
-    </LocalizationProvider>
-  );
-};
+            <Typography
+              color={"text.secondary"}
+              fontWeight={500}
+              variant="caption"
+            >
+              Clear
+            </Typography>
+          </Button>
+        </Stack>
+      </LocalizationProvider>
+    );
+  }
+);
