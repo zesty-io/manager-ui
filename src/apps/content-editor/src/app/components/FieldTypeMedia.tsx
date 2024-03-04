@@ -41,9 +41,10 @@ import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
 import styles from "../../../../media/src/app/components/Thumbnail/Loading.less";
 import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
+import { BynderAsset } from "../../../../../shell/services/types";
 
 type FieldTypeMediaProps = {
-  imageZUIDs: string[];
+  images: (string | BynderAsset)[];
   limit: number;
   openMediaBrowser: (opts: any) => void;
   name: string;
@@ -54,7 +55,7 @@ type FieldTypeMediaProps = {
 };
 
 export const FieldTypeMedia = ({
-  imageZUIDs,
+  images,
   limit,
   openMediaBrowser,
   onChange,
@@ -65,7 +66,8 @@ export const FieldTypeMedia = ({
 }: FieldTypeMediaProps) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [localImageZUIDs, setLocalImageZUIDs] = useState<string[]>(imageZUIDs);
+  const [localImageZUIDs, setLocalImageZUIDs] =
+    useState<(string | BynderAsset)[]>(images);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
@@ -76,43 +78,68 @@ export const FieldTypeMedia = ({
   const [isBynderOpen, setIsBynderOpen] = useState(false);
 
   useEffect(() => {
-    setLocalImageZUIDs(imageZUIDs);
-  }, [imageZUIDs]);
+    setLocalImageZUIDs(images);
+  }, [images]);
 
-  const addImage = (images: any[]) => {
-    const newImageZUIDs = images.map((image) => image.id);
+  const addZestyImage = (selectedImages: any[]) => {
+    const newImageZUIDs = selectedImages.map((image) => {
+      if (!images.includes(image.id)) {
+        return image.id;
+      }
+    });
 
-    // remove any duplicates
-    const filteredImageZUIDs = newImageZUIDs.filter(
-      (zuid) => !imageZUIDs.includes(zuid)
-    );
-
-    onChange([...imageZUIDs, ...filteredImageZUIDs].join(","), name);
+    onChange([...images, ...newImageZUIDs].join(","), name);
   };
 
-  const removeImage = (imageZUID: string) => {
-    const newImageZUIDs = imageZUIDs.filter((zuid) => zuid !== imageZUID);
-    onChange(newImageZUIDs.join(","), name);
+  const addBynderAsset = (selectedAsset: any[]) => {
+    const newBynderAssets = selectedAsset.map((asset) => {
+      const { createdAt, databaseId, id, name, originalUrl, publishedAt, url } =
+        asset;
+      const assetString = JSON.stringify({
+        createdAt,
+        databaseId,
+        id,
+        name,
+        originalUrl,
+        publishedAt,
+        url,
+      });
+      // if (!images.includes(assetString)) {
+      return assetString;
+      // }
+    });
+
+    onChange([...images, ...newBynderAssets].join(","), name);
+  };
+
+  const removeImage = (imageId: string) => {
+    // const newImageZUIDs = images?.filter((image) => {
+    //   if (typeof image === "string") {
+    //     return image !== imageId
+    //   }
+    //   if (typeof image === "object") {
+    //     return image.id !== imageId
+    //   }
+    // });
+    // onChange(newImageZUIDs.join(","), name);
   };
 
   const replaceImage = (images: any[]) => {
-    const imageZUID = images.map((image) => image.id)?.[0];
-    let imageToReplace: string;
-    setImageToReplace((value: string) => {
-      imageToReplace = value;
-      return "";
-    });
-
-    // if selected replacement image is already in the list of images, do nothing
-    if (imageZUIDs.includes(imageZUID)) return;
-
-    const newImageZUIDs = imageZUIDs.map((zuid) => {
-      if (zuid === imageToReplace) {
-        return imageZUID;
-      }
-      return zuid;
-    });
-    onChange(newImageZUIDs.join(","), name);
+    //   const imageZUID = images.map((image) => image.id)?.[0];
+    //   let imageToReplace: string;
+    //   setImageToReplace((value: string) => {
+    //     imageToReplace = value;
+    //     return "";
+    //   });
+    //   // if selected replacement image is already in the list of images, do nothing
+    //   if (imageZUIDs.includes(imageZUID)) return;
+    //   const newImageZUIDs = imageZUIDs.map((zuid) => {
+    //     if (zuid === imageToReplace) {
+    //       return imageZUID;
+    //     }
+    //     return zuid;
+    //   });
+    //   onChange(newImageZUIDs.join(","), name);
   };
 
   const onDrop = useCallback(
@@ -121,7 +148,7 @@ export const FieldTypeMedia = ({
 
       openMediaBrowser({
         limit,
-        callback: addImage,
+        callback: addZestyImage,
       });
 
       dispatch(
@@ -136,7 +163,7 @@ export const FieldTypeMedia = ({
         )
       );
     },
-    [defaultBin, dispatch, addImage]
+    [defaultBin, dispatch, addZestyImage]
   );
 
   const handleReorder = () => {
@@ -167,7 +194,7 @@ export const FieldTypeMedia = ({
     onDrop,
   });
 
-  if (!imageZUIDs.length)
+  if (!images?.length)
     return (
       <>
         <div
@@ -242,7 +269,7 @@ export const FieldTypeMedia = ({
                     onClick={() => {
                       openMediaBrowser({
                         limit,
-                        callback: addImage,
+                        callback: addZestyImage,
                       });
                     }}
                     sx={{
@@ -272,7 +299,13 @@ export const FieldTypeMedia = ({
         </div>
         <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
           <Login>
-            <CompactView />
+            <CompactView
+              onSuccess={(assets) => {
+                if (assets?.length) {
+                  addBynderAsset(assets);
+                }
+              }}
+            />
           </Login>
         </Modal>
       </>
@@ -287,11 +320,11 @@ export const FieldTypeMedia = ({
             hasError ? `1px solid ${theme.palette.error.main}` : "none",
         }}
       >
-        {sortedImages.map((imageZUID, index) => {
+        {sortedImages.map((image, index) => {
           return (
             <MediaItem
-              key={imageZUID}
-              imageZUID={imageZUID}
+              key={typeof image === "string" ? image : image.id}
+              imageZUID={typeof image === "string" ? image : image.originalUrl}
               index={index}
               setDraggedIndex={setDraggedIndex}
               setHoveredIndex={setHoveredIndex}
@@ -309,7 +342,7 @@ export const FieldTypeMedia = ({
             />
           );
         })}
-        {limit > imageZUIDs.length && (
+        {limit > images.length && (
           <Box display="flex" gap={1}>
             <Button
               size="large"
@@ -326,7 +359,7 @@ export const FieldTypeMedia = ({
               onClick={() => {
                 openMediaBrowser({
                   limit,
-                  callback: addImage,
+                  callback: addZestyImage,
                 });
               }}
               fullWidth
@@ -341,7 +374,11 @@ export const FieldTypeMedia = ({
         <FileModal
           fileId={showFileModal}
           onClose={() => setShowFileModal("")}
-          currentFiles={sortedImages}
+          currentFiles={
+            sortedImages?.filter(
+              (image) => typeof image === "string"
+            ) as string[]
+          }
           onFileChange={(fileId) => {
             setShowFileModal(fileId);
           }}
