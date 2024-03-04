@@ -62,8 +62,8 @@ export const Bynder = () => {
         </Box>
         {isBynderSessionValid ? (
           <Box px={4} pt={2}>
-            <Box component="img" src={bynderLogo} width={150} height={53} />
-            <Box my={2}>
+            <Box component="img" src={bynderLogo} width={150} height={33} />
+            <Box mt={2} mb={2.5}>
               <Typography fontWeight={700} variant="h5" color="text.primary">
                 Your instance is connected to the following Bynder Portal
               </Typography>
