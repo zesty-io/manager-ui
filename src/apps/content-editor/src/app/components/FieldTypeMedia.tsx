@@ -25,6 +25,8 @@ import {
   CloseRounded,
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
+import { CompactView, Modal, Login } from "@bynder/compact-view";
+
 import {
   useGetBinsQuery,
   useGetFileQuery,
@@ -71,6 +73,7 @@ export const FieldTypeMedia = ({
   const dispatch = useDispatch();
   const [showFileModal, setShowFileModal] = useState("");
   const [imageToReplace, setImageToReplace] = useState("");
+  const [isBynderOpen, setIsBynderOpen] = useState(false);
 
   useEffect(() => {
     setLocalImageZUIDs(imageZUIDs);
@@ -166,84 +169,113 @@ export const FieldTypeMedia = ({
 
   if (!imageZUIDs.length)
     return (
-      <div
-        {...getRootProps({
-          onClick: (evt) => evt.stopPropagation(),
-          onKeyDown: (evt) => evt.stopPropagation(),
-        })}
-      >
-        <input {...getInputProps()} />
-        <Box
-          sx={{
-            border: (theme) => `1px dashed ${theme.palette.primary.main}`,
-            borderRadius: "8px",
-            backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.04),
-            borderColor: hasError ? "error.main" : "primary.main",
-          }}
+      <>
+        <div
+          {...getRootProps({
+            onClick: (evt) => evt.stopPropagation(),
+            onKeyDown: (evt) => evt.stopPropagation(),
+          })}
         >
-          <Stack
-            alignItems="center"
-            gap={2}
-            py={4}
-            justifyContent="center"
-            height="154px"
+          <input {...getInputProps()} />
+          <Box
+            sx={{
+              border: (theme) => `1px dashed ${theme.palette.primary.main}`,
+              borderRadius: "8px",
+              backgroundColor: (theme) =>
+                alpha(theme.palette.primary.main, 0.04),
+              borderColor: hasError ? "error.main" : "primary.main",
+            }}
           >
-            {isDragActive ? (
-              <UploadRounded color="primary" />
-            ) : (
-              <AttachmentRounded color="primary" />
-            )}
-            <Typography
-              align="center"
-              variant="h5"
-              color="primary"
-              fontWeight={600}
+            <Stack
+              alignItems="center"
+              gap={2}
+              py={4}
+              justifyContent="center"
+              height="154px"
             >
               {isDragActive ? (
-                "Drop your files here to Upload"
+                <UploadRounded color="primary" />
               ) : (
-                <>
-                  Drag and drop your files here <br /> or
-                </>
+                <AttachmentRounded color="primary" />
               )}
-            </Typography>
-            {!isDragActive && (
-              <Box display="flex" gap={1} width="100%" justifyContent="center">
-                <Button
-                  size="large"
-                  variant="outlined"
-                  onClick={open}
-                  startIcon={<UploadRounded />}
-                  fullWidth
-                  sx={{
-                    maxWidth: "196px",
-                  }}
+              <Typography
+                align="center"
+                variant="h5"
+                color="primary"
+                fontWeight={600}
+              >
+                {isDragActive ? (
+                  "Drop your files here to Upload"
+                ) : (
+                  <>
+                    Drag and drop your files here <br /> or
+                  </>
+                )}
+              </Typography>
+              {!isDragActive && (
+                <Box
+                  display="flex"
+                  gap={1}
+                  width={400}
+                  justifyContent="center"
+                  flexWrap="wrap"
                 >
-                  Upload
-                </Button>
-                <Button
-                  data-cy="selectFromMediaButton"
-                  fullWidth
-                  size="large"
-                  startIcon={<AddRounded />}
-                  variant="outlined"
-                  onClick={() => {
-                    openMediaBrowser({
-                      limit,
-                      callback: addImage,
-                    });
-                  }}
-                  sx={{
-                    maxWidth: "196px",
-                  }}
-                >
-                  Add from Media
-                </Button>
-              </Box>
-            )}
-          </Stack>
-        </Box>
-      </div>
+                  <Button
+                    size="large"
+                    variant="outlined"
+                    onClick={open}
+                    startIcon={<UploadRounded />}
+                    fullWidth
+                    sx={{
+                      maxWidth: "196px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Upload
+                  </Button>
+                  <Button
+                    data-cy="selectFromMediaButton"
+                    fullWidth
+                    size="large"
+                    startIcon={<AddRounded />}
+                    variant="outlined"
+                    onClick={() => {
+                      openMediaBrowser({
+                        limit,
+                        callback: addImage,
+                      });
+                    }}
+                    sx={{
+                      maxWidth: "196px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Add from Media
+                  </Button>
+                  <Button
+                    size="large"
+                    variant="outlined"
+                    onClick={() => setIsBynderOpen(true)}
+                    startIcon={<UploadRounded />}
+                    fullWidth
+                    sx={{
+                      maxWidth: "240px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Add from Bynder
+                  </Button>
+                </Box>
+              )}
+            </Stack>
+          </Box>
+        </div>
+        <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
+          <Login>
+            <CompactView />
+          </Login>
+        </Modal>
+      </>
     );
 
   return (
