@@ -8,9 +8,9 @@ import {
   Backdrop,
   Dialog,
 } from "@mui/material";
+import PersonRemoveRoundedIcon from "@mui/icons-material/PersonRemoveRounded";
 import { theme } from "@zesty-io/material";
 import { CompactView, Modal, Login } from "@bynder/compact-view";
-import { useCookie } from "react-use";
 
 import bynderPreview from "../../../../../../public/images/bynder-preview.png";
 import bynderLogo from "../../../../../../public/images/bynder-logo.svg";
@@ -19,7 +19,31 @@ import bynderLogo from "../../../../../../public/images/bynder-logo.svg";
 // NOTE: cvrt is the bynder refresh token, determines if user is logged in or not
 export const Bynder = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [bynderCookie] = useCookie("bynder");
+  const [isBynderSessionValid, setIsBynderSessionValid] = useState(false);
+  const [bynderSessionUrl, setBynderSessionUrl] = useState("");
+
+  useEffect(() => {
+    // Immediately check bynder session details on mount
+    let validSession = !!localStorage.getItem("cvrt");
+    let bynderUrl = localStorage.getItem("cvad");
+
+    setIsBynderSessionValid(validSession);
+    setBynderSessionUrl(bynderUrl);
+
+    // Poll bynder session details in case the user has logged in/out in bynder
+    const bynderSessionInterval = setInterval(() => {
+      validSession = !!localStorage.getItem("cvrt");
+
+      if (validSession) {
+        setIsLoginOpen(false);
+      }
+
+      setIsBynderSessionValid(validSession);
+      setBynderSessionUrl(bynderUrl);
+    }, 500);
+
+    return () => clearInterval(bynderSessionInterval);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -36,50 +60,81 @@ export const Bynder = () => {
             Bynder Integration
           </Typography>
         </Box>
-        <Stack direction="row" gap={6} px={4} height="100%" alignItems="center">
-          <Box>
+        {isBynderSessionValid ? (
+          <Box px={4} pt={2}>
+            <Box component="img" src={bynderLogo} width={150} height={53} />
+            <Box my={2}>
+              <Typography fontWeight={700} variant="h5" color="text.primary">
+                Your instance is connected to the following Bynder Portal
+              </Typography>
+              <Typography fontWeight={600} variant="h5" color="primary.main">
+                {bynderSessionUrl}
+              </Typography>
+            </Box>
+            <Stack direction="row" gap={1}>
+              <Button variant="outlined">Change Bynder Portal</Button>
+              <Button
+                startIcon={<PersonRemoveRoundedIcon />}
+                color="error"
+                variant="contained"
+              >
+                Disconnect
+              </Button>
+            </Stack>
+          </Box>
+        ) : (
+          <Stack
+            direction="row"
+            gap={6}
+            px={4}
+            height="100%"
+            alignItems="center"
+          >
+            <Box>
+              <Box
+                component="img"
+                src={bynderLogo}
+                alt="Bynder logo"
+                width={150}
+                height={33}
+                mb={3}
+              />
+              <Typography
+                variant="h4"
+                fontWeight={700}
+                color="text.primary"
+                mb={1}
+              >
+                Use your Bynder Assets within Zesty
+              </Typography>
+              <Typography variant="body2" color="text.secondary" mb={2}>
+                Streamline your workflow by giving your team easy access to your
+                Bynder assets within Zesty
+              </Typography>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() => setIsLoginOpen(true)}
+              >
+                Connect to Bynder
+              </Button>
+            </Box>
             <Box
               component="img"
-              src={bynderLogo}
-              alt="Bynder logo"
-              width={150}
-              height={33}
-              mb={3}
+              src={bynderPreview}
+              alt="Bynder preview"
+              sx={{
+                height: 480,
+                width: 768,
+                borderRadius: 1,
+              }}
             />
-            <Typography
-              variant="h4"
-              fontWeight={700}
-              color="text.primary"
-              mb={1}
-            >
-              Use your Bynder Assets within Zesty
-            </Typography>
-            <Typography variant="body2" color="text.secondary" mb={2}>
-              Streamline your workflow by giving your team easy access to your
-              Bynder assets within Zesty
-            </Typography>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => setIsLoginOpen(true)}
-            >
-              Connect to Bynder
-            </Button>
-          </Box>
-          <Box
-            component="img"
-            src={bynderPreview}
-            alt="Bynder preview"
-            sx={{
-              height: 480,
-              width: 768,
-              borderRadius: 1,
-            }}
-          />
-        </Stack>
+          </Stack>
+        )}
         <Modal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)}>
           <Login>
-            <CompactView />
+            {/** HACK: Bynder's Login component requires a child*/}
+            <></>
           </Login>
         </Modal>
       </Stack>
