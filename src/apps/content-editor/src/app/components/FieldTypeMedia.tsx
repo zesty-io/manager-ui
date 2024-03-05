@@ -718,7 +718,9 @@ const MediaItem = ({
                 fontWeight={600}
                 noWrap
               >
-                {isBynderAsset ? bynderAssetData.originalUrl : data?.filename}
+                {isBynderAsset
+                  ? bynderAssetData.originalUrl.split("/")?.pop()
+                  : data?.filename}
               </Typography>
               <Typography variant="body2" color="text.secondary" noWrap>
                 {isBynderAsset ? bynderAssetData.name : data?.title}
