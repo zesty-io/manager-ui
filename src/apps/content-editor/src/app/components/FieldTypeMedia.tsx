@@ -42,6 +42,7 @@ import styles from "../../../../media/src/app/components/Thumbnail/Loading.less"
 import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
 import { BynderAsset } from "../../../../../shell/services/types";
+import bynderAssetIndicator from "../../../../../../public/images/bynder-asset-indicator.jpeg";
 
 type FieldTypeMediaProps = {
   images: string[];
@@ -114,9 +115,10 @@ export const FieldTypeMedia = ({
         publishedAt,
         url,
       });
-      // if (!images.includes(assetString)) {
-      return assetString;
-      // }
+
+      if (!images.includes(assetString)) {
+        return assetString;
+      }
     });
 
     onChange([...images, ...newBynderAssets].join(","), name);
@@ -185,7 +187,19 @@ export const FieldTypeMedia = ({
     setDraggedIndex(null);
     setHoveredIndex(null);
     setLocalImageZUIDs(newLocalImages);
-    onChange(newLocalImages.join(","), name);
+
+    onChange(
+      newLocalImages
+        .map((image) => {
+          if (typeof image === "object") {
+            return JSON.stringify(image);
+          }
+
+          return image;
+        })
+        .join(","),
+      name
+    );
   };
 
   const sortedImages = useMemo(() => {
@@ -543,7 +557,22 @@ const MediaItem = ({
             opacity: 0.01,
           }),
         }}
+        position="relative"
       >
+        {isBynderAsset && (
+          <Box
+            component="img"
+            src={bynderAssetIndicator}
+            alt="Bynder Asset Indicator"
+            width={24}
+            height={24}
+            borderRadius={100}
+            position="absolute"
+            left={84}
+            top={52}
+            zIndex={2}
+          />
+        )}
         {!hideDrag && (
           <IconButton
             disableRipple
