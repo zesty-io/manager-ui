@@ -33,6 +33,7 @@ interface Props {
   filename: string;
   imageSettings?: any;
   isMediaThumbnail?: boolean;
+  isBynderAsset?: boolean;
 }
 
 export const FileTypePreview: FC<Props> = ({
@@ -40,6 +41,7 @@ export const FileTypePreview: FC<Props> = ({
   filename,
   imageSettings,
   isMediaThumbnail,
+  isBynderAsset,
 }) => {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
@@ -115,7 +117,7 @@ export const FileTypePreview: FC<Props> = ({
     setIsImageLoading(false);
   };
 
-  switch (fileExtension(filename)) {
+  switch (fileExtension(isBynderAsset ? src : filename)) {
     case "jpg":
     case "jpeg":
     case "gif":

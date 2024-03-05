@@ -44,7 +44,7 @@ import { FileTypePreview } from "../../../../media/src/app/components/FileModal/
 import { BynderAsset } from "../../../../../shell/services/types";
 
 type FieldTypeMediaProps = {
-  images: (string | BynderAsset)[];
+  images: string[];
   limit: number;
   openMediaBrowser: (opts: any) => void;
   name: string;
@@ -78,7 +78,17 @@ export const FieldTypeMedia = ({
   const [isBynderOpen, setIsBynderOpen] = useState(false);
 
   useEffect(() => {
-    setLocalImageZUIDs(images);
+    const mappedImages = images?.map((el: string) => {
+      // Parse the bynder assets
+      if (/^\{.+\}$/.test(el)) {
+        return JSON.parse(el);
+      }
+
+      // Otherwise just return the plain zuid strings
+      return el;
+    });
+
+    setLocalImageZUIDs(mappedImages);
   }, [images]);
 
   const addZestyImage = (selectedImages: any[]) => {
@@ -321,10 +331,12 @@ export const FieldTypeMedia = ({
         }}
       >
         {sortedImages.map((image, index) => {
+          const isMediaZUID = typeof image === "string";
+
           return (
             <MediaItem
-              key={typeof image === "string" ? image : image.id}
-              imageZUID={typeof image === "string" ? image : image.originalUrl}
+              key={isMediaZUID ? image : image.id}
+              imageZUID={isMediaZUID ? image : image.originalUrl}
               index={index}
               setDraggedIndex={setDraggedIndex}
               setHoveredIndex={setHoveredIndex}
@@ -339,6 +351,8 @@ export const FieldTypeMedia = ({
                 });
               }}
               hideDrag={hideDrag || limit === 1}
+              isBynderAsset={!isMediaZUID}
+              bynderAssetData={image as BynderAsset}
             />
           );
         })}
@@ -398,8 +412,9 @@ type MediaItemProps = {
   onRemove: (imageZUID: string) => void;
   onReplace: (imageZUID: string) => void;
   hideDrag?: boolean;
+  isBynderAsset: boolean;
+  bynderAssetData: BynderAsset;
 };
-
 const MediaItem = ({
   imageZUID,
   onReorder,
@@ -410,6 +425,8 @@ const MediaItem = ({
   onRemove,
   onReplace,
   hideDrag,
+  isBynderAsset,
+  bynderAssetData,
 }: MediaItemProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
@@ -460,7 +477,7 @@ const MediaItem = ({
       });
   };
 
-  const isURL = imageZUID.substr(0, 4) === "http";
+  const isURL = !isBynderAsset && imageZUID.substr(0, 4) === "http";
 
   const handleDragStart = (e: React.DragEvent) => {
     setIsDragging(true);
@@ -546,8 +563,21 @@ const MediaItem = ({
             <div className={cx(styles.Load, styles.Loading)}></div>
           ) : (
             <FileTypePreview
-              src={isURL ? imageZUID : data?.url}
-              filename={isURL ? imageZUID : data?.filename}
+              isBynderAsset={isBynderAsset}
+              src={
+                isURL
+                  ? imageZUID
+                  : isBynderAsset
+                  ? bynderAssetData.originalUrl
+                  : data?.url
+              }
+              filename={
+                isURL
+                  ? imageZUID
+                  : isBynderAsset
+                  ? bynderAssetData.name
+                  : data?.filename
+              }
               isMediaThumbnail
             />
           )}
@@ -576,10 +606,10 @@ const MediaItem = ({
                 fontWeight={600}
                 noWrap
               >
-                {data?.filename}
+                {isBynderAsset ? bynderAssetData.originalUrl : data?.filename}
               </Typography>
               <Typography variant="body2" color="text.secondary" noWrap>
-                {data?.title}
+                {isBynderAsset ? bynderAssetData.name : data?.title}
               </Typography>
             </Box>
           )}
