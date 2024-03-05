@@ -148,21 +148,60 @@ export const FieldTypeMedia = ({
   };
 
   const replaceImage = (images: any[]) => {
-    //   const imageZUID = images.map((image) => image.id)?.[0];
-    //   let imageToReplace: string;
-    //   setImageToReplace((value: string) => {
-    //     imageToReplace = value;
-    //     return "";
-    //   });
-    //   // if selected replacement image is already in the list of images, do nothing
-    //   if (imageZUIDs.includes(imageZUID)) return;
-    //   const newImageZUIDs = imageZUIDs.map((zuid) => {
-    //     if (zuid === imageToReplace) {
-    //       return imageZUID;
-    //     }
-    //     return zuid;
-    //   });
-    //   onChange(newImageZUIDs.join(","), name);
+    const imageZUID = images.map((image) => image.id)?.[0];
+    let imageToReplace: string;
+    setImageToReplace((value: string) => {
+      imageToReplace = value;
+      return "";
+    });
+    // if selected replacement image is already in the list of images, do nothing
+    if (localImageZUIDs.includes(imageZUID)) return;
+    const newImageZUIDs = localImageZUIDs.map((zuid) => {
+      if (zuid === imageToReplace) {
+        return imageZUID;
+      }
+
+      if (typeof zuid === "object") {
+        return JSON.stringify(zuid);
+      }
+
+      return zuid;
+    });
+    onChange(newImageZUIDs.join(","), name);
+  };
+
+  const replaceBynderAsset = (selectedAsset: any) => {
+    const {
+      createdAt,
+      databaseId,
+      id,
+      name: fileName,
+      originalUrl,
+      publishedAt,
+      url,
+    } = selectedAsset;
+    const newImages = localImageZUIDs.map((image) => {
+      if (typeof image === "object") {
+        return JSON.stringify(
+          image.id === imageToReplace
+            ? {
+                createdAt,
+                databaseId,
+                id,
+                name: fileName,
+                originalUrl,
+                publishedAt,
+                url,
+              }
+            : image
+        );
+      }
+
+      return image;
+    });
+
+    setImageToReplace("");
+    onChange(newImages.join(","), name);
   };
 
   const onDrop = useCallback(
@@ -339,6 +378,7 @@ export const FieldTypeMedia = ({
               onSuccess={(assets) => {
                 if (assets?.length) {
                   addBynderAsset(assets);
+                  setIsBynderOpen(false);
                 }
               }}
             />
@@ -370,11 +410,16 @@ export const FieldTypeMedia = ({
               onPreview={(imageZUID: string) => setShowFileModal(imageZUID)}
               onRemove={removeImage}
               onReplace={(imageZUID) => {
-                setImageToReplace(imageZUID);
-                openMediaBrowser({
-                  callback: replaceImage,
-                  isReplace: true,
-                });
+                setImageToReplace(isMediaZUID ? imageZUID : image.id);
+
+                if (isMediaZUID) {
+                  openMediaBrowser({
+                    callback: replaceImage,
+                    isReplace: true,
+                  });
+                } else {
+                  setIsBynderOpen(true);
+                }
               }}
               hideDrag={hideDrag || limit === 1}
               isBynderAsset={!isMediaZUID}
@@ -424,6 +469,23 @@ export const FieldTypeMedia = ({
           }}
         />
       )}
+      <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
+        <Login>
+          <CompactView
+            onSuccess={(assets) => {
+              if (assets?.length) {
+                if (imageToReplace) {
+                  replaceBynderAsset(assets[0]);
+                } else {
+                  addBynderAsset(assets);
+                }
+
+                setIsBynderOpen(false);
+              }
+            }}
+          />
+        </Login>
+      </Modal>
     </>
   );
 };
@@ -660,7 +722,7 @@ const MediaItem = ({
                 size="small"
                 onClick={(event: any) => {
                   event.stopPropagation();
-                  onReplace(imageZUID);
+                  onReplace(isBynderAsset ? bynderAssetData.id : imageZUID);
                 }}
               >
                 <ImageSync fontSize="small" />
