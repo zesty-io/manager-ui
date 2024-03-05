@@ -4,10 +4,9 @@ import {
   DatePickerProps,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
-import { Ref, memo, useCallback, useRef, useState } from "react";
+import { memo, useCallback, useRef } from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box } from "@mui/material";
-import { parse } from "date-fns";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
@@ -69,7 +68,7 @@ export const FieldTypeDate = memo(
         }}
         dateAdapter={AdapterDateFns}
       >
-        <Stack direction={"row"}>
+        <Stack direction={"row"} gap={1}>
           <Box maxWidth={160}>
             <DatePicker
               {...props}
@@ -107,15 +106,10 @@ export const FieldTypeDate = memo(
           </Box>
 
           <Button
-            sx={{
-              "&:hover": {
-                background: "transparent",
-              },
-              minWidth: 45,
-            }}
+            color="inherit"
             variant="text"
             size="small"
-            disableRipple
+            sx={{ minWidth: 45 }}
             onClick={handleClear}
           >
             <Typography
