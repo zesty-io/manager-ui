@@ -180,6 +180,15 @@ export const FieldTypeMedia = ({
       publishedAt,
       url,
     } = selectedAsset;
+    const duplicateBynderAsset = localImageZUIDs.find((image) => {
+      if (typeof image === "object") {
+        return image.id === id;
+      }
+    });
+
+    // Prevent adding bynder asset that has already been added
+    if (!!duplicateBynderAsset) return;
+
     const newImages = localImageZUIDs.map((image) => {
       if (typeof image === "object") {
         return JSON.stringify(
