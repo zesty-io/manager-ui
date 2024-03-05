@@ -125,15 +125,26 @@ export const FieldTypeMedia = ({
   };
 
   const removeImage = (imageId: string) => {
-    // const newImageZUIDs = images?.filter((image) => {
-    //   if (typeof image === "string") {
-    //     return image !== imageId
-    //   }
-    //   if (typeof image === "object") {
-    //     return image.id !== imageId
-    //   }
-    // });
-    // onChange(newImageZUIDs.join(","), name);
+    const newImageZUIDs = localImageZUIDs
+      ?.filter((image) => {
+        if (typeof image === "string") {
+          return image !== imageId;
+        }
+
+        if (typeof image === "object") {
+          return image.id !== imageId;
+        }
+      })
+      .map((image) => {
+        // Bynder assets need to be stringified
+        if (typeof image === "object") {
+          return JSON.stringify(image);
+        }
+
+        return image;
+      });
+
+    onChange(newImageZUIDs.join(","), name);
   };
 
   const replaceImage = (images: any[]) => {
@@ -191,6 +202,7 @@ export const FieldTypeMedia = ({
     onChange(
       newLocalImages
         .map((image) => {
+          // Bynder assets need to be stringified
           if (typeof image === "object") {
             return JSON.stringify(image);
           }
@@ -543,7 +555,7 @@ const MediaItem = ({
         onDragEnter={handleDragEnter}
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
-        onClick={() => !isURL && onPreview(imageZUID)}
+        onClick={() => !isURL && !isBynderAsset && onPreview(imageZUID)}
         alignItems="center"
         sx={{
           border: (theme) => `1px solid ${theme.palette.border}`,
@@ -693,7 +705,7 @@ const MediaItem = ({
                 horizontal: "right",
               }}
             >
-              {!isURL && (
+              {!isURL && !isBynderAsset && (
                 <MenuItem
                   onClick={(event) => {
                     event.stopPropagation();
@@ -707,7 +719,7 @@ const MediaItem = ({
                   <ListItemText>Rename</ListItemText>
                 </MenuItem>
               )}
-              {!isURL && (
+              {!isURL && !isBynderAsset && (
                 <MenuItem
                   onClick={(event) => {
                     event.stopPropagation();
@@ -723,7 +735,14 @@ const MediaItem = ({
               <MenuItem
                 onClick={(event) => {
                   event.stopPropagation();
-                  handleCopyClick(isURL ? imageZUID : data?.url, false);
+                  handleCopyClick(
+                    isURL
+                      ? imageZUID
+                      : isBynderAsset
+                      ? bynderAssetData.originalUrl
+                      : data?.url,
+                    false
+                  );
                 }}
               >
                 <ListItemIcon>
@@ -735,7 +754,7 @@ const MediaItem = ({
                 onClick={(event) => {
                   event.stopPropagation();
                   setAnchorEl(null);
-                  onRemove(imageZUID);
+                  onRemove(isBynderAsset ? bynderAssetData.id : imageZUID);
                 }}
               >
                 <ListItemIcon>
