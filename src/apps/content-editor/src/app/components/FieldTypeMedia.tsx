@@ -626,7 +626,16 @@ const MediaItem = ({
         onDragEnter={handleDragEnter}
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
-        onClick={() => !isURL && !isBynderAsset && onPreview(imageZUID)}
+        onClick={() => {
+          if (isURL) return;
+
+          if (isBynderAsset) {
+            window.open(bynderAssetData.url, "_blank", "noopener");
+            return;
+          }
+
+          onPreview(imageZUID);
+        }}
         alignItems="center"
         sx={{
           border: (theme) => `1px solid ${theme.palette.border}`,
