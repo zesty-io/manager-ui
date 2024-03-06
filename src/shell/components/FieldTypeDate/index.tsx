@@ -46,6 +46,10 @@ export const FieldTypeDate = memo(
          */
         setTimeout(() => {
           textFieldRef.current.focus();
+          /**
+           * Check if the input field is empty, then set the value to today's date
+           */
+          if (!textFieldRef.current.value) props.onChange?.(new Date(), null);
         }, 0);
       }
     }, [triggerPickerRef, textFieldRef]);
