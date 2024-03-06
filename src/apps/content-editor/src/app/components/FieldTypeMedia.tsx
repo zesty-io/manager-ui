@@ -104,20 +104,9 @@ export const FieldTypeMedia = ({
   };
 
   const addBynderAsset = (selectedAsset: any[]) => {
-    console.log(selectedAsset);
     const newBynderAssets = selectedAsset.map((asset) => {
-      const {
-        createdAt,
-        databaseId,
-        id,
-        name,
-        originalUrl,
-        publishedAt,
-        url,
-        files: {
-          mini: { url: thumbUrl },
-        },
-      } = asset;
+      const { createdAt, databaseId, id, name, originalUrl, publishedAt, url } =
+        asset;
       const assetString = JSON.stringify({
         createdAt,
         databaseId,
@@ -126,7 +115,6 @@ export const FieldTypeMedia = ({
         originalUrl,
         publishedAt,
         url,
-        thumbUrl,
       });
 
       if (!images.includes(assetString)) {
@@ -702,7 +690,7 @@ const MediaItem = ({
                 isURL
                   ? imageZUID
                   : isBynderAsset
-                  ? bynderAssetData.thumbUrl
+                  ? bynderAssetData.originalUrl
                   : data?.url
               }
               filename={

@@ -506,5 +506,4 @@ export type BynderAsset = {
   originalUrl: string;
   publishedAt: string;
   url: string;
-  thumbUrl: string;
 };

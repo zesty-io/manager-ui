@@ -117,7 +117,7 @@ export const FileTypePreview: FC<Props> = ({
     setIsImageLoading(false);
   };
 
-  switch (fileExtension(isBynderAsset ? src : filename)) {
+  switch (fileExtension(src)) {
     case "jpg":
     case "jpeg":
     case "gif":
