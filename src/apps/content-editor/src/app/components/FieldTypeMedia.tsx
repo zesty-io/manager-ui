@@ -104,23 +104,34 @@ export const FieldTypeMedia = ({
   };
 
   const addBynderAsset = (selectedAsset: any[]) => {
-    const newBynderAssets = selectedAsset.map((asset) => {
-      const { createdAt, databaseId, id, name, originalUrl, publishedAt, url } =
-        asset;
-      const assetString = JSON.stringify({
-        createdAt,
-        databaseId,
-        id,
-        name,
-        originalUrl,
-        publishedAt,
-        url,
-      });
+    if (images.length > limit) return;
 
-      if (!images.includes(assetString)) {
-        return assetString;
-      }
-    });
+    const newBynderAssets = selectedAsset
+      .slice(0, limit - images.length)
+      .map((asset) => {
+        const {
+          createdAt,
+          databaseId,
+          id,
+          name,
+          originalUrl,
+          publishedAt,
+          url,
+        } = asset;
+        const assetString = JSON.stringify({
+          createdAt,
+          databaseId,
+          id,
+          name,
+          originalUrl,
+          publishedAt,
+          url,
+        });
+
+        if (!images.includes(assetString)) {
+          return assetString;
+        }
+      });
 
     onChange([...images, ...newBynderAssets].join(","), name);
   };
