@@ -5,6 +5,7 @@ import {
   Menu,
   MenuItem,
   Typography,
+  Tooltip,
 } from "@mui/material";
 import {
   MoreHorizRounded,
@@ -79,15 +80,22 @@ export const MoreMenu = () => {
 
   return (
     <>
-      <IconButton
-        data-cy="ContentItemMoreButton"
-        size="small"
-        onClick={(event) => {
-          setAnchorEl(event.currentTarget);
-        }}
+      <Tooltip
+        title="More Options"
+        enterDelay={1000}
+        enterNextDelay={1000}
+        placement="bottom-start"
       >
-        <MoreHorizRounded fontSize="small" />
-      </IconButton>
+        <IconButton
+          data-cy="ContentItemMoreButton"
+          size="small"
+          onClick={(event) => {
+            setAnchorEl(event.currentTarget);
+          }}
+        >
+          <MoreHorizRounded fontSize="small" />
+        </IconButton>
+      </Tooltip>
       <Menu
         anchorEl={anchorEl}
         open={!!anchorEl}

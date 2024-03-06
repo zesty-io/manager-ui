@@ -1,4 +1,10 @@
-import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import {
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Tooltip,
+} from "@mui/material";
 import { DesignServicesRounded, LanguageRounded } from "@mui/icons-material";
 import { useState } from "react";
 import { ScreenShare } from "@zesty-io/material";
@@ -45,14 +51,21 @@ export const PreviewMenu = () => {
 
   return (
     <>
-      <IconButton
-        size="small"
-        onClick={(event) => {
-          setAnchorEl(event.currentTarget);
-        }}
+      <Tooltip
+        title="Preview Page"
+        enterDelay={1000}
+        enterNextDelay={1000}
+        placement="bottom-start"
       >
-        <ScreenShare fontSize="small" />
-      </IconButton>
+        <IconButton
+          size="small"
+          onClick={(event) => {
+            setAnchorEl(event.currentTarget);
+          }}
+        >
+          <ScreenShare fontSize="small" />
+        </IconButton>
+      </Tooltip>
       <Menu
         anchorEl={anchorEl}
         open={!!anchorEl}
