@@ -442,15 +442,6 @@ export const FieldTypeMedia = ({
             <Button
               size="large"
               variant="outlined"
-              onClick={open}
-              fullWidth
-              startIcon={<UploadRounded />}
-            >
-              Upload More
-            </Button>
-            <Button
-              size="large"
-              variant="outlined"
               onClick={() => {
                 openMediaBrowser({
                   limit,
@@ -461,6 +452,15 @@ export const FieldTypeMedia = ({
               startIcon={<AddRounded />}
             >
               Add More from Media
+            </Button>
+            <Button
+              size="large"
+              variant="outlined"
+              onClick={() => setIsBynderOpen(true)}
+              startIcon={<Bynder />}
+              fullWidth
+            >
+              Add from Bynder
             </Button>
           </Box>
         )}
