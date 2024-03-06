@@ -35,6 +35,7 @@ import "tinymce/plugins/wordcount";
 import "./plugins/slashcommands";
 import "./plugins/socialmediaembed";
 import "./plugins/imageresizer";
+import "./plugins/bynder";
 
 // importing plugin resources
 import "tinymce/plugins/emoticons/js/emojis";
@@ -201,6 +202,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               "slashcommands",
               "socialmediaembed",
               "imageresizer",
+              "bynder",
             ],
             // NOTE: premium plugins are being loaded from a self hosted location
             // specific to our application. Making this component not usable outside of our context.
@@ -210,7 +212,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             toolbar:
               "slashcommands blocks | \
               bold italic underline backcolor | \
-              zestyMediaApp media link socialmediaembed table | \
+              zestyMediaApp media bynder link socialmediaembed table | \
               align bullist numlist outdent indent | \
               searchreplace | \
               superscript subscript strikethrough removeformat | \
