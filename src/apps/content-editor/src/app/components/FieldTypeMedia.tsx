@@ -26,6 +26,7 @@ import {
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
 import { CompactView, Modal, Login } from "@bynder/compact-view";
+import { Bynder } from "@zesty-io/material";
 
 import {
   useGetBinsQuery,
@@ -367,7 +368,7 @@ export const FieldTypeMedia = ({
                     size="large"
                     variant="outlined"
                     onClick={() => setIsBynderOpen(true)}
-                    startIcon={<UploadRounded />}
+                    startIcon={<Bynder />}
                     fullWidth
                     sx={{
                       maxWidth: "240px",
