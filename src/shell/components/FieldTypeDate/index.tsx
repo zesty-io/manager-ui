@@ -4,7 +4,7 @@ import {
   DatePickerProps,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
-import { memo, useCallback, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box } from "@mui/material";
 
@@ -18,6 +18,7 @@ export const FieldTypeDate = memo(
   ({ required, error, ...props }: FieldTypeDateProps) => {
     const triggerPickerRef = useRef<HTMLButtonElement>(null);
     const textFieldRef = useRef<HTMLInputElement>(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     const handleClear = () => {
       /**
@@ -26,33 +27,39 @@ export const FieldTypeDate = memo(
       if (props.onChange) props.onChange(null, null);
     };
 
-    /**
-     * This function is used to open the date picker when the input field is clicked
-     * and refocus the input field when the date picker is opened
-     */
-    const handleOpen = useCallback(() => {
+    const handleOpen = () => {
       /**
-       * Step 1: Open the date picker
+       *  Open the date picker
        */
-
       if (triggerPickerRef.current) triggerPickerRef.current?.click();
-      /**
-       * Step 2: Refocus the input field
-       */
+    };
 
+    const onDatePickerOpen = () => {
       if (textFieldRef.current) {
         /**
-         * Add delay to ensure the picker is rendered before refocusing the input field
+         * Add timeout to ensure the datepicker is open before setting the value
          */
         setTimeout(() => {
-          textFieldRef.current.focus();
           /**
            * Check if the input field is empty, then set the value to today's date
            */
-          if (!textFieldRef.current.value) props.onChange?.(new Date(), null);
+          if (!textFieldRef.current.value && props.value === null) {
+            props.onChange(new Date(), null);
+          }
+          setIsOpen(true);
         }, 0);
       }
-    }, [triggerPickerRef, textFieldRef]);
+    };
+
+    useEffect(() => {
+      /**
+       * This is to ensure the input field is focused and the cursor is at the beginning of the input field
+       */
+      if (isOpen) {
+        textFieldRef.current?.focus();
+        textFieldRef.current?.setSelectionRange(0, 3);
+      }
+    }, [isOpen]);
 
     return (
       <LocalizationProvider
@@ -75,6 +82,8 @@ export const FieldTypeDate = memo(
         <Stack direction={"row"} gap={1}>
           <Box maxWidth={160}>
             <DatePicker
+              onClose={() => setIsOpen(false)}
+              onOpen={onDatePickerOpen}
               {...props}
               inputRef={textFieldRef}
               disableHighlightToday={!!props.value}
