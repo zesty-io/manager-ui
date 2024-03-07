@@ -43,6 +43,28 @@ import "tinymce/plugins/emoticons/js/emojis";
 import { File } from "../../services/types";
 
 const EDITOR_HEIGHT = 560;
+const IMAGE_FILE_TYPES = [
+  ".jpg",
+  ".jpeg",
+  ".gif",
+  ".webp",
+  ".png",
+  ".svg",
+  ".ico",
+] as const;
+const VIDEO_FILE_TYPES = [
+  ".mp4",
+  ".mov",
+  ".avi",
+  ".wmv",
+  ".mkv",
+  ".webm",
+  ".flv",
+  ".f4v",
+  ".swf",
+  ".avch",
+  ".html5",
+] as const;
 
 type FieldTypeTinyMCEProps = {
   value: any;
@@ -363,34 +385,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                     limit: 10,
                     filetype,
                     callback: (files: File[]) => {
-                      const imageFileTypes = [
-                        ".jpg",
-                        ".jpeg",
-                        ".gif",
-                        ".webp",
-                        ".png",
-                        ".svg",
-                        ".ico",
-                      ];
-                      const videoFileTypes = [
-                        ".mp4",
-                        ".mov",
-                        ".avi",
-                        ".wmv",
-                        ".mkv",
-                        ".webm",
-                        ".flv",
-                        ".f4v",
-                        ".swf",
-                        ".avch",
-                        ".html5",
-                      ];
-
                       editor.insertContent(
                         files
                           .map((file: File) => {
                             if (
-                              imageFileTypes.some((fileType) =>
+                              IMAGE_FILE_TYPES.some((fileType) =>
                                 file.filename?.toLowerCase().includes(fileType)
                               )
                             ) {
@@ -398,7 +397,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                             }
 
                             if (
-                              videoFileTypes.some((fileType) =>
+                              VIDEO_FILE_TYPES.some((fileType) =>
                                 file.filename?.toLowerCase().includes(fileType)
                               )
                             ) {
@@ -423,13 +422,13 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                 });
                 editor.addCommand("mceZestyMediaApp", mediaBrowserDialog);
 
-                // Social media embed command
-                editor.addCommand("mceBynder", () => {});
+                // Bynder command
+                editor.addCommand("mceBynder", () => setIsBynderOpen(true));
 
-                // Social media embed button
+                // Bynder button
                 editor.ui.registry.addButton("bynder", {
                   icon: "bynder",
-                  tooltip: "Add images via Bynder",
+                  tooltip: "Select media from your Bynder assets",
                   onAction: () => {
                     setIsBynderOpen(true);
                   },
@@ -442,10 +441,37 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
       <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
         <Login>
           <CompactView
-            onSuccess={(assets) => {
+            onSuccess={(assets: any[]) => {
               if (assets?.length) {
-                console.log(assets);
-                tinymce.activeEditor.insertContent("Hello world");
+                tinymce.activeEditor.insertContent(
+                  assets
+                    .map((asset) => {
+                      const filename = asset.originalUrl.split("/").pop();
+
+                      if (
+                        IMAGE_FILE_TYPES.some((fileType) =>
+                          filename?.toLowerCase().includes(fileType)
+                        )
+                      ) {
+                        return `<img src="${asset.originalUrl}" data-id="${asset.id}" title="${asset.name}" alt="${asset.name}" />`;
+                      }
+
+                      if (
+                        VIDEO_FILE_TYPES.some((fileType) =>
+                          filename?.toLowerCase().includes(fileType)
+                        )
+                      ) {
+                        return `
+                            <video controls src="${asset.originalUrl}"/>
+                          `;
+                      }
+
+                      return `
+                            <a href="${asset.originalUrl}" target="_blank" rel="noopener">${filename}</a>
+                        `;
+                    })
+                    .join(" ")
+                );
                 setIsBynderOpen(false);
               }
             }}
