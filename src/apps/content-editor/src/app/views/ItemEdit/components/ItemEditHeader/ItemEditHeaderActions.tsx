@@ -212,7 +212,7 @@ export const ItemEditHeaderActions = ({
             </div>
           )
         }
-        placement="bottom"
+        placement="bottom-start"
       >
         {itemState === ITEM_STATES.dirty ? (
           <LoadingButton
@@ -276,7 +276,7 @@ export const ItemEditHeaderActions = ({
               </div>
             )
           }
-          placement="bottom"
+          placement="bottom-start"
         >
           {itemState === ITEM_STATES.draft ||
           itemState === ITEM_STATES.dirty ||
@@ -385,7 +385,7 @@ export const ItemEditHeaderActions = ({
               }
             </div>
           }
-          placement="bottom"
+          placement="bottom-start"
         >
           <Box display="flex" alignItems="center" pl="10px" pr="4px">
             <Box display="flex" gap={1} alignItems="center">

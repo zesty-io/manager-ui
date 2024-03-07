@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab, Typography, IconButton } from "@mui/material";
+import { Box, Tabs, Tab, Typography, IconButton, Tooltip } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import {
@@ -148,12 +148,19 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
               }}
             >
               <MoreMenu />
-              <IconButton
-                size="small"
-                onClick={() => setShowDuplicateItemDialog(true)}
+              <Tooltip
+                title="Duplicate Item"
+                enterDelay={1000}
+                enterNextDelay={1000}
+                placement="bottom-start"
               >
-                <ContentCopyRounded fontSize="small" />
-              </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={() => setShowDuplicateItemDialog(true)}
+                >
+                  <ContentCopyRounded fontSize="small" />
+                </IconButton>
+              </Tooltip>
               {type !== "dataset" && <PreviewMenu />}
               <ItemEditHeaderActions
                 saving={saving}

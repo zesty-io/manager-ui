@@ -1,4 +1,4 @@
-import { Button, Menu, MenuItem, Box } from "@mui/material";
+import { Button, Menu, MenuItem, Box, Tooltip } from "@mui/material";
 import {
   useGetContentItemVersionsQuery,
   useGetItemPublishingsQuery,
@@ -51,22 +51,29 @@ export const VersionSelector = () => {
 
   return (
     <>
-      <Button
-        sx={{
-          color: "text.disabled",
-          height: "24px",
-          minWidth: "unset",
-          padding: "2px",
-          " .MuiButton-endIcon": {
-            marginLeft: "4px",
-          },
-        }}
-        color="inherit"
-        endIcon={<KeyboardArrowDownRounded color="action" />}
-        onClick={(e) => setAnchorEl(e.currentTarget)}
+      <Tooltip
+        title="View Versions"
+        enterDelay={1000}
+        enterNextDelay={1000}
+        placement="top-start"
       >
-        v{item?.meta?.version}
-      </Button>
+        <Button
+          sx={{
+            color: "text.disabled",
+            height: "24px",
+            minWidth: "unset",
+            padding: "2px",
+            " .MuiButton-endIcon": {
+              marginLeft: "4px",
+            },
+          }}
+          color="inherit"
+          endIcon={<KeyboardArrowDownRounded color="action" />}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+        >
+          v{item?.meta?.version}
+        </Button>
+      </Tooltip>
       <Menu
         onClose={() => setAnchorEl(null)}
         anchorOrigin={{
