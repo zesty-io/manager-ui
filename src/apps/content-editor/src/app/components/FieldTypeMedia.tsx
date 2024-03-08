@@ -376,6 +376,7 @@ export const FieldTypeMedia = ({
                     Add from Media
                   </Button>
                   <Button
+                    data-cy="addFromBynderBtn"
                     size="large"
                     variant="outlined"
                     onClick={() => setIsBynderOpen(true)}
@@ -465,6 +466,7 @@ export const FieldTypeMedia = ({
               Add More from Media
             </Button>
             <Button
+              data-cy="addFromBynderBtn"
               size="large"
               variant="outlined"
               onClick={() => setIsBynderOpen(true)}
@@ -628,6 +630,7 @@ const MediaItem = ({
   return (
     <>
       <Box
+        data-cy="mediaItem"
         display="grid"
         gridTemplateColumns={
           hideDrag ? "min-content 1fr" : "repeat(2, min-content) 1fr"
@@ -665,6 +668,7 @@ const MediaItem = ({
       >
         {isBynderAsset && (
           <Box
+            data-cy="bynderAssetIndicator"
             component="img"
             src={bynderAssetIndicator}
             alt="Bynder Asset Indicator"
