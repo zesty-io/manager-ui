@@ -20,44 +20,35 @@ export const FieldTypeDate = memo(
     const textFieldRef = useRef<HTMLInputElement>(null);
     const [isOpen, setIsOpen] = useState(false);
 
+    /**
+     * Clear the input value
+     */
     const handleClear = () => {
-      /**
-       * Clear the input value
-       */
       if (props.onChange) props.onChange(null, null);
     };
 
+    /**
+     *  Open the date picker
+     */
     const handleOpen = () => {
-      /**
-       *  Open the date picker
-       */
-      if (triggerPickerRef.current) triggerPickerRef.current?.click();
-    };
-
-    const onDatePickerOpen = () => {
-      if (textFieldRef.current) {
-        /**
-         * Add timeout to ensure the datepicker is open before setting the value
-         */
-        setTimeout(() => {
-          /**
-           * Check if the input field is empty, then set the value to today's date
-           */
-          if (!textFieldRef.current.value && props.value === null) {
-            props.onChange(new Date(), null);
-          }
-          setIsOpen(true);
-        }, 0);
-      }
+      setIsOpen(true);
     };
 
     useEffect(() => {
-      /**
-       * This is to ensure the input field is focused and the cursor is at the beginning of the input field
-       */
-      if (isOpen) {
-        textFieldRef.current?.focus();
-        textFieldRef.current?.setSelectionRange(0, 3);
+      if (textFieldRef.current && isOpen) {
+        /**
+         * Check if the input field is empty, then set the value to today's date
+         */
+        if (props.value === null) {
+          props.onChange(new Date(), null);
+        }
+        /**
+         * Delay the focus to the input field to
+         * ensure the picker is open before focusing to the field
+         */
+        setTimeout(() => {
+          textFieldRef.current?.focus();
+        });
       }
     }, [isOpen]);
 
@@ -82,8 +73,10 @@ export const FieldTypeDate = memo(
         <Stack direction={"row"} gap={1}>
           <Box maxWidth={160}>
             <DatePicker
-              onClose={() => setIsOpen(false)}
-              onOpen={onDatePickerOpen}
+              open={isOpen}
+              onClose={() => {
+                setIsOpen(false);
+              }}
               {...props}
               inputRef={textFieldRef}
               disableHighlightToday={!!props.value}
