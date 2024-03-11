@@ -1,16 +1,8 @@
 import { useEffect, useState } from "react";
-import {
-  ThemeProvider,
-  Box,
-  Stack,
-  Typography,
-  Button,
-  Backdrop,
-  Dialog,
-} from "@mui/material";
+import { ThemeProvider, Box, Stack, Typography, Button } from "@mui/material";
 import PersonRemoveRoundedIcon from "@mui/icons-material/PersonRemoveRounded";
 import { theme } from "@zesty-io/material";
-import { CompactView, Modal, Login } from "@bynder/compact-view";
+import { Modal, Login } from "@bynder/compact-view";
 
 import bynderPreview from "../../../../../../public/images/bynder-preview.png";
 import bynderLogo from "../../../../../../public/images/bynder-logo.svg";
