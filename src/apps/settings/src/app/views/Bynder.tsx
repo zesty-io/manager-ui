@@ -15,7 +15,6 @@ import { CompactView, Modal, Login } from "@bynder/compact-view";
 import bynderPreview from "../../../../../../public/images/bynder-preview.png";
 import bynderLogo from "../../../../../../public/images/bynder-logo.svg";
 
-// TODO: Get the the cvad from local storage to determine the bynder url
 // NOTE: cvrt is the bynder refresh token, determines if user is logged in or not
 export const Bynder = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
