@@ -86,18 +86,7 @@ export const FieldTypeDate = memo(
                     mt: 1,
                   },
                 },
-                day: {
-                  /*
-                   * Override the default today's background color to match with the theme
-                   */
-                  sx: {
-                    "&.MuiPickersDay-today": {
-                      background: "#FF5D0A",
-                      border: "none",
-                      color: "white",
-                    },
-                  },
-                },
+
                 textField: {
                   onClick: handleOpen,
                 },
