@@ -30,6 +30,7 @@ import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import pluralizeWord from "../../../../../utility/pluralizeWord";
 
 export const UploadModal: FC = () => {
+  //
   const dispatch = useDispatch();
   const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
   const filesToUpload = useSelector((state: AppState) =>
