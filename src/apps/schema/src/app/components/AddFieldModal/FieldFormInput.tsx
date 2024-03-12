@@ -23,7 +23,7 @@ import { cloneDeep } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
-import { convertLabelValue } from "../../utils";
+import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
@@ -407,7 +407,7 @@ const KeyValueInput = ({
 }: KeyValueInputProps) => {
   const handleDataChanged = (type: string, value: string) => {
     if (type === "key") {
-      onOptionChange({ [convertLabelValue(value) || ""]: optionValue });
+      onOptionChange({ [convertDropdownValue(value) || ""]: optionValue });
     }
 
     if (type === "value") {
@@ -415,7 +415,7 @@ const KeyValueInput = ({
         onOptionChange({ [optionKey]: value });
       } else {
         // When the value is changed, automatically change the key as well
-        onOptionChange({ [convertLabelValue(value) || ""]: value });
+        onOptionChange({ [convertDropdownValue(value) || ""]: value });
       }
     }
   };
