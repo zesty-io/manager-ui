@@ -27,6 +27,7 @@ import { DnDProvider } from "./DnDProvider";
 import { UploadButton } from "./UploadButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
+import pluralizeWord from "../../../../../utility/pluralizeWord";
 
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
@@ -227,12 +228,9 @@ const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
         {filesUploading?.length > 0
           ? filesUploading.length
           : filesUploaded.length}{" "}
-        File
-        {filesUploading.length > 1
-          ? "s"
-          : filesUploaded.length > 1
-          ? "s"
-          : ""}{" "}
+        {filesUploading?.length > 0
+          ? pluralizeWord("File", filesUploading.length)
+          : pluralizeWord("File", filesUploaded.length)}{" "}
         {filesUploading?.length > 0 ? "Uploading" : "Uploaded"}
       </Typography>
     </Stack>
