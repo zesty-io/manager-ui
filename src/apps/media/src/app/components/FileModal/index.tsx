@@ -103,6 +103,9 @@ export const FileModal: FC<Props> = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      // This will prevent users to use arrowLeft/arrowRight functionality to
+      // navigate images while they are currently on focus in a textarea/text
+      // to ensure that the users won't encounter any problem navigating through text
       if (
         ["textarea", "text"].includes((event.target as HTMLInputElement)?.type)
       )
