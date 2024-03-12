@@ -227,7 +227,12 @@ const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
         {filesUploading?.length > 0
           ? filesUploading.length
           : filesUploaded.length}{" "}
-        File{filesUploading.length > 1 && "s"}{" "}
+        File
+        {filesUploading.length > 1
+          ? "s"
+          : filesUploaded.length > 1
+          ? "s"
+          : ""}{" "}
         {filesUploading?.length > 0 ? "Uploading" : "Uploaded"}
       </Typography>
     </Stack>
