@@ -103,6 +103,11 @@ export const FileModal: FC<Props> = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        ["textarea", "text"].includes((event.target as HTMLInputElement)?.type)
+      )
+        return;
+
       switch (event.code) {
         case "ArrowLeft":
           setAdjacentFiles((adjacentFiles) => {
