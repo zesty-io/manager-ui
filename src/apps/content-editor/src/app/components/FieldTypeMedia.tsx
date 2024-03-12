@@ -700,7 +700,6 @@ const MediaItem = ({
             <div className={cx(styles.Load, styles.Loading)}></div>
           ) : (
             <FileTypePreview
-              isBynderAsset={isBynderAsset}
               src={
                 isURL
                   ? imageZUID
