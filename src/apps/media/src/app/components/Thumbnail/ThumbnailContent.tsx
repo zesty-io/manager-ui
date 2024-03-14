@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 
 import { alpha } from "@mui/material/styles";
+
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
