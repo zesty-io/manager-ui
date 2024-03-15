@@ -7,8 +7,10 @@ import {
   Typography,
   Box,
   Stack,
+  ButtonBaseActions,
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
+import { useRef } from "react";
 
 type ConfirmPublishModal = {
   contentTitle: string;
@@ -20,11 +22,14 @@ export const ConfirmPublishModal = ({
   onCancel,
   onConfirm,
 }: ConfirmPublishModal) => {
+  const actionRef = useRef<ButtonBaseActions | null>(null);
+  const onEntered = () => actionRef?.current?.focusVisible();
   return (
     <Dialog
       open
       data-cy="ConfirmPublishModal"
       PaperProps={{ sx: { width: 480 } }}
+      TransitionProps={{ onEntered }}
     >
       <DialogTitle component="div" sx={{ pb: 1 }}>
         <Stack
@@ -39,10 +44,9 @@ export const ConfirmPublishModal = ({
           <CloudUploadRoundedIcon color="success" />
         </Stack>
         <Box>
-          <Typography fontWeight={700} variant="h5" display="inline">
-            Publish Content Item:
-          </Typography>{" "}
-          <Typography variant="h5" display="inline">
+          Publish Content Item:
+          <Typography fontWeight={600} variant="h5" display="inline">
+            {" "}
             {contentTitle}?
           </Typography>
         </Box>
@@ -58,7 +62,7 @@ export const ConfirmPublishModal = ({
           Cancel
         </Button>
         <Button
-          autoFocus
+          action={(actions) => (actionRef.current = actions)}
           variant="contained"
           color="success"
           sx={{ color: "common.white" }}
