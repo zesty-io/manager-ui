@@ -68,8 +68,7 @@ export const FieldTypeMedia = ({
 }: FieldTypeMediaProps) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [localImageZUIDs, setLocalImageZUIDs] =
-    useState<(string | BynderAsset)[]>(images);
+  const [localImageZUIDs, setLocalImageZUIDs] = useState<string[]>(images);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
@@ -80,17 +79,17 @@ export const FieldTypeMedia = ({
   const [isBynderOpen, setIsBynderOpen] = useState(false);
 
   useEffect(() => {
-    const mappedImages = images?.map((el: string) => {
-      // Parse the bynder assets
-      if (/^\{.+\}$/.test(el)) {
-        return JSON.parse(el);
-      }
+    // const mappedImages = images?.map((el: string) => {
+    //   // Parse the bynder assets
+    //   if (/^\{.+\}$/.test(el)) {
+    //     return JSON.parse(el);
+    //   }
 
-      // Otherwise just return the plain zuid strings
-      return el;
-    });
+    //   // Otherwise just return the plain zuid strings
+    //   return el;
+    // });
 
-    setLocalImageZUIDs(mappedImages);
+    setLocalImageZUIDs(images);
   }, [images]);
 
   const addZestyImage = (selectedImages: any[]) => {
@@ -109,52 +108,61 @@ export const FieldTypeMedia = ({
     const newBynderAssets = selectedAsset
       .slice(0, limit - images.length)
       .map((asset) => {
-        const {
-          createdAt,
-          databaseId,
-          id,
-          name,
-          originalUrl,
-          publishedAt,
-          url,
-        } = asset;
-        const assetString = JSON.stringify({
-          createdAt,
-          databaseId,
-          id,
-          name,
-          originalUrl,
-          publishedAt,
-          url,
-        });
-
-        if (!images.includes(assetString)) {
-          return assetString;
+        if (!images.includes(asset.originalUrl)) {
+          return asset.originalUrl;
         }
       });
+
+    // const newBynderAssets = selectedAsset
+    //   .slice(0, limit - images.length)
+    //   .map((asset) => {
+    //     const {
+    //       createdAt,
+    //       databaseId,
+    //       id,
+    //       name,
+    //       originalUrl,
+    //       publishedAt,
+    //       url,
+    //     } = asset;
+    //     const assetString = JSON.stringify({
+    //       createdAt,
+    //       databaseId,
+    //       id,
+    //       name,
+    //       originalUrl,
+    //       publishedAt,
+    //       url,
+    //     });
+
+    //     if (!images.includes(assetString)) {
+    //       return assetString;
+    //     }
+    //   });
 
     onChange([...images, ...newBynderAssets].join(","), name);
   };
 
   const removeImage = (imageId: string) => {
-    const newImageZUIDs = localImageZUIDs
-      ?.filter((image) => {
-        if (typeof image === "string") {
-          return image !== imageId;
-        }
+    // const newImageZUIDs = localImageZUIDs
+    //   ?.filter((image) => {
+    //     if (typeof image === "string") {
+    //       return image !== imageId;
+    //     }
 
-        if (typeof image === "object") {
-          return image.id !== imageId;
-        }
-      })
-      .map((image) => {
-        // Bynder assets need to be stringified
-        if (typeof image === "object") {
-          return JSON.stringify(image);
-        }
+    //     if (typeof image === "object") {
+    //       return image.id !== imageId;
+    //     }
+    //   })
+    //   .map((image) => {
+    //     // Bynder assets need to be stringified
+    //     if (typeof image === "object") {
+    //       return JSON.stringify(image);
+    //     }
 
-        return image;
-      });
+    //     return image;
+    //   });
+    const newImageZUIDs = images.filter((image) => image !== imageId);
 
     onChange(newImageZUIDs.join(","), name);
   };
@@ -173,9 +181,9 @@ export const FieldTypeMedia = ({
         return imageZUID;
       }
 
-      if (typeof zuid === "object") {
-        return JSON.stringify(zuid);
-      }
+      // if (typeof zuid === "object") {
+      //   return JSON.stringify(zuid);
+      // }
 
       return zuid;
     });
@@ -183,40 +191,43 @@ export const FieldTypeMedia = ({
   };
 
   const replaceBynderAsset = (selectedAsset: any) => {
-    const {
-      createdAt,
-      databaseId,
-      id,
-      name: fileName,
-      originalUrl,
-      publishedAt,
-      url,
-    } = selectedAsset;
-    const duplicateBynderAsset = localImageZUIDs.find((image) => {
-      if (typeof image === "object") {
-        return image.id === id;
-      }
-    });
+    // const {
+    //   createdAt,
+    //   databaseId,
+    //   id,
+    //   name: fileName,
+    //   originalUrl,
+    //   publishedAt,
+    //   url,
+    // } = selectedAsset;
+    // const duplicateBynderAsset = localImageZUIDs.find((image) => {
+    //   if (typeof image === "object") {
+    //     return image.id === id;
+    //   }
+    // });
 
     // Prevent adding bynder asset that has already been added
-    if (!!duplicateBynderAsset) return;
+    if (localImageZUIDs.includes(selectedAsset.originalUrl)) return;
 
     const newImages = localImageZUIDs.map((image) => {
-      if (typeof image === "object") {
-        return JSON.stringify(
-          image.id === imageToReplace
-            ? {
-                createdAt,
-                databaseId,
-                id,
-                name: fileName,
-                originalUrl,
-                publishedAt,
-                url,
-              }
-            : image
-        );
+      if (image === selectedAsset.originalUrl) {
+        return selectedAsset.originalUrl;
       }
+      // if (typeof image === "object") {
+      //   return JSON.stringify(
+      //     image.id === imageToReplace
+      //       ? {
+      //           createdAt,
+      //           databaseId,
+      //           id,
+      //           name: fileName,
+      //           originalUrl,
+      //           publishedAt,
+      //           url,
+      //         }
+      //       : image
+      //   );
+      // }
 
       return image;
     });
@@ -258,20 +269,21 @@ export const FieldTypeMedia = ({
     setDraggedIndex(null);
     setHoveredIndex(null);
     setLocalImageZUIDs(newLocalImages);
+    onChange(newLocalImages.join(","), name);
 
-    onChange(
-      newLocalImages
-        .map((image) => {
-          // Bynder assets need to be stringified
-          if (typeof image === "object") {
-            return JSON.stringify(image);
-          }
+    // onChange(
+    //   newLocalImages
+    //     .map((image) => {
+    //       // Bynder assets need to be stringified
+    //       if (typeof image === "object") {
+    //         return JSON.stringify(image);
+    //       }
 
-          return image;
-        })
-        .join(","),
-      name
-    );
+    //       return image;
+    //     })
+    //     .join(","),
+    //   name
+    // );
   };
 
   const sortedImages = useMemo(() => {
@@ -398,6 +410,7 @@ export const FieldTypeMedia = ({
           <Login>
             <CompactView
               onSuccess={(assets) => {
+                console.log(assets);
                 if (assets?.length) {
                   addBynderAsset(assets);
                   setIsBynderOpen(false);
@@ -419,12 +432,13 @@ export const FieldTypeMedia = ({
         }}
       >
         {sortedImages.map((image, index) => {
-          const isMediaZUID = typeof image === "string";
+          // const isMediaZUID = typeof image === "string";
+          const isBynderAsset = image.includes("bynder.com");
 
           return (
             <MediaItem
-              key={isMediaZUID ? image : image.id}
-              imageZUID={isMediaZUID ? image : image.originalUrl}
+              key={image}
+              imageZUID={image}
               index={index}
               setDraggedIndex={setDraggedIndex}
               setHoveredIndex={setHoveredIndex}
@@ -432,9 +446,9 @@ export const FieldTypeMedia = ({
               onPreview={(imageZUID: string) => setShowFileModal(imageZUID)}
               onRemove={removeImage}
               onReplace={(imageZUID) => {
-                setImageToReplace(isMediaZUID ? imageZUID : image.id);
+                setImageToReplace(imageZUID);
 
-                if (isMediaZUID) {
+                if (isBynderAsset) {
                   openMediaBrowser({
                     callback: replaceImage,
                     isReplace: true,
@@ -444,8 +458,8 @@ export const FieldTypeMedia = ({
                 }
               }}
               hideDrag={hideDrag || limit === 1}
-              isBynderAsset={!isMediaZUID}
-              bynderAssetData={image as BynderAsset}
+              isBynderAsset={isBynderAsset}
+              // bynderAssetData={image as BynderAsset}
             />
           );
         })}
@@ -496,6 +510,7 @@ export const FieldTypeMedia = ({
         <Login>
           <CompactView
             onSuccess={(assets) => {
+              console.log(assets);
               if (assets?.length) {
                 if (imageToReplace) {
                   replaceBynderAsset(assets[0]);
@@ -524,7 +539,6 @@ type MediaItemProps = {
   onReplace: (imageZUID: string) => void;
   hideDrag?: boolean;
   isBynderAsset: boolean;
-  bynderAssetData: BynderAsset;
 };
 const MediaItem = ({
   imageZUID,
@@ -537,7 +551,6 @@ const MediaItem = ({
   onReplace,
   hideDrag,
   isBynderAsset,
-  bynderAssetData,
 }: MediaItemProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
@@ -588,7 +601,7 @@ const MediaItem = ({
       });
   };
 
-  const isURL = !isBynderAsset && imageZUID.substr(0, 4) === "http";
+  const isURL = imageZUID.substr(0, 4) === "http";
 
   const handleDragStart = (e: React.DragEvent) => {
     setIsDragging(true);
@@ -644,10 +657,10 @@ const MediaItem = ({
         onClick={() => {
           if (isURL) return;
 
-          if (isBynderAsset) {
-            window.open(bynderAssetData.url, "_blank", "noopener");
-            return;
-          }
+          // if (isBynderAsset) {
+          //   window.open(bynderAssetData.url, "_blank", "noopener");
+          //   return;
+          // }
 
           onPreview(imageZUID);
         }}
@@ -700,20 +713,8 @@ const MediaItem = ({
             <div className={cx(styles.Load, styles.Loading)}></div>
           ) : (
             <FileTypePreview
-              src={
-                isURL
-                  ? imageZUID
-                  : isBynderAsset
-                  ? bynderAssetData.originalUrl
-                  : data?.url
-              }
-              filename={
-                isURL
-                  ? imageZUID
-                  : isBynderAsset
-                  ? bynderAssetData.name
-                  : data?.filename
-              }
+              src={isURL ? imageZUID : data?.url}
+              filename={isURL ? imageZUID : data?.filename}
               isMediaThumbnail
             />
           )}
@@ -742,12 +743,10 @@ const MediaItem = ({
                 fontWeight={600}
                 noWrap
               >
-                {isBynderAsset
-                  ? bynderAssetData.originalUrl.split("/")?.pop()
-                  : data?.filename}
+                {data?.filename}
               </Typography>
               <Typography variant="body2" color="text.secondary" noWrap>
-                {isBynderAsset ? bynderAssetData.name : data?.title}
+                {data?.title}
               </Typography>
             </Box>
           )}
@@ -757,7 +756,7 @@ const MediaItem = ({
                 size="small"
                 onClick={(event: any) => {
                   event.stopPropagation();
-                  onReplace(isBynderAsset ? bynderAssetData.id : imageZUID);
+                  onReplace(imageZUID);
                 }}
               >
                 <ImageSync fontSize="small" />
@@ -832,14 +831,7 @@ const MediaItem = ({
               <MenuItem
                 onClick={(event) => {
                   event.stopPropagation();
-                  handleCopyClick(
-                    isURL
-                      ? imageZUID
-                      : isBynderAsset
-                      ? bynderAssetData.originalUrl
-                      : data?.url,
-                    false
-                  );
+                  handleCopyClick(isURL ? imageZUID : data?.url, false);
                 }}
               >
                 <ListItemIcon>
@@ -851,7 +843,7 @@ const MediaItem = ({
                 onClick={(event) => {
                   event.stopPropagation();
                   setAnchorEl(null);
-                  onRemove(isBynderAsset ? bynderAssetData.id : imageZUID);
+                  onRemove(imageZUID);
                 }}
               >
                 <ListItemIcon>
