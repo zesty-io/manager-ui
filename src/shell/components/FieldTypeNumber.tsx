@@ -8,8 +8,8 @@ import { NumberFormatInput } from "./NumberFormatInput";
 type FieldTypeNumberProps = {
   required: boolean;
   name: string;
-  value: string;
-  onChange: (value: string, name: string) => void;
+  value: number;
+  onChange: (value: number, name: string) => void;
   hasError: boolean;
 };
 export const FieldTypeNumber = ({
@@ -22,12 +22,14 @@ export const FieldTypeNumber = ({
   const numberInputRef = useRef(null);
 
   useEffect(() => {
-    if (value === "0") {
+    if (value === 0) {
       numberInputRef.current?.setSelectionRange(1, 1);
     }
   }, [value]);
 
   const modifyNumberValue = (action: "increment" | "decrement") => {
+    if (value.toString().includes("e")) return;
+
     const integerFractionalSplit = value.toString().split(".");
 
     switch (action) {
@@ -43,7 +45,7 @@ export const FieldTypeNumber = ({
         break;
     }
 
-    onChange(integerFractionalSplit.join("."), name);
+    onChange(+integerFractionalSplit.join("."), name);
   };
 
   return (
@@ -51,17 +53,14 @@ export const FieldTypeNumber = ({
       inputRef={numberInputRef}
       variant="outlined"
       fullWidth
-      value={value?.toString() || "0"}
+      value={value || 0}
       name={name}
       required={required}
       onChange={(evt) => {
-        onChange(evt.target.value?.replace(/^0+/, "") ?? "0", name);
+        onChange(+evt.target.value?.toString()?.replace(/^0+/, "") ?? 0, name);
       }}
       onKeyDown={(evt) => {
-        if (
-          (evt.key === "Backspace" || evt.key === "Delete") &&
-          value === "0"
-        ) {
+        if ((evt.key === "Backspace" || evt.key === "Delete") && value === 0) {
           evt.preventDefault();
         }
       }}

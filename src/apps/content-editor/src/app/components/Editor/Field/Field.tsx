@@ -861,7 +861,7 @@ export const Field = ({
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeNumber
-            value={value?.toString() || "0"}
+            value={+value || 0}
             name={name}
             required={required}
             onChange={onChange}

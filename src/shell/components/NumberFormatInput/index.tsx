@@ -6,7 +6,7 @@ import {
 } from "react-number-format";
 
 type NumberFormatInputProps = {
-  onChange: (event: { target: { name: string; value: string } }) => void;
+  onChange: (event: { target: { name: string; value: number } }) => void;
   name: string;
 };
 export const NumberFormatInput = forwardRef<
@@ -23,7 +23,7 @@ export const NumberFormatInput = forwardRef<
         onChange({
           target: {
             name: props.name,
-            value: values.value || "0",
+            value: values.floatValue || 0,
           },
         });
       }}
