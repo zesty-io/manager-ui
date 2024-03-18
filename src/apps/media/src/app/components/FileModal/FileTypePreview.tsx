@@ -6,6 +6,7 @@ import {
   Typography,
   CircularProgress,
   useMediaQuery,
+  Stack,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
@@ -142,10 +143,17 @@ export const FileTypePreview: FC<Props> = ({
           }}
         >
           {isImageLoading ? (
-            <CircularProgress
-              color="primary"
-              sx={{ position: "absolute", left: "50%" }}
-            />
+            <Stack
+              position="absolute"
+              top={0}
+              bottom={0}
+              right={0}
+              left={0}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CircularProgress color="primary" />
+            </Stack>
           ) : null}
           <CardMedia
             component="img"
@@ -188,10 +196,17 @@ export const FileTypePreview: FC<Props> = ({
           }}
         >
           {isImageLoading ? (
-            <CircularProgress
-              color="primary"
-              sx={{ position: "absolute", left: "50%" }}
-            />
+            <Stack
+              position="absolute"
+              top={0}
+              bottom={0}
+              right={0}
+              left={0}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CircularProgress color="primary" />
+            </Stack>
           ) : null}
           <CardMedia
             component="img"
