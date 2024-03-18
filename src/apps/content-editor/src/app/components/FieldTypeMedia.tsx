@@ -42,7 +42,6 @@ import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
 import styles from "../../../../media/src/app/components/Thumbnail/Loading.less";
 import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
-import { BynderAsset } from "../../../../../shell/services/types";
 import bynderAssetIndicator from "../../../../../../public/images/bynder-asset-indicator.jpeg";
 
 type FieldTypeMediaProps = {
@@ -79,16 +78,6 @@ export const FieldTypeMedia = ({
   const [isBynderOpen, setIsBynderOpen] = useState(false);
 
   useEffect(() => {
-    // const mappedImages = images?.map((el: string) => {
-    //   // Parse the bynder assets
-    //   if (/^\{.+\}$/.test(el)) {
-    //     return JSON.parse(el);
-    //   }
-
-    //   // Otherwise just return the plain zuid strings
-    //   return el;
-    // });
-
     setLocalImageZUIDs(images);
   }, [images]);
 
@@ -113,55 +102,10 @@ export const FieldTypeMedia = ({
         }
       });
 
-    // const newBynderAssets = selectedAsset
-    //   .slice(0, limit - images.length)
-    //   .map((asset) => {
-    //     const {
-    //       createdAt,
-    //       databaseId,
-    //       id,
-    //       name,
-    //       originalUrl,
-    //       publishedAt,
-    //       url,
-    //     } = asset;
-    //     const assetString = JSON.stringify({
-    //       createdAt,
-    //       databaseId,
-    //       id,
-    //       name,
-    //       originalUrl,
-    //       publishedAt,
-    //       url,
-    //     });
-
-    //     if (!images.includes(assetString)) {
-    //       return assetString;
-    //     }
-    //   });
-
     onChange([...images, ...newBynderAssets].join(","), name);
   };
 
   const removeImage = (imageId: string) => {
-    // const newImageZUIDs = localImageZUIDs
-    //   ?.filter((image) => {
-    //     if (typeof image === "string") {
-    //       return image !== imageId;
-    //     }
-
-    //     if (typeof image === "object") {
-    //       return image.id !== imageId;
-    //     }
-    //   })
-    //   .map((image) => {
-    //     // Bynder assets need to be stringified
-    //     if (typeof image === "object") {
-    //       return JSON.stringify(image);
-    //     }
-
-    //     return image;
-    //   });
     const newImageZUIDs = images.filter((image) => image !== imageId);
 
     onChange(newImageZUIDs.join(","), name);
@@ -181,53 +125,19 @@ export const FieldTypeMedia = ({
         return imageZUID;
       }
 
-      // if (typeof zuid === "object") {
-      //   return JSON.stringify(zuid);
-      // }
-
       return zuid;
     });
     onChange(newImageZUIDs.join(","), name);
   };
 
   const replaceBynderAsset = (selectedAsset: any) => {
-    // const {
-    //   createdAt,
-    //   databaseId,
-    //   id,
-    //   name: fileName,
-    //   originalUrl,
-    //   publishedAt,
-    //   url,
-    // } = selectedAsset;
-    // const duplicateBynderAsset = localImageZUIDs.find((image) => {
-    //   if (typeof image === "object") {
-    //     return image.id === id;
-    //   }
-    // });
-
     // Prevent adding bynder asset that has already been added
     if (localImageZUIDs.includes(selectedAsset.originalUrl)) return;
 
     const newImages = localImageZUIDs.map((image) => {
-      if (image === selectedAsset.originalUrl) {
+      if (image === imageToReplace) {
         return selectedAsset.originalUrl;
       }
-      // if (typeof image === "object") {
-      //   return JSON.stringify(
-      //     image.id === imageToReplace
-      //       ? {
-      //           createdAt,
-      //           databaseId,
-      //           id,
-      //           name: fileName,
-      //           originalUrl,
-      //           publishedAt,
-      //           url,
-      //         }
-      //       : image
-      //   );
-      // }
 
       return image;
     });
@@ -270,20 +180,6 @@ export const FieldTypeMedia = ({
     setHoveredIndex(null);
     setLocalImageZUIDs(newLocalImages);
     onChange(newLocalImages.join(","), name);
-
-    // onChange(
-    //   newLocalImages
-    //     .map((image) => {
-    //       // Bynder assets need to be stringified
-    //       if (typeof image === "object") {
-    //         return JSON.stringify(image);
-    //       }
-
-    //       return image;
-    //     })
-    //     .join(","),
-    //   name
-    // );
   };
 
   const sortedImages = useMemo(() => {
@@ -432,7 +328,6 @@ export const FieldTypeMedia = ({
         }}
       >
         {sortedImages.map((image, index) => {
-          // const isMediaZUID = typeof image === "string";
           const isBynderAsset = image.includes("bynder.com");
 
           return (
@@ -449,17 +344,16 @@ export const FieldTypeMedia = ({
                 setImageToReplace(imageZUID);
 
                 if (isBynderAsset) {
+                  setIsBynderOpen(true);
+                } else {
                   openMediaBrowser({
                     callback: replaceImage,
                     isReplace: true,
                   });
-                } else {
-                  setIsBynderOpen(true);
                 }
               }}
               hideDrag={hideDrag || limit === 1}
               isBynderAsset={isBynderAsset}
-              // bynderAssetData={image as BynderAsset}
             />
           );
         })}
@@ -656,11 +550,6 @@ const MediaItem = ({
         onDragOver={handleDragOver}
         onClick={() => {
           if (isURL) return;
-
-          // if (isBynderAsset) {
-          //   window.open(bynderAssetData.url, "_blank", "noopener");
-          //   return;
-          // }
 
           onPreview(imageZUID);
         }}

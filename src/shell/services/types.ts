@@ -497,13 +497,3 @@ export type Announcement = {
   end_date_and_time: string;
   created_at: string;
 };
-
-export type BynderAsset = {
-  createdAt: string;
-  databaseId: string;
-  id: string;
-  name: string;
-  originalUrl: string;
-  publishedAt: string;
-  url: string;
-};
