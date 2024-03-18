@@ -361,7 +361,7 @@ export const FileTypePreview: FC<Props> = ({
         >
           <CardMedia
             component="video"
-            controls={true}
+            controls={!isMediaThumbnail}
             src={src}
             sx={{
               backgroundColor: "#000",
