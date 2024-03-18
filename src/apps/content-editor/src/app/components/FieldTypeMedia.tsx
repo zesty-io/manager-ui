@@ -306,7 +306,6 @@ export const FieldTypeMedia = ({
           <Login>
             <CompactView
               onSuccess={(assets) => {
-                console.log(assets);
                 if (assets?.length) {
                   addBynderAsset(assets);
                   setIsBynderOpen(false);
@@ -404,7 +403,6 @@ export const FieldTypeMedia = ({
         <Login>
           <CompactView
             onSuccess={(assets) => {
-              console.log(assets);
               if (assets?.length) {
                 if (imageToReplace) {
                   replaceBynderAsset(assets[0]);
