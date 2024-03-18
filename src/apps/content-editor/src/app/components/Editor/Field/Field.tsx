@@ -458,11 +458,6 @@ export const Field = ({
     case "images":
       const images = useMemo(
         () => ((value as string) || "").split(",").filter((el: string) => el),
-        // () =>
-        //   // Do not split commas that have " before it to prevent breaking stringified JSON data
-        //   ((value as string) || "")
-        //     .split(/(?<!\"),/)
-        //     .filter((el: string) => el),
         [value]
       );
       const error = errors && Object.values(errors)?.some((error) => !!error);
