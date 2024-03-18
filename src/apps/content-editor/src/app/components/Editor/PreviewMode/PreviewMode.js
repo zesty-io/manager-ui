@@ -19,7 +19,7 @@ export default function PreviewMode(props) {
   const preview = useRef(null);
 
   // Sends message to preview window to update route
-  function route(itemZUID, version, dirty) {
+  function route(itemZUID, version, dirty, hasErrors) {
     if (preview.current) {
       // if not a string or a string that is not a content item zuid
       // then see if location contains a routable content item
@@ -50,6 +50,7 @@ export default function PreviewMode(props) {
             settings: instanceSettings,
             version: version,
             dirty: dirty,
+            hasErrors,
           },
           origin
         );
@@ -60,19 +61,19 @@ export default function PreviewMode(props) {
   useEffect(() => {
     if (preview.current) {
       // ActivePreview iframe is loading, send route when ready
-      preview.current.addEventListener("load", () =>
-        route(props.itemZUID, props.version, props.dirty)
-      );
+      preview.current.addEventListener("load", () => {
+        route(props.itemZUID, props.version, props.dirty, props.hasErrors);
+      });
 
       // ActivePreview iframe is loaded, send route updates
       const doc =
         preview.current.contentDocument ||
         preview.current.contentWindow.document;
       if (doc.readyState === "complete") {
-        route(props.itemZUID, props.version, props.dirty);
+        route(props.itemZUID, props.version, props.dirty, props.hasErrors);
       }
     }
-  }, [props.itemZUID, props.version, props.dirty]);
+  }, [props.itemZUID, props.version, props.dirty, props.hasErrors]);
 
   useEffect(() => {
     const handleMessage = (event) => {
