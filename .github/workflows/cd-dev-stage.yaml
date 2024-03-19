@@ -59,38 +59,10 @@ jobs:
           SLACK_TITLE: Successfully Deployed manager-ui to Dev
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-  cancel_workflow_if_dev_deploy_failed:
-    runs-on: ubuntu-latest
-    if: ${{ failure() }}
-    needs:
-      - deploy_to_dev
-    steps:
-      - name: Post Failed Dev Deploy Notification To Slack
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: devops
-          SLACK_COLOR: "#FF0000"
-          SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
-          SLACK_MESSAGE: "PR merge by ${{ github.actor }} has failed to deploy to dev."
-          SLACK_TITLE: Dev Deployment Failed for manager-ui
-          SLACK_USERNAME: Deploy Bot
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      - name: Cancel current workflow run
-        uses: actions/github-script@v4
-        with:
-          script: |
-            github.actions.cancelWorkflowRun({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                run_id: context.runId
-            })
-
   deploy_to_stage:
     runs-on: ubuntu-latest
     env:
       ENV: "stage"
-    needs:
-      - deploy_to_dev
 
     steps:
       # This Clean step simply checks if there's already a workflow running from the last
@@ -138,20 +110,36 @@ jobs:
           SLACK_TITLE: Successfully Deployed manager-ui to Stage
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-  post_failed_stage_deploy_notification_to_slack:
+
+  failed_deploy_notification_to_slack:
     runs-on: ubuntu-latest
     if: ${{ failure() }}
-    needs:
-      - deploy_to_stage
+    needs: [deploy_to_dev, deploy_to_stage]
     steps:
-      - name: Post Failed Staging Deploy Notification To Slack
+      - name: Failed Deploy Notification To Slack
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_CHANNEL: devops
+          SLACK_CHANNEL: code-deploy
           SLACK_COLOR: "#FF0000"
           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
-          SLACK_MESSAGE: "PR merge by ${{ github.actor }} has failed to deploy to staging."
-          SLACK_TITLE: Staging Deployment Failed for manager-ui
+          SLACK_MESSAGE: "PR merge by ${{ github.actor }} failed to deploy."
+          SLACK_TITLE: Deployment Failed for manager-ui
+          SLACK_USERNAME: Deploy Bot
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  success_deploy_notification_to_slack:
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    needs: [deploy_to_stage]
+    steps:
+      - name: Success Deploy Notification To Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: code-deploy
+          SLACK_COLOR: "#FF0000"
+          SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
+          SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
+          SLACK_TITLE: Stage Deployment for manager-ui
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -166,7 +154,7 @@ jobs:
       - name: Create Beta Release PR
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: dev
-          base: beta
+          branch: beta
+          # base: dev
           title: beta
           # labels:
