@@ -6,12 +6,43 @@ import { Modal, Login } from "@bynder/compact-view";
 
 import bynderPreview from "../../../../../../public/images/bynder-preview.png";
 import bynderLogo from "../../../../../../public/images/bynder-logo.svg";
+import {
+  useCreateInstanceSettingsMutation,
+  useGetInstanceSettingsQuery,
+  useUpdateInstanceSettingMutation,
+} from "../../../../../shell/services/instance";
 
 // NOTE: cvrt is the bynder refresh token, determines if user is logged in or not
 export const Bynder = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isBynderSessionValid, setIsBynderSessionValid] = useState(false);
   const [bynderSessionUrl, setBynderSessionUrl] = useState("");
+  const [createInstanceSetting] = useCreateInstanceSettingsMutation();
+  const [updateInstanceSetting] = useUpdateInstanceSettingMutation();
+  const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
+
+  const bynderPortalUrlSetting = rawInstanceSettings?.find(
+    (setting) => setting.key === "bynder_portal_url"
+  );
+
+  const updateBynderPortalUrl = (url: string) => {
+    if (bynderPortalUrlSetting) {
+      updateInstanceSetting({
+        ...bynderPortalUrlSetting,
+        value: url,
+      });
+    } else {
+      createInstanceSetting({
+        category: "bynder",
+        key: "bynder_portal_url",
+        keyFriendly: "Bynder Portal URL",
+        value: url,
+        dataType: "text",
+      });
+    }
+
+    localStorage.setItem("cvad", url);
+  };
 
   useEffect(() => {
     // Immediately check bynder session details on mount
@@ -24,17 +55,25 @@ export const Bynder = () => {
     // Poll bynder session details in case the user has logged in/out in bynder
     const bynderSessionInterval = setInterval(() => {
       validSession = !!localStorage.getItem("cvrt");
+      bynderUrl = localStorage.getItem("cvad");
 
       if (validSession) {
         setIsLoginOpen(false);
       }
 
       setIsBynderSessionValid(validSession);
-      setBynderSessionUrl(bynderUrl);
+
+      if (bynderUrl === null && bynderPortalUrlSetting?.value) {
+        localStorage.setItem("cvad", bynderPortalUrlSetting?.value);
+        setBynderSessionUrl(bynderPortalUrlSetting?.value);
+      } else if (bynderUrl && bynderUrl !== bynderPortalUrlSetting?.value) {
+        updateBynderPortalUrl(bynderUrl);
+        setBynderSessionUrl(bynderUrl);
+      }
     }, 500);
 
     return () => clearInterval(bynderSessionInterval);
-  }, []);
+  }, [bynderPortalUrlSetting]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -67,8 +106,8 @@ export const Bynder = () => {
                 variant="outlined"
                 onClick={() => {
                   // Remove the bynder dam url and bynder refresh token
-                  localStorage.removeItem("cvad");
                   localStorage.removeItem("cvrt");
+                  updateBynderPortalUrl("");
                   setIsLoginOpen(true);
                 }}
               >

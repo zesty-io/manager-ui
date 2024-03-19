@@ -69,12 +69,19 @@ export const SettingsNav = () => {
         })
       );
 
-      instanceSettingsCategories.push({
-        label: "Bynder",
-        path: "/settings/instance/bynder",
-        icon: SettingsRoundedIcon,
-        children: [],
-      });
+      // Makes sure that the Bynder settings item is present if the user hasn't added any Bynder integration setting yet
+      if (
+        !instanceSettingsCategories.find(
+          (category) => category.label === "Bynder"
+        )
+      ) {
+        instanceSettingsCategories.push({
+          label: "Bynder",
+          path: "/settings/instance/bynder",
+          icon: SettingsRoundedIcon,
+          children: [],
+        });
+      }
 
       return instanceSettingsCategories;
     }
