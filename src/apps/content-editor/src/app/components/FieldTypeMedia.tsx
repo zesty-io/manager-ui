@@ -42,7 +42,6 @@ import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
 import styles from "../../../../media/src/app/components/Thumbnail/Loading.less";
 import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
-import bynderAssetIndicator from "../../../../../../public/images/bynder-asset-indicator.jpeg";
 
 type FieldTypeMediaProps = {
   images: string[];
@@ -82,13 +81,13 @@ export const FieldTypeMedia = ({
   }, [images]);
 
   const addZestyImage = (selectedImages: any[]) => {
-    const newImageZUIDs = selectedImages.map((image) => {
-      if (!images.includes(image.id)) {
-        return image.id;
-      }
-    });
+    const newImageZUIDs = selectedImages.map((image) => image.id);
+    // remove any duplicates
+    const filteredImageZUIDs = newImageZUIDs.filter(
+      (zuid) => !images.includes(zuid)
+    );
 
-    onChange([...images, ...newImageZUIDs].join(","), name);
+    onChange([...images, ...filteredImageZUIDs].join(","), name);
   };
 
   const addBynderAsset = (selectedAsset: any[]) => {
@@ -96,13 +95,12 @@ export const FieldTypeMedia = ({
 
     const newBynderAssets = selectedAsset
       .slice(0, limit - images.length)
-      .map((asset) => {
-        if (!images.includes(asset.originalUrl)) {
-          return asset.originalUrl;
-        }
-      });
+      .map((asset) => asset.originalUrl);
+    const filteredBynderAssets = newBynderAssets.filter(
+      (asset) => !images.includes(asset)
+    );
 
-    onChange([...images, ...newBynderAssets].join(","), name);
+    onChange([...images, ...filteredBynderAssets].join(","), name);
   };
 
   const removeImage = (imageId: string) => {
@@ -569,9 +567,6 @@ const MediaItem = ({
         {isBynderAsset && (
           <Box
             data-cy="bynderAssetIndicator"
-            component="img"
-            src={bynderAssetIndicator}
-            alt="Bynder Asset Indicator"
             width={24}
             height={24}
             borderRadius={100}
@@ -579,7 +574,19 @@ const MediaItem = ({
             left={84}
             top={52}
             zIndex={2}
-          />
+            px={0.25}
+            boxSizing="border-box"
+            sx={{
+              backgroundColor: "#0af",
+            }}
+          >
+            <Bynder
+              sx={{
+                width: "100%",
+                color: "common.white",
+              }}
+            />
+          </Box>
         )}
         {!hideDrag && (
           <IconButton
