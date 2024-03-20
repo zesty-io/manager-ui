@@ -81,6 +81,9 @@ export const FieldTypeMedia = ({
   const bynderPortalUrlSetting = rawInstanceSettings?.find(
     (setting) => setting.key === "bynder_portal_url"
   );
+  const bynderTokenSetting = rawInstanceSettings?.find(
+    (setting) => setting.key === "bynder_token"
+  );
   // Checks if the bynder portal and token are set
   const isBynderSessionValid =
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
@@ -92,8 +95,18 @@ export const FieldTypeMedia = ({
   useEffect(() => {
     if (bynderPortalUrlSetting?.value) {
       localStorage.setItem("cvad", bynderPortalUrlSetting.value);
+    } else {
+      localStorage.removeItem("cvad");
     }
   }, [bynderPortalUrlSetting]);
+
+  useEffect(() => {
+    if (bynderTokenSetting?.value) {
+      localStorage.setItem("cvrt", bynderTokenSetting.value);
+    } else {
+      localStorage.removeItem("cvrt");
+    }
+  }, [bynderTokenSetting]);
 
   const addZestyImage = (selectedImages: any[]) => {
     const newImageZUIDs = selectedImages.map((image) => image.id);
