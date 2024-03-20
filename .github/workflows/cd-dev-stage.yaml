@@ -111,7 +111,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: code-deploy
-          SLACK_COLOR: "#FF0000"
+          SLACK_COLOR: "#36a64f"
           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
           SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
           SLACK_TITLE: Stage Deployment for manager-ui
@@ -122,11 +122,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy_dev, deploy_stage]
     steps:
-      - uses: actions/checkout@v4
       - name: Create Beta Release PR
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: dev
-          base: beta
-          title: Beta Release
-          # labels:
+        run: gh pr create -B beta -H dev --title 'Beta Release' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: actions/checkout@v4
+      # - name: Create Beta Release PR
+      #   uses: peter-evans/create-pull-request@v6
+      #   with:
+      #     branch: dev
+      #     base: beta
+      #     title: Beta Release
+      #     # labels:
