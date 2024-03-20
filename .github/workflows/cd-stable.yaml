@@ -1,18 +1,15 @@
-# name: cd-stable
+name: cd-stable
 
-# on:
-#   # Uncomment to work on CD in development mode.
-#   # pull_request:
-#   #   branches: [ master ]
-#   push:
-#     branches:
-#       - master
+on:
+  push:
+    branches:
+      - stable
 
-# jobs:
-#   deploy_to_stable:
+jobs:
+#   deploy_stable:
 #     runs-on: ubuntu-latest
 #     env:
-#       ENV: "stable"
+#       ENV: "prod"
 
 #     steps:
 #       # This Clean step simply checks if there's already a workflow running from the last
@@ -32,7 +29,7 @@
 #       - name: Set up Gcloud SDK
 #         uses: google-github-actions/setup-gcloud@v0
 #         with:
-#           project_id: zesty-dev
+#           project_id: zesty-prod
 #       - name: Set up Node
 #         uses: actions/setup-node@v2
 #         with:
@@ -42,46 +39,40 @@
 #       - name: Install Dependencies
 #         run: npm install
 #       - name: Build
-#         run: npm run build:dev
+#         run: npm run build:prod
 #         env:
 #           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-#       - name: Deploy to Dev
-#         run: gcloud app deploy app.yaml --quiet --project zesty-dev
-#       - name: Post Successful Dev Deploy Notification To Slack
-#         uses: rtCamp/action-slack-notify@v2
-#         env:
-#           SLACK_CHANNEL: devops
-#           SLACK_COLOR: ${{ job.status }}
-#           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
-#           SLACK_MESSAGE: |
-#             Use :eyes: to signal you have seen this message.
-#             Use :white_check_mark: to signal you have successfully manually tested the deployed changes.
-#             Use :x: to signal manual tests on deployed changes were unsuccessful and start a thread under this alert describing your remediation steps.
-#           SLACK_TITLE: Successfully Deployed manager-ui to Dev
-#           SLACK_USERNAME: Deploy Bot
-#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-#   cancel_workflow_if_beta_deploy_failed:
+#       - name: Deploy Stable
+#         run: gcloud app deploy app.yaml --quiet --project zesty-prod
+
+#   failed_deploy_notification_to_slack:
 #     runs-on: ubuntu-latest
 #     if: ${{ failure() }}
-#     needs:
-#       - deploy_to_stable
+#     needs: deploy_stable
 #     steps:
-#       - name: Post Failed Dev Deploy Notification To Slack
+#       - name: Failed Deploy Notification To Slack
 #         uses: rtCamp/action-slack-notify@v2
 #         env:
-#           SLACK_CHANNEL: devops
+#           SLACK_CHANNEL: code-deploy
 #           SLACK_COLOR: "#FF0000"
 #           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
-#           SLACK_MESSAGE: "PR merge by ${{ github.actor }} has failed to deploy to dev."
-#           SLACK_TITLE: Dev Deployment Failed for manager-ui
+#           SLACK_MESSAGE: "PR merge by ${{ github.actor }} failed to deploy."
+#           SLACK_TITLE: FAILED Stable Deployment for manager-ui
 #           SLACK_USERNAME: Deploy Bot
 #           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-#       - name: Cancel current workflow run
-#         uses: actions/github-script@v4
-#         with:
-#           script: |
-#             github.actions.cancelWorkflowRun({
-#                 owner: context.repo.owner,
-#                 repo: context.repo.repo,
-#                 run_id: context.runId
-#             })
+
+#   success_deploy_notification_to_slack:
+#     runs-on: ubuntu-latest
+#     if: ${{ success() }}
+#     needs: [deploy_stable]
+#     steps:
+#       - name: Success Deploy Notification To Slack
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_CHANNEL: code-deploy
+#           SLACK_COLOR: "#FF0000"
+#           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
+#           SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
+#           SLACK_TITLE: Stable Deployment for manager-ui
+#           SLACK_USERNAME: Deploy Bot
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
