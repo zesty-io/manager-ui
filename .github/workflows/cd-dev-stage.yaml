@@ -98,7 +98,7 @@ jobs:
           SLACK_COLOR: "#FF2A08"
           SLACK_ICON: https://brand.zesty.io/zesty-io-logo.svg
           SLACK_MESSAGE: "PR merge by ${{ github.actor }} failed to deploy."
-          SLACK_TITLE: FAILED Dev/Stage Deployment for manager-ui
+          SLACK_TITLE: "FAILED: Dev/Stage Deployment for manager-ui"
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -113,8 +113,8 @@ jobs:
           SLACK_CHANNEL: code-deploy
           SLACK_COLOR: "#75BF43"
           SLACK_ICON: https://brand.zesty.io/zesty-io-logo.svg
-          SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
-          SLACK_TITLE: Stage Deployment for manager-ui
+          # SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
+          SLACK_TITLE: "SUCCESS: Stage Deployment of manager-ui"
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
