@@ -1,11 +1,11 @@
-# name: cd-stable
+name: cd-stable
 
-# on:
-#   push:
-#     branches:
-#       - stable
+on:
+  push:
+    branches:
+      - stable
 
-# jobs:
+jobs:
 #   deploy_stable:
 #     runs-on: ubuntu-latest
 #     env:
