@@ -1,0 +1,89 @@
+name: cd-beta
+
+on:
+  push:
+    branches:
+      - beta
+
+jobs:
+  #   deploy_beta:
+  #     runs-on: ubuntu-latest
+  #     env:
+  #       ENV: "prod"
+
+  #     steps:
+  #       # This Clean step simply checks if there's already a workflow running from the last
+  #       # commit and cancels it if there is. This helps us save on cloud cost in the long run.
+  #       # See https://github.com/rokroskar/workflow-run-cleanup-action for more information.
+  #       - name: Clean
+  #         uses: rokroskar/workflow-run-cleanup-action@v0.2.2
+  #         env:
+  #           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+  #         if: "github.ref != 'refs/heads/master'"
+  #       - name: Checkout Repo
+  #         uses: actions/checkout@v2
+  #       - name: Auth with Gcloud
+  #         uses: google-github-actions/auth@v0
+  #         with:
+  #           credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
+  #       - name: Set up Gcloud SDK
+  #         uses: google-github-actions/setup-gcloud@v0
+  #         with:
+  #           project_id: zesty-prod
+  #       - name: Set up Node
+  #         uses: actions/setup-node@v2
+  #         with:
+  #           node-version: "16.5.0"
+  #           cache: "npm"
+  #           cache-dependency-path: package-lock.json
+  #       - name: Install Dependencies
+  #         run: npm install
+  #       - name: Build
+  #         run: npm run build:prod
+  #         env:
+  #           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  #       - name: Deploy to Beta
+  #         run: gcloud app deploy app.yaml --quiet --no-promote --version beta --project zesty-prod
+
+  #   failed_deploy_notification_to_slack:
+  #     runs-on: ubuntu-latest
+  #     if: ${{ failure() }}
+  #     needs: deploy_beta
+  #     steps:
+  #       - name: Failed Deploy Notification To Slack
+  #         uses: rtCamp/action-slack-notify@v2
+  #         env:
+  #           SLACK_CHANNEL: code-deploy
+  #           SLACK_COLOR: "#FF0000"
+  #           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
+  #           SLACK_MESSAGE: "PR merge by ${{ github.actor }} failed to deploy."
+  #           SLACK_TITLE: FAILED Beta Deployment for manager-ui
+  #           SLACK_USERNAME: Deploy Bot
+  #           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  #   success_deploy_notification_to_slack:
+  #     runs-on: ubuntu-latest
+  #     if: ${{ success() }}
+  #     needs: [deploy_beta]
+  #     steps:
+  #       - name: Success Deploy Notification To Slack
+  #         uses: rtCamp/action-slack-notify@v2
+  #         env:
+  #           SLACK_CHANNEL: code-deploy
+  #           SLACK_COLOR: "#FF0000"
+  #           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
+  #           SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
+  #           SLACK_TITLE: Beta Deployment for manager-ui
+  #           SLACK_USERNAME: Deploy Bot
+  #           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  create_stable_pr:
+    runs-on: ubuntu-latest
+    # needs: [deploy_beta]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Create Stable Release PR
+        run: gh pr create -B stable -H beta --title 'Stable Release' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
