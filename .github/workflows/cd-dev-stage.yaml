@@ -113,8 +113,8 @@ jobs:
 
   failed_deploy_notification_to_slack:
     runs-on: ubuntu-latest
-    if: ${{ failure() }}
     needs: [deploy_to_dev, deploy_to_stage]
+    if: ${{ failure() }}
     steps:
       - name: Failed Deploy Notification To Slack
         uses: rtCamp/action-slack-notify@v2
@@ -129,8 +129,8 @@ jobs:
 
   success_deploy_notification_to_slack:
     runs-on: ubuntu-latest
-    if: ${{ success() }}
     needs: [deploy_to_stage]
+    if: ${{ success() }}
     steps:
       - name: Success Deploy Notification To Slack
         uses: rtCamp/action-slack-notify@v2
@@ -143,18 +143,33 @@ jobs:
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
+  # This will create a pr from dev to beta
+  # This will not be triggered if there is an existing PR from dev to beta
   create_beta_pr:
     runs-on: ubuntu-latest
-    needs:
-      - deploy_to_dev
-      - deploy_to_stage
-
+    needs: [deploy_to_dev, deploy_to_stage]
+    if: ${{ success() }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Create Beta Release PR
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: beta
-          # base: dev
-          title: beta
-          # labels:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if PR exists
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prs=$(gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --head 'dev' \
+              --base 'beta' \
+              --json title \
+              --jq 'length')
+          if ((prs > 0)); then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: create pull request
+        if: "!steps.check.outputs.skip"
+        run: gh pr create -B beta -H dev --title '🔥Merge:from `dev` to `beta`' --body '' --label 'hand-off-ready'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
