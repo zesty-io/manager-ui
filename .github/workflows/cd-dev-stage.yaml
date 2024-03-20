@@ -95,10 +95,10 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: code-deploy
-          SLACK_COLOR: "#FF0000"
-          SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
+          SLACK_COLOR: "#FF2A08"
+          SLACK_ICON: https://brand.zesty.io/zesty-io-logo.svg
           SLACK_MESSAGE: "PR merge by ${{ github.actor }} failed to deploy."
-          SLACK_TITLE: FAILED Dev/Stage Deployment for manager-ui
+          SLACK_TITLE: "FAILED: Dev/Stage Deployment for manager-ui"
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -111,10 +111,10 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: code-deploy
-          SLACK_COLOR: "#36a64f"
-          SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
-          SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
-          SLACK_TITLE: Stage Deployment for manager-ui
+          SLACK_COLOR: "#75BF43"
+          SLACK_ICON: https://brand.zesty.io/zesty-io-logo.svg
+          # SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
+          SLACK_TITLE: "SUCCESS: Stage Deployment of manager-ui"
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -124,7 +124,24 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - name: Create Beta Release PR
+
+      - name: Check if PR exists
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prs=$(gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --head 'dev' \
+              --base 'beta' \
+              --json title \
+              --jq 'length')
+          if ((prs > 0)); then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Beta Release
+        if: "!steps.check.outputs.skip"
         run: gh pr create -B beta -H dev --title 'Beta Release' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
