@@ -14,6 +14,10 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
+import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
+
+const TextFieldWithCursorPosition = withCursorPosition(TextField);
+
 interface Props {
   handleUpdateMutation: (renamedFilename: string) => void;
   onClose?: () => void;
@@ -72,7 +76,7 @@ export const RenameFileModal: FC<Props> = ({
       </DialogTitle>
       <DialogContent>
         <InputLabel>New File Name</InputLabel>
-        <TextField
+        <TextFieldWithCursorPosition
           sx={{
             mt: 1,
             width: "100%",
@@ -82,12 +86,16 @@ export const RenameFileModal: FC<Props> = ({
             },
           }}
           autoFocus
-          onFocus={(evt) => evt.target.select()}
+          onFocus={(evt: React.FocusEvent<HTMLInputElement>) =>
+            evt.target.select()
+          }
           value={renamedFilename}
-          onChange={(evt) => {
-            setRenamedFilename(evt.target.value);
+          onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
+            setRenamedFilename(evt.target.value.replace(" ", "-"));
           }}
-          onKeyPress={(event) => event.key === "Enter" && handleUpdate()}
+          onKeyPress={(event: React.KeyboardEvent<HTMLDivElement>) =>
+            event.key === "Enter" && handleUpdate()
+          }
           InputProps={{
             disableUnderline: true,
             endAdornment: (

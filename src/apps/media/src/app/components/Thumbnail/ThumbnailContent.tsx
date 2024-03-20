@@ -9,6 +9,10 @@ import {
 
 import { alpha } from "@mui/material/styles";
 
+import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
+
+const TextFieldWithCursorPosition = withCursorPosition(TextField);
+
 interface Props {
   filename: string;
   onFilenameChange?: (value: string) => void;
@@ -45,13 +49,15 @@ export const ThumbnailContent: FC<Props> = ({
         {onFilenameChange ? (
           <Box>
             <Box>
-              <TextField
+              <TextFieldWithCursorPosition
                 value={filename}
                 size="small"
                 variant="outlined"
                 fullWidth
                 disabled={!isEditable}
-                onChange={(e) => onFilenameChange(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onFilenameChange(e.target.value.replace(" ", "-"))
+                }
                 sx={{
                   "& .MuiInputBase-root.MuiOutlinedInput-root": {
                     borderRadius: 0,
