@@ -381,6 +381,7 @@ export const FieldTypeMedia = ({
               }}
               hideDrag={hideDrag || limit === 1}
               isBynderAsset={isBynderAsset}
+              isBynderSessionValid={!!isBynderSessionValid}
             />
           );
         })}
@@ -461,6 +462,7 @@ type MediaItemProps = {
   onReplace: (imageZUID: string) => void;
   hideDrag?: boolean;
   isBynderAsset: boolean;
+  isBynderSessionValid: boolean;
 };
 const MediaItem = ({
   imageZUID,
@@ -473,6 +475,7 @@ const MediaItem = ({
   onReplace,
   hideDrag,
   isBynderAsset,
+  isBynderSessionValid,
 }: MediaItemProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
@@ -603,7 +606,7 @@ const MediaItem = ({
             height={24}
             borderRadius={100}
             position="absolute"
-            left={84}
+            left={hideDrag ? 52 : 84}
             top={52}
             zIndex={2}
             px={0.25}
@@ -677,17 +680,21 @@ const MediaItem = ({
             </Box>
           )}
           <Box display="flex" gap={1} justifyContent="flex-end">
-            <Tooltip title="Replace File" placement="bottom" enterDelay={800}>
-              <IconButton
-                size="small"
-                onClick={(event: any) => {
-                  event.stopPropagation();
-                  onReplace(imageZUID);
-                }}
-              >
-                <ImageSync fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
+              <Tooltip title="Replace File" placement="bottom" enterDelay={800}>
+                <IconButton
+                  size="small"
+                  onClick={(event: any) => {
+                    event.stopPropagation();
+                    onReplace(imageZUID);
+                  }}
+                >
+                  <ImageSync fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <></>
+            )}
             {!isURL && (
               <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
                 <IconButton size="small">
