@@ -20,9 +20,14 @@ export const Bynder = () => {
   const [createInstanceSetting] = useCreateInstanceSettingsMutation();
   const [updateInstanceSetting] = useUpdateInstanceSettingMutation();
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
+  const [tokenInterval, setTokenInterval] = useState<NodeJS.Timer>();
+  const [portalUrlInterval, setPortalUrlInterval] = useState<NodeJS.Timer>();
 
   const bynderPortalUrlSetting = rawInstanceSettings?.find(
     (setting) => setting.key === "bynder_portal_url"
+  );
+  const bynderTokenSetting = rawInstanceSettings?.find(
+    (setting) => setting.key === "bynder_token"
   );
 
   const updateBynderPortalUrl = (url: string) => {
@@ -44,24 +49,37 @@ export const Bynder = () => {
     localStorage.setItem("cvad", url);
   };
 
+  const updateBynderToken = (token: string) => {
+    if (bynderTokenSetting) {
+      updateInstanceSetting({
+        ...bynderTokenSetting,
+        value: token,
+      });
+    } else {
+      createInstanceSetting({
+        category: "bynder",
+        key: "bynder_token",
+        keyFriendly: "Bynder Token",
+        value: token,
+        dataType: "text",
+      });
+    }
+
+    if (token) {
+      localStorage.setItem("cvrt", token);
+    } else {
+      localStorage.removeItem("cvrt");
+    }
+  };
+
   useEffect(() => {
-    // Immediately check bynder session details on mount
-    let validSession = !!localStorage.getItem("cvrt");
     let bynderUrl = localStorage.getItem("cvad");
 
-    setIsBynderSessionValid(validSession);
     setBynderSessionUrl(bynderUrl);
 
     // Poll bynder session details in case the user has logged in/out in bynder
     const bynderSessionInterval = setInterval(() => {
-      validSession = !!localStorage.getItem("cvrt");
       bynderUrl = localStorage.getItem("cvad");
-
-      if (validSession) {
-        setIsLoginOpen(false);
-      }
-
-      setIsBynderSessionValid(validSession);
 
       if (bynderUrl === null && bynderPortalUrlSetting?.value) {
         localStorage.setItem("cvad", bynderPortalUrlSetting?.value);
@@ -72,8 +90,39 @@ export const Bynder = () => {
       }
     }, 500);
 
+    setPortalUrlInterval(bynderSessionInterval);
+
     return () => clearInterval(bynderSessionInterval);
   }, [bynderPortalUrlSetting]);
+
+  useEffect(() => {
+    let bynderToken = localStorage.getItem("cvrt");
+
+    setIsBynderSessionValid(!!bynderToken);
+
+    // Poll bynder session details in case the user has logged in/out in bynder
+    const bynderSessionInterval = setInterval(() => {
+      bynderToken = localStorage.getItem("cvrt");
+
+      if (!!bynderToken) {
+        setIsLoginOpen(false);
+      }
+
+      setIsBynderSessionValid(!!bynderToken);
+
+      if (bynderToken === null && bynderTokenSetting?.value) {
+        localStorage.setItem("cvrt", bynderTokenSetting.value);
+        setIsBynderSessionValid(!!bynderTokenSetting.value);
+      } else if (bynderToken && bynderToken !== bynderTokenSetting?.value) {
+        updateBynderToken(bynderToken);
+        setIsBynderSessionValid(!!bynderToken);
+      }
+    }, 500);
+
+    setTokenInterval(bynderSessionInterval);
+
+    return () => clearInterval(bynderSessionInterval);
+  }, [bynderTokenSetting]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -105,9 +154,10 @@ export const Bynder = () => {
               <Button
                 variant="outlined"
                 onClick={() => {
-                  // Remove the bynder dam url and bynder refresh token
-                  localStorage.removeItem("cvrt");
+                  clearInterval(portalUrlInterval);
+                  clearInterval(tokenInterval);
                   updateBynderPortalUrl("");
+                  updateBynderToken("");
                   setIsLoginOpen(true);
                 }}
               >
@@ -118,8 +168,8 @@ export const Bynder = () => {
                 color="error"
                 variant="contained"
                 onClick={() => {
-                  // Remove the bynder refresh token
-                  localStorage.removeItem("cvrt");
+                  clearInterval(tokenInterval);
+                  updateBynderToken("");
                 }}
               >
                 Disconnect
