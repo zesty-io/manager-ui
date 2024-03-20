@@ -33,7 +33,7 @@
 #       - name: Set up Node
 #         uses: actions/setup-node@v2
 #         with:
-#           node-version: "16.5.0"
+#           node-version: "20.11.1"
 #           cache: "npm"
 #           cache-dependency-path: package-lock.json
 #       - name: Install Dependencies
