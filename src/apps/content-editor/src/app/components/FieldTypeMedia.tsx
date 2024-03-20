@@ -42,6 +42,7 @@ import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
 import styles from "../../../../media/src/app/components/Thumbnail/Loading.less";
 import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
+import { useGetInstanceSettingsQuery } from "../../../../../shell/services/instance";
 
 type FieldTypeMediaProps = {
   images: string[];
@@ -75,10 +76,24 @@ export const FieldTypeMedia = ({
   const [showFileModal, setShowFileModal] = useState("");
   const [imageToReplace, setImageToReplace] = useState("");
   const [isBynderOpen, setIsBynderOpen] = useState(false);
+  const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
+
+  const bynderPortalUrlSetting = rawInstanceSettings?.find(
+    (setting) => setting.key === "bynder_portal_url"
+  );
+  // Checks if the bynder portal and token are set
+  const isBynderSessionValid =
+    localStorage.getItem("cvrt") && localStorage.getItem("cvad");
 
   useEffect(() => {
     setLocalImageZUIDs(images);
   }, [images]);
+
+  useEffect(() => {
+    if (bynderPortalUrlSetting?.value) {
+      localStorage.setItem("cvad", bynderPortalUrlSetting.value);
+    }
+  }, [bynderPortalUrlSetting]);
 
   const addZestyImage = (selectedImages: any[]) => {
     const newImageZUIDs = selectedImages.map((image) => image.id);
@@ -281,20 +296,22 @@ export const FieldTypeMedia = ({
                   >
                     Add from Media
                   </Button>
-                  <Button
-                    data-cy="addFromBynderBtn"
-                    size="large"
-                    variant="outlined"
-                    onClick={() => setIsBynderOpen(true)}
-                    startIcon={<Bynder />}
-                    fullWidth
-                    sx={{
-                      maxWidth: "240px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    Add from Bynder
-                  </Button>
+                  {isBynderSessionValid && (
+                    <Button
+                      data-cy="addFromBynderBtn"
+                      size="large"
+                      variant="outlined"
+                      onClick={() => setIsBynderOpen(true)}
+                      startIcon={<Bynder />}
+                      fullWidth
+                      sx={{
+                        maxWidth: "240px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      Add from Bynder
+                    </Button>
+                  )}
                 </Box>
               )}
             </Stack>
@@ -370,16 +387,18 @@ export const FieldTypeMedia = ({
             >
               Add More from Media
             </Button>
-            <Button
-              data-cy="addFromBynderBtn"
-              size="large"
-              variant="outlined"
-              onClick={() => setIsBynderOpen(true)}
-              startIcon={<Bynder />}
-              fullWidth
-            >
-              Add from Bynder
-            </Button>
+            {isBynderSessionValid && (
+              <Button
+                data-cy="addFromBynderBtn"
+                size="large"
+                variant="outlined"
+                onClick={() => setIsBynderOpen(true)}
+                startIcon={<Bynder />}
+                fullWidth
+              >
+                Add from Bynder
+              </Button>
+            )}
           </Box>
         )}
       </Stack>
