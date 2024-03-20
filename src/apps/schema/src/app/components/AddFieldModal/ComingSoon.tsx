@@ -35,8 +35,7 @@ export const ComingSoon = () => {
             <>
               <Typography variant="body2">Default Value</Typography>
               <Typography variant="body3" color="text.secondary">
-                Ensures that multiple items can't have the same value for this
-                field
+                Set a predefined value for this field
               </Typography>
             </>
           }

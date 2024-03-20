@@ -27,6 +27,7 @@ import { AppState } from "../../../../../../shell/store/types";
 import {
   useCreateItemPublishingMutation,
   useGetContentItemQuery,
+  useGetContentModelFieldsQuery,
 } from "../../../../../../shell/services/instance";
 import { ScheduleFlyout } from "../ItemEdit/components/Header/ItemVersioning/ScheduleFlyout";
 import { Error } from "../../components/Editor/Field/FieldShell";
@@ -84,6 +85,11 @@ export const ItemCreate = () => {
     useGetContentItemQuery(newItemZUID, {
       skip: !newItemZUID,
     });
+
+  const {
+    isSuccess: isSuccessNewModelFields,
+    isFetching: isFetchingNewModelFields,
+  } = useGetContentModelFieldsQuery(modelZUID);
 
   // on mount and update modelZUID, load item fields
   useEffect(() => {
@@ -268,7 +274,12 @@ export const ItemCreate = () => {
   }
 
   return (
-    <WithLoader condition={!loading && item} message="Creating New Item">
+    <WithLoader
+      condition={
+        !loading && item && isSuccessNewModelFields && !isFetchingNewModelFields
+      }
+      message="Creating New Item"
+    >
       <Box component="section">
         <Header
           onSave={save}

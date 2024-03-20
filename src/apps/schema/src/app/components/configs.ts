@@ -416,7 +416,7 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
   },
   dropdown: {
     details: [
-      ...COMMON_FIELDS.slice(0, 3),
+      ...COMMON_FIELDS.slice(0, 4),
       {
         name: "options",
         type: "options",
@@ -426,7 +426,7 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
         maxLength: 150,
         validate: ["length", "unique"],
       },
-      ...COMMON_FIELDS.slice(3),
+      ...COMMON_FIELDS.slice(4),
     ],
     rules: [],
   },

@@ -110,10 +110,12 @@ export const mediaManagerApi = createApi({
       query: (binId) => `bin/${binId}/files`,
       providesTags: (result, error, binId) => [{ type: "BinFiles", id: binId }],
       transformResponse: (response: { data: File[] }) =>
-        response.data.map((file) => ({
-          ...file,
-          thumbnail: generateThumbnail(file),
-        })),
+        response.data
+          ?.filter((file) => file.group_id === file.bin_id)
+          ?.map((file) => ({
+            ...file,
+            thumbnail: generateThumbnail(file),
+          })),
     }),
     getBinGroups: builder.query<Group[], string>({
       query: (binId) => `bin/${binId}/groups`,

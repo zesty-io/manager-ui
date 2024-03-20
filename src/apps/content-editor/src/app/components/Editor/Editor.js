@@ -13,11 +13,11 @@ import { ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
-import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { FieldError } from "./FieldError";
 
 import styles from "./Editor.less";
 import { cloneDeep } from "lodash";
+import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 
 export const MaxLengths = {
   text: 150,
@@ -207,6 +207,7 @@ export default memo(function Editor({
         {saveClicked && hasErrors && (
           <FieldError errors={fieldErrors} fields={activeFields} />
         )}
+
         {activeFields.length ? (
           activeFields.map((field) => {
             return (
