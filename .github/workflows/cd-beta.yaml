@@ -1,14 +1,11 @@
-# name: cd-beta
+name: cd-beta
 
-# on:
-#   # Uncomment to work on CD in development mode.
-#   # pull_request:
-#   #   branches: [ master ]
-#   push:
-#     branches:
-#       - beta
+on:
+  push:
+    branches:
+      - beta
 
-# jobs:
+jobs:
 #   deploy_beta:
 #     runs-on: ubuntu-latest
 #     env:
