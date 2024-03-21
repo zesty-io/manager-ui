@@ -35,35 +35,19 @@ const parseDateInput = (input: string): Date | null => {
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
 
-  if (dateParts.length === 1) {
-    const month = months[dateParts[0].toLowerCase().slice(0, 3)];
-    const day = 1;
-    const isValidMonth = month >= 0;
-    return new Date(currentYear, isValidMonth ? month : currentMonth, day);
+  let [monthInput, dayInput, yearInput] = dateParts;
+  let month = months[monthInput.toLowerCase().slice(0, 3)];
+  if (isNaN(month)) {
+    month = currentMonth;
+    if (!isNaN(parseInt(monthInput))) {
+      month = parseInt(monthInput) - 1;
+    }
   }
+  const isValidMonth = month >= 0 && month <= 11;
+  let day = isNaN(parseInt(dayInput)) ? 1 : parseInt(dayInput);
+  let year = isNaN(parseInt(yearInput)) ? currentYear : parseInt(yearInput);
 
-  if (dateParts.length === 2) {
-    const month = months[dateParts[0].toLowerCase().slice(0, 3)];
-    const day = parseInt(dateParts[1]);
-    const isValidMonth = month >= 0;
-    return new Date(
-      currentYear,
-      isValidMonth ? month : currentMonth,
-      !isNaN(day) ? day : 1
-    );
-  }
-
-  if (dateParts.length === 3) {
-    const month = months[dateParts[0].toLowerCase().slice(0, 3)];
-    const day = parseInt(dateParts[1]);
-    const year = parseInt(dateParts[2]);
-    const isValidMonth = month >= 0;
-    return new Date(
-      !isNaN(year) ? year : currentYear,
-      isValidMonth ? month : currentMonth,
-      !isNaN(day) ? day : 1
-    );
-  }
+  return new Date(year, isValidMonth ? month : currentMonth, day);
 };
 
 export const FieldTypeDate = memo(
@@ -95,6 +79,7 @@ export const FieldTypeDate = memo(
         if (props.value === null) {
           props.onChange(new Date(), null);
           textFieldRef.current.value = format(new Date(), "MMM dd, yyyy");
+          textFieldRef.current.setSelectionRange(0, 3);
         }
 
         /**
@@ -113,8 +98,7 @@ export const FieldTypeDate = memo(
       if (!isOpen && props.value) {
         textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
       }
-
-      textFieldRef.current.setSelectionRange(0, 3);
+      textFieldRef.current.blur();
     }, [isOpen]);
 
     /**
@@ -149,7 +133,7 @@ export const FieldTypeDate = memo(
                   },
                 },
                 field: {
-                  //@ts-expect-error - Fix this, Add the correct type
+                  //@ts-expect-error - OnClick type does not exist on fieldProps
                   onClick: handleOpen,
                   onChange: (e: any) => {
                     const inputDate = e.target.value;
