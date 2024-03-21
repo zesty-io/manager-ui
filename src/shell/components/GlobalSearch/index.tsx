@@ -681,6 +681,7 @@ export const GlobalSearch = () => {
                   "& .Mui-focused": {
                     width: fullWidth,
                   },
+
                   "&:hover .MuiButtonBase-root.MuiAutocomplete-clearIndicator":
                     {
                       visibility: searchKeyword ? "visible" : "hidden",
@@ -714,13 +715,13 @@ export const GlobalSearch = () => {
                   ...params.inputProps,
                   style: {
                     ...params.inputProps.style,
-                    paddingLeft: "4px",
+                    paddingLeft: "0px",
                   },
                 }}
                 InputProps={{
                   ...params.InputProps,
                   startAdornment: (
-                    <InputAdornment position="start" sx={{ marginRight: 0 }}>
+                    <InputAdornment position="start">
                       {Boolean(chipSearchAccelerator) ? (
                         <Chip
                           data-cy={`active-global-search-accelerator-${chipSearchAccelerator}`}
@@ -756,6 +757,7 @@ export const GlobalSearch = () => {
                   sx: {
                     "&.MuiAutocomplete-inputRoot": {
                       py: "2px",
+
                       height: "40px",
                     },
 
