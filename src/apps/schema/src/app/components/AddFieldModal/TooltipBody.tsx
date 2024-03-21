@@ -51,6 +51,7 @@ export const TooltipBody = ({
           primaryTypographyProps={{
             fontSize: 14,
             fontWeight: 700,
+            color: "text.primary",
           }}
           secondaryTypographyProps={{
             variant: "body3",
@@ -62,11 +63,12 @@ export const TooltipBody = ({
           variant="body3"
           color="text.secondary"
           whiteSpace="pre-line"
+          fontWeight={400}
         >
           {description}
         </Typography>
         <Box py={2}>
-          <Typography variant="body2" fontWeight="700">
+          <Typography variant="body2" fontWeight="700" pb={1}>
             Common Uses
           </Typography>
           <Box pl={2} component="ul">
@@ -82,10 +84,10 @@ export const TooltipBody = ({
             ))}
           </Box>
         </Box>
-        <Typography variant="body2" fontWeight="700">
+        <Typography variant="body2" fontWeight="700" pb={1}>
           Pro Tip
         </Typography>
-        <Typography variant="body3" color="text.secondary">
+        <Typography fontWeight={400} variant="body3" color="text.secondary">
           {proTip}
         </Typography>
       </Box>
