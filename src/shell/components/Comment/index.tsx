@@ -2,7 +2,8 @@ import { IconButton, Button, alpha } from "@mui/material";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
 import { useState } from "react";
-import { theme } from "@zesty-io/material";
+
+import { CommentsList } from "./CommentsList";
 
 // Mock data
 const comments = [
@@ -32,6 +33,7 @@ type CommentProps = {};
 export const Comment = ({}: CommentProps) => {
   const [isUnresolved] = useState(false);
   const [_comments] = useState(comments);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
   return (
     <>
@@ -39,6 +41,7 @@ export const Comment = ({}: CommentProps) => {
         <Button
           size="xsmall"
           endIcon={<CommentRoundedIcon />}
+          onClick={(evt) => setAnchorEl(evt.currentTarget)}
           sx={{
             backgroundColor: (theme) =>
               isUnresolved
@@ -89,8 +92,11 @@ export const Comment = ({}: CommentProps) => {
             },
           }}
         >
-          <AddCommentRoundedIcon fontSize="small" />
+          <AddCommentRoundedIcon sx={{ fontSize: 16 }} />
         </IconButton>
+      )}
+      {anchorEl && (
+        <CommentsList anchorEl={anchorEl} onClose={() => setAnchorEl(null)} />
       )}
     </>
   );
