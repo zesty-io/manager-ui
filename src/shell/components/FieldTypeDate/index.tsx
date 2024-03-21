@@ -34,7 +34,6 @@ const parseDateInput = (input: string): Date | null => {
   const dateParts = input.split(/[ ,/]/).filter((part) => part.trim() !== "");
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
-  const currentDay = new Date().getDate();
 
   if (dateParts.length === 1) {
     const month = months[dateParts[0].toLowerCase().slice(0, 3)];
@@ -90,7 +89,8 @@ export const FieldTypeDate = memo(
     useEffect(() => {
       if (textFieldRef.current && isOpen) {
         /**
-         * Check if the input field is empty, then set the value to today's date
+         * This Perform a check if there's no value set
+         * When the user clicks on the input field, set the value to the current date
          */
         if (props.value === null) {
           props.onChange(new Date(), null);
@@ -107,7 +107,8 @@ export const FieldTypeDate = memo(
       }
 
       /**
-       * Set the input value to the selected date inside the picker
+       * This handles the case when the user selects a date from the picker
+       * directly and not use the input field to manually enter the date
        */
       if (!isOpen && props.value) {
         textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
@@ -117,7 +118,7 @@ export const FieldTypeDate = memo(
     }, [isOpen]);
 
     /**
-     * Set the input value on initial render if the value is set
+     * handles the case when the value is set from the parent component or db values
      */
     useEffect(() => {
       if (props.value) {
