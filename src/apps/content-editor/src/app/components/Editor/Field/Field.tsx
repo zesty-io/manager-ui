@@ -916,7 +916,7 @@ export const Field = ({
             name={name}
             required={required}
             value={value ? new Date(value) : null}
-            format="MMM dd, yyyy"
+            // format="MMM dd, yyyy"
             onChange={(date) => onDateChange(date, name, datatype)}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />
