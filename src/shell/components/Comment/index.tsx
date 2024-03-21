@@ -59,7 +59,7 @@ export const Comment = ({}: CommentProps) => {
             },
 
             "&:hover .MuiButton-endIcon .MuiSvgIcon-root": {
-              fill: "primary.main",
+              fill: (theme) => theme.palette.primary.main,
             },
 
             "& .MuiButton-endIcon": {
@@ -69,15 +69,27 @@ export const Comment = ({}: CommentProps) => {
 
             "& .MuiButton-endIcon .MuiSvgIcon-root": {
               fontSize: 16,
-              fill: isUnresolved ? "primary.main" : "action.active",
+              fill: (theme) =>
+                isUnresolved
+                  ? theme.palette.primary.main
+                  : theme.palette.action.active,
             },
           }}
         >
           {comments.length}
         </Button>
       ) : (
-        <IconButton size="small">
-          <AddCommentRoundedIcon />
+        <IconButton
+          size="xxsmall"
+          sx={{
+            "&:hover": {
+              backgroundColor: (theme) =>
+                alpha(theme.palette.primary.main, 0.08),
+              color: "primary.main",
+            },
+          }}
+        >
+          <AddCommentRoundedIcon fontSize="small" />
         </IconButton>
       )}
     </>
