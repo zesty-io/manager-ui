@@ -290,7 +290,8 @@ export const ItemEditHeaderActions = ({
           {itemState === ITEM_STATES.draft ||
           itemState === ITEM_STATES.dirty ||
           publishAfterSave ||
-          isFetching ? (
+          isFetching ||
+          saving ? (
             <ButtonGroup
               variant="contained"
               color="success"
