@@ -6,7 +6,12 @@ import { useState } from "react";
 import { CommentsList } from "./CommentsList";
 
 // Mock data
-const comments = [
+export type CommentItemType = {
+  creator: string;
+  createdOn: number;
+  body: string;
+};
+const comments: CommentItemType[] = [
   {
     creator: "Nar",
     createdOn: Date.now(),
@@ -96,7 +101,12 @@ export const Comment = ({}: CommentProps) => {
         </IconButton>
       )}
       {anchorEl && (
-        <CommentsList anchorEl={anchorEl} onClose={() => setAnchorEl(null)} />
+        <CommentsList
+          anchorEl={anchorEl}
+          onClose={() => setAnchorEl(null)}
+          comments={_comments}
+          isUnresolved
+        />
       )}
     </>
   );

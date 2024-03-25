@@ -13,6 +13,7 @@ import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownR
 import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
 import { FieldTooltipBody } from "./FieldTooltipBody";
 import { ContentModelField } from "../../../../../../../shell/services/types";
+import { Comment } from "../../../../../../../shell/components/Comment";
 
 export type EditorType =
   | "markdown"
@@ -141,6 +142,7 @@ export const FieldShell = ({
             </>
           )}
           {endLabel}
+          <Comment />
         </Stack>
       </Stack>
       {settings?.description && (

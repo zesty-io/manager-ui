@@ -1,10 +1,19 @@
-import { Popover } from "@mui/material";
+import { Popover, Divider } from "@mui/material";
+
+import { CommentItem } from "./CommentItem";
+import { CommentItemType } from "./index";
 
 type CommentsListProps = {
   anchorEl: Element;
   onClose: () => void;
+  comments: CommentItemType[];
+  isUnresolved: boolean;
 };
-export const CommentsList = ({ anchorEl, onClose }: CommentsListProps) => {
+export const CommentsList = ({
+  anchorEl,
+  onClose,
+  comments,
+}: CommentsListProps) => {
   return (
     <Popover
       open
@@ -18,8 +27,29 @@ export const CommentsList = ({ anchorEl, onClose }: CommentsListProps) => {
         vertical: "top",
         horizontal: "left",
       }}
+      slotProps={{
+        paper: {
+          elevation: 8,
+          sx: {
+            width: 360,
+            p: 2,
+            mt: 0.5,
+          },
+        },
+      }}
     >
-      Hello comment section!
+      {comments?.map((comment, index) => (
+        <>
+          <CommentItem
+            key={index}
+            body={comment.body}
+            createdOn={comment.createdOn}
+            creator={comment.creator}
+            withResolveButton={index === 0}
+          />
+          {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
+        </>
+      ))}
     </Popover>
   );
 };
