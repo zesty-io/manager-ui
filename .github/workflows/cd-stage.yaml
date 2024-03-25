@@ -100,6 +100,6 @@ jobs:
 
       - name: Create Beta Release
         if: "!steps.check.outputs.skip"
-        run: gh pr create -B beta -H dev --title 'Beta Release' --body 'Created by Github action'
+        run: gh pr create -B beta -H stage --title 'Beta Release' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
