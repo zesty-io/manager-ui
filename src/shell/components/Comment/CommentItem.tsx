@@ -8,12 +8,14 @@ type CommentItemProps = {
   creator: string;
   createdOn: number;
   withResolveButton?: boolean;
+  onResolveComment: () => void;
 };
 export const CommentItem = ({
   body,
   creator,
   createdOn,
   withResolveButton,
+  onResolveComment,
 }: CommentItemProps) => {
   return (
     <Stack gap={1.5}>
@@ -31,8 +33,8 @@ export const CommentItem = ({
         </Stack>
         <Box>
           {withResolveButton && (
-            <IconButton size="small">
-              <CheckRoundedIcon fontSize="small" />
+            <IconButton size="small" onClick={onResolveComment}>
+              <CheckRoundedIcon fontSize="small" color="primary" />
             </IconButton>
           )}
           <IconButton size="small">

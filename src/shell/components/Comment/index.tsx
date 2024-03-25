@@ -11,54 +11,54 @@ export type CommentItemType = {
   createdOn: number;
   body: string;
 };
-const comments: CommentItemType[] = [
+const dummyComments: CommentItemType[] = [
   {
     creator: "Nar",
-    createdOn: Date.now(),
+    createdOn: Date.now() - 100000000,
     body: "Lorem ipsum sit dolor hello hello",
   },
   {
     creator: "Zosh",
-    createdOn: Date.now(),
+    createdOn: Date.now() - 20000011,
     body: "Yo yo yo",
   },
   {
     creator: "Andres",
-    createdOn: Date.now(),
+    createdOn: Date.now() - 3333333,
     body: "Hey guys! What's up",
   },
   {
     creator: "Nar",
-    createdOn: Date.now(),
+    createdOn: Date.now() - 456900,
     body: "For all that is beautiful!",
   },
 ];
 
 type CommentProps = {};
 export const Comment = ({}: CommentProps) => {
-  const [isUnresolved] = useState(false);
-  const [_comments] = useState(comments);
+  const [isResolved, setIsResolved] = useState(false);
+  const [comments] = useState(dummyComments);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
   return (
     <>
-      {_comments.length ? (
+      {comments.length ? (
         <Button
           size="xsmall"
           endIcon={<CommentRoundedIcon />}
           onClick={(evt) => setAnchorEl(evt.currentTarget)}
           sx={{
             backgroundColor: (theme) =>
-              isUnresolved
-                ? alpha(theme.palette.primary.main, 0.04)
-                : "action.hover",
+              isResolved
+                ? "action.hover"
+                : alpha(theme.palette.primary.main, 0.04),
             minWidth: 0,
             fontWeight: 600,
             fontSize: 14,
             lineHeight: "14px",
             px: 0.5,
             py: 0.25,
-            color: isUnresolved ? "primary.main" : "text.secondary",
+            color: isResolved ? "text.secondary" : "primary.main",
 
             "&:hover": {
               backgroundColor: (theme) =>
@@ -78,9 +78,9 @@ export const Comment = ({}: CommentProps) => {
             "& .MuiButton-endIcon .MuiSvgIcon-root": {
               fontSize: 16,
               fill: (theme) =>
-                isUnresolved
-                  ? theme.palette.primary.main
-                  : theme.palette.action.active,
+                isResolved
+                  ? theme.palette.action.active
+                  : theme.palette.primary.main,
             },
           }}
         >
@@ -89,7 +89,12 @@ export const Comment = ({}: CommentProps) => {
       ) : (
         <IconButton
           size="xxsmall"
+          onClick={(evt) => setAnchorEl(evt.currentTarget)}
           sx={{
+            backgroundColor: anchorEl
+              ? (theme) => alpha(theme.palette.primary.main, 0.08)
+              : "transparent",
+            color: anchorEl ? "primary.main" : "action",
             "&:hover": {
               backgroundColor: (theme) =>
                 alpha(theme.palette.primary.main, 0.08),
@@ -104,8 +109,9 @@ export const Comment = ({}: CommentProps) => {
         <CommentsList
           anchorEl={anchorEl}
           onClose={() => setAnchorEl(null)}
-          comments={_comments}
-          isUnresolved
+          comments={comments}
+          isResolved={isResolved}
+          onResolveComment={() => setIsResolved(true)}
         />
       )}
     </>

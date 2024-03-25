@@ -7,12 +7,15 @@ type CommentsListProps = {
   anchorEl: Element;
   onClose: () => void;
   comments: CommentItemType[];
-  isUnresolved: boolean;
+  isResolved: boolean;
+  onResolveComment: () => void;
 };
 export const CommentsList = ({
   anchorEl,
   onClose,
   comments,
+  onResolveComment,
+  isResolved,
 }: CommentsListProps) => {
   return (
     <Popover
@@ -45,7 +48,8 @@ export const CommentsList = ({
             body={comment.body}
             createdOn={comment.createdOn}
             creator={comment.creator}
-            withResolveButton={index === 0}
+            withResolveButton={index === 0 && !isResolved}
+            onResolveComment={onResolveComment}
           />
           {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
         </>
