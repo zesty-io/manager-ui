@@ -1,0 +1,108 @@
+name: cd-dev
+
+on:
+  # Uncomment to work on CD in development mode.
+  # pull_request:
+  #   branches: [ master ]
+  push:
+    branches:
+      - dev
+jobs:
+  deploy_dev:
+    runs-on: ubuntu-latest
+    env:
+      ENV: "dev"
+
+    steps:
+      # This Clean step simply checks if there's already a workflow running from the last
+      # commit and cancels it if there is. This helps us save on cloud cost in the long run.
+      # See https://github.com/rokroskar/workflow-run-cleanup-action for more information.
+      - name: Clean
+        uses: rokroskar/workflow-run-cleanup-action@v0.2.2
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        if: "github.ref != 'refs/heads/master'"
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Auth with Gcloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
+      - name: Set up Gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: zesty-dev
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.5.0"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install Dependencies
+        run: npm install
+      - name: Build
+        run: npm run build:dev
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      - name: Deploy to Dev
+        run: gcloud app deploy app.yaml --quiet --project zesty-dev
+
+  failed_deploy_notification_to_slack:
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    needs: [deploy_dev]
+    steps:
+      - name: Failed Deploy Notification To Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: code-deploy
+          SLACK_COLOR: "#FF2A08"
+          SLACK_ICON: https://brand.zesty.io/zesty-io-logo.svg
+          SLACK_MESSAGE: "PR merge by ${{ github.actor }} failed to deploy."
+          SLACK_TITLE: "FAILED: Dev Deployment for manager-ui"
+          SLACK_USERNAME: Deploy Bot
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  success_deploy_notification_to_slack:
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    needs: [deploy_dev]
+    steps:
+      - name: Success Deploy Notification To Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: code-deploy
+          SLACK_COLOR: "#75BF43"
+          SLACK_ICON: https://brand.zesty.io/zesty-io-logo.svg
+          # SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
+          SLACK_TITLE: "SUCCESS: Dev Deployment of manager-ui"
+          SLACK_USERNAME: Deploy Bot
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  create_stage_pr:
+    runs-on: ubuntu-latest
+    needs: [deploy_dev]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Check if PR exists
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prs=$(gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --head 'dev' \
+              --base 'stage' \
+              --json title \
+              --jq 'length')
+          if ((prs > 0)); then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Stage Release
+        if: "!steps.check.outputs.skip"
+        run: gh pr create -B stage -H dev --title 'Stage Release' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
