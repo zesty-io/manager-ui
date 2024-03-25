@@ -1,11 +1,21 @@
-import { useMemo } from "react";
-import { Stack, Typography, Avatar, IconButton, Box } from "@mui/material";
+import { useMemo, useRef, useEffect } from "react";
+import {
+  Stack,
+  Typography,
+  Avatar,
+  IconButton,
+  Box,
+  Link,
+} from "@mui/material";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import moment from "moment";
 
 import { useGetUsersQuery } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
+
+const URL_REGEX =
+  /(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
 
 type CommentItemProps = {
   body: string;
@@ -21,12 +31,38 @@ export const CommentItem = ({
   withResolveButton,
   onResolveComment,
 }: CommentItemProps) => {
+  const commentBodyRef = useRef<HTMLParagraphElement>();
   const { data: users } = useGetUsersQuery();
 
   const user = useMemo(
     () => users?.find((user) => user.ZUID === creator),
     [users]
   );
+
+  useEffect(() => {
+    if (commentBodyRef.current) {
+      const hyperlinkedContent = body?.replaceAll(URL_REGEX, (text) => {
+        // Highlights @ mentions
+        if (text.includes("@") && text.startsWith("@")) {
+          return `<span style="color: #FF5D0A">${text}</span>`;
+        }
+
+        // Converts url strings to anchor tags
+        if (!text.includes("@")) {
+          const url =
+            text.includes("http://") || text.includes("https://")
+              ? text
+              : `https://${text}`;
+
+          return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #FF5D0A; text-decoration: none">${text}</a>`;
+        }
+
+        return text;
+      });
+
+      commentBodyRef.current.innerHTML = hyperlinkedContent;
+    }
+  }, [body, commentBodyRef]);
 
   return (
     <Stack gap={1.5}>
@@ -58,7 +94,7 @@ export const CommentItem = ({
           </IconButton>
         </Box>
       </Stack>
-      <Typography variant="body2">{body}</Typography>
+      <Typography variant="body2" ref={commentBodyRef}></Typography>
     </Stack>
   );
 };

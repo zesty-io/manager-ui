@@ -15,22 +15,22 @@ const dummyComments: CommentItemType[] = [
   {
     creator: "5-84d1e6d4ae-s3m974",
     createdOn: "2024-01-13T22:59:17Z",
-    body: "Lorem ipsum sit dolor hello hello",
+    body: "Lorem ipsum sit dolor hello hello. @stuart@zesty.io hello hello",
   },
   {
     creator: "5-a0a2aabff8-bw1dp1",
     createdOn: "2024-02-14T22:59:17Z",
-    body: "Yo yo yo",
+    body: "Yo yo yo. Coming at you from youtube.com, answers.microsoft.com",
   },
   {
     creator: "5-84d1e6d4ae-s3m974",
     createdOn: "2024-02-14T23:59:17Z",
-    body: "Hey guys! What's up",
+    body: "Hey guys! What's up. https://duckduckgo.com/?q=gravatar+query+params&t=brave&ia=web",
   },
   {
     creator: "5-57801f6-3cj46d",
     createdOn: "2024-03-24T10:59:17Z",
-    body: "For all that is beautiful!",
+    body: "For all that is beautiful! andres.galindo@zesty.io",
   },
 ];
 
