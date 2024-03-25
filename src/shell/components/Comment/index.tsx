@@ -8,28 +8,28 @@ import { CommentsList } from "./CommentsList";
 // Mock data
 export type CommentItemType = {
   creator: string;
-  createdOn: number;
+  createdOn: string;
   body: string;
 };
 const dummyComments: CommentItemType[] = [
   {
-    creator: "Nar",
-    createdOn: Date.now() - 100000000,
+    creator: "5-84d1e6d4ae-s3m974",
+    createdOn: "2024-01-13T22:59:17Z",
     body: "Lorem ipsum sit dolor hello hello",
   },
   {
-    creator: "Zosh",
-    createdOn: Date.now() - 20000011,
+    creator: "5-a0a2aabff8-bw1dp1",
+    createdOn: "2024-02-14T22:59:17Z",
     body: "Yo yo yo",
   },
   {
-    creator: "Andres",
-    createdOn: Date.now() - 3333333,
+    creator: "5-84d1e6d4ae-s3m974",
+    createdOn: "2024-02-14T23:59:17Z",
     body: "Hey guys! What's up",
   },
   {
-    creator: "Nar",
-    createdOn: Date.now() - 456900,
+    creator: "5-57801f6-3cj46d",
+    createdOn: "2024-03-24T10:59:17Z",
     body: "For all that is beautiful!",
   },
 ];
