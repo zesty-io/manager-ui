@@ -2,6 +2,7 @@ import { Popover, Divider } from "@mui/material";
 
 import { CommentItem } from "./CommentItem";
 import { CommentItemType } from "./index";
+import { InputField } from "./InputField";
 
 type CommentsListProps = {
   anchorEl: Element;
@@ -54,6 +55,7 @@ export const CommentsList = ({
           {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
         </>
       ))}
+      <InputField isFirstComment={!comments?.length} />
     </Popover>
   );
 };
