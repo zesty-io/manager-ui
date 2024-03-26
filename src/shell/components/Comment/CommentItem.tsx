@@ -1,14 +1,20 @@
-import { useMemo, useRef, useEffect } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import {
   Stack,
   Typography,
   Avatar,
   IconButton,
   Box,
-  Link,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
+import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import moment from "moment";
 
 import { useGetUsersQuery } from "../../services/accounts";
@@ -31,6 +37,7 @@ export const CommentItem = ({
   withResolveButton,
   onResolveComment,
 }: CommentItemProps) => {
+  const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>();
   const commentBodyRef = useRef<HTMLParagraphElement>();
   const { data: users } = useGetUsersQuery();
 
@@ -65,36 +72,88 @@ export const CommentItem = ({
   }, [body, commentBodyRef]);
 
   return (
-    <Stack gap={1.5}>
-      <Stack gap={1.5} direction="row">
-        <Stack flex={1} direction="row" gap={1.5} alignItems="center">
-          <Avatar
-            sx={{ width: 32, height: 32 }}
-            src={`https://www.gravatar.com/avatar/${MD5(
-              user?.email || ""
-            )}?s=32`}
-          />
-          <Stack>
-            <Typography fontWeight={700} variant="body2">
-              {`${user?.firstName} ${user?.lastName}`}
-            </Typography>
-            <Typography variant="body3" fontWeight={600} color="text.secondary">
-              {moment(createdOn).fromNow()}
-            </Typography>
+    <>
+      <Stack gap={1.5}>
+        <Stack gap={1.5} direction="row">
+          <Stack flex={1} direction="row" gap={1.5} alignItems="center">
+            <Avatar
+              sx={{ width: 32, height: 32 }}
+              src={`https://www.gravatar.com/avatar/${MD5(
+                user?.email || ""
+              )}?s=32`}
+            />
+            <Stack>
+              <Typography fontWeight={700} variant="body2">
+                {`${user?.firstName} ${user?.lastName}`}
+              </Typography>
+              <Typography
+                variant="body3"
+                fontWeight={600}
+                color="text.secondary"
+              >
+                {moment(createdOn).fromNow()}
+              </Typography>
+            </Stack>
           </Stack>
-        </Stack>
-        <Box>
-          {withResolveButton && (
-            <IconButton size="small" onClick={onResolveComment}>
-              <CheckRoundedIcon fontSize="small" color="primary" />
+          <Box>
+            {withResolveButton && (
+              <IconButton size="small" onClick={onResolveComment}>
+                <CheckRoundedIcon fontSize="small" color="primary" />
+              </IconButton>
+            )}
+            <IconButton
+              size="small"
+              onClick={(evt) => setMenuAnchorEl(evt.currentTarget)}
+            >
+              <MoreVertRoundedIcon fontSize="small" />
             </IconButton>
-          )}
-          <IconButton size="small">
-            <MoreVertRoundedIcon fontSize="small" />
-          </IconButton>
-        </Box>
+          </Box>
+        </Stack>
+        <Typography variant="body2" ref={commentBodyRef}></Typography>
       </Stack>
-      <Typography variant="body2" ref={commentBodyRef}></Typography>
-    </Stack>
+      {menuAnchorEl && (
+        <Menu
+          anchorEl={menuAnchorEl}
+          open
+          onClose={() => setMenuAnchorEl(null)}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                width: 160,
+              },
+            },
+          }}
+        >
+          <MenuItem onClick={() => console.log("Edit this comment")}>
+            <ListItemIcon>
+              <DriveFileRenameOutlineRoundedIcon />
+            </ListItemIcon>
+            <ListItemText>Edit</ListItemText>
+          </MenuItem>
+          <MenuItem
+            onClick={() => console.log("Copy deeplink of this comment")}
+          >
+            <ListItemIcon>
+              <LinkRoundedIcon />
+            </ListItemIcon>
+            <ListItemText>Copy Link</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={() => console.log("Delete this comment")}>
+            <ListItemIcon>
+              <DeleteRoundedIcon />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      )}
+    </>
   );
 };
