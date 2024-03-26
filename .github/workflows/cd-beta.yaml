@@ -83,7 +83,24 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - name: Create Stable Release PR
-        run: gh pr create -B stable -H beta --title 'Stable Release' --body 'Created by Github action'
+
+      - name: Check if PR exists
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prs=$(gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --head 'beta' \
+              --base 'stable' \
+              --json title \
+              --jq 'length')
+          if ((prs > 0)); then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Stable Release
+        if: "!steps.check.outputs.skip"
+        run: gh pr create -B stable -H dev --title 'Stable Release' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
