@@ -101,6 +101,7 @@ jobs:
 
       - name: Create Stable Release
         if: "!steps.check.outputs.skip"
+
         run: gh pr create -B stable -H beta --title 'Stable Release' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
