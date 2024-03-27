@@ -79,18 +79,14 @@ jobs:
   create_stage_release:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
       - name: create local branch
         run: git switch --create stage
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: push local branch to origin
         run: git push -u origin stage
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: make pr
         run: gh pr create -B stage -H dev --title 'Stage Release' --body 'Created by Github action'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # create_stage_release:
   #   runs-on: ubuntu-latest
