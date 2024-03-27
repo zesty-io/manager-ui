@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { KeyboardEventHandler, useCallback, useRef, useState } from "react";
 import { Box, TextField, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 
@@ -6,8 +6,17 @@ type InputFieldProps = {
   isFirstComment: boolean;
 };
 export const InputField = ({ isFirstComment }: InputFieldProps) => {
+  const buttonsContainerRef = useRef<HTMLDivElement>();
+  const inputRef = useRef<HTMLDivElement>();
+  const [inputHeight, setInputHeight] = useState(0);
   const [inputValue, setInputValue] = useState("");
   const [maxHeight, setMaxHeight] = useState(40);
+
+  // const inputHeightRef = useCallback((node: HTMLDivElement) => {
+  //   if (node) {
+  //     console.log(node)
+  //   }
+  // }, [])
 
   // return (
   //   <>
@@ -45,6 +54,7 @@ export const InputField = ({ isFirstComment }: InputFieldProps) => {
   return (
     <>
       <Box
+        ref={inputRef}
         component="div"
         contentEditable
         sx={{
@@ -63,8 +73,16 @@ export const InputField = ({ isFirstComment }: InputFieldProps) => {
             outline: (theme) => `${theme.palette.primary.light} solid 1px`,
           },
         }}
+        onInput={() => {
+          buttonsContainerRef.current?.scrollIntoView();
+        }}
       />
-      <Stack direction="row" gap={1} justifyContent="end">
+      <Stack
+        ref={buttonsContainerRef}
+        direction="row"
+        gap={1}
+        justifyContent="end"
+      >
         <Button variant="outlined" color="inherit" size="small">
           Cancel
         </Button>
