@@ -57,7 +57,7 @@ jobs:
 #           SLACK_COLOR: "#FF0000"
 #           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
 #           SLACK_MESSAGE: "PR merge by ${{ github.actor }} failed to deploy."
-#           SLACK_TITLE: FAILED Stable Deployment for manager-ui
+#           SLACK_TITLE: FAILED: Stable Deployment for manager-ui
 #           SLACK_USERNAME: Deploy Bot
 #           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -73,6 +73,6 @@ jobs:
 #           SLACK_COLOR: "#FF0000"
 #           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
 #           SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
-#           SLACK_TITLE: Stable Deployment for manager-ui
+#           SLACK_TITLE: STABLE: Deployment for manager-ui
 #           SLACK_USERNAME: Deploy Bot
 #           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
