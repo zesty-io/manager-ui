@@ -30,6 +30,8 @@ export const CommentsList = ({
     }
   }, []);
 
+  // NOTE: Try to get the offsetBottom and if it is small, change the origins to top??
+
   return (
     <Popover
       open
