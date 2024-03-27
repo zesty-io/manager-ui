@@ -90,22 +90,6 @@ jobs:
   #       env:
   #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # create_stage_release:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-
-  #     - uses: Wuerike/standard-version-release-branch@1.2.0
-  #       with:
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         release_version: ${{ github.event.inputs.version }}
-  #         origin_branch: dev
-  #         target_branch: stage
-  #         as_draft: true
-  #         pr_template: "PR opened by [standard-version-release-branch](https://github.com/Wuerike/standard-version-release-branch)"
-
   # release-please:
   #   runs-on: ubuntu-latest
   #   steps:
