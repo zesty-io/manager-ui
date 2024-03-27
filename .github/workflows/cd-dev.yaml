@@ -87,6 +87,8 @@ jobs:
         run: git push -u origin stage
       - name: make pr
         run: gh pr create -B stage -H dev --title 'Stage Release' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # create_stage_release:
   #   runs-on: ubuntu-latest
