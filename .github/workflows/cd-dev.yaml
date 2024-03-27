@@ -72,11 +72,11 @@ jobs:
           SLACK_COLOR: "#75BF43"
           SLACK_ICON: https://brand.zesty.io/zesty-io-logo.svg
           # SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
-          SLACK_TITLE: "SUCCESS: Dev Deployment of manager-ui"
+          SLACK_TITLE: "DEV:manager-ui"
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-  # create_stage_release:
+  # create_release:
   #   runs-on: ubuntu-latest
   #   steps:
   #     - name: Checkout Repo
