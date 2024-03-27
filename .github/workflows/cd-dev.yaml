@@ -79,18 +79,34 @@ jobs:
   create_stage_release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: create local branch
+        run: git switch --create stage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: push local branch to origin
+        run: git push -u origin stage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: make pr
+        run: gh pr create -B stage -H dev --title 'Stage Release' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: Wuerike/standard-version-release-branch@1.2.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_version: ${{ github.event.inputs.version }}
-          origin_branch: dev
-          target_branch: stage
-          as_draft: true
-          pr_template: "PR opened by [standard-version-release-branch](https://github.com/Wuerike/standard-version-release-branch)"
+  # create_stage_release:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+
+  #     - uses: Wuerike/standard-version-release-branch@1.2.0
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         release_version: ${{ github.event.inputs.version }}
+  #         origin_branch: dev
+  #         target_branch: stage
+  #         as_draft: true
+  #         pr_template: "PR opened by [standard-version-release-branch](https://github.com/Wuerike/standard-version-release-branch)"
 
   # release-please:
   #   runs-on: ubuntu-latest
