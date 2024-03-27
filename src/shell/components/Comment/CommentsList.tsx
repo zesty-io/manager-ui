@@ -1,4 +1,5 @@
 import { Popover, Divider } from "@mui/material";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 
 import { CommentItem } from "./CommentItem";
 import { CommentItemType } from "./index";
@@ -18,6 +19,17 @@ export const CommentsList = ({
   onResolveComment,
   isResolved,
 }: CommentsListProps) => {
+  const [popoverTopOffset, setPopoverTopOffset] = useState(0);
+
+  const topOffsetRef = useCallback((node: HTMLDivElement) => {
+    if (node) {
+      // HACK: Needed so that we're getting the correct value after the popover has been drawn to the DOM
+      setTimeout(() => {
+        setPopoverTopOffset(node.offsetTop);
+      }, 100);
+    }
+  }, []);
+
   return (
     <Popover
       open
@@ -38,14 +50,15 @@ export const CommentsList = ({
             width: 360,
             p: 2,
             mt: 0.5,
+            maxHeight: `calc(100% - ${popoverTopOffset}px - 48px)`,
           },
+          ref: topOffsetRef,
         },
       }}
     >
       {comments?.map((comment, index) => (
-        <>
+        <Fragment key={index}>
           <CommentItem
-            key={index}
             body={comment.body}
             createdOn={comment.createdOn}
             creator={comment.creator}
@@ -53,7 +66,7 @@ export const CommentsList = ({
             onResolveComment={onResolveComment}
           />
           {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
-        </>
+        </Fragment>
       ))}
       <InputField isFirstComment={!comments?.length} />
     </Popover>
