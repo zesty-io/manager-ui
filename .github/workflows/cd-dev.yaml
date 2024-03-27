@@ -76,21 +76,37 @@ jobs:
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-  release-please:
+  create_stage_release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - uses: google-github-actions/release-please-action@v4
+      - uses: actions/checkout@v4
         with:
-          # this assumes that you have created a personal access token
-          # (PAT) and configured it as a GitHub action secret named
-          # `MY_RELEASE_PLEASE_TOKEN` (this secret name is not important).
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # this is a built-in strategy in release-please, see "Action Inputs"
-          # for more options
-          release-type: node
-          target-branch: stage
+          fetch-depth: 0
+
+      - uses: Wuerike/standard-version-release-branch@1.2.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_version: ${{ github.event.inputs.version }}
+          origin_branch: dev
+          target_branch: stage
+          as_draft: true
+          pr_template: "PR opened by [standard-version-release-branch](https://github.com/Wuerike/standard-version-release-branch)"
+
+  # release-please:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Repo
+  #       uses: actions/checkout@v2
+  #     - uses: google-github-actions/release-please-action@v4
+  #       with:
+  #         # this assumes that you have created a personal access token
+  #         # (PAT) and configured it as a GitHub action secret named
+  #         # `MY_RELEASE_PLEASE_TOKEN` (this secret name is not important).
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         # this is a built-in strategy in release-please, see "Action Inputs"
+  #         # for more options
+  #         release-type: node
+  #         target-branch: stage
 
   # create_stage_pr:
   #   runs-on: ubuntu-latest
