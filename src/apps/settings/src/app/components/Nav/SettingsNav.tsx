@@ -60,12 +60,30 @@ export const SettingsNav = () => {
         categories.add(setting.category)
       );
 
-      return Array.from(categories)?.map((category) => ({
-        label: startCase(category.replace(/_|-/g, " ")),
-        path: `/settings/instance/${category}`,
-        icon: SettingsRoundedIcon,
-        children: [],
-      }));
+      const instanceSettingsCategories = Array.from(categories)?.map(
+        (category) => ({
+          label: startCase(category.replace(/_|-/g, " ")),
+          path: `/settings/instance/${category}`,
+          icon: SettingsRoundedIcon,
+          children: [],
+        })
+      );
+
+      // Makes sure that the Bynder settings item is present if the user hasn't added any Bynder integration setting yet
+      if (
+        !instanceSettingsCategories.find(
+          (category) => category.label === "Bynder"
+        )
+      ) {
+        instanceSettingsCategories.push({
+          label: "Bynder",
+          path: "/settings/instance/bynder",
+          icon: SettingsRoundedIcon,
+          children: [],
+        });
+      }
+
+      return instanceSettingsCategories;
     }
 
     return [];

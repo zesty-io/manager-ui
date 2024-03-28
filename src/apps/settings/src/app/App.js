@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route, Redirect, useLocation } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box } from "@mui/material";
 import { legacyTheme } from "@zesty-io/material";
@@ -12,6 +12,7 @@ import { Instance } from "./views/Instance";
 import { Styles } from "./views/Styles";
 import { Browse, Installed } from "./views/Fonts";
 import { Robots } from "./views/Robots";
+import { Bynder } from "./views/Bynder";
 
 import { Head } from "shell/components/Head";
 
@@ -96,6 +97,8 @@ export default connect((state) => ({
   instance: state.instance,
   settings: state.settings,
 }))(function SettingsApp(props) {
+  const location = useLocation();
+
   useEffect(() => {
     props.dispatch(fetchSettings());
     props.dispatch(fetchStylesCategories());
@@ -132,7 +135,17 @@ export default connect((state) => ({
                 borderColor: "border",
               }}
             >
-              <main className={styles.Content}>
+              <Box
+                component="main"
+                className={
+                  location.pathname === "/settings/instance/bynder"
+                    ? ""
+                    : styles.Content
+                }
+                sx={{
+                  height: "100%",
+                }}
+              >
                 <Switch>
                   <Route
                     exact
@@ -140,6 +153,11 @@ export default connect((state) => ({
                     component={Styles}
                   />
                   <Redirect from="/settings/styles" to="/settings/styles/1" />
+                  <Route
+                    path="/settings/instance/bynder"
+                    exact
+                    component={Bynder}
+                  />
                   <Route
                     path="/settings/instance/:category"
                     component={Instance}
@@ -171,7 +189,7 @@ export default connect((state) => ({
                     to="/settings/instance/general"
                   />
                 </Switch>
-              </main>
+              </Box>
             </Box>
           </div>
         </section>

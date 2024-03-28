@@ -6,6 +6,7 @@ import {
   Typography,
   CircularProgress,
   useMediaQuery,
+  Stack,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
@@ -115,7 +116,7 @@ export const FileTypePreview: FC<Props> = ({
     setIsImageLoading(false);
   };
 
-  switch (fileExtension(filename)) {
+  switch (fileExtension(src)) {
     case "jpg":
     case "jpeg":
     case "gif":
@@ -142,10 +143,17 @@ export const FileTypePreview: FC<Props> = ({
           }}
         >
           {isImageLoading ? (
-            <CircularProgress
-              color="primary"
-              sx={{ position: "absolute", left: "50%" }}
-            />
+            <Stack
+              position="absolute"
+              top={0}
+              bottom={0}
+              right={0}
+              left={0}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CircularProgress color="primary" />
+            </Stack>
           ) : null}
           <CardMedia
             component="img"
@@ -188,10 +196,17 @@ export const FileTypePreview: FC<Props> = ({
           }}
         >
           {isImageLoading ? (
-            <CircularProgress
-              color="primary"
-              sx={{ position: "absolute", left: "50%" }}
-            />
+            <Stack
+              position="absolute"
+              top={0}
+              bottom={0}
+              right={0}
+              left={0}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CircularProgress color="primary" />
+            </Stack>
           ) : null}
           <CardMedia
             component="img"
@@ -361,7 +376,7 @@ export const FileTypePreview: FC<Props> = ({
         >
           <CardMedia
             component="video"
-            controls={true}
+            controls={!isMediaThumbnail}
             src={src}
             sx={{
               backgroundColor: "#000",

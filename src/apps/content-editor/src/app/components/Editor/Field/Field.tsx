@@ -469,7 +469,7 @@ export const Field = ({
             <FieldTypeMedia
               hasError={error}
               limit={(settings && settings.limit) || 1}
-              imageZUIDs={images}
+              images={images}
               openMediaBrowser={(opts: any) => {
                 setImageModal({
                   ...opts,
