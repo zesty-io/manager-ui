@@ -1,6 +1,7 @@
-import { KeyboardEventHandler, useCallback, useRef, useState } from "react";
+import { FormEvent, useCallback, useRef, useState } from "react";
 import { Box, TextField, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
+import sanitizeHtml from "sanitize-html";
 
 type InputFieldProps = {
   isFirstComment: boolean;
@@ -8,15 +9,7 @@ type InputFieldProps = {
 export const InputField = ({ isFirstComment }: InputFieldProps) => {
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
-  const [inputHeight, setInputHeight] = useState(0);
   const [inputValue, setInputValue] = useState("");
-  const [maxHeight, setMaxHeight] = useState(40);
-
-  // const inputHeightRef = useCallback((node: HTMLDivElement) => {
-  //   if (node) {
-  //     console.log(node)
-  //   }
-  // }, [])
 
   // return (
   //   <>
@@ -57,6 +50,7 @@ export const InputField = ({ isFirstComment }: InputFieldProps) => {
         ref={inputRef}
         component="div"
         contentEditable
+        // dangerouslySetInnerHTML={{ __html: inputValue }}
         sx={{
           my: 1.5,
           py: 0.75,
@@ -72,9 +66,33 @@ export const InputField = ({ isFirstComment }: InputFieldProps) => {
           "&:focus-visible": {
             outline: (theme) => `${theme.palette.primary.light} solid 1px`,
           },
+
+          "&:empty:before": {
+            content: '"Reply or add others with @"',
+            color: "text.disabled",
+          },
         }}
-        onInput={() => {
+        onInput={(evt: FormEvent) => {
           buttonsContainerRef.current?.scrollIntoView();
+          const value = evt.currentTarget.innerHTML;
+
+          if (value === "<br>") {
+            setInputValue("");
+          } else {
+            setInputValue(
+              sanitizeHtml(value, {
+                allowedTags: ["b", "i", "em", "strong", "a"],
+                allowedAttributes: {
+                  a: ["href", "rel", "target", "alt"],
+                },
+              })
+            );
+          }
+        }}
+        onKeyDown={(evt: React.KeyboardEvent<HTMLDivElement>) => {
+          if (evt.key === "@") {
+            console.log("show users dropdown");
+          }
         }}
       />
       <Stack
@@ -92,28 +110,4 @@ export const InputField = ({ isFirstComment }: InputFieldProps) => {
       </Stack>
     </>
   );
-
-  // return (
-  //   <>
-  //     <TextField
-  //       fullWidth
-  //       multiline
-  //       autoFocus={isFirstComment}
-  //       value={inputValue}
-  //       onChange={(evt) => setInputValue(evt.currentTarget.value)}
-  //       placeholder="Reply or add others with @"
-  //       sx={{
-  //         my: 1.5,
-  //       }}
-  //     />
-  //     <Stack direction="row" gap={1} justifyContent="end">
-  //       <Button variant="outlined" color="inherit" size="small">
-  //         Cancel
-  //       </Button>
-  //       <Button variant="contained" color="primary" size="small">
-  //         {isFirstComment ? "Comment" : "Reply"}
-  //       </Button>
-  //     </Stack>
-  //   </>
-  // );
 };
