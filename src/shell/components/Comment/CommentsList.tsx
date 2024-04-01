@@ -1,4 +1,5 @@
-import { Popover, Divider } from "@mui/material";
+import { Popover, Divider, Paper, Popper, Box, Backdrop } from "@mui/material";
+import { theme } from "@zesty-io/material";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 
 import { CommentItem } from "./CommentItem";
@@ -33,44 +34,76 @@ export const CommentsList = ({
   // NOTE: Try to get the offsetBottom and if it is small, change the origins to top??
 
   return (
-    <Popover
+    // <Popover
+    //   open
+    //   anchorEl={anchorEl}
+    //   onClose={onClose}
+    //   anchorOrigin={{
+    //     vertical: "bottom",
+    //     horizontal: "left",
+    //   }}
+    //   transformOrigin={{
+    //     vertical: "top",
+    //     horizontal: "left",
+    //   }}
+    //   slotProps={{
+    //     paper: {
+    //       elevation: 8,
+    //       sx: {
+    //         width: 360,
+    //         p: 2,
+    //         mt: 0.5,
+    //         maxHeight: `calc(100% - ${popoverTopOffset}px - 48px)`,
+    //       },
+    //       ref: topOffsetRef,
+    //     },
+    //   }}
+    // >
+    <Backdrop
+      id="popperBg"
       open
-      anchorEl={anchorEl}
-      onClose={onClose}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left",
+      sx={{
+        zIndex: theme.zIndex.modal,
+        backgroundColor: "transparent",
       }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      slotProps={{
-        paper: {
-          elevation: 8,
-          sx: {
-            width: 360,
-            p: 2,
-            mt: 0.5,
-            maxHeight: `calc(100% - ${popoverTopOffset}px - 48px)`,
-          },
-          ref: topOffsetRef,
-        },
+      onClick={(evt) => {
+        const element = evt.target as HTMLElement;
+
+        if (element?.id === "popperBg") {
+          onClose();
+        }
       }}
     >
-      {comments?.map((comment, index) => (
-        <Fragment key={index}>
-          <CommentItem
-            body={comment.body}
-            createdOn={comment.createdOn}
-            creator={comment.creator}
-            withResolveButton={index === 0 && !isResolved}
-            onResolveComment={onResolveComment}
-          />
-          {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
-        </Fragment>
-      ))}
-      <InputField isFirstComment={!comments?.length} />
-    </Popover>
+      <Popper
+        open
+        anchorEl={anchorEl}
+        placement="bottom-start"
+        sx={{
+          zIndex: theme.zIndex.modal,
+        }}
+      >
+        <Paper
+          elevation={8}
+          sx={{
+            width: 360,
+            p: 2,
+          }}
+        >
+          {comments?.map((comment, index) => (
+            <Fragment key={index}>
+              <CommentItem
+                body={comment.body}
+                createdOn={comment.createdOn}
+                creator={comment.creator}
+                withResolveButton={index === 0 && !isResolved}
+                onResolveComment={onResolveComment}
+              />
+              {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
+            </Fragment>
+          ))}
+          <InputField isFirstComment={!comments?.length} onCancel={onClose} />
+        </Paper>
+      </Popper>
+    </Backdrop>
   );
 };

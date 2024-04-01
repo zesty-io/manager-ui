@@ -5,8 +5,9 @@ import sanitizeHtml from "sanitize-html";
 
 type InputFieldProps = {
   isFirstComment: boolean;
+  onCancel: () => void;
 };
-export const InputField = ({ isFirstComment }: InputFieldProps) => {
+export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
   const [inputValue, setInputValue] = useState("");
@@ -101,7 +102,12 @@ export const InputField = ({ isFirstComment }: InputFieldProps) => {
         gap={1}
         justifyContent="end"
       >
-        <Button variant="outlined" color="inherit" size="small">
+        <Button
+          variant="outlined"
+          color="inherit"
+          size="small"
+          onClick={onCancel}
+        >
           Cancel
         </Button>
         <Button variant="contained" color="primary" size="small">
