@@ -85,6 +85,7 @@
     "react-flatpickr": "^3.10.7",
     "react-measure": "^2.5.2",
     "react-monaco-editor": "^0.47.0",
+    "react-number-format": "^5.3.1",
     "react-redux": "^7.2.4",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
