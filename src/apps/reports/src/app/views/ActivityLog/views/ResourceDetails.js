@@ -19,6 +19,7 @@ import { filterByParams } from "utility/filterByParams";
 import { resolveUrlFromAudit } from "../../../../../../../utility/resolveResourceUrlFromAudit";
 import { CustomBreadcrumbs } from "../../../../../../../shell/components/CustomBreadcrumbs";
 import { ResourceHeaderTitle } from "../components/ResourceHeaderTitle";
+import { useGetInstanceSettingsQuery } from "../../../../../../../shell/services/instance";
 
 const Crumbs = [
   {
@@ -37,6 +38,7 @@ export const ResourceDetails = () => {
   const history = useHistory();
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
+  const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
 
   const zuid = useMemo(
     () => location.pathname.split("/").pop(),
@@ -168,7 +170,11 @@ export const ResourceDetails = () => {
             size="small"
             disabled={!actionsByZuid[0] || !actionsByZuid[0]?.meta}
             onClick={() => {
-              history.push(resolveUrlFromAudit(actionsByZuid[0]));
+              const category = rawInstanceSettings.find(
+                (setting) => setting.ZUID === actionsByZuid[0]?.affectedZUID
+              )?.category;
+
+              history.push(resolveUrlFromAudit(actionsByZuid[0], category));
             }}
           >
             Open

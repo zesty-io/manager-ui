@@ -90,7 +90,9 @@ export const ItemEditHeaderActions = ({
     useCreateItemPublishingMutation();
   const [deleteItemPublishing, { isLoading: unpublishing }] =
     useDeleteItemPublishingMutation();
-  const lastItemUpdateAudit = itemAudit?.find((audit) => audit.action === 2);
+  const lastItemUpdateAudit = itemAudit?.find(
+    (audit) => audit.action === 2 || audit.action === 1
+  );
   const { data: itemPublishings, isFetching } = useGetItemPublishingsQuery({
     modelZUID,
     itemZUID,
@@ -206,8 +208,15 @@ export const ItemEditHeaderActions = ({
             <div>
               v{item?.meta?.version} saved on <br />
               {formatDate(item?.meta?.updatedAt)} <br />
-              by {lastItemUpdateAudit?.firstName}{" "}
-              {lastItemUpdateAudit?.lastName}
+              by{" "}
+              {lastItemUpdateAudit?.firstName ||
+                users?.find(
+                  (user) => user.ZUID === item?.meta?.createdByUserZUID
+                )?.firstName}{" "}
+              {lastItemUpdateAudit?.lastName ||
+                users?.find(
+                  (user) => user.ZUID === item?.meta?.createdByUserZUID
+                )?.lastName}
             </div>
           )
         }
@@ -280,7 +289,8 @@ export const ItemEditHeaderActions = ({
           {itemState === ITEM_STATES.draft ||
           itemState === ITEM_STATES.dirty ||
           publishAfterSave ||
-          isFetching ? (
+          isFetching ||
+          saving ? (
             <ButtonGroup
               variant="contained"
               color="success"

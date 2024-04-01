@@ -23,7 +23,7 @@ import { cloneDeep } from "lodash";
 
 import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
-import { convertLabelValue } from "../../utils";
+import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
@@ -140,81 +140,6 @@ export const FieldFormInput = ({
 
   return (
     <Grid item xs={fieldConfig.gridSize}>
-      {fieldConfig.type === "input" && (
-        <>
-          <Stack
-            flexDirection="row"
-            alignItems="center"
-            mb={!!fieldConfig.subLabel ? 0 : 0.5}
-            height={18}
-          >
-            <Typography component="span" variant="body2" fontWeight={600}>
-              {fieldConfig.label}
-            </Typography>
-            {fieldConfig.label?.toLowerCase().includes("description") && (
-              <Typography
-                component="span"
-                variant="body2"
-                color="text.secondary"
-                sx={{ whiteSpace: "pre" }}
-              >
-                {" "}
-                (optional)
-              </Typography>
-            )}
-            {fieldConfig.tooltip && (
-              <Tooltip placement="right" title={fieldConfig.tooltip}>
-                <InfoRoundedIcon
-                  sx={{ ml: 1, width: "12px", height: "12px" }}
-                  color="action"
-                />
-              </Tooltip>
-            )}
-          </Stack>
-          {fieldConfig.subLabel && (
-            <Typography
-              component="p"
-              variant="body3"
-              color="text.secondary"
-              mb={0.5}
-            >
-              {fieldConfig.subLabel}
-            </Typography>
-          )}
-          <InputTextField
-            autoFocus={fieldConfig.autoFocus}
-            data-cy={`FieldFormInput_${fieldConfig.name}`}
-            name={fieldConfig.name}
-            required={fieldConfig.required}
-            fullWidth={fieldConfig.fullWidth}
-            multiline={fieldConfig.multiline}
-            minRows={fieldConfig.multiline && 2}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              onDataChange({
-                inputName: fieldConfig.name,
-                value: e.target.value,
-              });
-            }}
-            value={prefillData}
-            error={Boolean(errorMsg)}
-            helperText={
-              errorMsg && (
-                <Typography
-                  data-cy={`ErrorMsg_${fieldConfig.name}`}
-                  variant="caption"
-                >
-                  {errorMsg}
-                </Typography>
-              )
-            }
-            type={fieldConfig.inputType || "text"}
-            inputProps={{
-              min: 1,
-            }}
-          />
-        </>
-      )}
-
       {fieldConfig.type === "checkbox" && (
         <FormControlLabel
           control={
@@ -336,6 +261,80 @@ export const FieldFormInput = ({
         </>
       )}
 
+      {fieldConfig.type === "input" && (
+        <>
+          <Stack
+            flexDirection="row"
+            alignItems="center"
+            mb={!!fieldConfig.subLabel ? 0 : 0.5}
+            height={18}
+          >
+            <Typography component="span" variant="body2" fontWeight={600}>
+              {fieldConfig.label}
+            </Typography>
+            {fieldConfig.label?.toLowerCase().includes("description") && (
+              <Typography
+                component="span"
+                variant="body2"
+                color="text.secondary"
+                sx={{ whiteSpace: "pre" }}
+              >
+                {" "}
+                (optional)
+              </Typography>
+            )}
+            {fieldConfig.tooltip && (
+              <Tooltip placement="right" title={fieldConfig.tooltip}>
+                <InfoRoundedIcon
+                  sx={{ ml: 1, width: "12px", height: "12px" }}
+                  color="action"
+                />
+              </Tooltip>
+            )}
+          </Stack>
+          {fieldConfig.subLabel && (
+            <Typography
+              component="p"
+              variant="body3"
+              color="text.secondary"
+              mb={0.5}
+            >
+              {fieldConfig.subLabel}
+            </Typography>
+          )}
+          <InputTextField
+            autoFocus={fieldConfig.autoFocus}
+            data-cy={`FieldFormInput_${fieldConfig.name}`}
+            name={fieldConfig.name}
+            required={fieldConfig.required}
+            fullWidth={fieldConfig.fullWidth}
+            multiline={fieldConfig.multiline}
+            minRows={fieldConfig.multiline && 2}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              onDataChange({
+                inputName: fieldConfig.name,
+                value: e.target.value,
+              });
+            }}
+            value={prefillData}
+            error={Boolean(errorMsg)}
+            helperText={
+              errorMsg && (
+                <Typography
+                  data-cy={`ErrorMsg_${fieldConfig.name}`}
+                  variant="caption"
+                >
+                  {errorMsg}
+                </Typography>
+              )
+            }
+            type={fieldConfig.inputType || "text"}
+            inputProps={{
+              min: 1,
+            }}
+          />
+        </>
+      )}
       {(fieldConfig.type === "options" ||
         fieldConfig.type === "toggle_options") && (
         <>
@@ -375,6 +374,7 @@ export const FieldFormInput = ({
               variant="outlined"
               startIcon={<AddRoundedIcon />}
               onClick={handleAddNewOption}
+              size="small"
             >
               Add Option
             </Button>
@@ -407,7 +407,7 @@ const KeyValueInput = ({
 }: KeyValueInputProps) => {
   const handleDataChanged = (type: string, value: string) => {
     if (type === "key") {
-      onOptionChange({ [convertLabelValue(value) || ""]: optionValue });
+      onOptionChange({ [convertDropdownValue(value) || ""]: optionValue });
     }
 
     if (type === "value") {
@@ -415,7 +415,7 @@ const KeyValueInput = ({
         onOptionChange({ [optionKey]: value });
       } else {
         // When the value is changed, automatically change the key as well
-        onOptionChange({ [convertLabelValue(value) || ""]: value });
+        onOptionChange({ [convertDropdownValue(value) || ""]: value });
       }
     }
   };
@@ -427,9 +427,9 @@ const KeyValueInput = ({
       display="flex"
       justifyContent="space-between"
       alignItems="center"
-      mb={2}
+      mb={1}
     >
-      <Box display="flex" gap={2} width="480px">
+      <Box display="flex" gap={1} width="480px">
         <TextField
           data-cy={`OptionLabel_${id}`}
           name="value"

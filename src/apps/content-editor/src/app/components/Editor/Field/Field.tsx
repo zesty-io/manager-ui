@@ -52,6 +52,7 @@ import {
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
+import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
@@ -859,16 +860,12 @@ export const Field = ({
     case "number":
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <TextField
-            size="small"
-            variant="outlined"
-            type="number"
-            fullWidth
-            value={value ? value.toString() : "0"}
+          <FieldTypeNumber
+            value={+value || 0}
             name={name}
             required={required}
-            onChange={(evt) => onChange(evt.target.value, name)}
-            error={errors && Object.values(errors)?.some((error) => !!error)}
+            onChange={onChange}
+            hasError={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
       );
