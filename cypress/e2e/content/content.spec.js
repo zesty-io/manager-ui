@@ -188,7 +188,7 @@ describe("Content Specs", () => {
     it("Number Field", () => {
       // NOTE: the timestamp is too large for the 'small int' column in the DB
       // limit is 4294967295
-      cy.get("#12-9b96ec-tll2gn input[type=number]")
+      cy.get("#12-9b96ec-tll2gn input[type=text]")
         .focus()
         /*
           input type='number 'cannot be empty so rather than whitespace, it'd have a value of 0
