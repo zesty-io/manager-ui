@@ -57,7 +57,7 @@ jobs:
   #           SLACK_COLOR: "#FF0000"
   #           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
   #           SLACK_MESSAGE: "PR merge by ${{ github.actor }} failed to deploy."
-  #           SLACK_TITLE: FAILED Beta Deployment for manager-ui
+  #           SLACK_TITLE: FAILED: Beta Deployment for manager-ui
   #           SLACK_USERNAME: Deploy Bot
   #           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -73,7 +73,7 @@ jobs:
   #           SLACK_COLOR: "#FF0000"
   #           SLACK_ICON: https://clipart.world/wp-content/uploads/2021/06/Rocket-Ship-clipart-png.png
   #           SLACK_MESSAGE: "PR merge by ${{ github.actor }} has been deployed to stage."
-  #           SLACK_TITLE: Beta Deployment for manager-ui
+  #           SLACK_TITLE: BETA:manager-ui
   #           SLACK_USERNAME: Deploy Bot
   #           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -83,7 +83,24 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - name: Create Stable Release PR
+
+      - name: Check if PR exists
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prs=$(gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --head 'beta' \
+              --base 'stable' \
+              --json title \
+              --jq 'length')
+          if ((prs > 0)); then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Stable Release
+        if: "!steps.check.outputs.skip"
         run: gh pr create -B stable -H beta --title 'Stable Release' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
