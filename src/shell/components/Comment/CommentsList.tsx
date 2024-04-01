@@ -26,41 +26,12 @@ export const CommentsList = ({
     if (node) {
       // HACK: Needed so that we're getting the correct value after the popover has been drawn to the DOM
       setTimeout(() => {
-        // setPopoverTopOffset(node.offsetTop);
-        // console.log(node.getBoundingClientRect())
         setPopperTopOffset(node.getBoundingClientRect()?.top ?? 0);
       }, 100);
     }
   }, []);
 
-  // NOTE: Try to get the offsetBottom and if it is small, change the origins to top??
-
   return (
-    // <Popover
-    //   open
-    //   anchorEl={anchorEl}
-    //   onClose={onClose}
-    //   anchorOrigin={{
-    //     vertical: "bottom",
-    //     horizontal: "left",
-    //   }}
-    //   transformOrigin={{
-    //     vertical: "top",
-    //     horizontal: "left",
-    //   }}
-    //   slotProps={{
-    //     paper: {
-    //       elevation: 8,
-    //       sx: {
-    //         width: 360,
-    //         p: 2,
-    //         mt: 0.5,
-    //         maxHeight: `calc(100% - ${popoverTopOffset}px - 48px)`,
-    //       },
-    //       ref: topOffsetRef,
-    //     },
-    //   }}
-    // >
     <Backdrop
       id="popperBg"
       open
@@ -84,6 +55,16 @@ export const CommentsList = ({
           zIndex: theme.zIndex.modal,
         }}
         ref={topOffsetRef}
+        popperOptions={{
+          modifiers: [
+            {
+              name: "offset",
+              options: {
+                offset: [0, 4],
+              },
+            },
+          ],
+        }}
       >
         <Paper
           elevation={8}
