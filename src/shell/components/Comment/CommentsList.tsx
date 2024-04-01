@@ -20,13 +20,15 @@ export const CommentsList = ({
   onResolveComment,
   isResolved,
 }: CommentsListProps) => {
-  const [popoverTopOffset, setPopoverTopOffset] = useState(0);
+  const [popperTopOffset, setPopperTopOffset] = useState(0);
 
   const topOffsetRef = useCallback((node: HTMLDivElement) => {
     if (node) {
       // HACK: Needed so that we're getting the correct value after the popover has been drawn to the DOM
       setTimeout(() => {
-        setPopoverTopOffset(node.offsetTop);
+        // setPopoverTopOffset(node.offsetTop);
+        // console.log(node.getBoundingClientRect())
+        setPopperTopOffset(node.getBoundingClientRect()?.top ?? 0);
       }, 100);
     }
   }, []);
@@ -81,12 +83,15 @@ export const CommentsList = ({
         sx={{
           zIndex: theme.zIndex.modal,
         }}
+        ref={topOffsetRef}
       >
         <Paper
           elevation={8}
           sx={{
             width: 360,
             p: 2,
+            maxHeight: `calc(${window.innerHeight}px - ${popperTopOffset}px - 32px - 8px)`,
+            overflow: "auto",
           }}
         >
           {comments?.map((comment, index) => (
