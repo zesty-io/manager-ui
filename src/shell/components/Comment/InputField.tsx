@@ -1,7 +1,9 @@
-import { FormEvent, useCallback, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Box, TextField, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import sanitizeHtml from "sanitize-html";
+
+import { MentionList } from "./MentionList";
 
 type InputFieldProps = {
   isFirstComment: boolean;
@@ -11,6 +13,18 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
   const [inputValue, setInputValue] = useState("");
+  const [mentionListAnchorEl, setMentionListAnchorEl] =
+    useState<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const lastWord = inputRef.current?.textContent?.split(" ")?.pop();
+
+    if (lastWord?.startsWith("@")) {
+      setMentionListAnchorEl(inputRef.current);
+    } else {
+      setMentionListAnchorEl(null);
+    }
+  }, [inputValue]);
 
   // return (
   //   <>
@@ -90,12 +104,21 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
             );
           }
         }}
-        onKeyDown={(evt: React.KeyboardEvent<HTMLDivElement>) => {
-          if (evt.key === "@") {
-            console.log("show users dropdown");
-          }
-        }}
+        // onKeyDown={(evt: React.KeyboardEvent<HTMLDivElement>) => {
+        //   if (evt.key === "@") {
+        //     console.log("show users dropdown");
+        //     // setIsMentionListOpen(true)
+        //     setMentionListAnchorEl(evt.target as HTMLDivElement);
+        //   }
+        // }}
       />
+      {!!mentionListAnchorEl && (
+        <MentionList
+          anchorEl={mentionListAnchorEl}
+          onClose={() => {}}
+          onSelect={() => {}}
+        />
+      )}
       <Stack
         ref={buttonsContainerRef}
         direction="row"
