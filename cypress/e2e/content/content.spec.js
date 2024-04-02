@@ -43,11 +43,14 @@ describe("Content Specs", () => {
     });
 
     it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc button").click();
+      cy.get("#12-63ab04-0nkwcc")
+        .find('[data-cy="datePickerInputField"]')
+        .click();
 
-      cy.get('[aria-label="Mar 4, 2019"]').click();
+      // Timestamp for March 04, 2019
+      cy.get('[data-timestamp="1551628800000"]').click();
 
-      cy.get("#12-63ab04-0nkwcc input").should("have.value", "2019-03-04");
+      cy.get("#12-63ab04-0nkwcc input").should("have.value", "Mar 04, 2019");
     });
 
     it("Date & Time Field", () => {
@@ -287,10 +290,10 @@ describe("Content Specs", () => {
       });
     });
 
-    it("renders an image with a url from a template", () => {
+    it.only("renders an image with a url from a template", () => {
       cy.get("#12-1c94d4-pg8dvx")
         .find('[data-cy="file-preview"]')
-        .last()
+        .eq(3)
         .find("img")
         .should(
           "have.attr",

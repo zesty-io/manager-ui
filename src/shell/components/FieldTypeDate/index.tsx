@@ -178,6 +178,7 @@ function CustomField(props: any) {
 
   return (
     <TextField
+      data-cy="datePickerInputField"
       value={dateValue}
       onChange={(e) => {
         setDateValue(e.target.value);
