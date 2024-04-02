@@ -243,13 +243,7 @@ export const FieldTypeMedia = ({
               borderColor: hasError ? "error.main" : "primary.main",
             }}
           >
-            <Stack
-              alignItems="center"
-              gap={2}
-              py={4}
-              justifyContent="center"
-              height="154px"
-            >
+            <Stack alignItems="center" gap={2} py={4} justifyContent="center">
               {isDragActive ? (
                 <UploadRounded color="primary" />
               ) : (

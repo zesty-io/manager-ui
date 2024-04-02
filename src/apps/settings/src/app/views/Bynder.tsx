@@ -142,7 +142,7 @@ export const Bynder = () => {
         {isBynderSessionValid ? (
           <Box px={4} pt={2}>
             <Box component="img" src={bynderLogo} width={150} height={33} />
-            <Box mt={2} mb={2.5}>
+            <Box my={2}>
               <Typography fontWeight={700} variant="h5" color="text.primary">
                 Your instance is connected to the following Bynder Portal
               </Typography>
@@ -220,7 +220,7 @@ export const Bynder = () => {
               sx={{
                 height: 480,
                 width: 768,
-                borderRadius: 1,
+                borderRadius: 2,
               }}
             />
           </Stack>
