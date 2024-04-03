@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
@@ -20,8 +21,8 @@ type FieldTypeDateTimeProps = {
   required?: boolean;
   name: string;
   error?: boolean;
-  value: Date;
-  onChange: (date: Date) => void;
+  value: string;
+  onChange: (date: string) => void;
 };
 
 const TIME_OPTIONS = getTimeOptions();
@@ -34,18 +35,36 @@ export const FieldTypeDateTime = ({
   onChange,
 }: // ...props
 FieldTypeDateTimeProps) => {
-  const handleChange = (date: Date) => {
-    console.log(date);
-  };
+  const [dateString, setDateString] = useState(value?.split(" ")?.[0] ?? null);
+  const [timeString, setTimeString] = useState(value?.split(" ")?.[1] ?? null);
+
+  useEffect(() => {
+    const dateTimeString =
+      dateString && timeString ? `${dateString} ${timeString}` : null;
+
+    if (dateString !== value) {
+      onChange(dateTimeString);
+    }
+  }, [dateString, timeString]);
 
   return (
     <FieldTypeDate
       name={name}
       required={required}
-      value={value ? new Date(value) : null}
+      value={dateString ? new Date(dateString) : null}
       // format="MMM dd, yyyy"
       // onChange={(date) => onDateChange(date, name, datatype)}
-      onChange={handleChange}
+      onChange={(date) => {
+        setDateString(date ? moment(date).format("yyyy-MM-DD") : null);
+
+        if (date && timeString === null) {
+          setTimeString("00:00:00.000000");
+        }
+      }}
+      onClear={() => {
+        setDateString(null);
+        setTimeString(null);
+      }}
       error={error}
       slots={{
         timePicker: (
@@ -59,6 +78,9 @@ FieldTypeDateTimeProps) => {
             )}
             options={TIME_OPTIONS}
             getOptionLabel={(option) => option.inputValue}
+            onChange={(_, time) => {
+              console.log(time);
+            }}
             sx={{
               width: 96,
               "& .MuiAutocomplete-inputRoot": {
