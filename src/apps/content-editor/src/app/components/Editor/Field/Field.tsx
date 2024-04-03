@@ -933,9 +933,13 @@ export const Field = ({
             <FieldTypeDateTime
               name={name}
               required={required}
-              value={value ? new Date(value) : null}
-              inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
-              onChange={(date) => onDateTimeChange(date, name, datatype)}
+              value={(value as string) ?? null}
+              // value="2024-04-03 23:51:00.000000"
+              // inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
+              // onChange={(date) => onDateTimeChange(date, name, datatype)}
+              onChange={(datetime) => {
+                onChange(datetime, name, datatype);
+              }}
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
           </Box>
