@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
@@ -37,6 +37,7 @@ export const FieldTypeDateTime = ({
 FieldTypeDateTimeProps) => {
   const [dateString, setDateString] = useState(value?.split(" ")?.[0] ?? null);
   const [timeString, setTimeString] = useState(value?.split(" ")?.[1] ?? null);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     const dateTimeString =
@@ -59,6 +60,7 @@ FieldTypeDateTimeProps) => {
 
         if (date && timeString === null) {
           setTimeString("00:00:00.000000");
+          setCount(count + 1);
         }
       }}
       onClear={() => {
@@ -70,8 +72,10 @@ FieldTypeDateTimeProps) => {
         timePicker: (
           <Autocomplete
             disableClearable
+            key={count}
             // open
             // freeSolo
+            value={TIME_OPTIONS?.find((time) => time.value === timeString)}
             forcePopupIcon={false}
             renderInput={(params) => (
               <TextField placeholder="HH:MM" {...params} />
@@ -79,7 +83,7 @@ FieldTypeDateTimeProps) => {
             options={TIME_OPTIONS}
             getOptionLabel={(option) => option.inputValue}
             onChange={(_, time) => {
-              console.log(time);
+              setTimeString(time.value);
             }}
             sx={{
               width: 96,
