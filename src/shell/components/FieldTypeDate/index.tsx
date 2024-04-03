@@ -16,6 +16,7 @@ export interface FieldTypeDateProps extends DatePickerProps<Date> {
   slots?: DatePickerProps<Date>["slots"] & {
     timePicker?: React.ReactNode;
   };
+  onClear?: () => void;
 }
 
 const parseDateInput = (input: string): Date | null => {
@@ -54,7 +55,7 @@ const parseDateInput = (input: string): Date | null => {
 };
 
 export const FieldTypeDate = memo(
-  ({ required, error, slots, ...props }: FieldTypeDateProps) => {
+  ({ required, error, slots, onClear, ...props }: FieldTypeDateProps) => {
     const textFieldRef = useRef<HTMLInputElement>(null);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -64,6 +65,7 @@ export const FieldTypeDate = memo(
     const handleClear = () => {
       if (props.onChange) props.onChange(null, null);
       if (textFieldRef.current) textFieldRef.current.value = "";
+      onClear && onClear();
     };
 
     /**
