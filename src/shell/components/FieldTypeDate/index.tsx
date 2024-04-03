@@ -13,6 +13,9 @@ export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
   required?: boolean;
   error?: boolean;
+  slots?: DatePickerProps<Date>["slots"] & {
+    timePicker?: React.ReactNode;
+  };
 }
 
 const parseDateInput = (input: string): Date | null => {
@@ -51,7 +54,7 @@ const parseDateInput = (input: string): Date | null => {
 };
 
 export const FieldTypeDate = memo(
-  ({ required, error, ...props }: FieldTypeDateProps) => {
+  ({ required, error, slots, ...props }: FieldTypeDateProps) => {
     const textFieldRef = useRef<HTMLInputElement>(null);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -124,7 +127,7 @@ export const FieldTypeDate = memo(
               disableHighlightToday={!!props.value}
               slots={{
                 field: CustomField,
-                ...props.slots,
+                ...slots,
               }}
               slotProps={{
                 desktopPaper: {
@@ -150,6 +153,8 @@ export const FieldTypeDate = memo(
               }}
             />
           </Box>
+
+          {!!slots?.timePicker && slots.timePicker}
 
           <Button
             color="inherit"
