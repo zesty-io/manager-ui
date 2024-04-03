@@ -1,22 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import {
-  DesktopDateTimePicker,
-  DesktopDateTimePickerProps,
-} from "@mui/x-date-pickers";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { TextField, Autocomplete } from "@mui/material";
 import moment from "moment";
 
 import { FieldTypeDate } from "../FieldTypeDate";
 import { getTimeOptions } from "./util";
 
-// export interface FieldTypeDateTimeProps
-//   extends Omit<DesktopDateTimePickerProps<Date, Date>, "renderInput"> {
-//   required?: boolean;
-//   name: string;
-//   error?: boolean;
-// }
 type FieldTypeDateTimeProps = {
   required?: boolean;
   name: string;
@@ -33,57 +21,73 @@ export const FieldTypeDateTime = ({
   name,
   value,
   onChange,
-}: // ...props
-FieldTypeDateTimeProps) => {
-  const [dateString, setDateString] = useState(value?.split(" ")?.[0] ?? null);
-  const [timeString, setTimeString] = useState(value?.split(" ")?.[1] ?? null);
-  const [count, setCount] = useState(0);
+}: FieldTypeDateTimeProps) => {
+  const [timeKeyCount, setTimeKeyCount] = useState(0);
+  const [isTimeFieldActive, setIsTimeFieldActive] = useState(false);
+  const timeFieldRef = useRef<HTMLDivElement>(null);
+
+  const [dateString, timeString] = value?.split(" ") ?? [null, null];
 
   useEffect(() => {
-    const dateTimeString =
-      dateString && timeString ? `${dateString} ${timeString}` : null;
+    setTimeKeyCount(timeKeyCount + 1);
 
-    if (dateString !== value) {
-      onChange(dateTimeString);
+    if (isTimeFieldActive) {
+      console.log("auto focus");
+      setTimeout(() => {
+        timeFieldRef.current?.querySelector("input").focus();
+      });
     }
-  }, [dateString, timeString]);
+  }, [value]);
 
   return (
     <FieldTypeDate
       name={name}
       required={required}
       value={dateString ? new Date(dateString) : null}
-      // format="MMM dd, yyyy"
-      // onChange={(date) => onDateChange(date, name, datatype)}
       onChange={(date) => {
-        setDateString(date ? moment(date).format("yyyy-MM-DD") : null);
-
-        if (date && timeString === null) {
-          setTimeString("00:00:00.000000");
-          setCount(count + 1);
+        if (date) {
+          onChange(
+            `${moment(date).format("yyyy-MM-DD")} ${
+              timeString ?? "00:00:00.000000"
+            }`
+          );
+        } else {
+          onChange(null);
         }
       }}
       onClear={() => {
-        setDateString(null);
-        setTimeString(null);
+        onChange(null);
       }}
       error={error}
       slots={{
         timePicker: (
           <Autocomplete
             disableClearable
-            key={count}
-            // open
-            // freeSolo
+            key={timeKeyCount}
+            open={isTimeFieldActive}
             value={TIME_OPTIONS?.find((time) => time.value === timeString)}
             forcePopupIcon={false}
             renderInput={(params) => (
-              <TextField placeholder="HH:MM" {...params} />
+              <TextField
+                ref={timeFieldRef}
+                placeholder="HH:MM"
+                onClick={() => {
+                  setIsTimeFieldActive(true);
+                  if (!dateString && !timeString) {
+                    onChange(
+                      `${moment().format("yyyy-MM-DD")} 00:00:00.000000`
+                    );
+                  }
+                }}
+                onBlur={() => setIsTimeFieldActive(false)}
+                {...params}
+              />
             )}
             options={TIME_OPTIONS}
             getOptionLabel={(option) => option.inputValue}
             onChange={(_, time) => {
-              setTimeString(time.value);
+              onChange(`${dateString} ${time.value}`);
+              setIsTimeFieldActive(false);
             }}
             sx={{
               width: 96,

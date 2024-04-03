@@ -113,7 +113,7 @@ export const FieldTypeDate = memo(
       if (props.value) {
         textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
       }
-    }, []);
+    }, [props.value]);
 
     return (
       <LocalizationProvider dateAdapter={AdapterDateFns}>
