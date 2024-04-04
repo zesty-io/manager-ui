@@ -3,7 +3,7 @@ import { TextField, Autocomplete, Typography } from "@mui/material";
 import moment from "moment";
 
 import { FieldTypeDate } from "../FieldTypeDate";
-import { getTimeOptions } from "./util";
+import { TIME_OPTIONS, getFilteredTimeOptions } from "./util";
 
 type FieldTypeDateTimeProps = {
   required?: boolean;
@@ -12,8 +12,6 @@ type FieldTypeDateTimeProps = {
   value: string;
   onChange: (date: string) => void;
 };
-
-const TIME_OPTIONS = getTimeOptions();
 
 export const FieldTypeDateTime = ({
   required,
@@ -40,57 +38,7 @@ export const FieldTypeDateTime = ({
   }, [value]);
 
   const filteredTimeOptions = useMemo(() => {
-    if (!inputValue) {
-      return TIME_OPTIONS;
-    }
-
-    const hourInput = +inputValue.split(":")?.[0];
-    let minuteInput = inputValue?.split(":")?.[1]?.slice(0, 2);
-    let periodOfTime = inputValue?.split(" ")?.[1];
-
-    // const matchingTime = TIME_OPTIONS.filter((time) => {
-    //   return time.inputValue.startsWith(inputValue);
-    // });
-
-    // Try to do direct matches from the options else find the closest time from the user's input
-    // if (matchingTime.length) {
-    // TODO: Is still still actually necessary??
-    // return matchingTime;
-    // } else if (minuteInput?.length && +minuteInput <= 59) {
-    // Rounds off minutes so it's always 2 digits
-    if (!minuteInput) {
-      minuteInput = "00";
-    } else if (minuteInput.length === 1) {
-      minuteInput = `${minuteInput}0`;
-    }
-
-    // Determines wether we'll try to match am or pm times
-    if (!periodOfTime) {
-      periodOfTime = hourInput >= 7 && hourInput <= 11 ? "am" : "pm";
-    } else if (periodOfTime === "a") {
-      periodOfTime = "am";
-    } else if (periodOfTime === "p") {
-      periodOfTime = "pm";
-    }
-
-    const derivedTime = `${hourInput}:${minuteInput} ${periodOfTime}`;
-
-    const closestTimeOptionIndex = TIME_OPTIONS.findIndex((time) => {
-      return (
-        Math.abs(
-          new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 -
-            new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000
-        ) <= 420
-      );
-    });
-
-    return TIME_OPTIONS.slice(
-      closestTimeOptionIndex,
-      closestTimeOptionIndex + 5
-    );
-    // } else {
-    //   return [];
-    // }
+    return getFilteredTimeOptions(inputValue);
   }, [inputValue]);
 
   return (
@@ -135,7 +83,14 @@ export const FieldTypeDateTime = ({
                       );
                     }
                   }}
-                  onBlur={() => setIsTimeFieldActive(false)}
+                  onBlur={() => {
+                    setIsTimeFieldActive(false);
+                    // Check what's the closest match to the user input then select that on blur
+                    const matchedTimeOption =
+                      getFilteredTimeOptions(inputValue);
+
+                    console.log("possible value on blur", matchedTimeOption);
+                  }}
                   {...params}
                 />
               )}

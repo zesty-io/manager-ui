@@ -99,9 +99,59 @@ const TIME_STRINGS = [
   "11:45 pm",
 ] as const;
 
-export const getTimeOptions = () => {
+const generateTimeOptions = () => {
   return TIME_STRINGS.map((timeString) => ({
     value: moment(`01-01-2024 ${timeString}`).format("HH:mm:ss.SSSSSS"),
     inputValue: timeString,
   }));
+};
+
+export const TIME_OPTIONS = [...generateTimeOptions()] as const;
+
+export const getFilteredTimeOptions = (input: string) => {
+  if (!input) {
+    return TIME_OPTIONS;
+  }
+
+  const hourInput = +input.split(":")?.[0];
+  let minuteInput = input?.split(":")?.[1]?.slice(0, 2);
+  let periodOfTime = input?.split(" ")?.[1];
+
+  // const matchingTime = TIME_OPTIONS.filter((time) => {
+  //   return time.input.startsWith(input);
+  // });
+
+  // Try to do direct matches from the options else find the closest time from the user's input
+  // if (matchingTime.length) {
+  // TODO: Is still still actually necessary??
+  // return matchingTime;
+  // } else if (minuteInput?.length && +minuteInput <= 59) {
+  // Rounds off minutes so it's always 2 digits
+  if (!minuteInput) {
+    minuteInput = "00";
+  } else if (minuteInput.length === 1) {
+    minuteInput = `${minuteInput}0`;
+  }
+
+  // Determines wether we'll try to match am or pm times
+  if (!periodOfTime) {
+    periodOfTime = hourInput >= 7 && hourInput <= 11 ? "am" : "pm";
+  } else if (periodOfTime === "a") {
+    periodOfTime = "am";
+  } else if (periodOfTime === "p") {
+    periodOfTime = "pm";
+  }
+
+  const derivedTime = `${hourInput}:${minuteInput} ${periodOfTime}`;
+
+  const closestTimeOptionIndex = TIME_OPTIONS.findIndex((time) => {
+    return (
+      Math.abs(
+        new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 -
+          new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000
+      ) <= 420
+    );
+  });
+
+  return TIME_OPTIONS.slice(closestTimeOptionIndex, closestTimeOptionIndex + 5);
 };
