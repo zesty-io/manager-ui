@@ -100,13 +100,6 @@ const TIME_STRINGS = [
 ] as const;
 
 export const getTimeOptions = () => {
-  // let timeOptions: {value: string, inputValue: string}[] = [];
-
-  // for (TIME_OPTIONS)
-
-  // return timeOptions;
-
-  console.log("time options generated");
   return TIME_STRINGS.map((timeString) => ({
     value: moment(`01-01-2024 ${timeString}`).format("HH:mm:ss.SSSSSS"),
     inputValue: timeString,
