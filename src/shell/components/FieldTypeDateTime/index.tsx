@@ -32,7 +32,6 @@ export const FieldTypeDateTime = ({
     setTimeKeyCount(timeKeyCount + 1);
 
     if (isTimeFieldActive) {
-      console.log("auto focus");
       setTimeout(() => {
         timeFieldRef.current?.querySelector("input").focus();
       });
@@ -113,16 +112,4 @@ export const FieldTypeDateTime = ({
       }}
     />
   );
-  // return (
-  //   <LocalizationProvider dateAdapter={AdapterDateFns}>
-  //     <DesktopDateTimePicker
-  //       data-testid="zds-date-time-picker"
-  //       renderInput={(params) => (
-  //         <TextField {...params} fullWidth size="small" error={error} />
-  //       )}
-  //       // Spread props at the end to allow prop overrides
-  //       {...props}
-  //     />
-  //   </LocalizationProvider>
-  // );
 };
