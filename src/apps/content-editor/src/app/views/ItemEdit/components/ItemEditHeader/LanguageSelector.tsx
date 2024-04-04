@@ -1,4 +1,4 @@
-import { Button, Menu, MenuItem, Box } from "@mui/material";
+import { Button, Menu, MenuItem, Box, Tooltip } from "@mui/material";
 import {
   useGetContentItemVersionsQuery,
   useGetItemPublishingsQuery,
@@ -75,27 +75,34 @@ export const LanguageSelector = () => {
 
   return (
     <>
-      <Button
-        sx={{
-          color: "text.disabled",
-          height: "24px",
-          minWidth: "unset",
-          padding: "2px",
-          " .MuiButton-endIcon": {
-            marginLeft: "4px",
-          },
-        }}
-        color="inherit"
-        endIcon={<KeyboardArrowDownRounded color="action" />}
-        onClick={(e) => setAnchorEl(e.currentTarget)}
-        data-cy="language-selector"
+      <Tooltip
+        title="View Languages"
+        enterDelay={1000}
+        enterNextDelay={1000}
+        placement="top-start"
       >
-        <Box component="span" color="text.primary">
-          {getFlagEmojiFromIETFTag(activeLanguage?.code)}
-        </Box>{" "}
-        {activeLanguage?.code?.split("-")[0]?.toUpperCase()} (
-        {getCountryCode(activeLanguage?.code)})
-      </Button>
+        <Button
+          sx={{
+            color: "text.disabled",
+            height: "24px",
+            minWidth: "unset",
+            padding: "2px",
+            " .MuiButton-endIcon": {
+              marginLeft: "4px",
+            },
+          }}
+          color="inherit"
+          endIcon={<KeyboardArrowDownRounded color="action" />}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          data-cy="language-selector"
+        >
+          <Box component="span" color="text.primary">
+            {getFlagEmojiFromIETFTag(activeLanguage?.code)}
+          </Box>{" "}
+          {activeLanguage?.code?.split("-")[0]?.toUpperCase()} (
+          {getCountryCode(activeLanguage?.code)})
+        </Button>
+      </Tooltip>
       <Menu
         onClose={() => setAnchorEl(null)}
         anchorOrigin={{

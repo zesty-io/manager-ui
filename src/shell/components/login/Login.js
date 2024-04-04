@@ -39,7 +39,6 @@ export default connect((state) => {
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [ssoError, setSSOError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = (evt) => {
@@ -85,12 +84,6 @@ export default connect((state) => {
         props.dispatch(verify());
       }
     }, [isAuthenticated]);
-
-    useEffect(() => {
-      if (ssoError) {
-        setError(ssoError);
-      }
-    }, [ssoError]);
 
     return (
       <Paper
@@ -159,7 +152,7 @@ export default connect((state) => {
         ) : (
           <Box display="flex" flexDirection="column" gap={2}>
             <Box>
-              <Typography variant="h4" fontWeight={600} sx={{ mb: "2px" }}>
+              <Typography variant="h4" fontWeight={700} sx={{ mb: "2px" }}>
                 Hi, Welcome Back!
               </Typography>
               <Typography
@@ -176,7 +169,7 @@ export default connect((state) => {
                 setIsAuthenticated(true);
               }}
               onError={(err) => {
-                setSSOError(err);
+                setError(err);
               }}
             >
               <SSOButton service="google" />

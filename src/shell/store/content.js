@@ -382,7 +382,7 @@ export function fetchItems(modelZUID, options = {}) {
 export function saveItem(itemZUID, action = "") {
   return (dispatch, getState) => {
     const state = getState();
-    const item = state.content[itemZUID];
+    const item = cloneDeep(state.content[itemZUID]);
     const fields = Object.keys(state.fields)
       .filter(
         (fieldZUID) =>
@@ -408,7 +408,15 @@ export function saveItem(itemZUID, action = "") {
     if (item.web.metaDescription) {
       item.web.metaDescription = item.web.metaDescription.slice(0, 160);
     }
-
+    if (item.web.metaTitle) {
+      item.web.metaTitle = item.web.metaTitle.slice(0, 150);
+    }
+    if (item.web.metaLinkText) {
+      item.web.metaLinkText = item.web.metaLinkText.slice(0, 150);
+    }
+    if (item.web.metaKeywords) {
+      item.web.metaKeywords = item.web.metaKeywords.slice(0, 255);
+    }
     /*
       Nav item will not be found if item does exist in the nav such is the case
       when the item is in a dataset
