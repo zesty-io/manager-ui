@@ -22,9 +22,10 @@ export const FieldTypeDateTime = ({
   value,
   onChange,
 }: FieldTypeDateTimeProps) => {
+  const timeFieldRef = useRef<HTMLDivElement>(null);
   const [timeKeyCount, setTimeKeyCount] = useState(0);
   const [isTimeFieldActive, setIsTimeFieldActive] = useState(false);
-  const timeFieldRef = useRef<HTMLDivElement>(null);
+  const [inputValue, setInputValue] = useState("");
 
   const [dateString, timeString] = value?.split(" ") ?? [null, null];
 
@@ -37,6 +38,57 @@ export const FieldTypeDateTime = ({
       });
     }
   }, [value]);
+
+  const filteredTimeOptions = useMemo(() => {
+    if (!inputValue) {
+      TIME_OPTIONS;
+    }
+
+    const hourInput = +inputValue.split(":")?.[0];
+    let minuteInput = inputValue?.split(":")?.[1]?.slice(0, 2);
+    let periodOfTime = inputValue?.split(" ")?.[1];
+
+    const matchingTime = TIME_OPTIONS.filter((time) => {
+      return time.inputValue.startsWith(inputValue);
+    });
+
+    // Try to do direct matches from the options else find the closest time from the user's input
+    if (matchingTime.length) {
+      return matchingTime;
+    } else if (minuteInput?.length && +minuteInput <= 59) {
+      // Rounds off minutes so it's always 2 digits
+      if (minuteInput.length === 1) {
+        minuteInput = `${minuteInput}0`;
+      }
+
+      // Determines wether we'll try to match am or pm times
+      if (!periodOfTime) {
+        periodOfTime = hourInput >= 7 && hourInput <= 11 ? "am" : "pm";
+      } else if (periodOfTime === "a") {
+        periodOfTime = "am";
+      } else if (periodOfTime === "p") {
+        periodOfTime = "pm";
+      }
+
+      const derivedTime = `${hourInput}:${minuteInput} ${periodOfTime}`;
+
+      const closestTimeOptionIndex = TIME_OPTIONS.findIndex((time) => {
+        return (
+          Math.abs(
+            new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 -
+              new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000
+          ) <= 420
+        );
+      });
+
+      return TIME_OPTIONS.slice(
+        closestTimeOptionIndex,
+        closestTimeOptionIndex + 5
+      );
+    } else {
+      return [];
+    }
+  }, [inputValue]);
 
   return (
     <>
@@ -67,6 +119,7 @@ export const FieldTypeDateTime = ({
               open={isTimeFieldActive}
               value={TIME_OPTIONS?.find((time) => time.value === timeString)}
               forcePopupIcon={false}
+              inputValue={inputValue}
               renderInput={(params) => (
                 <TextField
                   ref={timeFieldRef}
@@ -83,11 +136,15 @@ export const FieldTypeDateTime = ({
                   {...params}
                 />
               )}
-              options={TIME_OPTIONS}
+              options={filteredTimeOptions}
               getOptionLabel={(option) => option.inputValue}
+              filterOptions={(e) => e}
               onChange={(_, time) => {
                 onChange(`${dateString} ${time.value}`);
                 setIsTimeFieldActive(false);
+              }}
+              onInputChange={(_, value) => {
+                setInputValue(value);
               }}
               sx={{
                 width: 96,
