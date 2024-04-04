@@ -90,6 +90,12 @@ export const FieldTypeDateTime = ({
                       getFilteredTimeOptions(inputValue);
 
                     console.log("possible value on blur", matchedTimeOption);
+
+                    if (matchedTimeOption?.length) {
+                      onChange(`${dateString} ${matchedTimeOption[0].value}`);
+                    } else {
+                      // Show error
+                    }
                   }}
                   {...params}
                 />
