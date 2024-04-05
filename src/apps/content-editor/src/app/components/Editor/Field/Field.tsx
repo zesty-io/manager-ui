@@ -921,12 +921,6 @@ export const Field = ({
       );
 
     case "datetime":
-      const onDateTimeChange = useCallback(
-        (value, name, datatype) => {
-          onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
-        },
-        [onChange]
-      );
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <Box maxWidth={360}>
@@ -938,7 +932,7 @@ export const Field = ({
               // inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
               // onChange={(date) => onDateTimeChange(date, name, datatype)}
               onChange={(datetime) => {
-                console.log("datetime changed", datetime, value);
+                // console.log("datetime changed", datetime, value);
                 onChange(datetime, name, datatype);
               }}
               error={errors && Object.values(errors)?.some((error) => !!error)}

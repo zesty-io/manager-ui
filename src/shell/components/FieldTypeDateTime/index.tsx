@@ -71,6 +71,7 @@ export const FieldTypeDateTime = ({
         }}
         onClear={() => {
           onChange(null);
+          setInputValue("");
         }}
         error={error}
         slots={{
@@ -82,9 +83,10 @@ export const FieldTypeDateTime = ({
             >
               <Autocomplete
                 disableClearable
+                freeSolo
                 key={timeKeyCount}
                 open={isTimeFieldActive}
-                value={TIME_OPTIONS?.find((time) => time.value === timeString)}
+                value={timeString}
                 forcePopupIcon={false}
                 inputValue={inputValue}
                 renderInput={(params) => (
@@ -102,13 +104,18 @@ export const FieldTypeDateTime = ({
                     }}
                     onBlur={() => {
                       setIsTimeFieldActive(false);
-                      // Check what's the closest match to the user input then select that on blur
-                      const matchedTimeOption =
-                        getFilteredTimeOptions(inputValue);
+                      // If user types in 1 or 1: convert to 1:00
+                      // Else if user types in 1:2 convert to 1:20
+                      // Else if user types in 1:29 save as is
+                      // Else if user types in invalid format ie 1:99 revert to last valid time
 
-                      if (matchedTimeOption?.length) {
-                        onChange(`${dateString} ${matchedTimeOption[0].value}`);
-                      }
+                      // Check what's the closest match to the user input then select that on blur
+                      // const matchedTimeOption =
+                      //   getFilteredTimeOptions(inputValue);
+
+                      // if (matchedTimeOption?.length) {
+                      //   onChange(`${dateString} ${matchedTimeOption[0].value}`);
+                      // }
                     }}
                     sx={{
                       "& .Mui-focused.MuiAutocomplete-inputRoot fieldset.MuiOutlinedInput-notchedOutline":
@@ -122,10 +129,27 @@ export const FieldTypeDateTime = ({
                   />
                 )}
                 options={filteredTimeOptions}
-                getOptionLabel={(option) => option.inputValue}
+                getOptionLabel={(option) => {
+                  if (typeof option === "object") {
+                    return option.inputValue;
+                  } else {
+                    return moment(`01/01/2024 ${option}`).format("h:mm a");
+                  }
+                }}
                 filterOptions={(e) => e}
                 onChange={(_, time) => {
-                  onChange(`${dateString} ${time.value}`);
+                  const isValidTimeFormat = TIME_FORMAT_REGEX.test(inputValue);
+
+                  if (typeof time === "string" && isValidTimeFormat) {
+                    onChange(
+                      `${dateString} ${moment(`01-01-2024 ${time}`).format(
+                        "HH:mm:ss.SSSSSS"
+                      )}`
+                    );
+                  } else if (typeof time === "object") {
+                    onChange(`${dateString} ${time.value}`);
+                  }
+
                   setIsTimeFieldActive(false);
                 }}
                 onInputChange={(_, value) => {
