@@ -108,6 +108,7 @@ const generateTimeOptions = () => {
 
 export const TIME_OPTIONS = [...generateTimeOptions()] as const;
 
+// FIXME: Still shows a match when typing something like 2:3112313123 am
 export const getFilteredTimeOptions = (input: string) => {
   if (!input) {
     return TIME_OPTIONS;

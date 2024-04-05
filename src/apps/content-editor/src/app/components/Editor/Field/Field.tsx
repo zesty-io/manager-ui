@@ -938,6 +938,7 @@ export const Field = ({
               // inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
               // onChange={(date) => onDateTimeChange(date, name, datatype)}
               onChange={(datetime) => {
+                console.log("datetime changed", datetime, value);
                 onChange(datetime, name, datatype);
               }}
               error={errors && Object.values(errors)?.some((error) => !!error)}
