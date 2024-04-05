@@ -5,6 +5,7 @@ import moment from "moment";
 import { FieldTypeDate } from "../FieldTypeDate";
 import {
   getClosestTimeSuggestion,
+  getDerivedTime,
   toISOString,
   to12HrTime,
   TIME_OPTIONS,
@@ -83,7 +84,6 @@ export const FieldTypeDateTime = ({
               <Autocomplete
                 disableClearable
                 freeSolo
-                autoHighlight
                 key={timeKeyCount}
                 open={isTimeFieldActive}
                 // open
@@ -151,30 +151,8 @@ export const FieldTypeDateTime = ({
                     onBlur={() => {
                       setIsTimeFieldActive(false);
 
-                      let periodOfTime = inputValue?.split(" ")?.[1];
-                      const timeInput = inputValue?.split(" ")?.[0];
-                      const hourInput = timeInput?.split(":")?.[0];
-                      let minuteInput = timeInput?.split(":")?.[1];
-
-                      if (!minuteInput) {
-                        minuteInput = "00";
-                      } else if (minuteInput.length === 1) {
-                        minuteInput = `${minuteInput}0`;
-                      } else if (minuteInput.length > 2) {
-                        return [];
-                      }
-
-                      if (!periodOfTime) {
-                        periodOfTime =
-                          +hourInput >= 7 && +hourInput <= 11 ? "am" : "pm";
-                      } else if (periodOfTime === "a") {
-                        periodOfTime = "am";
-                      } else if (periodOfTime === "p") {
-                        periodOfTime = "pm";
-                      }
-
                       const derivedTime = toISOString(
-                        `${hourInput}:${minuteInput} ${periodOfTime}`
+                        getDerivedTime(inputValue)
                       );
 
                       if (derivedTime.toLowerCase() === "invalid date") {
@@ -183,18 +161,6 @@ export const FieldTypeDateTime = ({
                       } else {
                         onChange(`${dateString} ${derivedTime}`);
                       }
-                      // If user types in 1 or 1: convert to 1:00
-                      // Else if user types in 1:2 convert to 1:20
-                      // Else if user types in 1:29 save as is
-                      // Else if user types in invalid format ie 1:99 revert to last valid time
-
-                      // Check what's the closest match to the user input then select that on blur
-                      // const matchedTimeOption =
-                      //   getFilteredTimeOptions(inputValue);
-
-                      // if (matchedTimeOption?.length) {
-                      //   onChange(`${dateString} ${matchedTimeOption[0].value}`);
-                      // }
                     }}
                     sx={{
                       "& .Mui-focused.MuiAutocomplete-inputRoot fieldset.MuiOutlinedInput-notchedOutline":

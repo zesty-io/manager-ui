@@ -116,32 +116,21 @@ const generateTimeOptions = () => {
 
 export const TIME_OPTIONS = [...generateTimeOptions()] as const;
 
-export const getClosestTimeSuggestion = (input: string) => {
-  if (!input) {
-    return TIME_OPTIONS;
+export const getDerivedTime = (userInput: string) => {
+  if (!userInput) {
+    return "";
   }
 
-  let periodOfTime = input.split(" ")?.[1];
-  const timeInput = input.split(" ")?.[0];
+  let periodOfTime = userInput.split(" ")?.[1];
+  const timeInput = userInput.split(" ")?.[0];
   const hourInput = timeInput?.split(":")?.[0];
   let minuteInput = timeInput?.split(":")?.[1];
 
-  // const matchingTime = TIME_OPTIONS.filter((time) => {
-  //   return time.input.startsWith(input);
-  // });
-
-  // Try to do direct matches from the options else find the closest time from the user's input
-  // if (matchingTime.length) {
-  // TODO: Is still still actually necessary??
-  // return matchingTime;
-  // } else if (minuteInput?.length && +minuteInput <= 59) {
   // Rounds off minutes so it's always 2 digits
   if (!minuteInput) {
     minuteInput = "00";
   } else if (minuteInput.length === 1) {
     minuteInput = `${minuteInput}0`;
-  } else if (minuteInput.length > 2) {
-    return [];
   }
 
   // Determines wether we'll try to match am or pm times
@@ -153,16 +142,16 @@ export const getClosestTimeSuggestion = (input: string) => {
     periodOfTime = "pm";
   }
 
-  const derivedTime = `${hourInput}:${minuteInput} ${periodOfTime}`;
+  return `${hourInput}:${minuteInput} ${periodOfTime}`;
+};
 
-  // const closestTimeOptionIndex = TIME_OPTIONS.findIndex((time) => {
-  //   return (
-  //     Math.abs(
-  //       new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 -
-  //         new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000
-  //     ) <= 420
-  //   );
-  // });
+export const getClosestTimeSuggestion = (input: string) => {
+  if (!input) {
+    return TIME_OPTIONS;
+  }
+
+  const derivedTime = getDerivedTime(input);
+
   return TIME_OPTIONS.find((time) => {
     return (
       Math.abs(
@@ -171,6 +160,4 @@ export const getClosestTimeSuggestion = (input: string) => {
       ) <= 420
     );
   });
-
-  // return TIME_OPTIONS.slice(closestTimeOptionIndex, closestTimeOptionIndex + 5);
 };
