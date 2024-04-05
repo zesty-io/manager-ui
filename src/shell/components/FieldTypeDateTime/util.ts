@@ -108,15 +108,15 @@ const generateTimeOptions = () => {
 
 export const TIME_OPTIONS = [...generateTimeOptions()] as const;
 
-// FIXME: Still shows a match when typing something like 2:3112313123 am
 export const getFilteredTimeOptions = (input: string) => {
   if (!input) {
     return TIME_OPTIONS;
   }
 
-  const hourInput = +input.split(":")?.[0];
-  let minuteInput = input?.split(":")?.[1]?.slice(0, 2);
-  let periodOfTime = input?.split(" ")?.[1];
+  let periodOfTime = input.split(" ")?.[1];
+  const timeInput = input.split(" ")?.[0];
+  const hourInput = timeInput?.split(":")?.[0];
+  let minuteInput = timeInput?.split(":")?.[1];
 
   // const matchingTime = TIME_OPTIONS.filter((time) => {
   //   return time.input.startsWith(input);
@@ -132,11 +132,13 @@ export const getFilteredTimeOptions = (input: string) => {
     minuteInput = "00";
   } else if (minuteInput.length === 1) {
     minuteInput = `${minuteInput}0`;
+  } else if (minuteInput.length > 2) {
+    return [];
   }
 
   // Determines wether we'll try to match am or pm times
   if (!periodOfTime) {
-    periodOfTime = hourInput >= 7 && hourInput <= 11 ? "am" : "pm";
+    periodOfTime = +hourInput >= 7 && +hourInput <= 11 ? "am" : "pm";
   } else if (periodOfTime === "a") {
     periodOfTime = "am";
   } else if (periodOfTime === "p") {
