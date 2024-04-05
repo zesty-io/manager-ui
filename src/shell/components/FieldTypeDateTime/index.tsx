@@ -90,6 +90,51 @@ export const FieldTypeDateTime = ({
                 value={timeString}
                 forcePopupIcon={false}
                 inputValue={inputValue}
+                options={TIME_OPTIONS}
+                getOptionLabel={(option) => {
+                  if (typeof option === "object") {
+                    return option.inputValue;
+                  } else {
+                    return to12HrTime(option);
+                  }
+                }}
+                filterOptions={(e) => e}
+                onChange={(_, time, reason, details) => {
+                  console.log(time, reason, details);
+                  const isValidTimeFormat = TIME_FORMAT_REGEX.test(inputValue);
+
+                  if (typeof time === "string" && isValidTimeFormat) {
+                    onChange(`${dateString} ${toISOString(time)}`);
+                    setIsTimeFieldActive(false);
+                  } else if (typeof time === "object") {
+                    onChange(`${dateString} ${time.value}`);
+                    setIsTimeFieldActive(false);
+                  } else {
+                    setInputValue(to12HrTime(timeString));
+                  }
+                }}
+                onInputChange={(_, value) => {
+                  setInputValue(value);
+                }}
+                sx={{
+                  width: 96,
+                  "& .MuiAutocomplete-inputRoot": {
+                    py: 0.75,
+                    px: 1,
+
+                    "& input.MuiOutlinedInput-input.MuiAutocomplete-input": {
+                      p: 0,
+                      height: 28,
+                    },
+                  },
+                }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      width: 184,
+                    },
+                  },
+                }}
                 renderInput={(params) => (
                   <TextField
                     ref={timeFieldRef}
@@ -162,51 +207,6 @@ export const FieldTypeDateTime = ({
                     {...params}
                   />
                 )}
-                options={TIME_OPTIONS}
-                getOptionLabel={(option) => {
-                  if (typeof option === "object") {
-                    return option.inputValue;
-                  } else {
-                    return to12HrTime(option);
-                  }
-                }}
-                filterOptions={(e) => e}
-                onChange={(_, time, reason, details) => {
-                  console.log(time, reason, details);
-                  const isValidTimeFormat = TIME_FORMAT_REGEX.test(inputValue);
-
-                  if (typeof time === "string" && isValidTimeFormat) {
-                    onChange(`${dateString} ${toISOString(time)}`);
-                    setIsTimeFieldActive(false);
-                  } else if (typeof time === "object") {
-                    onChange(`${dateString} ${time.value}`);
-                    setIsTimeFieldActive(false);
-                  } else {
-                    setInputValue(to12HrTime(timeString));
-                  }
-                }}
-                onInputChange={(_, value) => {
-                  setInputValue(value);
-                }}
-                sx={{
-                  width: 96,
-                  "& .MuiAutocomplete-inputRoot": {
-                    py: 0.75,
-                    px: 1,
-
-                    "& input.MuiOutlinedInput-input.MuiAutocomplete-input": {
-                      p: 0,
-                      height: 28,
-                    },
-                  },
-                }}
-                slotProps={{
-                  paper: {
-                    sx: {
-                      width: 184,
-                    },
-                  },
-                }}
               />
             </Tooltip>
           ),
