@@ -116,7 +116,7 @@ const generateTimeOptions = () => {
 
 export const TIME_OPTIONS = [...generateTimeOptions()] as const;
 
-export const getFilteredTimeOptions = (input: string) => {
+export const getClosestTimeSuggestion = (input: string) => {
   if (!input) {
     return TIME_OPTIONS;
   }
@@ -155,7 +155,15 @@ export const getFilteredTimeOptions = (input: string) => {
 
   const derivedTime = `${hourInput}:${minuteInput} ${periodOfTime}`;
 
-  const closestTimeOptionIndex = TIME_OPTIONS.findIndex((time) => {
+  // const closestTimeOptionIndex = TIME_OPTIONS.findIndex((time) => {
+  //   return (
+  //     Math.abs(
+  //       new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 -
+  //         new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000
+  //     ) <= 420
+  //   );
+  // });
+  return TIME_OPTIONS.find((time) => {
     return (
       Math.abs(
         new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 -
@@ -164,5 +172,5 @@ export const getFilteredTimeOptions = (input: string) => {
     );
   });
 
-  return TIME_OPTIONS.slice(closestTimeOptionIndex, closestTimeOptionIndex + 5);
+  // return TIME_OPTIONS.slice(closestTimeOptionIndex, closestTimeOptionIndex + 5);
 };

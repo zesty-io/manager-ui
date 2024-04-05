@@ -3,7 +3,12 @@ import { TextField, Autocomplete, Typography, Tooltip } from "@mui/material";
 import moment from "moment";
 
 import { FieldTypeDate } from "../FieldTypeDate";
-import { getFilteredTimeOptions, toISOString, to12HrTime } from "./util";
+import {
+  getClosestTimeSuggestion,
+  toISOString,
+  to12HrTime,
+  TIME_OPTIONS,
+} from "./util";
 
 const TIME_FORMAT_REGEX = /^((1[0-2]|0?[1-9]):([0-5][0-9]) ?([ap][m]))$/gi;
 
@@ -40,17 +45,10 @@ export const FieldTypeDateTime = ({
     }
   }, [value]);
 
-  const filteredTimeOptions = useMemo(() => {
-    const timeOptions = getFilteredTimeOptions(inputValue.trim());
-    console.log("recalculate options", timeOptions);
+  useEffect(() => {
+    const closestTime = getClosestTimeSuggestion(inputValue);
 
-    if (!timeOptions?.length) {
-      setInvalidInput(!TIME_FORMAT_REGEX.test(inputValue));
-    } else {
-      setInvalidInput(false);
-    }
-
-    return timeOptions;
+    setInvalidInput(!closestTime);
   }, [inputValue]);
 
   return (
@@ -85,8 +83,10 @@ export const FieldTypeDateTime = ({
               <Autocomplete
                 disableClearable
                 freeSolo
+                autoHighlight
                 key={timeKeyCount}
                 open={isTimeFieldActive}
+                // open
                 value={timeString}
                 forcePopupIcon={false}
                 inputValue={inputValue}
@@ -162,7 +162,7 @@ export const FieldTypeDateTime = ({
                     {...params}
                   />
                 )}
-                options={filteredTimeOptions}
+                options={TIME_OPTIONS}
                 getOptionLabel={(option) => {
                   if (typeof option === "object") {
                     return option.inputValue;
@@ -171,7 +171,8 @@ export const FieldTypeDateTime = ({
                   }
                 }}
                 filterOptions={(e) => e}
-                onChange={(_, time) => {
+                onChange={(_, time, reason, details) => {
+                  console.log(time, reason, details);
                   const isValidTimeFormat = TIME_FORMAT_REGEX.test(inputValue);
 
                   if (typeof time === "string" && isValidTimeFormat) {
