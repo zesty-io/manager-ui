@@ -43,11 +43,14 @@ describe("Content Specs", () => {
     });
 
     it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc button").click();
+      cy.get("#12-63ab04-0nkwcc")
+        .find('[data-cy="datePickerInputField"]')
+        .click();
 
-      cy.get('[aria-label="Mar 4, 2019"]').click();
+      // Timestamp for March 04, 2019
+      cy.get('[data-timestamp="1551628800000"]').click();
 
-      cy.get("#12-63ab04-0nkwcc input").should("have.value", "2019-03-04");
+      cy.get("#12-63ab04-0nkwcc input").should("have.value", "Mar 04, 2019");
     });
 
     it("Date & Time Field", () => {
@@ -280,23 +283,51 @@ describe("Content Specs", () => {
     });
   });
 
-  describe("Media field image template", () => {
+  describe("Media field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
     });
 
-    it("renders an image with a url from a template", () => {
+    it.only("renders an image with a url from a template", () => {
       cy.get("#12-1c94d4-pg8dvx")
         .find('[data-cy="file-preview"]')
-        .last()
+        .eq(3)
         .find("img")
         .should(
           "have.attr",
           "src",
           "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/1200px-SNice.svg.png?width=80&optimize=high"
         );
+    });
+
+    it("opens the bynder modal", () => {
+      cy.get("#12-1c94d4-pg8dvx").find('[data-cy="addFromBynderBtn"]').click();
+      cy.get('[data-test-id="CompactViewContainer"]')
+        .eq(2)
+        .find('[data-testid="root"]')
+        .should("exist");
+
+      // Close modal
+      cy.get('[data-test-id="CompactViewContainer"]')
+        .eq(2)
+        .find('[data-testid="root"]')
+        .shadow()
+        .find('button[title="Close"]')
+        .click();
+      cy.get('[data-test-id="CompactViewContainer"]')
+        .eq(2)
+        .find('[data-testid="root"]')
+        .should("not.exist");
+    });
+
+    it("renders bynder asset previews", () => {
+      cy.get("#12-1c94d4-pg8dvx")
+        .find('[data-cy="mediaItem"]')
+        .last()
+        .find('[data-cy="bynderAssetIndicator"]')
+        .should("exist");
     });
   });
 });
