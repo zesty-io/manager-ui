@@ -42,6 +42,7 @@ export const FieldTypeDateTime = ({
 
   const filteredTimeOptions = useMemo(() => {
     const timeOptions = getFilteredTimeOptions(inputValue.trim());
+    console.log("recalculate options", timeOptions);
 
     if (!timeOptions?.length) {
       setInvalidInput(!TIME_FORMAT_REGEX.test(inputValue));
@@ -175,11 +176,13 @@ export const FieldTypeDateTime = ({
 
                   if (typeof time === "string" && isValidTimeFormat) {
                     onChange(`${dateString} ${toISOString(time)}`);
+                    setIsTimeFieldActive(false);
                   } else if (typeof time === "object") {
                     onChange(`${dateString} ${time.value}`);
+                    setIsTimeFieldActive(false);
+                  } else {
+                    setInputValue(to12HrTime(timeString));
                   }
-
-                  setIsTimeFieldActive(false);
                 }}
                 onInputChange={(_, value) => {
                   setInputValue(value);
