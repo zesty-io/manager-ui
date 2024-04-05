@@ -3,7 +3,7 @@ import { TextField, Autocomplete, Typography, Tooltip } from "@mui/material";
 import moment from "moment";
 
 import { FieldTypeDate } from "../FieldTypeDate";
-import { TIME_OPTIONS, getFilteredTimeOptions } from "./util";
+import { getFilteredTimeOptions, toISOString, to12HrTime } from "./util";
 
 const TIME_FORMAT_REGEX = /^((1[0-2]|0?[1-9]):([0-5][0-9]) ?([ap][m]))$/gi;
 
@@ -104,6 +104,39 @@ export const FieldTypeDateTime = ({
                     }}
                     onBlur={() => {
                       setIsTimeFieldActive(false);
+
+                      let periodOfTime = inputValue?.split(" ")?.[1];
+                      const timeInput = inputValue?.split(" ")?.[0];
+                      const hourInput = timeInput?.split(":")?.[0];
+                      let minuteInput = timeInput?.split(":")?.[1];
+
+                      if (!minuteInput) {
+                        minuteInput = "00";
+                      } else if (minuteInput.length === 1) {
+                        minuteInput = `${minuteInput}0`;
+                      } else if (minuteInput.length > 2) {
+                        return [];
+                      }
+
+                      if (!periodOfTime) {
+                        periodOfTime =
+                          +hourInput >= 7 && +hourInput <= 11 ? "am" : "pm";
+                      } else if (periodOfTime === "a") {
+                        periodOfTime = "am";
+                      } else if (periodOfTime === "p") {
+                        periodOfTime = "pm";
+                      }
+
+                      const derivedTime = toISOString(
+                        `${hourInput}:${minuteInput} ${periodOfTime}`
+                      );
+
+                      if (derivedTime.toLowerCase() === "invalid date") {
+                        // Reset to whatever the last valid time was set to
+                        setInputValue(to12HrTime(timeString));
+                      } else {
+                        onChange(`${dateString} ${derivedTime}`);
+                      }
                       // If user types in 1 or 1: convert to 1:00
                       // Else if user types in 1:2 convert to 1:20
                       // Else if user types in 1:29 save as is
@@ -133,7 +166,7 @@ export const FieldTypeDateTime = ({
                   if (typeof option === "object") {
                     return option.inputValue;
                   } else {
-                    return moment(`01/01/2024 ${option}`).format("h:mm a");
+                    return to12HrTime(option);
                   }
                 }}
                 filterOptions={(e) => e}
@@ -141,11 +174,7 @@ export const FieldTypeDateTime = ({
                   const isValidTimeFormat = TIME_FORMAT_REGEX.test(inputValue);
 
                   if (typeof time === "string" && isValidTimeFormat) {
-                    onChange(
-                      `${dateString} ${moment(`01-01-2024 ${time}`).format(
-                        "HH:mm:ss.SSSSSS"
-                      )}`
-                    );
+                    onChange(`${dateString} ${toISOString(time)}`);
                   } else if (typeof time === "object") {
                     onChange(`${dateString} ${time.value}`);
                   }

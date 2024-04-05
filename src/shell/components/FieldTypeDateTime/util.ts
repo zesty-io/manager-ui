@@ -99,9 +99,17 @@ const TIME_STRINGS = [
   "11:45 pm",
 ] as const;
 
+export const toISOString = (timeString: string) => {
+  return moment(`01-01-2024 ${timeString}`).format("HH:mm:ss.SSSSSS");
+};
+
+export const to12HrTime = (isoTime: string) => {
+  return moment(`01/01/2024 ${isoTime}`).format("h:mm a");
+};
+
 const generateTimeOptions = () => {
   return TIME_STRINGS.map((timeString) => ({
-    value: moment(`01-01-2024 ${timeString}`).format("HH:mm:ss.SSSSSS"),
+    value: toISOString(timeString),
     inputValue: timeString,
   }));
 };
