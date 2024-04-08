@@ -147,12 +147,12 @@ export const getDerivedTime = (userInput: string) => {
 
 export const getClosestTimeSuggestion = (input: string) => {
   if (!input) {
-    return TIME_OPTIONS;
+    return { time: null, index: -1 };
   }
 
   const derivedTime = getDerivedTime(input);
 
-  return TIME_OPTIONS.find((time) => {
+  const matchedTimeIndex = TIME_OPTIONS.findIndex((time) => {
     return (
       Math.abs(
         new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 -
@@ -160,4 +160,9 @@ export const getClosestTimeSuggestion = (input: string) => {
       ) <= 420
     );
   });
+
+  return {
+    time: matchedTimeIndex > 0 ? TIME_OPTIONS[matchedTimeIndex] : null,
+    index: matchedTimeIndex,
+  };
 };

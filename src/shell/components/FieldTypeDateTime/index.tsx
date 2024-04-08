@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { TextField, Autocomplete, Typography, Tooltip } from "@mui/material";
 import moment from "moment";
+import { isEqual } from "lodash";
 
 import { FieldTypeDate } from "../FieldTypeDate";
 import {
@@ -29,6 +30,7 @@ export const FieldTypeDateTime = ({
   onChange,
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
+  const optionsRef = useRef<HTMLDivElement>(null);
   const [timeKeyCount, setTimeKeyCount] = useState(0);
   const [isTimeFieldActive, setIsTimeFieldActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -47,10 +49,31 @@ export const FieldTypeDateTime = ({
   }, [value]);
 
   useEffect(() => {
-    const closestTime = getClosestTimeSuggestion(inputValue);
+    const { time, index } = getClosestTimeSuggestion(inputValue);
 
-    setInvalidInput(!closestTime);
+    console.log(time, inputValue);
+
+    setInvalidInput(!time);
+
+    const timeOptionElements = optionsRef.current?.querySelectorAll(
+      "li.MuiAutocomplete-option"
+    );
+
+    // For closest time suggestion just scroll it into view, no highlighting needed
+    if (index > 0) {
+      timeOptionElements?.[index]?.scrollIntoView({
+        block: "center",
+      });
+    }
   }, [inputValue]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      optionsRef.current
+        ?.querySelector("li[aria-selected='true']")
+        ?.scrollIntoView({ block: "center" });
+    });
+  }, [isTimeFieldActive]);
 
   return (
     <>
@@ -99,8 +122,10 @@ export const FieldTypeDateTime = ({
                   }
                 }}
                 filterOptions={(e) => e}
+                isOptionEqualToValue={(option) => {
+                  return option.inputValue === getDerivedTime(inputValue);
+                }}
                 onChange={(_, time, reason, details) => {
-                  console.log(time, reason, details);
                   const isValidTimeFormat = TIME_FORMAT_REGEX.test(inputValue);
 
                   if (typeof time === "string" && isValidTimeFormat) {
@@ -133,6 +158,12 @@ export const FieldTypeDateTime = ({
                     sx: {
                       width: 184,
                     },
+                  },
+                }}
+                ListboxProps={{
+                  ref: optionsRef,
+                  sx: {
+                    maxHeight: 180,
                   },
                 }}
                 renderInput={(params) => (
