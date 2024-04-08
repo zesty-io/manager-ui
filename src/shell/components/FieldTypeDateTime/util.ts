@@ -162,7 +162,7 @@ export const getClosestTimeSuggestion = (input: string) => {
   });
 
   return {
-    time: matchedTimeIndex > 0 ? TIME_OPTIONS[matchedTimeIndex] : null,
+    time: matchedTimeIndex >= 0 ? TIME_OPTIONS[matchedTimeIndex] : null,
     index: matchedTimeIndex,
   };
 };
