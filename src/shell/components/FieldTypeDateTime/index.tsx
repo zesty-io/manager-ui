@@ -130,12 +130,12 @@ export const FieldTypeDateTime = ({
                       return;
                     }
 
-                    const derivedTime = getDerivedTime(time);
+                    const derivedTime = toISOString(getDerivedTime(time));
 
-                    if (invalidInput) {
+                    if (derivedTime.toLowerCase() === "invalid date") {
                       setInputValue(to12HrTime(timeString));
                     } else {
-                      onChange(`${dateString} ${toISOString(derivedTime)}`);
+                      onChange(`${dateString} ${derivedTime}`);
                       setIsTimeFieldActive(false);
                     }
                   } else if (reason === "selectOption") {
