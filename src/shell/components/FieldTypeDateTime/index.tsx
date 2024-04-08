@@ -51,7 +51,7 @@ export const FieldTypeDateTime = ({
   useEffect(() => {
     const { time, index } = getClosestTimeSuggestion(inputValue);
 
-    setInvalidInput(!time);
+    setInvalidInput(!!inputValue ? !time : false);
 
     const timeOptionElements = optionsRef.current?.querySelectorAll(
       "li.MuiAutocomplete-option"
@@ -187,6 +187,12 @@ export const FieldTypeDateTime = ({
                       }
                     }}
                     onBlur={() => {
+                      if (!inputValue) {
+                        setInputValue(
+                          to12HrTime(timeString ?? "00:00:00.000000")
+                        );
+                      }
+
                       setIsTimeFieldActive(false);
 
                       const derivedTime = toISOString(
