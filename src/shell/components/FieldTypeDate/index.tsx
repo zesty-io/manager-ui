@@ -148,6 +148,7 @@ export const FieldTypeDate = memo(
                       props.onChange(parsedDate, null);
                     }
                   },
+                  error,
                 },
                 inputAdornment: {
                   position: "start",

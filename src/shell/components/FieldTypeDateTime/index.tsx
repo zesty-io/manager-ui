@@ -177,7 +177,7 @@ export const FieldTypeDateTime = ({
                   <TextField
                     ref={timeFieldRef}
                     placeholder="HH:MM"
-                    error={invalidInput}
+                    error={invalidInput || error}
                     onClick={() => {
                       setIsTimeFieldActive(true);
                       if (!dateString && !timeString) {
