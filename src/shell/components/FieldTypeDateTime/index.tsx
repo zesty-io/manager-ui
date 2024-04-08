@@ -51,8 +51,6 @@ export const FieldTypeDateTime = ({
   useEffect(() => {
     const { time, index } = getClosestTimeSuggestion(inputValue);
 
-    console.log(time, inputValue);
-
     setInvalidInput(!time);
 
     const timeOptionElements = optionsRef.current?.querySelectorAll(
@@ -125,17 +123,26 @@ export const FieldTypeDateTime = ({
                 isOptionEqualToValue={(option) => {
                   return option.inputValue === getDerivedTime(inputValue);
                 }}
-                onChange={(_, time, reason, details) => {
-                  const isValidTimeFormat = TIME_FORMAT_REGEX.test(inputValue);
+                onChange={(_, time, reason) => {
+                  if (reason === "createOption") {
+                    if (typeof time !== "string") {
+                      setInputValue(to12HrTime(timeString));
+                      return;
+                    }
 
-                  if (typeof time === "string" && isValidTimeFormat) {
-                    onChange(`${dateString} ${toISOString(time)}`);
-                    setIsTimeFieldActive(false);
-                  } else if (typeof time === "object") {
-                    onChange(`${dateString} ${time.value}`);
-                    setIsTimeFieldActive(false);
-                  } else {
-                    setInputValue(to12HrTime(timeString));
+                    const derivedTime = getDerivedTime(time);
+
+                    if (invalidInput) {
+                      setInputValue(to12HrTime(timeString));
+                    } else {
+                      onChange(`${dateString} ${toISOString(derivedTime)}`);
+                      setIsTimeFieldActive(false);
+                    }
+                  } else if (reason === "selectOption") {
+                    if (typeof time === "object") {
+                      onChange(`${dateString} ${time.value}`);
+                      setIsTimeFieldActive(false);
+                    }
                   }
                 }}
                 onInputChange={(_, value) => {
