@@ -51,6 +51,7 @@ export const TooltipBody = ({
           primaryTypographyProps={{
             fontSize: 14,
             fontWeight: 700,
+            color: "text.primary",
           }}
           secondaryTypographyProps={{
             variant: "body3",
