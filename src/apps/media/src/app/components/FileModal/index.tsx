@@ -69,10 +69,10 @@ export const FileModal: FC<Props> = ({
   };
 
   useEffect(() => {
-    if (isError) {
-      onSetIsFileModalError && onSetIsFileModalError(true);
+    if (isError && onSetIsFileModalError) {
+      onSetIsFileModalError(true);
     }
-  }, [isError]);
+  }, [isError, onSetIsFileModalError]);
 
   const currentIndex = currentFiles?.indexOf(fileId);
 
