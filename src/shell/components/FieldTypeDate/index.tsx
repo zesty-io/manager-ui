@@ -116,6 +116,7 @@ export const FieldTypeDate = memo(
         <Stack direction="row" gap={0.5} alignItems="center">
           <Box maxWidth={160}>
             <DatePicker
+              reduceAnimations
               open={isOpen}
               onClose={() => {
                 setIsOpen(false);
@@ -132,6 +133,12 @@ export const FieldTypeDate = memo(
                 desktopPaper: {
                   sx: {
                     mt: 1,
+
+                    "& .MuiDateCalendar-root .MuiPickersSlideTransition-root": {
+                      minHeight: 0,
+                      pb: 2,
+                      pt: 1.5,
+                    },
                   },
                 },
                 field: {
