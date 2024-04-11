@@ -47,13 +47,17 @@ describe("Content Specs", () => {
 
     it("Date Field", () => {
       cy.get("#12-63ab04-0nkwcc")
+        .find("[data-cy='dateFieldClearButton']")
+        .click();
+
+      cy.get("#12-63ab04-0nkwcc")
         .find('[data-cy="datePickerInputField"]')
         .click();
 
-      // Timestamp for March 04, 2019
-      cy.get('[data-timestamp="1551628800000"]').click();
-
-      cy.get("#12-63ab04-0nkwcc input").should("have.value", "Mar 04, 2019");
+      cy.get("#12-63ab04-0nkwcc input").should(
+        "have.value",
+        moment(TIMESTAMP).format("MMM DD, YYYY")
+      );
     });
 
     it("WYSIWYG Advanced Field", () => {
