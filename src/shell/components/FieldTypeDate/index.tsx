@@ -8,6 +8,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box, TextField } from "@mui/material";
 import format from "date-fns/format";
+import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
@@ -124,6 +125,7 @@ export const FieldTypeDate = memo(
               disableHighlightToday={!!props.value}
               slots={{
                 field: CustomField,
+                openPickerIcon: CalendarTodayRoundedIcon,
                 ...props.slots,
               }}
               slotProps={{
@@ -150,16 +152,22 @@ export const FieldTypeDate = memo(
                       textFieldRef.current?.blur();
                     }
                   },
-                  // onBlur: () => {
-                  //   setIsOpen(false);
-                  //   textFieldRef.current?.blur();
-                  // },
+                  onBlur: () => {
+                    setIsOpen(false);
+                    textFieldRef.current?.blur();
+                  },
                 },
                 inputAdornment: {
                   position: "start",
                 },
                 openPickerButton: {
                   tabIndex: -1,
+                  size: "small",
+                },
+                openPickerIcon: {
+                  sx: {
+                    fontSize: 20,
+                  },
                 },
               }}
             />
@@ -191,7 +199,7 @@ function CustomField(props: any) {
       onChange={(e) => {
         setDateValue(e.target.value);
       }}
-      placeholder="Mon DD, YYYY"
+      placeholder="Mon DD YYYY"
       {...rest}
       type="text"
     />
