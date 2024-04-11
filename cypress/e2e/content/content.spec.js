@@ -61,7 +61,7 @@ describe("Content Specs", () => {
 
       cy.get("#12-63ab04-0nkwcc")
         .find('[data-cy="datePickerInputField"]')
-        .click();
+        .click({ force: true });
     });
 
     it("WYSIWYG Advanced Field", () => {
