@@ -152,10 +152,6 @@ export const FieldTypeDate = memo(
                       textFieldRef.current?.blur();
                     }
                   },
-                  onBlur: () => {
-                    setIsOpen(false);
-                    textFieldRef.current?.blur();
-                  },
                 },
                 inputAdornment: {
                   position: "start",
