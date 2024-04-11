@@ -8,6 +8,7 @@ describe("Content Specs", () => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
+      cy.getBySelector("DuoModeToggle").click();
     });
 
     it("Text Field", () => {
