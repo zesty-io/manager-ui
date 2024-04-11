@@ -58,6 +58,10 @@ describe("Content Specs", () => {
         "have.value",
         moment(TIMESTAMP).format("MMM DD, YYYY")
       );
+
+      cy.get("#12-63ab04-0nkwcc")
+        .find('[data-cy="datePickerInputField"]')
+        .click();
     });
 
     it("WYSIWYG Advanced Field", () => {
