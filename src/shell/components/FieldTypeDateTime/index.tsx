@@ -175,6 +175,7 @@ export const FieldTypeDateTime = ({
                 }}
                 renderInput={(params) => (
                   <TextField
+                    data-cy="dateTimeInputField"
                     ref={timeFieldRef}
                     placeholder="HH:MM"
                     error={invalidInput || error}

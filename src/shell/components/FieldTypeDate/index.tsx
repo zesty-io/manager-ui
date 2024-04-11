@@ -160,6 +160,7 @@ export const FieldTypeDate = memo(
           {!!slots?.timePicker && slots.timePicker}
 
           <Button
+            data-cy="dateFieldClearButton"
             color="inherit"
             variant="text"
             size="small"
