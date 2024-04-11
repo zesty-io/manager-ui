@@ -107,7 +107,6 @@ export const FieldTypeDateTime = ({
                 freeSolo
                 key={timeKeyCount}
                 open={isTimeFieldActive}
-                // open
                 value={timeString}
                 forcePopupIcon={false}
                 inputValue={inputValue}
