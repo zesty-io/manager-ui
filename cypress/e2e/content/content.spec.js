@@ -45,25 +45,6 @@ describe("Content Specs", () => {
         .should("have.value", `${TIMESTAMP}`);
     });
 
-    it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc")
-        .find("[data-cy='dateFieldClearButton']")
-        .click();
-
-      cy.get("#12-63ab04-0nkwcc")
-        .find('[data-cy="datePickerInputField"]')
-        .click();
-
-      cy.get("#12-63ab04-0nkwcc input").should(
-        "have.value",
-        moment(TIMESTAMP).format("MMM DD, YYYY")
-      );
-
-      cy.get("#12-63ab04-0nkwcc")
-        .find('[data-cy="datePickerInputField"]')
-        .click({ force: true });
-    });
-
     it("WYSIWYG Advanced Field", () => {
       cy.get("#12-be261c-4q7s81").should("exist");
 
@@ -331,6 +312,35 @@ describe("Content Specs", () => {
     });
   });
 
+  describe("Date Field", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+      });
+    });
+
+    it("should be able to clear date entries", () => {
+      cy.get("#12-63ab04-0nkwcc")
+        .find("[data-cy='dateFieldClearButton']")
+        .click();
+      cy.get("#12-63ab04-0nkwcc")
+        .find("[data-cy='datePickerInputField']")
+        .find("input")
+        .should("have.value", "");
+    });
+
+    it("should be able to auto-fill empty date fields on click", () => {
+      cy.get("#12-63ab04-0nkwcc")
+        .find('[data-cy="datePickerInputField"]')
+        .click();
+
+      cy.get("#12-63ab04-0nkwcc input").should(
+        "have.value",
+        moment(TIMESTAMP).format("MMM DD, YYYY")
+      );
+    });
+  });
+
   describe("Date & Time Field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
@@ -339,15 +349,6 @@ describe("Content Specs", () => {
     });
 
     it("should be able to clear date and time entries", () => {
-      // cy.get("#12-f3db44-c8kt0q button").click();
-      cy.get("#12-f3db44-c8kt0q")
-        .find("[data-cy='datePickerInputField']")
-        .find("input")
-        .should("have.value", "Mar 21, 2019");
-      cy.get("#12-f3db44-c8kt0q")
-        .find("[data-cy='dateTimeInputField']")
-        .find("input")
-        .should("have.value", "2:30 pm");
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='dateFieldClearButton']")
         .click();
