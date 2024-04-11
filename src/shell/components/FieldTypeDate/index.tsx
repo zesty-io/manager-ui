@@ -135,6 +135,7 @@ export const FieldTypeDate = memo(
                 field: {
                   //@ts-expect-error - OnClick type does not exist on fieldProps
                   onClick: handleOpen,
+                  onFocus: handleOpen,
                   onChange: (e: any) => {
                     const inputDate = e.target.value;
                     const parsedDate = parseDateInput(inputDate);
@@ -146,6 +147,9 @@ export const FieldTypeDate = memo(
                 },
                 inputAdornment: {
                   position: "start",
+                },
+                openPickerButton: {
+                  tabIndex: -1,
                 },
               }}
             />
