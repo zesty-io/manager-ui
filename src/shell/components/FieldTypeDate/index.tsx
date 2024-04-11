@@ -112,7 +112,7 @@ export const FieldTypeDate = memo(
 
     return (
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Stack direction={"row"} gap={1}>
+        <Stack direction="row" gap={0.5} alignItems="center">
           <Box maxWidth={160}>
             <DatePicker
               open={isOpen}
@@ -150,10 +150,10 @@ export const FieldTypeDate = memo(
                       textFieldRef.current?.blur();
                     }
                   },
-                  onBlur: () => {
-                    setIsOpen(false);
-                    textFieldRef.current?.blur();
-                  },
+                  // onBlur: () => {
+                  //   setIsOpen(false);
+                  //   textFieldRef.current?.blur();
+                  // },
                 },
                 inputAdornment: {
                   position: "start",
@@ -172,13 +172,7 @@ export const FieldTypeDate = memo(
             sx={{ minWidth: 45 }}
             onClick={handleClear}
           >
-            <Typography
-              color={"text.secondary"}
-              fontWeight={500}
-              variant="caption"
-            >
-              Clear
-            </Typography>
+            Clear
           </Button>
         </Stack>
       </LocalizationProvider>
