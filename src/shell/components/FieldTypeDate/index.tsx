@@ -144,6 +144,12 @@ export const FieldTypeDate = memo(
                       props.onChange(parsedDate, null);
                     }
                   },
+                  onKeyDown: (evt: KeyboardEvent) => {
+                    if (evt.key === "Enter") {
+                      setIsOpen(false);
+                      textFieldRef.current?.blur();
+                    }
+                  },
                 },
                 inputAdornment: {
                   position: "start",
