@@ -8,6 +8,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box, TextField } from "@mui/material";
 import format from "date-fns/format";
+import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
@@ -112,9 +113,10 @@ export const FieldTypeDate = memo(
 
     return (
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Stack direction={"row"} gap={1}>
+        <Stack direction="row" gap={0.5} alignItems="center">
           <Box maxWidth={160}>
             <DatePicker
+              reduceAnimations
               open={isOpen}
               onClose={() => {
                 setIsOpen(false);
@@ -124,17 +126,25 @@ export const FieldTypeDate = memo(
               disableHighlightToday={!!props.value}
               slots={{
                 field: CustomField,
+                openPickerIcon: CalendarTodayRoundedIcon,
                 ...props.slots,
               }}
               slotProps={{
                 desktopPaper: {
                   sx: {
                     mt: 1,
+
+                    "& .MuiDateCalendar-root .MuiPickersSlideTransition-root": {
+                      minHeight: 0,
+                      pb: 2,
+                      pt: 1.5,
+                    },
                   },
                 },
                 field: {
                   //@ts-expect-error - OnClick type does not exist on fieldProps
                   onClick: handleOpen,
+                  onFocus: handleOpen,
                   onChange: (e: any) => {
                     const inputDate = e.target.value;
                     const parsedDate = parseDateInput(inputDate);
@@ -143,9 +153,24 @@ export const FieldTypeDate = memo(
                       props.onChange(parsedDate, null);
                     }
                   },
+                  onKeyDown: (evt: KeyboardEvent) => {
+                    if (evt.key === "Enter") {
+                      setIsOpen(false);
+                      textFieldRef.current?.blur();
+                    }
+                  },
                 },
                 inputAdornment: {
                   position: "start",
+                },
+                openPickerButton: {
+                  tabIndex: -1,
+                  size: "small",
+                },
+                openPickerIcon: {
+                  sx: {
+                    fontSize: 20,
+                  },
                 },
               }}
             />
@@ -158,13 +183,7 @@ export const FieldTypeDate = memo(
             sx={{ minWidth: 45 }}
             onClick={handleClear}
           >
-            <Typography
-              color={"text.secondary"}
-              fontWeight={500}
-              variant="caption"
-            >
-              Clear
-            </Typography>
+            Clear
           </Button>
         </Stack>
       </LocalizationProvider>
@@ -183,7 +202,7 @@ function CustomField(props: any) {
       onChange={(e) => {
         setDateValue(e.target.value);
       }}
-      placeholder="Mon DD, YYYY"
+      placeholder="Mon DD YYYY"
       {...rest}
       type="text"
     />
