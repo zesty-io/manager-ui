@@ -132,7 +132,7 @@ export const FieldTypeDate = memo(
               slots={{
                 field: CustomField,
                 openPickerIcon: CalendarTodayRoundedIcon,
-                ...props.slots,
+                ...slots,
               }}
               slotProps={{
                 desktopPaper: {
@@ -150,6 +150,7 @@ export const FieldTypeDate = memo(
                   //@ts-expect-error - OnClick type does not exist on fieldProps
                   onClick: handleOpen,
                   onFocus: handleOpen,
+                  error,
                   onChange: (e: any) => {
                     const inputDate = e.target.value;
                     const parsedDate = parseDateInput(inputDate);
