@@ -42,7 +42,7 @@ import { formatDate } from "../../../../../../../../utility/formatDate";
 import { ScheduleFlyout } from "../Header/ItemVersioning/ScheduleFlyout";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
-import { ContentItemWithDirtyAndPublishing } from ".";
+import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { ConfirmPublishModal } from "./ConfirmPublishModal";
 
 const ITEM_STATES = {
