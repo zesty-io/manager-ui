@@ -44,6 +44,7 @@ import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { ConfirmPublishModal } from "./ConfirmPublishModal";
+import { SchedulePublish } from "../../../../../../../../shell/components/SchedulePublish";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -435,12 +436,22 @@ export const ItemEditHeaderActions = ({
           loading={unpublishing}
         />
       )}
+      {scheduledPublishDialogOpen && (
+        <SchedulePublish
+          item={item}
+          onClose={() => setScheduledPublishDialogOpen(false)}
+        />
+      )}
+      {/**
+      
       <ScheduleFlyout
         isOpen={scheduledPublishDialogOpen}
         item={item}
         dispatch={dispatch}
         toggleOpen={() => setScheduledPublishDialogOpen(false)}
       />
+      
+    */}
       {isConfirmPublishModalOpen && (
         <ConfirmPublishModal
           contentTitle={item?.web?.metaTitle}
