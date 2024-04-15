@@ -52,12 +52,12 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
                 Schedule Content Item Publish:&nbsp;
               </Typography>
               <Typography variant="h5" display="inline">
-                {item?.web?.metaTitle}
+                {item?.web?.metaLinkText}
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">
-              v{item?.web?.version} saved{" "}
-              {moment(item?.web?.createdAt).fromNow()} by{" "}
+              v{item?.web?.version} saved&nbsp;
+              {moment(item?.web?.createdAt).fromNow()} by&nbsp;
               {latestChangeCreator?.firstName} {latestChangeCreator?.lastName}
             </Typography>
           </Box>
