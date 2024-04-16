@@ -20,6 +20,7 @@ type FieldTypeDateTimeProps = {
   error?: boolean;
   value: string;
   onChange: (date: string) => void;
+  withClearButton?: boolean;
 };
 
 export const FieldTypeDateTime = ({
@@ -28,6 +29,7 @@ export const FieldTypeDateTime = ({
   name,
   value,
   onChange,
+  withClearButton = true,
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -79,6 +81,7 @@ export const FieldTypeDateTime = ({
         name={name}
         required={required}
         value={dateString ? new Date(dateString) : null}
+        withClearButton={withClearButton}
         onChange={(date) => {
           if (date) {
             onChange(
