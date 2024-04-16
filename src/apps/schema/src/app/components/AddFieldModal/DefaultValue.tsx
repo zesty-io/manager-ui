@@ -11,7 +11,7 @@ import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { DefaultValueInput } from "./DefaultValueInput";
 
 type DefaultValueProps = {
-  type: keyof typeof MaxLengths;
+  type: string;
   value: FormValue;
   onChange: (value: FormValue) => void;
   isDefaultValueEnabled: boolean;
@@ -80,10 +80,12 @@ export const DefaultValue = ({
             <FormHelperText>
               <Box display="flex" justifyContent="space-between">
                 <Box>{error}</Box>
-                {MaxLengths[type] !== undefined && (
+                {MaxLengths[type as keyof typeof MaxLengths] !== undefined && (
                   <Box>
                     {typeof value === "string" ? value.length : 0}
-                    {MaxLengths[type] !== 0 ? `/${MaxLengths[type]}` : null}
+                    {MaxLengths[type as keyof typeof MaxLengths] !== 0
+                      ? `/${MaxLengths[type as keyof typeof MaxLengths]}`
+                      : null}
                   </Box>
                 )}
               </Box>
