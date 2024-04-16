@@ -9,10 +9,12 @@ import {
   Box,
 } from "@mui/material";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
-import moment from "moment";
+// import moment from "moment";
+import moment from "moment-timezone";
 
 import { ContentItemWithDirtyAndPublishing } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
+import { FieldTypeDateTime } from "../FieldTypeDateTime";
 
 type SchedulePublishProps = {
   item: ContentItemWithDirtyAndPublishing;
@@ -24,6 +26,8 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
   const latestChangeCreator = users?.find(
     (user) => user.ZUID === item?.web?.createdByUserZUID
   );
+
+  console.log(moment.tz.names());
 
   return (
     <Dialog
@@ -63,7 +67,16 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
           </Box>
         </Stack>
       </DialogTitle>
-      <DialogContent>Hello</DialogContent>
+      <DialogContent>
+        <FieldTypeDateTime
+          name="publishDateTime"
+          value=""
+          onChange={(datetime) => {
+            console.log(datetime);
+          }}
+          withClearButton={false}
+        />
+      </DialogContent>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>
           Cancel
