@@ -912,7 +912,7 @@ export const Field = ({
           <FieldTypeDate
             name={name}
             required={required}
-            value={value ? new Date(value) : null}
+            value={value ? moment(value).toDate() : null}
             // format="MMM dd, yyyy"
             onChange={(date) => onDateChange(date, name, datatype)}
             error={errors && Object.values(errors)?.some((error) => !!error)}
