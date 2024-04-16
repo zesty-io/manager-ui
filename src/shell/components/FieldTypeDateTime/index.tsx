@@ -78,7 +78,7 @@ export const FieldTypeDateTime = ({
       <FieldTypeDate
         name={name}
         required={required}
-        value={dateString ? new Date(dateString) : null}
+        value={dateString ? moment(dateString).toDate() : null}
         onChange={(date) => {
           if (date) {
             onChange(
