@@ -71,7 +71,7 @@ import { FieldTypeMedia } from "../../FieldTypeMedia";
 
 const AIFieldShell = withAI(FieldShell);
 
-const sortHTML = (a: any, b: any) => {
+export const sortHTML = (a: any, b: any) => {
   const nameA = String(a.html) && String(a.html).toUpperCase(); // ignore upper and lowercase
   const nameB = String(b.html) && String(b.html).toUpperCase(); // ignore upper and lowercase
   if (nameA < nameB) {
@@ -84,7 +84,7 @@ const sortHTML = (a: any, b: any) => {
   return 0;
 };
 
-const resolveRelatedOptions = (
+export const resolveRelatedOptions = (
   fields: Record<string, ContentModelField>,
   items: any,
   fieldZUID: string,
