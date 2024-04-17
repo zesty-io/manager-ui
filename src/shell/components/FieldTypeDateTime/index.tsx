@@ -81,6 +81,7 @@ export const FieldTypeDateTime = ({
         name={name}
         required={required}
         value={dateString ? moment(dateString).toDate() : null}
+        withClearButton={withClearButton}
         onChange={(date) => {
           if (date) {
             onChange(
