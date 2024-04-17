@@ -71,7 +71,7 @@ import { FieldTypeMedia } from "../../FieldTypeMedia";
 
 const AIFieldShell = withAI(FieldShell);
 
-const sortHTML = (a: any, b: any) => {
+export const sortHTML = (a: any, b: any) => {
   const nameA = String(a.html) && String(a.html).toUpperCase(); // ignore upper and lowercase
   const nameB = String(b.html) && String(b.html).toUpperCase(); // ignore upper and lowercase
   if (nameA < nameB) {
@@ -84,7 +84,7 @@ const sortHTML = (a: any, b: any) => {
   return 0;
 };
 
-const resolveRelatedOptions = (
+export const resolveRelatedOptions = (
   fields: Record<string, ContentModelField>,
   items: any,
   fieldZUID: string,
@@ -889,24 +889,6 @@ export const Field = ({
       );
 
     case "date":
-      /**
-       * Every time this parent compenent re-renders it creates a new function
-       * invalidating the FieldTypeData components referential prop check,
-       * causing it to re-render as well. This `onChange` handler doesn't need
-       * to change once created.
-       */
-      const onDateChange = useCallback(
-        (value, name, datatype) => {
-          /**
-           * Flatpickr emits a utc timestamp, offset from users local time.
-           * Legacy behavior did not send utc but sent the value as is selected by the user
-           * this ensures that behavior is maintained.
-           */
-          onChange(value, name, datatype);
-        },
-        [onChange]
-      );
-
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeDate
@@ -914,7 +896,13 @@ export const Field = ({
             required={required}
             value={value ? moment(value).toDate() : null}
             // format="MMM dd, yyyy"
-            onChange={(date) => onDateChange(date, name, datatype)}
+            onChange={(date) => {
+              onChange(
+                date ? moment(date).format("yyyy-MM-DD") : null,
+                name,
+                datatype
+              );
+            }}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>

@@ -50,7 +50,6 @@ export const MediaRules = ({
       display="flex"
       flexDirection="column"
       height="100%"
-      minHeight={428}
     >
       <Box
         display="flex"
@@ -59,6 +58,7 @@ export const MediaRules = ({
         gap="20px"
       >
         {fieldConfig?.map((rule: InputField, key: number) => {
+          if (rule.name === "defaultValue") return;
           return (
             <Box key={key}>
               <FormControlLabel
@@ -119,6 +119,7 @@ export const MediaRules = ({
             </Box>
           );
         })}
+        <Box></Box>
       </Box>
     </Box>
   );
