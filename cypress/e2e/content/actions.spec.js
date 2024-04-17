@@ -124,17 +124,6 @@ describe("Actions in content editor", () => {
     cy.get("#SchedulePublishClose").click();
   });
 
-  it("Creates a new item", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-a1a600-k0b6f0/new");
-    });
-
-    cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
-    cy.getBySelector("CreateItemSaveButton").click();
-
-    cy.contains("Created new ", { timeout: 5000 }).should("exist");
-  });
-
   it("Fills in default values for a new item", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
@@ -148,6 +137,17 @@ describe("Actions in content editor", () => {
     cy.get("#12-bcd1dcc5f4-2rpm9p").contains(
       "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
     );
+  });
+
+  it("Creates a new item", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0/new");
+    });
+
+    cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
+    cy.getBySelector("CreateItemSaveButton").click();
+
+    cy.contains("Created new ", { timeout: 5000 }).should("exist");
   });
 
   it("Saved item becomes publishable", () => {

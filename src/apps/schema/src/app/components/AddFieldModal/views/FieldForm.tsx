@@ -228,7 +228,6 @@ export const FieldForm = ({
       }
     });
 
-    console.log("testing formFields", formFields);
     setFormData(formFields);
     setErrors(errors);
   }, [type, fieldData, mediaFoldersOptions.length]);
@@ -486,8 +485,6 @@ export const FieldForm = ({
     setIsAddAnotherFieldClicked(true);
     handleSubmitForm();
   };
-
-  console.log("testing toggle options", formData["options"]);
 
   return (
     <>
