@@ -32,6 +32,16 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
     (user) => user.ZUID === item?.web?.createdByUserZUID
   );
 
+  // const determineTimeValidity = () => {
+  //   const toLocalTime = moment(moment.tz(publishDateTime, publishTimezone))
+  // }
+
+  console.log("current time in utc", moment.utc().format());
+  console.log(
+    "selected time in utc",
+    moment.utc(moment.tz(publishDateTime, publishTimezone)).format()
+  );
+
   return (
     <Dialog
       open
