@@ -79,6 +79,9 @@ export const FieldTypeDateTime = ({
         name={name}
         required={required}
         value={dateString ? moment(dateString).toDate() : null}
+        valueFormatPreview={
+          dateString && timeString ? `${dateString} ${timeString}` : null
+        }
         onChange={(date) => {
           if (date) {
             onChange(
@@ -222,11 +225,6 @@ export const FieldTypeDateTime = ({
           ),
         }}
       />
-      {dateString && timeString && (
-        <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
-          Stored as {dateString} {timeString}
-        </Typography>
-      )}
     </>
   );
 };
