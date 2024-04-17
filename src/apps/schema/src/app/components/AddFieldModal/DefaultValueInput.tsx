@@ -589,8 +589,7 @@ export const DefaultValueInput = ({
           required
           value={value ? moment(value as string).toDate() : null}
           onChange={(date) => {
-            // @ts-ignore
-            onChange(date);
+            onChange(date ? moment(date).format("yyyy-MM-DD") : null);
           }}
           error={error}
         />
