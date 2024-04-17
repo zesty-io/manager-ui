@@ -40,7 +40,8 @@ export type FieldNames =
   | "relatedFieldZUID"
   | "group_id"
   | "limit"
-  | "tooltip";
+  | "tooltip"
+  | "defaultValue";
 type FieldType =
   | "input"
   | "checkbox"
