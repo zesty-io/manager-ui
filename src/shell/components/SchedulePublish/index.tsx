@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogActions,
@@ -21,6 +22,8 @@ type SchedulePublishProps = {
   onClose: () => void;
 };
 export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
+  const [publishDateTime, setPublishDateTime] = useState("");
+  const [publishTimezone, setPublishTimezone] = useState("");
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
   const latestChangeCreator = users?.find(
@@ -70,13 +73,18 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
           Publish on
         </Typography>
         <FieldTypeDateTime
+          showTimezonePicker
+          showClearButton={false}
           name="publishDateTime"
-          value=""
+          value={publishDateTime}
+          selectedTimezone={publishTimezone}
           onChange={(datetime) => {
             console.log(datetime);
+            setPublishDateTime(datetime);
           }}
-          showClearButton={false}
-          showTimezonePicker
+          onTimezoneChange={(timezone) => {
+            setPublishTimezone(timezone);
+          }}
         />
       </DialogContent>
       <DialogActions>

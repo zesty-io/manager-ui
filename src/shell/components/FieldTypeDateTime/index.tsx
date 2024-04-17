@@ -28,6 +28,8 @@ type FieldTypeDateTimeProps = {
   onChange: (date: string) => void;
   showClearButton?: boolean;
   showTimezonePicker?: boolean;
+  selectedTimezone?: string;
+  onTimezoneChange?: (timezone: string) => void;
 };
 
 export const FieldTypeDateTime = ({
@@ -38,6 +40,8 @@ export const FieldTypeDateTime = ({
   onChange,
   showClearButton = true,
   showTimezonePicker,
+  selectedTimezone,
+  onTimezoneChange,
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -45,6 +49,7 @@ export const FieldTypeDateTime = ({
   const [isTimeFieldActive, setIsTimeFieldActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [invalidInput, setInvalidInput] = useState(false);
+  const [timezone, setTimezone] = useState(selectedTimezone ?? "");
 
   const [dateString, timeString] = value?.split(" ") ?? [null, null];
 
@@ -254,6 +259,9 @@ export const FieldTypeDateTime = ({
                   {option.label}
                 </ListItem>
               )}
+              onChange={(_, value) =>
+                onTimezoneChange && onTimezoneChange(value.id)
+              }
             />
           ),
         }}
