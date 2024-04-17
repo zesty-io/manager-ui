@@ -6,7 +6,7 @@ import {
   Tooltip,
   ListItem,
 } from "@mui/material";
-import moment from "moment";
+import moment from "moment-timezone";
 
 import { FieldTypeDate } from "../FieldTypeDate";
 import {
@@ -88,6 +88,20 @@ export const FieldTypeDateTime = ({
     });
   }, [isTimeFieldActive]);
 
+  const generateValuePreview = () => {
+    if (showTimezonePicker) {
+      return `Stored in UTC as ${moment
+        .utc(moment.tz(value, timezone))
+        .format("yyyy-MM-DD HH:mm:ss.ssssss")}`;
+    }
+
+    if (dateString && timeString) {
+      return `Stored as ${dateString} ${timeString}`;
+    }
+
+    return null;
+  };
+
   return (
     <>
       <FieldTypeDate
@@ -95,9 +109,7 @@ export const FieldTypeDateTime = ({
         required={required}
         value={dateString ? moment(dateString).toDate() : null}
         showClearButton={showClearButton}
-        valueFormatPreview={
-          dateString && timeString ? `${dateString} ${timeString}` : null
-        }
+        valueFormatPreview={generateValuePreview()}
         onChange={(date) => {
           if (date) {
             onChange(

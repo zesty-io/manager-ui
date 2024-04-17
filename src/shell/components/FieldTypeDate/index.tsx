@@ -212,8 +212,8 @@ export const FieldTypeDate = memo(
         </Stack>
         {(valueFormatPreview || props.value) && (
           <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
-            Stored as{" "}
-            {valueFormatPreview ?? moment(props.value).format("yyyy-MM-DD")}
+            {valueFormatPreview ??
+              `Stored as ${moment(props.value).format("yyyy-MM-DD")}`}
           </Typography>
         )}
       </LocalizationProvider>
