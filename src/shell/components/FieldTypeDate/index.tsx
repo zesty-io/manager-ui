@@ -9,11 +9,17 @@ import Button from "@mui/material/Button";
 import { Typography, Stack, Box, TextField } from "@mui/material";
 import format from "date-fns/format";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
+import moment from "moment";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
   required?: boolean;
   error?: boolean;
+  slots?: DatePickerProps<Date>["slots"] & {
+    timePicker?: React.ReactNode;
+  };
+  onClear?: () => void;
+  valueFormatPreview?: string;
 }
 
 const parseDateInput = (input: string): Date | null => {
@@ -52,7 +58,14 @@ const parseDateInput = (input: string): Date | null => {
 };
 
 export const FieldTypeDate = memo(
-  ({ required, error, ...props }: FieldTypeDateProps) => {
+  ({
+    required,
+    error,
+    slots,
+    onClear,
+    valueFormatPreview,
+    ...props
+  }: FieldTypeDateProps) => {
     const textFieldRef = useRef<HTMLInputElement>(null);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -62,6 +75,7 @@ export const FieldTypeDate = memo(
     const handleClear = () => {
       if (props.onChange) props.onChange(null, null);
       if (textFieldRef.current) textFieldRef.current.value = "";
+      onClear && onClear();
     };
 
     /**
@@ -109,7 +123,7 @@ export const FieldTypeDate = memo(
       if (props.value) {
         textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
       }
-    }, []);
+    }, [props.value]);
 
     return (
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -127,7 +141,7 @@ export const FieldTypeDate = memo(
               slots={{
                 field: CustomField,
                 openPickerIcon: CalendarTodayRoundedIcon,
-                ...props.slots,
+                ...slots,
               }}
               slotProps={{
                 desktopPaper: {
@@ -145,6 +159,7 @@ export const FieldTypeDate = memo(
                   //@ts-expect-error - OnClick type does not exist on fieldProps
                   onClick: handleOpen,
                   onFocus: handleOpen,
+                  error,
                   onChange: (e: any) => {
                     const inputDate = e.target.value;
                     const parsedDate = parseDateInput(inputDate);
@@ -176,7 +191,10 @@ export const FieldTypeDate = memo(
             />
           </Box>
 
+          {!!slots?.timePicker && slots.timePicker}
+
           <Button
+            data-cy="dateFieldClearButton"
             color="inherit"
             variant="text"
             size="small"
@@ -186,6 +204,12 @@ export const FieldTypeDate = memo(
             Clear
           </Button>
         </Stack>
+        {(valueFormatPreview || props.value) && (
+          <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
+            Stored as{" "}
+            {valueFormatPreview ?? moment(props.value).format("yyyy-MM-DD")}
+          </Typography>
+        )}
       </LocalizationProvider>
     );
   }
