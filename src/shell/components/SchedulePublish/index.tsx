@@ -22,8 +22,10 @@ type SchedulePublishProps = {
   onClose: () => void;
 };
 export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
-  const [publishDateTime, setPublishDateTime] = useState("");
-  const [publishTimezone, setPublishTimezone] = useState("");
+  const [publishDateTime, setPublishDateTime] = useState(
+    moment().minute(0).second(0).add(1, "hours").format("yyyy-MM-DD HH:mm:ss")
+  );
+  const [publishTimezone, setPublishTimezone] = useState(moment.tz.guess());
   const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
   const latestChangeCreator = users?.find(

@@ -243,8 +243,10 @@ export const FieldTypeDateTime = ({
           timezonePicker: showTimezonePicker && (
             <Autocomplete
               fullWidth
+              disableClearable
               size="small"
               options={TIMEZONES}
+              value={TIMEZONES.find((tz) => tz.id === timezone)}
               renderInput={(params) => <TextField {...params} />}
               renderOption={(props, option) => (
                 <ListItem
@@ -259,9 +261,10 @@ export const FieldTypeDateTime = ({
                   {option.label}
                 </ListItem>
               )}
-              onChange={(_, value) =>
-                onTimezoneChange && onTimezoneChange(value.id)
-              }
+              onChange={(_, value) => {
+                setTimezone(value.id);
+                onTimezoneChange && onTimezoneChange(value.id);
+              }}
             />
           ),
         }}
