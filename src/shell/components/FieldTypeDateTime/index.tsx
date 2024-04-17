@@ -1,7 +1,12 @@
 import { useEffect, useState, useMemo, useRef } from "react";
-import { TextField, Autocomplete, Typography, Tooltip } from "@mui/material";
+import {
+  TextField,
+  Autocomplete,
+  Typography,
+  Tooltip,
+  ListItem,
+} from "@mui/material";
 import moment from "moment";
-import { isEqual } from "lodash";
 
 import { FieldTypeDate } from "../FieldTypeDate";
 import {
@@ -10,6 +15,7 @@ import {
   toISOString,
   to12HrTime,
   TIME_OPTIONS,
+  TIMEZONES,
 } from "./util";
 
 const TIME_FORMAT_REGEX = /^((1[0-2]|0?[1-9]):([0-5][0-9]) ?([ap][m]))$/gi;
@@ -20,7 +26,8 @@ type FieldTypeDateTimeProps = {
   error?: boolean;
   value: string;
   onChange: (date: string) => void;
-  withClearButton?: boolean;
+  showClearButton?: boolean;
+  showTimezonePicker?: boolean;
 };
 
 export const FieldTypeDateTime = ({
@@ -29,7 +36,8 @@ export const FieldTypeDateTime = ({
   name,
   value,
   onChange,
-  withClearButton = true,
+  showClearButton = true,
+  showTimezonePicker,
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -81,7 +89,7 @@ export const FieldTypeDateTime = ({
         name={name}
         required={required}
         value={dateString ? moment(dateString).toDate() : null}
-        withClearButton={withClearButton}
+        showClearButton={showClearButton}
         onChange={(date) => {
           if (date) {
             onChange(
@@ -152,6 +160,7 @@ export const FieldTypeDateTime = ({
                 }}
                 sx={{
                   width: 96,
+                  flexShrink: 0,
                   "& .MuiAutocomplete-inputRoot": {
                     py: 0.75,
                     px: 1,
@@ -222,6 +231,27 @@ export const FieldTypeDateTime = ({
                 )}
               />
             </Tooltip>
+          ),
+          timezonePicker: showTimezonePicker && (
+            <Autocomplete
+              fullWidth
+              size="small"
+              options={TIMEZONES}
+              renderInput={(params) => <TextField {...params} />}
+              renderOption={(props, option) => (
+                <ListItem
+                  {...props}
+                  key={option.id}
+                  sx={{
+                    "&.MuiListItem-root": {
+                      color: "text.primary",
+                    },
+                  }}
+                >
+                  {option.label}
+                </ListItem>
+              )}
+            />
           ),
         }}
       />

@@ -27,8 +27,6 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
     (user) => user.ZUID === item?.web?.createdByUserZUID
   );
 
-  console.log(moment.tz.names());
-
   return (
     <Dialog
       open
@@ -68,13 +66,17 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
         </Stack>
       </DialogTitle>
       <DialogContent>
+        <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
+          Publish on
+        </Typography>
         <FieldTypeDateTime
           name="publishDateTime"
           value=""
           onChange={(datetime) => {
             console.log(datetime);
           }}
-          withClearButton={false}
+          showClearButton={false}
+          showTimezonePicker
         />
       </DialogContent>
       <DialogActions>

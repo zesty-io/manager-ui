@@ -16,9 +16,10 @@ export interface FieldTypeDateProps extends DatePickerProps<Date> {
   error?: boolean;
   slots?: DatePickerProps<Date>["slots"] & {
     timePicker?: React.ReactNode;
+    timezonePicker?: React.ReactNode;
   };
   onClear?: () => void;
-  withClearButton?: boolean;
+  showClearButton?: boolean;
 }
 
 const parseDateInput = (input: string): Date | null => {
@@ -62,7 +63,7 @@ export const FieldTypeDate = memo(
     error,
     slots,
     onClear,
-    withClearButton = true,
+    showClearButton = true,
     ...props
   }: FieldTypeDateProps) => {
     const textFieldRef = useRef<HTMLInputElement>(null);
@@ -127,7 +128,7 @@ export const FieldTypeDate = memo(
     return (
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Stack direction="row" gap={0.5} alignItems="center">
-          <Box maxWidth={160}>
+          <Box maxWidth={160} flexShrink={0}>
             <DatePicker
               reduceAnimations
               open={isOpen}
@@ -191,8 +192,9 @@ export const FieldTypeDate = memo(
           </Box>
 
           {!!slots?.timePicker && slots.timePicker}
+          {!!slots?.timezonePicker && slots.timezonePicker}
 
-          {withClearButton && (
+          {showClearButton && (
             <Button
               data-cy="dateFieldClearButton"
               color="inherit"
