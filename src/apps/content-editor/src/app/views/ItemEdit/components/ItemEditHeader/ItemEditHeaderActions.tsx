@@ -440,6 +440,10 @@ export const ItemEditHeaderActions = ({
         <SchedulePublish
           item={item}
           onClose={() => setScheduledPublishDialogOpen(false)}
+          onPublishNow={() => {
+            handlePublish();
+            setScheduledPublishDialogOpen(false);
+          }}
         />
       )}
       {/**

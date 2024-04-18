@@ -12,42 +12,72 @@ import {
 } from "@mui/material";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
-// import moment from "moment";
 import moment from "moment-timezone";
+import { useDispatch } from "react-redux";
 
 import { ContentItemWithDirtyAndPublishing } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
 import { FieldTypeDateTime } from "../FieldTypeDateTime";
+import { publish } from "../../store/content";
 
 type SchedulePublishProps = {
   item: ContentItemWithDirtyAndPublishing;
   onClose: () => void;
+  onPublishNow: () => void;
+  onScheduleSuccess?: () => void;
 };
-export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
+export const SchedulePublish = ({
+  onClose,
+  item,
+  onPublishNow,
+  onScheduleSuccess,
+}: SchedulePublishProps) => {
+  const dispatch = useDispatch();
+  const { data: users } = useGetUsersQuery();
   const [publishDateTime, setPublishDateTime] = useState(
     moment().minute(0).second(0).add(1, "hours").format("yyyy-MM-DD HH:mm:ss")
   );
   const [publishTimezone, setPublishTimezone] = useState(moment.tz.guess());
-  const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
+  const [isLoading, setIsLoading] = useState(false);
 
   const latestChangeCreator = users?.find(
     (user) => user.ZUID === item?.web?.createdByUserZUID
   );
 
-  // const determineTimeValidity = () => {
-  //   const toLocalTime = moment(moment.tz(publishDateTime, publishTimezone))
-  // }
-
-  console.log("current time in utc", moment.utc().format());
-  console.log(
-    "selected time in utc",
-    moment.utc(moment.tz(publishDateTime, publishTimezone)).format()
-  );
-
   const isSelectedDatetimePast = moment
     .utc(moment.tz(publishDateTime, publishTimezone))
     .isBefore(moment.utc());
-  console.log("is before", isSelectedDatetimePast);
+
+  const handleSchedulePublish = () => {
+    setIsLoading(true);
+
+    try {
+      dispatch(
+        publish(
+          item?.meta?.contentModelZUID,
+          item?.meta?.ZUID,
+          {
+            // Used for the api call
+            publishAt: moment
+              .utc(moment.tz(publishDateTime, publishTimezone))
+              .format("YYYY-MM-DD HH:mm:ss"),
+            version: item?.meta?.version,
+          },
+          {
+            // Used for the confirmation msg
+            localTime: moment
+              .utc(moment.tz(publishDateTime, publishTimezone))
+              .format("MMMM Do YYYY, [at] h:mm a"),
+            localTimezone: publishTimezone,
+          }
+        )
+      );
+    } finally {
+      onScheduleSuccess?.();
+      setIsLoading(false);
+      onClose();
+    }
+  };
 
   return (
     <Dialog
@@ -127,7 +157,17 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
         <Button variant="text" color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        <Button variant="contained" startIcon={<ScheduleRoundedIcon />}>
+        <Button
+          variant="contained"
+          startIcon={<ScheduleRoundedIcon />}
+          onClick={() => {
+            if (isSelectedDatetimePast) {
+              onPublishNow();
+            } else {
+              handleSchedulePublish();
+            }
+          }}
+        >
           Schedule v{item?.web?.version} for Publish
         </Button>
       </DialogActions>
