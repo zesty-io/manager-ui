@@ -62,7 +62,7 @@ export const DefaultValue = ({
           variant="body3"
           color="text.secondary"
           fontWeight="600"
-          sx={{ mb: 1 }}
+          sx={{ mb: 1, display: "block" }}
         >
           Set a predefined value for this field
         </Typography>
