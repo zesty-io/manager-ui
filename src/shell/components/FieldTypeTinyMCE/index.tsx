@@ -99,6 +99,10 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
   const [isBynderOpen, setIsBynderOpen] = useState(false);
 
+  // Checks if the bynder portal and token are set
+  const isBynderSessionValid =
+    localStorage.getItem("cvrt") && localStorage.getItem("cvad");
+
   // NOTE: update if version changes
   useEffect(() => {
     setInitialValue(value);
@@ -428,13 +432,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                 editor.addCommand("mceBynder", () => setIsBynderOpen(true));
 
                 // Bynder button
-                editor.ui.registry.addButton("bynder", {
-                  icon: "bynder",
-                  tooltip: "Select media from your Bynder assets",
-                  onAction: () => {
-                    setIsBynderOpen(true);
-                  },
-                });
+                if (isBynderSessionValid) {
+                  editor.ui.registry.addButton("bynder", {
+                    icon: "bynder",
+                    tooltip: "Select media from your Bynder assets",
+                    onAction: () => {
+                      setIsBynderOpen(true);
+                    },
+                  });
+                }
               },
             }}
           />
