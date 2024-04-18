@@ -471,6 +471,7 @@ export const ItemEditHeaderActions = ({
       {isConfirmPublishModalOpen && (
         <ConfirmPublishModal
           contentTitle={item?.web?.metaTitle}
+          contentVersion={item?.web?.version}
           onCancel={() => {
             setIsConfirmPublishModalOpen(false);
             setPublishAfterUnschedule(false);
