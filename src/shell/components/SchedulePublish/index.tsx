@@ -8,8 +8,10 @@ import {
   Button,
   Stack,
   Box,
+  Alert,
 } from "@mui/material";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 // import moment from "moment";
 import moment from "moment-timezone";
 
@@ -41,6 +43,11 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
     "selected time in utc",
     moment.utc(moment.tz(publishDateTime, publishTimezone)).format()
   );
+
+  const isSelectedDatetimePast = moment
+    .utc(moment.tz(publishDateTime, publishTimezone))
+    .isBefore(moment.utc());
+  console.log("is before", isSelectedDatetimePast);
 
   return (
     <Dialog
@@ -85,6 +92,7 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
           Publish on
         </Typography>
         <FieldTypeDateTime
+          disablePast
           showTimezonePicker
           showClearButton={false}
           name="publishDateTime"
@@ -98,6 +106,22 @@ export const SchedulePublish = ({ onClose, item }: SchedulePublishProps) => {
             setPublishTimezone(timezone);
           }}
         />
+        {isSelectedDatetimePast && (
+          <Alert
+            variant="filled"
+            severity="warning"
+            icon={<WarningRoundedIcon fontSize="inherit" />}
+            sx={{
+              mt: 2.5,
+              "& .MuiAlert-icon": {
+                mr: 1,
+              },
+            }}
+          >
+            Since the selected time is a current or past date, this will be
+            immediately published.
+          </Alert>
+        )}
       </DialogContent>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={onClose}>

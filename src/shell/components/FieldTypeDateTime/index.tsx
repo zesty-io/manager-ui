@@ -30,6 +30,7 @@ type FieldTypeDateTimeProps = {
   showTimezonePicker?: boolean;
   selectedTimezone?: string;
   onTimezoneChange?: (timezone: string) => void;
+  disablePast?: boolean;
 };
 
 export const FieldTypeDateTime = ({
@@ -42,6 +43,7 @@ export const FieldTypeDateTime = ({
   showTimezonePicker,
   selectedTimezone,
   onTimezoneChange,
+  disablePast = false,
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -49,7 +51,9 @@ export const FieldTypeDateTime = ({
   const [isTimeFieldActive, setIsTimeFieldActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [invalidInput, setInvalidInput] = useState(false);
-  const [timezone, setTimezone] = useState(selectedTimezone ?? "");
+  const [timezone, setTimezone] = useState(
+    selectedTimezone ?? "America/Los_Angeles"
+  );
 
   const [dateString, timeString] = value?.split(" ") ?? [null, null];
 
@@ -105,6 +109,7 @@ export const FieldTypeDateTime = ({
   return (
     <>
       <FieldTypeDate
+        disablePast={disablePast}
         name={name}
         required={required}
         value={dateString ? moment(dateString).toDate() : null}
@@ -148,6 +153,17 @@ export const FieldTypeDateTime = ({
                   } else {
                     return to12HrTime(option);
                   }
+                }}
+                getOptionDisabled={(option) => {
+                  if (disablePast) {
+                    const isSelectedDatetimePast = moment
+                      .utc(moment.tz(`${dateString} ${option.value}`, timezone))
+                      .isBefore(moment.utc());
+
+                    return isSelectedDatetimePast;
+                  }
+
+                  return false;
                 }}
                 filterOptions={(e) => e}
                 isOptionEqualToValue={(option) => {
