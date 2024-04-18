@@ -1096,6 +1096,10 @@ export const TIMEZONES = [
     id: "Asia/Colombo",
   },
   {
+    label: "(GMT+05:30) India Standard Time - Calcutta",
+    id: "Asia/Calcutta",
+  },
+  {
     label: "(GMT+05:30) India Standard Time - Kolkata",
     id: "Asia/Kolkata",
   },
