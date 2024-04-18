@@ -77,6 +77,7 @@ export const ItemEditHeaderActions = ({
   const [scheduledPublishDialogOpen, setScheduledPublishDialogOpen] =
     useState(false);
   const [scheduleAfterSave, setScheduleAfterSave] = useState(false);
+  const [publishAfterUnschedule, setPublishAfterUnschedule] = useState(false);
   const [isConfirmPublishModalOpen, setIsConfirmPublishModalOpen] =
     useState(false);
   const item = useSelector(
@@ -426,6 +427,10 @@ export const ItemEditHeaderActions = ({
         setScheduleAfterSave={setScheduleAfterSave}
         setUnpublishDialogOpen={setUnpublishDialogOpen}
         setScheduledPublishDialogOpen={setScheduledPublishDialogOpen}
+        setPublishAfterUnschedule={() => {
+          setScheduledPublishDialogOpen(true);
+          setPublishAfterUnschedule(true);
+        }}
         handlePublish={() => setIsConfirmPublishModalOpen(true)}
       />
       {unpublishDialogOpen && (
@@ -439,10 +444,17 @@ export const ItemEditHeaderActions = ({
       {scheduledPublishDialogOpen && (
         <SchedulePublish
           item={item}
-          onClose={() => setScheduledPublishDialogOpen(false)}
+          onClose={() => {
+            setScheduledPublishDialogOpen(false);
+          }}
           onPublishNow={() => {
             handlePublish();
             setScheduledPublishDialogOpen(false);
+          }}
+          onUnscheduleSuccess={() => {
+            if (publishAfterUnschedule) {
+              setIsConfirmPublishModalOpen(true);
+            }
           }}
         />
       )}
@@ -459,9 +471,13 @@ export const ItemEditHeaderActions = ({
       {isConfirmPublishModalOpen && (
         <ConfirmPublishModal
           contentTitle={item?.web?.metaTitle}
-          onCancel={() => setIsConfirmPublishModalOpen(false)}
+          onCancel={() => {
+            setIsConfirmPublishModalOpen(false);
+            setPublishAfterUnschedule(false);
+          }}
           onConfirm={() => {
             setIsConfirmPublishModalOpen(false);
+            setPublishAfterUnschedule(false);
             handlePublish();
           }}
         />
@@ -479,6 +495,7 @@ type PublishingMenuProps = {
   setScheduleAfterSave: (value: boolean) => void;
   setUnpublishDialogOpen: (value: boolean) => void;
   setScheduledPublishDialogOpen: (value: boolean) => void;
+  setPublishAfterUnschedule: () => void;
   handlePublish: () => void;
 };
 
@@ -491,6 +508,7 @@ const PublishingMenu = ({
   setScheduleAfterSave,
   setUnpublishDialogOpen,
   setScheduledPublishDialogOpen,
+  setPublishAfterUnschedule,
   handlePublish,
 }: PublishingMenuProps) => {
   const history = useHistory();
@@ -523,7 +541,7 @@ const PublishingMenu = ({
               setUnpublishDialogOpen(true);
               break;
             case ITEM_STATES.scheduled:
-              setScheduledPublishDialogOpen(true);
+              setPublishAfterUnschedule();
               break;
             case ITEM_STATES.draft:
               handlePublish();

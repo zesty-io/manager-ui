@@ -29,12 +29,14 @@ type SchedulePublishProps = {
   onClose: () => void;
   onPublishNow: () => void;
   onScheduleSuccess?: () => void;
+  onUnscheduleSuccess?: () => void;
 };
 export const SchedulePublish = ({
   onClose,
   item,
   onPublishNow,
   onScheduleSuccess,
+  onUnscheduleSuccess,
 }: SchedulePublishProps) => {
   const dispatch = useDispatch();
   const { data: users } = useGetUsersQuery();
@@ -57,50 +59,49 @@ export const SchedulePublish = ({
   const handleSchedulePublish = () => {
     setIsLoading(true);
 
-    try {
-      dispatch(
-        publish(
-          item?.meta?.contentModelZUID,
-          item?.meta?.ZUID,
-          {
-            // Used for the api call
-            publishAt: moment
-              .utc(moment.tz(publishDateTime, publishTimezone))
-              .format("YYYY-MM-DD HH:mm:ss"),
-            version: item?.meta?.version,
-          },
-          {
-            // Used for the confirmation msg
-            localTime: moment
-              .utc(moment.tz(publishDateTime, publishTimezone))
-              .format("MMMM Do YYYY, [at] h:mm a"),
-            localTimezone: publishTimezone,
-          }
-        )
-      );
-    } finally {
+    dispatch(
+      publish(
+        item?.meta?.contentModelZUID,
+        item?.meta?.ZUID,
+        {
+          // Used for the api call
+          publishAt: moment
+            .utc(moment.tz(publishDateTime, publishTimezone))
+            .format("YYYY-MM-DD HH:mm:ss"),
+          version: item?.meta?.version,
+        },
+        {
+          // Used for the confirmation msg
+          localTime: moment
+            .utc(moment.tz(publishDateTime, publishTimezone))
+            .format("MMMM Do YYYY, [at] h:mm a"),
+          localTimezone: publishTimezone,
+        }
+      )
+      // @ts-expect-error untyped
+    ).finally(() => {
       onScheduleSuccess?.();
       setIsLoading(false);
       onClose();
-    }
+    });
   };
 
   const handleUnschedulePublish = () => {
     setIsLoading(true);
 
-    try {
-      dispatch(
-        unpublish(
-          item?.meta?.contentModelZUID,
-          item?.meta?.ZUID,
-          item?.scheduling?.ZUID,
-          { version: item?.scheduling?.version }
-        )
-      );
-    } finally {
+    dispatch(
+      unpublish(
+        item?.meta?.contentModelZUID,
+        item?.meta?.ZUID,
+        item?.scheduling?.ZUID,
+        { version: item?.scheduling?.version }
+      )
+      // @ts-expect-error untyped
+    ).finally(() => {
       setIsLoading(false);
       onClose();
-    }
+      onUnscheduleSuccess?.();
+    });
   };
 
   return (
@@ -220,6 +221,7 @@ export const SchedulePublish = ({
             color="warning"
             startIcon={<CalendarTodayRoundedIcon />}
             onClick={handleUnschedulePublish}
+            loading={isLoading}
           >
             Unschedule Publish
           </LoadingButton>
@@ -234,6 +236,7 @@ export const SchedulePublish = ({
                 handleSchedulePublish();
               }
             }}
+            loading={isLoading}
           >
             Schedule v{item?.web?.version} for Publish
           </LoadingButton>
