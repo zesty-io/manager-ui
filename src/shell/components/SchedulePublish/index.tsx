@@ -21,7 +21,7 @@ import { ContentItemWithDirtyAndPublishing } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
 import { FieldTypeDateTime } from "../FieldTypeDateTime";
 import { TIMEZONES } from "../FieldTypeDateTime/util";
-import { publish } from "../../store/content";
+import { publish, unpublish } from "../../store/content";
 
 type SchedulePublishProps = {
   item: ContentItemWithDirtyAndPublishing;
@@ -79,6 +79,24 @@ export const SchedulePublish = ({
       );
     } finally {
       onScheduleSuccess?.();
+      setIsLoading(false);
+      onClose();
+    }
+  };
+
+  const handleUnschedulePublish = () => {
+    setIsLoading(true);
+
+    try {
+      dispatch(
+        unpublish(
+          item?.meta?.contentModelZUID,
+          item?.meta?.ZUID,
+          item?.scheduling?.ZUID,
+          { version: item?.scheduling?.version }
+        )
+      );
+    } finally {
       setIsLoading(false);
       onClose();
     }
@@ -196,7 +214,7 @@ export const SchedulePublish = ({
             variant="contained"
             color="warning"
             startIcon={<CalendarTodayRoundedIcon />}
-            onClick={() => {}}
+            onClick={handleUnschedulePublish}
           >
             Unschedule Publish
           </Button>
