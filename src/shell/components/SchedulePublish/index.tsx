@@ -10,6 +10,7 @@ import {
   Box,
   Alert,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
@@ -191,7 +192,6 @@ export const SchedulePublish = ({
             />
             {isSelectedDatetimePast && (
               <Alert
-                variant="filled"
                 severity="warning"
                 icon={<WarningRoundedIcon fontSize="inherit" />}
                 sx={{
@@ -206,20 +206,25 @@ export const SchedulePublish = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button variant="text" color="inherit" onClick={onClose}>
+        <Button
+          variant="text"
+          color="inherit"
+          onClick={onClose}
+          disabled={isLoading}
+        >
           Cancel
         </Button>
         {item?.scheduling?.isScheduled ? (
-          <Button
+          <LoadingButton
             variant="contained"
             color="warning"
             startIcon={<CalendarTodayRoundedIcon />}
             onClick={handleUnschedulePublish}
           >
             Unschedule Publish
-          </Button>
+          </LoadingButton>
         ) : (
-          <Button
+          <LoadingButton
             variant="contained"
             startIcon={<ScheduleRoundedIcon />}
             onClick={() => {
@@ -231,7 +236,7 @@ export const SchedulePublish = ({
             }}
           >
             Schedule v{item?.web?.version} for Publish
-          </Button>
+          </LoadingButton>
         )}
       </DialogActions>
     </Dialog>
