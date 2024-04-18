@@ -27,8 +27,10 @@ export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(
         }}
         name={props.name}
         placeholder={props.placeholder}
-        value={props.value || "0"}
-        onSelect={props.onChange}
+        value={props.value && props.value !== "0" ? props.value : null}
+        onSelect={(value, name) => {
+          props.onChange(value ? value : null, name);
+        }}
         onFilter={onSearch}
         // always render search input
         searchPlaceholder="Do not see the item you are looking for? Enter a term to search your API."
@@ -38,7 +40,7 @@ export const FieldTypeInternalLink = React.memo(function FieldTypeInternalLink(
       >
         {/* You should always be able to unlink an internal link */}
         <Option
-          value={props.defaultOptValue || "0"}
+          value={props.defaultOptValue || null}
           text={props.defaultOptText || "— None —"}
         />
 

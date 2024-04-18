@@ -8,11 +8,18 @@ import { memo, useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box, TextField } from "@mui/material";
 import format from "date-fns/format";
+import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
+import moment from "moment";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;
   required?: boolean;
   error?: boolean;
+  slots?: DatePickerProps<Date>["slots"] & {
+    timePicker?: React.ReactNode;
+  };
+  onClear?: () => void;
+  valueFormatPreview?: string;
 }
 
 const parseDateInput = (input: string): Date | null => {
@@ -51,7 +58,14 @@ const parseDateInput = (input: string): Date | null => {
 };
 
 export const FieldTypeDate = memo(
-  ({ required, error, ...props }: FieldTypeDateProps) => {
+  ({
+    required,
+    error,
+    slots,
+    onClear,
+    valueFormatPreview,
+    ...props
+  }: FieldTypeDateProps) => {
     const textFieldRef = useRef<HTMLInputElement>(null);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -61,6 +75,7 @@ export const FieldTypeDate = memo(
     const handleClear = () => {
       if (props.onChange) props.onChange(null, null);
       if (textFieldRef.current) textFieldRef.current.value = "";
+      onClear && onClear();
     };
 
     /**
@@ -108,13 +123,14 @@ export const FieldTypeDate = memo(
       if (props.value) {
         textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
       }
-    }, []);
+    }, [props.value]);
 
     return (
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Stack direction={"row"} gap={1}>
+        <Stack direction="row" gap={0.5} alignItems="center">
           <Box maxWidth={160}>
             <DatePicker
+              reduceAnimations
               open={isOpen}
               onClose={() => {
                 setIsOpen(false);
@@ -124,17 +140,26 @@ export const FieldTypeDate = memo(
               disableHighlightToday={!!props.value}
               slots={{
                 field: CustomField,
-                ...props.slots,
+                openPickerIcon: CalendarTodayRoundedIcon,
+                ...slots,
               }}
               slotProps={{
                 desktopPaper: {
                   sx: {
                     mt: 1,
+
+                    "& .MuiDateCalendar-root .MuiPickersSlideTransition-root": {
+                      minHeight: 0,
+                      pb: 2,
+                      pt: 1.5,
+                    },
                   },
                 },
                 field: {
                   //@ts-expect-error - OnClick type does not exist on fieldProps
                   onClick: handleOpen,
+                  onFocus: handleOpen,
+                  error,
                   onChange: (e: any) => {
                     const inputDate = e.target.value;
                     const parsedDate = parseDateInput(inputDate);
@@ -143,30 +168,48 @@ export const FieldTypeDate = memo(
                       props.onChange(parsedDate, null);
                     }
                   },
+                  onKeyDown: (evt: KeyboardEvent) => {
+                    if (evt.key === "Enter") {
+                      setIsOpen(false);
+                      textFieldRef.current?.blur();
+                    }
+                  },
                 },
                 inputAdornment: {
                   position: "start",
+                },
+                openPickerButton: {
+                  tabIndex: -1,
+                  size: "small",
+                },
+                openPickerIcon: {
+                  sx: {
+                    fontSize: 20,
+                  },
                 },
               }}
             />
           </Box>
 
+          {!!slots?.timePicker && slots.timePicker}
+
           <Button
+            data-cy="dateFieldClearButton"
             color="inherit"
             variant="text"
             size="small"
             sx={{ minWidth: 45 }}
             onClick={handleClear}
           >
-            <Typography
-              color={"text.secondary"}
-              fontWeight={500}
-              variant="caption"
-            >
-              Clear
-            </Typography>
+            Clear
           </Button>
         </Stack>
+        {(valueFormatPreview || props.value) && (
+          <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
+            Stored as{" "}
+            {valueFormatPreview ?? moment(props.value).format("yyyy-MM-DD")}
+          </Typography>
+        )}
       </LocalizationProvider>
     );
   }
@@ -183,7 +226,7 @@ function CustomField(props: any) {
       onChange={(e) => {
         setDateValue(e.target.value);
       }}
-      placeholder="Mon DD, YYYY"
+      placeholder="Mon DD YYYY"
       {...rest}
       type="text"
     />
