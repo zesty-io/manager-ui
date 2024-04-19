@@ -154,11 +154,6 @@ export const FieldFormInput = ({
                 });
               }}
               checked={Boolean(prefillData)}
-              sx={{
-                color: "grey.200",
-                pl: 1,
-                pt: 0,
-              }}
               size="small"
             />
           }
