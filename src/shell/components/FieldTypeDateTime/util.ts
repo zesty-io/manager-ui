@@ -159,10 +159,20 @@ export const getClosestTimeSuggestion = (input: string) => {
   const derivedTime = getDerivedTime(input);
 
   const matchedTimeIndex = TIME_OPTIONS.findIndex((time) => {
+    const timeToTest = new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000;
+
+    // Makes sure that 11:53 pm to 11:59 pm are being matched to 12:00 am since it is the closest time option
+    if (
+      timeToTest >= 1704124380 &&
+      timeToTest <= 1704124740 &&
+      time.inputValue === "12:00 am"
+    ) {
+      return time.inputValue;
+    }
+
     return (
       Math.abs(
-        new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 -
-          new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000
+        new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 - timeToTest
       ) <= 420
     );
   });
