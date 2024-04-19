@@ -71,13 +71,16 @@ export const TooltipBody = ({
           <Typography variant="body2" fontWeight="700" pb={1}>
             Common Uses
           </Typography>
-          <Box pl={2} component="ul">
+          <Box pl={3} component="ul">
             {commonUses.map((string, index) => (
               <Typography
                 variant="body3"
                 color="text.secondary"
                 component="li"
                 key={index}
+                sx={{
+                  display: "list-item",
+                }}
               >
                 {string}
               </Typography>
