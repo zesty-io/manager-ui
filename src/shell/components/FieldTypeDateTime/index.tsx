@@ -49,9 +49,9 @@ export const FieldTypeDateTime = ({
   }, [value]);
 
   useEffect(() => {
-    const { time, index } = getClosestTimeSuggestion(inputValue);
+    const { time, index } = getClosestTimeSuggestion(inputValue.trim());
 
-    setInvalidInput(!!inputValue ? !time : false);
+    setInvalidInput(!!inputValue.trim() ? !time : false);
 
     const timeOptionElements = optionsRef.current?.querySelectorAll(
       "li.MuiAutocomplete-option"

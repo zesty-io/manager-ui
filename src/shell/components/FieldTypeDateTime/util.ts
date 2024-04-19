@@ -121,10 +121,16 @@ export const getDerivedTime = (userInput: string) => {
     return "";
   }
 
-  let periodOfTime = userInput.split(" ")?.[1];
-  const timeInput = userInput.split(" ")?.[0];
-  const hourInput = timeInput?.split(":")?.[0];
-  let minuteInput = timeInput?.split(":")?.[1];
+  const matchedPeriodOfTime = userInput.match(
+    /(?<![a-zA-Z])(?:a\.?m?\.?|p\.?m?\.?)$/i
+  );
+  let periodOfTimeValue = matchedPeriodOfTime?.[0]?.trim();
+  const timeInput = userInput.slice(
+    0,
+    matchedPeriodOfTime?.["index"] ?? undefined
+  );
+  const hourInput = timeInput?.split(":")?.[0]?.trim();
+  let minuteInput = timeInput?.split(":")?.[1]?.trim();
 
   // Rounds off minutes so it's always 2 digits
   if (!minuteInput) {
@@ -134,15 +140,15 @@ export const getDerivedTime = (userInput: string) => {
   }
 
   // Determines wether we'll try to match am or pm times
-  if (!periodOfTime) {
-    periodOfTime = +hourInput >= 7 && +hourInput <= 11 ? "am" : "pm";
-  } else if (periodOfTime === "a") {
-    periodOfTime = "am";
-  } else if (periodOfTime === "p") {
-    periodOfTime = "pm";
+  if (!periodOfTimeValue) {
+    periodOfTimeValue = +hourInput >= 7 && +hourInput <= 11 ? "am" : "pm";
+  } else if (periodOfTimeValue.startsWith("a")) {
+    periodOfTimeValue = "am";
+  } else if (periodOfTimeValue.startsWith("p")) {
+    periodOfTimeValue = "pm";
   }
 
-  return `${hourInput}:${minuteInput} ${periodOfTime}`;
+  return `${hourInput}:${minuteInput} ${periodOfTimeValue}`;
 };
 
 export const getClosestTimeSuggestion = (input: string) => {
