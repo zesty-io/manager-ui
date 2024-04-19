@@ -1,7 +1,6 @@
-import { useEffect, useState, useMemo, useRef } from "react";
-import { TextField, Autocomplete, Typography, Tooltip } from "@mui/material";
+import { useEffect, useState, useRef } from "react";
+import { TextField, Autocomplete, Tooltip } from "@mui/material";
 import moment from "moment";
-import { isEqual } from "lodash";
 
 import { FieldTypeDate } from "../FieldTypeDate";
 import {
@@ -31,6 +30,7 @@ export const FieldTypeDateTime = ({
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
+  const dateFieldRef = useRef(null);
   const [timeKeyCount, setTimeKeyCount] = useState(0);
   const [isTimeFieldActive, setIsTimeFieldActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -79,6 +79,7 @@ export const FieldTypeDateTime = ({
         name={name}
         required={required}
         value={dateString ? moment(dateString).toDate() : null}
+        ref={dateFieldRef}
         valueFormatPreview={
           dateString && timeString ? `${dateString} ${timeString}` : null
         }
@@ -187,6 +188,7 @@ export const FieldTypeDateTime = ({
                         onChange(
                           `${moment().format("yyyy-MM-DD")} 00:00:00.000000`
                         );
+                        dateFieldRef.current?.setDefaultDate();
                       }
                     }}
                     onBlur={() => {
