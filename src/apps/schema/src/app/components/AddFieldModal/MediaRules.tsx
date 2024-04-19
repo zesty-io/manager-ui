@@ -68,11 +68,6 @@ export const MediaRules = ({
                 control={
                   <Checkbox
                     data-cy={`MediaCheckbox_${rule.name}`}
-                    sx={{
-                      color: "grey.200",
-                      pl: 1,
-                      pt: 0,
-                    }}
                     size="small"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const { checked } = e.target;
