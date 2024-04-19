@@ -50,6 +50,8 @@ const parseDateInput = (input: string): Date | null => {
   const currentYear = new Date().getFullYear();
 
   let [monthInput, dayInput, yearInput] = dateParts;
+  yearInput = yearInput.slice(0, 4);
+  dayInput = dayInput.slice(0, 2);
   let month = months[monthInput.toLowerCase().slice(0, 3)];
   if (isNaN(month)) {
     month = currentMonth;
