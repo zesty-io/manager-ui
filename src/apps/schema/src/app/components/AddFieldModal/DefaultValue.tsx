@@ -4,6 +4,7 @@ import {
   FormHelperText,
   Checkbox,
   Typography,
+  FormControlLabel,
 } from "@mui/material";
 import { FormValue } from "./views/FieldForm";
 import { MaxLengths } from "../../../../../content-editor/src/app/components/Editor/Editor";
@@ -40,32 +41,42 @@ export const DefaultValue = ({
   options,
 }: DefaultValueProps) => {
   return (
-    <Box display="flex" gap={1}>
-      <Checkbox
-        data-cy="DefaultValueCheckbox"
-        checked={isDefaultValueEnabled}
-        size="small"
-        sx={{ width: "24px", height: "24px" }}
-        onChange={(event) => {
-          setIsDefaultValueEnabled(event.target.checked);
-          if (!event.target.checked) {
-            onChange(null);
-            setIsDefaultValueEnabled(false);
-          }
+    <Box>
+      <FormControlLabel
+        sx={{
+          alignItems: "flex-start",
         }}
+        control={
+          <Checkbox
+            data-cy="DefaultValueCheckbox"
+            checked={isDefaultValueEnabled}
+            size="small"
+            onChange={(event) => {
+              setIsDefaultValueEnabled(event.target.checked);
+              if (!event.target.checked) {
+                onChange(null);
+                setIsDefaultValueEnabled(false);
+              }
+            }}
+          />
+        }
+        label={
+          <Box>
+            <Typography variant="body2" fontWeight="600">
+              Default Value
+            </Typography>
+            <Typography
+              variant="body3"
+              color="text.secondary"
+              fontWeight="600"
+              sx={{ mb: 1, display: "block" }}
+            >
+              Set a predefined value for this field
+            </Typography>
+          </Box>
+        }
       />
       <Box flex={1}>
-        <Typography variant="body2" fontWeight="600">
-          Default Value
-        </Typography>
-        <Typography
-          variant="body3"
-          color="text.secondary"
-          fontWeight="600"
-          sx={{ mb: 1 }}
-        >
-          Set a predefined value for this field
-        </Typography>
         {isDefaultValueEnabled && (
           <FormControl error={!!error} fullWidth>
             <DefaultValueInput
