@@ -165,8 +165,10 @@ export const FieldTypeDateTime = ({
                 }}
                 slotProps={{
                   paper: {
+                    elevation: 8,
                     sx: {
                       width: 184,
+                      mt: 1,
                     },
                   },
                 }}
