@@ -185,13 +185,15 @@ export const FieldTypeDateTime = ({
                     placeholder="HH:MM"
                     error={invalidInput || error}
                     onClick={() => {
-                      setIsTimeFieldActive(true);
                       if (!dateString && !timeString) {
                         onChange(
                           `${moment().format("yyyy-MM-DD")} 00:00:00.000000`
                         );
                         dateFieldRef.current?.setDefaultDate();
                       }
+                    }}
+                    onFocus={() => {
+                      setIsTimeFieldActive(true);
                     }}
                     onBlur={() => {
                       if (!inputValue) {

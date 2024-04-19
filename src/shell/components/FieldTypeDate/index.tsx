@@ -199,6 +199,10 @@ export const FieldTypeDate = memo(
                         setIsOpen(false);
                         textFieldRef.current?.blur();
                       }
+
+                      if (evt.key === "Tab") {
+                        setIsOpen(false);
+                      }
                     },
                   },
                   inputAdornment: {
