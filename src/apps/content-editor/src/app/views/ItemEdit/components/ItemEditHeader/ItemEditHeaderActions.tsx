@@ -19,10 +19,6 @@ import { useHistory, useParams } from "react-router";
 import { useEffect, useState } from "react";
 
 import {
-  ContentItem,
-  Publishing,
-} from "../../../../../../../../shell/services/types";
-import {
   SaveRounded,
   ArrowDropDownRounded,
   CloudUploadRounded,
@@ -39,7 +35,6 @@ import { fetchItemPublishing } from "../../../../../../../../shell/store/content
 import { LoadingButton } from "@mui/lab";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
-import { ScheduleFlyout } from "../Header/ItemVersioning/ScheduleFlyout";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
@@ -464,16 +459,6 @@ export const ItemEditHeaderActions = ({
           }}
         />
       )}
-      {/**
-      
-      <ScheduleFlyout
-        isOpen={scheduledPublishDialogOpen}
-        item={item}
-        dispatch={dispatch}
-        toggleOpen={() => setScheduledPublishDialogOpen(false)}
-      />
-      
-    */}
       {isConfirmPublishModalOpen && (
         <ConfirmPublishModal
           contentTitle={item?.web?.metaTitle}
