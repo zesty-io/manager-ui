@@ -9,7 +9,9 @@ import {
   Stack,
   Box,
   Alert,
+  ThemeProvider,
 } from "@mui/material";
+import { theme } from "@zesty-io/material";
 import { LoadingButton } from "@mui/lab";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
@@ -105,146 +107,148 @@ export const SchedulePublish = ({
   };
 
   return (
-    <Dialog
-      open
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          maxWidth: 640,
-          width: 640,
-        },
-      }}
-    >
-      <DialogTitle>
-        <Stack gap={1.5}>
-          <Box
-            sx={{
-              backgroundColor: "warning.light",
-              borderRadius: "100%",
-              width: "40px",
-              height: "40px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {item?.scheduling?.isScheduled ? (
-              <CalendarTodayRoundedIcon color="warning" />
-            ) : (
-              <ScheduleRoundedIcon color="warning" />
-            )}
-          </Box>
-          <Box>
-            <Box mb={1}>
-              <Typography variant="h5" display="inline" fontWeight={700}>
+    <ThemeProvider theme={theme}>
+      <Dialog
+        open
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            maxWidth: 640,
+            width: 640,
+          },
+        }}
+      >
+        <DialogTitle>
+          <Stack gap={1.5}>
+            <Box
+              sx={{
+                backgroundColor: "warning.light",
+                borderRadius: "100%",
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {item?.scheduling?.isScheduled ? (
+                <CalendarTodayRoundedIcon color="warning" />
+              ) : (
+                <ScheduleRoundedIcon color="warning" />
+              )}
+            </Box>
+            <Box>
+              <Box mb={1}>
+                <Typography variant="h5" display="inline" fontWeight={700}>
+                  {item?.scheduling?.isScheduled
+                    ? "Unschedule Publish:"
+                    : "Schedule Content Item Publish:"}
+                  &nbsp;
+                </Typography>
+                <Typography variant="h5" display="inline">
+                  {item?.web?.metaLinkText}
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary">
                 {item?.scheduling?.isScheduled
-                  ? "Unschedule Publish:"
-                  : "Schedule Content Item Publish:"}
-                &nbsp;
-              </Typography>
-              <Typography variant="h5" display="inline">
-                {item?.web?.metaLinkText}
+                  ? `v${item?.web?.version} is scheduled to publish on ${moment
+                      .utc(item?.scheduling?.publishAt)
+                      .tz(moment.tz.guess())
+                      .format("MMM D, YYYY [at] H:mm A")} in ${
+                      TIMEZONES.find(
+                        (timezone) => timezone.id === moment.tz.guess()
+                      )?.label
+                    }.`
+                  : `v${item?.web?.version} saved 
+                      ${moment(item?.web?.createdAt).fromNow()} by 
+                      ${latestChangeCreator?.firstName} ${
+                      latestChangeCreator?.lastName
+                    }`}
               </Typography>
             </Box>
-            <Typography variant="body2" color="text.secondary">
-              {item?.scheduling?.isScheduled
-                ? `v${item?.web?.version} is scheduled to publish on ${moment
-                    .utc(item?.scheduling?.publishAt)
-                    .tz(moment.tz.guess())
-                    .format("MMM D, YYYY [at] H:mm A")} in ${
-                    TIMEZONES.find(
-                      (timezone) => timezone.id === moment.tz.guess()
-                    )?.label
-                  }.`
-                : `v${item?.web?.version} saved 
-              ${moment(item?.web?.createdAt).fromNow()} by 
-              ${latestChangeCreator?.firstName} ${
-                    latestChangeCreator?.lastName
-                  }`}
-            </Typography>
-          </Box>
-        </Stack>
-      </DialogTitle>
-      <DialogContent data-cy="PublishScheduleModal">
-        {item?.scheduling?.isScheduled ? (
-          <Alert severity="info" icon={<InfoRoundedIcon />}>
-            This will enable the ability to schedule or publish other versions
-            of this content item
-          </Alert>
-        ) : (
-          <>
-            <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
-              Publish on
-            </Typography>
-            <FieldTypeDateTime
-              disablePast
-              showTimezonePicker
-              showClearButton={false}
-              name="publishDateTime"
-              value={publishDateTime}
-              selectedTimezone={publishTimezone}
-              onChange={(datetime) => {
-                console.log(datetime);
-                setPublishDateTime(datetime);
-              }}
-              onTimezoneChange={(timezone) => {
-                setPublishTimezone(timezone);
-              }}
-            />
-            {isSelectedDatetimePast && (
-              <Alert
-                severity="warning"
-                icon={<WarningRoundedIcon fontSize="inherit" />}
-                sx={{
-                  mt: 2.5,
+          </Stack>
+        </DialogTitle>
+        <DialogContent data-cy="PublishScheduleModal">
+          {item?.scheduling?.isScheduled ? (
+            <Alert severity="info" icon={<InfoRoundedIcon />}>
+              This will enable the ability to schedule or publish other versions
+              of this content item
+            </Alert>
+          ) : (
+            <>
+              <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
+                Publish on
+              </Typography>
+              <FieldTypeDateTime
+                disablePast
+                showTimezonePicker
+                showClearButton={false}
+                name="publishDateTime"
+                value={publishDateTime}
+                selectedTimezone={publishTimezone}
+                onChange={(datetime) => {
+                  console.log(datetime);
+                  setPublishDateTime(datetime);
                 }}
-              >
-                Since the selected time is a current or past date, this will be
-                immediately published.
-              </Alert>
-            )}
-          </>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button
-          data-cy="CancelSchedulePublishButton"
-          variant="text"
-          color="inherit"
-          onClick={onClose}
-          disabled={isLoading}
-        >
-          Cancel
-        </Button>
-        {item?.scheduling?.isScheduled ? (
-          <LoadingButton
-            data-cy="UnschedulePublishButton"
-            variant="contained"
-            color="warning"
-            startIcon={<CalendarTodayRoundedIcon />}
-            onClick={handleUnschedulePublish}
-            loading={isLoading}
+                onTimezoneChange={(timezone) => {
+                  setPublishTimezone(timezone);
+                }}
+              />
+              {isSelectedDatetimePast && (
+                <Alert
+                  severity="warning"
+                  icon={<WarningRoundedIcon fontSize="inherit" />}
+                  sx={{
+                    mt: 2.5,
+                  }}
+                >
+                  Since the selected time is a current or past date, this will
+                  be immediately published.
+                </Alert>
+              )}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            data-cy="CancelSchedulePublishButton"
+            variant="text"
+            color="inherit"
+            onClick={onClose}
+            disabled={isLoading}
           >
-            Unschedule Publish
-          </LoadingButton>
-        ) : (
-          <LoadingButton
-            data-cy="SchedulePublishButton"
-            variant="contained"
-            startIcon={<ScheduleRoundedIcon />}
-            onClick={() => {
-              if (isSelectedDatetimePast) {
-                onPublishNow();
-              } else {
-                handleSchedulePublish();
-              }
-            }}
-            loading={isLoading}
-          >
-            Schedule v{item?.web?.version} for Publish
-          </LoadingButton>
-        )}
-      </DialogActions>
-    </Dialog>
+            Cancel
+          </Button>
+          {item?.scheduling?.isScheduled ? (
+            <LoadingButton
+              data-cy="UnschedulePublishButton"
+              variant="contained"
+              color="warning"
+              startIcon={<CalendarTodayRoundedIcon />}
+              onClick={handleUnschedulePublish}
+              loading={isLoading}
+            >
+              Unschedule Publish
+            </LoadingButton>
+          ) : (
+            <LoadingButton
+              data-cy="SchedulePublishButton"
+              variant="contained"
+              startIcon={<ScheduleRoundedIcon />}
+              onClick={() => {
+                if (isSelectedDatetimePast) {
+                  onPublishNow();
+                } else {
+                  handleSchedulePublish();
+                }
+              }}
+              loading={isLoading}
+            >
+              Schedule v{item?.web?.version} for Publish
+            </LoadingButton>
+          )}
+        </DialogActions>
+      </Dialog>
+    </ThemeProvider>
   );
 };
