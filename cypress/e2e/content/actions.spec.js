@@ -90,27 +90,27 @@ describe("Actions in content editor", () => {
     cy.getBySelector("PublishButton").should("exist");
   });
 
-  // TODO: fix race condition so schedule publish will work
-  it.skip("Schedules a Publish for an item", () => {
-    // TODO: remove reload when UI state is consistent
-    cy.reload();
+  it("Schedules a Publish for an item", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
+    });
+
+    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishScheduleButton").click({ force: true });
+    cy.getBySelector("SchedulePublishButton").click();
+    cy.getBySelector("ContentScheduledIndicator").should("exist");
+  });
+
+  it("Unschedules a Publish for an item", () => {
     cy.getBySelector("PublishMenuButton").click();
     cy.getBySelector("PublishScheduleButton").click();
-    // select date and time
-    cy.get(".form-control").first().click();
-    cy.get(".flatpickr-calendar.open .flatpickr-next-month").click();
-    cy.get(".flatpickr-calendar.open .flatpickr-day:not(.prevMonthDay)")
-      .first()
-      .click();
-    cy.get(".flatpickr-calendar.open .flatpickr-confirm").click();
-    cy.get("[data-cy=SchedulePublishButton]").click();
-    cy.contains("Scheduled version").should("exist");
-    cy.get("#SchedulePublishClose").click();
+    cy.getBySelector("UnschedulePublishButton").click();
+    cy.getBySelector("ContentScheduledIndicator").should("not.exist");
   });
 
   it("Only allows future dates to be scheduled for publish", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+      cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
     });
 
     cy.getBySelector("PublishMenuButton").click();
@@ -125,12 +125,7 @@ describe("Actions in content editor", () => {
     cy.get(
       '.MuiPickersArrowSwitcher-root button[aria-label="Next month"]'
     ).should("not.be.disabled");
-  });
-
-  it.skip("Unschedules a Publish for an item", () => {
-    cy.getBySelector("PublishMenuButton").click();
-    cy.getBySelector("PublishScheduleButton").click();
-    cy.get("#SchedulePublishClose").click();
+    cy.getBySelector("CancelSchedulePublishButton").click({ force: true });
   });
 
   it("Fills in default values for a new item", () => {

@@ -400,13 +400,19 @@ export const ItemEditHeaderActions = ({
           placement="bottom-start"
         >
           <Box display="flex" alignItems="center" pl="10px" pr="4px">
-            <Box display="flex" gap={1} alignItems="center">
+            <Box
+              display="flex"
+              gap={1}
+              alignItems="center"
+              data-cy="ContentScheduledIndicator"
+            >
               <ScheduleRounded fontSize="small" color="warning" />
               <Typography variant="body2" color="warning.main" fontWeight={500}>
                 Scheduled
               </Typography>
             </Box>
             <IconButton
+              data-cy="PublishMenuButton"
               size="small"
               onClick={(e) => {
                 setPublishMenu(e.currentTarget);

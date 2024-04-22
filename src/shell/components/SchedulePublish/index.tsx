@@ -208,6 +208,7 @@ export const SchedulePublish = ({
       </DialogContent>
       <DialogActions>
         <Button
+          data-cy="CancelSchedulePublishButton"
           variant="text"
           color="inherit"
           onClick={onClose}
@@ -217,6 +218,7 @@ export const SchedulePublish = ({
         </Button>
         {item?.scheduling?.isScheduled ? (
           <LoadingButton
+            data-cy="UnschedulePublishButton"
             variant="contained"
             color="warning"
             startIcon={<CalendarTodayRoundedIcon />}
@@ -227,6 +229,7 @@ export const SchedulePublish = ({
           </LoadingButton>
         ) : (
           <LoadingButton
+            data-cy="SchedulePublishButton"
             variant="contained"
             startIcon={<ScheduleRoundedIcon />}
             onClick={() => {
