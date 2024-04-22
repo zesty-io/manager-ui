@@ -381,6 +381,17 @@ export const FieldTypeMedia = ({
         })}
         {limit > images.length && (
           <Box display="flex" gap={1}>
+            {!isBynderSessionValid && (
+              <Button
+                size="large"
+                variant="outlined"
+                onClick={open}
+                startIcon={<UploadRounded />}
+                fullWidth
+              >
+                Upload
+              </Button>
+            )}
             <Button
               size="large"
               variant="outlined"
