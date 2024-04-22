@@ -4,7 +4,14 @@ import {
   DatePickerProps,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
-import { memo, useEffect, useRef, useState } from "react";
+import {
+  memo,
+  useEffect,
+  useRef,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import Button from "@mui/material/Button";
 import { Typography, Stack, Box, TextField } from "@mui/material";
 import format from "date-fns/format";
@@ -45,6 +52,8 @@ const parseDateInput = (input: string): Date | null => {
   const currentYear = new Date().getFullYear();
 
   let [monthInput, dayInput, yearInput] = dateParts;
+  yearInput = yearInput.slice(0, 4);
+  dayInput = dayInput.slice(0, 2);
   let month = months[monthInput.toLowerCase().slice(0, 3)];
   if (isNaN(month)) {
     month = currentMonth;
@@ -60,165 +69,186 @@ const parseDateInput = (input: string): Date | null => {
 };
 
 export const FieldTypeDate = memo(
-  ({
-    required,
-    error,
-    slots,
-    onClear,
-    showClearButton = true,
-    valueFormatPreview,
-    ...props
-  }: FieldTypeDateProps) => {
-    const textFieldRef = useRef<HTMLInputElement>(null);
-    const [isOpen, setIsOpen] = useState(false);
+  forwardRef(
+    (
+      {
+        required,
+        error,
+        slots,
+        onClear,
+        showClearButton = true,
+        valueFormatPreview,
+        ...props
+      }: FieldTypeDateProps,
+      ref
+    ) => {
+      const textFieldRef = useRef<HTMLInputElement>(null);
+      const [isOpen, setIsOpen] = useState(false);
 
-    /**
-     * Clear the input value
-     */
-    const handleClear = () => {
-      if (props.onChange) props.onChange(null, null);
-      if (textFieldRef.current) textFieldRef.current.value = "";
-      onClear && onClear();
-    };
+      /**
+       * Clear the input value
+       */
+      const handleClear = () => {
+        if (props.onChange) props.onChange(null, null);
+        if (textFieldRef.current) textFieldRef.current.value = "";
+        onClear && onClear();
+      };
 
-    /**
-     *  Open the date picker
-     */
-    const handleOpen = () => {
-      setIsOpen(true);
-    };
+      /**
+       *  Open the date picker
+       */
+      const handleOpen = () => {
+        setIsOpen(true);
+      };
 
-    useEffect(() => {
-      if (textFieldRef.current && isOpen) {
-        /**
-         * This Perform a check if there's no value set
-         * When the user clicks on the input field, set the value to the current date
-         */
-        if (props.value === null) {
-          props.onChange(new Date(), null);
-          textFieldRef.current.value = format(new Date(), "MMM dd, yyyy");
-          textFieldRef.current.setSelectionRange(0, 3);
+      useEffect(() => {
+        if (textFieldRef.current && isOpen) {
+          /**
+           * This Perform a check if there's no value set
+           * When the user clicks on the input field, set the value to the current date
+           */
+          if (props.value === null) {
+            props.onChange(new Date(), null);
+            textFieldRef.current.value = format(new Date(), "MMM dd, yyyy");
+            textFieldRef.current.setSelectionRange(0, 3);
+          }
+
+          /**
+           * Delay the focus to the input field to
+           * ensure the picker is open before focusing to the field
+           */
+          setTimeout(() => {
+            textFieldRef.current?.focus();
+          });
         }
 
         /**
-         * Delay the focus to the input field to
-         * ensure the picker is open before focusing to the field
+         * This handles the case when the user selects a date from the picker
+         * directly and not use the input field to manually enter the date
          */
-        setTimeout(() => {
-          textFieldRef.current?.focus();
-        });
-      }
+        if (!isOpen && props.value) {
+          textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
+        }
+        textFieldRef.current.blur();
+      }, [isOpen]);
 
       /**
-       * This handles the case when the user selects a date from the picker
-       * directly and not use the input field to manually enter the date
+       * handles the case when the value is set from the parent component or db values
        */
-      if (!isOpen && props.value) {
-        textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
-      }
-      textFieldRef.current.blur();
-    }, [isOpen]);
+      useEffect(() => {
+        if (props.value) {
+          textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
+        }
+      }, []);
 
-    /**
-     * handles the case when the value is set from the parent component or db values
-     */
-    useEffect(() => {
-      if (props.value) {
-        textFieldRef.current.value = format(props.value, "MMM dd, yyyy");
-      }
-    }, [props.value]);
+      useImperativeHandle(
+        ref,
+        () => {
+          return {
+            setDefaultDate() {
+              textFieldRef.current.value = format(new Date(), "MMM dd, yyyy");
+            },
+          };
+        },
+        []
+      );
 
-    return (
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Stack direction="row" gap={0.5} alignItems="center">
-          <Box maxWidth={160} flexShrink={0}>
-            <DatePicker
-              reduceAnimations
-              open={isOpen}
-              onClose={() => {
-                setIsOpen(false);
-              }}
-              {...props}
-              inputRef={textFieldRef}
-              disableHighlightToday={!!props.value}
-              slots={{
-                field: CustomField,
-                openPickerIcon: CalendarTodayRoundedIcon,
-                ...slots,
-              }}
-              slotProps={{
-                desktopPaper: {
-                  sx: {
-                    mt: 1,
-
-                    "& .MuiDateCalendar-root .MuiPickersSlideTransition-root": {
-                      minHeight: 0,
-                      pb: 2,
-                      pt: 1.5,
+      return (
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Stack direction="row" gap={0.5} alignItems="center">
+            <Box maxWidth={160} flexShrink={0}>
+              <DatePicker
+                reduceAnimations
+                open={isOpen}
+                onClose={() => {
+                  setIsOpen(false);
+                }}
+                {...props}
+                inputRef={textFieldRef}
+                disableHighlightToday={!!props.value}
+                slots={{
+                  field: CustomField,
+                  openPickerIcon: CalendarTodayRoundedIcon,
+                  ...slots,
+                }}
+                slotProps={{
+                  desktopPaper: {
+                    sx: {
+                      mt: 1,
+                      "& .MuiDateCalendar-root .MuiPickersSlideTransition-root":
+                        {
+                          minHeight: 0,
+                          pb: 2,
+                          pt: 1.5,
+                        },
                     },
                   },
-                },
-                field: {
-                  //@ts-expect-error - OnClick type does not exist on fieldProps
-                  onClick: handleOpen,
-                  onFocus: handleOpen,
-                  error,
-                  onChange: (e: any) => {
-                    const inputDate = e.target.value;
-                    const parsedDate = parseDateInput(inputDate);
+                  field: {
+                    //@ts-expect-error - OnClick type does not exist on fieldProps
+                    onClick: handleOpen,
+                    onFocus: handleOpen,
+                    error,
+                    onChange: (e: any) => {
+                      const inputDate = e.target.value;
+                      const parsedDate = parseDateInput(inputDate);
 
-                    if (parsedDate) {
-                      props.onChange(parsedDate, null);
-                    }
-                  },
-                  onKeyDown: (evt: KeyboardEvent) => {
-                    if (evt.key === "Enter") {
-                      setIsOpen(false);
-                      textFieldRef.current?.blur();
-                    }
-                  },
-                },
-                inputAdornment: {
-                  position: "start",
-                },
-                openPickerButton: {
-                  tabIndex: -1,
-                  size: "small",
-                },
-                openPickerIcon: {
-                  sx: {
-                    fontSize: 20,
-                  },
-                },
-              }}
-            />
-          </Box>
+                      if (parsedDate) {
+                        props.onChange(parsedDate, null);
+                      }
+                    },
+                    onKeyDown: (evt: KeyboardEvent) => {
+                      if (evt.key === "Enter") {
+                        setIsOpen(false);
+                        textFieldRef.current?.blur();
+                      }
 
-          {!!slots?.timePicker && slots.timePicker}
-          {!!slots?.timezonePicker && slots.timezonePicker}
+                      if (evt.key === "Tab") {
+                        setIsOpen(false);
+                      }
+                    },
+                  },
+                  inputAdornment: {
+                    position: "start",
+                  },
+                  openPickerButton: {
+                    tabIndex: -1,
+                    size: "small",
+                  },
+                  openPickerIcon: {
+                    sx: {
+                      fontSize: 20,
+                    },
+                  },
+                }}
+              />
+            </Box>
 
-          {showClearButton && (
-            <Button
-              data-cy="dateFieldClearButton"
-              color="inherit"
-              variant="text"
-              size="small"
-              sx={{ minWidth: 45 }}
-              onClick={handleClear}
-            >
-              Clear
-            </Button>
+            {!!slots?.timePicker && slots.timePicker}
+            {!!slots?.timezonePicker && slots.timezonePicker}
+
+            {showClearButton && (
+              <Button
+                data-cy="dateFieldClearButton"
+                color="inherit"
+                variant="text"
+                size="small"
+                sx={{ minWidth: 45 }}
+                onClick={handleClear}
+              >
+                Clear
+              </Button>
+            )}
+          </Stack>
+          {(valueFormatPreview || props.value) && (
+            <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
+              {valueFormatPreview ??
+                `Stored as ${moment(props.value).format("yyyy-MM-DD")}`}
+            </Typography>
           )}
-        </Stack>
-        {(valueFormatPreview || props.value) && (
-          <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
-            {valueFormatPreview ??
-              `Stored as ${moment(props.value).format("yyyy-MM-DD")}`}
-          </Typography>
-        )}
-      </LocalizationProvider>
-    );
-  }
+        </LocalizationProvider>
+      );
+    }
+  )
 );
 
 function CustomField(props: any) {

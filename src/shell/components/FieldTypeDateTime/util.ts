@@ -1491,10 +1491,16 @@ export const getDerivedTime = (userInput: string) => {
     return "";
   }
 
-  let periodOfTime = userInput.split(" ")?.[1];
-  const timeInput = userInput.split(" ")?.[0];
-  const hourInput = timeInput?.split(":")?.[0];
-  let minuteInput = timeInput?.split(":")?.[1];
+  const matchedPeriodOfTime = userInput.match(
+    /(?<![a-zA-Z])(?:a\.?m?\.?|p\.?m?\.?)$/i
+  );
+  let periodOfTimeValue = matchedPeriodOfTime?.[0]?.trim();
+  const timeInput = userInput.slice(
+    0,
+    matchedPeriodOfTime?.["index"] ?? undefined
+  );
+  const hourInput = timeInput?.split(":")?.[0]?.trim();
+  let minuteInput = timeInput?.split(":")?.[1]?.trim();
 
   // Rounds off minutes so it's always 2 digits
   if (!minuteInput) {
@@ -1504,15 +1510,15 @@ export const getDerivedTime = (userInput: string) => {
   }
 
   // Determines wether we'll try to match am or pm times
-  if (!periodOfTime) {
-    periodOfTime = +hourInput >= 7 && +hourInput <= 11 ? "am" : "pm";
-  } else if (periodOfTime === "a") {
-    periodOfTime = "am";
-  } else if (periodOfTime === "p") {
-    periodOfTime = "pm";
+  if (!periodOfTimeValue) {
+    periodOfTimeValue = +hourInput >= 7 && +hourInput <= 11 ? "am" : "pm";
+  } else if (periodOfTimeValue.startsWith("a")) {
+    periodOfTimeValue = "am";
+  } else if (periodOfTimeValue.startsWith("p")) {
+    periodOfTimeValue = "pm";
   }
 
-  return `${hourInput}:${minuteInput} ${periodOfTime}`;
+  return `${hourInput}:${minuteInput} ${periodOfTimeValue}`;
 };
 
 export const getClosestTimeSuggestion = (input: string) => {
@@ -1523,10 +1529,20 @@ export const getClosestTimeSuggestion = (input: string) => {
   const derivedTime = getDerivedTime(input);
 
   const matchedTimeIndex = TIME_OPTIONS.findIndex((time) => {
+    const timeToTest = new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000;
+
+    // Makes sure that 11:53 pm to 11:59 pm are being matched to 12:00 am since it is the closest time option
+    if (
+      timeToTest >= 1704124380 &&
+      timeToTest <= 1704124740 &&
+      time.inputValue === "12:00 am"
+    ) {
+      return time.inputValue;
+    }
+
     return (
       Math.abs(
-        new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 -
-          new Date(`01/01/2024 ${derivedTime}`).getTime() / 1000
+        new Date(`01/01/2024 ${time.inputValue}`).getTime() / 1000 - timeToTest
       ) <= 420
     );
   });
