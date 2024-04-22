@@ -1,3 +1,13 @@
+import moment from "moment";
+
+const yesterdayTimestamp = moment()
+  .hour(0)
+  .minute(0)
+  .second(0)
+  .millisecond(0)
+  .subtract(1, "day")
+  .format("x");
+
 describe("Actions in content editor", () => {
   const timestamp = Date.now();
 
@@ -105,16 +115,15 @@ describe("Actions in content editor", () => {
 
     cy.getBySelector("PublishMenuButton").click();
     cy.getBySelector("PublishScheduleButton").click();
-    // cy.get(
-    //   ".ModalAligner--ptdt- .MuiOutlinedInput-root .MuiInputAdornment-root .MuiButtonBase-root"
-    // ).click();
-    cy.getBySelector("SchedulePublishDate").find("button").click();
+    cy.getBySelector("PublishScheduleModal")
+      .find("[data-cy='datePickerInputField']")
+      .click();
 
     cy.get(
-      '.MuiCalendarPicker-root .MuiPickersArrowSwitcher-root button[aria-label="Previous month"]'
+      '.MuiPickersArrowSwitcher-root button[aria-label="Previous month"]'
     ).should("be.disabled");
     cy.get(
-      '.MuiCalendarPicker-root .MuiPickersArrowSwitcher-root button[aria-label="Next month"]'
+      '.MuiPickersArrowSwitcher-root button[aria-label="Next month"]'
     ).should("not.be.disabled");
   });
 

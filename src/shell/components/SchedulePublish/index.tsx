@@ -165,7 +165,7 @@ export const SchedulePublish = ({
           </Box>
         </Stack>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent data-cy="PublishScheduleModal">
         {item?.scheduling?.isScheduled ? (
           <Alert severity="info" icon={<InfoRoundedIcon />}>
             This will enable the ability to schedule or publish other versions
