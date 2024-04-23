@@ -97,6 +97,7 @@ export const FreestyleWrapper = () => {
                     source: "zesty",
                     payload: images,
                   },
+                  // @ts-expect-error CONFIG not typed
                   `${CONFIG.URL_APPS}/freestyle/`
                 );
                 setShowZestyDAM(false);
