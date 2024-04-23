@@ -109,7 +109,11 @@ export const HeadTag = (props) => {
 
   let { tag, dispatch } = props;
   return (
-    <Card data-cy="tagCard" className={styles.HeadTag} sx={{ m: 2 }}>
+    <Card
+      data-cy={tag.hasOwnProperty("createdAt") ? "tagCard" : "newTagCard"}
+      className={styles.HeadTag}
+      sx={{ m: 2 }}
+    >
       <CardHeader
         title={
           <Box

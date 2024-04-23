@@ -20,7 +20,7 @@ export type EditorType =
   | "wysiwyg_basic"
   | "article_writer"
   | "html";
-const EditorTypes: Record<EditorType, string> = {
+export const EditorTypes: Record<EditorType, string> = {
   markdown: "Markdown",
   wysiwyg_basic: "WYSIWYG",
   article_writer: "Inline",

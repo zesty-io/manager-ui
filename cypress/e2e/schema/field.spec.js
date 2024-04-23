@@ -44,6 +44,8 @@ const SELECTORS = {
   ADD_FIELD_MODAL_DEACTIVATE_REACTIVATE: "DeactivateReactivateFieldUpdateModal",
   SHOW_SYSTEM_FIELDS_BTN: "ShowSystemFieldsBtn",
   SYSTEM_FIELDS: "SystemFields",
+  DEFAULT_VALUE_CHECKBOX: "DefaultValueCheckbox",
+  DEFAULT_VALUE_INPUT: "DefaultValueInput",
 };
 
 /**
@@ -97,6 +99,17 @@ describe("Schema: Fields", () => {
       .should("exist")
       .should("have.value", fieldName);
 
+    // Navigate to rules tab and add default value
+    cy.getBySelector(SELECTORS.RULES_TAB_BTN).click();
+    // click on the default value checkbox
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_CHECKBOX).click();
+    // enter a default value
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT).type("default value");
+    // verify that the default value is set
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT)
+      .find("input")
+      .should("have.value", "default value");
+
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
@@ -140,6 +153,19 @@ describe("Schema: Fields", () => {
     cy.getBySelector(`${SELECTORS.DROPDOWN_DELETE_OPTION}_1`)
       .should("exist")
       .click();
+
+    // Navigate to rules tab and add default value
+    cy.getBySelector(SELECTORS.RULES_TAB_BTN).click();
+    // click on the default value checkbox
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_CHECKBOX).click();
+    // Open select menu
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT).click();
+    // Select the option
+    cy.get("[role=listbox] [role=option]").last().click();
+    // verify that the default value is set
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT)
+      .find("input")
+      .should("have.value", "test");
 
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
@@ -210,6 +236,21 @@ describe("Schema: Fields", () => {
       "not.exist"
     );
 
+    // Navigate to rules tab and add default value
+    cy.getBySelector(SELECTORS.RULES_TAB_BTN).click();
+    // click on the default value checkbox
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_CHECKBOX).click();
+    // enter a default value
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT)
+      .find("button")
+      .first()
+      .click();
+    // verify that the default value is set by aria-pressed attribute
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT)
+      .find("button")
+      .first()
+      .should("have.attr", "aria-pressed", "true");
+
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
@@ -249,6 +290,20 @@ describe("Schema: Fields", () => {
       .should("exist")
       .type("title");
     cy.get("[role=listbox] [role=option]").first().click();
+
+    // Navigate to rules tab and add default value
+    cy.getBySelector(SELECTORS.RULES_TAB_BTN).click();
+    // click on the default value checkbox
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_CHECKBOX).click();
+    // enter a default value
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT).click();
+    // Select the option
+    cy.get("[role=listbox] [role=option]").first().click();
+    // verify that the default value is set
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT)
+      .find("input")
+      .should("have.value", "- None -");
+    cy.getBySelector(SELECTORS.DEFAULT_VALUE_CHECKBOX).click();
 
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
@@ -376,7 +431,6 @@ describe("Schema: Fields", () => {
 
     // Click Rules tab
     cy.getBySelector(SELECTORS.RULES_TAB_BTN).should("exist").click();
-    cy.getBySelector(SELECTORS.RULES_TAB).should("exist");
 
     // Close the modal
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();

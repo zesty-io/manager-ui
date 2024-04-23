@@ -1,3 +1,5 @@
+import moment from "moment";
+
 describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
@@ -6,6 +8,7 @@ describe("Content Specs", () => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
+      cy.getBySelector("DuoModeToggle").click();
     });
 
     it("Text Field", () => {
@@ -40,28 +43,6 @@ describe("Content Specs", () => {
         .clear()
         .type(`${TIMESTAMP}`)
         .should("have.value", `${TIMESTAMP}`);
-    });
-
-    it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc")
-        .find('[data-cy="datePickerInputField"]')
-        .click();
-
-      // Timestamp for March 04, 2019
-      cy.get('[data-timestamp="1551628800000"]').click();
-
-      cy.get("#12-63ab04-0nkwcc input").should("have.value", "Mar 04, 2019");
-    });
-
-    it("Date & Time Field", () => {
-      cy.get("#12-f3db44-c8kt0q button").click();
-
-      // cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
-
-      cy.get("#12-f3db44-c8kt0q  input").should(
-        "have.value",
-        "2019-03-21 14:30:00.000000"
-      );
     });
 
     it("WYSIWYG Advanced Field", () => {
@@ -283,14 +264,14 @@ describe("Content Specs", () => {
     });
   });
 
-  describe("Media field image template", () => {
+  describe("Media field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
     });
 
-    it.only("renders an image with a url from a template", () => {
+    it("renders an image with a url from a template", () => {
       cy.get("#12-1c94d4-pg8dvx")
         .find('[data-cy="file-preview"]')
         .eq(3)
@@ -300,6 +281,134 @@ describe("Content Specs", () => {
           "src",
           "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/1200px-SNice.svg.png?width=80&optimize=high"
         );
+    });
+
+    it("opens the bynder modal", () => {
+      cy.get("#12-1c94d4-pg8dvx").find('[data-cy="addFromBynderBtn"]').click();
+      cy.get('[data-test-id="CompactViewContainer"]')
+        .eq(2)
+        .find('[data-testid="root"]')
+        .should("exist");
+
+      // Close modal
+      cy.get('[data-test-id="CompactViewContainer"]')
+        .eq(2)
+        .find('[data-testid="root"]')
+        .shadow()
+        .find('button[title="Close"]')
+        .click();
+      cy.get('[data-test-id="CompactViewContainer"]')
+        .eq(2)
+        .find('[data-testid="root"]')
+        .should("not.exist");
+    });
+
+    it("renders bynder asset previews", () => {
+      cy.get("#12-1c94d4-pg8dvx")
+        .find('[data-cy="mediaItem"]')
+        .last()
+        .find('[data-cy="bynderAssetIndicator"]')
+        .should("exist");
+    });
+  });
+
+  describe("Date Field", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+      });
+    });
+
+    it("should be able to clear date entries", () => {
+      cy.get("#12-63ab04-0nkwcc")
+        .find("[data-cy='dateFieldClearButton']")
+        .click();
+      cy.get("#12-63ab04-0nkwcc")
+        .find("[data-cy='datePickerInputField']")
+        .find("input")
+        .should("have.value", "");
+    });
+
+    it("should be able to auto-fill empty date fields on click", () => {
+      cy.get("#12-63ab04-0nkwcc")
+        .find('[data-cy="datePickerInputField"]')
+        .click();
+
+      cy.get("#12-63ab04-0nkwcc input").should(
+        "have.value",
+        moment(TIMESTAMP).format("MMM DD, YYYY")
+      );
+    });
+  });
+
+  describe("Date & Time Field", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+      });
+    });
+
+    it("should be able to clear date and time entries", () => {
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateFieldClearButton']")
+        .click();
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='datePickerInputField']")
+        .find("input")
+        .should("have.value", "");
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateTimeInputField']")
+        .find("input")
+        .should("have.value", "");
+    });
+
+    it("should be able to auto-fill the date and time when field is empty", () => {
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateTimeInputField']")
+        .click();
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='datePickerInputField']")
+        .find("input")
+        .should("have.value", moment(TIMESTAMP).format("MMM DD, YYYY"));
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateTimeInputField']")
+        .find("input")
+        .should("have.value", "12:00 am");
+    });
+
+    it("should allow a user to select a time from the dropdown", () => {
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateTimeInputField']")
+        .click();
+      cy.get(".MuiAutocomplete-listbox>.MuiAutocomplete-option").eq(1).click();
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateTimeInputField']")
+        .find("input")
+        .should("have.value", "12:15 am");
+    });
+
+    it("should allow a user to manually type in a time", () => {
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateTimeInputField']")
+        .find("input")
+        .type("{selectAll}{del}11:00 pm")
+        .blur();
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateTimeInputField']")
+        .find("input")
+        .should("have.value", "11:00 pm");
+    });
+
+    it("should reset to last saved valid time when user types in an invalid time", () => {
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateTimeInputField']")
+        .find("input")
+        .type("{selectAll}{del}asdasdasdasdas")
+        .blur();
+      cy.get("#12-f3db44-c8kt0q")
+        .find("[data-cy='dateTimeInputField']")
+        .find("input")
+        .should("have.value", "11:00 pm");
     });
   });
 });

@@ -40,7 +40,8 @@ export type FieldNames =
   | "relatedFieldZUID"
   | "group_id"
   | "limit"
-  | "tooltip";
+  | "tooltip"
+  | "defaultValue";
 type FieldType =
   | "input"
   | "checkbox"
@@ -153,11 +154,6 @@ export const FieldFormInput = ({
                 });
               }}
               checked={Boolean(prefillData)}
-              sx={{
-                color: "grey.200",
-                pl: 1,
-                pt: 0,
-              }}
               size="small"
             />
           }
