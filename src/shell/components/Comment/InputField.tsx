@@ -65,7 +65,6 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
             }}
             onClick={() => {
               // Removes the placeholder
-              console.log(tinymce?.activeEditor.getContent(), PLACEHOLDER);
               if (tinymce?.activeEditor.getContent() === PLACEHOLDER) {
                 tinymce?.activeEditor.setContent("");
               }

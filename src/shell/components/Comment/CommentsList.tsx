@@ -21,11 +21,14 @@ export const CommentsList = ({
   isResolved,
 }: CommentsListProps) => {
   const [popperTopOffset, setPopperTopOffset] = useState(0);
+  const [popperBottomOffset, setPopperBottomOffset] = useState(0);
   const topOffsetRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
     setTimeout(() => {
-      setPopperTopOffset(topOffsetRef.current?.getBoundingClientRect().top);
+      const { top, bottom } = topOffsetRef.current?.getBoundingClientRect();
+      setPopperTopOffset(top);
+      setPopperBottomOffset(bottom);
     });
 
     // HACK: Prevents UI flicker when popper renders and is temporarily out of bounds
@@ -35,6 +38,17 @@ export const CommentsList = ({
       document.body.style.overflow = null;
     };
   }, []);
+
+  const calculateMaxHeight = () => {
+    const isPopperInBottom =
+      anchorEl.getBoundingClientRect().top < popperTopOffset;
+
+    if (isPopperInBottom) {
+      return window.innerHeight - popperTopOffset - 32 - 8;
+    } else {
+      return popperBottomOffset - 32 - 8;
+    }
+  };
 
   return (
     <Backdrop
@@ -76,7 +90,7 @@ export const CommentsList = ({
           sx={{
             width: 360,
             p: 2,
-            maxHeight: `calc(${window.innerHeight}px - ${popperTopOffset}px - 32px - 8px)`,
+            maxHeight: calculateMaxHeight(),
             overflow: "auto",
           }}
         >
