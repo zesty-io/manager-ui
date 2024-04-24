@@ -27,9 +27,14 @@ export const CommentsList = ({
     setTimeout(() => {
       setPopperTopOffset(topOffsetRef.current?.getBoundingClientRect().top);
     });
-  }, []);
 
-  console.log(popperTopOffset);
+    // HACK: Prevents UI flicker when popper renders and is temporarily out of bounds
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = null;
+    };
+  }, []);
 
   return (
     <Backdrop
@@ -66,31 +71,29 @@ export const CommentsList = ({
           ],
         }}
       >
-        {!!popperTopOffset && (
-          <Paper
-            elevation={8}
-            sx={{
-              width: 360,
-              p: 2,
-              maxHeight: `calc(${window.innerHeight}px - ${popperTopOffset}px - 32px - 8px)`,
-              overflow: "auto",
-            }}
-          >
-            {comments?.map((comment, index) => (
-              <Fragment key={index}>
-                <CommentItem
-                  body={comment.body}
-                  createdOn={comment.createdOn}
-                  creator={comment.creator}
-                  withResolveButton={index === 0 && !isResolved}
-                  onResolveComment={onResolveComment}
-                />
-                {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
-              </Fragment>
-            ))}
-            <InputField isFirstComment={!comments?.length} onCancel={onClose} />
-          </Paper>
-        )}
+        <Paper
+          elevation={8}
+          sx={{
+            width: 360,
+            p: 2,
+            maxHeight: `calc(${window.innerHeight}px - ${popperTopOffset}px - 32px - 8px)`,
+            overflow: "auto",
+          }}
+        >
+          {comments?.map((comment, index) => (
+            <Fragment key={index}>
+              <CommentItem
+                body={comment.body}
+                createdOn={comment.createdOn}
+                creator={comment.creator}
+                withResolveButton={index === 0 && !isResolved}
+                onResolveComment={onResolveComment}
+              />
+              {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
+            </Fragment>
+          ))}
+          <InputField isFirstComment={!comments?.length} onCancel={onClose} />
+        </Paper>
       </Popper>
     </Backdrop>
   );
