@@ -181,25 +181,35 @@ export default function LinkEdit() {
           setState({ ...state, saving: false });
           let message = "";
           if (/metaTitle/.test(res.error)) {
-            message = "Missing Link title";
+            message = "Please add a Link Title";
           } else if (
             /internal links must target a content item/.test(res.error)
           ) {
-            message = "Missing Link target";
+            message = "Please add a Link Target";
           } else if (
             /external links must target an external site/.test(res.error)
           ) {
-            message = "Missing Link protocol";
+            message = "Please add a Link Protocol";
           }
           dispatch(
             notify({
-              message: `Error saving link: ${message}`,
+              primary: `Cannot Save: ${
+                params.metaTitle.trim() === ""
+                  ? "Empty Title"
+                  : params.metaTitle
+              }`,
+              message,
               kind: "error",
             })
           );
         } else {
           setState({ ...state, saving: false });
-          dispatch(notify({ message: "Saved link", kind: "save" }));
+          dispatch(
+            notify({
+              message: `Link Saved: [${params.metaTitle}]`,
+              kind: "save",
+            })
+          );
           dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
         }
       })
@@ -218,7 +228,12 @@ export default function LinkEdit() {
       dispatch({
         type: "REMOVE_LINK",
       });
-      dispatch(notify({ message: "Deleted Link", kind: "save" }));
+      dispatch(
+        notify({
+          message: `Link Deleted: ${state.metaTitle}`,
+          kind: "deleted",
+        })
+      );
       dispatch(unpinTab({ pathname: `/content/link/${linkZUID}`, search: "" }));
       dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
     });

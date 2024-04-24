@@ -233,7 +233,7 @@ export const ItemCreate = () => {
 
         dispatch(
           notify({
-            message: `Created new ${model.label} item`,
+            message: `Created Item: ${model.label}`,
             kind: "success",
           })
         );

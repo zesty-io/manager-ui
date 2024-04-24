@@ -27,12 +27,48 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import CloseIcon from "@mui/icons-material/Close";
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import {
   SnackbarContent,
   SnackbarProvider,
   enqueueSnackbar,
   useSnackbar,
 } from "notistack";
+
+const alertDetails = (kind) => {
+  let bgColor, icon, severity;
+
+  switch (kind) {
+    case "warn":
+      bgColor = "warning.main";
+      icon = <WarningRoundedIcon sx={{ width: 22, height: 22 }} />;
+      severity = "warning";
+      break;
+    case "error":
+      bgColor = "error.dark";
+      icon = <ErrorOutlineOutlinedIcon sx={{ width: 22, height: 22 }} />;
+      severity = "error";
+      break;
+    case "save":
+    case "success":
+      bgColor = "success.dark";
+      icon = <CheckCircleRoundedIcon sx={{ width: 22, height: 22 }} />;
+      severity = "success";
+      break;
+    case "deleted":
+      bgColor = "success.dark";
+      icon = <DeleteRoundedIcon sx={{ width: 22, height: 22 }} />;
+      severity = "success";
+      break;
+    default:
+      bgColor = "info.main";
+      icon = <InfoRoundedIcon sx={{ width: 22, height: 22 }} />;
+      severity = "info";
+      break;
+  }
+
+  return { bgColor, icon, severity };
+};
 
 export default connect((state) => {
   return {
@@ -48,36 +84,6 @@ export default connect((state) => {
       setDrawerOpen(false);
     });
 
-    const alertDetails = (kind) => {
-      let bgColor, icon, severity;
-
-      switch (kind) {
-        case "warn":
-          bgColor = "warning.main";
-          icon = <WarningRoundedIcon sx={{ width: 22, height: 22 }} />;
-          severity = "warning";
-          break;
-        case "error":
-          bgColor = "error.dark";
-          icon = <DeleteRoundedIcon sx={{ width: 22, height: 22 }} />;
-          severity = "error";
-          break;
-        case "save":
-        case "success":
-          bgColor = "success.dark";
-          icon = <CheckCircleRoundedIcon sx={{ width: 22, height: 22 }} />;
-          severity = "success";
-          break;
-        default:
-          bgColor = "info.main";
-          icon = <InfoRoundedIcon sx={{ width: 22, height: 22 }} />;
-          severity = "info";
-          break;
-      }
-
-      return { bgColor, icon, severity };
-    };
-
     const { bgColor, icon, severity } = alertDetails(
       props.notifications[0]?.kind
     );
@@ -90,6 +96,7 @@ export default connect((state) => {
           severity,
           icon,
           bgColor,
+          primary: props.notifications[0]?.primary,
         });
         // On every render set timeout to hide notices
         const token = setTimeout(() => {
@@ -224,8 +231,7 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
         icon={props.icon}
         action={
           <Stack direction="row">
-            {/* if there's additional action show this */}
-            {/* <Button sx={{ color: "white" }}>Action</Button> */}
+            {props.primary && <Button sx={{ color: "white" }}>Action</Button>}
             <IconButton onClick={handleDismiss}>
               <CloseIcon sx={{ width: 20, height: 20, color: "white" }} />
             </IconButton>
@@ -248,31 +254,32 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
         }}
       >
         <Stack>
-          {/* if there's secondary text , make fontWeight to 700 */}
           <Typography
             variant="body2"
+            noWrap={props.severity === "success"}
             sx={{
               maxWidth: "516px",
-              whiteSpace: props.severity === "success" ? "nowrap" : "normal",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              // fontWeight: 700,
+              fontWeight: props.primary ? 700 : "normal",
             }}
           >
-            {props.message}
+            {props.primary ? props.primary : props.message}
           </Typography>
-          {/* This will contain the SECONDARY TEXT */}
-          {/* <Typography
-            variant="body2"
-            sx={{
-              maxWidth: "516px",
-              whiteSpace: props.severity === "success" ? "nowrap" : "normal",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {props.message}
-          </Typography> */}
+
+          {props.primary && (
+            <Typography
+              variant="body2"
+              noWrap={props.severity === "success"}
+              sx={{
+                maxWidth: "516px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {props.message}
+            </Typography>
+          )}
         </Stack>
       </Alert>
     </SnackbarContent>

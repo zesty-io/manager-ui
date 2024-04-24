@@ -85,19 +85,20 @@ export function LinkCreate() {
         if (res.error) {
           let message = "";
           if (/metaTitle/.test(res.error)) {
-            message = "Missing Link title";
+            message = "Please add a Link Title";
           } else if (
             /internal links must target a content item/.test(res.error)
           ) {
-            message = "Missing Link target";
+            message = "Please add a Link Target";
           } else if (
             /external links must target an external site/.test(res.error)
           ) {
-            message = "Missing Link protocol";
+            message = "Please add a Link Protocol";
           }
           dispatch(
             notify({
-              message: `Failure creating link: ${message}`,
+              primary: "Unable to Create Link",
+              message,
               kind: "error",
             })
           );
@@ -107,7 +108,7 @@ export function LinkCreate() {
           dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
           dispatch(
             notify({
-              message: "Successfully created link",
+              message: `Link Created: ${state.metaTitle}`,
               kind: "save",
             })
           );
