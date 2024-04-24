@@ -29,6 +29,8 @@ export const CommentsList = ({
     });
   }, []);
 
+  console.log(popperTopOffset);
+
   return (
     <Backdrop
       id="popperBg"
@@ -64,29 +66,31 @@ export const CommentsList = ({
           ],
         }}
       >
-        <Paper
-          elevation={8}
-          sx={{
-            width: 360,
-            p: 2,
-            maxHeight: `calc(${window.innerHeight}px - ${popperTopOffset}px - 32px - 8px)`,
-            overflow: "auto",
-          }}
-        >
-          {comments?.map((comment, index) => (
-            <Fragment key={index}>
-              <CommentItem
-                body={comment.body}
-                createdOn={comment.createdOn}
-                creator={comment.creator}
-                withResolveButton={index === 0 && !isResolved}
-                onResolveComment={onResolveComment}
-              />
-              {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
-            </Fragment>
-          ))}
-          <InputField isFirstComment={!comments?.length} onCancel={onClose} />
-        </Paper>
+        {!!popperTopOffset && (
+          <Paper
+            elevation={8}
+            sx={{
+              width: 360,
+              p: 2,
+              maxHeight: `calc(${window.innerHeight}px - ${popperTopOffset}px - 32px - 8px)`,
+              overflow: "auto",
+            }}
+          >
+            {comments?.map((comment, index) => (
+              <Fragment key={index}>
+                <CommentItem
+                  body={comment.body}
+                  createdOn={comment.createdOn}
+                  creator={comment.creator}
+                  withResolveButton={index === 0 && !isResolved}
+                  onResolveComment={onResolveComment}
+                />
+                {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
+              </Fragment>
+            ))}
+            <InputField isFirstComment={!comments?.length} onCancel={onClose} />
+          </Paper>
+        )}
       </Popper>
     </Backdrop>
   );
