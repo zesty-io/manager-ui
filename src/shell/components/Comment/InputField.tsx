@@ -7,6 +7,8 @@ import sanitizeHtml from "sanitize-html";
 import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
 
+const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
+
 type InputFieldProps = {
   isFirstComment: boolean;
   onCancel: () => void;
@@ -15,10 +17,9 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
   const [inputValue, setInputValue] = useState("");
-  const [initialValue, setInitialValue] = useState(
-    "<p class='placeholder'>Reply or add others with @</p>"
-  );
+  const [initialValue, setInitialValue] = useState(PLACEHOLDER);
   const [isEditorInitialized, setIsEditorInitialized] = useState(false);
+  const [isEditorActive, setIsEditorActive] = useState(false);
   const [mentionListAnchorEl, setMentionListAnchorEl] =
     useState<HTMLDivElement>(null);
 
@@ -35,12 +36,11 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   return (
     <>
       <Box sx={{ my: 1.5 }}>
-        {isEditorInitialized ? (
+        <Box height={100} display={isEditorInitialized ? "none" : "block"} />
+        <Box display={isEditorInitialized ? "block" : "none"}>
           <Editor
             id="commentInputField"
-            initialValue={
-              "<p class='placeholder'>Reply or add others with @</p>"
-            }
+            initialValue={PLACEHOLDER}
             init={{
               plugins: ["autoresize"],
               toolbar: false,
@@ -54,32 +54,35 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
               p, span { margin-top: 0px; margin-bottom: 16px; }\
               p.placeholder { color: ${theme.palette.text.disabled}; }\
             `,
+
+              setup: (editor) => {
+                editor.on("ResizeEditor", () => {
+                  if (!editor.isNotDirty) {
+                    buttonsContainerRef.current?.scrollIntoView();
+                  }
+                });
+              },
             }}
             onClick={() => {
               // Removes the placeholder
-              // TODO: do not do this if there is a default value
-              tinymce?.activeEditor.setContent("");
+              console.log(tinymce?.activeEditor.getContent(), PLACEHOLDER);
+              if (tinymce?.activeEditor.getContent() === PLACEHOLDER) {
+                tinymce?.activeEditor.setContent("");
+              }
+              setIsEditorActive(true);
             }}
             onBlur={() => {
               // Re-adds the placeholder when user clicks out and there's no value
               if (!tinymce?.activeEditor.getContent()) {
-                tinymce?.activeEditor.setContent(
-                  "<p class='placeholder'>Reply or add others with @</p>"
-                );
+                tinymce?.activeEditor.setContent(PLACEHOLDER);
               }
-            }}
-            onKeyDown={() => {
-              setTimeout(() => {
-                buttonsContainerRef.current?.scrollIntoView();
-              });
+              setIsEditorActive(false);
             }}
             onInit={() => {
               setIsEditorInitialized(true);
             }}
           />
-        ) : (
-          <Box height={100} />
-        )}
+        </Box>
       </Box>
       <Stack
         ref={buttonsContainerRef}
