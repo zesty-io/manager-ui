@@ -21,14 +21,12 @@ export const CommentsList = ({
   isResolved,
 }: CommentsListProps) => {
   const [popperTopOffset, setPopperTopOffset] = useState(0);
+  const topOffsetRef = useRef<HTMLDivElement>();
 
-  const topOffsetRef = useCallback((node: HTMLDivElement) => {
-    if (node) {
-      // HACK: Needed so that we're getting the correct value after the popover has been drawn to the DOM
-      setTimeout(() => {
-        setPopperTopOffset(node.getBoundingClientRect()?.top ?? 0);
-      }, 100);
-    }
+  useEffect(() => {
+    setTimeout(() => {
+      setPopperTopOffset(topOffsetRef.current?.getBoundingClientRect().top);
+    });
   }, []);
 
   return (
