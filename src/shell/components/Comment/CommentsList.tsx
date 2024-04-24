@@ -92,6 +92,7 @@ export const CommentsList = ({
             p: 2,
             maxHeight: calculateMaxHeight(),
             overflow: "auto",
+            boxSizing: "border-box",
           }}
         >
           {comments?.map((comment, index) => (
