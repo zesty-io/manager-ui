@@ -4,6 +4,7 @@ import {
   useState,
   forwardRef,
   useImperativeHandle,
+  useMemo,
 } from "react";
 import {
   Popper,
@@ -30,6 +31,13 @@ export const MentionList = forwardRef(
     const [popperBottomOffset, setPopperBottomOffset] = useState(0);
     const [selectedUserIndex, setSelectedUserIndex] = useState(0);
     const popperRef = useRef<HTMLDivElement>();
+    const listRef = useRef<HTMLUListElement>();
+
+    const sortedUsers = useMemo(() => {
+      return [...users]?.sort((userA, userB) =>
+        userA.firstName.localeCompare(userB.firstName)
+      );
+    }, [users]);
 
     useEffect(() => {
       setTimeout(() => {
@@ -38,6 +46,12 @@ export const MentionList = forwardRef(
         setPopperBottomOffset(bottom);
       });
     }, []);
+
+    useEffect(() => {
+      listRef.current
+        ?.querySelector(".Mui-selected")
+        .scrollIntoView({ block: "nearest" });
+    }, [selectedUserIndex]);
 
     useImperativeHandle(
       ref,
@@ -98,8 +112,8 @@ export const MentionList = forwardRef(
             width: 328,
           }}
         >
-          <List>
-            {users?.map((user, index) => (
+          <List ref={listRef}>
+            {sortedUsers?.map((user, index) => (
               <ListItemButton
                 divider
                 dense
