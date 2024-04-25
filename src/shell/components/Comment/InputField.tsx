@@ -6,6 +6,7 @@ import sanitizeHtml from "sanitize-html";
 
 import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
+import { countCharUsage, getCursorPosition } from "./utils";
 
 const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
 
@@ -22,16 +23,159 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   const [isEditorInitialized, setIsEditorInitialized] = useState(false);
   const [isEditorActive, setIsEditorActive] = useState(false);
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
+  const [isEnterPressed, setIsEnterPressed] = useState(true);
 
   useEffect(() => {
-    const lastWord = inputRef.current?.textContent?.split(" ")?.pop();
-
-    if (lastWord?.startsWith("@")) {
-      setMentionListAnchorEl(inputRef.current);
-    } else {
+    if (!inputValue) {
       setMentionListAnchorEl(null);
     }
   }, [inputValue]);
+
+  return (
+    <>
+      <Box
+        ref={inputRef}
+        component="div"
+        contentEditable
+        // dangerouslySetInnerHTML={{ __html: inputValue }}
+        sx={{
+          my: 1.5,
+          p: 1,
+          minHeight: 40,
+          borderRadius: 2,
+          boxSizing: "border-box",
+          fontSize: "14px",
+          fontWeight: 400,
+          lineHeight: "20px",
+          border: (theme) => `1px solid ${theme.palette.border}`,
+
+          "&:focus-visible": {
+            outline: (theme) => `${theme.palette.primary.light} solid 1px`,
+          },
+
+          "&:empty:before": {
+            content: '"Reply or add others with @"',
+            color: "text.disabled",
+          },
+        }}
+        onInput={(evt: FormEvent) => {
+          buttonsContainerRef.current?.scrollIntoView();
+          const value = evt.currentTarget.innerHTML;
+
+          if (value === "<br>" || value === "<br/>" || value === "<br />") {
+            setInputValue("");
+          } else {
+            setInputValue(
+              sanitizeHtml(value, {
+                allowedTags: [
+                  "b",
+                  "i",
+                  "em",
+                  "strong",
+                  "a",
+                  "div",
+                  "br",
+                  "span",
+                  "p",
+                ],
+                allowedAttributes: {
+                  a: ["href", "rel", "target", "alt"],
+                },
+              })
+            );
+          }
+        }}
+        onKeyDown={(evt: React.KeyboardEvent<HTMLDivElement>) => {
+          // Checks if the mention list should be opened or not
+          if (evt.key === "@") {
+            setTimeout(() => {
+              setMentionListAnchorEl(inputRef.current);
+            });
+          }
+
+          // Changes selected item from the mention list when open
+          if (
+            (evt.key === "ArrowDown" || evt.key === "ArrowUp") &&
+            !!mentionListAnchorEl
+          ) {
+            evt.preventDefault();
+            mentionListRef.current?.handleSelectUser(evt.key);
+            return;
+          }
+
+          // Closes the mention list
+          if (
+            (evt.key === "ArrowLeft" ||
+              evt.key === "ArrowRight" ||
+              evt.key === " ") &&
+            !!mentionListAnchorEl
+          ) {
+            setMentionListAnchorEl(null);
+            return;
+          }
+
+          // Checks if the @ that opened the mention list was deleted
+          if (
+            (evt.key === "Backspace" || evt.key === "Delete") &&
+            !!mentionListAnchorEl
+          ) {
+            const countBeforeDeletion = countCharUsage(
+              inputRef.current?.innerText,
+              "@"
+            );
+
+            setTimeout(() => {
+              const countAfterDeletion = countCharUsage(
+                inputRef.current?.innerText,
+                "@"
+              );
+
+              if (countAfterDeletion < countBeforeDeletion) {
+                setMentionListAnchorEl(null);
+              }
+            });
+            return;
+          }
+
+          // Selects the highlighted item when mention list is open
+          if (evt.key === "Enter") {
+            if (!!mentionListAnchorEl) {
+              evt.preventDefault();
+            } else {
+              // Do something else
+            }
+            return;
+          }
+        }}
+      />
+      {!!mentionListAnchorEl && (
+        <MentionList
+          ref={mentionListRef}
+          anchorEl={mentionListAnchorEl}
+          onClose={() => {}}
+          onSelect={() => {}}
+        />
+      )}
+      <Stack
+        ref={buttonsContainerRef}
+        direction="row"
+        gap={1}
+        justifyContent="end"
+      >
+        <Button
+          variant="outlined"
+          color="inherit"
+          size="small"
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
+        <Button variant="contained" color="primary" size="small">
+          {isFirstComment ? "Comment" : "Reply"}
+        </Button>
+      </Stack>
+    </>
+  );
 
   // return (
   //   <>
@@ -127,97 +271,4 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   //     </Stack>
   //   </>
   // );
-
-  return (
-    <>
-      <Box
-        ref={inputRef}
-        component="div"
-        contentEditable
-        // dangerouslySetInnerHTML={{ __html: inputValue }}
-        sx={{
-          my: 1.5,
-          p: 1,
-          minHeight: 40,
-          borderRadius: 2,
-          boxSizing: "border-box",
-          fontSize: "14px",
-          fontWeight: 400,
-          lineHeight: "20px",
-          border: (theme) => `1px solid ${theme.palette.border}`,
-
-          "&:focus-visible": {
-            outline: (theme) => `${theme.palette.primary.light} solid 1px`,
-          },
-
-          "&:empty:before": {
-            content: '"Reply or add others with @"',
-            color: "text.disabled",
-          },
-        }}
-        onInput={(evt: FormEvent) => {
-          buttonsContainerRef.current?.scrollIntoView();
-          const value = evt.currentTarget.innerHTML;
-
-          if (value === "<br>") {
-            setInputValue("");
-          } else {
-            setInputValue(
-              sanitizeHtml(value, {
-                allowedTags: [
-                  "b",
-                  "i",
-                  "em",
-                  "strong",
-                  "a",
-                  "div",
-                  "br",
-                  "span",
-                  "p",
-                ],
-                allowedAttributes: {
-                  a: ["href", "rel", "target", "alt"],
-                },
-              })
-            );
-          }
-        }}
-        onKeyDown={(evt: React.KeyboardEvent<HTMLDivElement>) => {
-          if (
-            (evt.key === "ArrowDown" || evt.key === "ArrowUp") &&
-            !!mentionListAnchorEl
-          ) {
-            evt.preventDefault();
-            mentionListRef.current?.handleSelectUser(evt.key);
-          }
-        }}
-      />
-      {!!mentionListAnchorEl && (
-        <MentionList
-          ref={mentionListRef}
-          anchorEl={mentionListAnchorEl}
-          onClose={() => {}}
-          onSelect={() => {}}
-        />
-      )}
-      <Stack
-        ref={buttonsContainerRef}
-        direction="row"
-        gap={1}
-        justifyContent="end"
-      >
-        <Button
-          variant="outlined"
-          color="inherit"
-          size="small"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>
-        <Button variant="contained" color="primary" size="small">
-          {isFirstComment ? "Comment" : "Reply"}
-        </Button>
-      </Stack>
-    </>
-  );
 };
