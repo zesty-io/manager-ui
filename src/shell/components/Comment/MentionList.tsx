@@ -39,7 +39,6 @@ export const MentionList = forwardRef(
       });
     }, []);
 
-    // FIXME: Maybe move the selected index state out??
     useImperativeHandle(
       ref,
       () => {
@@ -67,7 +66,7 @@ export const MentionList = forwardRef(
           },
         };
       },
-      []
+      [selectedUserIndex]
     );
 
     const calculateMaxHeight = () => {
