@@ -16,6 +16,7 @@ type InputFieldProps = {
 export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
+  const mentionListRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
   const [initialValue, setInitialValue] = useState(PLACEHOLDER);
   const [isEditorInitialized, setIsEditorInitialized] = useState(false);
@@ -144,7 +145,6 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
           fontWeight: 400,
           lineHeight: "20px",
           border: (theme) => `1px solid ${theme.palette.border}`,
-          cursor: "text",
 
           "&:focus-visible": {
             outline: (theme) => `${theme.palette.primary.light} solid 1px`,
@@ -164,7 +164,17 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
           } else {
             setInputValue(
               sanitizeHtml(value, {
-                allowedTags: ["b", "i", "em", "strong", "a", "p", "div", "br"],
+                allowedTags: [
+                  "b",
+                  "i",
+                  "em",
+                  "strong",
+                  "a",
+                  "div",
+                  "br",
+                  "span",
+                  "p",
+                ],
                 allowedAttributes: {
                   a: ["href", "rel", "target", "alt"],
                 },
@@ -172,9 +182,19 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
             );
           }
         }}
+        onKeyDown={(evt: React.KeyboardEvent<HTMLDivElement>) => {
+          if (
+            evt.key === "ArrowDown" ||
+            (evt.key === "ArrowUp" && !!mentionListAnchorEl)
+          ) {
+            evt.preventDefault();
+            mentionListRef.current?.handleSelectUser(evt.key);
+          }
+        }}
       />
       {!!mentionListAnchorEl && (
         <MentionList
+          ref={mentionListRef}
           anchorEl={mentionListAnchorEl}
           onClose={() => {}}
           onSelect={() => {}}

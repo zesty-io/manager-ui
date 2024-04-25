@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import {
   Popper,
   Paper,
@@ -17,71 +23,106 @@ type MentionListProps = {
   onClose: () => void;
   onSelect: () => void;
 };
-export const MentionList = ({
-  anchorEl,
-  onClose,
-  onSelect,
-}: MentionListProps) => {
-  const { data: users } = useGetUsersQuery();
-  const [popperTopOffset, setPopperTopOffset] = useState(0);
-  const [popperBottomOffset, setPopperBottomOffset] = useState(0);
-  const popperRef = useRef<HTMLDivElement>();
+export const MentionList = forwardRef(
+  ({ anchorEl, onClose, onSelect }: MentionListProps, ref) => {
+    const { data: users } = useGetUsersQuery();
+    const [popperTopOffset, setPopperTopOffset] = useState(0);
+    const [popperBottomOffset, setPopperBottomOffset] = useState(0);
+    const [selectedUserIndex, setSelectedUserIndex] = useState(0);
+    const popperRef = useRef<HTMLDivElement>();
 
-  useEffect(() => {
-    setTimeout(() => {
-      const { top, bottom } = popperRef.current?.getBoundingClientRect();
-      setPopperTopOffset(top);
-      setPopperBottomOffset(bottom);
-    });
-  }, []);
+    useEffect(() => {
+      setTimeout(() => {
+        const { top, bottom } = popperRef.current?.getBoundingClientRect();
+        setPopperTopOffset(top);
+        setPopperBottomOffset(bottom);
+      });
+    }, []);
 
-  const calculateMaxHeight = () => {
-    const isPopperInBottom =
-      anchorEl.getBoundingClientRect().top < popperTopOffset;
+    // FIXME: Maybe move the selected index state out??
+    useImperativeHandle(
+      ref,
+      () => {
+        return {
+          handleSelectUser(action: "ArrowUp" | "ArrowDown") {
+            switch (action) {
+              case "ArrowDown":
+                const nextIndex = selectedUserIndex + 1;
+                setSelectedUserIndex(
+                  nextIndex <= users?.length - 1 ? nextIndex : 0
+                );
+                break;
 
-    if (isPopperInBottom) {
-      return window.innerHeight - popperTopOffset - 8;
-    } else {
-      return popperBottomOffset - 8;
-    }
-  };
+              case "ArrowUp":
+                setSelectedUserIndex(
+                  Math.sign(selectedUserIndex - 1) !== -1
+                    ? selectedUserIndex - 1
+                    : users?.length - 1
+                );
+                break;
 
-  return (
-    <Popper
-      open
-      placement="bottom-start"
-      anchorEl={anchorEl}
-      ref={popperRef}
-      sx={{
-        zIndex: theme.zIndex.modal,
-      }}
-    >
-      <Paper
-        elevation={8}
+              default:
+                break;
+            }
+          },
+        };
+      },
+      []
+    );
+
+    const calculateMaxHeight = () => {
+      const isPopperInBottom =
+        anchorEl.getBoundingClientRect().top < popperTopOffset;
+
+      if (isPopperInBottom) {
+        return window.innerHeight - popperTopOffset - 8;
+      } else {
+        return popperBottomOffset - 8;
+      }
+    };
+
+    return (
+      <Popper
+        open
+        placement="bottom-start"
+        anchorEl={anchorEl}
+        ref={popperRef}
         sx={{
-          overflow: "auto",
-          maxHeight: calculateMaxHeight(),
-          width: 328,
+          zIndex: theme.zIndex.modal,
         }}
       >
-        <List>
-          {users?.map((user) => (
-            <ListItemButton divider dense>
-              <ListItemAvatar>
-                <Avatar
-                  src={`https://www.gravatar.com/avatar/${MD5(
-                    user?.email || ""
-                  )}?s=40`}
+        <Paper
+          elevation={8}
+          sx={{
+            overflow: "auto",
+            maxHeight: calculateMaxHeight(),
+            width: 328,
+          }}
+        >
+          <List>
+            {users?.map((user, index) => (
+              <ListItemButton
+                divider
+                dense
+                key={user.ZUID}
+                selected={selectedUserIndex === index}
+              >
+                <ListItemAvatar>
+                  <Avatar
+                    src={`https://www.gravatar.com/avatar/${MD5(
+                      user?.email || ""
+                    )}?s=40`}
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={`${user.firstName} ${user.lastName}`}
+                  secondary={user.email}
                 />
-              </ListItemAvatar>
-              <ListItemText
-                primary={`${user.firstName} ${user.lastName}`}
-                secondary={user.email}
-              />
-            </ListItemButton>
-          ))}
-        </List>
-      </Paper>
-    </Popper>
-  );
-};
+              </ListItemButton>
+            ))}
+          </List>
+        </Paper>
+      </Popper>
+    );
+  }
+);
