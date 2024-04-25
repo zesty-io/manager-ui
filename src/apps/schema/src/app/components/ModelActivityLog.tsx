@@ -14,6 +14,7 @@ import {
 } from "../../../../../shell/services/instance";
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 import { filterByParams } from "../../../../../utility/filterByParams";
+import { toUTC } from "../../../../reports/src/app/views/ActivityLog/utils";
 
 type Params = {
   id: string;
@@ -34,8 +35,12 @@ export const ModelActivityLog = () => {
     isFetching: isFetchingAudits,
   } = useGetAuditsQuery(
     {
-      start_date: moment(searchParams.get("from")).format("L"),
-      end_date: moment(searchParams.get("to")).format("L"),
+      ...(searchParams.get("from") && {
+        start_date: toUTC(searchParams.get("from")),
+      }),
+      ...(searchParams.get("to") && {
+        end_date: toUTC(searchParams.get("to")),
+      }),
     },
     { skip: !initialized }
   );
