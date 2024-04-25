@@ -184,8 +184,8 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
         }}
         onKeyDown={(evt: React.KeyboardEvent<HTMLDivElement>) => {
           if (
-            evt.key === "ArrowDown" ||
-            (evt.key === "ArrowUp" && !!mentionListAnchorEl)
+            (evt.key === "ArrowDown" || evt.key === "ArrowUp") &&
+            !!mentionListAnchorEl
           ) {
             evt.preventDefault();
             mentionListRef.current?.handleSelectUser(evt.key);
