@@ -3,10 +3,12 @@ import { Box, TextField, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
 import sanitizeHtml from "sanitize-html";
+import { useSelector } from "react-redux";
 
 import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
 import { countCharUsage, getCursorPosition } from "./utils";
+import { AppState } from "../../../shell/store/types";
 
 const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
 
@@ -24,12 +26,41 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   const [isEditorActive, setIsEditorActive] = useState(false);
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
   const [isEnterPressed, setIsEnterPressed] = useState(true);
+  const platform = useSelector((state: AppState) => state.platform);
 
   useEffect(() => {
     if (!inputValue) {
       setMentionListAnchorEl(null);
     }
   }, [inputValue]);
+
+  const handleTextManipulation = (evt: KeyboardEvent) => {
+    const isModifierPressed =
+      (!platform.isMac && evt.ctrlKey) || (platform.isMac && evt.metaKey);
+
+    if (evt.key === "b" && isModifierPressed) {
+      evt.preventDefault();
+      document.execCommand("bold", false, "");
+    }
+
+    if (evt.key === "i" && isModifierPressed) {
+      evt.preventDefault();
+      document.execCommand("italic", false, "");
+    }
+
+    if (evt.key === "u" && isModifierPressed) {
+      evt.preventDefault();
+      document.execCommand("underline", false, "");
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleTextManipulation);
+
+    return () => {
+      window.removeEventListener("keydown", handleTextManipulation);
+    };
+  }, []);
 
   return (
     <>
@@ -86,6 +117,7 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
           }
         }}
         onKeyDown={(evt: React.KeyboardEvent<HTMLDivElement>) => {
+          console.log(evt);
           // Checks if the mention list should be opened or not
           if (evt.key === "@") {
             setTimeout(() => {
