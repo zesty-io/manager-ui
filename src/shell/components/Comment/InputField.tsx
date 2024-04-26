@@ -1,35 +1,49 @@
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { Box, TextField, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
-import sanitizeHtml from "sanitize-html";
-import { useSelector } from "react-redux";
 
 import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
 import { countCharUsage, getCursorPosition } from "./utils";
-import { AppState } from "../../../shell/store/types";
+import { CommentContext } from "../../contexts/CommentProvider";
 
 const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
 
 type InputFieldProps = {
   isFirstComment: boolean;
   onCancel: () => void;
+  fieldZuid: string;
 };
-export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
+export const InputField = ({
+  isFirstComment,
+  onCancel,
+  fieldZuid,
+}: InputFieldProps) => {
+  const [comments, updateComments] = useContext(CommentContext);
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
   const mentionListRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
   const [initialValue, setInitialValue] = useState(PLACEHOLDER);
   const [isEditorInitialized, setIsEditorInitialized] = useState(false);
-  const [isEditorActive, setIsEditorActive] = useState(false);
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
-  const [isEnterPressed, setIsEnterPressed] = useState(true);
   const [userFilterKeyword, setUserFilterKeyword] = useState("");
-  const platform = useSelector((state: AppState) => state.platform);
-  const [bm, setBm] = useState(null);
-  // NOTE: use the stored keyword to find the position in the string then add 1 to the left to include @, delete those then insert the mention
+
+  useEffect(() => {
+    if (comments[fieldZuid]) {
+      setInitialValue(comments[fieldZuid]);
+      setInputValue(comments[fieldZuid]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (inputValue) {
+      updateComments({
+        [fieldZuid]: inputValue === PLACEHOLDER ? "" : inputValue,
+      });
+    }
+  }, [inputValue]);
 
   return (
     <>
@@ -64,7 +78,7 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
         >
           <Editor
             id="commentInputField"
-            initialValue={PLACEHOLDER}
+            initialValue={initialValue}
             init={{
               inline: true,
 
@@ -81,14 +95,12 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
               if (tinymce?.activeEditor.getContent() === PLACEHOLDER) {
                 tinymce?.activeEditor.setContent("");
               }
-              setIsEditorActive(true);
             }}
             onBlur={() => {
               // Re-adds the placeholder when user clicks out and there's no value
               if (!tinymce?.activeEditor.getContent()) {
                 tinymce?.activeEditor.setContent(PLACEHOLDER);
               }
-              setIsEditorActive(false);
             }}
             onInit={(evt, editor) => {
               setIsEditorInitialized(true);
