@@ -57,7 +57,8 @@ export const MentionList = forwardRef(
       ref,
       () => {
         return {
-          handleSelectUser(action: "ArrowUp" | "ArrowDown") {
+          handleChangeSelectedUser(action: "ArrowUp" | "ArrowDown") {
+            console.log(action);
             switch (action) {
               case "ArrowDown":
                 const nextIndex = selectedUserIndex + 1;
@@ -78,9 +79,12 @@ export const MentionList = forwardRef(
                 break;
             }
           },
+          handleSelectUser() {
+            return sortedUsers[selectedUserIndex];
+          },
         };
       },
-      [selectedUserIndex]
+      [selectedUserIndex, sortedUsers]
     );
 
     const calculateMaxHeight = () => {
