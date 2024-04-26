@@ -28,6 +28,8 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   const [isEnterPressed, setIsEnterPressed] = useState(true);
   const [userFilterKeyword, setUserFilterKeyword] = useState("");
   const platform = useSelector((state: AppState) => state.platform);
+  const [bm, setBm] = useState(null);
+  // NOTE: use the stored keyword to find the position in the string then add 1 to the left to include @, delete those then insert the mention
 
   return (
     <>
@@ -52,6 +54,10 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
 
               "& .placeholder": {
                 color: "text.disabled",
+              },
+
+              "& .mentioned-user": {
+                color: "primary.main",
               },
             },
           }}
@@ -162,9 +168,24 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
                   mentionListRef.current?.handleSelectUser()?.email;
 
                 if (userEmail) {
-                  editor.insertContent(
+                  const selection = window.getSelection();
+                  if (selection && selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const startOffset = range.startOffset;
+                    range.setStart(
+                      range.startContainer,
+                      startOffset - (userFilterKeyword?.length + 1)
+                    );
+                    range.setEnd(range.startContainer, startOffset);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                  }
+                  editor.selection.setContent(`<span class="mentioned-user">@${
                     mentionListRef.current?.handleSelectUser()?.email
-                  );
+                  }
+                  </span>`);
+                  editor.selection.setContent("<span>&nbsp;</span>");
+
                   setMentionListAnchorEl(null);
                 }
                 return;
