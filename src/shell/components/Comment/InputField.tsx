@@ -26,6 +26,7 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
   const [isEditorActive, setIsEditorActive] = useState(false);
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
   const [isEnterPressed, setIsEnterPressed] = useState(true);
+  const [userFilterKeyword, setUserFilterKeyword] = useState("");
   const platform = useSelector((state: AppState) => state.platform);
 
   return (
@@ -59,13 +60,6 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
             id="commentInputField"
             initialValue={PLACEHOLDER}
             init={{
-              plugins: ["autoresize"],
-              toolbar: false,
-              menubar: false,
-              branding: false,
-              statusbar: false,
-              resize: false,
-              autoresize_bottom_margin: 0,
               inline: true,
 
               setup: (editor) => {
@@ -93,13 +87,28 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
             onInit={(evt, editor) => {
               setIsEditorInitialized(true);
             }}
-            onEditorChange={(value, editor) => {}}
-            onKeyDown={(evt) => {
+            onEditorChange={(value, editor) => {
+              setInputValue(value);
+            }}
+            onKeyDown={(evt, editor) => {
               // Checks if the mention list should be opened or not
               if (evt.key === "@") {
                 setTimeout(() => {
                   setMentionListAnchorEl(inputRef.current);
                 });
+              }
+
+              // Logs the entered values after the mention list was opened
+              if (!!mentionListAnchorEl) {
+                if (evt.key.length === 1) {
+                  setUserFilterKeyword(userFilterKeyword + evt.key);
+                } else if (evt.key === "Backspace") {
+                  setUserFilterKeyword(
+                    userFilterKeyword.slice(0, userFilterKeyword?.length - 1)
+                  );
+                }
+              } else {
+                setUserFilterKeyword("");
               }
 
               // Changes selected item from the mention list when open
@@ -147,12 +156,16 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
               }
 
               // Selects the highlighted item when mention list is open
-              if (evt.key === "Enter") {
-                if (!!mentionListAnchorEl) {
-                  evt.preventDefault();
-                  console.log(mentionListRef.current?.handleSelectUser());
-                } else {
-                  // Do something else
+              if (evt.key === "Enter" && !!mentionListAnchorEl) {
+                evt.preventDefault();
+                const userEmail =
+                  mentionListRef.current?.handleSelectUser()?.email;
+
+                if (userEmail) {
+                  editor.insertContent(
+                    mentionListRef.current?.handleSelectUser()?.email
+                  );
+                  setMentionListAnchorEl(null);
                 }
                 return;
               }
@@ -164,8 +177,7 @@ export const InputField = ({ isFirstComment, onCancel }: InputFieldProps) => {
         <MentionList
           ref={mentionListRef}
           anchorEl={mentionListAnchorEl}
-          onClose={() => {}}
-          onSelect={() => {}}
+          filterKeyword={userFilterKeyword}
         />
       )}
       <Stack

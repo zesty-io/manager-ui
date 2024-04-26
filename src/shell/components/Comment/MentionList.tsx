@@ -21,11 +21,10 @@ import { MD5 } from "../../../utility/md5";
 
 type MentionListProps = {
   anchorEl: Element;
-  onClose: () => void;
-  onSelect: () => void;
+  filterKeyword: string;
 };
 export const MentionList = forwardRef(
-  ({ anchorEl, onClose, onSelect }: MentionListProps, ref) => {
+  ({ anchorEl, filterKeyword }: MentionListProps, ref) => {
     const { data: users } = useGetUsersQuery();
     const [popperTopOffset, setPopperTopOffset] = useState(0);
     const [popperBottomOffset, setPopperBottomOffset] = useState(0);
@@ -34,10 +33,10 @@ export const MentionList = forwardRef(
     const listRef = useRef<HTMLUListElement>();
 
     const sortedUsers = useMemo(() => {
-      return [...users]?.sort((userA, userB) =>
-        userA.firstName.localeCompare(userB.firstName)
-      );
-    }, [users]);
+      return [...users]
+        ?.sort((userA, userB) => userA.firstName.localeCompare(userB.firstName))
+        .filter((user) => user.email.includes(filterKeyword));
+    }, [users, filterKeyword]);
 
     useEffect(() => {
       setTimeout(() => {
