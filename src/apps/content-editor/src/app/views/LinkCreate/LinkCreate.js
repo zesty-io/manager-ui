@@ -97,7 +97,7 @@ export function LinkCreate() {
           }
           dispatch(
             notify({
-              primary: "Unable to Create Link",
+              heading: "Unable to Create Link",
               message,
               kind: "error",
             })

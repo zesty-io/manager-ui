@@ -96,7 +96,7 @@ export default connect((state) => {
           severity,
           icon,
           bgColor,
-          primary: props.notifications[0]?.primary,
+          heading: props.notifications[0]?.heading,
         });
         // On every render set timeout to hide notices
         const token = setTimeout(() => {
@@ -231,7 +231,7 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
         icon={props.icon}
         action={
           <Stack direction="row">
-            {props.primary && <Button sx={{ color: "white" }}>Action</Button>}
+            {props.heading && <Button sx={{ color: "white" }}>Action</Button>}
             <IconButton onClick={handleDismiss}>
               <CloseIcon sx={{ width: 20, height: 20, color: "white" }} />
             </IconButton>
@@ -261,13 +261,13 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
               maxWidth: "516px",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              fontWeight: props.primary ? 700 : "normal",
+              fontWeight: props.heading ? 700 : "normal",
             }}
           >
-            {props.primary ? props.primary : props.message}
+            {props.heading ? props.heading : props.message}
           </Typography>
 
-          {props.primary && (
+          {props.heading && (
             <Typography
               variant="body2"
               noWrap={props.severity === "success"}

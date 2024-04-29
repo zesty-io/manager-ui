@@ -254,7 +254,7 @@ export default function ItemEdit() {
             // message: `You are missing data in ${res.missingRequired.map(
             //   (f) => f.label + " "
             // )}`,
-            primary: `Cannot Save: ${item.web.metaTitle}`,
+            heading: `Cannot Save: ${item.web.metaTitle}`,
             message: "Missing Data in Required Fields",
             kind: "error",
           })

@@ -125,7 +125,7 @@ export const ItemParent = connect((state) => {
                     props.dispatch(
                       notify({
                         kind: "warn",
-                        primary: `Cannot Save: ${props.metaTitle}`,
+                        heading: `Cannot Save: ${props.metaTitle}`,
                         messsage: "Set page parent in SEO Tab",
                       })
                     );
@@ -142,7 +142,7 @@ export const ItemParent = connect((state) => {
                 props.dispatch(
                   notify({
                     kind: "warn",
-                    primary: `"Cannot Save: [${props.metaTitle}]`,
+                    heading: `"Cannot Save: [${props.metaTitle}]`,
                     message: `Page's Parent does not exist or has been deleted`,
                   })
                 );

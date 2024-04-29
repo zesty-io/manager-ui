@@ -193,7 +193,7 @@ export default function LinkEdit() {
           }
           dispatch(
             notify({
-              primary: `Cannot Save: ${
+              heading: `Cannot Save: ${
                 params.metaTitle.trim() === ""
                   ? "Empty Title"
                   : params.metaTitle
@@ -206,7 +206,7 @@ export default function LinkEdit() {
           setState({ ...state, saving: false });
           dispatch(
             notify({
-              message: `Link Saved: [${params.metaTitle}]`,
+              message: `Link Saved: ${params.metaTitle}`,
               kind: "save",
             })
           );

@@ -25,7 +25,7 @@ export function notifications(state: Notification[] = [], action: Action) {
 type NotifyArgs = {
   kind: "warn" | "error" | "success";
   HTML?: unknown;
-  primary?: string;
+  heading?: string;
   message?: string;
 };
 
