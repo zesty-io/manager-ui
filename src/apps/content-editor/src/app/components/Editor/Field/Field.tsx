@@ -619,7 +619,7 @@ export const Field = ({
     case "internal_link":
       let internalLinkRelatedItem = allItems[value];
       let internalLinkOptions = useMemo(() => {
-        return Object.keys(allItems)
+        const options = Object.keys(allItems)
           .filter(
             (itemZUID) =>
               !itemZUID.includes("new") && // exclude new items
@@ -656,19 +656,18 @@ export const Field = ({
             };
           })
           .sort(sortHTML);
-      }, [internalLinkRelatedItem, Object.keys(allItems).length]);
 
-      if (
-        !internalLinkRelatedItem ||
-        !internalLinkRelatedItem.meta ||
-        !internalLinkRelatedItem.meta.ZUID
-      ) {
-        // insert placeholder
-        internalLinkOptions.unshift({
-          value: value as string,
-          html: `Selected item not found: ${value}`,
-        });
-      }
+        // if the selected item is not found, insert a placeholder
+        if (internalLinkRelatedItem && !internalLinkRelatedItem?.meta?.ZUID) {
+          // insert placeholder
+          options.unshift({
+            value: value as string,
+            html: `Selected item not found: ${value}`,
+          });
+        }
+
+        return options;
+      }, [internalLinkRelatedItem, Object.keys(allItems).length]);
 
       const onInternalLinkSearch = useCallback(
         (term) => dispatch(searchItems(term)),
