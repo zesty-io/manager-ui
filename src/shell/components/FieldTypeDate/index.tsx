@@ -206,7 +206,6 @@ export const FieldTypeDate = memo(
                     onChange: (e: any) => {
                       const inputDate = e.target.value;
                       const parsedDate = parseDateInput(inputDate);
-                      console.log(parsedDate);
 
                       if (parsedDate) {
                         props.onChange(parsedDate, null);
