@@ -63,7 +63,6 @@ const parseDateInput = (input: string): Date | null => {
 
   const isValidMonth = month >= 0 && month <= 11;
   let day = isNaN(parseInt(dayInput)) ? 1 : parseInt(dayInput);
-  // let year = isNaN(parseInt(yearInput)) ? currentYear : parseInt(yearInput);
   let year = parseInt(yearInput);
 
   if (isNaN(year)) {
