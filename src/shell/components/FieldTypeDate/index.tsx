@@ -50,18 +50,36 @@ const parseDateInput = (input: string): Date | null => {
   const currentYear = new Date().getFullYear();
 
   let [monthInput, dayInput, yearInput] = dateParts;
-  yearInput = yearInput.slice(0, 4);
-  dayInput = dayInput.slice(0, 2);
-  let month = months[monthInput.toLowerCase().slice(0, 3)];
+  yearInput = yearInput?.slice(0, 4);
+  dayInput = dayInput?.slice(0, 2);
+  let month = months[monthInput.toLowerCase()?.slice(0, 3)];
+
   if (isNaN(month)) {
     month = currentMonth;
     if (!isNaN(parseInt(monthInput))) {
       month = parseInt(monthInput) - 1;
     }
   }
+
   const isValidMonth = month >= 0 && month <= 11;
   let day = isNaN(parseInt(dayInput)) ? 1 : parseInt(dayInput);
-  let year = isNaN(parseInt(yearInput)) ? currentYear : parseInt(yearInput);
+  // let year = isNaN(parseInt(yearInput)) ? currentYear : parseInt(yearInput);
+  let year = parseInt(yearInput);
+
+  if (isNaN(year)) {
+    const isNotInPast =
+      new Date(
+        currentYear,
+        isValidMonth ? month : currentMonth,
+        day
+      ).getTime() >= new Date().getTime();
+
+    if (isNotInPast) {
+      year = currentYear;
+    } else {
+      year = currentYear + 1;
+    }
+  }
 
   return new Date(year, isValidMonth ? month : currentMonth, day);
 };
@@ -189,6 +207,7 @@ export const FieldTypeDate = memo(
                     onChange: (e: any) => {
                       const inputDate = e.target.value;
                       const parsedDate = parseDateInput(inputDate);
+                      console.log(parsedDate);
 
                       if (parsedDate) {
                         props.onChange(parsedDate, null);
