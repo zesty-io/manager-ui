@@ -196,7 +196,10 @@ export default memo(function Editor({
         });
       }
 
-      if (field?.settings?.defaultValue !== null) {
+      if (
+        field?.settings?.defaultValue !== null &&
+        field?.settings?.defaultValue !== undefined
+      ) {
         dispatch({
           type: "SET_ITEM_DATA",
           itemZUID: itemZUID,
