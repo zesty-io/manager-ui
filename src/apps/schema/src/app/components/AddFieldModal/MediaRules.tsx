@@ -50,7 +50,6 @@ export const MediaRules = ({
       display="flex"
       flexDirection="column"
       height="100%"
-      minHeight={428}
     >
       <Box
         display="flex"
@@ -59,6 +58,7 @@ export const MediaRules = ({
         gap="20px"
       >
         {fieldConfig?.map((rule: InputField, key: number) => {
+          if (rule.name === "defaultValue") return;
           return (
             <Box key={key}>
               <FormControlLabel
@@ -68,11 +68,6 @@ export const MediaRules = ({
                 control={
                   <Checkbox
                     data-cy={`MediaCheckbox_${rule.name}`}
-                    sx={{
-                      color: "grey.200",
-                      pl: 1,
-                      pt: 0,
-                    }}
                     size="small"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const { checked } = e.target;
@@ -119,6 +114,7 @@ export const MediaRules = ({
             </Box>
           );
         })}
+        <Box></Box>
       </Box>
     </Box>
   );

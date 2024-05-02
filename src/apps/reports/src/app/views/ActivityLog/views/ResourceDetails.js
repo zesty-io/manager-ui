@@ -20,6 +20,7 @@ import { resolveUrlFromAudit } from "../../../../../../../utility/resolveResourc
 import { CustomBreadcrumbs } from "../../../../../../../shell/components/CustomBreadcrumbs";
 import { ResourceHeaderTitle } from "../components/ResourceHeaderTitle";
 import { useGetInstanceSettingsQuery } from "../../../../../../../shell/services/instance";
+import { toUTC } from "../utils";
 
 const Crumbs = [
   {
@@ -98,10 +99,10 @@ export const ResourceDetails = () => {
   } = instanceApi.useGetAuditsQuery(
     {
       ...(params.get("from") && {
-        start_date: moment(params.get("from")).format("L"),
+        start_date: toUTC(params.get("from")),
       }),
       ...(params.get("to") && {
-        end_date: moment(params.get("to")).format("L"),
+        end_date: toUTC(params.get("to")),
       }),
     },
     { skip: !initialized }

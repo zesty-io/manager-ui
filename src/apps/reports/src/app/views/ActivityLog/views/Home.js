@@ -33,6 +33,7 @@ import { TopUsers } from "../components/TopUsers";
 import { isEmpty, omitBy, uniqBy } from "lodash";
 import { EmptyState } from "../components/EmptyState";
 import { ApiErrorState } from "../components/ApiErrorState";
+import { toUTC } from "../utils";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
@@ -91,10 +92,10 @@ export const Home = () => {
   } = instanceApi.useGetAuditsQuery(
     {
       ...(params.get("from") && {
-        start_date: moment(params.get("from")).format("L"),
+        start_date: toUTC(params.get("from")),
       }),
       ...(params.get("to") && {
-        end_date: moment(params.get("to")).format("L"),
+        end_date: toUTC(params.get("to")),
       }),
     },
     { skip: !initialized }
