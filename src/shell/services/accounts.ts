@@ -11,6 +11,7 @@ export const accountsApi = createApi({
     baseUrl: `${__CONFIG__.API_ACCOUNTS}/`,
     prepareHeaders,
   }),
+  tagTypes: ["Comments"],
   // always use the instanceZUID from the URL
   endpoints: (builder) => ({
     getDomains: builder.query<Domain[], void>({
@@ -72,13 +73,58 @@ export const accountsApi = createApi({
           instanceZUID,
         },
       }),
+      invalidatesTags: (result, error, { resourceZUID }) => [
+        { type: "Comments", id: resourceZUID },
+      ],
     }),
     // createReply
-    // getComment NOTE: Include thread
-    // getCommentByResource
-    // updateComment
-    // deleteComment
-    // resolveComment
+    // TODO: Create type once response is ready
+    getComment: builder.query<any, { resourceZUID: string }>({
+      query: ({ resourceZUID }) => `/comments/${resourceZUID}?showReplies=true`,
+      transformResponse: getResponseData,
+      providesTags: (result, error, { resourceZUID }) => [
+        { type: "Comments", id: resourceZUID },
+      ],
+    }),
+    updateComment: builder.mutation<
+      any,
+      { resourceZUID: string; commentZUID: string; content: string }
+    >({
+      query: ({ commentZUID, content }) => ({
+        url: `/comments/${commentZUID}`,
+        method: "PUT",
+        body: { content },
+      }),
+      invalidatesTags: (result, error, { resourceZUID }) => [
+        { type: "Comments", id: resourceZUID },
+      ],
+    }),
+    deleteComment: builder.mutation<
+      any,
+      { resourceZUID: string; commentZUID: string }
+    >({
+      query: ({ commentZUID }) => ({
+        url: `/comments/${commentZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, { resourceZUID }) => [
+        { type: "Comments", id: resourceZUID },
+      ],
+    }),
+    updateCommentStatus: builder.mutation<
+      any,
+      { resourceZUID: string; commentZUID: string; isResolved: boolean }
+    >({
+      query: ({ commentZUID, isResolved }) => ({
+        url: `/comments/${commentZUID}?action=${
+          isResolved ? "resolve" : "unresolve"
+        }`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, { resourceZUID }) => [
+        { type: "Comments", id: resourceZUID },
+      ],
+    }),
   }),
 });
 
@@ -94,4 +140,8 @@ export const {
   useGetCurrentUserRolesQuery,
   useGetInstalledAppsQuery,
   useCreateCommentMutation,
+  useGetCommentQuery,
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
+  useUpdateCommentStatusMutation,
 } = accountsApi;
