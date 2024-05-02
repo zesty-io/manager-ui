@@ -1,4 +1,12 @@
-import { Popover, Divider, Paper, Popper, Box, Backdrop } from "@mui/material";
+import {
+  Popover,
+  Divider,
+  Paper,
+  Popper,
+  Box,
+  Backdrop,
+  PopperPlacementType,
+} from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 
@@ -24,13 +32,25 @@ export const CommentsList = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const [popperTopOffset, setPopperTopOffset] = useState(0);
   const [popperBottomOffset, setPopperBottomOffset] = useState(0);
+  const [placement, setPlacement] =
+    useState<PopperPlacementType>("bottom-start");
   const topOffsetRef = useRef<HTMLDivElement>();
 
   const commentResourceZuid = searchParams.get("commentResourceZuid");
 
   useEffect(() => {
+    if (
+      window.innerHeight - anchorEl?.getBoundingClientRect().top >
+      window.innerHeight * 0.3
+    ) {
+      setPlacement("bottom-start");
+    } else {
+      setPlacement("top-start");
+    }
+
     setTimeout(() => {
       const { top, bottom } = topOffsetRef.current?.getBoundingClientRect();
+
       setPopperTopOffset(top);
       setPopperBottomOffset(bottom);
     });
@@ -44,13 +64,10 @@ export const CommentsList = ({
   }, []);
 
   const calculateMaxHeight = () => {
-    const isPopperInBottom =
-      anchorEl?.getBoundingClientRect().top < popperTopOffset;
-
-    if (isPopperInBottom) {
-      return window.innerHeight - popperTopOffset - 32 - 8;
+    if (placement === "bottom-start") {
+      return window.innerHeight - popperTopOffset - 8;
     } else {
-      return popperBottomOffset - 32 - 8;
+      return popperBottomOffset - 8;
     }
   };
 
@@ -73,7 +90,7 @@ export const CommentsList = ({
       <Popper
         open
         anchorEl={anchorEl}
-        placement="bottom-start"
+        placement={placement}
         sx={{
           zIndex: theme.zIndex.modal,
         }}
@@ -102,6 +119,8 @@ export const CommentsList = ({
           {comments?.map((comment, index) => (
             <Fragment key={index}>
               <CommentItem
+                // TODO: Replace with comment zuid
+                id={`${commentResourceZuid}${index}`}
                 body={comment.body}
                 createdOn={comment.createdOn}
                 creator={comment.creator}

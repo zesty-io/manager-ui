@@ -57,7 +57,6 @@ export const MentionList = forwardRef(
       () => {
         return {
           handleChangeSelectedUser(action: "ArrowUp" | "ArrowDown") {
-            console.log(action);
             switch (action) {
               case "ArrowDown":
                 const nextIndex = selectedUserIndex + 1;

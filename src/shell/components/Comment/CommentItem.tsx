@@ -24,6 +24,7 @@ const URL_REGEX =
   /(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
 
 type CommentItemProps = {
+  id: string;
   body: string;
   creator: string;
   createdOn: string;
@@ -31,6 +32,7 @@ type CommentItemProps = {
   onResolveComment: () => void;
 };
 export const CommentItem = ({
+  id,
   body,
   creator,
   createdOn,
@@ -72,7 +74,7 @@ export const CommentItem = ({
   }, [body, commentBodyRef]);
 
   return (
-    <>
+    <Box id={id}>
       <Stack gap={1.5}>
         <Stack gap={1.5} direction="row">
           <Stack flex={1} direction="row" gap={1.5} alignItems="center">
@@ -154,6 +156,6 @@ export const CommentItem = ({
           </MenuItem>
         </Menu>
       )}
-    </>
+    </Box>
   );
 };
