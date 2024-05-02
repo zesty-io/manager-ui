@@ -53,6 +53,7 @@ import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
 import { notify } from "../../../../../../../shell/store/notifications";
+import { DefaultValue } from "../DefaultValue";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -151,6 +152,10 @@ export const FieldForm = ({
     { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
   ] = useUndeleteContentModelFieldMutation();
   const dispatch = useDispatch();
+  const [isDefaultValueEnabled, setIsDefaultValueEnabled] = useState(
+    fieldData?.settings?.defaultValue !== null &&
+      fieldData?.settings?.defaultValue !== undefined
+  );
 
   /** Initiate field type form */
   useEffect(() => {
@@ -186,6 +191,12 @@ export const FieldForm = ({
           formFields.options = options;
         } else if (field.name === "tooltip") {
           formFields["tooltip"] = fieldData.settings.tooltip || "";
+        } else if (field.name === "defaultValue") {
+          formFields["defaultValue"] =
+            fieldData.settings.defaultValue !== null &&
+            fieldData.settings.defaultValue !== undefined
+              ? fieldData.settings.defaultValue
+              : null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -203,7 +214,11 @@ export const FieldForm = ({
         } else if (field.type === "toggle_options") {
           formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
         } else {
-          formFields[field.name] = "";
+          if (field.name === "defaultValue") {
+            formFields[field.name] = null;
+          } else {
+            formFields[field.name] = "";
+          }
         }
 
         // Add the field name to the errors object if the field requires any validation
@@ -261,7 +276,14 @@ export const FieldForm = ({
     let newErrorsObj: Errors = {};
 
     Object.keys(formData).map((inputName) => {
-      if (inputName in errors) {
+      if (
+        inputName === "defaultValue" &&
+        isDefaultValueEnabled &&
+        (formData.defaultValue === "" || formData.defaultValue === null)
+      ) {
+        newErrorsObj[inputName] = "Required Field. Please enter a value.";
+      }
+      if (inputName in errors && inputName !== "defaultValue") {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
           (field) => field.name === inputName
         );
@@ -299,7 +321,7 @@ export const FieldForm = ({
     });
 
     setErrors(newErrorsObj);
-  }, [formData]);
+  }, [formData, isDefaultValueEnabled]);
 
   useEffect(() => {
     if (fieldCreationError || fieldUpdateError) {
@@ -354,7 +376,9 @@ export const FieldForm = ({
     if (hasErrors) {
       // Switch the active tab to details to show the user the errors if
       // they're not on the details tab and they clicked the submit button
-      if (activeTab !== "details") {
+      if (errors.defaultValue) {
+        setActiveTab("rules");
+      } else {
         setActiveTab("details");
       }
 
@@ -379,6 +403,7 @@ export const FieldForm = ({
         ...((formData.tooltip as string)?.length && {
           tooltip: formData.tooltip as string,
         }),
+        defaultValue: formData.defaultValue as string,
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
@@ -428,7 +453,7 @@ export const FieldForm = ({
     value,
   }: {
     inputName: string;
-    value: string | boolean;
+    value: FormValue;
   }) => {
     const isAutoPopulateName = inputName === "label" && !isUpdateField;
 
@@ -561,7 +586,7 @@ export const FieldForm = ({
             rowSpacing={2.5}
             columnSpacing={2.5}
             width="inherit"
-            minHeight={448}
+            // minHeight={448}
             ml={0}
           >
             {FORM_CONFIG[type]?.details?.map((fieldConfig, index) => {
@@ -636,8 +661,6 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && type !== "images" && <ComingSoon />}
-
         {activeTab === "rules" && type === "images" && (
           <MediaRules
             fieldConfig={FORM_CONFIG["images"].rules}
@@ -647,6 +670,30 @@ export const FieldForm = ({
               limit: formData["limit"],
               group_id: formData["group_id"],
             }}
+          />
+        )}
+
+        {activeTab === "rules" && type === "uuid" && <ComingSoon />}
+
+        {activeTab === "rules" && type !== "uuid" && (
+          <DefaultValue
+            type={type}
+            value={formData["defaultValue"]}
+            onChange={(value) => {
+              handleFieldDataChange({ inputName: "defaultValue", value });
+            }}
+            isDefaultValueEnabled={isDefaultValueEnabled}
+            setIsDefaultValueEnabled={setIsDefaultValueEnabled}
+            error={isSubmitClicked && (errors["defaultValue"] as string)}
+            mediaRules={{
+              limit: formData["limit"],
+              group_id: formData["group_id"],
+            }}
+            relationshipFields={{
+              relatedModelZUID: formData["relatedModelZUID"] as string,
+              relatedFieldZUID: formData["relatedFieldZUID"] as string,
+            }}
+            options={formData["options"] as FieldSettingsOptions[]}
           />
         )}
 

@@ -25,6 +25,9 @@ export const MaxLengths = {
   textarea: 16000,
   wysiwyg_basic: 0,
   wysiwyg_advanced: 0,
+  fontawesome: 150,
+  markdown: 0,
+  article_writer: 0,
 };
 
 export default memo(function Editor({
@@ -43,6 +46,7 @@ export default memo(function Editor({
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const activeFields = useMemo(() => {
     if (fields?.length) {
@@ -181,7 +185,6 @@ export default memo(function Editor({
     [fieldErrors]
   );
 
-  // This function will be built upon when default values are added to the schema builder
   const applyDefaultValuesToItemData = useCallback(() => {
     activeFields.forEach((field) => {
       if (field.datatype === "sort") {
@@ -192,14 +195,32 @@ export default memo(function Editor({
           value: 0,
         });
       }
+
+      if (
+        field?.settings?.defaultValue !== null &&
+        field?.settings?.defaultValue !== undefined
+      ) {
+        dispatch({
+          type: "SET_ITEM_DATA",
+          itemZUID: itemZUID,
+          key: field.name,
+          value: field.settings.defaultValue,
+        });
+      }
+
+      setIsLoaded(true);
     });
   }, [activeFields, itemZUID]);
 
   useEffect(() => {
     if (isNewItem) {
       applyDefaultValuesToItemData();
+    } else {
+      setIsLoaded(true);
     }
-  }, [isNewItem]);
+  }, [isNewItem, setIsLoaded, applyDefaultValuesToItemData]);
+
+  if (!isLoaded) return null;
 
   return (
     <ThemeProvider theme={theme}>
