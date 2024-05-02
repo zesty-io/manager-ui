@@ -142,7 +142,7 @@ export const FieldShell = ({
             </>
           )}
           {endLabel}
-          <Comment fieldZuid={settings.ZUID} />
+          <Comment resourceZUID={settings.ZUID} />
         </Stack>
       </Stack>
       {settings?.description && (

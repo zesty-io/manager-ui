@@ -12,7 +12,7 @@ type CommentsListProps = {
   comments: CommentItemType[];
   isResolved: boolean;
   onResolveComment: () => void;
-  fieldZuid: string;
+  resourceZUID: string;
 };
 export const CommentsList = ({
   anchorEl,
@@ -20,7 +20,7 @@ export const CommentsList = ({
   comments,
   onResolveComment,
   isResolved,
-  fieldZuid,
+  resourceZUID,
 }: CommentsListProps) => {
   const [popperTopOffset, setPopperTopOffset] = useState(0);
   const [popperBottomOffset, setPopperBottomOffset] = useState(0);
@@ -112,7 +112,7 @@ export const CommentsList = ({
           <InputField
             isFirstComment={!comments?.length}
             onCancel={onClose}
-            fieldZuid={fieldZuid}
+            resourceZUID={resourceZUID}
           />
         </Paper>
       </Popper>

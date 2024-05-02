@@ -35,9 +35,9 @@ const dummyComments: CommentItemType[] = [
 ];
 
 type CommentProps = {
-  fieldZuid: string;
+  resourceZUID: string;
 };
-export const Comment = ({ fieldZuid }: CommentProps) => {
+export const Comment = ({ resourceZUID }: CommentProps) => {
   const [isResolved, setIsResolved] = useState(false);
   const [comments] = useState(dummyComments);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
@@ -109,7 +109,7 @@ export const Comment = ({ fieldZuid }: CommentProps) => {
       )}
       {anchorEl && (
         <CommentsList
-          fieldZuid={fieldZuid}
+          resourceZUID={resourceZUID}
           anchorEl={anchorEl}
           onClose={() => setAnchorEl(null)}
           comments={comments}

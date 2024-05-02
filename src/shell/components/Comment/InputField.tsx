@@ -15,12 +15,12 @@ const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
 type InputFieldProps = {
   isFirstComment: boolean;
   onCancel: () => void;
-  fieldZuid: string;
+  resourceZUID: string;
 };
 export const InputField = ({
   isFirstComment,
   onCancel,
-  fieldZuid,
+  resourceZUID,
 }: InputFieldProps) => {
   const [
     createComment,
@@ -43,8 +43,8 @@ export const InputField = ({
   const handleCreateComment = () => {
     createComment({
       // TODO: Make this dynamic
-      resourceType: getResourceTypeByZuid(fieldZuid),
-      resourceZUID: fieldZuid,
+      resourceType: getResourceTypeByZuid(resourceZUID),
+      resourceZUID,
       content: inputValue,
       // content: "Hello world",
     });
@@ -55,16 +55,16 @@ export const InputField = ({
   };
 
   useEffect(() => {
-    if (comments[fieldZuid]) {
-      setInitialValue(comments[fieldZuid]);
-      setInputValue(comments[fieldZuid]);
+    if (comments[resourceZUID]) {
+      setInitialValue(comments[resourceZUID]);
+      setInputValue(comments[resourceZUID]);
     }
   }, []);
 
   useEffect(() => {
     if (inputValue) {
       updateComments({
-        [fieldZuid]: inputValue === PLACEHOLDER ? "" : inputValue,
+        [resourceZUID]: inputValue === PLACEHOLDER ? "" : inputValue,
       });
     }
   }, [inputValue]);
@@ -72,7 +72,7 @@ export const InputField = ({
   useEffect(() => {
     setInputValue("");
     updateComments({
-      [fieldZuid]: "",
+      [resourceZUID]: "",
     });
   }, [isCommentCreated]);
 
