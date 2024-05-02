@@ -5,6 +5,7 @@ import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { CommentItem } from "./CommentItem";
 import { CommentItemType } from "./index";
 import { InputField } from "./InputField";
+import { useParams as useSearchParams } from "../../hooks/useParams";
 
 type CommentsListProps = {
   anchorEl: Element;
@@ -12,7 +13,6 @@ type CommentsListProps = {
   comments: CommentItemType[];
   isResolved: boolean;
   onResolveComment: () => void;
-  resourceZUID: string;
 };
 export const CommentsList = ({
   anchorEl,
@@ -20,11 +20,13 @@ export const CommentsList = ({
   comments,
   onResolveComment,
   isResolved,
-  resourceZUID,
 }: CommentsListProps) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [popperTopOffset, setPopperTopOffset] = useState(0);
   const [popperBottomOffset, setPopperBottomOffset] = useState(0);
   const topOffsetRef = useRef<HTMLDivElement>();
+
+  const commentResourceZuid = searchParams.get("commentResourceZuid");
 
   useEffect(() => {
     setTimeout(() => {
@@ -43,7 +45,7 @@ export const CommentsList = ({
 
   const calculateMaxHeight = () => {
     const isPopperInBottom =
-      anchorEl.getBoundingClientRect().top < popperTopOffset;
+      anchorEl?.getBoundingClientRect().top < popperTopOffset;
 
     if (isPopperInBottom) {
       return window.innerHeight - popperTopOffset - 32 - 8;
@@ -112,7 +114,7 @@ export const CommentsList = ({
           <InputField
             isFirstComment={!comments?.length}
             onCancel={onClose}
-            resourceZUID={resourceZUID}
+            resourceZUID={commentResourceZuid}
           />
         </Paper>
       </Popper>

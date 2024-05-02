@@ -1,9 +1,10 @@
 import { IconButton, Button, alpha } from "@mui/material";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import { CommentsList } from "./CommentsList";
+import { useParams as useSearchParams } from "../../hooks/useParams";
 
 // Mock data
 export type CommentItemType = {
@@ -38,9 +39,13 @@ type CommentProps = {
   resourceZUID: string;
 };
 export const Comment = ({ resourceZUID }: CommentProps) => {
+  const buttonRef = useRef<HTMLButtonElement>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isResolved, setIsResolved] = useState(false);
   const [comments] = useState(dummyComments);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
+
+  const commentResourceZuid = searchParams.get("commentResourceZuid");
 
   return (
     <>
@@ -48,7 +53,8 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
         <Button
           size="xsmall"
           endIcon={<CommentRoundedIcon />}
-          onClick={(evt) => setAnchorEl(evt.currentTarget)}
+          onClick={() => setSearchParams(resourceZUID, "commentResourceZuid")}
+          ref={buttonRef}
           sx={{
             backgroundColor: (theme) =>
               isResolved
@@ -107,11 +113,10 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
           <AddCommentRoundedIcon sx={{ fontSize: 16 }} />
         </IconButton>
       )}
-      {anchorEl && (
+      {commentResourceZuid === resourceZUID && buttonRef.current && (
         <CommentsList
-          resourceZUID={resourceZUID}
-          anchorEl={anchorEl}
-          onClose={() => setAnchorEl(null)}
+          anchorEl={buttonRef.current}
+          onClose={() => setSearchParams(null, "commentResourceZuid")}
           comments={comments}
           isResolved={isResolved}
           onResolveComment={() => setIsResolved(true)}

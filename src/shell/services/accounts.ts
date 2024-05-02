@@ -11,7 +11,7 @@ export const accountsApi = createApi({
     baseUrl: `${__CONFIG__.API_ACCOUNTS}/`,
     prepareHeaders,
   }),
-  tagTypes: ["Comments"],
+  tagTypes: ["Comments", "CommentThread"],
   // always use the instanceZUID from the URL
   endpoints: (builder) => ({
     getDomains: builder.query<Domain[], void>({
@@ -79,11 +79,22 @@ export const accountsApi = createApi({
     }),
     // createReply
     // TODO: Create type once response is ready
-    getComment: builder.query<any, { resourceZUID: string }>({
-      query: ({ resourceZUID }) => `/comments/${resourceZUID}?showReplies=true`,
+    getCommentByResource: builder.query<any, { resourceZUID: string }>({
+      query: ({ resourceZUID }) =>
+        `/instances/${instanceZUID}/comments?resource=${resourceZUID}`,
       transformResponse: getResponseData,
       providesTags: (result, error, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
+      ],
+    }),
+    getCommentThread: builder.query<
+      any,
+      { commentZUID: string; resourceZUID: string }
+    >({
+      query: ({ resourceZUID }) => `/comments/${resourceZUID}?showReplies=true`,
+      transformResponse: getResponseData,
+      providesTags: (result, error, { commentZUID }) => [
+        { type: "CommentThread", id: commentZUID },
       ],
     }),
     updateComment: builder.mutation<
@@ -97,6 +108,7 @@ export const accountsApi = createApi({
       }),
       invalidatesTags: (result, error, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
+        "CommentThread",
       ],
     }),
     deleteComment: builder.mutation<
@@ -109,6 +121,7 @@ export const accountsApi = createApi({
       }),
       invalidatesTags: (result, error, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
+        "CommentThread",
       ],
     }),
     updateCommentStatus: builder.mutation<
@@ -140,7 +153,8 @@ export const {
   useGetCurrentUserRolesQuery,
   useGetInstalledAppsQuery,
   useCreateCommentMutation,
-  useGetCommentQuery,
+  useGetCommentThreadQuery,
+  useGetCommentByResourceQuery,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
   useUpdateCommentStatusMutation,
