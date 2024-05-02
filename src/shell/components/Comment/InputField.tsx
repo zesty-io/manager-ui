@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState, useContext } from "react";
-import { Box, TextField, Button, Stack } from "@mui/material";
+import { Box, Typography, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
+import { LoadingButton } from "@mui/lab";
 
 import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
-import { countCharUsage, getCursorPosition } from "./utils";
+import { countCharUsage, getResourceTypeByZuid } from "./utils";
 import { CommentContext } from "../../contexts/CommentProvider";
+import { useCreateCommentMutation } from "../../services/accounts";
 
 const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
 
@@ -20,6 +22,14 @@ export const InputField = ({
   onCancel,
   fieldZuid,
 }: InputFieldProps) => {
+  const [
+    createComment,
+    {
+      isLoading: isCreatingComment,
+      isError: isCommentCreationError,
+      isSuccess: isCommentCreated,
+    },
+  ] = useCreateCommentMutation();
   const [comments, updateComments] = useContext(CommentContext);
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
@@ -29,6 +39,20 @@ export const InputField = ({
   const [isEditorInitialized, setIsEditorInitialized] = useState(false);
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
   const [userFilterKeyword, setUserFilterKeyword] = useState("");
+
+  const handleCreateComment = () => {
+    createComment({
+      // TODO: Make this dynamic
+      resourceType: getResourceTypeByZuid(fieldZuid),
+      resourceZUID: fieldZuid,
+      content: inputValue,
+      // content: "Hello world",
+    });
+  };
+
+  const handleReply = () => {
+    // TODO: Add query
+  };
 
   useEffect(() => {
     if (comments[fieldZuid]) {
@@ -45,9 +69,16 @@ export const InputField = ({
     }
   }, [inputValue]);
 
+  useEffect(() => {
+    setInputValue("");
+    updateComments({
+      [fieldZuid]: "",
+    });
+  }, [isCommentCreated]);
+
   return (
     <>
-      <Box sx={{ my: 1.5 }}>
+      <Box sx={{ mt: 1.5 }}>
         <Box height={100} display={isEditorInitialized ? "none" : "block"} />
         <Box
           ref={inputRef}
@@ -55,7 +86,6 @@ export const InputField = ({
           sx={{
             "& #commentInputField": {
               ...theme.typography.body2,
-              my: 1.5,
               p: 1,
               minHeight: 40,
               borderRadius: 2,
@@ -102,10 +132,10 @@ export const InputField = ({
                 tinymce?.activeEditor.setContent(PLACEHOLDER);
               }
             }}
-            onInit={(evt, editor) => {
+            onInit={() => {
               setIsEditorInitialized(true);
             }}
-            onEditorChange={(value, editor) => {
+            onEditorChange={(value) => {
               setInputValue(value);
             }}
             onKeyDown={(evt, editor) => {
@@ -213,23 +243,39 @@ export const InputField = ({
           filterKeyword={userFilterKeyword}
         />
       )}
+      {isCommentCreationError && (
+        <Typography variant="body2" color="error.dark" mt={0.5}>
+          Unable to add comment. Please check your internet connection and try
+          again.
+        </Typography>
+      )}
       <Stack
         ref={buttonsContainerRef}
         direction="row"
         gap={1}
         justifyContent="end"
+        mt={1.5}
       >
         <Button
           variant="outlined"
           color="inherit"
           size="small"
           onClick={onCancel}
+          disabled={isCreatingComment}
         >
           Cancel
         </Button>
-        <Button variant="contained" color="primary" size="small">
+        <LoadingButton
+          variant="contained"
+          color="primary"
+          size="small"
+          // TODO: Change depending on if it's a new comment or a reply
+          onClick={handleCreateComment}
+          disabled={!inputValue}
+          loading={isCreatingComment}
+        >
           {isFirstComment ? "Comment" : "Reply"}
-        </Button>
+        </LoadingButton>
       </Stack>
     </>
   );

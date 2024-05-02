@@ -3,13 +3,12 @@ export const countCharUsage = (string: string, char: string) => {
   return [...string.matchAll(regex)]?.length ?? 0;
 };
 
-export const getCursorPosition = (contentElement: Node) => {
-  const selection = window.getSelection();
-  const range = selection?.getRangeAt(0) as Range;
-  const clonedRange = range?.cloneRange();
+export const getResourceTypeByZuid = (zuid: string) => {
+  switch (zuid?.split("-")?.[0]) {
+    case "12":
+      return "fields";
 
-  clonedRange?.selectNodeContents(contentElement);
-  clonedRange?.setEnd(range?.endContainer, range?.endOffset);
-
-  return clonedRange?.toString().length || 0;
+    default:
+      return "";
+  }
 };

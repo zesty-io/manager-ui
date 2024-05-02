@@ -58,6 +58,27 @@ export const accountsApi = createApi({
       query: () => `instances/${instanceZUID}/app-installs`,
       transformResponse: getResponseData,
     }),
+    createComment: builder.mutation<
+      any,
+      { resourceZUID: string; resourceType: string; content: string }
+    >({
+      query: ({ resourceZUID, resourceType, content }) => ({
+        url: "/comments",
+        method: "POST",
+        body: {
+          resourceZUID,
+          resourceType,
+          content,
+          instanceZUID,
+        },
+      }),
+    }),
+    // createReply
+    // getComment NOTE: Include thread
+    // getCommentByResource
+    // updateComment
+    // deleteComment
+    // resolveComment
   }),
 });
 
@@ -72,4 +93,5 @@ export const {
   useCreateUserInviteMutation,
   useGetCurrentUserRolesQuery,
   useGetInstalledAppsQuery,
+  useCreateCommentMutation,
 } = accountsApi;
