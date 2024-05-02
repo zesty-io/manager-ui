@@ -1,7 +1,7 @@
 import { IconButton, Button, alpha } from "@mui/material";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import { CommentsList } from "./CommentsList";
 import { useParams as useSearchParams } from "../../hooks/useParams";
@@ -43,9 +43,24 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isResolved, setIsResolved] = useState(false);
   const [comments] = useState(dummyComments);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
+  const [isCommentListOpen, setIsCommentListOpen] = useState(false);
+  const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
 
   const commentResourceZuid = searchParams.get("commentResourceZuid");
+
+  useEffect(() => {
+    setIsCommentListOpen(
+      commentResourceZuid === resourceZUID && !!buttonRef.current
+    );
+  }, [buttonRef.current, commentResourceZuid]);
+
+  useEffect(() => {
+    // Autoscrolls to the button before opening the comment list popup
+    // Only applicable when popup is opened via deeplink
+    if (isCommentListOpen && isButtonAutoscroll) {
+      buttonRef.current?.scrollIntoView();
+    }
+  }, [isCommentListOpen, isButtonAutoscroll]);
 
   return (
     <>
@@ -53,7 +68,10 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
         <Button
           size="xsmall"
           endIcon={<CommentRoundedIcon />}
-          onClick={() => setSearchParams(resourceZUID, "commentResourceZuid")}
+          onClick={() => {
+            setIsButtonAutoscroll(false);
+            setSearchParams(resourceZUID, "commentResourceZuid");
+          }}
           ref={buttonRef}
           sx={{
             backgroundColor: (theme) =>
@@ -97,12 +115,16 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       ) : (
         <IconButton
           size="xxsmall"
-          onClick={(evt) => setAnchorEl(evt.currentTarget)}
+          onClick={() => {
+            setIsButtonAutoscroll(false);
+            setSearchParams(resourceZUID, "commentResourceZuid");
+          }}
+          ref={buttonRef}
           sx={{
-            backgroundColor: anchorEl
+            backgroundColor: isCommentListOpen
               ? (theme) => alpha(theme.palette.primary.main, 0.08)
               : "transparent",
-            color: anchorEl ? "primary.main" : "action",
+            color: isCommentListOpen ? "primary.main" : "action",
             "&:hover": {
               backgroundColor: (theme) =>
                 alpha(theme.palette.primary.main, 0.08),
@@ -113,10 +135,13 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
           <AddCommentRoundedIcon sx={{ fontSize: 16 }} />
         </IconButton>
       )}
-      {commentResourceZuid === resourceZUID && buttonRef.current && (
+      {isCommentListOpen && (
         <CommentsList
           anchorEl={buttonRef.current}
-          onClose={() => setSearchParams(null, "commentResourceZuid")}
+          onClose={() => {
+            setIsButtonAutoscroll(false);
+            setSearchParams(null, "commentResourceZuid");
+          }}
           comments={comments}
           isResolved={isResolved}
           onResolveComment={() => setIsResolved(true)}
