@@ -18,7 +18,6 @@ import {
 } from "react";
 
 import { CommentItem } from "./CommentItem";
-import { CommentItemType } from "./index";
 import { InputField } from "./InputField";
 import { useParams as useSearchParams } from "../../hooks/useParams";
 import { useGetCommentThreadQuery } from "../../services/accounts";
