@@ -1,7 +1,16 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
-import { User, UserRole, Domain, Instance, Role, InstalledApp } from "./types";
+import {
+  User,
+  UserRole,
+  Domain,
+  Instance,
+  Role,
+  InstalledApp,
+  Comment,
+  CommentReply,
+} from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const accountsApi = createApi({
@@ -79,20 +88,20 @@ export const accountsApi = createApi({
     }),
     // createReply
     // TODO: Create type once response is ready
-    getCommentByResource: builder.query<any, { resourceZUID: string }>({
+    getCommentByResource: builder.query<Comment, { resourceZUID: string }>({
       query: ({ resourceZUID }) =>
         `/instances/${instanceZUID}/comments?resource=${resourceZUID}`,
-      transformResponse: getResponseData,
+      transformResponse: (response: any) => response.data?.pop(),
       providesTags: (result, error, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
       ],
     }),
-    getCommentThread: builder.query<
-      any,
-      { commentZUID: string; resourceZUID: string }
-    >({
-      query: ({ resourceZUID }) => `/comments/${resourceZUID}?showReplies=true`,
-      transformResponse: getResponseData,
+    getCommentThread: builder.query<CommentReply[], { commentZUID: string }>({
+      query: ({ commentZUID }) => `/comments/${commentZUID}?showReplies=true`,
+      transformResponse: (response: any) => [
+        response.data?.comment,
+        ...response.data?.replies,
+      ],
       providesTags: (result, error, { commentZUID }) => [
         { type: "CommentThread", id: commentZUID },
       ],

@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 
 import { CommentsList } from "./CommentsList";
 import { useParams as useSearchParams } from "../../hooks/useParams";
+import { useGetCommentByResourceQuery } from "../../services/accounts";
 
 // Mock data
 export type CommentItemType = {
@@ -12,41 +13,22 @@ export type CommentItemType = {
   createdOn: string;
   body: string;
 };
-const dummyComments: CommentItemType[] = [
-  {
-    creator: "5-84d1e6d4ae-s3m974",
-    createdOn: "2024-01-13T22:59:17Z",
-    body: "Lorem ipsum sit dolor hello hello. @stuart@zesty.io hello hello",
-  },
-  {
-    creator: "5-a0a2aabff8-bw1dp1",
-    createdOn: "2024-02-14T22:59:17Z",
-    body: "Yo yo yo. Coming at you from youtube.com, answers.microsoft.com",
-  },
-  {
-    creator: "5-84d1e6d4ae-s3m974",
-    createdOn: "2024-02-14T23:59:17Z",
-    body: "Hey guys! What's up. https://duckduckgo.com/?q=gravatar+query+params&t=brave&ia=web",
-  },
-  {
-    creator: "5-57801f6-3cj46d",
-    createdOn: "2024-03-24T10:59:17Z",
-    body: "For all that is beautiful! andres.galindo@zesty.io",
-  },
-];
 
 type CommentProps = {
   resourceZUID: string;
 };
 export const Comment = ({ resourceZUID }: CommentProps) => {
+  const { data: comment, isLoading: isCommentLoading } =
+    useGetCommentByResourceQuery({ resourceZUID }, { skip: !resourceZUID });
   const buttonRef = useRef<HTMLButtonElement>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isResolved, setIsResolved] = useState(false);
-  const [comments] = useState(dummyComments);
   const [isCommentListOpen, setIsCommentListOpen] = useState(false);
   const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
 
   const commentResourceZuid = searchParams.get("commentResourceZuid");
+
+  console.log("comment data for ", resourceZUID, comment);
 
   useEffect(() => {
     setIsCommentListOpen(
@@ -64,7 +46,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
 
   return (
     <>
-      {comments.length ? (
+      {comment ? (
         <Button
           size="xsmall"
           endIcon={<CommentRoundedIcon />}
@@ -110,7 +92,8 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
             },
           }}
         >
-          {comments.length}
+          {/* NOTE: Adding 1 since we need to include the initial comment **/}
+          {comment.replyCount + 1}
         </Button>
       ) : (
         <IconButton
@@ -137,12 +120,12 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       )}
       {isCommentListOpen && (
         <CommentsList
+          commentZUID={comment?.ZUID}
           anchorEl={buttonRef.current}
           onClose={() => {
             setIsButtonAutoscroll(false);
             setSearchParams(null, "commentResourceZuid");
           }}
-          comments={comments}
           isResolved={isResolved}
           onResolveComment={() => setIsResolved(true)}
         />

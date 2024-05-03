@@ -8,26 +8,34 @@ import {
   PopperPlacementType,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { CommentItem } from "./CommentItem";
 import { CommentItemType } from "./index";
 import { InputField } from "./InputField";
 import { useParams as useSearchParams } from "../../hooks/useParams";
+import { useGetCommentThreadQuery } from "../../services/accounts";
 
 type CommentsListProps = {
   anchorEl: Element;
   onClose: () => void;
-  comments: CommentItemType[];
   isResolved: boolean;
   onResolveComment: () => void;
+  commentZUID: string;
 };
 export const CommentsList = ({
   anchorEl,
   onClose,
-  comments,
   onResolveComment,
   isResolved,
+  commentZUID,
 }: CommentsListProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [popperTopOffset, setPopperTopOffset] = useState(0);
@@ -36,7 +44,14 @@ export const CommentsList = ({
     useState<PopperPlacementType>("bottom-start");
   const topOffsetRef = useRef<HTMLDivElement>();
 
-  const commentResourceZuid = searchParams.get("commentResourceZuid");
+  const commentResourceZUID = searchParams.get("commentResourceZuid");
+
+  const { data: commentThread } = useGetCommentThreadQuery(
+    { commentZUID },
+    { skip: !commentZUID }
+  );
+
+  console.log(commentThread);
 
   useEffect(() => {
     if (
@@ -116,24 +131,25 @@ export const CommentsList = ({
             boxSizing: "border-box",
           }}
         >
-          {comments?.map((comment, index) => (
-            <Fragment key={index}>
+          {commentThread?.map((comment, index) => (
+            <Fragment key={comment.ZUID}>
               <CommentItem
-                // TODO: Replace with comment zuid
-                id={`${commentResourceZuid}${index}`}
-                body={comment.body}
-                createdOn={comment.createdOn}
-                creator={comment.creator}
+                id={comment.ZUID}
+                body={comment.content}
+                createdOn={comment.createdAt}
+                creator={comment.createdByUserZUID}
                 withResolveButton={index === 0 && !isResolved}
                 onResolveComment={onResolveComment}
               />
-              {index + 1 < comments?.length && <Divider sx={{ my: 1.5 }} />}
+              {index + 1 < commentThread?.length && (
+                <Divider sx={{ my: 1.5 }} />
+              )}
             </Fragment>
           ))}
           <InputField
-            isFirstComment={!comments?.length}
+            isFirstComment={!commentThread?.length}
             onCancel={onClose}
-            resourceZUID={commentResourceZuid}
+            resourceZUID={commentResourceZUID}
           />
         </Paper>
       </Popper>

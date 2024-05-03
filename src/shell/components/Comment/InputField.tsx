@@ -42,16 +42,16 @@ export const InputField = ({
 
   const handleCreateComment = () => {
     createComment({
-      // TODO: Make this dynamic
       resourceType: getResourceTypeByZuid(resourceZUID),
       resourceZUID,
-      content: inputValue,
-      // content: "Hello world",
+      // TODO: remove hardcoded text once Markel fixes the endpoint
+      // content: inputValue,
+      content: "Hello world",
     });
   };
 
   const handleReply = () => {
-    // TODO: Add query
+    // TODO: Add query once Markel provides the endpoint
   };
 
   useEffect(() => {

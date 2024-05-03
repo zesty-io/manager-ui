@@ -498,3 +498,24 @@ export type Announcement = {
   end_date_and_time: string;
   created_at: string;
 };
+
+export type CommentResourceType = "fields" | "items";
+
+export type Comment = {
+  ZUID: string;
+  content: string;
+  createdAt: string;
+  createdByUserName: string;
+  createdByUserZUID: string;
+  instanceZUID: string;
+  mentions: string[];
+  replyCount?: number;
+  resolved: boolean;
+  resourceType: CommentResourceType;
+  resourceZUID: string;
+  updatedAt: string;
+};
+
+export type CommentReply = Omit<Comment, "replyCount"> & {
+  commentZUID: string;
+};
