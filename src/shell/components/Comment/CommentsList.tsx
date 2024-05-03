@@ -1,21 +1,12 @@
 import {
-  Popover,
   Divider,
   Paper,
   Popper,
-  Box,
   Backdrop,
   PopperPlacementType,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 import { CommentItem } from "./CommentItem";
 import { InputField } from "./InputField";
