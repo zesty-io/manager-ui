@@ -51,8 +51,6 @@ export const CommentsList = ({
     { skip: !commentZUID }
   );
 
-  console.log(commentThread);
-
   useEffect(() => {
     if (
       window.innerHeight - anchorEl?.getBoundingClientRect().top >

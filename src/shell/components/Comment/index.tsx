@@ -28,13 +28,14 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
 
   const commentResourceZuid = searchParams.get("commentResourceZuid");
 
-  console.log("comment data for ", resourceZUID, comment);
-
   useEffect(() => {
-    setIsCommentListOpen(
-      commentResourceZuid === resourceZUID && !!buttonRef.current
-    );
-  }, [buttonRef.current, commentResourceZuid]);
+    // NOTE: This makes sure that the comment list popper will be anchored to the button properly since there is a chance that the buttonRef will change depending on the comment response
+    if (!isCommentLoading) {
+      setIsCommentListOpen(
+        commentResourceZuid === resourceZUID && !!buttonRef.current
+      );
+    }
+  }, [buttonRef.current, commentResourceZuid, isCommentLoading]);
 
   useEffect(() => {
     // Autoscrolls to the button before opening the comment list popup
