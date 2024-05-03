@@ -147,6 +147,7 @@ export const CommentsList = ({
             isFirstComment={!commentThread?.length}
             onCancel={onClose}
             resourceZUID={commentResourceZUID}
+            commentZUID={commentZUID}
           />
         </Paper>
       </Popper>

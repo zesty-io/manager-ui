@@ -86,7 +86,19 @@ export const accountsApi = createApi({
         { type: "Comments", id: resourceZUID },
       ],
     }),
-    // createReply
+    createReply: builder.mutation<
+      any,
+      { commentZUID: string; content: string }
+    >({
+      query: ({ commentZUID, content }) => ({
+        url: `/comments/${commentZUID}/replies`,
+        method: "POST",
+        body: {
+          content,
+        },
+      }),
+      invalidatesTags: () => ["CommentThread"],
+    }),
     // TODO: Create type once response is ready
     getCommentByResource: builder.query<Comment, { resourceZUID: string }>({
       query: ({ resourceZUID }) =>
@@ -167,4 +179,5 @@ export const {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
   useUpdateCommentStatusMutation,
+  useCreateReplyMutation,
 } = accountsApi;

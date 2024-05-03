@@ -8,7 +8,10 @@ import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
 import { countCharUsage, getResourceTypeByZuid } from "./utils";
 import { CommentContext } from "../../contexts/CommentProvider";
-import { useCreateCommentMutation } from "../../services/accounts";
+import {
+  useCreateCommentMutation,
+  useCreateReplyMutation,
+} from "../../services/accounts";
 
 const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
 
@@ -16,11 +19,13 @@ type InputFieldProps = {
   isFirstComment: boolean;
   onCancel: () => void;
   resourceZUID: string;
+  commentZUID: string;
 };
 export const InputField = ({
   isFirstComment,
   onCancel,
   resourceZUID,
+  commentZUID,
 }: InputFieldProps) => {
   const [
     createComment,
@@ -30,6 +35,14 @@ export const InputField = ({
       isSuccess: isCommentCreated,
     },
   ] = useCreateCommentMutation();
+  const [
+    createReply,
+    {
+      isLoading: isCreatingReply,
+      isError: isReplyCreationError,
+      isSuccess: isReplyCreated,
+    },
+  ] = useCreateReplyMutation();
   const [comments, updateComments] = useContext(CommentContext);
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
@@ -52,6 +65,11 @@ export const InputField = ({
 
   const handleReply = () => {
     // TODO: Add query once Markel provides the endpoint
+    createReply({
+      // content: inputValue,
+      content: "This is a reply",
+      commentZUID,
+    });
   };
 
   useEffect(() => {
@@ -70,11 +88,13 @@ export const InputField = ({
   }, [inputValue]);
 
   useEffect(() => {
-    setInputValue("");
-    updateComments({
-      [resourceZUID]: "",
-    });
-  }, [isCommentCreated]);
+    if (isCommentCreated || isReplyCreated) {
+      setInputValue("");
+      updateComments({
+        [resourceZUID]: "",
+      });
+    }
+  }, [isCommentCreated, isReplyCreated]);
 
   return (
     <>
@@ -243,7 +263,7 @@ export const InputField = ({
           filterKeyword={userFilterKeyword}
         />
       )}
-      {isCommentCreationError && (
+      {(isCommentCreationError || isReplyCreationError) && (
         <Typography variant="body2" color="error.dark" mt={0.5}>
           Unable to add comment. Please check your internet connection and try
           again.
@@ -261,7 +281,7 @@ export const InputField = ({
           color="inherit"
           size="small"
           onClick={onCancel}
-          disabled={isCreatingComment}
+          disabled={isCreatingComment || isCreatingReply}
         >
           Cancel
         </Button>
@@ -269,10 +289,9 @@ export const InputField = ({
           variant="contained"
           color="primary"
           size="small"
-          // TODO: Change depending on if it's a new comment or a reply
-          onClick={handleCreateComment}
+          onClick={isFirstComment ? handleCreateComment : handleReply}
           disabled={!inputValue}
-          loading={isCreatingComment}
+          loading={isCreatingComment || isCreatingReply}
         >
           {isFirstComment ? "Comment" : "Reply"}
         </LoadingButton>
