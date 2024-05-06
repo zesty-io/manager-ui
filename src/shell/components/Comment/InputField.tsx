@@ -91,6 +91,7 @@ export const InputField = ({
 
   useEffect(() => {
     if (isCommentCreated || isReplyCreated) {
+      tinymce?.activeEditor.setContent(PLACEHOLDER);
       setInputValue("");
       updateComments({
         [resourceZUID]: "",

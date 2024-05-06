@@ -108,7 +108,6 @@ export const accountsApi = createApi({
       }),
       invalidatesTags: () => ["CommentThread"],
     }),
-    // TODO: Create type once response is ready
     getCommentByResource: builder.query<Comment[], { resourceZUID: string }>({
       query: ({ resourceZUID }) =>
         `/instances/${instanceZUID}/comments?resource=${resourceZUID}`,
