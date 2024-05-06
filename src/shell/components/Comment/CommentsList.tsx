@@ -38,6 +38,7 @@ export const CommentsList = ({
   const topOffsetRef = useRef<HTMLDivElement>();
 
   const commentResourceZUID = searchParams.get("commentResourceZuid");
+  const highlightedReplyZUID = searchParams.get("replyZUID");
 
   const { data: commentThread, isLoading: isLoadingCommentThread } =
     useGetCommentThreadQuery({ commentZUID }, { skip: !commentZUID });
@@ -66,6 +67,18 @@ export const CommentsList = ({
       document.body.style.overflow = null;
     };
   }, []);
+
+  useEffect(() => {
+    // Scrolls to a specific reply indicated in the search params
+    if (!isLoadingCommentThread) {
+      setTimeout(() => {
+        const replyEl = document.getElementById(highlightedReplyZUID);
+        if (replyEl) {
+          replyEl.scrollIntoView();
+        }
+      });
+    }
+  }, [highlightedReplyZUID, isLoadingCommentThread]);
 
   const calculateMaxHeight = () => {
     if (placement === "bottom-start") {

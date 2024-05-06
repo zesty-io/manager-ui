@@ -16,9 +16,11 @@ import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRena
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import moment from "moment";
+import { useLocation } from "react-router";
 
 import { useGetUsersQuery } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
+import { useParams as useSearchParams } from "../../hooks/useParams";
 
 const URL_REGEX =
   /(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
@@ -39,7 +41,10 @@ export const CommentItem = ({
   withResolveButton,
   onResolveComment,
 }: CommentItemProps) => {
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>();
+  const [isCopied, setIsCopied] = useState(false);
   const commentBodyRef = useRef<HTMLParagraphElement>();
   const { data: users } = useGetUsersQuery();
 
@@ -72,6 +77,24 @@ export const CommentItem = ({
       commentBodyRef.current.innerHTML = hyperlinkedContent;
     }
   }, [body, commentBodyRef]);
+
+  const handleCopyClick = () => {
+    const resourceZUID = searchParams.get("commentResourceZuid");
+
+    navigator?.clipboard
+      ?.writeText(
+        `${window.location.origin}${location.pathname}?commentResourceZuid=${resourceZUID}&replyZUID=${id}`
+      )
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 500);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   return (
     <Box id={id}>
@@ -140,11 +163,9 @@ export const CommentItem = ({
             </ListItemIcon>
             <ListItemText>Edit</ListItemText>
           </MenuItem>
-          <MenuItem
-            onClick={() => console.log("Copy deeplink of this comment")}
-          >
+          <MenuItem onClick={handleCopyClick}>
             <ListItemIcon>
-              <LinkRoundedIcon />
+              {isCopied ? <CheckRoundedIcon /> : <LinkRoundedIcon />}
             </ListItemIcon>
             <ListItemText>Copy Link</ListItemText>
           </MenuItem>

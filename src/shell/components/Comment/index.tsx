@@ -122,6 +122,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
           onClose={() => {
             setIsButtonAutoscroll(false);
             setSearchParams(null, "commentResourceZuid");
+            setSearchParams(null, "replyZUID");
           }}
           isResolved={isResolved}
           onResolveComment={() => setIsResolved(true)}
