@@ -27,7 +27,7 @@ export const CommentsList = ({
   isResolved,
   commentZUID,
 }: CommentsListProps) => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [popperTopOffset, setPopperTopOffset] = useState(0);
   const [popperBottomOffset, setPopperBottomOffset] = useState(0);
   const [placement, setPlacement] =

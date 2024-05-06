@@ -49,7 +49,6 @@ export const InputField = ({
   const mentionListRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
   const [initialValue, setInitialValue] = useState(PLACEHOLDER);
-  const [isEditorInitialized, setIsEditorInitialized] = useState(false);
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
   const [userFilterKeyword, setUserFilterKeyword] = useState("");
 
@@ -99,10 +98,8 @@ export const InputField = ({
   return (
     <>
       <Box sx={{ mt: 1.5 }}>
-        <Box height={100} display={isEditorInitialized ? "none" : "block"} />
         <Box
           ref={inputRef}
-          display={isEditorInitialized ? "block" : "none"}
           sx={{
             "& #commentInputField": {
               ...theme.typography.body2,
@@ -151,9 +148,6 @@ export const InputField = ({
               if (!tinymce?.activeEditor.getContent()) {
                 tinymce?.activeEditor.setContent(PLACEHOLDER);
               }
-            }}
-            onInit={() => {
-              setIsEditorInitialized(true);
             }}
             onEditorChange={(value) => {
               setInputValue(value);
