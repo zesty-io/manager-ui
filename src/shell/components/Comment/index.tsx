@@ -1,7 +1,8 @@
 import { IconButton, Button, alpha, Box } from "@mui/material";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { useParams } from "react-router";
 
 import { CommentsList } from "./CommentsList";
 import { useParams as useSearchParams } from "../../hooks/useParams";
@@ -11,6 +12,7 @@ type CommentProps = {
   resourceZUID: string;
 };
 export const Comment = ({ resourceZUID }: CommentProps) => {
+  const { itemZUID } = useParams<{ itemZUID: string }>();
   const { data: comment, isLoading: isCommentLoading } =
     useGetCommentByResourceQuery({ resourceZUID }, { skip: !resourceZUID });
   const buttonContainerRef = useRef<HTMLDivElement>();
@@ -20,6 +22,10 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
 
   const commentResourceZuid = searchParams.get("commentResourceZuid");
+
+  const activeComment = useMemo(() => {
+    return comment?.find((comment) => comment.resourceParentZUID === itemZUID);
+  }, [comment, itemZUID]);
 
   useEffect(() => {
     setIsCommentListOpen(
@@ -38,7 +44,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   return (
     <>
       <Box ref={buttonContainerRef}>
-        {comment ? (
+        {activeComment ? (
           <Button
             size="xsmall"
             endIcon={<CommentRoundedIcon />}
@@ -84,7 +90,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
             }}
           >
             {/* NOTE: Adding 1 since we need to include the initial comment **/}
-            {comment.replyCount + 1}
+            {activeComment.replyCount + 1}
           </Button>
         ) : (
           <IconButton
@@ -111,7 +117,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       </Box>
       {isCommentListOpen && (
         <CommentsList
-          commentZUID={comment?.ZUID}
+          commentZUID={activeComment?.ZUID}
           anchorEl={buttonContainerRef.current}
           onClose={() => {
             setIsButtonAutoscroll(false);

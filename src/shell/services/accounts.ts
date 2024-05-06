@@ -1,4 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import moment from "moment";
+
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import {
@@ -107,10 +109,13 @@ export const accountsApi = createApi({
       invalidatesTags: () => ["CommentThread"],
     }),
     // TODO: Create type once response is ready
-    getCommentByResource: builder.query<Comment, { resourceZUID: string }>({
+    getCommentByResource: builder.query<Comment[], { resourceZUID: string }>({
       query: ({ resourceZUID }) =>
         `/instances/${instanceZUID}/comments?resource=${resourceZUID}`,
-      transformResponse: (response: any) => response.data?.pop(),
+      transformResponse: (response: any) =>
+        response.data?.sort((a: any, b: any) =>
+          moment(b.createdAt).diff(a.createdAt)
+        ),
       providesTags: (result, error, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
       ],
@@ -118,7 +123,20 @@ export const accountsApi = createApi({
     getCommentThread: builder.query<CommentReply[], { commentZUID: string }>({
       query: ({ commentZUID }) => `/comments/${commentZUID}?showReplies=true`,
       transformResponse: (response: any) => [
-        response.data?.comment,
+        {
+          ZUID: response.data?.ZUID,
+          content: response.data?.content,
+          createdAt: response.data?.createdAt,
+          createdByUserName: response.data?.createdByUserName,
+          createdByUserZUID: response.data?.createdByUserZUID,
+          instanceZUID: response.data?.instanceZUID,
+          mentions: response.data?.mentions,
+          replyCount: response.data?.replyCount,
+          resolved: response.data?.resolved,
+          resourceType: response.data?.resourceType,
+          resourceZUID: response.data?.resourceZUID,
+          updatedAt: response.data?.updatedAt,
+        },
         ...response.data?.replies,
       ],
       providesTags: (result, error, { commentZUID }) => [

@@ -514,8 +514,12 @@ export type Comment = {
   resourceType: CommentResourceType;
   resourceZUID: string;
   updatedAt: string;
+  resourceParentZUID: string;
 };
 
-export type CommentReply = Omit<Comment, "replyCount"> & {
+export type CommentReply = Omit<
+  Comment,
+  "replyCount" | "resourceParentZUID"
+> & {
   commentZUID: string;
 };
