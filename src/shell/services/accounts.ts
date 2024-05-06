@@ -10,6 +10,7 @@ import {
   InstalledApp,
   Comment,
   CommentReply,
+  CommentResourceType,
 } from "./types";
 
 // Define a service using a base URL and expected endpoints
@@ -70,9 +71,14 @@ export const accountsApi = createApi({
     }),
     createComment: builder.mutation<
       any,
-      { resourceZUID: string; resourceType: string; content: string }
+      {
+        resourceZUID: string;
+        resourceParentZUID: string;
+        resourceType: CommentResourceType | "";
+        content: string;
+      }
     >({
-      query: ({ resourceZUID, resourceType, content }) => ({
+      query: ({ resourceZUID, resourceType, content, resourceParentZUID }) => ({
         url: "/comments",
         method: "POST",
         body: {
@@ -80,6 +86,7 @@ export const accountsApi = createApi({
           resourceType,
           content,
           instanceZUID,
+          resourceParentZUID,
         },
       }),
       invalidatesTags: (result, error, { resourceZUID }) => [

@@ -4,6 +4,9 @@ import {
   Popper,
   Backdrop,
   PopperPlacementType,
+  Box,
+  Stack,
+  Skeleton,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { Fragment, useEffect, useRef, useState } from "react";
@@ -36,10 +39,8 @@ export const CommentsList = ({
 
   const commentResourceZUID = searchParams.get("commentResourceZuid");
 
-  const { data: commentThread } = useGetCommentThreadQuery(
-    { commentZUID },
-    { skip: !commentZUID }
-  );
+  const { data: commentThread, isLoading: isLoadingCommentThread } =
+    useGetCommentThreadQuery({ commentZUID }, { skip: !commentZUID });
 
   useEffect(() => {
     if (
@@ -119,6 +120,7 @@ export const CommentsList = ({
             boxSizing: "border-box",
           }}
         >
+          {isLoadingCommentThread && <CommentItemLoading />}
           {commentThread?.map((comment, index) => (
             <Fragment key={comment.ZUID}>
               <CommentItem
@@ -143,5 +145,28 @@ export const CommentsList = ({
         </Paper>
       </Popper>
     </Backdrop>
+  );
+};
+
+const CommentItemLoading = () => {
+  return (
+    <Stack gap={1.5}>
+      <Stack direction="row" gap={1.5} alignItems="center">
+        <Skeleton
+          variant="circular"
+          width={32}
+          height={32}
+          sx={{ flexShrink: 0 }}
+        />
+        <Stack height={38} width="100%" justifyContent="space-between">
+          <Skeleton variant="rounded" height={14} />
+          <Skeleton variant="rounded" height={12} />
+        </Stack>
+      </Stack>
+      <Stack gap={0.5}>
+        <Skeleton variant="rounded" height={14} />
+        <Skeleton variant="rounded" height={14} />
+      </Stack>
+    </Stack>
   );
 };

@@ -3,6 +3,7 @@ import { Box, Typography, Button, Stack } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
 import { LoadingButton } from "@mui/lab";
+import { useParams } from "react-router";
 
 import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
@@ -43,6 +44,7 @@ export const InputField = ({
       isSuccess: isReplyCreated,
     },
   ] = useCreateReplyMutation();
+  const { itemZUID } = useParams<{ itemZUID: string }>();
   const [comments, updateComments] = useContext(CommentContext);
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
@@ -59,6 +61,7 @@ export const InputField = ({
       // TODO: remove hardcoded text once Markel fixes the endpoint
       // content: inputValue,
       content: "Hello world",
+      resourceParentZUID: itemZUID,
     });
   };
 
