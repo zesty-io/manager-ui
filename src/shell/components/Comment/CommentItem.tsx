@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect, useState } from "react";
+import { useMemo, useRef, useEffect, useState, useContext } from "react";
 import {
   Stack,
   Typography,
@@ -21,6 +21,8 @@ import { useLocation } from "react-router";
 import { useGetUsersQuery } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
 import { useParams as useSearchParams } from "../../hooks/useParams";
+import { InputField } from "./InputField";
+import { CommentContext } from "../../contexts/CommentProvider";
 
 const URL_REGEX =
   /(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
@@ -43,6 +45,8 @@ export const CommentItem = ({
 }: CommentItemProps) => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const [_, __, commentZUIDtoEdit, setCommentZUIDtoEdit] =
+    useContext(CommentContext);
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>();
   const [isCopied, setIsCopied] = useState(false);
   const commentBodyRef = useRef<HTMLParagraphElement>();
@@ -95,6 +99,10 @@ export const CommentItem = ({
         console.error(err);
       });
   };
+
+  if (commentZUIDtoEdit === id) {
+    return <Box>Editing</Box>;
+  }
 
   return (
     <Box id={id}>
@@ -157,7 +165,12 @@ export const CommentItem = ({
             },
           }}
         >
-          <MenuItem onClick={() => console.log("Edit this comment")}>
+          <MenuItem
+            onClick={() => {
+              setMenuAnchorEl(null);
+              setCommentZUIDtoEdit(id);
+            }}
+          >
             <ListItemIcon>
               <DriveFileRenameOutlineRoundedIcon />
             </ListItemIcon>

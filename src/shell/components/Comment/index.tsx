@@ -1,17 +1,19 @@
 import { IconButton, Button, alpha, Box } from "@mui/material";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useContext } from "react";
 import { useParams } from "react-router";
 
 import { CommentsList } from "./CommentsList";
 import { useParams as useSearchParams } from "../../hooks/useParams";
 import { useGetCommentByResourceQuery } from "../../services/accounts";
+import { CommentContext } from "../../contexts/CommentProvider";
 
 type CommentProps = {
   resourceZUID: string;
 };
 export const Comment = ({ resourceZUID }: CommentProps) => {
+  const [_, __, ___, setCommentZUIDtoEdit] = useContext(CommentContext);
   const { itemZUID } = useParams<{ itemZUID: string }>();
   const { data: comment, isLoading: isCommentLoading } =
     useGetCommentByResourceQuery({ resourceZUID }, { skip: !resourceZUID });
@@ -121,6 +123,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
           anchorEl={buttonContainerRef.current}
           onClose={() => {
             setIsButtonAutoscroll(false);
+            setCommentZUIDtoEdit(null);
             setSearchParams(null, "commentResourceZuid");
             setSearchParams(null, "replyZUID");
           }}

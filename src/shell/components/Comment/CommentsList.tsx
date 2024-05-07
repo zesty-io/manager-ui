@@ -9,12 +9,13 @@ import {
   Skeleton,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 
 import { CommentItem } from "./CommentItem";
 import { InputField } from "./InputField";
 import { useParams as useSearchParams } from "../../hooks/useParams";
 import { useGetCommentThreadQuery } from "../../services/accounts";
+import { CommentContext } from "../../contexts/CommentProvider";
 
 type CommentsListProps = {
   anchorEl: Element;
@@ -31,6 +32,7 @@ export const CommentsList = ({
   commentZUID,
 }: CommentsListProps) => {
   const [searchParams] = useSearchParams();
+  const [_, __, commentZUIDtoEdit] = useContext(CommentContext);
   const [popperTopOffset, setPopperTopOffset] = useState(0);
   const [popperBottomOffset, setPopperBottomOffset] = useState(0);
   const [placement, setPlacement] =
@@ -149,12 +151,14 @@ export const CommentsList = ({
               )}
             </Fragment>
           ))}
-          <InputField
-            isFirstComment={!commentThread?.length}
-            onCancel={onClose}
-            resourceZUID={commentResourceZUID}
-            commentZUID={commentZUID}
-          />
+          {!commentZUIDtoEdit && (
+            <InputField
+              isFirstComment={!commentThread?.length}
+              onCancel={onClose}
+              resourceZUID={commentResourceZUID}
+              commentZUID={commentZUID}
+            />
+          )}
         </Paper>
       </Popper>
     </Backdrop>
