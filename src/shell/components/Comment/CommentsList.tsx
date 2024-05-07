@@ -22,14 +22,14 @@ type CommentsListProps = {
   onClose: () => void;
   isResolved: boolean;
   onResolveComment: () => void;
-  commentZUID: string;
+  parentCommentZUID: string;
 };
 export const CommentsList = ({
   anchorEl,
   onClose,
   onResolveComment,
   isResolved,
-  commentZUID,
+  parentCommentZUID,
 }: CommentsListProps) => {
   const [searchParams] = useSearchParams();
   const [_, __, commentZUIDtoEdit] = useContext(CommentContext);
@@ -43,7 +43,10 @@ export const CommentsList = ({
   const highlightedReplyZUID = searchParams.get("replyZUID");
 
   const { data: commentThread, isLoading: isLoadingCommentThread } =
-    useGetCommentThreadQuery({ commentZUID }, { skip: !commentZUID });
+    useGetCommentThreadQuery(
+      { commentZUID: parentCommentZUID },
+      { skip: !parentCommentZUID }
+    );
 
   useEffect(() => {
     if (
@@ -145,7 +148,7 @@ export const CommentsList = ({
                 creator={comment.createdByUserZUID}
                 withResolveButton={index === 0 && !isResolved}
                 onResolveComment={onResolveComment}
-                commentZUID={commentZUID}
+                commentZUID={parentCommentZUID}
               />
               {index + 1 < commentThread?.length && (
                 <Divider sx={{ my: 1.5 }} />
@@ -157,7 +160,7 @@ export const CommentsList = ({
               isFirstComment={!commentThread?.length}
               onCancel={onClose}
               resourceZUID={commentResourceZUID}
-              commentZUID={commentZUID}
+              parentCommentZUID={parentCommentZUID}
             />
           )}
         </Paper>

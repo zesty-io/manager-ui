@@ -108,12 +108,11 @@ export const CommentItem = ({
     return (
       <InputField
         isEditMode
-        // editModeValue={body}
-        editModeValue="<p>Hello guys!</p><div>Hey hey</div>"
+        editModeValue={body}
         isFirstComment={false}
         onCancel={() => setCommentZUIDtoEdit(null)}
         resourceZUID={commentResourceZUID}
-        commentZUID={commentZUID}
+        parentCommentZUID={commentZUID}
       />
     );
   }

@@ -12,6 +12,7 @@ import { CommentContext } from "../../contexts/CommentProvider";
 import {
   useCreateCommentMutation,
   useCreateReplyMutation,
+  useUpdateCommentMutation,
 } from "../../services/accounts";
 
 const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
@@ -20,7 +21,7 @@ type InputFieldProps = {
   isFirstComment: boolean;
   onCancel: () => void;
   resourceZUID: string;
-  commentZUID: string;
+  parentCommentZUID: string;
   isEditMode?: boolean;
   editModeValue?: string;
 };
@@ -28,7 +29,7 @@ export const InputField = ({
   isFirstComment,
   onCancel,
   resourceZUID,
-  commentZUID,
+  parentCommentZUID,
   isEditMode = false,
   editModeValue = "",
 }: InputFieldProps) => {
@@ -48,8 +49,17 @@ export const InputField = ({
       isSuccess: isReplyCreated,
     },
   ] = useCreateReplyMutation();
+  const [
+    updateComment,
+    {
+      isLoading: isUpdatingComment,
+      isError: isCommentUpdateError,
+      isSuccess: isCommentUpdated,
+    },
+  ] = useUpdateCommentMutation();
   const { itemZUID } = useParams<{ itemZUID: string }>();
-  const [comments, updateComments] = useContext(CommentContext);
+  const [comments, updateComments, commentZUIDtoEdit, setCommentZUIDtoEdit] =
+    useContext(CommentContext);
   const buttonsContainerRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLDivElement>();
   const mentionListRef = useRef(null);
@@ -70,16 +80,21 @@ export const InputField = ({
   };
 
   const handleReply = () => {
-    // TODO: Add query once Markel provides the endpoint
     createReply({
       // content: inputValue,
       content: "This is a reply",
-      commentZUID,
+      commentZUID: parentCommentZUID,
     });
   };
 
   const handleUpdateComment = () => {
-    // TODO: Add logic
+    updateComment({
+      resourceZUID,
+      commentZUID: commentZUIDtoEdit,
+      // TODO: remove hardcoded once fix is made
+      content: "Comment updated",
+      // content: inputValue,
+    });
   };
 
   const getPrimaryButtonText = () => {
@@ -119,6 +134,14 @@ export const InputField = ({
       });
     }
   }, [isCommentCreated, isReplyCreated]);
+
+  useEffect(() => {
+    if (isCommentUpdated) {
+      tinymce?.activeEditor.setContent(PLACEHOLDER);
+      setInputValue("");
+      setCommentZUIDtoEdit(null);
+    }
+  }, [isCommentUpdated]);
 
   useEffect(() => {
     if (isEditMode) {
@@ -289,7 +312,9 @@ export const InputField = ({
           filterKeyword={userFilterKeyword}
         />
       )}
-      {(isCommentCreationError || isReplyCreationError) && (
+      {(isCommentCreationError ||
+        isReplyCreationError ||
+        isCommentUpdateError) && (
         <Typography variant="body2" color="error.dark" mt={0.5}>
           Unable to add comment. Please check your internet connection and try
           again.
@@ -307,7 +332,7 @@ export const InputField = ({
           color="inherit"
           size="small"
           onClick={onCancel}
-          disabled={isCreatingComment || isCreatingReply}
+          disabled={isCreatingComment || isCreatingReply || isUpdatingComment}
         >
           Cancel
         </Button>
@@ -327,7 +352,7 @@ export const InputField = ({
             }
           }}
           disabled={!inputValue}
-          loading={isCreatingComment || isCreatingReply}
+          loading={isCreatingComment || isCreatingReply || isUpdatingComment}
         >
           {getPrimaryButtonText()}
         </LoadingButton>

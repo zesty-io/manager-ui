@@ -25,7 +25,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
 
   const commentResourceZuid = searchParams.get("commentResourceZuid");
 
-  const activeComment = useMemo(() => {
+  const parentComment = useMemo(() => {
     return comment?.find((comment) => comment.resourceParentZUID === itemZUID);
   }, [comment, itemZUID]);
 
@@ -46,7 +46,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   return (
     <>
       <Box ref={buttonContainerRef}>
-        {activeComment ? (
+        {parentComment ? (
           <Button
             size="xsmall"
             endIcon={<CommentRoundedIcon />}
@@ -92,7 +92,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
             }}
           >
             {/* NOTE: Adding 1 since we need to include the initial comment **/}
-            {activeComment.replyCount + 1}
+            {parentComment.replyCount + 1}
           </Button>
         ) : (
           <IconButton
@@ -119,7 +119,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       </Box>
       {isCommentListOpen && (
         <CommentsList
-          commentZUID={activeComment?.ZUID}
+          parentCommentZUID={parentComment?.ZUID}
           anchorEl={buttonContainerRef.current}
           onClose={() => {
             setIsButtonAutoscroll(false);

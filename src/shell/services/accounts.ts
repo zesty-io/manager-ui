@@ -91,7 +91,7 @@ export const accountsApi = createApi({
           resourceParentZUID,
         },
       }),
-      invalidatesTags: (result, error, { resourceZUID }) => [
+      invalidatesTags: (_, __, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
       ],
     }),
@@ -115,7 +115,7 @@ export const accountsApi = createApi({
         response.data?.sort((a: any, b: any) =>
           moment(b.createdAt).diff(a.createdAt)
         ),
-      providesTags: (result, error, { resourceZUID }) => [
+      providesTags: (_, __, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
       ],
     }),
@@ -138,7 +138,7 @@ export const accountsApi = createApi({
         },
         ...response.data?.replies,
       ],
-      providesTags: (result, error, { commentZUID }) => [
+      providesTags: (_, __, { commentZUID }) => [
         { type: "CommentThread", id: commentZUID },
       ],
     }),
@@ -151,7 +151,7 @@ export const accountsApi = createApi({
         method: "PUT",
         body: { content },
       }),
-      invalidatesTags: (result, error, { resourceZUID }) => [
+      invalidatesTags: (_, __, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
         "CommentThread",
       ],
@@ -164,7 +164,7 @@ export const accountsApi = createApi({
         url: `/comments/${commentZUID}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, { resourceZUID }) => [
+      invalidatesTags: (_, __, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
         "CommentThread",
       ],
@@ -179,7 +179,7 @@ export const accountsApi = createApi({
         }`,
         method: "PUT",
       }),
-      invalidatesTags: (result, error, { resourceZUID }) => [
+      invalidatesTags: (_, __, { resourceZUID }) => [
         { type: "Comments", id: resourceZUID },
       ],
     }),
