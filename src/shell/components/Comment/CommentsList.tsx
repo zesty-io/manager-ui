@@ -145,6 +145,7 @@ export const CommentsList = ({
                 creator={comment.createdByUserZUID}
                 withResolveButton={index === 0 && !isResolved}
                 onResolveComment={onResolveComment}
+                commentZUID={commentZUID}
               />
               {index + 1 < commentThread?.length && (
                 <Divider sx={{ my: 1.5 }} />

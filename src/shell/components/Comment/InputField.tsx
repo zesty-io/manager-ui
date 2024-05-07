@@ -21,12 +21,16 @@ type InputFieldProps = {
   onCancel: () => void;
   resourceZUID: string;
   commentZUID: string;
+  isEditMode?: boolean;
+  editModeValue?: string;
 };
 export const InputField = ({
   isFirstComment,
   onCancel,
   resourceZUID,
   commentZUID,
+  isEditMode = false,
+  editModeValue = "",
 }: InputFieldProps) => {
   const [
     createComment,
@@ -74,6 +78,22 @@ export const InputField = ({
     });
   };
 
+  const handleUpdateComment = () => {
+    // TODO: Add logic
+  };
+
+  const getPrimaryButtonText = () => {
+    if (isEditMode) {
+      return "Save";
+    }
+
+    if (isFirstComment) {
+      return "Comment";
+    } else {
+      return "Reply";
+    }
+  };
+
   useEffect(() => {
     if (comments[resourceZUID]) {
       setInitialValue(comments[resourceZUID]);
@@ -82,12 +102,13 @@ export const InputField = ({
   }, []);
 
   useEffect(() => {
-    if (inputValue) {
+    // No need to save edit mode changes in draft
+    if (inputValue && !isEditMode) {
       updateComments({
         [resourceZUID]: inputValue === PLACEHOLDER ? "" : inputValue,
       });
     }
-  }, [inputValue]);
+  }, [inputValue, isEditMode]);
 
   useEffect(() => {
     if (isCommentCreated || isReplyCreated) {
@@ -98,6 +119,13 @@ export const InputField = ({
       });
     }
   }, [isCommentCreated, isReplyCreated]);
+
+  useEffect(() => {
+    if (isEditMode) {
+      setInitialValue(editModeValue);
+      setInputValue(editModeValue);
+    }
+  }, [isEditMode, editModeValue]);
 
   return (
     <>
@@ -287,11 +315,21 @@ export const InputField = ({
           variant="contained"
           color="primary"
           size="small"
-          onClick={isFirstComment ? handleCreateComment : handleReply}
+          onClick={() => {
+            if (isEditMode) {
+              return handleUpdateComment();
+            }
+
+            if (isFirstComment) {
+              return handleCreateComment();
+            } else {
+              return handleReply();
+            }
+          }}
           disabled={!inputValue}
           loading={isCreatingComment || isCreatingReply}
         >
-          {isFirstComment ? "Comment" : "Reply"}
+          {getPrimaryButtonText()}
         </LoadingButton>
       </Stack>
     </>

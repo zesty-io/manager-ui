@@ -32,6 +32,7 @@ type CommentItemProps = {
   body: string;
   creator: string;
   createdOn: string;
+  commentZUID: string;
   withResolveButton?: boolean;
   onResolveComment: () => void;
 };
@@ -40,6 +41,7 @@ export const CommentItem = ({
   body,
   creator,
   createdOn,
+  commentZUID,
   withResolveButton,
   onResolveComment,
 }: CommentItemProps) => {
@@ -51,6 +53,8 @@ export const CommentItem = ({
   const [isCopied, setIsCopied] = useState(false);
   const commentBodyRef = useRef<HTMLParagraphElement>();
   const { data: users } = useGetUsersQuery();
+
+  const commentResourceZUID = searchParams.get("commentResourceZuid");
 
   const user = useMemo(
     () => users?.find((user) => user.ZUID === creator),
@@ -101,7 +105,17 @@ export const CommentItem = ({
   };
 
   if (commentZUIDtoEdit === id) {
-    return <Box>Editing</Box>;
+    return (
+      <InputField
+        isEditMode
+        // editModeValue={body}
+        editModeValue="<p>Hello guys!</p><div>Hey hey</div>"
+        isFirstComment={false}
+        onCancel={() => setCommentZUIDtoEdit(null)}
+        resourceZUID={commentResourceZUID}
+        commentZUID={commentZUID}
+      />
+    );
   }
 
   return (
