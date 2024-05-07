@@ -17,12 +17,15 @@ import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import moment from "moment";
 import { useLocation } from "react-router";
+import { useSelector } from "react-redux";
 
 import { useGetUsersQuery } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
 import { useParams as useSearchParams } from "../../hooks/useParams";
 import { InputField } from "./InputField";
 import { CommentContext } from "../../contexts/CommentProvider";
+import { AppState } from "../../store/types";
+import { User } from "../../services/types";
 
 const URL_REGEX =
   /(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
@@ -53,13 +56,17 @@ export const CommentItem = ({
   const [isCopied, setIsCopied] = useState(false);
   const commentBodyRef = useRef<HTMLParagraphElement>();
   const { data: users } = useGetUsersQuery();
+  const loggedInUser: User = useSelector((state: AppState) => state.user);
 
   const commentResourceZUID = searchParams.get("commentResourceZuid");
 
-  const user = useMemo(
+  const commentCreator = useMemo(
     () => users?.find((user) => user.ZUID === creator),
     [users]
   );
+
+  const isLoggedInUserCommentCreator =
+    loggedInUser?.ZUID === commentCreator?.ZUID;
 
   useEffect(() => {
     if (commentBodyRef.current) {
@@ -125,12 +132,12 @@ export const CommentItem = ({
             <Avatar
               sx={{ width: 32, height: 32 }}
               src={`https://www.gravatar.com/avatar/${MD5(
-                user?.email || ""
+                commentCreator?.email || ""
               )}?s=32`}
             />
             <Stack>
               <Typography fontWeight={700} variant="body2">
-                {`${user?.firstName} ${user?.lastName}`}
+                {`${commentCreator?.firstName} ${commentCreator?.lastName}`}
               </Typography>
               <Typography
                 variant="body3"
@@ -178,29 +185,33 @@ export const CommentItem = ({
             },
           }}
         >
-          <MenuItem
-            onClick={() => {
-              setMenuAnchorEl(null);
-              setCommentZUIDtoEdit(id);
-            }}
-          >
-            <ListItemIcon>
-              <DriveFileRenameOutlineRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>Edit</ListItemText>
-          </MenuItem>
+          {isLoggedInUserCommentCreator && (
+            <MenuItem
+              onClick={() => {
+                setMenuAnchorEl(null);
+                setCommentZUIDtoEdit(id);
+              }}
+            >
+              <ListItemIcon>
+                <DriveFileRenameOutlineRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Edit</ListItemText>
+            </MenuItem>
+          )}
           <MenuItem onClick={handleCopyClick}>
             <ListItemIcon>
               {isCopied ? <CheckRoundedIcon /> : <LinkRoundedIcon />}
             </ListItemIcon>
             <ListItemText>Copy Link</ListItemText>
           </MenuItem>
-          <MenuItem onClick={() => console.log("Delete this comment")}>
-            <ListItemIcon>
-              <DeleteRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
-          </MenuItem>
+          {isLoggedInUserCommentCreator && (
+            <MenuItem onClick={() => console.log("Delete this comment")}>
+              <ListItemIcon>
+                <DeleteRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
+          )}
         </Menu>
       )}
     </Box>
