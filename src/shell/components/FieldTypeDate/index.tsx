@@ -24,8 +24,10 @@ export interface FieldTypeDateProps extends DatePickerProps<Date> {
   error?: boolean;
   slots?: DatePickerProps<Date>["slots"] & {
     timePicker?: React.ReactNode;
+    timezonePicker?: React.ReactNode;
   };
   onClear?: () => void;
+  showClearButton?: boolean;
   valueFormatPreview?: string;
 }
 
@@ -50,18 +52,35 @@ const parseDateInput = (input: string): Date | null => {
   const currentYear = new Date().getFullYear();
 
   let [monthInput, dayInput, yearInput] = dateParts;
-  yearInput = yearInput.slice(0, 4);
-  dayInput = dayInput.slice(0, 2);
-  let month = months[monthInput.toLowerCase().slice(0, 3)];
+  yearInput = yearInput?.slice(0, 4);
+  dayInput = dayInput?.slice(0, 2);
+  let month = months[monthInput.toLowerCase()?.slice(0, 3)];
+
   if (isNaN(month)) {
     month = currentMonth;
     if (!isNaN(parseInt(monthInput))) {
       month = parseInt(monthInput) - 1;
     }
   }
+
   const isValidMonth = month >= 0 && month <= 11;
   let day = isNaN(parseInt(dayInput)) ? 1 : parseInt(dayInput);
-  let year = isNaN(parseInt(yearInput)) ? currentYear : parseInt(yearInput);
+  let year = parseInt(yearInput);
+
+  if (isNaN(year)) {
+    const isNotInPast =
+      new Date(
+        currentYear,
+        isValidMonth ? month : currentMonth,
+        day
+      ).getTime() >= new Date().getTime();
+
+    if (isNotInPast) {
+      year = currentYear;
+    } else {
+      year = currentYear + 1;
+    }
+  }
 
   return new Date(year, isValidMonth ? month : currentMonth, day);
 };
@@ -74,6 +93,7 @@ export const FieldTypeDate = memo(
         error,
         slots,
         onClear,
+        showClearButton = true,
         valueFormatPreview,
         ...props
       }: FieldTypeDateProps,
@@ -153,7 +173,7 @@ export const FieldTypeDate = memo(
       return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Stack direction="row" gap={0.5} alignItems="center">
-            <Box maxWidth={160}>
+            <Box maxWidth={160} flexShrink={0}>
               <DatePicker
                 reduceAnimations
                 open={isOpen}
@@ -172,7 +192,6 @@ export const FieldTypeDate = memo(
                   desktopPaper: {
                     sx: {
                       mt: 1,
-
                       "& .MuiDateCalendar-root .MuiPickersSlideTransition-root":
                         {
                           minHeight: 0,
@@ -222,22 +241,25 @@ export const FieldTypeDate = memo(
             </Box>
 
             {!!slots?.timePicker && slots.timePicker}
+            {!!slots?.timezonePicker && slots.timezonePicker}
 
-            <Button
-              data-cy="dateFieldClearButton"
-              color="inherit"
-              variant="text"
-              size="small"
-              sx={{ minWidth: 45 }}
-              onClick={handleClear}
-            >
-              Clear
-            </Button>
+            {showClearButton && (
+              <Button
+                data-cy="dateFieldClearButton"
+                color="inherit"
+                variant="text"
+                size="small"
+                sx={{ minWidth: 45 }}
+                onClick={handleClear}
+              >
+                Clear
+              </Button>
+            )}
           </Stack>
           {(valueFormatPreview || props.value) && (
             <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
-              Stored as{" "}
-              {valueFormatPreview ?? moment(props.value).format("yyyy-MM-DD")}
+              {valueFormatPreview ??
+                `Stored as ${moment(props.value).format("yyyy-MM-DD")}`}
             </Typography>
           )}
         </LocalizationProvider>

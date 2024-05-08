@@ -1,5 +1,4 @@
 import { Header } from "../components/Header";
-import { ItemVersioning } from "../components/Header/ItemVersioning";
 
 import { ItemSettings } from "./ItemSettings";
 import { DataSettings } from "./ItemSettings/DataSettings";
