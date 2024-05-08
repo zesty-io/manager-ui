@@ -19,7 +19,10 @@ import moment from "moment";
 import { useLocation } from "react-router";
 import { useSelector } from "react-redux";
 
-import { useGetUsersQuery } from "../../services/accounts";
+import {
+  useGetUsersQuery,
+  useUpdateCommentStatusMutation,
+} from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
 import { useParams as useSearchParams } from "../../hooks/useParams";
 import { InputField } from "./InputField";
@@ -42,7 +45,6 @@ type CommentItemProps = {
   createdOn: string;
   parentCommentZUID: string;
   withResolveButton?: boolean;
-  onResolveComment: () => void;
   onParentCommentDeleted: () => void;
 };
 export const CommentItem = ({
@@ -52,7 +54,6 @@ export const CommentItem = ({
   createdOn,
   parentCommentZUID,
   withResolveButton,
-  onResolveComment,
   onParentCommentDeleted,
 }: CommentItemProps) => {
   const [searchParams] = useSearchParams();
@@ -67,6 +68,8 @@ export const CommentItem = ({
     deleteReply,
     { isLoading: isDeletingReply, isSuccess: isReplyDeleted },
   ] = useDeleteReplyMutation();
+  const [updateCommentStatus, { isLoading: isUpdatingCommentStatus }] =
+    useUpdateCommentStatusMutation();
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>();
   const [isCopied, setIsCopied] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -151,6 +154,15 @@ export const CommentItem = ({
     }
   };
 
+  const handleUpdateCommentStatus = () => {
+    updateCommentStatus({
+      resourceZUID: commentResourceZUID,
+      commentZUID,
+      parentCommentZUID,
+      isResolved: true,
+    });
+  };
+
   if (commentZUIDtoEdit === commentZUID) {
     return (
       <InputField
@@ -191,7 +203,7 @@ export const CommentItem = ({
             </Stack>
             <Box>
               {withResolveButton && (
-                <IconButton size="small" onClick={onResolveComment}>
+                <IconButton size="small" onClick={handleUpdateCommentStatus}>
                   <CheckRoundedIcon fontSize="small" color="primary" />
                 </IconButton>
               )}

@@ -21,13 +21,11 @@ type CommentsListProps = {
   anchorEl: Element;
   onClose: () => void;
   isResolved: boolean;
-  onResolveComment: () => void;
   parentCommentZUID: string;
 };
 export const CommentsList = ({
   anchorEl,
   onClose,
-  onResolveComment,
   isResolved,
   parentCommentZUID,
 }: CommentsListProps) => {
@@ -147,7 +145,6 @@ export const CommentsList = ({
                 createdOn={comment.createdAt}
                 creator={comment.createdByUserZUID}
                 withResolveButton={index === 0 && !isResolved}
-                onResolveComment={onResolveComment}
                 parentCommentZUID={parentCommentZUID}
                 onParentCommentDeleted={onClose}
               />

@@ -196,7 +196,12 @@ export const accountsApi = createApi({
     }),
     updateCommentStatus: builder.mutation<
       any,
-      { resourceZUID: string; commentZUID: string; isResolved: boolean }
+      {
+        resourceZUID: string;
+        commentZUID: string;
+        parentCommentZUID: string;
+        isResolved: boolean;
+      }
     >({
       query: ({ commentZUID, isResolved }) => ({
         url: `/comments/${commentZUID}?action=${
@@ -204,8 +209,9 @@ export const accountsApi = createApi({
         }`,
         method: "PUT",
       }),
-      invalidatesTags: (_, __, { resourceZUID }) => [
+      invalidatesTags: (_, __, { resourceZUID, parentCommentZUID }) => [
         { type: "Comments", id: resourceZUID },
+        { type: "CommentThread", id: parentCommentZUID },
       ],
     }),
   }),

@@ -19,7 +19,6 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
     useGetCommentByResourceQuery({ resourceZUID }, { skip: !resourceZUID });
   const buttonContainerRef = useRef<HTMLDivElement>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [isResolved, setIsResolved] = useState(false);
   const [isCommentListOpen, setIsCommentListOpen] = useState(false);
   const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
 
@@ -56,7 +55,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
             }}
             sx={{
               backgroundColor: (theme) =>
-                isResolved
+                parentComment.resolved
                   ? "action.hover"
                   : alpha(theme.palette.primary.main, 0.04),
               minWidth: 0,
@@ -65,7 +64,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
               lineHeight: "14px",
               px: 0.5,
               py: 0.25,
-              color: isResolved ? "text.secondary" : "primary.main",
+              color: parentComment.resolved ? "text.secondary" : "primary.main",
 
               "&:hover": {
                 backgroundColor: (theme) =>
@@ -85,7 +84,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
               "& .MuiButton-endIcon .MuiSvgIcon-root": {
                 fontSize: 16,
                 fill: (theme) =>
-                  isResolved
+                  parentComment.resolved
                     ? theme.palette.action.active
                     : theme.palette.primary.main,
               },
@@ -127,8 +126,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
             setSearchParams(null, "commentResourceZuid");
             setSearchParams(null, "replyZUID");
           }}
-          isResolved={isResolved}
-          onResolveComment={() => setIsResolved(true)}
+          isResolved={parentComment?.resolved}
         />
       )}
     </>
