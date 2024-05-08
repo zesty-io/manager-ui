@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { TextField, Autocomplete, Tooltip } from "@mui/material";
-import moment from "moment";
+import { TextField, Autocomplete, Tooltip, ListItem } from "@mui/material";
+import moment from "moment-timezone";
 
 import { FieldTypeDate } from "../FieldTypeDate";
 import {
@@ -9,6 +9,7 @@ import {
   toISOString,
   to12HrTime,
   TIME_OPTIONS,
+  TIMEZONES,
 } from "./util";
 
 const TIME_FORMAT_REGEX = /^((1[0-2]|0?[1-9]):([0-5][0-9]) ?([ap][m]))$/gi;
@@ -19,6 +20,11 @@ type FieldTypeDateTimeProps = {
   error?: boolean;
   value: string;
   onChange: (date: string) => void;
+  showClearButton?: boolean;
+  showTimezonePicker?: boolean;
+  selectedTimezone?: string;
+  onTimezoneChange?: (timezone: string) => void;
+  disablePast?: boolean;
 };
 
 export const FieldTypeDateTime = ({
@@ -27,6 +33,11 @@ export const FieldTypeDateTime = ({
   name,
   value,
   onChange,
+  showClearButton = true,
+  showTimezonePicker,
+  selectedTimezone,
+  onTimezoneChange,
+  disablePast = false,
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -35,6 +46,9 @@ export const FieldTypeDateTime = ({
   const [isTimeFieldActive, setIsTimeFieldActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [invalidInput, setInvalidInput] = useState(false);
+  const [timezone, setTimezone] = useState(
+    selectedTimezone ?? "America/Los_Angeles"
+  );
 
   const [dateString, timeString] = value?.split(" ") ?? [null, null];
 
@@ -73,16 +87,30 @@ export const FieldTypeDateTime = ({
     });
   }, [isTimeFieldActive]);
 
+  const generateValuePreview = () => {
+    if (showTimezonePicker) {
+      return `Stored in UTC as ${moment
+        .utc(moment.tz(value, timezone))
+        .format("yyyy-MM-DD HH:mm:ss.ssssss")}`;
+    }
+
+    if (dateString && timeString) {
+      return `Stored as ${dateString} ${timeString}`;
+    }
+
+    return null;
+  };
+
   return (
     <>
       <FieldTypeDate
+        disablePast={disablePast}
         name={name}
         required={required}
         value={dateString ? moment(dateString).toDate() : null}
         ref={dateFieldRef}
-        valueFormatPreview={
-          dateString && timeString ? `${dateString} ${timeString}` : null
-        }
+        showClearButton={showClearButton}
+        valueFormatPreview={generateValuePreview()}
         onChange={(date) => {
           if (date) {
             onChange(
@@ -122,6 +150,17 @@ export const FieldTypeDateTime = ({
                     return to12HrTime(option);
                   }
                 }}
+                getOptionDisabled={(option) => {
+                  if (disablePast) {
+                    const isSelectedDatetimePast = moment
+                      .utc(moment.tz(`${dateString} ${option.value}`, timezone))
+                      .isBefore(moment.utc());
+
+                    return isSelectedDatetimePast;
+                  }
+
+                  return false;
+                }}
                 filterOptions={(e) => e}
                 isOptionEqualToValue={(option) => {
                   return option.inputValue === getDerivedTime(inputValue);
@@ -153,6 +192,7 @@ export const FieldTypeDateTime = ({
                 }}
                 sx={{
                   width: 96,
+                  flexShrink: 0,
                   "& .MuiAutocomplete-inputRoot": {
                     py: 0.75,
                     px: 1,
@@ -228,6 +268,33 @@ export const FieldTypeDateTime = ({
                 )}
               />
             </Tooltip>
+          ),
+          timezonePicker: showTimezonePicker && (
+            <Autocomplete
+              fullWidth
+              disableClearable
+              size="small"
+              options={TIMEZONES}
+              value={TIMEZONES.find((tz) => tz.id === timezone)}
+              renderInput={(params) => <TextField {...params} />}
+              renderOption={(props, option) => (
+                <ListItem
+                  {...props}
+                  key={option.id}
+                  sx={{
+                    "&.MuiListItem-root": {
+                      color: "text.primary",
+                    },
+                  }}
+                >
+                  {option.label}
+                </ListItem>
+              )}
+              onChange={(_, value) => {
+                setTimezone(value.id);
+                onTimezoneChange && onTimezoneChange(value.id);
+              }}
+            />
           ),
         }}
       />

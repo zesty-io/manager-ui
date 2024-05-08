@@ -29,9 +29,12 @@ import {
   useGetContentItemQuery,
   useGetContentModelFieldsQuery,
 } from "../../../../../../shell/services/instance";
-import { ScheduleFlyout } from "../ItemEdit/components/Header/ItemVersioning/ScheduleFlyout";
 import { Error } from "../../components/Editor/Field/FieldShell";
-import { ContentModelField } from "../../../../../../shell/services/types";
+import {
+  ContentItemWithDirtyAndPublishing,
+  ContentModelField,
+} from "../../../../../../shell/services/types";
+import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
 
 export type ActionAfterSave =
   | ""
@@ -341,19 +344,20 @@ export const ItemCreate = () => {
           </Box>
         </Stack>
       </Box>
-      <ScheduleFlyout
-        isOpen={!isLoadingNewItem && isScheduleDialogOpen}
-        item={newItemData}
-        dispatch={dispatch}
-        toggleOpen={() => setIsScheduleDialogOpen(false)}
-        onScheduled={() => {
-          setIsScheduleDialogOpen(false);
+      {isScheduleDialogOpen && !isLoadingNewItem && (
+        <SchedulePublish
+          item={newItemData as ContentItemWithDirtyAndPublishing}
+          onClose={() => setIsScheduleDialogOpen(false)}
+          onPublishNow={() => handlePublish(newItemZUID)}
+          onScheduleSuccess={() => {
+            setIsScheduleDialogOpen(false);
 
-          if (willRedirect) {
-            history.push(`/content/${modelZUID}/${newItemData?.meta?.ZUID}`);
-          }
-        }}
-      />
+            if (willRedirect) {
+              history.push(`/content/${modelZUID}/${newItemData?.meta?.ZUID}`);
+            }
+          }}
+        />
+      )}
     </WithLoader>
   );
 };
