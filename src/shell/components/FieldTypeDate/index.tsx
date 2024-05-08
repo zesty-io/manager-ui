@@ -24,8 +24,10 @@ export interface FieldTypeDateProps extends DatePickerProps<Date> {
   error?: boolean;
   slots?: DatePickerProps<Date>["slots"] & {
     timePicker?: React.ReactNode;
+    timezonePicker?: React.ReactNode;
   };
   onClear?: () => void;
+  showClearButton?: boolean;
   valueFormatPreview?: string;
 }
 
@@ -91,6 +93,7 @@ export const FieldTypeDate = memo(
         error,
         slots,
         onClear,
+        showClearButton = true,
         valueFormatPreview,
         ...props
       }: FieldTypeDateProps,
@@ -170,7 +173,7 @@ export const FieldTypeDate = memo(
       return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Stack direction="row" gap={0.5} alignItems="center">
-            <Box maxWidth={160}>
+            <Box maxWidth={160} flexShrink={0}>
               <DatePicker
                 reduceAnimations
                 open={isOpen}
@@ -189,7 +192,6 @@ export const FieldTypeDate = memo(
                   desktopPaper: {
                     sx: {
                       mt: 1,
-
                       "& .MuiDateCalendar-root .MuiPickersSlideTransition-root":
                         {
                           minHeight: 0,
@@ -239,22 +241,25 @@ export const FieldTypeDate = memo(
             </Box>
 
             {!!slots?.timePicker && slots.timePicker}
+            {!!slots?.timezonePicker && slots.timezonePicker}
 
-            <Button
-              data-cy="dateFieldClearButton"
-              color="inherit"
-              variant="text"
-              size="small"
-              sx={{ minWidth: 45 }}
-              onClick={handleClear}
-            >
-              Clear
-            </Button>
+            {showClearButton && (
+              <Button
+                data-cy="dateFieldClearButton"
+                color="inherit"
+                variant="text"
+                size="small"
+                sx={{ minWidth: 45 }}
+                onClick={handleClear}
+              >
+                Clear
+              </Button>
+            )}
           </Stack>
           {(valueFormatPreview || props.value) && (
             <Typography variant="body3" color="text.secondary" sx={{ mt: 0.5 }}>
-              Stored as{" "}
-              {valueFormatPreview ?? moment(props.value).format("yyyy-MM-DD")}
+              {valueFormatPreview ??
+                `Stored as ${moment(props.value).format("yyyy-MM-DD")}`}
             </Typography>
           )}
         </LocalizationProvider>

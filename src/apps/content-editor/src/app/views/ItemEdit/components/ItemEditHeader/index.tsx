@@ -29,6 +29,7 @@ import { PreviewMenu } from "./PreviewMenu";
 import { useGetInstalledAppsQuery } from "../../../../../../../../shell/services/accounts";
 import { DuoModeSwitch } from "./DuoModeToggle";
 import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
+import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 
 const tabs = [
   {
@@ -67,12 +68,6 @@ const tabs = [
     value: "freestyle",
   },
 ];
-
-export type ContentItemWithDirtyAndPublishing = ContentItem & {
-  dirty: boolean;
-  publishing: Publishing;
-  scheduling: any;
-};
 
 type HeaderProps = {
   saving: boolean;
