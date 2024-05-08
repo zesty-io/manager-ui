@@ -142,13 +142,14 @@ export const CommentsList = ({
           {commentThread?.map((comment, index) => (
             <Fragment key={comment.ZUID}>
               <CommentItem
-                id={comment.ZUID}
+                commentZUID={comment.ZUID}
                 body={comment.content}
                 createdOn={comment.createdAt}
                 creator={comment.createdByUserZUID}
                 withResolveButton={index === 0 && !isResolved}
                 onResolveComment={onResolveComment}
-                commentZUID={parentCommentZUID}
+                parentCommentZUID={parentCommentZUID}
+                onParentCommentDeleted={onClose}
               />
               {index + 1 < commentThread?.length && (
                 <Divider sx={{ my: 1.5 }} />

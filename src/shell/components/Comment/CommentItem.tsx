@@ -26,34 +26,43 @@ import { InputField } from "./InputField";
 import { CommentContext } from "../../contexts/CommentProvider";
 import { AppState } from "../../store/types";
 import { User } from "../../services/types";
+import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+import { useDeleteCommentMutation } from "../../services/accounts";
 
 const URL_REGEX =
   /(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
 
 type CommentItemProps = {
-  id: string;
+  commentZUID: string;
   body: string;
   creator: string;
   createdOn: string;
-  commentZUID: string;
+  parentCommentZUID: string;
   withResolveButton?: boolean;
   onResolveComment: () => void;
+  onParentCommentDeleted: () => void;
 };
 export const CommentItem = ({
-  id,
+  commentZUID,
   body,
   creator,
   createdOn,
-  commentZUID,
+  parentCommentZUID,
   withResolveButton,
   onResolveComment,
+  onParentCommentDeleted,
 }: CommentItemProps) => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const [_, __, commentZUIDtoEdit, setCommentZUIDtoEdit] =
     useContext(CommentContext);
+  const [
+    deleteComment,
+    { isLoading: isDeletingComment, isSuccess: isCommentDeleted },
+  ] = useDeleteCommentMutation();
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>();
   const [isCopied, setIsCopied] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const commentBodyRef = useRef<HTMLParagraphElement>();
   const { data: users } = useGetUsersQuery();
   const loggedInUser: User = useSelector((state: AppState) => state.user);
@@ -93,12 +102,22 @@ export const CommentItem = ({
     }
   }, [body, commentBodyRef]);
 
+  useEffect(() => {
+    if (isCommentDeleted) {
+      setIsDeleteModalOpen(false);
+
+      if (commentZUID.startsWith("24")) {
+        onParentCommentDeleted();
+      }
+    }
+  }, [isCommentDeleted]);
+
   const handleCopyClick = () => {
     const resourceZUID = searchParams.get("commentResourceZuid");
 
     navigator?.clipboard
       ?.writeText(
-        `${window.location.origin}${location.pathname}?commentResourceZuid=${resourceZUID}&replyZUID=${id}`
+        `${window.location.origin}${location.pathname}?commentResourceZuid=${resourceZUID}&replyZUID=${commentZUID}`
       )
       .then(() => {
         setIsCopied(true);
@@ -111,7 +130,14 @@ export const CommentItem = ({
       });
   };
 
-  if (commentZUIDtoEdit === id) {
+  const handleDeleteComment = () => {
+    deleteComment({
+      resourceZUID: commentResourceZUID,
+      commentZUID,
+    });
+  };
+
+  if (commentZUIDtoEdit === commentZUID) {
     return (
       <InputField
         isEditMode
@@ -119,101 +145,115 @@ export const CommentItem = ({
         isFirstComment={false}
         onCancel={() => setCommentZUIDtoEdit(null)}
         resourceZUID={commentResourceZUID}
-        parentCommentZUID={commentZUID}
+        parentCommentZUID={parentCommentZUID}
       />
     );
   }
 
   return (
-    <Box id={id}>
-      <Stack gap={1.5}>
-        <Stack gap={1.5} direction="row">
-          <Stack flex={1} direction="row" gap={1.5} alignItems="center">
-            <Avatar
-              sx={{ width: 32, height: 32 }}
-              src={`https://www.gravatar.com/avatar/${MD5(
-                commentCreator?.email || ""
-              )}?s=32`}
-            />
-            <Stack>
-              <Typography fontWeight={700} variant="body2">
-                {`${commentCreator?.firstName} ${commentCreator?.lastName}`}
-              </Typography>
-              <Typography
-                variant="body3"
-                fontWeight={600}
-                color="text.secondary"
-              >
-                {moment(createdOn).fromNow()}
-              </Typography>
+    <>
+      <Box id={commentZUID}>
+        <Stack gap={1.5}>
+          <Stack gap={1.5} direction="row">
+            <Stack flex={1} direction="row" gap={1.5} alignItems="center">
+              <Avatar
+                sx={{ width: 32, height: 32 }}
+                src={`https://www.gravatar.com/avatar/${MD5(
+                  commentCreator?.email || ""
+                )}?s=32`}
+              />
+              <Stack>
+                <Typography fontWeight={700} variant="body2">
+                  {`${commentCreator?.firstName} ${commentCreator?.lastName}`}
+                </Typography>
+                <Typography
+                  variant="body3"
+                  fontWeight={600}
+                  color="text.secondary"
+                >
+                  {moment(createdOn).fromNow()}
+                </Typography>
+              </Stack>
             </Stack>
-          </Stack>
-          <Box>
-            {withResolveButton && (
-              <IconButton size="small" onClick={onResolveComment}>
-                <CheckRoundedIcon fontSize="small" color="primary" />
+            <Box>
+              {withResolveButton && (
+                <IconButton size="small" onClick={onResolveComment}>
+                  <CheckRoundedIcon fontSize="small" color="primary" />
+                </IconButton>
+              )}
+              <IconButton
+                size="small"
+                onClick={(evt) => setMenuAnchorEl(evt.currentTarget)}
+              >
+                <MoreVertRoundedIcon fontSize="small" />
               </IconButton>
-            )}
-            <IconButton
-              size="small"
-              onClick={(evt) => setMenuAnchorEl(evt.currentTarget)}
-            >
-              <MoreVertRoundedIcon fontSize="small" />
-            </IconButton>
-          </Box>
+            </Box>
+          </Stack>
+          <Typography variant="body2" ref={commentBodyRef}></Typography>
         </Stack>
-        <Typography variant="body2" ref={commentBodyRef}></Typography>
-      </Stack>
-      {menuAnchorEl && (
-        <Menu
-          anchorEl={menuAnchorEl}
-          open
-          onClose={() => setMenuAnchorEl(null)}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          slotProps={{
-            paper: {
-              sx: {
-                width: 160,
+        {menuAnchorEl && (
+          <Menu
+            anchorEl={menuAnchorEl}
+            open
+            onClose={() => setMenuAnchorEl(null)}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            slotProps={{
+              paper: {
+                sx: {
+                  width: 160,
+                },
               },
-            },
-          }}
-        >
-          {isLoggedInUserCommentCreator && (
-            <MenuItem
-              onClick={() => {
-                setMenuAnchorEl(null);
-                setCommentZUIDtoEdit(id);
-              }}
-            >
+            }}
+          >
+            {isLoggedInUserCommentCreator && (
+              <MenuItem
+                onClick={() => {
+                  setMenuAnchorEl(null);
+                  setCommentZUIDtoEdit(commentZUID);
+                }}
+              >
+                <ListItemIcon>
+                  <DriveFileRenameOutlineRoundedIcon />
+                </ListItemIcon>
+                <ListItemText>Edit</ListItemText>
+              </MenuItem>
+            )}
+            <MenuItem onClick={handleCopyClick}>
               <ListItemIcon>
-                <DriveFileRenameOutlineRoundedIcon />
+                {isCopied ? <CheckRoundedIcon /> : <LinkRoundedIcon />}
               </ListItemIcon>
-              <ListItemText>Edit</ListItemText>
+              <ListItemText>Copy Link</ListItemText>
             </MenuItem>
-          )}
-          <MenuItem onClick={handleCopyClick}>
-            <ListItemIcon>
-              {isCopied ? <CheckRoundedIcon /> : <LinkRoundedIcon />}
-            </ListItemIcon>
-            <ListItemText>Copy Link</ListItemText>
-          </MenuItem>
-          {isLoggedInUserCommentCreator && (
-            <MenuItem onClick={() => console.log("Delete this comment")}>
-              <ListItemIcon>
-                <DeleteRoundedIcon />
-              </ListItemIcon>
-              <ListItemText>Delete</ListItemText>
-            </MenuItem>
-          )}
-        </Menu>
+            {isLoggedInUserCommentCreator && (
+              <MenuItem
+                onClick={() => {
+                  setMenuAnchorEl(null);
+                  setIsDeleteModalOpen(true);
+                }}
+              >
+                <ListItemIcon>
+                  <DeleteRoundedIcon />
+                </ListItemIcon>
+                <ListItemText>Delete</ListItemText>
+              </MenuItem>
+            )}
+          </Menu>
+        )}
+      </Box>
+      {isDeleteModalOpen && (
+        <ConfirmDeleteModal
+          isDeletingComment={isDeletingComment}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirmDelete={handleDeleteComment}
+        />
       )}
-    </Box>
+    </>
   );
 };
