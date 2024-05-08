@@ -142,6 +142,12 @@ export interface ContentItem {
   publishAt?: any;
 }
 
+export type ContentItemWithDirtyAndPublishing = ContentItem & {
+  dirty: boolean;
+  publishing: Publishing;
+  scheduling: any;
+};
+
 export interface Instance {
   ID: number;
   ZUID: string;
