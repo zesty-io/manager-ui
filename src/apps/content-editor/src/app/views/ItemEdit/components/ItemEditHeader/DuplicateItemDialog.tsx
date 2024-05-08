@@ -45,6 +45,8 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
       body: {
         data: {
           ...item.data,
+          // Remove the UUID to avoid duplication
+          ...(item.data.uuid !== undefined && { uuid: null }),
           ...(fieldToChange && {
             [fieldToChange]: item.data[fieldToChange] + " (copy)",
           }),
