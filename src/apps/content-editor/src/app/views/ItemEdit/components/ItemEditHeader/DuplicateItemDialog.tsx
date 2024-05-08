@@ -47,7 +47,7 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
 
     const newData = { ...item.data };
 
-    uuidFieldKeys.forEach((key) => {
+    uuidFieldKeys?.forEach((key) => {
       newData[key] = null; // Set each uuid key to null
     });
 
