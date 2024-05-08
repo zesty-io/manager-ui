@@ -151,9 +151,9 @@ export const accountsApi = createApi({
         method: "PUT",
         body: { content },
       }),
-      invalidatesTags: (_, __, { resourceZUID }) => [
+      invalidatesTags: (_, __, { resourceZUID, commentZUID }) => [
         { type: "Comments", id: resourceZUID },
-        "CommentThread",
+        { type: "CommentThread", id: commentZUID },
       ],
     }),
     deleteComment: builder.mutation<
@@ -164,9 +164,21 @@ export const accountsApi = createApi({
         url: `/comments/${commentZUID}`,
         method: "DELETE",
       }),
-      invalidatesTags: (_, __, { resourceZUID }) => [
+      invalidatesTags: (_, __, { resourceZUID, commentZUID }) => [
         { type: "Comments", id: resourceZUID },
-        "CommentThread",
+        { type: "CommentThread", id: commentZUID },
+      ],
+    }),
+    deleteReply: builder.mutation<
+      any,
+      { commentZUID: string; parentCommentZUID: string }
+    >({
+      query: ({ commentZUID, parentCommentZUID }) => ({
+        url: `/comments/${parentCommentZUID}/replies/${commentZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_, __, { parentCommentZUID }) => [
+        { type: "CommentThread", id: parentCommentZUID },
       ],
     }),
     updateCommentStatus: builder.mutation<
@@ -198,10 +210,11 @@ export const {
   useGetCurrentUserRolesQuery,
   useGetInstalledAppsQuery,
   useCreateCommentMutation,
+  useCreateReplyMutation,
   useGetCommentThreadQuery,
   useGetCommentByResourceQuery,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
+  useDeleteReplyMutation,
   useUpdateCommentStatusMutation,
-  useCreateReplyMutation,
 } = accountsApi;

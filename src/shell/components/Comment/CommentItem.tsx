@@ -27,7 +27,10 @@ import { CommentContext } from "../../contexts/CommentProvider";
 import { AppState } from "../../store/types";
 import { User } from "../../services/types";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
-import { useDeleteCommentMutation } from "../../services/accounts";
+import {
+  useDeleteCommentMutation,
+  useDeleteReplyMutation,
+} from "../../services/accounts";
 
 const URL_REGEX =
   /(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
@@ -60,6 +63,10 @@ export const CommentItem = ({
     deleteComment,
     { isLoading: isDeletingComment, isSuccess: isCommentDeleted },
   ] = useDeleteCommentMutation();
+  const [
+    deleteReply,
+    { isLoading: isDeletingReply, isSuccess: isReplyDeleted },
+  ] = useDeleteReplyMutation();
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>();
   const [isCopied, setIsCopied] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -103,14 +110,14 @@ export const CommentItem = ({
   }, [body, commentBodyRef]);
 
   useEffect(() => {
-    if (isCommentDeleted) {
+    if (isCommentDeleted || isReplyDeleted) {
       setIsDeleteModalOpen(false);
 
       if (commentZUID.startsWith("24")) {
         onParentCommentDeleted();
       }
     }
-  }, [isCommentDeleted]);
+  }, [isCommentDeleted, isReplyDeleted]);
 
   const handleCopyClick = () => {
     const resourceZUID = searchParams.get("commentResourceZuid");
@@ -131,10 +138,17 @@ export const CommentItem = ({
   };
 
   const handleDeleteComment = () => {
-    deleteComment({
-      resourceZUID: commentResourceZUID,
-      commentZUID,
-    });
+    if (commentZUID.startsWith("24")) {
+      deleteComment({
+        resourceZUID: commentResourceZUID,
+        commentZUID,
+      });
+    } else {
+      deleteReply({
+        commentZUID,
+        parentCommentZUID,
+      });
+    }
   };
 
   if (commentZUIDtoEdit === commentZUID) {
@@ -249,7 +263,7 @@ export const CommentItem = ({
       </Box>
       {isDeleteModalOpen && (
         <ConfirmDeleteModal
-          isDeletingComment={isDeletingComment}
+          isDeletingComment={isDeletingComment || isDeletingReply}
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirmDelete={handleDeleteComment}
         />
