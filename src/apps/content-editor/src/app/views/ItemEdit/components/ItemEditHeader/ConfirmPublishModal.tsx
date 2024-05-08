@@ -16,11 +16,13 @@ type ConfirmPublishModal = {
   contentTitle: string;
   onCancel: () => void;
   onConfirm: () => void;
+  contentVersion: number;
 };
 export const ConfirmPublishModal = ({
   contentTitle,
   onCancel,
   onConfirm,
+  contentVersion,
 }: ConfirmPublishModal) => {
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
@@ -45,7 +47,7 @@ export const ConfirmPublishModal = ({
         </Stack>
         <Box>
           Publish Content Item:
-          <Typography fontWeight={600} variant="h5" display="inline">
+          <Typography fontWeight={400} variant="h5" display="inline">
             {" "}
             {contentTitle}?
           </Typography>
@@ -53,8 +55,9 @@ export const ConfirmPublishModal = ({
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary">
-          This will make the item immediately available on all of your
-          platforms. You can always unpublish this item later if needed.
+          This will immediately make v{contentVersion} of the item available on
+          all of your platforms. You can always unpublish this item later if
+          needed.
         </Typography>
       </DialogContent>
       <DialogActions>
