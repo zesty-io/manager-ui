@@ -40,13 +40,22 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
     if (modelFields?.[0]?.datatype === "text") {
       fieldToChange = modelFields[0].name;
     }
+
+    const uuidFieldKeys = modelFields
+      ?.filter((field) => field.datatype === "uuid")
+      ?.map((field) => field.name);
+
+    // Set uuid fields to null in item.data
+    const newData = { ...item.data };
+    uuidFieldKeys.forEach((key) => {
+      newData[key] = null; // Set each uuid key to null
+    });
+
     createContentItem({
       modelZUID,
       body: {
         data: {
-          ...item.data,
-          // Remove the UUID to avoid duplication
-          ...(item.data.uuid !== undefined && { uuid: null }),
+          ...newData,
           ...(fieldToChange && {
             [fieldToChange]: item.data[fieldToChange] + " (copy)",
           }),
