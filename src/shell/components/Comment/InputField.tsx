@@ -17,6 +17,8 @@ import {
 } from "../../services/accounts";
 
 const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
+const EMAIL_MENTION_REGEX =
+  /(?<!\>)@[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}(?!\<span\>)/gm;
 
 type InputFieldProps = {
   isFirstComment: boolean;
@@ -169,6 +171,10 @@ export const InputField = ({
     }
   }, [isEditMode, editModeValue]);
 
+  useEffect(() => {
+    console.log(inputValue);
+  }, [inputValue]);
+
   const isLoading =
     isCreatingComment ||
     isCreatingReply ||
@@ -234,8 +240,22 @@ export const InputField = ({
                 tinymce?.activeEditor.setContent(PLACEHOLDER);
               }
             }}
-            onEditorChange={(value) => {
+            onEditorChange={(value, editor) => {
+              // const hasMention = !![...value.matchAll(EMAIL_MENTION_REGEX)]
+              //   ?.length;
+
+              // if (hasMention) {
+              //   console.log("has mention");
+              //   const emailMatchedValue = value.replaceAll(
+              //     EMAIL_MENTION_REGEX,
+              //     (text) =>
+              //       `<span class="mentioned-user" contentEditable={false}>${text}</span>`
+              //   );
+              //   setInputValue(emailMatchedValue);
+              //   setInitialValue(emailMatchedValue);
+              // } else {
               setInputValue(value);
+              // }
             }}
             onKeyDown={(evt, editor) => {
               // Checks if the mention list should be opened or not
@@ -321,11 +341,12 @@ export const InputField = ({
                     selection.removeAllRanges();
                     selection.addRange(range);
                   }
-                  editor.selection.setContent(`<span class="mentioned-user">@${
-                    mentionListRef.current?.handleSelectUser()?.email
-                  }
-                  </span>`);
-                  editor.selection.setContent("<span>&nbsp;</span>");
+                  editor.selection.setContent(
+                    `<span class="mentioned-user" contentEditable="false">@${
+                      mentionListRef.current?.handleSelectUser()?.email
+                    }</span>`
+                  );
+                  editor.selection.setContent(" ");
 
                   setMentionListAnchorEl(null);
                 }

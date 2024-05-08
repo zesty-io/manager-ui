@@ -506,6 +506,10 @@ export type Announcement = {
 };
 
 export type CommentResourceType = "fields" | "items";
+export type Mention = {
+  email: string;
+  userZUID: string;
+};
 
 export type Comment = {
   ZUID: string;
@@ -514,7 +518,7 @@ export type Comment = {
   createdByUserName: string;
   createdByUserZUID: string;
   instanceZUID: string;
-  mentions: string[];
+  mentions: Mention[];
   replyCount?: number;
   resolved: boolean;
   resourceType: CommentResourceType;
