@@ -156,6 +156,19 @@ export const accountsApi = createApi({
         { type: "CommentThread", id: commentZUID },
       ],
     }),
+    updateReply: builder.mutation<
+      any,
+      { commentZUID: string; parentCommentZUID: string; content: string }
+    >({
+      query: ({ commentZUID, parentCommentZUID, content }) => ({
+        url: `/comments/${parentCommentZUID}/replies/${commentZUID}`,
+        method: "PUT",
+        body: { content },
+      }),
+      invalidatesTags: (_, __, { parentCommentZUID }) => [
+        { type: "CommentThread", id: parentCommentZUID },
+      ],
+    }),
     deleteComment: builder.mutation<
       any,
       { resourceZUID: string; commentZUID: string }
@@ -214,6 +227,7 @@ export const {
   useGetCommentThreadQuery,
   useGetCommentByResourceQuery,
   useUpdateCommentMutation,
+  useUpdateReplyMutation,
   useDeleteCommentMutation,
   useDeleteReplyMutation,
   useUpdateCommentStatusMutation,

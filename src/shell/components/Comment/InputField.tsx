@@ -13,6 +13,7 @@ import {
   useCreateCommentMutation,
   useCreateReplyMutation,
   useUpdateCommentMutation,
+  useUpdateReplyMutation,
 } from "../../services/accounts";
 
 const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
@@ -57,6 +58,14 @@ export const InputField = ({
       isSuccess: isCommentUpdated,
     },
   ] = useUpdateCommentMutation();
+  const [
+    updateReply,
+    {
+      isLoading: isUpdatingReply,
+      isError: isReplyUpdateError,
+      isSuccess: isReplyUpdated,
+    },
+  ] = useUpdateReplyMutation();
   const { itemZUID } = useParams<{ itemZUID: string }>();
   const [comments, updateComments, commentZUIDtoEdit, setCommentZUIDtoEdit] =
     useContext(CommentContext);
@@ -68,33 +77,43 @@ export const InputField = ({
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
   const [userFilterKeyword, setUserFilterKeyword] = useState("");
 
-  const handleCreateComment = () => {
-    createComment({
-      resourceType: getResourceTypeByZuid(resourceZUID),
-      resourceZUID,
-      // TODO: remove hardcoded text once Markel fixes the endpoint
-      // content: inputValue,
-      content: "Hello world",
-      resourceParentZUID: itemZUID,
-    });
+  const handleSubmit = () => {
+    if (isFirstComment) {
+      createComment({
+        resourceType: getResourceTypeByZuid(resourceZUID),
+        resourceZUID,
+        // TODO: remove hardcoded text once Markel fixes the endpoint
+        // content: inputValue,
+        content: "Hello world",
+        resourceParentZUID: itemZUID,
+      });
+    } else {
+      createReply({
+        // content: inputValue,
+        content: "This is a reply",
+        commentZUID: parentCommentZUID,
+      });
+    }
   };
 
-  const handleReply = () => {
-    createReply({
-      // content: inputValue,
-      content: "This is a reply",
-      commentZUID: parentCommentZUID,
-    });
-  };
-
-  const handleUpdateComment = () => {
-    updateComment({
-      resourceZUID,
-      commentZUID: commentZUIDtoEdit,
-      // TODO: remove hardcoded once fix is made
-      content: "Comment updated",
-      // content: inputValue,
-    });
+  const handleUpdate = () => {
+    if (commentZUIDtoEdit.startsWith("24")) {
+      updateComment({
+        resourceZUID,
+        commentZUID: commentZUIDtoEdit,
+        // TODO: remove hardcoded once fix is made
+        content: "Comment updated",
+        // content: inputValue,
+      });
+    } else {
+      updateReply({
+        commentZUID: commentZUIDtoEdit,
+        parentCommentZUID,
+        // TODO: remove hardcoded once fix is made
+        content: "Reply updated",
+        // content: inputValue,
+      });
+    }
   };
 
   const getPrimaryButtonText = () => {
@@ -136,12 +155,12 @@ export const InputField = ({
   }, [isCommentCreated, isReplyCreated]);
 
   useEffect(() => {
-    if (isCommentUpdated) {
+    if (isCommentUpdated || isReplyUpdated) {
       tinymce?.activeEditor.setContent(PLACEHOLDER);
       setInputValue("");
       setCommentZUIDtoEdit(null);
     }
-  }, [isCommentUpdated]);
+  }, [isCommentUpdated, isReplyUpdated]);
 
   useEffect(() => {
     if (isEditMode) {
@@ -149,6 +168,17 @@ export const InputField = ({
       setInputValue(editModeValue);
     }
   }, [isEditMode, editModeValue]);
+
+  const isLoading =
+    isCreatingComment ||
+    isCreatingReply ||
+    isUpdatingComment ||
+    isUpdatingReply;
+  const hasError =
+    isCommentCreationError ||
+    isReplyCreationError ||
+    isCommentUpdateError ||
+    isReplyUpdateError;
 
   return (
     <>
@@ -312,9 +342,7 @@ export const InputField = ({
           filterKeyword={userFilterKeyword}
         />
       )}
-      {(isCommentCreationError ||
-        isReplyCreationError ||
-        isCommentUpdateError) && (
+      {hasError && (
         <Typography variant="body2" color="error.dark" mt={0.5}>
           Unable to add comment. Please check your internet connection and try
           again.
@@ -332,7 +360,7 @@ export const InputField = ({
           color="inherit"
           size="small"
           onClick={onCancel}
-          disabled={isCreatingComment || isCreatingReply || isUpdatingComment}
+          disabled={isLoading}
         >
           Cancel
         </Button>
@@ -340,19 +368,9 @@ export const InputField = ({
           variant="contained"
           color="primary"
           size="small"
-          onClick={() => {
-            if (isEditMode) {
-              return handleUpdateComment();
-            }
-
-            if (isFirstComment) {
-              return handleCreateComment();
-            } else {
-              return handleReply();
-            }
-          }}
+          onClick={isEditMode ? handleUpdate : handleSubmit}
           disabled={!inputValue}
-          loading={isCreatingComment || isCreatingReply || isUpdatingComment}
+          loading={isLoading}
         >
           {getPrimaryButtonText()}
         </LoadingButton>
