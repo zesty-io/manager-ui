@@ -84,7 +84,8 @@ export const InputField = ({
       createComment({
         resourceType: getResourceTypeByZuid(resourceZUID),
         resourceZUID,
-        content: inputValue,
+        // content: inputValue,
+        content: "Initial content",
         resourceParentZUID: itemZUID,
       });
     } else {
