@@ -84,15 +84,12 @@ export const InputField = ({
       createComment({
         resourceType: getResourceTypeByZuid(resourceZUID),
         resourceZUID,
-        // TODO: remove hardcoded text once Markel fixes the endpoint
-        // content: inputValue,
-        content: "Hello world",
+        content: inputValue,
         resourceParentZUID: itemZUID,
       });
     } else {
       createReply({
-        // content: inputValue,
-        content: "This is a reply",
+        content: inputValue,
         commentZUID: parentCommentZUID,
       });
     }
@@ -103,17 +100,13 @@ export const InputField = ({
       updateComment({
         resourceZUID,
         commentZUID: commentZUIDtoEdit,
-        // TODO: remove hardcoded once fix is made
-        content: "Comment updated",
-        // content: inputValue,
+        content: inputValue,
       });
     } else {
       updateReply({
         commentZUID: commentZUIDtoEdit,
         parentCommentZUID,
-        // TODO: remove hardcoded once fix is made
-        content: "Reply updated",
-        // content: inputValue,
+        content: inputValue,
       });
     }
   };
