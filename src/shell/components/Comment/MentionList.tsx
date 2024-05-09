@@ -61,8 +61,13 @@ export const MentionList = forwardRef(
     useEffect(() => {
       listRef.current
         ?.querySelector(".Mui-selected")
-        .scrollIntoView({ block: "nearest" });
+        ?.scrollIntoView({ block: "nearest" });
     }, [selectedUserIndex]);
+
+    useEffect(() => {
+      // Makes sure that the first user is always selected when filtering
+      setSelectedUserIndex(0);
+    }, [filterKeyword]);
 
     useImperativeHandle(
       ref,
@@ -104,6 +109,10 @@ export const MentionList = forwardRef(
         return popperBottomOffset - 8;
       }
     };
+
+    if (!sortedUsers?.length) {
+      return <></>;
+    }
 
     return (
       <Popper
