@@ -165,10 +165,6 @@ export const InputField = ({
     }
   }, [isEditMode, editModeValue]);
 
-  useEffect(() => {
-    console.log(inputValue);
-  }, [inputValue]);
-
   const isLoading =
     isCreatingComment ||
     isCreatingReply ||
