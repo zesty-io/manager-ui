@@ -14,6 +14,7 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
+  PopperPlacementType,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useGetUsersQuery } from "../../services/accounts";
@@ -29,6 +30,8 @@ export const MentionList = forwardRef(
     const [popperTopOffset, setPopperTopOffset] = useState(0);
     const [popperBottomOffset, setPopperBottomOffset] = useState(0);
     const [selectedUserIndex, setSelectedUserIndex] = useState(0);
+    const [placement, setPlacement] =
+      useState<PopperPlacementType>("bottom-start");
     const popperRef = useRef<HTMLDivElement>();
     const listRef = useRef<HTMLUListElement>();
 
@@ -39,6 +42,15 @@ export const MentionList = forwardRef(
     }, [users, filterKeyword]);
 
     useEffect(() => {
+      if (
+        window.innerHeight - anchorEl?.getBoundingClientRect().top >
+        window.innerHeight * 0.2
+      ) {
+        setPlacement("bottom-start");
+      } else {
+        setPlacement("top-start");
+      }
+
       setTimeout(() => {
         const { top, bottom } = popperRef.current?.getBoundingClientRect();
         setPopperTopOffset(top);
@@ -86,10 +98,7 @@ export const MentionList = forwardRef(
     );
 
     const calculateMaxHeight = () => {
-      const isPopperInBottom =
-        anchorEl.getBoundingClientRect().top < popperTopOffset;
-
-      if (isPopperInBottom) {
+      if (placement === "bottom-start") {
         return window.innerHeight - popperTopOffset - 8;
       } else {
         return popperBottomOffset - 8;
@@ -99,7 +108,7 @@ export const MentionList = forwardRef(
     return (
       <Popper
         open
-        placement="bottom-start"
+        placement={placement}
         anchorEl={anchorEl}
         ref={popperRef}
         sx={{
