@@ -215,7 +215,6 @@ export const InputField = ({
             initialValue={initialValue}
             init={{
               inline: true,
-              noneditable_class: "mentioned-user",
 
               setup: (editor) => {
                 editor.on("ResizeEditor", () => {
@@ -325,7 +324,7 @@ export const InputField = ({
                     selection.addRange(range);
                   }
                   editor.selection.setContent(
-                    `<span class="mentioned-user">@${
+                    `<span class="mentioned-user" contenteditable="false">@${
                       mentionListRef.current?.handleSelectUser()?.email
                     }</span>`
                   );
