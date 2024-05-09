@@ -134,7 +134,7 @@ export const ItemParent = connect((state) => {
                   props.dispatch(
                     notify({
                       kind: "warn",
-                      message: `API failed to return data.Try Again.`,
+                      message: `API failed to return data. Try Again.`,
                     })
                   );
                 }
@@ -142,7 +142,7 @@ export const ItemParent = connect((state) => {
                 props.dispatch(
                   notify({
                     kind: "warn",
-                    heading: `"Cannot Save: [${props.metaTitle}]`,
+                    heading: `"Cannot Save: ${props.metaTitle}`,
                     message: `Page's Parent does not exist or has been deleted`,
                   })
                 );

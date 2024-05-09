@@ -36,38 +36,33 @@ import {
 } from "notistack";
 
 const alertDetails = (kind) => {
-  let bgColor, icon, severity;
+  let icon, severity;
 
   switch (kind) {
     case "warn":
-      bgColor = "warning.main";
       icon = <WarningRoundedIcon sx={{ width: 22, height: 22 }} />;
       severity = "warning";
       break;
     case "error":
-      bgColor = "error.dark";
       icon = <ErrorOutlineOutlinedIcon sx={{ width: 22, height: 22 }} />;
       severity = "error";
       break;
     case "save":
     case "success":
-      bgColor = "success.dark";
       icon = <CheckCircleRoundedIcon sx={{ width: 22, height: 22 }} />;
       severity = "success";
       break;
     case "deleted":
-      bgColor = "success.dark";
       icon = <DeleteRoundedIcon sx={{ width: 22, height: 22 }} />;
       severity = "success";
       break;
     default:
-      bgColor = "info.main";
       icon = <InfoRoundedIcon sx={{ width: 22, height: 22 }} />;
       severity = "info";
       break;
   }
 
-  return { bgColor, icon, severity };
+  return { icon, severity };
 };
 
 export default connect((state) => {
@@ -84,9 +79,7 @@ export default connect((state) => {
       setDrawerOpen(false);
     });
 
-    const { bgColor, icon, severity } = alertDetails(
-      props.notifications[0]?.kind
-    );
+    const { icon, severity } = alertDetails(props.notifications[0]?.kind);
 
     useEffect(() => {
       if (!initialRender && props.notifications.length) {
@@ -95,7 +88,6 @@ export default connect((state) => {
           variant: "custom",
           severity,
           icon,
-          bgColor,
           heading: props.notifications[0]?.heading,
         });
         // On every render set timeout to hide notices
@@ -238,18 +230,6 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
           </Stack>
         }
         sx={{
-          "& .MuiAlert-icon, .MuiAlert-message, .MuiAlert-action ": {
-            color: "#fff",
-          },
-          "& .MuiAlert-action": {
-            alignItems: "center",
-            padding: 0,
-            pl: 2,
-            mr: 0,
-          },
-          padding: "8px 12px",
-          borderRadius: "8px",
-          bgcolor: props.bgColor,
           width: 516,
         }}
       >

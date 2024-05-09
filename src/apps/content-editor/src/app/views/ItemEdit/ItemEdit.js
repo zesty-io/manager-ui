@@ -251,9 +251,6 @@ export default function ItemEdit() {
 
         dispatch(
           notify({
-            // message: `You are missing data in ${res.missingRequired.map(
-            //   (f) => f.label + " "
-            // )}`,
             heading: `Cannot Save: ${item.web.metaTitle}`,
             message: "Missing Data in Required Fields",
             kind: "error",
@@ -264,7 +261,6 @@ export default function ItemEdit() {
       if (res.status === 400) {
         dispatch(
           notify({
-            // message: `Failed to save new version: ${res.error}`,
             message: `Cannot Save: ${item.web.metaTitle}`,
             kind: "error",
           })
@@ -274,11 +270,6 @@ export default function ItemEdit() {
 
       dispatch(
         notify({
-          // message: `Saved a new ${
-          //   item && item.web.metaLinkText ? item.web.metaLinkText : ""
-          // } (${
-          //   languages.find((lang) => lang.ID === item.meta.langID)?.code
-          // }) version`,
           message: `Item Saved: ${
             item && item.web.metaLinkText ? item.web.metaLinkText : ""
           }`,
