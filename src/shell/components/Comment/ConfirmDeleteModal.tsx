@@ -52,6 +52,7 @@ export const ConfirmDeleteModal = ({
         Cancel
       </Button>
       <LoadingButton
+        data-cy="ConfirmDeleteCommentButton"
         variant="contained"
         color="error"
         onClick={onConfirmDelete}

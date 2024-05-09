@@ -178,7 +178,7 @@ export const CommentItem = ({
 
   return (
     <>
-      <Box id={commentZUID}>
+      <Box data-cy="CommentItem" id={commentZUID}>
         <Stack gap={1.5}>
           <Stack gap={1.5} direction="row">
             <Stack flex={1} direction="row" gap={1.5} alignItems="center">
@@ -203,11 +203,16 @@ export const CommentItem = ({
             </Stack>
             <Box>
               {withResolveButton && (
-                <IconButton size="small" onClick={handleUpdateCommentStatus}>
+                <IconButton
+                  data-cy="ResolveCommentButton"
+                  size="small"
+                  onClick={handleUpdateCommentStatus}
+                >
                   <CheckRoundedIcon fontSize="small" color="primary" />
                 </IconButton>
               )}
               <IconButton
+                data-cy="CommentMenuButton"
                 size="small"
                 onClick={(evt) => setMenuAnchorEl(evt.currentTarget)}
               >
@@ -240,6 +245,7 @@ export const CommentItem = ({
           >
             {isLoggedInUserCommentCreator && (
               <MenuItem
+                data-cy="EditCommentButton"
                 onClick={() => {
                   setMenuAnchorEl(null);
                   setCommentZUIDtoEdit(commentZUID);
@@ -251,7 +257,7 @@ export const CommentItem = ({
                 <ListItemText>Edit</ListItemText>
               </MenuItem>
             )}
-            <MenuItem onClick={handleCopyClick}>
+            <MenuItem data-cy="CopyCommentLinkButton" onClick={handleCopyClick}>
               <ListItemIcon>
                 {isCopied ? <CheckRoundedIcon /> : <LinkRoundedIcon />}
               </ListItemIcon>
@@ -259,6 +265,7 @@ export const CommentItem = ({
             </MenuItem>
             {isLoggedInUserCommentCreator && (
               <MenuItem
+                data-cy="DeleteCommentButton"
                 onClick={() => {
                   setMenuAnchorEl(null);
                   setIsDeleteModalOpen(true);

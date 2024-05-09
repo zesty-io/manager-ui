@@ -15,8 +15,10 @@ type CommentProps = {
 export const Comment = ({ resourceZUID }: CommentProps) => {
   const [_, __, ___, setCommentZUIDtoEdit] = useContext(CommentContext);
   const { itemZUID } = useParams<{ itemZUID: string }>();
-  const { data: comment, isLoading: isCommentLoading } =
-    useGetCommentByResourceQuery({ resourceZUID }, { skip: !resourceZUID });
+  const { data: comment } = useGetCommentByResourceQuery(
+    { resourceZUID },
+    { skip: !resourceZUID }
+  );
   const buttonContainerRef = useRef<HTMLDivElement>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isCommentListOpen, setIsCommentListOpen] = useState(false);
@@ -47,6 +49,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       <Box ref={buttonContainerRef}>
         {parentComment ? (
           <Button
+            data-cy="OpenCommentsButton"
             size="xsmall"
             endIcon={<CommentRoundedIcon />}
             onClick={() => {
@@ -95,6 +98,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
           </Button>
         ) : (
           <IconButton
+            data-cy="OpenCommentsButton"
             size="xxsmall"
             onClick={() => {
               setIsButtonAutoscroll(false);

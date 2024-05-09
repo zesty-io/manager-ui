@@ -380,6 +380,7 @@ export const InputField = ({
           Cancel
         </Button>
         <LoadingButton
+          data-cy="SubmitNewComment"
           variant="contained"
           color="primary"
           size="small"
