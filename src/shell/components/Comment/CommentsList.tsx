@@ -136,7 +136,15 @@ export const CommentsList = ({
             boxSizing: "border-box",
           }}
         >
-          {isLoadingCommentThread && <CommentItemLoading />}
+          {isLoadingCommentThread &&
+            Array(3)
+              .fill(null)
+              .map((_, index) => (
+                <>
+                  <CommentItemLoading />
+                  {index + 1 < 3 && <Divider sx={{ my: 1.5 }} />}
+                </>
+              ))}
           {commentThread?.map((comment, index) => (
             <Fragment key={comment.ZUID}>
               <CommentItem
