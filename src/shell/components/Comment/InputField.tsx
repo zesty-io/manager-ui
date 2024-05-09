@@ -84,8 +84,7 @@ export const InputField = ({
       createComment({
         resourceType: getResourceTypeByZuid(resourceZUID),
         resourceZUID,
-        // content: inputValue,
-        content: "Initial content",
+        content: inputValue,
         resourceParentZUID: itemZUID,
       });
     } else {
@@ -205,6 +204,12 @@ export const InputField = ({
               "& .mentioned-user": {
                 color: "primary.main",
               },
+
+              "& .mce-offscreen-selection": {
+                position: "absolute",
+                // HACK: Makes sure that the offscreen selection is offscreen when user selects the mentioned user element
+                left: "-9999999px",
+              },
             },
           }}
         >
@@ -213,6 +218,7 @@ export const InputField = ({
             initialValue={initialValue}
             init={{
               inline: true,
+              noneditable_class: "mentioned-user",
 
               setup: (editor) => {
                 editor.on("ResizeEditor", () => {
@@ -235,21 +241,7 @@ export const InputField = ({
               }
             }}
             onEditorChange={(value, editor) => {
-              // const hasMention = !![...value.matchAll(EMAIL_MENTION_REGEX)]
-              //   ?.length;
-
-              // if (hasMention) {
-              //   console.log("has mention");
-              //   const emailMatchedValue = value.replaceAll(
-              //     EMAIL_MENTION_REGEX,
-              //     (text) =>
-              //       `<span class="mentioned-user" contentEditable={false}>${text}</span>`
-              //   );
-              //   setInputValue(emailMatchedValue);
-              //   setInitialValue(emailMatchedValue);
-              // } else {
               setInputValue(value);
-              // }
             }}
             onKeyDown={(evt, editor) => {
               // Checks if the mention list should be opened or not
@@ -336,7 +328,7 @@ export const InputField = ({
                     selection.addRange(range);
                   }
                   editor.selection.setContent(
-                    `<span class="mentioned-user" contentEditable="false">@${
+                    `<span class="mentioned-user">@${
                       mentionListRef.current?.handleSelectUser()?.email
                     }</span>`
                   );
