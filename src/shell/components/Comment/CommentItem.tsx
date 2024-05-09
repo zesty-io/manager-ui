@@ -148,6 +148,7 @@ export const CommentItem = ({
       });
     } else {
       deleteReply({
+        resourceZUID: commentResourceZUID,
         commentZUID,
         parentCommentZUID,
       });

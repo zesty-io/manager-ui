@@ -91,6 +91,7 @@ export const InputField = ({
       createReply({
         content: inputValue,
         commentZUID: parentCommentZUID,
+        resourceZUID,
       });
     }
   };

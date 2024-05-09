@@ -97,7 +97,11 @@ export const accountsApi = createApi({
     }),
     createReply: builder.mutation<
       any,
-      { commentZUID: string; content: string }
+      {
+        commentZUID: string;
+        resourceZUID: string;
+        content: string;
+      }
     >({
       query: ({ commentZUID, content }) => ({
         url: `/comments/${commentZUID}/replies`,
@@ -106,7 +110,10 @@ export const accountsApi = createApi({
           content,
         },
       }),
-      invalidatesTags: () => ["CommentThread"],
+      invalidatesTags: (_, __, { resourceZUID, commentZUID }) => [
+        { type: "Comments", id: resourceZUID },
+        { type: "CommentThread", id: commentZUID },
+      ],
     }),
     getCommentByResource: builder.query<Comment[], { resourceZUID: string }>({
       query: ({ resourceZUID }) =>
@@ -184,13 +191,14 @@ export const accountsApi = createApi({
     }),
     deleteReply: builder.mutation<
       any,
-      { commentZUID: string; parentCommentZUID: string }
+      { commentZUID: string; parentCommentZUID: string; resourceZUID: string }
     >({
       query: ({ commentZUID, parentCommentZUID }) => ({
         url: `/comments/${parentCommentZUID}/replies/${commentZUID}`,
         method: "DELETE",
       }),
-      invalidatesTags: (_, __, { parentCommentZUID }) => [
+      invalidatesTags: (_, __, { parentCommentZUID, resourceZUID }) => [
+        { type: "Comments", id: resourceZUID },
         { type: "CommentThread", id: parentCommentZUID },
       ],
     }),
