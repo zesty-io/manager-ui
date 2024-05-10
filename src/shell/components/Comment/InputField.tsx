@@ -124,6 +124,30 @@ export const InputField = ({
     }
   };
 
+  const insertUserMention = (email: string) => {
+    const selection = window.getSelection();
+
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const startOffset = range.startOffset;
+
+      range.setStart(
+        range.startContainer,
+        startOffset - (userFilterKeyword?.length + 1)
+      );
+      range.setEnd(range.startContainer, startOffset);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    tinymce.activeEditor.selection.setContent(
+      `<span class="mentioned-user" contenteditable="false">@${email}</span>`
+    );
+    tinymce.activeEditor.selection.setContent(" ");
+
+    setMentionListAnchorEl(null);
+  };
+
   useEffect(() => {
     if (comments[resourceZUID]) {
       setInitialValue(comments[resourceZUID]);
@@ -343,6 +367,7 @@ export const InputField = ({
           ref={mentionListRef}
           anchorEl={mentionListAnchorEl}
           filterKeyword={userFilterKeyword}
+          onUserSelected={insertUserMention}
         />
       )}
       {hasError && (

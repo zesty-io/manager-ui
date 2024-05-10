@@ -23,9 +23,10 @@ import { MD5 } from "../../../utility/md5";
 type MentionListProps = {
   anchorEl: Element;
   filterKeyword: string;
+  onUserSelected: (email: string) => void;
 };
 export const MentionList = forwardRef(
-  ({ anchorEl, filterKeyword }: MentionListProps, ref) => {
+  ({ anchorEl, filterKeyword, onUserSelected }: MentionListProps, ref) => {
     const { data: users } = useGetUsersQuery();
     const [popperTopOffset, setPopperTopOffset] = useState(0);
     const [popperBottomOffset, setPopperBottomOffset] = useState(0);
@@ -139,6 +140,7 @@ export const MentionList = forwardRef(
                 dense
                 key={user.ZUID}
                 selected={selectedUserIndex === index}
+                onClick={() => onUserSelected(user.email)}
               >
                 <ListItemAvatar>
                   <Avatar
