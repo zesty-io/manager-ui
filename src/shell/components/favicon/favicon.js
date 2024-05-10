@@ -178,8 +178,6 @@ export default connect((state) => {
 
   const images = faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : [];
 
-  console.log("testing images", images);
-
   return (
     <>
       <Modal
