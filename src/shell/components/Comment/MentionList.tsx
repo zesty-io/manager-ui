@@ -96,7 +96,7 @@ export const MentionList = forwardRef(
             }
           },
           handleSelectUser() {
-            return sortedUsers[selectedUserIndex];
+            onUserSelected(sortedUsers[selectedUserIndex]?.email);
           },
         };
       },

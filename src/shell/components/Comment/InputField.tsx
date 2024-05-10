@@ -331,32 +331,7 @@ export const InputField = ({
               // Selects the highlighted item when mention list is open
               if (evt.key === "Enter" && !!mentionListAnchorEl) {
                 evt.preventDefault();
-                const userEmail =
-                  mentionListRef.current?.handleSelectUser()?.email;
-
-                if (userEmail) {
-                  const selection = window.getSelection();
-                  if (selection && selection.rangeCount > 0) {
-                    const range = selection.getRangeAt(0);
-                    const startOffset = range.startOffset;
-                    range.setStart(
-                      range.startContainer,
-                      startOffset - (userFilterKeyword?.length + 1)
-                    );
-                    range.setEnd(range.startContainer, startOffset);
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                  }
-                  editor.selection.setContent(
-                    `<span class="mentioned-user" contenteditable="false">@${
-                      mentionListRef.current?.handleSelectUser()?.email
-                    }</span>`
-                  );
-                  editor.selection.setContent(" ");
-
-                  setMentionListAnchorEl(null);
-                }
-                return;
+                mentionListRef.current?.handleSelectUser();
               }
             }}
           />
