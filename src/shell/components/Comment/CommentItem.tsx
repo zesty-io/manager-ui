@@ -206,10 +206,12 @@ export const CommentItem = ({
               {withResolveButton && (
                 <IconButton
                   data-cy="ResolveCommentButton"
+                  color="primary"
                   size="small"
                   onClick={handleUpdateCommentStatus}
+                  disabled={isUpdatingCommentStatus}
                 >
-                  <CheckRoundedIcon fontSize="small" color="primary" />
+                  <CheckRoundedIcon fontSize="small" />
                 </IconButton>
               )}
               <IconButton

@@ -213,19 +213,16 @@ export const InputField = ({
               borderRadius: 2,
               boxSizing: "border-box",
               border: (theme) => `1px solid ${theme.palette.border}`,
-
+              cursor: "text",
               "&:focus-visible": {
                 outline: (theme) => `${theme.palette.primary.light} solid 1px`,
               },
-
               "& .placeholder": {
                 color: "text.disabled",
               },
-
               "& .mentioned-user": {
                 color: "primary.main",
               },
-
               "& .mce-offscreen-selection": {
                 position: "absolute",
                 // HACK: Makes sure that the offscreen selection is offscreen when user selects the mentioned user element

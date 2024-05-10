@@ -4,7 +4,6 @@ import {
   Popper,
   Backdrop,
   PopperPlacementType,
-  Box,
   Stack,
   Skeleton,
 } from "@mui/material";
