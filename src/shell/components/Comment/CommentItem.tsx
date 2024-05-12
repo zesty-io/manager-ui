@@ -9,6 +9,7 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Tooltip,
 } from "@mui/material";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
@@ -204,23 +205,35 @@ export const CommentItem = ({
             </Stack>
             <Box>
               {withResolveButton && (
-                <IconButton
-                  data-cy="ResolveCommentButton"
-                  color="primary"
-                  size="small"
-                  onClick={handleUpdateCommentStatus}
-                  disabled={isUpdatingCommentStatus}
+                <Tooltip
+                  title="Mark as Resolved"
+                  placement="top-start"
+                  disableInteractive
                 >
-                  <CheckRoundedIcon fontSize="small" />
-                </IconButton>
+                  <IconButton
+                    data-cy="ResolveCommentButton"
+                    color="primary"
+                    size="small"
+                    onClick={handleUpdateCommentStatus}
+                    disabled={isUpdatingCommentStatus}
+                  >
+                    <CheckRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               )}
-              <IconButton
-                data-cy="CommentMenuButton"
-                size="small"
-                onClick={(evt) => setMenuAnchorEl(evt.currentTarget)}
+              <Tooltip
+                title="More Options"
+                placement="top-start"
+                disableInteractive
               >
-                <MoreVertRoundedIcon fontSize="small" />
-              </IconButton>
+                <IconButton
+                  data-cy="CommentMenuButton"
+                  size="small"
+                  onClick={(evt) => setMenuAnchorEl(evt.currentTarget)}
+                >
+                  <MoreVertRoundedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Box>
           </Stack>
           <Typography variant="body2" ref={commentBodyRef}></Typography>

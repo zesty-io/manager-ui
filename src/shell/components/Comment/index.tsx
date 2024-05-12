@@ -1,4 +1,4 @@
-import { IconButton, Button, alpha, Box } from "@mui/material";
+import { IconButton, Button, alpha, Box, Tooltip } from "@mui/material";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
 import { useState, useRef, useEffect, useMemo, useContext } from "react";
@@ -48,76 +48,90 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
     <>
       <Box ref={buttonContainerRef}>
         {parentComment ? (
-          <Button
-            data-cy="OpenCommentsButton"
-            size="xsmall"
-            endIcon={<CommentRoundedIcon />}
-            onClick={() => {
-              setIsButtonAutoscroll(false);
-              setSearchParams(resourceZUID, "commentResourceZuid");
-            }}
-            sx={{
-              backgroundColor: (theme) =>
-                parentComment.resolved
-                  ? "action.hover"
-                  : alpha(theme.palette.primary.main, 0.04),
-              minWidth: 0,
-              fontWeight: 600,
-              fontSize: 14,
-              lineHeight: "14px",
-              px: 0.5,
-              py: 0.25,
-              color: parentComment.resolved ? "text.secondary" : "primary.main",
-
-              "&:hover": {
+          <Tooltip
+            title="View Open Comment"
+            disableInteractive
+            placement="top-start"
+          >
+            <Button
+              data-cy="OpenCommentsButton"
+              size="xsmall"
+              endIcon={<CommentRoundedIcon />}
+              onClick={() => {
+                setIsButtonAutoscroll(false);
+                setSearchParams(resourceZUID, "commentResourceZuid");
+              }}
+              sx={{
                 backgroundColor: (theme) =>
-                  alpha(theme.palette.primary.main, 0.08),
-                color: "primary.main",
-              },
-
-              "&:hover .MuiButton-endIcon .MuiSvgIcon-root": {
-                fill: (theme) => theme.palette.primary.main,
-              },
-
-              "& .MuiButton-endIcon": {
-                ml: 0.5,
-                mr: 0,
-              },
-
-              "& .MuiButton-endIcon .MuiSvgIcon-root": {
-                fontSize: 16,
-                fill: (theme) =>
                   parentComment.resolved
-                    ? theme.palette.action.active
-                    : theme.palette.primary.main,
-              },
-            }}
-          >
-            {/* NOTE: Adding 1 since we need to include the initial comment **/}
-            {parentComment.replyCount + 1}
-          </Button>
+                    ? "action.hover"
+                    : alpha(theme.palette.primary.main, 0.04),
+                minWidth: 0,
+                fontWeight: 600,
+                fontSize: 14,
+                lineHeight: "14px",
+                px: 0.5,
+                py: 0.25,
+                color: parentComment.resolved
+                  ? "text.secondary"
+                  : "primary.main",
+
+                "&:hover": {
+                  backgroundColor: (theme) =>
+                    alpha(theme.palette.primary.main, 0.08),
+                  color: "primary.main",
+                },
+
+                "&:hover .MuiButton-endIcon .MuiSvgIcon-root": {
+                  fill: (theme) => theme.palette.primary.main,
+                },
+
+                "& .MuiButton-endIcon": {
+                  ml: 0.5,
+                  mr: 0,
+                },
+
+                "& .MuiButton-endIcon .MuiSvgIcon-root": {
+                  fontSize: 16,
+                  fill: (theme) =>
+                    parentComment.resolved
+                      ? theme.palette.action.active
+                      : theme.palette.primary.main,
+                },
+              }}
+            >
+              {/* NOTE: Adding 1 since we need to include the initial comment **/}
+              {parentComment.replyCount + 1}
+            </Button>
+          </Tooltip>
         ) : (
-          <IconButton
-            data-cy="OpenCommentsButton"
-            size="xxsmall"
-            onClick={() => {
-              setIsButtonAutoscroll(false);
-              setSearchParams(resourceZUID, "commentResourceZuid");
-            }}
-            sx={{
-              backgroundColor: isCommentListOpen
-                ? (theme) => alpha(theme.palette.primary.main, 0.08)
-                : "transparent",
-              color: isCommentListOpen ? "primary.main" : "action",
-              "&:hover": {
-                backgroundColor: (theme) =>
-                  alpha(theme.palette.primary.main, 0.08),
-                color: "primary.main",
-              },
-            }}
+          <Tooltip
+            title="Add New Comment"
+            disableInteractive
+            placement="top-start"
           >
-            <AddCommentRoundedIcon sx={{ fontSize: 16 }} />
-          </IconButton>
+            <IconButton
+              data-cy="OpenCommentsButton"
+              size="xxsmall"
+              onClick={() => {
+                setIsButtonAutoscroll(false);
+                setSearchParams(resourceZUID, "commentResourceZuid");
+              }}
+              sx={{
+                backgroundColor: isCommentListOpen
+                  ? (theme) => alpha(theme.palette.primary.main, 0.08)
+                  : "transparent",
+                color: isCommentListOpen ? "primary.main" : "action",
+                "&:hover": {
+                  backgroundColor: (theme) =>
+                    alpha(theme.palette.primary.main, 0.08),
+                  color: "primary.main",
+                },
+              }}
+            >
+              <AddCommentRoundedIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Tooltip>
         )}
       </Box>
       {isCommentListOpen && (
