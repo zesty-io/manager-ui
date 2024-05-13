@@ -1,4 +1,4 @@
-import { useParams as useRouterParams } from "react-router";
+import { useHistory, useParams as useRouterParams } from "react-router";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
 import {
   Box,
@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  useGetAllPublishingsQuery,
   useGetContentModelFieldsQuery,
   useGetContentModelItemsQuery,
   useGetContentModelQuery,
@@ -18,12 +19,14 @@ import { ItemListActions } from "./ItemListActions";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import { useMemo, useRef, useState } from "react";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
+  const history = useHistory();
 
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
@@ -31,21 +34,135 @@ export const ItemList2 = () => {
     useGetContentModelItemsQuery(modelZUID);
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
+  const { data: publishings, isFetching: isPublishingsFetching } =
+    useGetAllPublishingsQuery();
+
   const searchRef = useRef<HTMLInputElement>(null);
   const [params, setParams] = useParams();
   const search = params.get("search");
+  const sort = params.get("sort");
+  const statusFilter = params.get("statusFilter");
 
-  const filteredItems = useMemo(() => {
+  const processedItems = useMemo(() => {
     if (!items) return [];
-    if (!search) return items;
-    // filter items by all fields
-    return items?.filter((item) => {
-      return Object.values(item.data).some((value) => {
-        if (!value) return false;
-        return value.toString().toLowerCase().includes(search.toLowerCase());
-      });
+    let clonedItems = items?.map((item) => {
+      return {
+        id: item.meta.ZUID,
+        publishing: publishings?.find(
+          (publishing) =>
+            publishing.itemZUID === item.meta.ZUID &&
+            publishing.version === item.meta.version
+        ),
+        ...item,
+      };
     });
-  }, [items, search]);
+
+    clonedItems?.sort((a: any, b: any) => {
+      if (sort === "datePublished") {
+        // Handle undefined publishAt by setting a default far-future date for sorting purposes
+        const dateA = a?.publishing?.publishAt
+          ? new Date(a.publishing.publishAt).getTime()
+          : Number.NEGATIVE_INFINITY;
+        const dateB = b?.publishing?.publishAt
+          ? new Date(b.publishing.publishAt).getTime()
+          : Number.NEGATIVE_INFINITY;
+
+        return dateB - dateA;
+      } else if (sort === "dateCreated") {
+        return (
+          new Date(b.meta.createdAt).getTime() -
+          new Date(a.meta.createdAt).getTime()
+        );
+      } else if (sort === "status") {
+        const now = new Date(); // Current date and time
+        const aPublishing = a?.publishing;
+        const bPublishing = b?.publishing;
+
+        const aDate = aPublishing?.publishAt
+          ? new Date(aPublishing.publishAt)
+          : null;
+        const bDate = bPublishing?.publishAt
+          ? new Date(bPublishing.publishAt)
+          : null;
+
+        // Check if A or B is scheduled or not
+        const aIsScheduled = aDate ? aDate > now : false;
+        const bIsScheduled = bDate ? bDate > now : false;
+
+        // Check if A or B has a date
+        const aHasDate = aDate !== null;
+        const bHasDate = bDate !== null;
+
+        // Handle sorting based on scheduled status and presence of publishAt date
+        if (aIsScheduled && !bIsScheduled) {
+          // A is scheduled, B is live or has no date
+          if (!bHasDate) {
+            // B has no date, A should still come first
+            return -1;
+          }
+          // B is live, A should come after B
+          return 1;
+        } else if (!aIsScheduled && bIsScheduled) {
+          // A is live or has no date, B is scheduled
+          if (!aHasDate) {
+            // A has no date, B should still come first
+            return 1;
+          }
+          // A is live, A should come before B
+          return -1;
+        } else if (!aHasDate && bHasDate) {
+          // A has no date, B has a date (either scheduled or live)
+          return 1; // B should come before A
+        } else if (aHasDate && !bHasDate) {
+          // A has a date (either scheduled or live), B has no date
+          return -1; // A should come before B
+        } else {
+          // Both have dates, or both have no dates, sort by publish date
+          if (aDate && bDate) {
+            // Both are scheduled, sort by publish date ascending
+            if (aIsScheduled && bIsScheduled) {
+              return aDate.getTime() - bDate.getTime();
+            }
+            // Both are live, sort by publish date descending
+            return bDate.getTime() - aDate.getTime();
+          }
+          return 0; // Neither have a date, consider them equal
+        }
+      } else {
+        return (
+          new Date(b.meta.updatedAt).getTime() -
+          new Date(a.meta.updatedAt).getTime()
+        );
+      }
+    });
+    if (search) {
+      clonedItems = clonedItems?.filter((item) => {
+        return Object.values(item.data).some((value) => {
+          if (!value) return false;
+          return value.toString().toLowerCase().includes(search.toLowerCase());
+        });
+      });
+    }
+    if (statusFilter) {
+      clonedItems = clonedItems?.filter((item) => {
+        if (statusFilter === "published") {
+          return (
+            item.publishing?.publishAt &&
+            new Date(item.publishing.publishAt) < new Date()
+          );
+        } else if (statusFilter === "scheduled") {
+          return (
+            item.publishing?.publishAt &&
+            new Date(item.publishing.publishAt) > new Date()
+          );
+        } else if (statusFilter === "notPublished") {
+          return !item.publishing?.publishAt;
+        }
+      });
+    }
+    // filter items by all fields
+    return clonedItems;
+  }, [items, search, sort, publishings, statusFilter]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -58,7 +175,10 @@ export const ItemList2 = () => {
           },
         }}
       >
-        {isModelFetching || isModelItemsFetching || isFieldsFetching ? (
+        {isModelFetching ||
+        isModelItemsFetching ||
+        isFieldsFetching ||
+        isPublishingsFetching ? (
           <Box
             display="flex"
             height="100%"
@@ -114,7 +234,7 @@ export const ItemList2 = () => {
               ) : (
                 <>
                   <ItemListFilters />
-                  {!filteredItems?.length ? (
+                  {!processedItems?.length && search ? (
                     <Box
                       data-cy="NoResults"
                       textAlign="center"
@@ -139,18 +259,48 @@ export const ItemList2 = () => {
                         Search Again
                       </Button>
                     </Box>
+                  ) : !processedItems?.length && !search ? (
+                    <Box
+                      data-cy="NoResults"
+                      textAlign="center"
+                      sx={{
+                        maxWidth: 387,
+                        mx: "auto",
+                      }}
+                    >
+                      <img src={noSearchResults} alt="No search results" />
+                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                        No results that matched your filters could be found
+                      </Typography>
+                      <Typography variant="body2" pb={3} color="text.secondary">
+                        Try adjusting your filters to find what you're looking
+                        for
+                      </Typography>
+                      <Button
+                        onClick={() => {
+                          setParams(null, "statusFilter");
+                        }}
+                        variant="contained"
+                        startIcon={<RestartAltRounded />}
+                      >
+                        Reset Filters
+                      </Button>
+                    </Box>
                   ) : (
                     <DataGridPro
-                      rows={filteredItems?.map((item) => ({
-                        id: item.meta.ZUID,
-                        ...item.data,
-                      }))}
+                      rows={processedItems}
                       columns={fields.map((field) => ({
                         field: field.name,
                         headerName: field.label,
                         sortable: false,
                         width: 150,
+                        valueGetter: (params) => {
+                          return params.row.data[field.name];
+                        },
                       }))}
+                      onRowClick={(row) => {
+                        history.push(`/content/${modelZUID}/${row.id}`);
+                      }}
                     />
                   )}
                 </>
