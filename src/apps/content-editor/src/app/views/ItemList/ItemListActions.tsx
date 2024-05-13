@@ -113,6 +113,7 @@ export const ItemListActions = forwardRef((props, ref) => {
         onChange={(e) => {
           setParams(e.target.value, "search");
         }}
+        value={params.get("search") || ""}
         placeholder="Filter Items"
         variant="outlined"
         size="small"

@@ -23,6 +23,13 @@ import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
 import { useParams } from "../../../../../../shell/hooks/useParams";
+import {
+  useGetAllBinFilesQuery,
+  useGetBinsQuery,
+} from "../../../../../../shell/services/mediaManager";
+import { useSelector } from "react-redux";
+import { AppState } from "../../../../../../shell/store/types";
+import { cloneDeep } from "lodash";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -36,6 +43,16 @@ export const ItemList2 = () => {
     useGetContentModelFieldsQuery(modelZUID);
   const { data: publishings, isFetching: isPublishingsFetching } =
     useGetAllPublishingsQuery();
+  const instanceId = useSelector((state: AppState) => state.instance.ID);
+  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
+  const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
+    instanceId,
+    ecoId,
+  });
+  const { data: files, isFetching: isFilesFetching } = useGetAllBinFilesQuery(
+    bins?.map((bin) => bin.id),
+    { skip: !bins?.length }
+  );
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [params, setParams] = useParams();
@@ -45,18 +62,35 @@ export const ItemList2 = () => {
 
   const processedItems = useMemo(() => {
     if (!items) return [];
-    let clonedItems = items?.map((item) => {
-      return {
-        id: item.meta.ZUID,
-        publishing: publishings?.find(
-          (publishing) =>
-            publishing.itemZUID === item.meta.ZUID &&
-            publishing.version === item.meta.version
-        ),
-        ...item,
-      };
-    });
+    let clonedItems = items.map((item: any) => {
+      const clonedItem = cloneDeep(item);
+      clonedItem.id = item.meta.ZUID;
+      clonedItem.publishing = publishings?.find(
+        (publishing) =>
+          publishing.itemZUID === item.meta.ZUID &&
+          publishing.version === item.meta.version
+      );
 
+      Object.keys(clonedItem.data).forEach((key) => {
+        // @ts-ignore
+        if (
+          typeof clonedItem.data[key] === "string" &&
+          clonedItem.data[key]?.startsWith("3-")
+        ) {
+          // Perform the substitution: replace '3-' with 'newPrefix-' or any other specific logic
+          clonedItem.data[key] = files?.find(
+            (file) => file.id === clonedItem.data[key]
+          );
+        }
+      });
+
+      return clonedItem;
+    });
+    return clonedItems;
+  }, [items, publishings, files]);
+
+  const sortedAndFilteredItems = useMemo(() => {
+    let clonedItems = [...processedItems];
     clonedItems?.sort((a: any, b: any) => {
       if (sort === "datePublished") {
         // Handle undefined publishAt by setting a default far-future date for sorting purposes
@@ -137,8 +171,14 @@ export const ItemList2 = () => {
     });
     if (search) {
       clonedItems = clonedItems?.filter((item) => {
-        return Object.values(item.data).some((value) => {
+        return Object.values(item.data).some((value: any) => {
           if (!value) return false;
+          if (value?.filename || value?.title) {
+            return (
+              value?.filename?.toLowerCase()?.includes(search.toLowerCase()) ||
+              value?.title?.toLowerCase()?.includes(search.toLowerCase())
+            );
+          }
           return value.toString().toLowerCase().includes(search.toLowerCase());
         });
       });
@@ -162,7 +202,7 @@ export const ItemList2 = () => {
     }
     // filter items by all fields
     return clonedItems;
-  }, [items, search, sort, publishings, statusFilter]);
+  }, [processedItems, search, sort, statusFilter]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -178,7 +218,8 @@ export const ItemList2 = () => {
         {isModelFetching ||
         isModelItemsFetching ||
         isFieldsFetching ||
-        isPublishingsFetching ? (
+        isPublishingsFetching ||
+        isFilesFetching ? (
           <Box
             display="flex"
             height="100%"
@@ -234,7 +275,7 @@ export const ItemList2 = () => {
               ) : (
                 <>
                   <ItemListFilters />
-                  {!processedItems?.length && search ? (
+                  {!sortedAndFilteredItems?.length && search ? (
                     <Box
                       data-cy="NoResults"
                       textAlign="center"
@@ -259,7 +300,7 @@ export const ItemList2 = () => {
                         Search Again
                       </Button>
                     </Box>
-                  ) : !processedItems?.length && !search ? (
+                  ) : !sortedAndFilteredItems?.length && !search ? (
                     <Box
                       data-cy="NoResults"
                       textAlign="center"
@@ -288,14 +329,17 @@ export const ItemList2 = () => {
                     </Box>
                   ) : (
                     <DataGridPro
-                      rows={processedItems}
+                      rows={sortedAndFilteredItems}
                       columns={fields.map((field) => ({
                         field: field.name,
                         headerName: field.label,
                         sortable: false,
                         width: 150,
                         valueGetter: (params) => {
-                          return params.row.data[field.name];
+                          return (
+                            params.row.data[field.name]?.title ||
+                            params.row.data[field.name]
+                          );
                         },
                       }))}
                       onRowClick={(row) => {
