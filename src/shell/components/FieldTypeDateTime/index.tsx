@@ -271,6 +271,7 @@ export const FieldTypeDateTime = ({
           ),
           timezonePicker: showTimezonePicker && (
             <Autocomplete
+              autoHighlight
               fullWidth
               disableClearable
               size="small"
@@ -293,6 +294,11 @@ export const FieldTypeDateTime = ({
               onChange={(_, value) => {
                 setTimezone(value.id);
                 onTimezoneChange && onTimezoneChange(value.id);
+              }}
+              ListboxProps={{
+                sx: {
+                  maxHeight: 320,
+                },
               }}
             />
           ),
