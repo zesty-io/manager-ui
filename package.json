@@ -100,7 +100,6 @@
     "redux-sentry-middleware": "^0.2.2",
     "redux-thunk": "2.3.0",
     "reselect": "^4.0.0",
-    "sanitize-html": "^2.13.0",
     "showdown": "1.9.1",
     "tinymce": "^6.7.2",
     "uuid": "^8.3.2",
