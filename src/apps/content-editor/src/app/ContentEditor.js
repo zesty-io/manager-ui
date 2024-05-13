@@ -14,7 +14,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ContentNav } from "./components/ContentNav";
 
-import { ItemList } from "./views/ItemList";
+import { ItemList2 as ItemList } from "./views/ItemList/ItemList2";
 import { ItemEdit } from "./views/ItemEdit";
 import { ItemCreate } from "./views/ItemCreate";
 import { LinkCreate } from "./views/LinkCreate";
