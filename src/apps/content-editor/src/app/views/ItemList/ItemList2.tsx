@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams as useRouterParams } from "react-router";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
 import {
   Box,
@@ -20,9 +20,10 @@ import { useMemo, useRef, useState } from "react";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
+import { useParams } from "../../../../../../shell/hooks/useParams";
 
 export const ItemList2 = () => {
-  const { modelZUID } = useParams<{ modelZUID: string }>();
+  const { modelZUID } = useRouterParams<{ modelZUID: string }>();
 
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
@@ -30,8 +31,9 @@ export const ItemList2 = () => {
     useGetContentModelItemsQuery(modelZUID);
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
-  const [search, setSearch] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
+  const [params, setParams] = useParams();
+  const search = params.get("search");
 
   const filteredItems = useMemo(() => {
     if (!items) return [];
@@ -97,12 +99,7 @@ export const ItemList2 = () => {
                   {model?.label}
                 </Typography>
               </Box>
-              <ItemListActions
-                onSearch={(value: string) => {
-                  setSearch(value);
-                }}
-                ref={searchRef}
-              />
+              <ItemListActions ref={searchRef} />
             </Box>
             <Box
               height="100%"
