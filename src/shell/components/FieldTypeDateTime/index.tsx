@@ -91,7 +91,7 @@ export const FieldTypeDateTime = ({
     if (showTimezonePicker) {
       return `Stored in UTC as ${moment
         .utc(moment.tz(value, timezone))
-        .format("yyyy-MM-DD HH:mm:ss.ssssss")}`;
+        .format()}`;
     }
 
     if (dateString && timeString) {
