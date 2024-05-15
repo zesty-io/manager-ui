@@ -4,8 +4,10 @@ import {
   Box,
   Button,
   CircularProgress,
+  Chip,
   ThemeProvider,
   Typography,
+  Stack,
 } from "@mui/material";
 import {
   useGetAllPublishingsQuery,
@@ -16,7 +18,11 @@ import {
 import { theme } from "@zesty-io/material";
 import { ItemListEmpty } from "./ItemListEmpty";
 import { ItemListActions } from "./ItemListActions";
-import { DataGridPro } from "@mui/x-data-grid-pro";
+import {
+  DataGridPro,
+  GridColumns,
+  GridRenderCellParams,
+} from "@mui/x-data-grid-pro";
 import { useMemo, useRef, useState } from "react";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
@@ -69,6 +75,11 @@ export const ItemList2 = () => {
         (publishing) =>
           publishing.itemZUID === item.meta.ZUID &&
           publishing.version === item.meta.version
+      );
+      clonedItem.priorPublishing = publishings?.find(
+        (publishing) =>
+          publishing.itemZUID === item.meta.ZUID &&
+          publishing.version !== item.meta.version
       );
 
       Object.keys(clonedItem.data).forEach((key) => {
@@ -204,6 +215,57 @@ export const ItemList2 = () => {
     return clonedItems;
   }, [processedItems, search, sort, statusFilter]);
 
+  const columns = useMemo(() => {
+    let result: any[] = [
+      {
+        field: "version",
+        headerName: "Vers.",
+        width: 104,
+        sortable: false,
+        renderCell: ({ row }: GridRenderCellParams) => {
+          console.log("testing row", row);
+          return (
+            <Stack spacing={0.25}>
+              {row?.meta?.version !== row?.publishing?.version && (
+                <Chip
+                  label={`v${row?.meta?.version}`}
+                  size="small"
+                  color="info"
+                />
+              )}
+              {(row?.publishing?.version || row?.priorPublishing?.version) && (
+                <Chip
+                  label={`v${
+                    row?.publishing?.version || row?.priorPublishing?.version
+                  }`}
+                  size="small"
+                  color="success"
+                />
+              )}
+            </Stack>
+          );
+        },
+      },
+    ];
+    if (fields) {
+      result = [
+        ...result,
+        ...fields?.map((field) => ({
+          field: field.name,
+          headerName: field.label,
+          sortable: false,
+          width: 150,
+          valueGetter: (params: any) => {
+            return (
+              params.row.data[field.name]?.title || params.row.data[field.name]
+            );
+          },
+        })),
+      ];
+    }
+    return result;
+  }, [fields, processedItems]);
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -330,20 +392,16 @@ export const ItemList2 = () => {
                   ) : (
                     <DataGridPro
                       rows={sortedAndFilteredItems}
-                      columns={fields.map((field) => ({
-                        field: field.name,
-                        headerName: field.label,
-                        sortable: false,
-                        width: 150,
-                        valueGetter: (params) => {
-                          return (
-                            params.row.data[field.name]?.title ||
-                            params.row.data[field.name]
-                          );
-                        },
-                      }))}
+                      columns={columns}
                       onRowClick={(row) => {
                         history.push(`/content/${modelZUID}/${row.id}`);
+                      }}
+                      checkboxSelection
+                      disableSelectionOnClick
+                      sx={{
+                        "& .MuiDataGrid-columnHeaderCheckbox": {
+                          padding: 0,
+                        },
                       }}
                     />
                   )}
