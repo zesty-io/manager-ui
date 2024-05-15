@@ -22,9 +22,6 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
   });
   const { data: item } = useGetContentItemQuery(itemZUID, { skip: !itemZUID });
 
-  console.log(itemPublishings);
-  console.log(item);
-
   const activePublishing = itemPublishings?.find(
     (itemPublishing) => itemPublishing._active
   );
