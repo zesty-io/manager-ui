@@ -173,7 +173,7 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
                   hasError={hasError}
                 />
               </Box>
-              <PublishStatus />
+              <PublishStatus currentVersion={item?.web?.version} />
             </Stack>
           </Box>
           <Box
