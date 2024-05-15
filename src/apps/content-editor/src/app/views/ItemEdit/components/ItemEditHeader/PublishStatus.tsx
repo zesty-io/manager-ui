@@ -3,10 +3,7 @@ import { CheckCircleRounded, ScheduleRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
 import moment from "moment";
 
-import {
-  useGetItemPublishingsQuery,
-  useGetContentItemQuery,
-} from "../../../../../../../../shell/services/instance";
+import { useGetItemPublishingsQuery } from "../../../../../../../../shell/services/instance";
 
 type PublishStatusProps = {
   currentVersion: number;
@@ -20,7 +17,6 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
     modelZUID,
     itemZUID,
   });
-  const { data: item } = useGetContentItemQuery(itemZUID, { skip: !itemZUID });
 
   const activePublishing = itemPublishings?.find(
     (itemPublishing) => itemPublishing._active
