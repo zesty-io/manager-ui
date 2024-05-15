@@ -37,6 +37,68 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { cloneDeep } from "lodash";
 
+const fieldTypeColumnConfigMap = {
+  text: {
+    width: 360,
+  },
+  wysiwyg_basic: {
+    width: 360,
+  },
+  wysiwyg_advanced: {
+    width: 360,
+  },
+  article_writer: {
+    width: 360,
+  },
+  markdown: {
+    width: 360,
+  },
+  textarea: {
+    width: 360,
+  },
+  one_to_many: {
+    width: 360,
+  },
+  one_to_one: {
+    width: 360,
+  },
+  uuid: {
+    width: 360,
+  },
+  number: {
+    width: 360,
+  },
+  images: {
+    width: 360,
+  },
+  yes_no: {
+    width: 360,
+  },
+  dropdown: {
+    width: 360,
+  },
+  date: {
+    width: 160,
+    valueFormatter: (params: any) =>
+      new Date(params.value)?.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }),
+  },
+  datetime: {
+    width: 200,
+    valueFormatter: (params: any) =>
+      new Date(params.value)?.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      }),
+  },
+} as const;
+
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const history = useHistory();
@@ -59,6 +121,8 @@ export const ItemList2 = () => {
     bins?.map((bin) => bin.id),
     { skip: !bins?.length }
   );
+
+  console.log("testing fields", fields);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [params, setParams] = useParams();
@@ -223,7 +287,6 @@ export const ItemList2 = () => {
         width: 104,
         sortable: false,
         renderCell: ({ row }: GridRenderCellParams) => {
-          console.log("testing row", row);
           return (
             <Stack spacing={0.25}>
               {row?.meta?.version !== row?.publishing?.version && (
@@ -254,17 +317,14 @@ export const ItemList2 = () => {
           field: field.name,
           headerName: field.label,
           sortable: false,
-          width: 150,
-          valueGetter: (params: any) => {
-            return (
-              params.row.data[field.name]?.title || params.row.data[field.name]
-            );
-          },
+          // width: fieldTypeWidthMap[field.datatype] || 100,
+          valueGetter: (params: any) => params.row.data[field.name],
+          ...fieldTypeColumnConfigMap[field.datatype],
         })),
       ];
     }
     return result;
-  }, [fields, processedItems]);
+  }, [fields]);
 
   return (
     <ThemeProvider theme={theme}>
