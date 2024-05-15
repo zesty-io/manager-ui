@@ -69,7 +69,20 @@ const fieldTypeColumnConfigMap = {
     width: 360,
   },
   images: {
-    width: 360,
+    width: 100,
+    renderCell: ({ row }: GridRenderCellParams) => {
+      const src =
+        row.data.images?.thumbnail || row.data.images?.split(",")?.[0];
+      if (!src) return null;
+      return (
+        <img
+          style={{ objectFit: "contain" }}
+          width="68px"
+          height="58px"
+          src={src}
+        />
+      );
+    },
   },
   yes_no: {
     width: 360,
@@ -122,8 +135,6 @@ export const ItemList2 = () => {
     { skip: !bins?.length }
   );
 
-  console.log("testing fields", fields);
-
   const searchRef = useRef<HTMLInputElement>(null);
   const [params, setParams] = useParams();
   const search = params.get("search");
@@ -150,11 +161,10 @@ export const ItemList2 = () => {
         // @ts-ignore
         if (
           typeof clonedItem.data[key] === "string" &&
-          clonedItem.data[key]?.startsWith("3-")
+          clonedItem.data[key]?.split(",")?.[0]?.startsWith("3-")
         ) {
-          // Perform the substitution: replace '3-' with 'newPrefix-' or any other specific logic
           clonedItem.data[key] = files?.find(
-            (file) => file.id === clonedItem.data[key]
+            (file) => file.id === clonedItem.data[key]?.split(",")?.[0]
           );
         }
       });
@@ -313,14 +323,16 @@ export const ItemList2 = () => {
     if (fields) {
       result = [
         ...result,
-        ...fields?.map((field) => ({
-          field: field.name,
-          headerName: field.label,
-          sortable: false,
-          // width: fieldTypeWidthMap[field.datatype] || 100,
-          valueGetter: (params: any) => params.row.data[field.name],
-          ...fieldTypeColumnConfigMap[field.datatype],
-        })),
+        ...fields
+          ?.filter((field) => !field.deletedAt)
+          ?.map((field) => ({
+            field: field.name,
+            headerName: field.label,
+            sortable: false,
+            // width: fieldTypeWidthMap[field.datatype] || 100,
+            valueGetter: (params: any) => params.row.data[field.name],
+            ...fieldTypeColumnConfigMap[field.datatype],
+          })),
       ];
     }
     return result;
