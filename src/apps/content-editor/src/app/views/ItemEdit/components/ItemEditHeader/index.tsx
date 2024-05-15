@@ -1,4 +1,12 @@
-import { Box, Tabs, Tab, Typography, IconButton, Tooltip } from "@mui/material";
+import {
+  Stack,
+  Box,
+  Tabs,
+  Tab,
+  Typography,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useHistory, useLocation, useParams } from "react-router";
 import {
@@ -30,6 +38,7 @@ import { useGetInstalledAppsQuery } from "../../../../../../../../shell/services
 import { DuoModeSwitch } from "./DuoModeToggle";
 import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
+import { PublishStatus } from "./PublishStatus";
 
 const tabs = [
   {
@@ -132,37 +141,40 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
                 {item?.web?.metaTitle || item?.web?.metaLinkText}
               </Typography>
             </Box>
-            <Box
-              display="flex"
-              gap={1}
-              alignItems="center"
-              sx={{
-                "@container (max-width: 900px)": {
-                  flexWrap: "wrap",
-                },
-              }}
-            >
-              <MoreMenu />
-              <Tooltip
-                title="Duplicate Item"
-                enterDelay={1000}
-                enterNextDelay={1000}
-                placement="bottom-start"
+            <Stack gap={1.25}>
+              <Box
+                display="flex"
+                gap={1}
+                alignItems="center"
+                sx={{
+                  "@container (max-width: 900px)": {
+                    flexWrap: "wrap",
+                  },
+                }}
               >
-                <IconButton
-                  size="small"
-                  onClick={() => setShowDuplicateItemDialog(true)}
+                <MoreMenu />
+                <Tooltip
+                  title="Duplicate Item"
+                  enterDelay={1000}
+                  enterNextDelay={1000}
+                  placement="bottom-start"
                 >
-                  <ContentCopyRounded fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              {type !== "dataset" && <PreviewMenu />}
-              <ItemEditHeaderActions
-                saving={saving}
-                onSave={onSave}
-                hasError={hasError}
-              />
-            </Box>
+                  <IconButton
+                    size="small"
+                    onClick={() => setShowDuplicateItemDialog(true)}
+                  >
+                    <ContentCopyRounded fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                {type !== "dataset" && <PreviewMenu />}
+                <ItemEditHeaderActions
+                  saving={saving}
+                  onSave={onSave}
+                  hasError={hasError}
+                />
+              </Box>
+              <PublishStatus />
+            </Stack>
           </Box>
           <Box
             display="flex"
