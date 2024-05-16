@@ -45,6 +45,10 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { cloneDeep } from "lodash";
 import { ContentItem } from "../../../../../../shell/services/types";
+import {
+  StagedChangesProvider,
+  useStagedChanges,
+} from "./StagedChangesContext";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -72,8 +76,6 @@ export const ItemList2 = () => {
 
   console.log("testing fields", fields);
   console.log("testing items", items);
-
-  const [stagedChanges, setStagedChanges] = useState<any>({});
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [params, setParams] = useParams();
@@ -110,7 +112,19 @@ export const ItemList2 = () => {
       width: 360,
     },
     number: {
-      width: 360,
+      width: 160,
+      valueFormatter: (params: any) => {
+        return new Intl.NumberFormat("en-US").format(params.value);
+      },
+    },
+    currency: {
+      width: 160,
+      valueFormatter: (params: any) => {
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(params.value);
+      },
     },
     images: {
       width: 100,
@@ -131,11 +145,7 @@ export const ItemList2 = () => {
     dropdown: {
       width: 240,
       renderCell: (params: GridRenderCellParams) => (
-        <DropDownCell
-          params={params}
-          stagedChanges={stagedChanges}
-          setStagedChanges={setStagedChanges}
-        />
+        <DropDownCell params={params} />
       ),
     },
     date: {
@@ -182,11 +192,7 @@ export const ItemList2 = () => {
     yes_no: {
       width: 120,
       renderCell: (params: GridRenderCellParams) => (
-        <BooleanCell
-          params={params}
-          stagedChanges={stagedChanges}
-          setStagedChanges={setStagedChanges}
-        />
+        <BooleanCell params={params} />
       ),
     },
   } as const;
@@ -393,171 +399,172 @@ export const ItemList2 = () => {
       ];
     }
     return result;
-  }, [fields, stagedChanges]);
-
-  console.log("testing stagedchanges", stagedChanges);
+  }, [fields]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          color: "text.primary",
-          height: "100%",
-          "*": {
-            boxSizing: "border-box",
-          },
-        }}
-      >
-        {isModelFetching ||
-        isModelItemsFetching ||
-        isFieldsFetching ||
-        isPublishingsFetching ||
-        isFilesFetching ? (
-          <Box
-            display="flex"
-            height="100%"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <CircularProgress />
-          </Box>
-        ) : (
-          <>
+    <StagedChangesProvider>
+      <ThemeProvider theme={theme}>
+        <Box
+          sx={{
+            color: "text.primary",
+            height: "100%",
+            "*": {
+              boxSizing: "border-box",
+            },
+          }}
+        >
+          {isModelFetching ||
+          isModelItemsFetching ||
+          isFieldsFetching ||
+          isPublishingsFetching ||
+          isFilesFetching ? (
             <Box
-              sx={{
-                px: 4,
-                pt: 4,
-                pb: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "start",
-                gap: 4,
-              }}
-            >
-              <Box flex={1}>
-                <ContentBreadcrumbs />
-                <Typography
-                  variant="h3"
-                  mt={0.25}
-                  fontWeight={700}
-                  sx={{
-                    display: "-webkit-box",
-                    "-webkit-line-clamp": "2",
-                    "-webkit-box-orient": "vertical",
-                    wordBreak: "break-word",
-                    wordWrap: "break-word",
-                    hyphens: "auto",
-                    overflow: "hidden",
-                  }}
-                >
-                  {model?.label}
-                </Typography>
-              </Box>
-              <ItemListActions ref={searchRef} />
-            </Box>
-            <Box
+              display="flex"
               height="100%"
-              bgcolor="grey.50"
-              px={4}
-              sx={{
-                overflowY: "auto",
-              }}
+              justifyContent="center"
+              alignItems="center"
             >
-              {!items?.length ? (
-                <ItemListEmpty />
-              ) : (
-                <>
-                  <ItemListFilters />
-                  {!sortedAndFilteredItems?.length && search ? (
-                    <Box
-                      data-cy="NoResults"
-                      textAlign="center"
-                      sx={{
-                        maxWidth: 387,
-                        mx: "auto",
-                      }}
-                    >
-                      <img src={noSearchResults} alt="No search results" />
-                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        Your filter {search} could not find any results
-                      </Typography>
-                      <Typography variant="body2" pb={3} color="text.secondary">
-                        Try adjusting your search. We suggest check all words
-                        are spelled correctly or try using different keywords.
-                      </Typography>
-                      <Button
-                        onClick={() => searchRef.current?.focus()}
-                        variant="contained"
-                        startIcon={<SearchRounded />}
-                      >
-                        Search Again
-                      </Button>
-                    </Box>
-                  ) : !sortedAndFilteredItems?.length && !search ? (
-                    <Box
-                      data-cy="NoResults"
-                      textAlign="center"
-                      sx={{
-                        maxWidth: 387,
-                        mx: "auto",
-                      }}
-                    >
-                      <img src={noSearchResults} alt="No search results" />
-                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        No results that matched your filters could be found
-                      </Typography>
-                      <Typography variant="body2" pb={3} color="text.secondary">
-                        Try adjusting your filters to find what you're looking
-                        for
-                      </Typography>
-                      <Button
-                        onClick={() => {
-                          setParams(null, "statusFilter");
-                        }}
-                        variant="contained"
-                        startIcon={<RestartAltRounded />}
-                      >
-                        Reset Filters
-                      </Button>
-                    </Box>
-                  ) : (
-                    <DataGridPro
-                      rows={sortedAndFilteredItems}
-                      columns={columns}
-                      onRowClick={(row) => {
-                        history.push(`/content/${modelZUID}/${row.id}`);
-                      }}
-                      checkboxSelection
-                      disableSelectionOnClick
-                      sx={{
-                        "& .MuiDataGrid-columnHeaderCheckbox": {
-                          padding: 0,
-                        },
-                        " & .MuiDataGrid-columnSeparator": {
-                          visibility: "visible",
-                        },
-                      }}
-                    />
-                  )}
-                </>
-              )}
+              <CircularProgress />
             </Box>
-          </>
-        )}
-      </Box>
-    </ThemeProvider>
+          ) : (
+            <>
+              <Box
+                sx={{
+                  px: 4,
+                  pt: 4,
+                  pb: 2,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "start",
+                  gap: 4,
+                }}
+              >
+                <Box flex={1}>
+                  <ContentBreadcrumbs />
+                  <Typography
+                    variant="h3"
+                    mt={0.25}
+                    fontWeight={700}
+                    sx={{
+                      display: "-webkit-box",
+                      "-webkit-line-clamp": "2",
+                      "-webkit-box-orient": "vertical",
+                      wordBreak: "break-word",
+                      wordWrap: "break-word",
+                      hyphens: "auto",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {model?.label}
+                  </Typography>
+                </Box>
+                <ItemListActions ref={searchRef} />
+              </Box>
+              <Box
+                height="100%"
+                bgcolor="grey.50"
+                px={4}
+                sx={{
+                  overflowY: "auto",
+                }}
+              >
+                {!items?.length ? (
+                  <ItemListEmpty />
+                ) : (
+                  <>
+                    <ItemListFilters />
+                    {!sortedAndFilteredItems?.length && search ? (
+                      <Box
+                        data-cy="NoResults"
+                        textAlign="center"
+                        sx={{
+                          maxWidth: 387,
+                          mx: "auto",
+                        }}
+                      >
+                        <img src={noSearchResults} alt="No search results" />
+                        <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                          Your filter {search} could not find any results
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          pb={3}
+                          color="text.secondary"
+                        >
+                          Try adjusting your search. We suggest check all words
+                          are spelled correctly or try using different keywords.
+                        </Typography>
+                        <Button
+                          onClick={() => searchRef.current?.focus()}
+                          variant="contained"
+                          startIcon={<SearchRounded />}
+                        >
+                          Search Again
+                        </Button>
+                      </Box>
+                    ) : !sortedAndFilteredItems?.length && !search ? (
+                      <Box
+                        data-cy="NoResults"
+                        textAlign="center"
+                        sx={{
+                          maxWidth: 387,
+                          mx: "auto",
+                        }}
+                      >
+                        <img src={noSearchResults} alt="No search results" />
+                        <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                          No results that matched your filters could be found
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          pb={3}
+                          color="text.secondary"
+                        >
+                          Try adjusting your filters to find what you're looking
+                          for
+                        </Typography>
+                        <Button
+                          onClick={() => {
+                            setParams(null, "statusFilter");
+                          }}
+                          variant="contained"
+                          startIcon={<RestartAltRounded />}
+                        >
+                          Reset Filters
+                        </Button>
+                      </Box>
+                    ) : (
+                      <DataGridPro
+                        rows={sortedAndFilteredItems}
+                        columns={columns}
+                        onRowClick={(row) => {
+                          history.push(`/content/${modelZUID}/${row.id}`);
+                        }}
+                        checkboxSelection
+                        disableSelectionOnClick
+                        sx={{
+                          "& .MuiDataGrid-columnHeaderCheckbox": {
+                            padding: 0,
+                          },
+                          " & .MuiDataGrid-columnSeparator": {
+                            visibility: "visible",
+                          },
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+              </Box>
+            </>
+          )}
+        </Box>
+      </ThemeProvider>
+    </StagedChangesProvider>
   );
 };
 
-export const DropDownCell = ({
-  params,
-  stagedChanges,
-  setStagedChanges,
-}: {
-  params: GridRenderCellParams;
-  stagedChanges: any;
-  setStagedChanges: any;
-}) => {
+export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
+  const { stagedChanges, updateStagedChanges } = useStagedChanges();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const { data: fields, isFetching: isFieldsFetching } =
@@ -565,13 +572,7 @@ export const DropDownCell = ({
   const field = fields?.find((field) => field.name === params.field);
   const handleChange = (value: any) => {
     setAnchorEl(null);
-    setStagedChanges((prev: any) => ({
-      ...prev,
-      [params.row.id]: {
-        ...prev[params.row.id],
-        [params.field]: value,
-      },
-    }));
+    updateStagedChanges(params.row.id, params.field, value);
   };
 
   return (
@@ -634,30 +635,15 @@ export const DropDownCell = ({
   );
 };
 
-export const BooleanCell = ({
-  params,
-  stagedChanges,
-  setStagedChanges,
-}: {
-  params: GridRenderCellParams;
-  stagedChanges: any;
-  setStagedChanges: any;
-}) => {
+export const BooleanCell = ({ params }: { params: GridRenderCellParams }) => {
+  const { stagedChanges, updateStagedChanges } = useStagedChanges();
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
   const field = fields?.find((field) => field.name === params.field);
   const handleChange = (value: any) => {
-    setStagedChanges((prev: any) => ({
-      ...prev,
-      [params.row.id]: {
-        ...prev[params.row.id],
-        [params.field]: value,
-      },
-    }));
+    updateStagedChanges(params.row.id, params.field, value);
   };
-
-  console.log("testing value", params.value);
 
   return (
     <ToggleButtonGroup

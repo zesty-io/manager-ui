@@ -215,6 +215,7 @@ export type ContentModelFieldDataType =
   | "one_to_one"
   | "uuid"
   | "number"
+  | "currency"
   | "date"
   | "datetime"
   | "images"
