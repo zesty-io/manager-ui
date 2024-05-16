@@ -11,6 +11,8 @@ import {
   Menu,
   MenuItem,
   Link,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "@mui/material";
 import {
   useGetAllPublishingsQuery,
@@ -42,6 +44,7 @@ import {
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { cloneDeep } from "lodash";
+import { ContentItem } from "../../../../../../shell/services/types";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -55,6 +58,7 @@ export const ItemList2 = () => {
     useGetContentModelFieldsQuery(modelZUID);
   const { data: publishings, isFetching: isPublishingsFetching } =
     useGetAllPublishingsQuery();
+  const allItems = useSelector((state: AppState) => state.content);
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
@@ -67,6 +71,7 @@ export const ItemList2 = () => {
   );
 
   console.log("testing fields", fields);
+  console.log("testing items", items);
 
   const [stagedChanges, setStagedChanges] = useState<any>({});
 
@@ -123,9 +128,6 @@ export const ItemList2 = () => {
         );
       },
     },
-    yes_no: {
-      width: 360,
-    },
     dropdown: {
       width: 240,
       renderCell: (params: GridRenderCellParams) => (
@@ -174,6 +176,19 @@ export const ItemList2 = () => {
         );
       },
     },
+    internal_link: {
+      width: 240,
+    },
+    yes_no: {
+      width: 120,
+      renderCell: (params: GridRenderCellParams) => (
+        <BooleanCell
+          params={params}
+          stagedChanges={stagedChanges}
+          setStagedChanges={setStagedChanges}
+        />
+      ),
+    },
   } as const;
 
   const processedItems = useMemo(() => {
@@ -193,21 +208,28 @@ export const ItemList2 = () => {
       );
 
       Object.keys(clonedItem.data).forEach((key) => {
+        const fieldType = fields?.find((field) => field.name === key)?.datatype;
         // @ts-ignore
         if (
-          typeof clonedItem.data[key] === "string" &&
+          fieldType === "images" &&
           clonedItem.data[key]?.split(",")?.[0]?.startsWith("3-")
         ) {
           clonedItem.data[key] = files?.find(
             (file) => file.id === clonedItem.data[key]?.split(",")?.[0]
           );
         }
+
+        if (fieldType === "internal_link") {
+          clonedItem.data[key] =
+            allItems?.[clonedItem.data[key]]?.web?.metaTitle ||
+            clonedItem.data[key];
+        }
       });
 
       return clonedItem;
     });
     return clonedItems;
-  }, [items, publishings, files]);
+  }, [items, publishings, files, allItems, fields]);
 
   const sortedAndFilteredItems = useMemo(() => {
     let clonedItems = [...processedItems];
@@ -551,7 +573,6 @@ export const DropDownCell = ({
       },
     }));
   };
-  // console.log("testing params", params, field);
 
   return (
     <>
@@ -610,5 +631,53 @@ export const DropDownCell = ({
         ))}
       </Menu>
     </>
+  );
+};
+
+export const BooleanCell = ({
+  params,
+  stagedChanges,
+  setStagedChanges,
+}: {
+  params: GridRenderCellParams;
+  stagedChanges: any;
+  setStagedChanges: any;
+}) => {
+  const { modelZUID } = useRouterParams<{ modelZUID: string }>();
+  const { data: fields, isFetching: isFieldsFetching } =
+    useGetContentModelFieldsQuery(modelZUID);
+  const field = fields?.find((field) => field.name === params.field);
+  const handleChange = (value: any) => {
+    setStagedChanges((prev: any) => ({
+      ...prev,
+      [params.row.id]: {
+        ...prev[params.row.id],
+        [params.field]: value,
+      },
+    }));
+  };
+
+  console.log("testing value", params.value);
+
+  return (
+    <ToggleButtonGroup
+      size="small"
+      color="primary"
+      value={stagedChanges?.[params.row.id]?.[params.field] ?? params.value}
+      exclusive
+      onChange={(e, value) => {
+        e.stopPropagation();
+        if (value === null) {
+          return;
+        }
+        handleChange(Number(value));
+      }}
+    >
+      {Object.entries(field?.settings?.options)?.map(([key, value]) => (
+        <ToggleButton key={key} value={Number(key)}>
+          {value}
+        </ToggleButton>
+      ))}
+    </ToggleButtonGroup>
   );
 };
