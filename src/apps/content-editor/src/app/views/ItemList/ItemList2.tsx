@@ -8,6 +8,8 @@ import {
   ThemeProvider,
   Typography,
   Stack,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import {
   useGetAllPublishingsQuery,
@@ -24,8 +26,11 @@ import {
   GridRenderCellParams,
 } from "@mui/x-data-grid-pro";
 import { useMemo, useRef, useState } from "react";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
+import {
+  KeyboardArrowDownRounded,
+  SearchRounded,
+  RestartAltRounded,
+} from "@mui/icons-material";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
 import { useParams } from "../../../../../../shell/hooks/useParams";
@@ -36,81 +41,6 @@ import {
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { cloneDeep } from "lodash";
-
-const fieldTypeColumnConfigMap = {
-  text: {
-    width: 360,
-  },
-  wysiwyg_basic: {
-    width: 360,
-  },
-  wysiwyg_advanced: {
-    width: 360,
-  },
-  article_writer: {
-    width: 360,
-  },
-  markdown: {
-    width: 360,
-  },
-  textarea: {
-    width: 360,
-  },
-  one_to_many: {
-    width: 360,
-  },
-  one_to_one: {
-    width: 360,
-  },
-  uuid: {
-    width: 360,
-  },
-  number: {
-    width: 360,
-  },
-  images: {
-    width: 100,
-    renderCell: ({ row }: GridRenderCellParams) => {
-      const src =
-        row.data.images?.thumbnail || row.data.images?.split(",")?.[0];
-      if (!src) return null;
-      return (
-        <img
-          style={{ objectFit: "contain" }}
-          width="68px"
-          height="58px"
-          src={src}
-        />
-      );
-    },
-  },
-  yes_no: {
-    width: 360,
-  },
-  dropdown: {
-    width: 360,
-  },
-  date: {
-    width: 160,
-    valueFormatter: (params: any) =>
-      new Date(params.value)?.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      }),
-  },
-  datetime: {
-    width: 200,
-    valueFormatter: (params: any) =>
-      new Date(params.value)?.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-      }),
-  },
-} as const;
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -135,11 +65,95 @@ export const ItemList2 = () => {
     { skip: !bins?.length }
   );
 
+  const [stagedChanges, setStagedChanges] = useState<any>({});
+
   const searchRef = useRef<HTMLInputElement>(null);
   const [params, setParams] = useParams();
   const search = params.get("search");
   const sort = params.get("sort");
   const statusFilter = params.get("statusFilter");
+
+  const fieldTypeColumnConfigMap = {
+    text: {
+      width: 360,
+    },
+    wysiwyg_basic: {
+      width: 360,
+    },
+    wysiwyg_advanced: {
+      width: 360,
+    },
+    article_writer: {
+      width: 360,
+    },
+    markdown: {
+      width: 360,
+    },
+    textarea: {
+      width: 360,
+    },
+    one_to_many: {
+      width: 360,
+    },
+    one_to_one: {
+      width: 360,
+    },
+    uuid: {
+      width: 360,
+    },
+    number: {
+      width: 360,
+    },
+    images: {
+      width: 100,
+      renderCell: ({ row }: GridRenderCellParams) => {
+        const src =
+          row.data.images?.thumbnail || row.data.images?.split(",")?.[0];
+        if (!src) return null;
+        return (
+          <img
+            style={{ objectFit: "contain" }}
+            width="68px"
+            height="58px"
+            src={src}
+          />
+        );
+      },
+    },
+    yes_no: {
+      width: 360,
+    },
+    dropdown: {
+      width: 240,
+      renderCell: (params: GridRenderCellParams) => (
+        <DropDownCell
+          params={params}
+          stagedChanges={stagedChanges}
+          setStagedChanges={setStagedChanges}
+        />
+      ),
+    },
+    date: {
+      width: 160,
+      valueFormatter: (params: any) =>
+        new Date(params.value)?.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+    },
+    datetime: {
+      width: 200,
+      valueFormatter: (params: any) =>
+        new Date(params.value)?.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }),
+    },
+  } as const;
 
   const processedItems = useMemo(() => {
     if (!items) return [];
@@ -336,7 +350,9 @@ export const ItemList2 = () => {
       ];
     }
     return result;
-  }, [fields]);
+  }, [fields, stagedChanges]);
+
+  console.log("testing stagedchanges", stagedChanges);
 
   return (
     <ThemeProvider theme={theme}>
@@ -429,7 +445,7 @@ export const ItemList2 = () => {
                       <Button
                         onClick={() => searchRef.current?.focus()}
                         variant="contained"
-                        startIcon={<SearchRoundedIcon />}
+                        startIcon={<SearchRounded />}
                       >
                         Search Again
                       </Button>
@@ -484,5 +500,91 @@ export const ItemList2 = () => {
         )}
       </Box>
     </ThemeProvider>
+  );
+};
+
+export const DropDownCell = ({
+  params,
+  stagedChanges,
+  setStagedChanges,
+}: {
+  params: GridRenderCellParams;
+  stagedChanges: any;
+  setStagedChanges: any;
+}) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { modelZUID } = useRouterParams<{ modelZUID: string }>();
+  const { data: fields, isFetching: isFieldsFetching } =
+    useGetContentModelFieldsQuery(modelZUID);
+  const field = fields?.find((field) => field.name === params.field);
+  const handleChange = (value: any) => {
+    setAnchorEl(null);
+    setStagedChanges((prev: any) => ({
+      ...prev,
+      [params.row.id]: {
+        ...prev[params.row.id],
+        [params.field]: value,
+      },
+    }));
+  };
+  // console.log("testing params", params, field);
+
+  return (
+    <>
+      <Button
+        sx={{
+          color: "text.disabled",
+          height: "24px",
+          minWidth: "unset",
+          padding: "2px",
+          " .MuiButton-endIcon": {
+            marginLeft: "4px",
+          },
+        }}
+        color="inherit"
+        endIcon={<KeyboardArrowDownRounded color="action" />}
+        onClick={(e) => {
+          e.stopPropagation();
+          setAnchorEl(e.currentTarget);
+        }}
+      >
+        {stagedChanges?.[params.row.id]?.[params.field] === null
+          ? "Select"
+          : stagedChanges?.[params.row.id]?.[params.field] ||
+            field?.settings?.options[params?.value] ||
+            "Select"}
+      </Button>
+      <Menu
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        anchorEl={anchorEl}
+        open={!!anchorEl}
+      >
+        <MenuItem
+          onClick={() => {
+            handleChange(null);
+          }}
+        >
+          Select
+        </MenuItem>
+        {Object.entries(field?.settings?.options)?.map(([key, value]) => (
+          <MenuItem
+            key={key}
+            onClick={() => {
+              handleChange(value);
+            }}
+          >
+            {value}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   );
 };
