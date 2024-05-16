@@ -10,6 +10,7 @@ import {
   Stack,
   Menu,
   MenuItem,
+  Link,
 } from "@mui/material";
 import {
   useGetAllPublishingsQuery,
@@ -64,6 +65,8 @@ export const ItemList2 = () => {
     bins?.map((bin) => bin.id),
     { skip: !bins?.length }
   );
+
+  console.log("testing fields", fields);
 
   const [stagedChanges, setStagedChanges] = useState<any>({});
 
@@ -152,6 +155,24 @@ export const ItemList2 = () => {
           hour: "numeric",
           minute: "numeric",
         }),
+    },
+    link: {
+      width: 360,
+      renderCell: (params: any) => {
+        return (
+          <Link
+            underline="none"
+            target="_blank"
+            href={params.value}
+            sx={{
+              color: "primary.main",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {params.value}
+          </Link>
+        );
+      },
     },
   } as const;
 
@@ -489,6 +510,9 @@ export const ItemList2 = () => {
                       sx={{
                         "& .MuiDataGrid-columnHeaderCheckbox": {
                           padding: 0,
+                        },
+                        " & .MuiDataGrid-columnSeparator": {
+                          visibility: "visible",
                         },
                       }}
                     />

@@ -219,7 +219,8 @@ export type ContentModelFieldDataType =
   | "datetime"
   | "images"
   | "yes_no"
-  | "dropdown";
+  | "dropdown"
+  | "link";
 
 export interface ContentModelField {
   ZUID: string;
