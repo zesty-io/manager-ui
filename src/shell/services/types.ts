@@ -223,7 +223,8 @@ export type ContentModelFieldDataType =
   | "dropdown"
   | "link"
   | "internal_link"
-  | "yes_no";
+  | "yes_no"
+  | "color";
 
 export interface ContentModelField {
   ZUID: string;

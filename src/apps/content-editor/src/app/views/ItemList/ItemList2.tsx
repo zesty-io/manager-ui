@@ -49,6 +49,8 @@ import {
   StagedChangesProvider,
   useStagedChanges,
 } from "./StagedChangesContext";
+import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort";
+import { render } from "react-dom";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -103,13 +105,28 @@ export const ItemList2 = () => {
       width: 360,
     },
     one_to_many: {
-      width: 360,
+      width: 240,
+      renderCell: (params: GridRenderCellParams) => {
+        return (
+          <Box display="flex" gap={0.5}>
+            {params.value?.split(",")?.map((id: string) => (
+              <Chip
+                key={id}
+                label={allItems?.[id]?.web?.metaTitle || id}
+                size="small"
+              />
+            ))}
+          </Box>
+        );
+      },
     },
     one_to_one: {
-      width: 360,
+      width: 240,
+      renderCell: (params: any) =>
+        params.value && <Chip label={params.value} size="small" />,
     },
     uuid: {
-      width: 360,
+      width: 280,
     },
     number: {
       width: 160,
@@ -188,11 +205,37 @@ export const ItemList2 = () => {
     },
     internal_link: {
       width: 240,
+      renderCell: (params: any) =>
+        params.value && <Chip label={params.value} size="small" />,
     },
     yes_no: {
       width: 120,
       renderCell: (params: GridRenderCellParams) => (
         <BooleanCell params={params} />
+      ),
+    },
+    color: {
+      width: 140,
+      renderCell: (params: GridRenderCellParams) => {
+        return (
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <Box
+              sx={{
+                width: 32,
+                height: 32,
+                borderRadius: "8px",
+                backgroundColor: params.value,
+              }}
+            />
+            <Typography>{params.value?.toUpperCase()}</Typography>
+          </Box>
+        );
+      },
+    },
+    sort: {
+      width: 156,
+      renderCell: (params: GridRenderCellParams) => (
+        <SortCell params={params} />
       ),
     },
   } as const;
@@ -225,10 +268,17 @@ export const ItemList2 = () => {
           );
         }
 
-        if (fieldType === "internal_link") {
+        if (fieldType === "internal_link" || fieldType === "one_to_one") {
           clonedItem.data[key] =
             allItems?.[clonedItem.data[key]]?.web?.metaTitle ||
             clonedItem.data[key];
+        }
+
+        if (fieldType === "one_to_many") {
+          clonedItem.data[key] = clonedItem.data[key]
+            ?.split(",")
+            .map((id: string) => allItems?.[id]?.web?.metaTitle || id)
+            ?.join(",");
         }
       });
 
@@ -665,5 +715,25 @@ export const BooleanCell = ({ params }: { params: GridRenderCellParams }) => {
         </ToggleButton>
       ))}
     </ToggleButtonGroup>
+  );
+};
+
+export const SortCell = ({ params }: { params: GridRenderCellParams }) => {
+  const { stagedChanges, updateStagedChanges } = useStagedChanges();
+  const handleChange = (value: any) => {
+    updateStagedChanges(params.row.id, params.field, value);
+  };
+
+  return (
+    <FieldTypeSort
+      value={
+        stagedChanges?.[params.row.id]?.[params.field]?.toString() ??
+        (params.value?.toString() || "0")
+      }
+      onChange={(evt) => {
+        handleChange(parseInt(evt.target.value));
+      }}
+      height={40}
+    />
   );
 };
