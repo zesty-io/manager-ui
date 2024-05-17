@@ -35,34 +35,31 @@ import {
   useSnackbar,
 } from "notistack";
 
-const alertDetails = (kind) => {
-  let icon, severity;
-
-  switch (kind) {
-    case "warn":
-      icon = <WarningRoundedIcon sx={{ width: 22, height: 22 }} />;
-      severity = "warning";
-      break;
-    case "error":
-      icon = <ErrorOutlineOutlinedIcon sx={{ width: 22, height: 22 }} />;
-      severity = "error";
-      break;
-    case "save":
-    case "success":
-      icon = <CheckCircleRoundedIcon sx={{ width: 22, height: 22 }} />;
-      severity = "success";
-      break;
-    case "deleted":
-      icon = <DeleteRoundedIcon sx={{ width: 22, height: 22 }} />;
-      severity = "success";
-      break;
-    default:
-      icon = <InfoRoundedIcon sx={{ width: 22, height: 22 }} />;
-      severity = "info";
-      break;
-  }
-
-  return { icon, severity };
+const alertDetails = {
+  warn: {
+    icon: <WarningRoundedIcon sx={{ width: 22, height: 22 }} />,
+    severity: "warning",
+  },
+  error: {
+    icon: <ErrorOutlineOutlinedIcon sx={{ width: 22, height: 22 }} />,
+    severity: "error",
+  },
+  save: {
+    icon: <CheckCircleRoundedIcon sx={{ width: 22, height: 22 }} />,
+    severity: "success",
+  },
+  success: {
+    icon: <CheckCircleRoundedIcon sx={{ width: 22, height: 22 }} />,
+    severity: "success",
+  },
+  deleted: {
+    icon: <DeleteRoundedIcon sx={{ width: 22, height: 22 }} />,
+    severity: "success",
+  },
+  default: {
+    icon: <InfoRoundedIcon sx={{ width: 22, height: 22 }} />,
+    severity: "info",
+  },
 };
 
 export default connect((state) => {
@@ -79,7 +76,9 @@ export default connect((state) => {
       setDrawerOpen(false);
     });
 
-    const { icon, severity } = alertDetails(props.notifications[0]?.kind);
+    const kind = props.notifications[0]?.kind;
+    const { icon, severity } =
+      alertDetails[alertDetails.hasOwnProperty(kind) ? kind : "default"];
 
     useEffect(() => {
       if (!initialRender && props.notifications.length) {
