@@ -13,6 +13,7 @@ import {
   Link,
   ToggleButtonGroup,
   ToggleButton,
+  Tooltip,
 } from "@mui/material";
 import {
   useGetAllPublishingsQuery,
@@ -27,6 +28,7 @@ import {
   DataGridPro,
   GridColumns,
   GridRenderCellParams,
+  GRID_CHECKBOX_SELECTION_COL_DEF,
 } from "@mui/x-data-grid-pro";
 import { useMemo, useRef, useState } from "react";
 import {
@@ -51,6 +53,8 @@ import {
 } from "./StagedChangesContext";
 import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort";
 import { render } from "react-dom";
+import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
+import { UpdateListActions } from "./UpdateListActions";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -76,8 +80,8 @@ export const ItemList2 = () => {
     { skip: !bins?.length }
   );
 
-  console.log("testing fields", fields);
-  console.log("testing items", items);
+  const { stagedChanges, updateStagedChanges, clearStagedChanges } =
+    useStagedChanges();
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [params, setParams] = useParams();
@@ -409,28 +413,10 @@ export const ItemList2 = () => {
         headerName: "Vers.",
         width: 104,
         sortable: false,
-        renderCell: ({ row }: GridRenderCellParams) => {
-          return (
-            <Stack spacing={0.25}>
-              {row?.meta?.version !== row?.publishing?.version && (
-                <Chip
-                  label={`v${row?.meta?.version}`}
-                  size="small"
-                  color="info"
-                />
-              )}
-              {(row?.publishing?.version || row?.priorPublishing?.version) && (
-                <Chip
-                  label={`v${
-                    row?.publishing?.version || row?.priorPublishing?.version
-                  }`}
-                  size="small"
-                  color="success"
-                />
-              )}
-            </Stack>
-          );
-        },
+        filterable: false,
+        renderCell: (params: GridRenderCellParams) => (
+          <VersionCell params={params} />
+        ),
       },
     ];
     if (fields) {
@@ -442,6 +428,7 @@ export const ItemList2 = () => {
             field: field.name,
             headerName: field.label,
             sortable: false,
+            filterable: false,
             // width: fieldTypeWidthMap[field.datatype] || 100,
             valueGetter: (params: any) => params.row.data[field.name],
             ...fieldTypeColumnConfigMap[field.datatype],
@@ -452,164 +439,183 @@ export const ItemList2 = () => {
   }, [fields]);
 
   return (
-    <StagedChangesProvider>
-      <ThemeProvider theme={theme}>
-        <Box
-          sx={{
-            color: "text.primary",
-            height: "100%",
-            "*": {
-              boxSizing: "border-box",
-            },
-          }}
-        >
-          {isModelFetching ||
-          isModelItemsFetching ||
-          isFieldsFetching ||
-          isPublishingsFetching ||
-          isFilesFetching ? (
+    <ThemeProvider theme={theme}>
+      <Box
+        sx={{
+          color: "text.primary",
+          height: "100%",
+          "*": {
+            boxSizing: "border-box",
+          },
+        }}
+      >
+        {isModelFetching ||
+        isModelItemsFetching ||
+        isFieldsFetching ||
+        isPublishingsFetching ||
+        isFilesFetching ? (
+          <Box
+            display="flex"
+            height="100%"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
             <Box
-              display="flex"
-              height="100%"
-              justifyContent="center"
-              alignItems="center"
+              sx={{
+                px: 4,
+                pt: 4,
+                pb: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "start",
+                gap: 4,
+              }}
             >
-              <CircularProgress />
+              {stagedChanges && Object.keys(stagedChanges)?.length ? (
+                <UpdateListActions />
+              ) : (
+                <>
+                  <Box flex={1}>
+                    <ContentBreadcrumbs />
+                    <Typography
+                      variant="h3"
+                      mt={0.25}
+                      fontWeight={700}
+                      sx={{
+                        display: "-webkit-box",
+                        "-webkit-line-clamp": "2",
+                        "-webkit-box-orient": "vertical",
+                        wordBreak: "break-word",
+                        wordWrap: "break-word",
+                        hyphens: "auto",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {model?.label}
+                    </Typography>
+                  </Box>
+                  <ItemListActions ref={searchRef} />
+                </>
+              )}
             </Box>
-          ) : (
-            <>
-              <Box
-                sx={{
-                  px: 4,
-                  pt: 4,
-                  pb: 2,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "start",
-                  gap: 4,
-                }}
-              >
-                <Box flex={1}>
-                  <ContentBreadcrumbs />
-                  <Typography
-                    variant="h3"
-                    mt={0.25}
-                    fontWeight={700}
-                    sx={{
-                      display: "-webkit-box",
-                      "-webkit-line-clamp": "2",
-                      "-webkit-box-orient": "vertical",
-                      wordBreak: "break-word",
-                      wordWrap: "break-word",
-                      hyphens: "auto",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {model?.label}
-                  </Typography>
-                </Box>
-                <ItemListActions ref={searchRef} />
-              </Box>
-              <Box
-                height="100%"
-                bgcolor="grey.50"
-                px={4}
-                sx={{
-                  overflowY: "auto",
-                }}
-              >
-                {!items?.length ? (
-                  <ItemListEmpty />
-                ) : (
-                  <>
-                    <ItemListFilters />
-                    {!sortedAndFilteredItems?.length && search ? (
-                      <Box
-                        data-cy="NoResults"
-                        textAlign="center"
-                        sx={{
-                          maxWidth: 387,
-                          mx: "auto",
-                        }}
+            <Box
+              height="100%"
+              bgcolor="grey.50"
+              px={4}
+              sx={{
+                overflowY: "auto",
+              }}
+            >
+              {!items?.length ? (
+                <ItemListEmpty />
+              ) : (
+                <>
+                  <ItemListFilters />
+                  {!sortedAndFilteredItems?.length && search ? (
+                    <Box
+                      data-cy="NoResults"
+                      textAlign="center"
+                      sx={{
+                        maxWidth: 387,
+                        mx: "auto",
+                      }}
+                    >
+                      <img src={noSearchResults} alt="No search results" />
+                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                        Your filter {search} could not find any results
+                      </Typography>
+                      <Typography variant="body2" pb={3} color="text.secondary">
+                        Try adjusting your search. We suggest check all words
+                        are spelled correctly or try using different keywords.
+                      </Typography>
+                      <Button
+                        onClick={() => searchRef.current?.focus()}
+                        variant="contained"
+                        startIcon={<SearchRounded />}
                       >
-                        <img src={noSearchResults} alt="No search results" />
-                        <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                          Your filter {search} could not find any results
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          pb={3}
-                          color="text.secondary"
-                        >
-                          Try adjusting your search. We suggest check all words
-                          are spelled correctly or try using different keywords.
-                        </Typography>
-                        <Button
-                          onClick={() => searchRef.current?.focus()}
-                          variant="contained"
-                          startIcon={<SearchRounded />}
-                        >
-                          Search Again
-                        </Button>
-                      </Box>
-                    ) : !sortedAndFilteredItems?.length && !search ? (
-                      <Box
-                        data-cy="NoResults"
-                        textAlign="center"
-                        sx={{
-                          maxWidth: 387,
-                          mx: "auto",
+                        Search Again
+                      </Button>
+                    </Box>
+                  ) : !sortedAndFilteredItems?.length && !search ? (
+                    <Box
+                      data-cy="NoResults"
+                      textAlign="center"
+                      sx={{
+                        maxWidth: 387,
+                        mx: "auto",
+                      }}
+                    >
+                      <img src={noSearchResults} alt="No search results" />
+                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                        No results that matched your filters could be found
+                      </Typography>
+                      <Typography variant="body2" pb={3} color="text.secondary">
+                        Try adjusting your filters to find what you're looking
+                        for
+                      </Typography>
+                      <Button
+                        onClick={() => {
+                          setParams(null, "statusFilter");
                         }}
+                        variant="contained"
+                        startIcon={<RestartAltRounded />}
                       >
-                        <img src={noSearchResults} alt="No search results" />
-                        <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                          No results that matched your filters could be found
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          pb={3}
-                          color="text.secondary"
-                        >
-                          Try adjusting your filters to find what you're looking
-                          for
-                        </Typography>
-                        <Button
-                          onClick={() => {
-                            setParams(null, "statusFilter");
-                          }}
-                          variant="contained"
-                          startIcon={<RestartAltRounded />}
-                        >
-                          Reset Filters
-                        </Button>
-                      </Box>
-                    ) : (
-                      <DataGridPro
-                        rows={sortedAndFilteredItems}
-                        columns={columns}
-                        onRowClick={(row) => {
-                          history.push(`/content/${modelZUID}/${row.id}`);
-                        }}
-                        checkboxSelection
-                        disableSelectionOnClick
-                        sx={{
-                          "& .MuiDataGrid-columnHeaderCheckbox": {
-                            padding: 0,
-                          },
-                          " & .MuiDataGrid-columnSeparator": {
-                            visibility: "visible",
-                          },
-                        }}
-                      />
-                    )}
-                  </>
-                )}
-              </Box>
-            </>
-          )}
-        </Box>
-      </ThemeProvider>
-    </StagedChangesProvider>
+                        Reset Filters
+                      </Button>
+                    </Box>
+                  ) : (
+                    <DataGridPro
+                      rows={sortedAndFilteredItems}
+                      columns={columns}
+                      onRowClick={(row) => {
+                        history.push(`/content/${modelZUID}/${row.id}`);
+                      }}
+                      checkboxSelection={
+                        !(stagedChanges && Object.keys(stagedChanges)?.length)
+                      }
+                      disableSelectionOnClick
+                      initialState={{
+                        pinnedColumns: {
+                          left: [
+                            GRID_CHECKBOX_SELECTION_COL_DEF.field,
+                            "version",
+                            fields[0]?.name,
+                          ],
+                        },
+                      }}
+                      sx={{
+                        backgroundColor: "common.white",
+                        ".MuiDataGrid-row": {
+                          cursor: "pointer",
+                        },
+                        border: "none",
+                        "& .MuiDataGrid-columnHeaderCheckbox": {
+                          padding: 0,
+                        },
+                        " & .MuiDataGrid-columnSeparator": {
+                          visibility: "visible",
+                        },
+                        "& .MuiDataGrid-pinnedColumnHeaders": {
+                          backgroundColor: "inherit",
+                          // boxShadow: "none",
+                        },
+                        // "& .MuiDataGrid-pinnedColumns": {
+                        //   boxShadow: "none",
+                        // },
+                      }}
+                    />
+                  )}
+                </>
+              )}
+            </Box>
+          </>
+        )}
+      </Box>
+    </ThemeProvider>
   );
 };
 
@@ -646,7 +652,9 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
       >
         {stagedChanges?.[params.row.id]?.[params.field] === null
           ? "Select"
-          : stagedChanges?.[params.row.id]?.[params.field] ||
+          : field?.settings?.options[
+              stagedChanges?.[params.row.id]?.[params.field]
+            ] ||
             field?.settings?.options[params?.value] ||
             "Select"}
       </Button>
@@ -674,7 +682,7 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
           <MenuItem
             key={key}
             onClick={() => {
-              handleChange(value);
+              handleChange(key);
             }}
           >
             {value}
@@ -735,5 +743,106 @@ export const SortCell = ({ params }: { params: GridRenderCellParams }) => {
       }}
       height={40}
     />
+  );
+};
+
+export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
+  const { data: users } = useGetUsersQuery();
+
+  const createdByUser = users?.find(
+    (user) => user.ZUID === params.row?.meta?.createdByUserZUID
+  );
+  const publishedByUser =
+    users?.find(
+      (user) => user.ZUID === params.row?.publishing?.publishedByUserZUID
+    ) ||
+    users?.find(
+      (user) => user.ZUID === params.row?.priorPublishing?.publishedByUserZUID
+    );
+  const isScheduledPublish =
+    new Date(
+      params.row?.publishing?.publishAt ||
+        params.row?.priorPublishing?.publishAt
+    )?.getTime() > new Date()?.getTime();
+
+  console.log(
+    "testing ids",
+    params.row?.meta?.createdByUserZUID,
+    params.row?.publishing?.publishedByUserZUID
+  );
+
+  return (
+    <Stack spacing={0.25}>
+      {params.row?.meta?.version !== params.row?.publishing?.version && (
+        <Tooltip
+          enterDelay={1000}
+          enterNextDelay={1000}
+          title={`v${params.row?.meta?.version} saved on ${new Date(
+            params.row?.meta?.updatedAt
+          ).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            timeZoneName: "short",
+          })} by ${createdByUser?.firstName} ${createdByUser?.lastName}`}
+          slotProps={{
+            popper: {
+              style: {
+                width: 116,
+              },
+            },
+          }}
+          placement="bottom"
+        >
+          <Chip
+            label={`v${params.row?.meta?.version}`}
+            size="small"
+            color="info"
+          />
+        </Tooltip>
+      )}
+      {(params.row?.publishing?.version ||
+        params.row?.priorPublishing?.version) && (
+        <Tooltip
+          enterDelay={1000}
+          enterNextDelay={1000}
+          title={`v${
+            params.row?.publishing?.version ||
+            params.row?.priorPublishing?.version
+          } ${
+            isScheduledPublish ? "scheduled to publish" : "published"
+          } on ${new Date(
+            params.row?.publishing?.publishAt ||
+              params.row?.priorPublishing?.publishAt
+          ).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            timeZoneName: "short",
+          })} by ${publishedByUser?.firstName} ${publishedByUser?.lastName}`}
+          slotProps={{
+            popper: {
+              style: {
+                width: isScheduledPublish ? 116 : 146,
+              },
+            },
+          }}
+          placement="bottom"
+        >
+          <Chip
+            label={`v${
+              params.row?.publishing?.version ||
+              params.row?.priorPublishing?.version
+            }`}
+            size="small"
+            color={isScheduledPublish ? "warning" : "success"}
+          />
+        </Tooltip>
+      )}
+    </Stack>
   );
 };

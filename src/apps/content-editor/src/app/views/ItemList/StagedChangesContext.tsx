@@ -21,9 +21,13 @@ export const StagedChangesProvider = ({
     }));
   }, []);
 
+  const clearStagedChanges = useCallback(() => {
+    setStagedChanges({});
+  }, []);
+
   return (
     <StagedChangesContext.Provider
-      value={{ stagedChanges, updateStagedChanges }}
+      value={{ stagedChanges, updateStagedChanges, clearStagedChanges }}
     >
       {children}
     </StagedChangesContext.Provider>
