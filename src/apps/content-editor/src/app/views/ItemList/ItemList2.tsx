@@ -449,6 +449,44 @@ export const ItemList2 = () => {
           },
         }}
       >
+        <Box
+          sx={{
+            px: 4,
+            pt: 4,
+            pb: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "start",
+            gap: 4,
+          }}
+        >
+          {stagedChanges && Object.keys(stagedChanges)?.length ? (
+            <UpdateListActions />
+          ) : (
+            <>
+              <Box flex={1}>
+                <ContentBreadcrumbs />
+                <Typography
+                  variant="h3"
+                  mt={0.25}
+                  fontWeight={700}
+                  sx={{
+                    display: "-webkit-box",
+                    "-webkit-line-clamp": "2",
+                    "-webkit-box-orient": "vertical",
+                    wordBreak: "break-word",
+                    wordWrap: "break-word",
+                    hyphens: "auto",
+                    overflow: "hidden",
+                  }}
+                >
+                  {model?.label}
+                </Typography>
+              </Box>
+              <ItemListActions ref={searchRef} />
+            </>
+          )}
+        </Box>
         {isModelFetching ||
         isModelItemsFetching ||
         isFieldsFetching ||
@@ -464,44 +502,6 @@ export const ItemList2 = () => {
           </Box>
         ) : (
           <>
-            <Box
-              sx={{
-                px: 4,
-                pt: 4,
-                pb: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "start",
-                gap: 4,
-              }}
-            >
-              {stagedChanges && Object.keys(stagedChanges)?.length ? (
-                <UpdateListActions />
-              ) : (
-                <>
-                  <Box flex={1}>
-                    <ContentBreadcrumbs />
-                    <Typography
-                      variant="h3"
-                      mt={0.25}
-                      fontWeight={700}
-                      sx={{
-                        display: "-webkit-box",
-                        "-webkit-line-clamp": "2",
-                        "-webkit-box-orient": "vertical",
-                        wordBreak: "break-word",
-                        wordWrap: "break-word",
-                        hyphens: "auto",
-                        overflow: "hidden",
-                      }}
-                    >
-                      {model?.label}
-                    </Typography>
-                  </Box>
-                  <ItemListActions ref={searchRef} />
-                </>
-              )}
-            </Box>
             <Box
               height="100%"
               bgcolor="grey.50"

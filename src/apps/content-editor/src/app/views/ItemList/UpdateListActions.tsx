@@ -5,13 +5,14 @@ import {
   CloseRounded,
   CloudUploadRounded,
 } from "@mui/icons-material";
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useHistory, useParams as useRouterParams } from "react-router";
 import { useFilePath } from "../../../../../../shell/hooks/useFilePath";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { useStagedChanges } from "./StagedChangesContext";
 import { LoadingButton } from "@mui/lab";
 import {
+  useCreateItemsPublishingMutation,
   useGetContentModelItemsQuery,
   useUpdateContentItemsMutation,
 } from "../../../../../../shell/services/instance";
@@ -19,16 +20,23 @@ import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 
 export const UpdateListActions = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
-  const { data: items, isFetching: isModelItemsFetching } =
-    useGetContentModelItemsQuery(modelZUID);
+  const [itemsToPublish, setItemsToPublish] = useState<string[]>([]);
+  const { data: items } = useGetContentModelItemsQuery(modelZUID);
   const { stagedChanges, updateStagedChanges, clearStagedChanges } =
     useStagedChanges();
 
   const [updateContentItems, { isLoading: isSaving }] =
     useUpdateContentItemsMutation();
 
+  const [createItemsPublishing, { isLoading: isPublishing }] =
+    useCreateItemsPublishingMutation();
+
   const saveShortcut = useMetaKey("s", () => {
     handleSave();
+  });
+
+  const publishShortcut = useMetaKey("p", () => {
+    handlePublish();
   });
 
   const handleSave = async () => {
@@ -52,79 +60,137 @@ export const UpdateListActions = () => {
     }
   };
 
-  return (
-    <Box
-      display="flex"
-      justifyContent="space-between"
-      alignItems="center"
-      width="100%"
-    >
-      <Box display={"flex"} gap={1.5} alignItems="center">
-        <IconButton
-          size="small"
-          sx={{
-            width: "20px",
-            height: "20px",
-          }}
-          onClick={() => {
-            clearStagedChanges({});
-          }}
-        >
-          <CloseRounded />
-        </IconButton>
-        <Typography variant="h3" fontWeight={700}>
-          Update {Object.keys(stagedChanges)?.length} Content Items
-        </Typography>
-      </Box>
-      <Box>
-        <Tooltip
-          enterDelay={1000}
-          enterNextDelay={1000}
-          title={
-            <div>
-              Save Item <br />
-              {saveShortcut}
-            </div>
-          }
-        >
-          <LoadingButton
-            variant="contained"
-            startIcon={<SaveRounded />}
-            size="small"
-            onClick={handleSave}
-            loading={isSaving}
-          >
-            Save
-          </LoadingButton>
-        </Tooltip>
-        {/* <ButtonGroup
-          variant="contained"
-          color="success"
-          size="small"
-          sx={{
-            "& .MuiButtonGroup-grouped:not(:last-of-type)": {
-              borderColor: "green.600",
+  const handlePublish = async () => {
+    try {
+      const response = await updateContentItems({
+        modelZUID,
+        body: Object.entries(stagedChanges).map(([id, changes]: any) => {
+          const item = items.find((item) => item.meta.ZUID === id);
+          return {
+            ...item,
+            data: {
+              ...item.data,
+              ...changes,
             },
-          }}
-        >
-          <LoadingButton
-            startIcon={<CloudUploadRounded />}
+          };
+        }),
+      });
+      // @ts-ignore
+      console.log("testing response", response?.data?.data);
+      // @ts-ignore
+      setItemsToPublish([...response?.data?.data]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  console.log("testing itemstoPublish from component", itemsToPublish);
+
+  useEffect(() => {
+    if (itemsToPublish.length) {
+      createItemsPublishing({
+        modelZUID,
+        body: itemsToPublish?.map((itemZUID) => {
+          const item = items.find((item) => item.meta.ZUID === itemZUID);
+          return {
+            ZUID: item.meta.ZUID,
+            version: item.meta.version,
+            publishAt: "now",
+            unpublishAt: "never",
+          };
+        }),
+      }).then(() => {
+        setItemsToPublish([]);
+        clearStagedChanges({});
+      });
+    }
+  }, [itemsToPublish, items]);
+
+  return (
+    <>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        width="100%"
+      >
+        <Box display={"flex"} gap={1.5} alignItems="center">
+          <IconButton
+            size="small"
             sx={{
-              color: "common.white",
-              whiteSpace: "nowrap",
+              width: "20px",
+              height: "20px",
             }}
             onClick={() => {
-             
+              clearStagedChanges({});
             }}
-            loading={publishing || publishAfterSave || isFetching}
-            color="success"
-            variant="contained"
-            id="PublishButton"
-            data-cy="PublishButton"
           >
-            {itemState === ITEM_STATES.dirty ? "Save & Publish" : "Publish"}
-          </LoadingButton>
-          <Button
+            <CloseRounded />
+          </IconButton>
+          <Typography variant="h3" fontWeight={700}>
+            Update {Object.keys(stagedChanges)?.length} Content Item
+          </Typography>
+        </Box>
+        <Box display="flex" gap={1} alignItems="center">
+          <Tooltip
+            enterDelay={1000}
+            enterNextDelay={1000}
+            title={
+              <div>
+                Save Items <br />
+                {saveShortcut}
+              </div>
+            }
+          >
+            <LoadingButton
+              variant="contained"
+              startIcon={<SaveRounded />}
+              size="small"
+              onClick={handleSave}
+              loading={isSaving}
+            >
+              Save
+            </LoadingButton>
+          </Tooltip>
+          <ButtonGroup
+            variant="contained"
+            color="success"
+            size="small"
+            sx={{
+              "& .MuiButtonGroup-grouped:not(:last-of-type)": {
+                borderColor: "green.600",
+              },
+            }}
+          >
+            <Tooltip
+              enterDelay={1000}
+              enterNextDelay={1000}
+              title={
+                <div>
+                  Save & Publish Items <br />
+                  {publishShortcut}
+                </div>
+              }
+            >
+              <LoadingButton
+                startIcon={<CloudUploadRounded />}
+                sx={{
+                  color: "common.white",
+                  whiteSpace: "nowrap",
+                }}
+                onClick={() => {
+                  handlePublish();
+                }}
+                loading={isPublishing || isSaving}
+                color="success"
+                variant="contained"
+                id="PublishButton"
+                data-cy="PublishButton"
+              >
+                Save & Publish
+              </LoadingButton>
+            </Tooltip>
+            {/* <Button
             sx={{
               color: "common.white",
               width: 32,
@@ -138,9 +204,10 @@ export const UpdateListActions = () => {
             data-cy="PublishMenuButton"
           >
             <ArrowDropDownRounded fontSize="small" />
-          </Button>
-        </ButtonGroup> */}
+          </Button> */}
+          </ButtonGroup>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 };

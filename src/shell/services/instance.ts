@@ -50,6 +50,7 @@ export const instanceApi = createApi({
     "ItemVersions",
     "HeadTags",
     "ContentItems",
+    "ItemPublishings",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -78,6 +79,7 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       // TODO: Remove once all item publishing mutations are using rtk query
       keepUnusedDataFor: 0,
+      providesTags: ["ItemPublishings"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Create-Item-Publishing
     createItemPublishing: builder.mutation<
@@ -100,6 +102,14 @@ export const instanceApi = createApi({
       invalidatesTags: (result, error, id) => [
         { type: "ItemPublishing", id: id.itemZUID },
       ],
+    }),
+    createItemsPublishing: builder.mutation<any, any>({
+      query: ({ modelZUID, body }) => ({
+        url: `content/models/${modelZUID}/items/publishings/batch`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["ItemPublishings"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Delete-Item-Publishing
     deleteItemPublishing: builder.mutation<
@@ -619,4 +629,5 @@ export const {
   useDeleteHeadTagMutation,
   useGetInstanceStylesCategoriesQuery,
   useUpdateContentItemsMutation,
+  useCreateItemsPublishingMutation,
 } = instanceApi;
