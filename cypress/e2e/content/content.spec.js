@@ -260,7 +260,7 @@ describe("Content Specs", () => {
       cy.get("#SaveItemButton").click();
       // cy.wait('@saveItem')
 
-      cy.get("[data-cy=toast]").contains("Saved a new ").should("exist");
+      cy.get("[data-cy=toast]").contains("Item Saved").should("exist");
     });
   });
 
