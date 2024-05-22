@@ -216,6 +216,7 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
   return (
     <SnackbarContent ref={ref}>
       <Alert
+        data-cy="toast"
         key={id}
         variant="filled"
         severity={props.severity}

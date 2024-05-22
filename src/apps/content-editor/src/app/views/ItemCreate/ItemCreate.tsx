@@ -175,9 +175,7 @@ export const ItemCreate = () => {
           }
           dispatch(
             notify({
-              message: `You are missing data in ${res.missingRequired
-                .map((f: any) => f.label)
-                .join(", ")}`,
+              message: "Missing Data in Required Fields",
               kind: "error",
             })
           );
