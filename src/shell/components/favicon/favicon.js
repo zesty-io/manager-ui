@@ -221,6 +221,7 @@ export default connect((state) => {
               name={"favicon"}
               onChange={handleImage}
               hideDrag
+              images={[]}
             />
             {imageModal && (
               <MemoryRouter>
