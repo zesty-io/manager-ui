@@ -49,7 +49,7 @@ export default connect((state, props) => {
 
   const legacyHeadTags = useMemo(() => {
     const customRawLegacyHeadTags = rawLegacyHeadTags?.filter(
-      (tag) => tag.resourceZUID === null && tag.ID > 1
+      (tag) => tag.resourceZUID === null && tag.ID > 1 && tag.type !== "doctype"
     );
 
     return customRawLegacyHeadTags?.map((tag) => {
