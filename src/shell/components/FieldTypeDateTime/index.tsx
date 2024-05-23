@@ -91,7 +91,7 @@ export const FieldTypeDateTime = ({
     if (showTimezonePicker) {
       return `Stored in UTC as ${moment
         .utc(moment.tz(value, timezone))
-        .format("yyyy-MM-DD HH:mm:ss.ssssss")}`;
+        .format()}`;
     }
 
     if (dateString && timeString) {
@@ -271,6 +271,7 @@ export const FieldTypeDateTime = ({
           ),
           timezonePicker: showTimezonePicker && (
             <Autocomplete
+              autoHighlight
               fullWidth
               disableClearable
               size="small"
@@ -293,6 +294,11 @@ export const FieldTypeDateTime = ({
               onChange={(_, value) => {
                 setTimezone(value.id);
                 onTimezoneChange && onTimezoneChange(value.id);
+              }}
+              ListboxProps={{
+                sx: {
+                  maxHeight: 320,
+                },
               }}
             />
           ),
