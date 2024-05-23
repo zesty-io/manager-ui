@@ -143,6 +143,21 @@ describe("Actions in content editor", () => {
     );
   });
 
+  it("Fills in default values for a new item", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0/new");
+    });
+
+    cy.get("#12-0c3934-8dz720 input").should(
+      "have.value",
+      "default single line text field"
+    );
+    cy.get("#12-d39a38-85sqdt").contains("zesty-io-logo-horizontal-dark.png");
+    cy.get("#12-bcd1dcc5f4-2rpm9p").contains(
+      "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
+    );
+  });
+
   it("Creates a new item", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
