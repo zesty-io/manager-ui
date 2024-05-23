@@ -63,7 +63,11 @@ export const TimelineItem = (props) => {
         return "Unpublished";
       case 6:
         const [publishAt] = props.action?.meta?.message.split(" ").slice(-1);
-        return `Scheduled to Publish on ${moment(publishAt).format(
+        const happenedAt = props.action?.happenedAt;
+        const convertedDate = moment.isDate(publishAt)
+          ? moment(publishAt)
+          : moment(happenedAt);
+        return `Scheduled to Publish on  ${convertedDate.format(
           "MMMM DD [at] hh:mm A"
         )}`;
       default:
