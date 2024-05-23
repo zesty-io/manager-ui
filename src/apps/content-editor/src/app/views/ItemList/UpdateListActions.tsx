@@ -17,11 +17,13 @@ import {
   useUpdateContentItemsMutation,
 } from "../../../../../../shell/services/instance";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
+import { ConfirmPublishesModal } from "./ConfirmPublishesModal";
 
 export const UpdateListActions = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [itemsToPublish, setItemsToPublish] = useState<string[]>([]);
   const { data: items } = useGetContentModelItemsQuery(modelZUID);
+  const [showPublishesModal, setShowPublishesModal] = useState(false);
   const { stagedChanges, updateStagedChanges, clearStagedChanges } =
     useStagedChanges();
 
@@ -76,33 +78,15 @@ export const UpdateListActions = () => {
         }),
       });
       // @ts-ignore
-      console.log("testing response", response?.data?.data);
-      // @ts-ignore
       setItemsToPublish([...response?.data?.data]);
     } catch (err) {
       console.error(err);
     }
   };
 
-  console.log("testing itemstoPublish from component", itemsToPublish);
-
   useEffect(() => {
     if (itemsToPublish.length) {
-      createItemsPublishing({
-        modelZUID,
-        body: itemsToPublish?.map((itemZUID) => {
-          const item = items.find((item) => item.meta.ZUID === itemZUID);
-          return {
-            ZUID: item.meta.ZUID,
-            version: item.meta.version,
-            publishAt: "now",
-            unpublishAt: "never",
-          };
-        }),
-      }).then(() => {
-        setItemsToPublish([]);
-        clearStagedChanges({});
-      });
+      setShowPublishesModal(true);
     }
   }, [itemsToPublish, items]);
 
@@ -208,6 +192,35 @@ export const UpdateListActions = () => {
           </ButtonGroup>
         </Box>
       </Box>
+      {showPublishesModal && (
+        <ConfirmPublishesModal
+          items={itemsToPublish?.map((itemZUID) =>
+            items?.find((item) => item.meta.ZUID === itemZUID)
+          )}
+          onCancel={() => {
+            setItemsToPublish([]);
+            clearStagedChanges({});
+            setShowPublishesModal(false);
+          }}
+          onConfirm={(items) => {
+            createItemsPublishing({
+              modelZUID,
+              body: items?.map((item) => {
+                return {
+                  ZUID: item.meta.ZUID,
+                  version: item.meta.version,
+                  publishAt: "now",
+                  unpublishAt: "never",
+                };
+              }),
+            }).then(() => {
+              setItemsToPublish([]);
+              clearStagedChanges({});
+              setShowPublishesModal(false);
+            });
+          }}
+        />
+      )}
     </>
   );
 };
