@@ -571,6 +571,7 @@ export const ItemList2 = () => {
                     <DataGridPro
                       rows={sortedAndFilteredItems}
                       columns={columns}
+                      rowHeight={54}
                       onRowClick={(row) => {
                         history.push(`/content/${modelZUID}/${row.id}`);
                       }}
