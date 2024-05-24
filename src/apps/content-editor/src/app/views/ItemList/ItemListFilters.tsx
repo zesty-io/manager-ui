@@ -2,12 +2,14 @@ import { Box, Menu, MenuItem, Button } from "@mui/material";
 import {
   DateFilter,
   FilterButton,
+  UserFilter,
 } from "../../../../../../shell/components/Filters";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { ArrowDropDownOutlined } from "@mui/icons-material";
 import { useGetLangsQuery } from "../../../../../../shell/services/instance";
 import { useDateFilterParams } from "../../../../../../shell/hooks/useDateFilterParams";
+import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 
 const SORT_ORDER = {
   dateSaved: "Date Saved",
@@ -54,6 +56,16 @@ export const ItemListFilters = () => {
   const [activeDateFilter, setActiveDateFilter] = useDateFilterParams();
   const { data: languages } = useGetLangsQuery({});
   const activeLanguageCode = params.get("language");
+  const { data: users } = useGetUsersQuery();
+
+  const userOptions = useMemo(() => {
+    return users?.map((user) => ({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      ZUID: user.ZUID,
+      email: user.email,
+    }));
+  }, [users]);
 
   useEffect(() => {
     // if languages and no language param, set the first language as the active language
@@ -141,6 +153,12 @@ export const ItemListFilters = () => {
           </MenuItem>
         ))}
       </Menu>
+      <UserFilter
+        value={params.get("user") || ""}
+        onChange={(value) => setParams(value, "user")}
+        defaultButtonText="Created By"
+        options={userOptions}
+      />
       <DateFilter
         withDateRange
         defaultButtonText="Date Saved"

@@ -94,6 +94,7 @@ export const ItemList2 = () => {
     from: params.get("from") || "",
     to: params.get("to") || "",
   };
+  const userFilter = params.get("user");
 
   const fieldTypeColumnConfigMap = {
     text: {
@@ -412,7 +413,7 @@ export const ItemList2 = () => {
     const dateFilterFn = getDateFilterFnByValues(dateFilter);
 
     if (dateFilterFn) {
-      return clonedItems.filter((item) => {
+      clonedItems = clonedItems.filter((item) => {
         if (item?.meta?.updatedAt) {
           return dateFilterFn(item?.meta?.updatedAt);
         }
@@ -421,9 +422,15 @@ export const ItemList2 = () => {
       });
     }
 
+    if (userFilter) {
+      clonedItems = clonedItems.filter(
+        (item) => item?.web?.createdByUserZUID === userFilter
+      );
+    }
+
     // filter items by all fields
     return clonedItems;
-  }, [processedItems, search, sort, statusFilter, dateFilter]);
+  }, [processedItems, search, sort, statusFilter, dateFilter, userFilter]);
 
   const columns = useMemo(() => {
     let result: any[] = [
