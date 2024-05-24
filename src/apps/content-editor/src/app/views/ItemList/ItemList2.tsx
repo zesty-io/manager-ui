@@ -55,6 +55,7 @@ import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort"
 import { render } from "react-dom";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { UpdateListActions } from "./UpdateListActions";
+import { getDateFilterFn } from "../../../../../../shell/components/Filters/DateFilter";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -88,6 +89,11 @@ export const ItemList2 = () => {
   const search = params.get("search");
   const sort = params.get("sort");
   const statusFilter = params.get("statusFilter");
+  const dateFilter = {
+    preset: params.get("datePreset") || "",
+    from: params.get("from") || "",
+    to: params.get("to") || "",
+  };
 
   const fieldTypeColumnConfigMap = {
     text: {
@@ -402,9 +408,54 @@ export const ItemList2 = () => {
         }
       });
     }
+
+    const isPreset = !!dateFilter.preset;
+    const isBefore = !!dateFilter.to && !!!dateFilter.from;
+    const isAfter = !!dateFilter.from && !!!dateFilter.to;
+    const isOn =
+      !!dateFilter.to && !!dateFilter.from && dateFilter.to === dateFilter.from;
+    const isRange =
+      !!dateFilter.to && !!dateFilter.from && dateFilter.to !== dateFilter.from;
+    let dateFilterFn: (date: string) => boolean;
+
+    if (isPreset) {
+      dateFilterFn = getDateFilterFn({
+        type: "preset",
+        value: dateFilter.preset,
+      });
+    }
+
+    if (isBefore) {
+      dateFilterFn = getDateFilterFn({ type: "before", value: dateFilter.to });
+    }
+
+    if (isAfter) {
+      dateFilterFn = getDateFilterFn({ type: "after", value: dateFilter.from });
+    }
+
+    if (isOn) {
+      dateFilterFn = getDateFilterFn({ type: "on", value: dateFilter.from });
+    }
+
+    if (isRange) {
+      dateFilterFn = getDateFilterFn({
+        type: "daterange",
+        value: { from: dateFilter.from, to: dateFilter.to },
+      });
+    }
+
+    if (dateFilterFn) {
+      return clonedItems.filter((item) => {
+        if (item?.meta?.updatedAt) {
+          return dateFilterFn(item?.meta?.updatedAt);
+        }
+
+        return false;
+      });
+    }
     // filter items by all fields
     return clonedItems;
-  }, [processedItems, search, sort, statusFilter]);
+  }, [processedItems, search, sort, statusFilter, dateFilter]);
 
   const columns = useMemo(() => {
     let result: any[] = [
