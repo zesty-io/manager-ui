@@ -513,7 +513,7 @@ export const ItemList2 = () => {
             </>
           )}
         </Box>
-        {isModelFetching ||
+        {/* {isModelFetching ||
         isModelItemsFetching ||
         isFieldsFetching ||
         isPublishingsFetching ||
@@ -526,121 +526,124 @@ export const ItemList2 = () => {
           >
             <CircularProgress />
           </Box>
-        ) : (
-          <>
-            <Box
-              height="100%"
-              bgcolor="grey.50"
-              px={4}
-              sx={{
-                overflowY: "auto",
-              }}
-            >
-              {!items?.length ? (
-                <ItemListEmpty />
+        ) : ( */}
+        <Box
+          height="100%"
+          bgcolor="grey.50"
+          px={4}
+          sx={{
+            overflowY: "auto",
+          }}
+        >
+          {!items?.length ? (
+            <ItemListEmpty />
+          ) : (
+            <>
+              <ItemListFilters />
+              {!sortedAndFilteredItems?.length && search ? (
+                <Box
+                  data-cy="NoResults"
+                  textAlign="center"
+                  sx={{
+                    maxWidth: 387,
+                    mx: "auto",
+                  }}
+                >
+                  <img src={noSearchResults} alt="No search results" />
+                  <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                    Your filter {search} could not find any results
+                  </Typography>
+                  <Typography variant="body2" pb={3} color="text.secondary">
+                    Try adjusting your search. We suggest check all words are
+                    spelled correctly or try using different keywords.
+                  </Typography>
+                  <Button
+                    onClick={() => searchRef.current?.focus()}
+                    variant="contained"
+                    startIcon={<SearchRounded />}
+                  >
+                    Search Again
+                  </Button>
+                </Box>
+              ) : !sortedAndFilteredItems?.length && !search ? (
+                <Box
+                  data-cy="NoResults"
+                  textAlign="center"
+                  sx={{
+                    maxWidth: 387,
+                    mx: "auto",
+                  }}
+                >
+                  <img src={noSearchResults} alt="No search results" />
+                  <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                    No results that matched your filters could be found
+                  </Typography>
+                  <Typography variant="body2" pb={3} color="text.secondary">
+                    Try adjusting your filters to find what you're looking for
+                  </Typography>
+                  <Button
+                    onClick={() => {
+                      setParams(null, "statusFilter");
+                    }}
+                    variant="contained"
+                    startIcon={<RestartAltRounded />}
+                  >
+                    Reset Filters
+                  </Button>
+                </Box>
               ) : (
-                <>
-                  <ItemListFilters />
-                  {!sortedAndFilteredItems?.length && search ? (
-                    <Box
-                      data-cy="NoResults"
-                      textAlign="center"
-                      sx={{
-                        maxWidth: 387,
-                        mx: "auto",
-                      }}
-                    >
-                      <img src={noSearchResults} alt="No search results" />
-                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        Your filter {search} could not find any results
-                      </Typography>
-                      <Typography variant="body2" pb={3} color="text.secondary">
-                        Try adjusting your search. We suggest check all words
-                        are spelled correctly or try using different keywords.
-                      </Typography>
-                      <Button
-                        onClick={() => searchRef.current?.focus()}
-                        variant="contained"
-                        startIcon={<SearchRounded />}
-                      >
-                        Search Again
-                      </Button>
-                    </Box>
-                  ) : !sortedAndFilteredItems?.length && !search ? (
-                    <Box
-                      data-cy="NoResults"
-                      textAlign="center"
-                      sx={{
-                        maxWidth: 387,
-                        mx: "auto",
-                      }}
-                    >
-                      <img src={noSearchResults} alt="No search results" />
-                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        No results that matched your filters could be found
-                      </Typography>
-                      <Typography variant="body2" pb={3} color="text.secondary">
-                        Try adjusting your filters to find what you're looking
-                        for
-                      </Typography>
-                      <Button
-                        onClick={() => {
-                          setParams(null, "statusFilter");
-                        }}
-                        variant="contained"
-                        startIcon={<RestartAltRounded />}
-                      >
-                        Reset Filters
-                      </Button>
-                    </Box>
-                  ) : (
-                    <DataGridPro
-                      rows={sortedAndFilteredItems}
-                      columns={columns}
-                      rowHeight={54}
-                      onRowClick={(row) => {
-                        history.push(`/content/${modelZUID}/${row.id}`);
-                      }}
-                      checkboxSelection={
-                        !(stagedChanges && Object.keys(stagedChanges)?.length)
-                      }
-                      disableSelectionOnClick
-                      initialState={{
-                        pinnedColumns: {
-                          left: [
-                            GRID_CHECKBOX_SELECTION_COL_DEF.field,
-                            "version",
-                            fields[0]?.name,
-                          ],
-                        },
-                      }}
-                      sx={{
-                        backgroundColor: "common.white",
-                        ".MuiDataGrid-row": {
-                          cursor: "pointer",
-                        },
-                        border: "none",
-                        "& .MuiDataGrid-columnHeaderCheckbox": {
-                          padding: 0,
-                        },
-                        " & .MuiDataGrid-columnSeparator": {
-                          visibility: "visible",
-                        },
-                        "& .MuiDataGrid-pinnedColumnHeaders": {
-                          backgroundColor: "inherit",
-                          // boxShadow: "none",
-                        },
-                        // "& .MuiDataGrid-pinnedColumns": {
-                        //   boxShadow: "none",
-                        // },
-                      }}
-                    />
-                  )}
-                </>
+                <DataGridPro
+                  loading={
+                    isModelFetching ||
+                    isModelItemsFetching ||
+                    isFieldsFetching ||
+                    isPublishingsFetching ||
+                    isFilesFetching
+                  }
+                  rows={sortedAndFilteredItems}
+                  columns={columns}
+                  rowHeight={54}
+                  onRowClick={(row) => {
+                    history.push(`/content/${modelZUID}/${row.id}`);
+                  }}
+                  checkboxSelection={
+                    !(stagedChanges && Object.keys(stagedChanges)?.length)
+                  }
+                  disableSelectionOnClick
+                  initialState={{
+                    pinnedColumns: {
+                      left: [
+                        GRID_CHECKBOX_SELECTION_COL_DEF.field,
+                        "version",
+                        fields[0]?.name,
+                      ],
+                    },
+                  }}
+                  sx={{
+                    backgroundColor: "common.white",
+                    ".MuiDataGrid-row": {
+                      cursor: "pointer",
+                    },
+                    border: "none",
+                    "& .MuiDataGrid-columnHeaderCheckbox": {
+                      padding: 0,
+                    },
+                    " & .MuiDataGrid-columnSeparator": {
+                      visibility: "visible",
+                    },
+                    "& .MuiDataGrid-pinnedColumnHeaders": {
+                      backgroundColor: "inherit",
+                      // boxShadow: "none",
+                    },
+                    // "& .MuiDataGrid-pinnedColumns": {
+                    //   boxShadow: "none",
+                    // },
+                  }}
+                />
               )}
-            </Box>
-          </>
-        )}
+            </>
+          )}
+        </Box>
       </Box>
     </ThemeProvider>
   );
@@ -791,12 +794,6 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
       params.row?.publishing?.publishAt ||
         params.row?.priorPublishing?.publishAt
     )?.getTime() > new Date()?.getTime();
-
-  console.log(
-    "testing ids",
-    params.row?.meta?.createdByUserZUID,
-    params.row?.publishing?.publishedByUserZUID
-  );
 
   return (
     <Stack spacing={0.25}>
