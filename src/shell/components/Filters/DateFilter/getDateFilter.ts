@@ -17,6 +17,10 @@ export const getDateFilterFn = ({ type, value }: DateFilterValue) => {
           return (date: string) =>
             moment(date).isSameOrAfter(moment().subtract(7, "days"), "day");
 
+        case "last_14_days":
+          return (date: string) =>
+            moment(date).isSameOrAfter(moment().subtract(14, "days"), "day");
+
         case "last_30_days":
           return (date: string) =>
             moment(date).isSameOrAfter(moment().subtract(30, "days"), "day");
