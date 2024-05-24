@@ -551,20 +551,6 @@ export const ItemList2 = () => {
             </>
           )}
         </Box>
-        {/* {isModelFetching ||
-        isModelItemsFetching ||
-        isFieldsFetching ||
-        isPublishingsFetching ||
-        isFilesFetching ? (
-          <Box
-            display="flex"
-            height="100%"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <CircularProgress />
-          </Box>
-        ) : ( */}
         <Box
           height="100%"
           bgcolor="grey.50"
@@ -675,11 +661,7 @@ export const ItemList2 = () => {
                     },
                     "& .MuiDataGrid-pinnedColumnHeaders": {
                       backgroundColor: "inherit",
-                      // boxShadow: "none",
                     },
-                    // "& .MuiDataGrid-pinnedColumns": {
-                    //   boxShadow: "none",
-                    // },
                   }}
                 />
               )}

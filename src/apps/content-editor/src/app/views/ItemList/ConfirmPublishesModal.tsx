@@ -105,7 +105,9 @@ export const ConfirmPublishesModal = ({
                       },
                     }}
                   >
-                    Null
+                    <Typography variant="body2" color="text.secondary">
+                      NA
+                    </Typography>
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
