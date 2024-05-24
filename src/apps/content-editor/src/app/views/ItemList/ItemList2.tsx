@@ -506,6 +506,8 @@ export const ItemList2 = () => {
         sx={{
           color: "text.primary",
           height: "100%",
+          display: "flex",
+          flexDirection: "column",
           "*": {
             boxSizing: "border-box",
           },
