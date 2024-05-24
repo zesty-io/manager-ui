@@ -29,8 +29,10 @@ import {
   GridColumns,
   GridRenderCellParams,
   GRID_CHECKBOX_SELECTION_COL_DEF,
+  useGridApiRef,
+  GridInitialState,
 } from "@mui/x-data-grid-pro";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   KeyboardArrowDownRounded,
   SearchRounded,
@@ -47,12 +49,8 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { cloneDeep } from "lodash";
 import { ContentItem } from "../../../../../../shell/services/types";
-import {
-  StagedChangesProvider,
-  useStagedChanges,
-} from "./StagedChangesContext";
+import { useStagedChanges } from "./StagedChangesContext";
 import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort";
-import { render } from "react-dom";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { UpdateListActions } from "./UpdateListActions";
 import { getDateFilterFnByValues } from "../../../../../../shell/components/Filters/DateFilter/getDateFilter";
@@ -60,7 +58,8 @@ import { getDateFilterFnByValues } from "../../../../../../shell/components/Filt
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const history = useHistory();
-
+  const apiRef = useGridApiRef();
+  const [initialState, setInitialState] = useState<GridInitialState>();
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
   const { data: items, isFetching: isModelItemsFetching } =
@@ -464,6 +463,43 @@ export const ItemList2 = () => {
     return result;
   }, [fields]);
 
+  const saveSnapshot = useCallback(() => {
+    if (apiRef?.current?.exportState && localStorage) {
+      const currentState = apiRef.current.exportState();
+      localStorage.setItem(
+        `${modelZUID}-dataGridState`,
+        JSON.stringify(currentState)
+      );
+    }
+  }, [apiRef]);
+
+  useLayoutEffect(() => {
+    if (isFieldsFetching) return;
+    const stateFromLocalStorage = localStorage?.getItem(
+      `${modelZUID}-dataGridState`
+    );
+    setInitialState(
+      stateFromLocalStorage
+        ? JSON.parse(stateFromLocalStorage)
+        : {
+            pinnedColumns: {
+              left: [
+                GRID_CHECKBOX_SELECTION_COL_DEF.field,
+                "version",
+                fields?.[0]?.name,
+              ],
+            },
+          }
+    );
+
+    window.addEventListener("beforeunload", saveSnapshot);
+
+    return () => {
+      window.removeEventListener("beforeunload", saveSnapshot);
+      saveSnapshot();
+    };
+  }, [saveSnapshot, isFieldsFetching, fields]);
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -535,12 +571,14 @@ export const ItemList2 = () => {
             overflowY: "auto",
           }}
         >
-          {!items?.length ? (
+          {!items?.length && !isModelItemsFetching ? (
             <ItemListEmpty />
           ) : (
             <>
               <ItemListFilters />
-              {!sortedAndFilteredItems?.length && search ? (
+              {!sortedAndFilteredItems?.length &&
+              search &&
+              !isModelItemsFetching ? (
                 <Box
                   data-cy="NoResults"
                   textAlign="center"
@@ -565,7 +603,7 @@ export const ItemList2 = () => {
                     Search Again
                   </Button>
                 </Box>
-              ) : !sortedAndFilteredItems?.length && !search ? (
+              ) : !sortedAndFilteredItems?.length && !isModelItemsFetching ? (
                 <Box
                   data-cy="NoResults"
                   textAlign="center"
@@ -591,8 +629,18 @@ export const ItemList2 = () => {
                     Reset Filters
                   </Button>
                 </Box>
+              ) : !initialState ? (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  height="100%"
+                >
+                  <CircularProgress />
+                </Box>
               ) : (
                 <DataGridPro
+                  apiRef={apiRef}
                   loading={
                     isModelFetching ||
                     isModelItemsFetching ||
@@ -610,15 +658,7 @@ export const ItemList2 = () => {
                     !(stagedChanges && Object.keys(stagedChanges)?.length)
                   }
                   disableSelectionOnClick
-                  initialState={{
-                    pinnedColumns: {
-                      left: [
-                        GRID_CHECKBOX_SELECTION_COL_DEF.field,
-                        "version",
-                        fields[0]?.name,
-                      ],
-                    },
-                  }}
+                  initialState={initialState}
                   sx={{
                     backgroundColor: "common.white",
                     ".MuiDataGrid-row": {
