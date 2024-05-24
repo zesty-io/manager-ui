@@ -2,6 +2,51 @@ import moment from "moment-timezone";
 
 import { DateFilterValue, DateRangeFilterValue, PresetType } from "./types";
 
+export const getDateFilterFnByValues = ({
+  preset,
+  from,
+  to,
+}: {
+  preset: string;
+  from: string;
+  to: string;
+}) => {
+  const isPreset = !!preset;
+  const isBefore = !!to && !!!from;
+  const isAfter = !!from && !!!to;
+  const isOn = !!to && !!from && to === from;
+  const isRange = !!to && !!from && to !== from;
+  let dateFilterFn: (date: string) => boolean;
+
+  if (isPreset) {
+    dateFilterFn = getDateFilterFn({
+      type: "preset",
+      value: preset,
+    });
+  }
+
+  if (isBefore) {
+    dateFilterFn = getDateFilterFn({ type: "before", value: to });
+  }
+
+  if (isAfter) {
+    dateFilterFn = getDateFilterFn({ type: "after", value: from });
+  }
+
+  if (isOn) {
+    dateFilterFn = getDateFilterFn({ type: "on", value: from });
+  }
+
+  if (isRange) {
+    dateFilterFn = getDateFilterFn({
+      type: "daterange",
+      value: { from: from, to: to },
+    });
+  }
+
+  return dateFilterFn;
+};
+
 export const getDateFilterFn = ({ type, value }: DateFilterValue) => {
   switch (type) {
     case "preset":
