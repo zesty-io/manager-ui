@@ -54,6 +54,7 @@ import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort"
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { UpdateListActions } from "./UpdateListActions";
 import { getDateFilterFnByValues } from "../../../../../../shell/components/Filters/DateFilter/getDateFilter";
+import { OneToManyColumn } from "./OneToManyColumn";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -117,19 +118,25 @@ export const ItemList2 = () => {
     one_to_many: {
       width: 240,
       renderCell: (params: GridRenderCellParams) => {
-        return (
-          <Box display="flex" gap={0.5}>
-            {params.value?.split(",")?.map((id: string) => (
-              <Chip
-                key={id}
-                label={allItems?.[id]?.web?.metaTitle || id}
-                size="small"
-              />
-            ))}
-          </Box>
-        );
+        return <OneToManyColumn items={params.value?.split(",")} />;
       },
     },
+    // one_to_many: {
+    //   width: 240,
+    //   renderCell: (params: GridRenderCellParams) => {
+    //     return (
+    //       <Box display="flex" gap={0.5} ref={oneToManyContainerRef}>
+    //         {params.value?.split(",")?.map((id: string) => (
+    //           <Chip
+    //             key={id}
+    //             label={allItems?.[id]?.web?.metaTitle || id}
+    //             size="small"
+    //           />
+    //         ))}
+    //       </Box>
+    //     );
+    //   },
+    // },
     one_to_one: {
       width: 240,
       renderCell: (params: any) =>
