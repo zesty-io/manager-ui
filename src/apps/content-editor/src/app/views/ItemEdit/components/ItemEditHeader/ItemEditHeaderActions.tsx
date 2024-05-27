@@ -19,10 +19,6 @@ import { useHistory, useParams } from "react-router";
 import { useEffect, useState } from "react";
 
 import {
-  ContentItem,
-  Publishing,
-} from "../../../../../../../../shell/services/types";
-import {
   SaveRounded,
   ArrowDropDownRounded,
   CloudUploadRounded,
@@ -39,11 +35,11 @@ import { fetchItemPublishing } from "../../../../../../../../shell/store/content
 import { LoadingButton } from "@mui/lab";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
-import { ScheduleFlyout } from "../Header/ItemVersioning/ScheduleFlyout";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
-import { ContentItemWithDirtyAndPublishing } from ".";
+import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { ConfirmPublishModal } from "./ConfirmPublishModal";
+import { SchedulePublish } from "../../../../../../../../shell/components/SchedulePublish";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -76,6 +72,7 @@ export const ItemEditHeaderActions = ({
   const [scheduledPublishDialogOpen, setScheduledPublishDialogOpen] =
     useState(false);
   const [scheduleAfterSave, setScheduleAfterSave] = useState(false);
+  const [publishAfterUnschedule, setPublishAfterUnschedule] = useState(false);
   const [isConfirmPublishModalOpen, setIsConfirmPublishModalOpen] =
     useState(false);
   const item = useSelector(
@@ -289,7 +286,8 @@ export const ItemEditHeaderActions = ({
           {itemState === ITEM_STATES.draft ||
           itemState === ITEM_STATES.dirty ||
           publishAfterSave ||
-          isFetching ? (
+          isFetching ||
+          saving ? (
             <ButtonGroup
               variant="contained"
               color="success"
@@ -397,13 +395,19 @@ export const ItemEditHeaderActions = ({
           placement="bottom-start"
         >
           <Box display="flex" alignItems="center" pl="10px" pr="4px">
-            <Box display="flex" gap={1} alignItems="center">
+            <Box
+              display="flex"
+              gap={1}
+              alignItems="center"
+              data-cy="ContentScheduledIndicator"
+            >
               <ScheduleRounded fontSize="small" color="warning" />
               <Typography variant="body2" color="warning.main" fontWeight={500}>
                 Scheduled
               </Typography>
             </Box>
             <IconButton
+              data-cy="PublishMenuButton"
               size="small"
               onClick={(e) => {
                 setPublishMenu(e.currentTarget);
@@ -424,6 +428,10 @@ export const ItemEditHeaderActions = ({
         setScheduleAfterSave={setScheduleAfterSave}
         setUnpublishDialogOpen={setUnpublishDialogOpen}
         setScheduledPublishDialogOpen={setScheduledPublishDialogOpen}
+        setPublishAfterUnschedule={() => {
+          setScheduledPublishDialogOpen(true);
+          setPublishAfterUnschedule(true);
+        }}
         handlePublish={() => setIsConfirmPublishModalOpen(true)}
       />
       {unpublishDialogOpen && (
@@ -434,18 +442,34 @@ export const ItemEditHeaderActions = ({
           loading={unpublishing}
         />
       )}
-      <ScheduleFlyout
-        isOpen={scheduledPublishDialogOpen}
-        item={item}
-        dispatch={dispatch}
-        toggleOpen={() => setScheduledPublishDialogOpen(false)}
-      />
+      {scheduledPublishDialogOpen && (
+        <SchedulePublish
+          item={item}
+          onClose={() => {
+            setScheduledPublishDialogOpen(false);
+          }}
+          onPublishNow={() => {
+            handlePublish();
+            setScheduledPublishDialogOpen(false);
+          }}
+          onUnscheduleSuccess={() => {
+            if (publishAfterUnschedule) {
+              setIsConfirmPublishModalOpen(true);
+            }
+          }}
+        />
+      )}
       {isConfirmPublishModalOpen && (
         <ConfirmPublishModal
           contentTitle={item?.web?.metaTitle}
-          onCancel={() => setIsConfirmPublishModalOpen(false)}
+          contentVersion={item?.web?.version}
+          onCancel={() => {
+            setIsConfirmPublishModalOpen(false);
+            setPublishAfterUnschedule(false);
+          }}
           onConfirm={() => {
             setIsConfirmPublishModalOpen(false);
+            setPublishAfterUnschedule(false);
             handlePublish();
           }}
         />
@@ -463,6 +487,7 @@ type PublishingMenuProps = {
   setScheduleAfterSave: (value: boolean) => void;
   setUnpublishDialogOpen: (value: boolean) => void;
   setScheduledPublishDialogOpen: (value: boolean) => void;
+  setPublishAfterUnschedule: () => void;
   handlePublish: () => void;
 };
 
@@ -475,6 +500,7 @@ const PublishingMenu = ({
   setScheduleAfterSave,
   setUnpublishDialogOpen,
   setScheduledPublishDialogOpen,
+  setPublishAfterUnschedule,
   handlePublish,
 }: PublishingMenuProps) => {
   const history = useHistory();
@@ -507,7 +533,7 @@ const PublishingMenu = ({
               setUnpublishDialogOpen(true);
               break;
             case ITEM_STATES.scheduled:
-              setScheduledPublishDialogOpen(true);
+              setPublishAfterUnschedule();
               break;
             case ITEM_STATES.draft:
               handlePublish();

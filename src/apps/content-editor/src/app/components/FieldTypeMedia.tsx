@@ -25,6 +25,9 @@ import {
   CloseRounded,
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
+import { CompactView, Modal, Login } from "@bynder/compact-view";
+import { Bynder } from "@zesty-io/material";
+
 import {
   useGetBinsQuery,
   useGetFileQuery,
@@ -39,9 +42,10 @@ import { fileExtension } from "../../../../media/src/app/utils/fileUtils";
 import styles from "../../../../media/src/app/components/Thumbnail/Loading.less";
 import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
+import { useGetInstanceSettingsQuery } from "../../../../../shell/services/instance";
 
 type FieldTypeMediaProps = {
-  imageZUIDs: string[];
+  images: string[];
   limit: number;
   openMediaBrowser: (opts: any) => void;
   name: string;
@@ -52,7 +56,7 @@ type FieldTypeMediaProps = {
 };
 
 export const FieldTypeMedia = ({
-  imageZUIDs,
+  images,
   limit,
   openMediaBrowser,
   onChange,
@@ -63,7 +67,7 @@ export const FieldTypeMedia = ({
 }: FieldTypeMediaProps) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [localImageZUIDs, setLocalImageZUIDs] = useState<string[]>(imageZUIDs);
+  const [localImageZUIDs, setLocalImageZUIDs] = useState<string[]>(images);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
@@ -71,24 +75,65 @@ export const FieldTypeMedia = ({
   const dispatch = useDispatch();
   const [showFileModal, setShowFileModal] = useState("");
   const [imageToReplace, setImageToReplace] = useState("");
+  const [isBynderOpen, setIsBynderOpen] = useState(false);
+  const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
+
+  const bynderPortalUrlSetting = rawInstanceSettings?.find(
+    (setting) => setting.key === "bynder_portal_url"
+  );
+  const bynderTokenSetting = rawInstanceSettings?.find(
+    (setting) => setting.key === "bynder_token"
+  );
+  // Checks if the bynder portal and token are set
+  const isBynderSessionValid =
+    localStorage.getItem("cvrt") && localStorage.getItem("cvad");
 
   useEffect(() => {
-    setLocalImageZUIDs(imageZUIDs);
-  }, [imageZUIDs]);
+    setLocalImageZUIDs(images);
+  }, [images]);
 
-  const addImage = (images: any[]) => {
-    const newImageZUIDs = images.map((image) => image.id);
+  useEffect(() => {
+    if (bynderPortalUrlSetting?.value) {
+      localStorage.setItem("cvad", bynderPortalUrlSetting.value);
+    } else {
+      localStorage.removeItem("cvad");
+    }
+  }, [bynderPortalUrlSetting]);
 
+  useEffect(() => {
+    if (bynderTokenSetting?.value) {
+      localStorage.setItem("cvrt", bynderTokenSetting.value);
+    } else {
+      localStorage.removeItem("cvrt");
+    }
+  }, [bynderTokenSetting]);
+
+  const addZestyImage = (selectedImages: any[]) => {
+    const newImageZUIDs = selectedImages.map((image) => image.id);
     // remove any duplicates
     const filteredImageZUIDs = newImageZUIDs.filter(
-      (zuid) => !imageZUIDs.includes(zuid)
+      (zuid) => !images.includes(zuid)
     );
 
-    onChange([...imageZUIDs, ...filteredImageZUIDs].join(","), name);
+    onChange([...images, ...filteredImageZUIDs].join(","), name);
   };
 
-  const removeImage = (imageZUID: string) => {
-    const newImageZUIDs = imageZUIDs.filter((zuid) => zuid !== imageZUID);
+  const addBynderAsset = (selectedAsset: any[]) => {
+    if (images.length > limit) return;
+
+    const newBynderAssets = selectedAsset
+      .slice(0, limit - images.length)
+      .map((asset) => asset.originalUrl);
+    const filteredBynderAssets = newBynderAssets.filter(
+      (asset) => !images.includes(asset)
+    );
+
+    onChange([...images, ...filteredBynderAssets].join(","), name);
+  };
+
+  const removeImage = (imageId: string) => {
+    const newImageZUIDs = images.filter((image) => image !== imageId);
+
     onChange(newImageZUIDs.join(","), name);
   };
 
@@ -99,17 +144,32 @@ export const FieldTypeMedia = ({
       imageToReplace = value;
       return "";
     });
-
     // if selected replacement image is already in the list of images, do nothing
-    if (imageZUIDs.includes(imageZUID)) return;
-
-    const newImageZUIDs = imageZUIDs.map((zuid) => {
+    if (localImageZUIDs.includes(imageZUID)) return;
+    const newImageZUIDs = localImageZUIDs.map((zuid) => {
       if (zuid === imageToReplace) {
         return imageZUID;
       }
+
       return zuid;
     });
     onChange(newImageZUIDs.join(","), name);
+  };
+
+  const replaceBynderAsset = (selectedAsset: any) => {
+    // Prevent adding bynder asset that has already been added
+    if (localImageZUIDs.includes(selectedAsset.originalUrl)) return;
+
+    const newImages = localImageZUIDs.map((image) => {
+      if (image === imageToReplace) {
+        return selectedAsset.originalUrl;
+      }
+
+      return image;
+    });
+
+    setImageToReplace("");
+    onChange(newImages.join(","), name);
   };
 
   const onDrop = useCallback(
@@ -118,7 +178,7 @@ export const FieldTypeMedia = ({
 
       openMediaBrowser({
         limit,
-        callback: addImage,
+        callback: addZestyImage,
       });
 
       dispatch(
@@ -133,7 +193,7 @@ export const FieldTypeMedia = ({
         )
       );
     },
-    [defaultBin, dispatch, addImage]
+    [defaultBin, dispatch, addZestyImage]
   );
 
   const handleReorder = () => {
@@ -164,86 +224,119 @@ export const FieldTypeMedia = ({
     onDrop,
   });
 
-  if (!imageZUIDs.length)
+  if (!images?.length)
     return (
-      <div
-        {...getRootProps({
-          onClick: (evt) => evt.stopPropagation(),
-          onKeyDown: (evt) => evt.stopPropagation(),
-        })}
-      >
-        <input {...getInputProps()} />
-        <Box
-          sx={{
-            border: (theme) => `1px dashed ${theme.palette.primary.main}`,
-            borderRadius: "8px",
-            backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.04),
-            borderColor: hasError ? "error.main" : "primary.main",
-          }}
+      <>
+        <div
+          {...getRootProps({
+            onClick: (evt) => evt.stopPropagation(),
+            onKeyDown: (evt) => evt.stopPropagation(),
+          })}
         >
-          <Stack
-            alignItems="center"
-            gap={2}
-            py={4}
-            justifyContent="center"
-            height="154px"
+          <input {...getInputProps()} />
+          <Box
+            sx={{
+              border: (theme) => `1px dashed ${theme.palette.primary.main}`,
+              borderRadius: "8px",
+              backgroundColor: (theme) =>
+                alpha(theme.palette.primary.main, 0.04),
+              borderColor: hasError ? "error.main" : "primary.main",
+            }}
           >
-            {isDragActive ? (
-              <UploadRounded color="primary" />
-            ) : (
-              <AttachmentRounded color="primary" />
-            )}
-            <Typography
-              align="center"
-              variant="h5"
-              color="primary"
-              fontWeight={600}
-            >
+            <Stack alignItems="center" gap={2} py={4} justifyContent="center">
               {isDragActive ? (
-                "Drop your files here to Upload"
+                <UploadRounded color="primary" />
               ) : (
-                <>
-                  Drag and drop your files here <br /> or
-                </>
+                <AttachmentRounded color="primary" />
               )}
-            </Typography>
-            {!isDragActive && (
-              <Box display="flex" gap={1} width="100%" justifyContent="center">
-                <Button
-                  size="large"
-                  variant="outlined"
-                  onClick={open}
-                  startIcon={<UploadRounded />}
-                  fullWidth
-                  sx={{
-                    maxWidth: "196px",
-                  }}
+              <Typography
+                align="center"
+                variant="h5"
+                color="primary"
+                fontWeight={600}
+              >
+                {isDragActive ? (
+                  "Drop your files here to Upload"
+                ) : (
+                  <>
+                    Drag and drop your files here <br /> or
+                  </>
+                )}
+              </Typography>
+              {!isDragActive && (
+                <Box
+                  display="flex"
+                  gap={1}
+                  width={400}
+                  justifyContent="center"
+                  flexWrap="wrap"
                 >
-                  Upload
-                </Button>
-                <Button
-                  data-cy="selectFromMediaButton"
-                  fullWidth
-                  size="large"
-                  startIcon={<AddRounded />}
-                  variant="outlined"
-                  onClick={() => {
-                    openMediaBrowser({
-                      limit,
-                      callback: addImage,
-                    });
-                  }}
-                  sx={{
-                    maxWidth: "196px",
-                  }}
-                >
-                  Add from Media
-                </Button>
-              </Box>
-            )}
-          </Stack>
-        </Box>
-      </div>
+                  <Button
+                    size="large"
+                    variant="outlined"
+                    onClick={open}
+                    startIcon={<UploadRounded />}
+                    fullWidth
+                    sx={{
+                      maxWidth: "196px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Upload
+                  </Button>
+                  <Button
+                    data-cy="selectFromMediaButton"
+                    fullWidth
+                    size="large"
+                    startIcon={<AddRounded />}
+                    variant="outlined"
+                    onClick={() => {
+                      openMediaBrowser({
+                        limit,
+                        callback: addZestyImage,
+                      });
+                    }}
+                    sx={{
+                      maxWidth: "196px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Add from Media
+                  </Button>
+                  {isBynderSessionValid && (
+                    <Button
+                      data-cy="addFromBynderBtn"
+                      size="large"
+                      variant="outlined"
+                      onClick={() => setIsBynderOpen(true)}
+                      startIcon={<Bynder />}
+                      fullWidth
+                      sx={{
+                        maxWidth: "240px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      Add from Bynder
+                    </Button>
+                  )}
+                </Box>
+              )}
+            </Stack>
+          </Box>
+        </div>
+        <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
+          <Login>
+            <CompactView
+              onSuccess={(assets) => {
+                if (assets?.length) {
+                  addBynderAsset(assets);
+                  setIsBynderOpen(false);
+                }
+              }}
+            />
+          </Login>
+        </Modal>
+      </>
     );
 
   return (
@@ -255,11 +348,13 @@ export const FieldTypeMedia = ({
             hasError ? `1px solid ${theme.palette.error.main}` : "none",
         }}
       >
-        {sortedImages.map((imageZUID, index) => {
+        {sortedImages.map((image, index) => {
+          const isBynderAsset = image.includes("bynder.com");
+
           return (
             <MediaItem
-              key={imageZUID}
-              imageZUID={imageZUID}
+              key={image}
+              imageZUID={image}
               index={index}
               setDraggedIndex={setDraggedIndex}
               setHoveredIndex={setHoveredIndex}
@@ -268,33 +363,42 @@ export const FieldTypeMedia = ({
               onRemove={removeImage}
               onReplace={(imageZUID) => {
                 setImageToReplace(imageZUID);
-                openMediaBrowser({
-                  callback: replaceImage,
-                  isReplace: true,
-                });
+
+                if (isBynderAsset) {
+                  setIsBynderOpen(true);
+                } else {
+                  openMediaBrowser({
+                    callback: replaceImage,
+                    isReplace: true,
+                  });
+                }
               }}
               hideDrag={hideDrag || limit === 1}
+              isBynderAsset={isBynderAsset}
+              isBynderSessionValid={!!isBynderSessionValid}
             />
           );
         })}
-        {limit > imageZUIDs.length && (
+        {limit > images.length && (
           <Box display="flex" gap={1}>
-            <Button
-              size="large"
-              variant="outlined"
-              onClick={open}
-              fullWidth
-              startIcon={<UploadRounded />}
-            >
-              Upload More
-            </Button>
+            {!isBynderSessionValid && (
+              <Button
+                size="large"
+                variant="outlined"
+                onClick={open}
+                startIcon={<UploadRounded />}
+                fullWidth
+              >
+                Upload
+              </Button>
+            )}
             <Button
               size="large"
               variant="outlined"
               onClick={() => {
                 openMediaBrowser({
                   limit,
-                  callback: addImage,
+                  callback: addZestyImage,
                 });
               }}
               fullWidth
@@ -302,6 +406,18 @@ export const FieldTypeMedia = ({
             >
               Add More from Media
             </Button>
+            {isBynderSessionValid && (
+              <Button
+                data-cy="addFromBynderBtn"
+                size="large"
+                variant="outlined"
+                onClick={() => setIsBynderOpen(true)}
+                startIcon={<Bynder />}
+                fullWidth
+              >
+                Add from Bynder
+              </Button>
+            )}
           </Box>
         )}
       </Stack>
@@ -309,12 +425,33 @@ export const FieldTypeMedia = ({
         <FileModal
           fileId={showFileModal}
           onClose={() => setShowFileModal("")}
-          currentFiles={sortedImages}
+          currentFiles={
+            sortedImages?.filter(
+              (image) => typeof image === "string"
+            ) as string[]
+          }
           onFileChange={(fileId) => {
             setShowFileModal(fileId);
           }}
         />
       )}
+      <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
+        <Login>
+          <CompactView
+            onSuccess={(assets) => {
+              if (assets?.length) {
+                if (imageToReplace) {
+                  replaceBynderAsset(assets[0]);
+                } else {
+                  addBynderAsset(assets);
+                }
+
+                setIsBynderOpen(false);
+              }
+            }}
+          />
+        </Login>
+      </Modal>
     </>
   );
 };
@@ -329,8 +466,9 @@ type MediaItemProps = {
   onRemove: (imageZUID: string) => void;
   onReplace: (imageZUID: string) => void;
   hideDrag?: boolean;
+  isBynderAsset: boolean;
+  isBynderSessionValid: boolean;
 };
-
 const MediaItem = ({
   imageZUID,
   onReorder,
@@ -341,6 +479,8 @@ const MediaItem = ({
   onRemove,
   onReplace,
   hideDrag,
+  isBynderAsset,
+  isBynderSessionValid,
 }: MediaItemProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
@@ -433,6 +573,7 @@ const MediaItem = ({
   return (
     <>
       <Box
+        data-cy="mediaItem"
         display="grid"
         gridTemplateColumns={
           hideDrag ? "min-content 1fr" : "repeat(2, min-content) 1fr"
@@ -443,7 +584,11 @@ const MediaItem = ({
         onDragEnter={handleDragEnter}
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
-        onClick={() => !isURL && onPreview(imageZUID)}
+        onClick={() => {
+          if (isURL) return;
+
+          onPreview(imageZUID);
+        }}
         alignItems="center"
         sx={{
           border: (theme) => `1px solid ${theme.palette.border}`,
@@ -457,7 +602,32 @@ const MediaItem = ({
             opacity: 0.01,
           }),
         }}
+        position="relative"
       >
+        {isBynderAsset && (
+          <Box
+            data-cy="bynderAssetIndicator"
+            width={24}
+            height={24}
+            borderRadius={100}
+            position="absolute"
+            left={hideDrag ? 52 : 84}
+            top={52}
+            zIndex={2}
+            px={0.25}
+            boxSizing="border-box"
+            sx={{
+              backgroundColor: "#0af",
+            }}
+          >
+            <Bynder
+              sx={{
+                width: "100%",
+                color: "common.white",
+              }}
+            />
+          </Box>
+        )}
         {!hideDrag && (
           <IconButton
             disableRipple
@@ -515,17 +685,21 @@ const MediaItem = ({
             </Box>
           )}
           <Box display="flex" gap={1} justifyContent="flex-end">
-            <Tooltip title="Replace File" placement="bottom" enterDelay={800}>
-              <IconButton
-                size="small"
-                onClick={(event: any) => {
-                  event.stopPropagation();
-                  onReplace(imageZUID);
-                }}
-              >
-                <ImageSync fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
+              <Tooltip title="Replace File" placement="bottom" enterDelay={800}>
+                <IconButton
+                  size="small"
+                  onClick={(event: any) => {
+                    event.stopPropagation();
+                    onReplace(imageZUID);
+                  }}
+                >
+                  <ImageSync fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <></>
+            )}
             {!isURL && (
               <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
                 <IconButton size="small">
@@ -565,7 +739,7 @@ const MediaItem = ({
                 horizontal: "right",
               }}
             >
-              {!isURL && (
+              {!isURL && !isBynderAsset && (
                 <MenuItem
                   onClick={(event) => {
                     event.stopPropagation();
@@ -579,7 +753,7 @@ const MediaItem = ({
                   <ListItemText>Rename</ListItemText>
                 </MenuItem>
               )}
-              {!isURL && (
+              {!isURL && !isBynderAsset && (
                 <MenuItem
                   onClick={(event) => {
                     event.stopPropagation();

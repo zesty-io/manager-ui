@@ -714,7 +714,7 @@ export const GlobalSearch = () => {
                   ...params.inputProps,
                   style: {
                     ...params.inputProps.style,
-                    paddingLeft: "4px",
+                    paddingLeft: "0px",
                   },
                 }}
                 InputProps={{

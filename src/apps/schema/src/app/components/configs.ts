@@ -393,26 +393,37 @@ const COMMON_FIELDS: InputField[] = [
     gridSize: 12,
   },
 ];
+
+const COMMON_RULES: InputField[] = [
+  {
+    name: "defaultValue",
+    type: "input",
+    label: "Default Value",
+    required: false,
+    gridSize: 12,
+  },
+];
+
 const FORM_CONFIG: { [key: string]: FormConfig } = {
   article_writer: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   color: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   currency: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   date: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   datetime: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   dropdown: {
     details: [
@@ -428,15 +439,15 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
       },
       ...COMMON_FIELDS.slice(4),
     ],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   files: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_FIELDS],
   },
   fontawesome: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   images: {
     details: [...COMMON_FIELDS],
@@ -457,23 +468,24 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
         required: false,
         gridSize: 12,
       },
+      ...COMMON_RULES,
     ],
   },
   internal_link: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   link: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   markdown: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   number: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   one_to_many: {
     details: [
@@ -500,7 +512,7 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
       },
       ...COMMON_FIELDS.slice(1),
     ],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   one_to_one: {
     details: [
@@ -527,19 +539,19 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
       },
       ...COMMON_FIELDS.slice(1),
     ],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   sort: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   text: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   textarea: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   uuid: {
     details: [...COMMON_FIELDS],
@@ -547,11 +559,11 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
   },
   wysiwyg_advanced: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   wysiwyg_basic: {
     details: [...COMMON_FIELDS],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
   yes_no: {
     details: [
@@ -567,7 +579,7 @@ const FORM_CONFIG: { [key: string]: FormConfig } = {
       },
       ...COMMON_FIELDS.slice(3),
     ],
-    rules: [],
+    rules: [...COMMON_RULES],
   },
 };
 

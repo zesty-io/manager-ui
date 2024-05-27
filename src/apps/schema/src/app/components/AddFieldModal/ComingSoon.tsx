@@ -9,7 +9,6 @@ export const ComingSoon = () => {
       height="100%"
       justifyContent="center"
       alignItems="center"
-      minHeight={428}
     >
       <Box
         display="flex"

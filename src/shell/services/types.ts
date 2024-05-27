@@ -142,6 +142,12 @@ export interface ContentItem {
   publishAt?: any;
 }
 
+export type ContentItemWithDirtyAndPublishing = ContentItem & {
+  dirty: boolean;
+  publishing: Publishing;
+  scheduling: any;
+};
+
 export interface Instance {
   ID: number;
   ZUID: string;
@@ -188,6 +194,7 @@ export interface FieldSettings {
   limit?: number;
   list: boolean;
   tooltip?: string;
+  defaultValue?: string;
 }
 
 export type ContentModelFieldValue =
