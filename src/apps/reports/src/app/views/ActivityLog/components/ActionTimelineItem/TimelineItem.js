@@ -64,15 +64,12 @@ export const TimelineItem = (props) => {
       case 6:
         const [publishAt] = props.action?.meta?.message.split(" ").slice(-1);
         const happenedAt = props.action?.happenedAt;
-        const format = "MMMM DD [at] hh:mm A";
-        const convertedDate = moment(
-          new Date(publishAt),
-          format,
-          true
-        ).isValid()
+        const convertedDate = moment(publishAt).isValid()
           ? moment(publishAt)
           : moment(happenedAt);
-        return `Scheduled to Publish on  ${convertedDate.format(format)}`;
+        return `Scheduled to Publish on  ${convertedDate.format(
+          "MMMM DD [at] hh:mm A"
+        )}`;
       default:
         return props.action?.meta?.message;
     }
