@@ -10,6 +10,9 @@ export const StagedChangesProvider = ({
   const [stagedChanges, setStagedChanges] = useState({});
 
   const updateStagedChanges = useCallback((id, field, value) => {
+    if (id.startsWith("new")) {
+      return;
+    }
     setStagedChanges((prev: any) => ({
       ...prev,
       [id]: {

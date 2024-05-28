@@ -72,12 +72,14 @@ const fieldTypeColumnConfigMap = {
   number: {
     width: 160,
     valueFormatter: (params: any) => {
+      if (!params.value) return null;
       return new Intl.NumberFormat("en-US").format(params.value);
     },
   },
   currency: {
     width: 160,
     valueFormatter: (params: any) => {
+      if (!params.value) return null;
       return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -108,23 +110,27 @@ const fieldTypeColumnConfigMap = {
   },
   date: {
     width: 160,
-    valueFormatter: (params: any) =>
-      new Date(params.value)?.toLocaleDateString("en-US", {
+    valueFormatter: (params: any) => {
+      if (!params.value) return null;
+      return new Date(params.value)?.toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
         day: "numeric",
-      }),
+      });
+    },
   },
   datetime: {
     width: 200,
-    valueFormatter: (params: any) =>
-      new Date(params.value)?.toLocaleDateString("en-US", {
+    valueFormatter: (params: any) => {
+      if (!params.value) return null;
+      return new Date(params.value)?.toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
         day: "numeric",
         hour: "numeric",
         minute: "numeric",
-      }),
+      });
+    },
   },
   link: {
     width: 360,
