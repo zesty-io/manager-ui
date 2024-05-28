@@ -10,21 +10,16 @@ const getNumOfItemsToRender = (
 ) => {
   if (!children) return;
 
-  // console.log("parent width", parentWidth);
-
   let validIndex = 0;
   let calculatedWidth = 32; //Padding
 
   [...children]?.forEach((chip, index) => {
     calculatedWidth = calculatedWidth + chip?.clientWidth + 4;
 
-    console.log(index, chip?.clientWidth, calculatedWidth);
     if (calculatedWidth <= parentWidth) {
       validIndex = index;
     }
   });
-
-  // console.log("index", validIndex);
 
   return validIndex;
 };
