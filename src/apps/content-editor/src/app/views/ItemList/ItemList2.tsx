@@ -1,4 +1,5 @@
 import { useHistory, useParams as useRouterParams } from "react-router";
+import moment from "moment";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
 import {
   Box,
@@ -55,6 +56,10 @@ import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { UpdateListActions } from "./UpdateListActions";
 import { getDateFilterFnByValues } from "../../../../../../shell/components/Filters/DateFilter/getDateFilter";
 import { OneToManyColumn } from "./OneToManyColumn";
+import { UserCell } from "./UserCell";
+
+const formatDate = (rawDate: string) =>
+  moment(rawDate).format("MMM D, YYYY h:mm a");
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -467,6 +472,66 @@ export const ItemList2 = () => {
           })),
       ];
     }
+    // Metadata
+    result = [
+      ...result,
+      {
+        field: "createdBy",
+        headerName: "Created By",
+        width: 240,
+        sortable: false,
+        filterable: false,
+        renderCell: (params: GridRenderCellParams) => (
+          <UserCell params={params} />
+        ),
+      },
+      {
+        field: "createdOn",
+        headerName: "Created On",
+        width: 200,
+        sortable: false,
+        filterable: false,
+        valueGetter: (params: any) => formatDate(params.row?.meta?.createdAt),
+      },
+      {
+        field: "lastSaved",
+        headerName: "Last Saved",
+        width: 200,
+        sortable: false,
+        filterable: false,
+        valueGetter: (params: any) => formatDate(params.row?.web?.updatedAt),
+      },
+      {
+        field: "lastPublished",
+        headerName: "Last Published",
+        width: 200,
+        sortable: false,
+        filterable: false,
+        valueGetter: (params: any) => {
+          const isScheduledPublish = moment(
+            params.row?.publishing?.publishAt
+          ).isAfter(moment());
+
+          if (params.row?.publishing?.publishAt && !isScheduledPublish) {
+            return formatDate(params.row?.publishing?.publishAt);
+          }
+
+          if (params.row?.priorPublishing?.publishAt) {
+            return formatDate(params.row?.priorPublishing?.publishAt);
+          }
+
+          return "";
+        },
+      },
+      {
+        field: "zuid",
+        headerName: "ZUID",
+        width: 200,
+        sortable: false,
+        filterable: false,
+        valueGetter: (params: any) => params.row?.meta?.ZUID,
+      },
+    ];
     return result;
   }, [fields]);
 
