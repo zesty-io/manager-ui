@@ -50,7 +50,7 @@ export const ItemListActions = forwardRef((props, ref) => {
   const debouncedSetParams = useCallback(
     debounce((value) => {
       setParams(value, "search");
-    }, 300),
+    }, 500),
     []
   );
 
