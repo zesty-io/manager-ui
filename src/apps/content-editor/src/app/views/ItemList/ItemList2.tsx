@@ -404,7 +404,6 @@ export const ItemList2 = () => {
                 <ItemListTable
                   key={modelZUID}
                   loading={
-                    isModelFetching ||
                     isModelItemsFetching ||
                     isFieldsFetching ||
                     isPublishingsFetching ||
