@@ -293,14 +293,16 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
         sortable: false,
         filterable: false,
         valueGetter: (params: any) => params.row?.web?.updatedAt,
-        valueFormatter: (params: any) =>
-          new Date(params.value)?.toLocaleDateString("en-US", {
+        valueFormatter: (params: any) => {
+          if (!params.value) return null;
+          return new Date(params.value)?.toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-          }),
+          });
+        },
       },
       {
         field: "lastPublished",
@@ -357,11 +359,17 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
       onRowClick={(row) => {
         history.push(`/content/${modelZUID}/${row.id}`);
       }}
-      checkboxSelection={!(stagedChanges && Object.keys(stagedChanges)?.length)}
+      checkboxSelection
       disableSelectionOnClick
       initialState={initialState}
       onSelectionModelChange={(newSelection) => setSelectedItems(newSelection)}
-      selectionModel={selectedItems}
+      selectionModel={
+        stagedChanges && Object.keys(stagedChanges)?.length ? [] : selectedItems
+      }
+      isRowSelectable={(params) =>
+        params.row?.meta?.version &&
+        !(stagedChanges && Object.keys(stagedChanges)?.length)
+      }
       sx={{
         backgroundColor: "common.white",
         ".MuiDataGrid-row": {
@@ -600,6 +608,17 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
             size="small"
             color={isScheduledPublish ? "warning" : "success"}
           />
+        </Tooltip>
+      )}
+
+      {!params.row?.meta?.version && (
+        <Tooltip
+          enterDelay={1000}
+          enterNextDelay={1000}
+          title={"Item not yet created"}
+          placement="bottom"
+        >
+          <Chip label={"v0"} size="small" />
         </Tooltip>
       )}
     </Stack>

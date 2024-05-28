@@ -32,6 +32,15 @@ export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
   const langCode = params.get("lang");
+  const draftItems = useSelector((state: AppState) =>
+    Object.keys(state.content)
+      .filter(
+        (item) =>
+          state.content[item].meta?.contentModelZUID === modelZUID &&
+          state.content[item].meta.ZUID.slice(0, 3) === "new"
+      )
+      .map((item) => state.content[item])
+  );
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
   const { data: items, isFetching: isModelItemsFetching } =
@@ -72,7 +81,7 @@ export const ItemList2 = () => {
 
   const processedItems = useMemo(() => {
     if (!items) return [];
-    let clonedItems = items.map((item: any) => {
+    let clonedItems = [...draftItems, ...items].map((item: any) => {
       const clonedItem = cloneDeep(item);
       clonedItem.id = item.meta.ZUID;
       clonedItem.publishing = publishings?.find(
