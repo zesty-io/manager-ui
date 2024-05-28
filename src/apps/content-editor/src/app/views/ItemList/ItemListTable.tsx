@@ -29,6 +29,7 @@ import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort"
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { OneToManyColumn } from "./OneToManyColumn";
 import { UserCell } from "./UserCell";
+import { useSelectedItems } from "./SelectedItemsContext";
 
 type ItemListTableProps = {
   loading: boolean;
@@ -184,6 +185,7 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
   const [initialState, setInitialState] = useState<GridInitialState>();
   const history = useHistory();
   const { stagedChanges } = useStagedChanges();
+  const [selectedItems, setSelectedItems] = useSelectedItems();
 
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
@@ -358,6 +360,8 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
       checkboxSelection={!(stagedChanges && Object.keys(stagedChanges)?.length)}
       disableSelectionOnClick
       initialState={initialState}
+      onSelectionModelChange={(newSelection) => setSelectedItems(newSelection)}
+      selectionModel={selectedItems}
       sx={{
         backgroundColor: "common.white",
         ".MuiDataGrid-row": {

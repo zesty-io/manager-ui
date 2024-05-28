@@ -1,9 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 
-// Create a context for staged changes
 const StagedChangesContext = createContext(null);
 
-// Create a provider component
 export const StagedChangesProvider = ({
   children,
 }: {

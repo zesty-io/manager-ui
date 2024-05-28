@@ -58,10 +58,10 @@ import { getDateFilterFnByValues } from "../../../../../../shell/components/Filt
 import { OneToManyColumn } from "./OneToManyColumn";
 import { UserCell } from "./UserCell";
 import { ItemListTable } from "./ItemListTable";
+import { useSelectedItems } from "./SelectedItemsContext";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
-  const history = useHistory();
   const [params, setParams] = useParams();
   const langCode = params.get("lang");
   const { data: model, isFetching: isModelFetching } =
@@ -90,7 +90,7 @@ export const ItemList2 = () => {
   );
 
   const { stagedChanges } = useStagedChanges();
-
+  const [selectedItems] = useSelectedItems();
   const searchRef = useRef<HTMLInputElement>(null);
   const search = params.get("search");
   const sort = params.get("sort");
@@ -307,7 +307,8 @@ export const ItemList2 = () => {
             gap: 4,
           }}
         >
-          {stagedChanges && Object.keys(stagedChanges)?.length ? (
+          {(stagedChanges && Object.keys(stagedChanges)?.length) ||
+          selectedItems?.length ? (
             <UpdateListActions />
           ) : (
             <>

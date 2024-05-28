@@ -30,6 +30,7 @@ import styles from "./ContentEditor.less";
 import Analytics from "./views/Analytics";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
 import { StagedChangesProvider } from "./views/ItemList/StagedChangesContext";
+import { SelectedItemsProvider } from "./views/ItemList/SelectedItemsContext";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 let customTheme = createTheme(legacyTheme, {
@@ -172,7 +173,9 @@ export default function ContentEditor() {
                       path="/content/:modelZUID"
                       render={() => (
                         <StagedChangesProvider>
-                          <ItemList />
+                          <SelectedItemsProvider>
+                            <ItemList />
+                          </SelectedItemsProvider>
                         </StagedChangesProvider>
                       )}
                     />

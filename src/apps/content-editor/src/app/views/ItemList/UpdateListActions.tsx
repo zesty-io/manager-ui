@@ -1,13 +1,12 @@
-import { Button, Box, ButtonGroup, Typography, Tooltip } from "@mui/material";
-import { Database, IconButton } from "@zesty-io/material";
+import { Box, ButtonGroup, Button, Typography, Tooltip } from "@mui/material";
+import { IconButton } from "@zesty-io/material";
 import {
   SaveRounded,
   CloseRounded,
   CloudUploadRounded,
 } from "@mui/icons-material";
-import { forwardRef, useEffect, useState } from "react";
-import { useHistory, useParams as useRouterParams } from "react-router";
-import { useFilePath } from "../../../../../../shell/hooks/useFilePath";
+import { useEffect, useState } from "react";
+import { useParams as useRouterParams } from "react-router";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { useStagedChanges } from "./StagedChangesContext";
 import { LoadingButton } from "@mui/lab";
@@ -18,6 +17,7 @@ import {
 } from "../../../../../../shell/services/instance";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { ConfirmPublishesModal } from "./ConfirmPublishesModal";
+import { useSelectedItems } from "./SelectedItemsContext";
 
 export const UpdateListActions = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -33,6 +33,7 @@ export const UpdateListActions = () => {
   const [showPublishesModal, setShowPublishesModal] = useState(false);
   const { stagedChanges, updateStagedChanges, clearStagedChanges } =
     useStagedChanges();
+  const [selectedItems, setSelectedItems] = useSelectedItems();
 
   const [updateContentItems, { isLoading: isSaving }] =
     useUpdateContentItemsMutation();
@@ -45,8 +46,14 @@ export const UpdateListActions = () => {
   });
 
   const publishShortcut = useMetaKey("p", () => {
-    handlePublish();
+    if (hasStagedChanges) {
+      handleSaveAndPublish();
+    } else {
+      setItemsToPublish(selectedItems);
+    }
   });
+
+  const hasStagedChanges = Object.keys(stagedChanges).length > 0;
 
   const handleSave = async () => {
     try {
@@ -69,7 +76,7 @@ export const UpdateListActions = () => {
     }
   };
 
-  const handlePublish = async () => {
+  const handleSaveAndPublish = async () => {
     try {
       const response = await updateContentItems({
         modelZUID,
@@ -114,35 +121,42 @@ export const UpdateListActions = () => {
             }}
             onClick={() => {
               clearStagedChanges({});
+              setSelectedItems([]);
             }}
           >
             <CloseRounded />
           </IconButton>
           <Typography variant="h3" fontWeight={700}>
-            Update {Object.keys(stagedChanges)?.length} Content Item
+            {hasStagedChanges
+              ? ` Update ${Object.keys(stagedChanges)?.length} Content Items`
+              : `${selectedItems?.length} selected`}
           </Typography>
         </Box>
         <Box display="flex" gap={1} alignItems="center">
-          <Tooltip
-            enterDelay={1000}
-            enterNextDelay={1000}
-            title={
-              <div>
-                Save Items <br />
-                {saveShortcut}
-              </div>
-            }
-          >
-            <LoadingButton
-              variant="contained"
-              startIcon={<SaveRounded />}
-              size="small"
-              onClick={handleSave}
-              loading={isSaving}
+          {hasStagedChanges ? (
+            <Tooltip
+              enterDelay={1000}
+              enterNextDelay={1000}
+              title={
+                <div>
+                  Save Items <br />
+                  {saveShortcut}
+                </div>
+              }
             >
-              Save
-            </LoadingButton>
-          </Tooltip>
+              <LoadingButton
+                variant="contained"
+                startIcon={<SaveRounded />}
+                size="small"
+                onClick={handleSave}
+                loading={isSaving}
+              >
+                Save
+              </LoadingButton>
+            </Tooltip>
+          ) : (
+            <Button>delete</Button>
+          )}
           <ButtonGroup
             variant="contained"
             color="success"
@@ -158,7 +172,8 @@ export const UpdateListActions = () => {
               enterNextDelay={1000}
               title={
                 <div>
-                  Save & Publish Items <br />
+                  {hasStagedChanges ? "Save & Publish Items" : "Publish Items"}{" "}
+                  <br />
                   {publishShortcut}
                 </div>
               }
@@ -170,7 +185,11 @@ export const UpdateListActions = () => {
                   whiteSpace: "nowrap",
                 }}
                 onClick={() => {
-                  handlePublish();
+                  if (hasStagedChanges) {
+                    handleSaveAndPublish();
+                  } else {
+                    setItemsToPublish(selectedItems);
+                  }
                 }}
                 loading={isPublishing || isSaving}
                 color="success"
@@ -178,7 +197,7 @@ export const UpdateListActions = () => {
                 id="PublishButton"
                 data-cy="PublishButton"
               >
-                Save & Publish
+                {hasStagedChanges ? "Save & Publish" : "Publish"}
               </LoadingButton>
             </Tooltip>
             {/* <Button
@@ -223,6 +242,7 @@ export const UpdateListActions = () => {
             }).then(() => {
               setItemsToPublish([]);
               clearStagedChanges({});
+              setSelectedItems([]);
               setShowPublishesModal(false);
             });
           }}
