@@ -60,6 +60,7 @@ import { UserCell } from "./UserCell";
 
 const formatDate = (rawDate: string) =>
   moment(rawDate).format("MMM D, YYYY h:mm a");
+const isFuture = (dateToCheck: string) => moment(dateToCheck).isAfter(moment());
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -508,15 +509,17 @@ export const ItemList2 = () => {
         sortable: false,
         filterable: false,
         valueGetter: (params: any) => {
-          const isScheduledPublish = moment(
-            params.row?.publishing?.publishAt
-          ).isAfter(moment());
-
-          if (params.row?.publishing?.publishAt && !isScheduledPublish) {
+          if (
+            params.row?.publishing?.publishAt &&
+            !isFuture(params.row?.publishing?.publishAt)
+          ) {
             return formatDate(params.row?.publishing?.publishAt);
           }
 
-          if (params.row?.priorPublishing?.publishAt) {
+          if (
+            params.row?.priorPublishing?.publishAt &&
+            !isFuture(params.row?.priorPublishing?.publishAt)
+          ) {
             return formatDate(params.row?.priorPublishing?.publishAt);
           }
 
