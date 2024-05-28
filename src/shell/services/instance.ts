@@ -186,11 +186,18 @@ export const instanceApi = createApi({
       },
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Get-All-Items
-    getContentModelItems: builder.query<ContentItem[], string>({
-      query: (ZUID) => ({
-        url: `content/models/${ZUID}/items`,
+    getContentModelItems: builder.query<
+      ContentItem[],
+      {
+        modelZUID: string;
+        params?: Record<string, string | number>;
+      }
+    >({
+      query: ({ modelZUID, params = {} }) => ({
+        url: `content/models/${modelZUID}/items`,
         params: {
           limit: 5000,
+          ...params,
         },
       }),
       transformResponse: getResponseData,

@@ -66,11 +66,18 @@ export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const history = useHistory();
   const apiRef = useGridApiRef();
+  const [params, setParams] = useParams();
+  const langCode = params.get("lang");
   const [initialState, setInitialState] = useState<GridInitialState>();
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
   const { data: items, isFetching: isModelItemsFetching } =
-    useGetContentModelItemsQuery(modelZUID);
+    useGetContentModelItemsQuery({
+      modelZUID,
+      params: {
+        lang: langCode,
+      },
+    });
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
   const { data: publishings, isFetching: isPublishingsFetching } =
@@ -78,7 +85,7 @@ export const ItemList2 = () => {
   const allItems = useSelector((state: AppState) => state.content);
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
-  const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
+  const { data: bins } = useGetBinsQuery({
     instanceId,
     ecoId,
   });
@@ -87,11 +94,9 @@ export const ItemList2 = () => {
     { skip: !bins?.length }
   );
 
-  const { stagedChanges, updateStagedChanges, clearStagedChanges } =
-    useStagedChanges();
+  const { stagedChanges } = useStagedChanges();
 
   const searchRef = useRef<HTMLInputElement>(null);
-  const [params, setParams] = useParams();
   const search = params.get("search");
   const sort = params.get("sort");
   const statusFilter = params.get("statusFilter");
@@ -573,7 +578,7 @@ export const ItemList2 = () => {
       window.removeEventListener("beforeunload", saveSnapshot);
       saveSnapshot();
     };
-  }, [saveSnapshot, isFieldsFetching, fields]);
+  }, [saveSnapshot, isFieldsFetching, fields, modelZUID]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -807,16 +812,17 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
         >
           Select
         </MenuItem>
-        {Object.entries(field?.settings?.options)?.map(([key, value]) => (
-          <MenuItem
-            key={key}
-            onClick={() => {
-              handleChange(key);
-            }}
-          >
-            {value}
-          </MenuItem>
-        ))}
+        {field?.settings?.options &&
+          Object.entries(field?.settings?.options)?.map(([key, value]) => (
+            <MenuItem
+              key={key}
+              onClick={() => {
+                handleChange(key);
+              }}
+            >
+              {value}
+            </MenuItem>
+          ))}
       </Menu>
     </>
   );
@@ -846,11 +852,12 @@ export const BooleanCell = ({ params }: { params: GridRenderCellParams }) => {
         handleChange(Number(value));
       }}
     >
-      {Object.entries(field?.settings?.options)?.map(([key, value]) => (
-        <ToggleButton key={key} value={Number(key)}>
-          {value}
-        </ToggleButton>
-      ))}
+      {field?.settings?.options &&
+        Object.entries(field?.settings?.options)?.map(([key, value]) => (
+          <ToggleButton key={key} value={Number(key)}>
+            {value}
+          </ToggleButton>
+        ))}
     </ToggleButtonGroup>
   );
 };

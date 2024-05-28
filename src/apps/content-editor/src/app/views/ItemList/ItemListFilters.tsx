@@ -55,7 +55,7 @@ export const ItemListFilters = () => {
   const [params, setParams] = useParams();
   const [activeDateFilter, setActiveDateFilter] = useDateFilterParams();
   const { data: languages } = useGetLangsQuery({});
-  const activeLanguageCode = params.get("language");
+  const activeLanguageCode = params.get("lang");
   const { data: users } = useGetUsersQuery();
 
   const userOptions = useMemo(() => {
@@ -70,7 +70,7 @@ export const ItemListFilters = () => {
   useEffect(() => {
     // if languages and no language param, set the first language as the active language
     if (languages && !activeLanguageCode) {
-      setParams(languages[0].code, "language");
+      setParams(languages[0].code, "lang");
     }
   }, [languages, activeLanguageCode]);
 
@@ -215,7 +215,7 @@ export const ItemListFilters = () => {
             key={language.code}
             onClick={() => {
               setAnchorEl(null);
-              setParams(language.code, "language");
+              setParams(language.code, "lang");
             }}
           >
             {getFlagEmojiFromIETFTag(language.code)}{" "}

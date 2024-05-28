@@ -21,8 +21,15 @@ import { ConfirmPublishesModal } from "./ConfirmPublishesModal";
 
 export const UpdateListActions = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
+  const [params, setParams] = useParams();
+  const langCode = params.get("lang");
   const [itemsToPublish, setItemsToPublish] = useState<string[]>([]);
-  const { data: items } = useGetContentModelItemsQuery(modelZUID);
+  const { data: items } = useGetContentModelItemsQuery({
+    modelZUID,
+    params: {
+      lang: langCode,
+    },
+  });
   const [showPublishesModal, setShowPublishesModal] = useState(false);
   const { stagedChanges, updateStagedChanges, clearStagedChanges } =
     useStagedChanges();
