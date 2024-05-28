@@ -363,7 +363,11 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
       columns={columns}
       rowHeight={54}
       onRowClick={(row) => {
-        history.push(`/content/${modelZUID}/${row.id}`);
+        if (typeof row.id === "string" && row.id?.startsWith("new")) {
+          history.push(`/content/${modelZUID}/new`);
+        } else {
+          history.push(`/content/${modelZUID}/${row.id}`);
+        }
       }}
       checkboxSelection
       disableSelectionOnClick
