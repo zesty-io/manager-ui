@@ -1,21 +1,6 @@
-import { useHistory, useParams as useRouterParams } from "react-router";
-import moment from "moment";
+import { useParams as useRouterParams } from "react-router";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Chip,
-  ThemeProvider,
-  Typography,
-  Stack,
-  Menu,
-  MenuItem,
-  Link,
-  ToggleButtonGroup,
-  ToggleButton,
-  Tooltip,
-} from "@mui/material";
+import { Box, Button, ThemeProvider, Typography } from "@mui/material";
 import {
   useGetAllPublishingsQuery,
   useGetContentModelFieldsQuery,
@@ -25,20 +10,8 @@ import {
 import { theme } from "@zesty-io/material";
 import { ItemListEmpty } from "./ItemListEmpty";
 import { ItemListActions } from "./ItemListActions";
-import {
-  DataGridPro,
-  GridColumns,
-  GridRenderCellParams,
-  GRID_CHECKBOX_SELECTION_COL_DEF,
-  useGridApiRef,
-  GridInitialState,
-} from "@mui/x-data-grid-pro";
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
-import {
-  KeyboardArrowDownRounded,
-  SearchRounded,
-  RestartAltRounded,
-} from "@mui/icons-material";
+import { useMemo, useRef } from "react";
+import { SearchRounded, RestartAltRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
 import { useParams } from "../../../../../../shell/hooks/useParams";
@@ -49,14 +22,9 @@ import {
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { cloneDeep } from "lodash";
-import { ContentItem } from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
-import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort";
-import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { UpdateListActions } from "./UpdateListActions";
 import { getDateFilterFnByValues } from "../../../../../../shell/components/Filters/DateFilter/getDateFilter";
-import { OneToManyColumn } from "./OneToManyColumn";
-import { UserCell } from "./UserCell";
 import { ItemListTable } from "./ItemListTable";
 import { useSelectedItems } from "./SelectedItemsContext";
 

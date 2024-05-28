@@ -17,10 +17,11 @@ import {
   CodeRounded,
   ContentCopyRounded,
 } from "@mui/icons-material";
-import { forwardRef, useState } from "react";
+import { forwardRef, useState, useCallback } from "react";
 import { useHistory, useParams as useRouterParams } from "react-router";
 import { useFilePath } from "../../../../../../shell/hooks/useFilePath";
 import { useParams } from "../../../../../../shell/hooks/useParams";
+import { debounce } from "lodash";
 
 export const ItemListActions = forwardRef((props, ref) => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -29,6 +30,7 @@ export const ItemListActions = forwardRef((props, ref) => {
   const codePath = useFilePath(modelZUID);
   const [isCopied, setIsCopied] = useState(false);
   const [params, setParams] = useParams();
+  const [searchTerm, setSearchTerm] = useState(params.get("search") || "");
 
   const handleCopyClick = (data: string) => {
     navigator?.clipboard
@@ -43,6 +45,19 @@ export const ItemListActions = forwardRef((props, ref) => {
       .catch((err) => {
         console.error(err);
       });
+  };
+
+  const debouncedSetParams = useCallback(
+    debounce((value) => {
+      setParams(value, "search");
+    }, 300),
+    []
+  );
+
+  const handleSearchChange = (event: any) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    debouncedSetParams(value);
   };
 
   return (
@@ -110,10 +125,8 @@ export const ItemListActions = forwardRef((props, ref) => {
         </MenuItem>
       </Menu>
       <TextField
-        onChange={(e) => {
-          setParams(e.target.value, "search");
-        }}
-        value={params.get("search") || ""}
+        onChange={handleSearchChange}
+        value={searchTerm}
         placeholder="Filter Items"
         variant="outlined"
         size="small"
