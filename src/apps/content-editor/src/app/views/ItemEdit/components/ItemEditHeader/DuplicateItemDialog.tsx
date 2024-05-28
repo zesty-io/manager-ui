@@ -52,9 +52,9 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
         web: {
           canonicalTagMode: item.web.canonicalTagMode,
           parentZUID: item.web.parentZUID,
-          metaLinkText: item.web.metaLinkText.slice(0, 143) + " (copy)",
-          metaTitle: item.web.metaTitle.slice(0, 143) + " (copy)",
-          metaDescription: item.web.metaDescription.slice(0, 153) + " (copy)",
+          metaLinkText: item.web.metaLinkText?.slice(0, 143) + " (copy)",
+          metaTitle: item.web.metaTitle?.slice(0, 143) + " (copy)",
+          metaDescription: item.web.metaDescription?.slice(0, 153) + " (copy)",
           pathPart: item.web.pathPart
             ? item.web.pathPart + `-${new Date().toISOString()}`
             : undefined,
