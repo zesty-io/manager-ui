@@ -22,7 +22,7 @@ import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
 
 import styles from "./CSVImport.less";
-class CSVImport extends Component {
+class CSVImportBody extends Component {
   state = {
     modelZUID: this.props.modelZUID,
     fields: this.props.fields,
@@ -464,4 +464,4 @@ export default connect((state, props) => {
     fields,
     userZUID: state.user.user_zuid,
   };
-})(CSVImport);
+})(CSVImportBody);
