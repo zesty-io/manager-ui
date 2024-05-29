@@ -36,6 +36,80 @@ type ItemListTableProps = {
   rows: ContentItem[];
 };
 
+const METADATA_COLUMNS = [
+  {
+    field: "createdBy",
+    headerName: "Created By",
+    width: 240,
+    sortable: false,
+    filterable: false,
+    renderCell: (params: GridRenderCellParams) => <UserCell params={params} />,
+  },
+  {
+    field: "createdOn",
+    headerName: "Created On",
+    width: 200,
+    sortable: false,
+    filterable: false,
+    valueGetter: (params: any) => params.row?.meta?.createdAt,
+    valueFormatter: (params: any) =>
+      new Date(params.value)?.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      }),
+  },
+
+  {
+    field: "lastSaved",
+    headerName: "Last Saved",
+    width: 200,
+    sortable: false,
+    filterable: false,
+    valueGetter: (params: any) => params.row?.web?.updatedAt,
+    valueFormatter: (params: any) => {
+      if (!params.value) return null;
+      return new Date(params.value)?.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      });
+    },
+  },
+  {
+    field: "lastPublished",
+    headerName: "Last Published",
+    width: 200,
+    sortable: false,
+    filterable: false,
+    valueGetter: (params: any) =>
+      params.row?.publishing?.publishAt ||
+      params.row?.priorPublishing?.publishAt,
+    valueFormatter: (params: any) => {
+      if (!params.value) return null;
+      return new Date(params.value)?.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      });
+    },
+  },
+  {
+    field: "zuid",
+    headerName: "ZUID",
+    width: 200,
+    sortable: false,
+    filterable: false,
+    valueGetter: (params: any) => params.row?.meta?.ZUID,
+  },
+] as const;
+
 const fieldTypeColumnConfigMap = {
   text: {
     width: 360,
@@ -262,83 +336,7 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
           })),
       ];
     }
-    // Metadata
-    result = [
-      ...result,
-      {
-        field: "createdBy",
-        headerName: "Created By",
-        width: 240,
-        sortable: false,
-        filterable: false,
-        renderCell: (params: GridRenderCellParams) => (
-          <UserCell params={params} />
-        ),
-      },
-      {
-        field: "createdOn",
-        headerName: "Created On",
-        width: 200,
-        sortable: false,
-        filterable: false,
-        valueGetter: (params: any) => params.row?.meta?.createdAt,
-        valueFormatter: (params: any) =>
-          new Date(params.value)?.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-          }),
-      },
 
-      {
-        field: "lastSaved",
-        headerName: "Last Saved",
-        width: 200,
-        sortable: false,
-        filterable: false,
-        valueGetter: (params: any) => params.row?.web?.updatedAt,
-        valueFormatter: (params: any) => {
-          if (!params.value) return null;
-          return new Date(params.value)?.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-          });
-        },
-      },
-      {
-        field: "lastPublished",
-        headerName: "Last Published",
-        width: 200,
-        sortable: false,
-        filterable: false,
-        valueGetter: (params: any) =>
-          params.row?.publishing?.publishAt ||
-          params.row?.priorPublishing?.publishAt,
-        valueFormatter: (params: any) => {
-          if (!params.value) return null;
-          return new Date(params.value)?.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-          });
-        },
-      },
-      {
-        field: "zuid",
-        headerName: "ZUID",
-        width: 200,
-        sortable: false,
-        filterable: false,
-        valueGetter: (params: any) => params.row?.meta?.ZUID,
-      },
-    ];
     return result;
   }, [fields]);
 
@@ -360,7 +358,7 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
       apiRef={apiRef}
       loading={loading}
       rows={rows}
-      columns={columns}
+      columns={[...columns, ...METADATA_COLUMNS]}
       rowHeight={54}
       onRowClick={(row) => {
         if (typeof row.id === "string" && row.id?.startsWith("new")) {
