@@ -55,8 +55,7 @@ export const ItemListActions = forwardRef((props, ref) => {
     "dataset";
   const apiTypeEndpointMap: Partial<Record<ApiType, string>> = {
     "quick-access": `/-/instant/${modelZUID}.json`,
-    // "site-generators": item ? `/${item?.web?.path}/?toJSON` : "/?toJSON",
-    "site-generators": "/?toJSON", //TODO: Doesn't seem to be possible when in the table view
+    "site-generators": "/?toJSON",
   };
   const liveDomain = domains?.find((domain) => domain.branch == "live");
 
