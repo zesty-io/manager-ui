@@ -515,6 +515,7 @@ export type Comment = {
   ZUID: string;
   content: string;
   createdAt: string;
+  createdByUserEmail: string;
   createdByUserName: string;
   createdByUserZUID: string;
   instanceZUID: string;

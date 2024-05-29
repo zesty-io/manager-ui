@@ -150,7 +150,11 @@ export const CommentsList = ({
                 commentZUID={comment.ZUID}
                 body={comment.content}
                 createdOn={comment.createdAt}
-                creator={comment.createdByUserZUID}
+                creator={{
+                  ZUID: comment.createdByUserZUID,
+                  name: comment.createdByUserName,
+                  email: comment.createdByUserEmail,
+                }}
                 withResolveButton={index === 0 && !isResolved}
                 parentCommentZUID={parentCommentZUID}
                 onParentCommentDeleted={onClose}

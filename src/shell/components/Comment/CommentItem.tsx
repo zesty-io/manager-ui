@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect, useState, useContext } from "react";
+import { useRef, useEffect, useState, useContext } from "react";
 import {
   Stack,
   Typography,
@@ -20,10 +20,7 @@ import moment from "moment";
 import { useLocation } from "react-router";
 import { useSelector } from "react-redux";
 
-import {
-  useGetUsersQuery,
-  useUpdateCommentStatusMutation,
-} from "../../services/accounts";
+import { useUpdateCommentStatusMutation } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
 import { useParams as useSearchParams } from "../../hooks/useParams";
 import { InputField } from "./InputField";
@@ -42,7 +39,11 @@ const URL_REGEX =
 type CommentItemProps = {
   commentZUID: string;
   body: string;
-  creator: string;
+  creator: {
+    name: string;
+    ZUID: string;
+    email: string;
+  };
   createdOn: string;
   parentCommentZUID: string;
   withResolveButton?: boolean;
@@ -75,18 +76,10 @@ export const CommentItem = ({
   const [isCopied, setIsCopied] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const commentBodyRef = useRef<HTMLParagraphElement>();
-  const { data: users } = useGetUsersQuery();
   const loggedInUser: User = useSelector((state: AppState) => state.user);
 
   const commentResourceZUID = searchParams.get("commentResourceZuid");
-
-  const commentCreator = useMemo(
-    () => users?.find((user) => user.ZUID === creator),
-    [users]
-  );
-
-  const isLoggedInUserCommentCreator =
-    loggedInUser?.ZUID === commentCreator?.ZUID;
+  const isLoggedInUserCommentCreator = loggedInUser?.ZUID === creator?.ZUID;
 
   useEffect(() => {
     if (commentBodyRef.current) {
@@ -187,12 +180,12 @@ export const CommentItem = ({
               <Avatar
                 sx={{ width: 32, height: 32 }}
                 src={`https://www.gravatar.com/avatar/${MD5(
-                  commentCreator?.email || ""
+                  creator?.email || ""
                 )}?s=32`}
               />
               <Stack>
                 <Typography fontWeight={700} variant="body2">
-                  {`${commentCreator?.firstName} ${commentCreator?.lastName}`}
+                  {creator?.name}
                 </Typography>
                 <Typography
                   variant="body3"
