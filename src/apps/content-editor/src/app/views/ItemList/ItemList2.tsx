@@ -294,7 +294,6 @@ export const ItemList2 = () => {
     });
     if (search) {
       clonedItems = clonedItems?.filter((item) => {
-        console.log(item);
         return (
           Object.values(item.data).some((value: any) => {
             if (!value) return false;
