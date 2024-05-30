@@ -90,11 +90,62 @@ export const ItemList2 = () => {
           publishing.itemZUID === item.meta.ZUID &&
           publishing.version === item.meta.version
       );
+      if (clonedItem.publishing) {
+        clonedItem.publishing = {
+          ...clonedItem.publishing,
+          publishAt: clonedItem?.publishing?.publishAt
+            ? new Date(clonedItem.publishing.publishAt)?.toLocaleDateString(
+                "en-US",
+                {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                }
+              )
+            : null,
+        };
+      }
       clonedItem.priorPublishing = publishings?.find(
         (publishing) =>
           publishing.itemZUID === item.meta.ZUID &&
           publishing.version !== item.meta.version
       );
+      if (clonedItem.priorPublishing) {
+        clonedItem.priorPublishing = {
+          ...clonedItem.priorPublishing,
+          publishAt: clonedItem?.priorPublishing?.publishAt
+            ? new Date(
+                clonedItem.priorPublishing.publishAt
+              )?.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              })
+            : null,
+        };
+      }
+      clonedItem.meta.createdAt = clonedItem?.meta?.createdAt
+        ? new Date(clonedItem.meta.createdAt)?.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+          })
+        : null;
+      clonedItem.web.updatedAt = clonedItem?.web?.updatedAt
+        ? new Date(clonedItem.web.updatedAt)?.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+          })
+        : null;
 
       Object.keys(clonedItem.data).forEach((key) => {
         const fieldType = fields?.find((field) => field.name === key)?.datatype;
@@ -236,6 +287,7 @@ export const ItemList2 = () => {
     if (search) {
       clonedItems = clonedItems?.filter((item) => {
         return Object.values(item.data).some((value: any) => {
+          // console.log(item);
           if (!value) return false;
           if (value?.filename || value?.title) {
             return (

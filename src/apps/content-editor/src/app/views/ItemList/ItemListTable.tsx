@@ -52,14 +52,6 @@ const METADATA_COLUMNS = [
     sortable: false,
     filterable: false,
     valueGetter: (params: any) => params.row?.meta?.createdAt,
-    valueFormatter: (params: any) =>
-      new Date(params.value)?.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-      }),
   },
 
   {
@@ -69,16 +61,6 @@ const METADATA_COLUMNS = [
     sortable: false,
     filterable: false,
     valueGetter: (params: any) => params.row?.web?.updatedAt,
-    valueFormatter: (params: any) => {
-      if (!params.value) return null;
-      return new Date(params.value)?.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-      });
-    },
   },
   {
     field: "lastPublished",
@@ -89,16 +71,6 @@ const METADATA_COLUMNS = [
     valueGetter: (params: any) =>
       params.row?.publishing?.publishAt ||
       params.row?.priorPublishing?.publishAt,
-    valueFormatter: (params: any) => {
-      if (!params.value) return null;
-      return new Date(params.value)?.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-      });
-    },
   },
   {
     field: "zuid",
