@@ -27,6 +27,7 @@ import { UpdateListActions } from "./UpdateListActions";
 import { getDateFilterFnByValues } from "../../../../../../shell/components/Filters/DateFilter/getDateFilter";
 import { ItemListTable } from "./ItemListTable";
 import { useSelectedItems } from "./SelectedItemsContext";
+import { isDate } from "moment-timezone";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -118,6 +119,32 @@ export const ItemList2 = () => {
             ?.split(",")
             .map((id: string) => allItems?.[id]?.web?.metaTitle || id)
             ?.join(",");
+        }
+
+        if (fieldType === "date") {
+          if (!clonedItem.data[key]) return;
+
+          clonedItem.data[key] = new Date(
+            clonedItem.data[key]
+          )?.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+        }
+
+        if (fieldType === "datetime") {
+          if (!clonedItem.data[key]) return;
+
+          clonedItem.data[key] = new Date(
+            clonedItem.data[key]
+          )?.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+          });
         }
       });
 
