@@ -187,7 +187,6 @@ export const SchedulePublish = ({
                 value={publishDateTime}
                 selectedTimezone={publishTimezone}
                 onChange={(datetime) => {
-                  console.log(datetime);
                   setPublishDateTime(datetime);
                 }}
                 onTimezoneChange={(timezone) => {
