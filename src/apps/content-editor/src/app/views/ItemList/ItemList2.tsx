@@ -28,6 +28,7 @@ import { getDateFilterFnByValues } from "../../../../../../shell/components/Filt
 import { ItemListTable } from "./ItemListTable";
 import { useSelectedItems } from "./SelectedItemsContext";
 import { isDate } from "moment-timezone";
+import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 
 export const ItemList2 = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -66,6 +67,7 @@ export const ItemList2 = () => {
     bins?.map((bin) => bin.id),
     { skip: !bins?.length }
   );
+  const { data: users } = useGetUsersQuery();
 
   const { stagedChanges } = useStagedChanges();
   const [selectedItems] = useSelectedItems();
@@ -146,6 +148,12 @@ export const ItemList2 = () => {
             minute: "numeric",
           })
         : null;
+      const creatorData = users.find(
+        (user) => user.ZUID === clonedItem?.meta?.createdByUserZUID
+      );
+      clonedItem.meta.createdByUserName = creatorData
+        ? `${creatorData?.firstName} ${creatorData?.lastName}`
+        : null;
 
       Object.keys(clonedItem.data).forEach((key) => {
         const fieldType = fields?.find((field) => field.name === key)?.datatype;
@@ -202,7 +210,7 @@ export const ItemList2 = () => {
       return clonedItem;
     });
     return clonedItems;
-  }, [items, publishings, files, allItems, fields]);
+  }, [items, publishings, files, allItems, fields, users]);
 
   const sortedAndFilteredItems = useMemo(() => {
     let clonedItems = [...processedItems];
@@ -286,17 +294,36 @@ export const ItemList2 = () => {
     });
     if (search) {
       clonedItems = clonedItems?.filter((item) => {
-        return Object.values(item.data).some((value: any) => {
-          // console.log(item);
-          if (!value) return false;
-          if (value?.filename || value?.title) {
-            return (
-              value?.filename?.toLowerCase()?.includes(search.toLowerCase()) ||
-              value?.title?.toLowerCase()?.includes(search.toLowerCase())
-            );
-          }
-          return value.toString().toLowerCase().includes(search.toLowerCase());
-        });
+        console.log(item);
+        return (
+          Object.values(item.data).some((value: any) => {
+            if (!value) return false;
+            if (value?.filename || value?.title) {
+              return (
+                value?.filename
+                  ?.toLowerCase()
+                  ?.includes(search.toLowerCase()) ||
+                value?.title?.toLowerCase()?.includes(search.toLowerCase())
+              );
+            }
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(search.toLowerCase());
+          }) ||
+          item?.meta?.createdAt?.toLowerCase().includes(search.toLowerCase()) ||
+          item?.web?.updatedAt?.toLowerCase().includes(search.toLowerCase()) ||
+          item?.publishing?.publishAt
+            ?.toLowerCase()
+            .includes(search.toLowerCase()) ||
+          item?.priorPublishing?.publishAt
+            ?.toLowerCase()
+            .includes(search.toLowerCase()) ||
+          item?.meta?.ZUID?.toLowerCase().includes(search.toLowerCase()) ||
+          item?.meta?.createdByUserName
+            ?.toLowerCase()
+            .includes(search.toLowerCase())
+        );
       });
     }
     if (statusFilter) {
