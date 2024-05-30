@@ -125,7 +125,8 @@ export const ItemParent = connect((state) => {
                     props.dispatch(
                       notify({
                         kind: "warn",
-                        message: `Parent item not found ${res.status}`,
+                        heading: `Cannot Save: ${props.metaTitle}`,
+                        messsage: "Set page parent in SEO Tab",
                       })
                     );
                   }
@@ -133,7 +134,7 @@ export const ItemParent = connect((state) => {
                   props.dispatch(
                     notify({
                       kind: "warn",
-                      message: `API failed to return data ${res.status}`,
+                      message: `API failed to return data. Try Again.`,
                     })
                   );
                 }
@@ -141,7 +142,8 @@ export const ItemParent = connect((state) => {
                 props.dispatch(
                   notify({
                     kind: "warn",
-                    message: `API failed to return response when searching for ${parentZUID}`,
+                    heading: `"Cannot Save: ${props.metaTitle}`,
+                    message: `Page's Parent does not exist or has been deleted`,
                   })
                 );
               }
