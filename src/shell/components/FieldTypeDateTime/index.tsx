@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { TextField, Autocomplete, Tooltip, ListItem } from "@mui/material";
 import moment from "moment-timezone";
 
@@ -51,6 +51,7 @@ export const FieldTypeDateTime = ({
   );
 
   const [dateString, timeString] = value?.split(" ") ?? [null, null];
+  const currentSystemTimezoneID = moment.tz.guess() ?? "America/Los_Angeles";
 
   useEffect(() => {
     setTimeKeyCount(timeKeyCount + 1);
@@ -86,6 +87,17 @@ export const FieldTypeDateTime = ({
         ?.scrollIntoView({ block: "center" });
     });
   }, [isTimeFieldActive]);
+
+  const timezoneOptions = useMemo(() => {
+    const userTimezone = TIMEZONES.find(
+      (tz) => tz.id === currentSystemTimezoneID
+    );
+    const filteredTimezones = TIMEZONES.filter(
+      (tz) => tz.id !== currentSystemTimezoneID
+    );
+
+    return [userTimezone, ...filteredTimezones];
+  }, [TIMEZONES, currentSystemTimezoneID]);
 
   const generateValuePreview = () => {
     if (showTimezonePicker) {
@@ -275,7 +287,7 @@ export const FieldTypeDateTime = ({
               fullWidth
               disableClearable
               size="small"
-              options={TIMEZONES}
+              options={timezoneOptions}
               value={TIMEZONES.find((tz) => tz.id === timezone)}
               renderInput={(params) => <TextField {...params} />}
               renderOption={(props, option) => (
@@ -285,6 +297,10 @@ export const FieldTypeDateTime = ({
                   sx={{
                     "&.MuiListItem-root": {
                       color: "text.primary",
+                      borderBottom: (theme) =>
+                        option.id === "UTC"
+                          ? `1px solid ${theme.palette.border}`
+                          : "none",
                     },
                   }}
                 >
