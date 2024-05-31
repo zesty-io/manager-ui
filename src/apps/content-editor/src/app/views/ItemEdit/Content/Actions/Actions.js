@@ -8,7 +8,6 @@ import WidgetDraftHistory from "./Widgets/WidgetDraftHistory";
 import WidgetPurgeItem from "./Widgets/WidgetPurgeItem";
 import { WorkflowRequest } from "./Widgets/WorkflowRequest";
 import { Unpublish } from "./Widgets/Unpublish";
-import { QuickView } from "./Widgets/QuickView";
 import { WidgetQuickShare } from "./Widgets/WidgetQuickShare";
 import { WidgetListed } from "./Widgets/WidgetListed";
 import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
@@ -26,28 +25,13 @@ export function Actions(props) {
   const canUpdate = usePermission("UPDATE");
   const domain = useDomain();
 
-  const { publishing, scheduling, siblings } = props.item;
-  const { listed, sort, updatedAt, version } = props.item.meta;
+  const { publishing } = props.item;
+  const { listed, sort } = props.item.meta;
   const { path, metaTitle, metaLinkText } = props.item.web;
-  const { basicApi } = props.instance;
   const liveURL = domain ? `${domain}${path}` : "";
 
   return (
     <Fragment>
-      <QuickView
-        fields={props.fields}
-        itemZUID={props.itemZUID}
-        modelZUID={props.modelZUID}
-        metaTitle={metaTitle}
-        version={version}
-        updatedAt={updatedAt}
-        publishing={publishing}
-        scheduling={scheduling}
-        siblings={siblings}
-        basicApi={basicApi}
-        liveURL={liveURL}
-      />
-
       <ContentInfo modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
       <ContentLinks item={props.item} />
 
