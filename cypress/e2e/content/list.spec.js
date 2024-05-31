@@ -46,6 +46,47 @@ describe("Content List Filters", () => {
   });
 });
 
+describe("Content List Navigation", () => {
+  before(() => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.waitOn("/bin/*", () => {
+        cy.visit("/content/6-0c960c-d1n0kx");
+      });
+    });
+  });
+
+  it("Opens the content item on click", () => {
+    cy.get(".MuiDataGrid-cell[data-colindex='1']").first().click();
+    cy.getBySelector("DuoModeToggle").should("exist");
+    cy.getBySelector("breadcrumbs").find(".MuiBreadcrumbs-li").eq(2).click();
+    cy.url().should("include", "/content/6-0c960c-d1n0kx");
+  });
+
+  it("Navigates to the import csv page", () => {
+    cy.getBySelector("MultiPageTableMoreMenu").click();
+    cy.getBySelector("ImportCSVNavButton").click();
+    cy.url().should("include", "/content/6-0c960c-d1n0kx/import");
+  });
+
+  it("Navigates to edit the model page", () => {
+    cy.getBySelector("MultiPageTableMoreMenu").click();
+    cy.getBySelector("EditModelNavButton").click();
+    cy.url().should("include", "/schema/6-0c960c-d1n0kx/fields");
+  });
+
+  it("Navigates to edit the template page", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.waitOn("/bin/*", () => {
+        cy.visit("/content/6-0c960c-d1n0kx");
+      });
+    });
+
+    cy.getBySelector("MultiPageTableMoreMenu").click();
+    cy.getBySelector("EditTemplateNavButton").click();
+    cy.url().should("include", "/code/file/views");
+  });
+});
+
 describe("Content List Actions", () => {
   before(() => {
     cy.waitOn("/v1/content/models*", () => {
@@ -66,8 +107,9 @@ describe("Content List Actions", () => {
     cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
   });
 
-  it("Opens the add item view", () => {
+  it("Opens the create new item view", () => {
     cy.getBySelector("AddItemButton").click();
     cy.getBySelector("CreateItemSaveButton").should("exist");
+    cy.url().should("include", "/content/6-e3d0e0-965qp6/new");
   });
 });

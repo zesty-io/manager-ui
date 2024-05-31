@@ -90,6 +90,7 @@ export const ItemListActions = forwardRef((props, ref) => {
   return (
     <Box display="flex" gap={1}>
       <IconButton
+        data-cy="MultiPageTableMoreMenu"
         size="small"
         onClick={(event) => {
           setAnchorEl(event.currentTarget);
@@ -111,6 +112,7 @@ export const ItemListActions = forwardRef((props, ref) => {
         }}
       >
         <MenuItem
+          data-cy="ImportCSVNavButton"
           onClick={() => {
             history.push(`/content/${modelZUID}/import`);
           }}
@@ -157,6 +159,7 @@ export const ItemListActions = forwardRef((props, ref) => {
           </MenuItem>
         )}
         <MenuItem
+          data-cy="EditModelNavButton"
           onClick={() => {
             history.push(`/schema/${modelZUID}`);
           }}
@@ -167,6 +170,7 @@ export const ItemListActions = forwardRef((props, ref) => {
           Edit Model
         </MenuItem>
         <MenuItem
+          data-cy="EditTemplateNavButton"
           onClick={() => {
             history.push(codePath);
           }}
