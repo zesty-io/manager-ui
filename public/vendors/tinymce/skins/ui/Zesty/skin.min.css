@@ -3038,6 +3038,9 @@ body.tox-dialog__disable-scroll {
   flex-wrap: wrap;
   padding: 0 0;
 }
+.tox.tox-fullscreen .tox-toolbar {
+  background: none !important;
+}
 .tox .tox-toolbar__overflow.tox-toolbar__overflow--closed {
   height: 0;
   opacity: 0;

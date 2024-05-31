@@ -95,6 +95,7 @@ export const ItemSettings = memo(
           {web.pathPart !== "zesty_home" && (
             <Fragment>
               <ItemParent
+                metaTitle={web.metaTitle}
                 itemZUID={meta.ZUID}
                 modelZUID={props.modelZUID}
                 parentZUID={web.parentZUID}
