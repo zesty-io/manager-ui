@@ -77,6 +77,7 @@ export const ItemListFilters = () => {
   return (
     <Box display="flex" gap={1.5} py={2}>
       <FilterButton
+        filterId="sortByFilter"
         isFilterActive={false}
         buttonText={`Sort: ${
           SORT_ORDER[params.get("sort") as keyof typeof SORT_ORDER] ??
@@ -97,6 +98,7 @@ export const ItemListFilters = () => {
       >
         {Object.entries(SORT_ORDER).map(([key, value]) => (
           <MenuItem
+            data-cy={`${key}FilterOption`}
             onClick={() => {
               setParams(key, "sort");
               setAnchorEl({

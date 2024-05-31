@@ -248,6 +248,7 @@ export const ItemListActions = forwardRef((props, ref) => {
         )}
       </Menu>
       <TextField
+        data-cy="MultiPageTableSearchField"
         onChange={handleSearchChange}
         value={searchTerm}
         placeholder="Filter Items"
@@ -268,6 +269,7 @@ export const ItemListActions = forwardRef((props, ref) => {
         }}
       />
       <Button
+        data-cy="AddItemButton"
         variant="contained"
         color="primary"
         startIcon={<Add />}

@@ -145,6 +145,7 @@ export const UpdateListActions = () => {
               }
             >
               <LoadingButton
+                data-cy="MultiPageTableSaveChanges"
                 variant="contained"
                 startIcon={<SaveRounded />}
                 size="small"

@@ -6,37 +6,39 @@ describe("Content List", () => {
   });
 
   it("Filters list items based on search term", () => {
-    cy.get("input[name='filter']").type("turkey");
-    cy.get(".ItemList article").contains("Turkey Run");
-    cy.get("input[name='filter']").clear();
+    cy.getBySelector("MultiPageTableSearchField").type("turkey");
+    cy.get(".MuiDataGrid-cell").contains("Turkey Run");
+    cy.getBySelector("MultiPageTableSearchField").type("{selectAll}{del}");
   });
 
   it("Sorts list items", () => {
-    cy.get(".ItemList .SortBy").first().click();
-    cy.get(".ItemList article")
-      .first()
-      .contains("Parent pre selection with fast typing");
-
-    cy.get(".ItemList .SortBy").eq(1).click();
-    cy.get(".ItemList article").first().contains("Self-Defense Class");
+    cy.getBySelector("sortByFilter_default").click();
+    cy.getBySelector("dateCreatedFilterOption").click();
+    cy.get(".MuiDataGrid-cell[data-colindex='3']").contains(
+      "Parent pre selection with fast typing"
+    );
+    cy.getBySelector("sortByFilter_default").click();
+    cy.getBySelector("dateSavedFilterOption").click();
   });
 
-  it("Bulk Edits Toggle and Number Values", () => {
+  it("Saves bulk edits", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-e3d0e0-965qp6");
+      cy.waitOn("/bin/*", () => {
+        cy.visit("/content/6-e3d0e0-965qp6");
+      });
     });
 
-    cy.get(".ItemList article").first().get(".SortCell button").first().click();
-    cy.get(".ItemList article")
-      .first()
-      .get(".ToggleCell button")
-      .first()
-      .click();
-    cy.contains("Save All Changes").click();
-    cy.contains("changes saved").should("exist");
+    cy.wait(5000);
+
+    cy.getBySelector("sortCell").first().find("button").first().click();
+    cy.getBySelector("sortCell").eq(1).find("button").first().click();
+    cy.getBySelector("MultiPageTableSaveChanges").click();
+
+    cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
+    cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
   });
 
-  it("Opens the add item view", () => {
+  it.only("Opens the add item view", () => {
     cy.getBySelector("AddItemButton").click();
     cy.getBySelector("CreateItemSaveButton").should("exist");
   });

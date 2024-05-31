@@ -470,6 +470,7 @@ export const SortCell = ({ params }: { params: GridRenderCellParams }) => {
 
   return (
     <FieldTypeSort
+      data-cy="sortCell"
       value={
         stagedChanges?.[params.row.id]?.[params.field]?.toString() ??
         (params.value?.toString() || "0")
