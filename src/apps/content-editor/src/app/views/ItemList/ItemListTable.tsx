@@ -383,7 +383,8 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
           setAnchorEl(e.currentTarget);
         }}
       >
-        {stagedChanges?.[params.row.id]?.[params.field] === null
+        {stagedChanges?.[params.row.id]?.[params.field] === null ||
+        !field?.settings?.options
           ? "Select"
           : field?.settings?.options[
               stagedChanges?.[params.row.id]?.[params.field]
