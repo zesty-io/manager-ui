@@ -1,4 +1,4 @@
-describe("Content List", () => {
+describe("Content List Filters", () => {
   before(() => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-0c960c-d1n0kx");
@@ -11,6 +11,30 @@ describe("Content List", () => {
     cy.getBySelector("MultiPageTableSearchField").type("{selectAll}{del}");
   });
 
+  it("Filters items based on date saved", () => {
+    cy.getBySelector("date_default").click();
+    cy.get(".MuiMenuItem-root").eq(1).click();
+    cy.getBySelector("NoResults").should("exist");
+    cy.getBySelector("date_clearFilter").click();
+    cy.getBySelector("NoResults").should("not.exist");
+  });
+
+  it("Filters by publish status", () => {
+    cy.getBySelector("statusFilter_default").click();
+    cy.getBySelector("scheduledFilterOption").click();
+    cy.getBySelector("NoResults").should("exist");
+    cy.getBySelector("statusFilter_clearFilter").click();
+    cy.getBySelector("NoResults").should("not.exist");
+  });
+
+  it("Filters by creator", () => {
+    cy.getBySelector("user_default").click();
+    cy.getBySelector("filter_value_5-da8c91c9da-l9cqsz").click();
+    cy.getBySelector("NoResults").should("exist");
+    cy.getBySelector("user_clearFilter").click();
+    cy.getBySelector("NoResults").should("not.exist");
+  });
+
   it("Sorts list items", () => {
     cy.getBySelector("sortByFilter_default").click();
     cy.getBySelector("dateCreatedFilterOption").click();
@@ -20,14 +44,18 @@ describe("Content List", () => {
     cy.getBySelector("sortByFilter_default").click();
     cy.getBySelector("dateSavedFilterOption").click();
   });
+});
 
-  it("Saves bulk edits", () => {
+describe("Content List Actions", () => {
+  before(() => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/bin/*", () => {
         cy.visit("/content/6-e3d0e0-965qp6");
       });
     });
+  });
 
+  it("Saves bulk edits", () => {
     cy.wait(5000);
 
     cy.getBySelector("sortCell").first().find("button").first().click();
@@ -38,7 +66,7 @@ describe("Content List", () => {
     cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
   });
 
-  it.only("Opens the add item view", () => {
+  it("Opens the add item view", () => {
     cy.getBySelector("AddItemButton").click();
     cy.getBySelector("CreateItemSaveButton").should("exist");
   });

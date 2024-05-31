@@ -117,6 +117,7 @@ export const ItemListFilters = () => {
         ))}
       </Menu>
       <FilterButton
+        filterId="statusFilter"
         isFilterActive={!!params.get("statusFilter")}
         buttonText={
           params.get("statusFilter")
@@ -142,6 +143,7 @@ export const ItemListFilters = () => {
       >
         {Object.entries(STATUS_FILTER).map(([key, value]) => (
           <MenuItem
+            data-cy={`${key}FilterOption`}
             onClick={() => {
               setParams(key, "statusFilter");
               setAnchorEl({
