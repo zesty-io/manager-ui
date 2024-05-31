@@ -175,9 +175,7 @@ export const ItemCreate = () => {
           }
           dispatch(
             notify({
-              message: `You are missing data in ${res.missingRequired
-                .map((f: any) => f.label)
-                .join(", ")}`,
+              message: "Missing Data in Required Fields",
               kind: "error",
             })
           );
@@ -236,7 +234,7 @@ export const ItemCreate = () => {
 
         dispatch(
           notify({
-            message: `Created new ${model.label} item`,
+            message: `Created Item: ${model.label}`,
             kind: "success",
           })
         );
