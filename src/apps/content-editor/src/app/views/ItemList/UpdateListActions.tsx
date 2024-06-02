@@ -1,9 +1,20 @@
-import { Box, ButtonGroup, Button, Typography, Tooltip } from "@mui/material";
+import {
+  Box,
+  ButtonGroup,
+  Button,
+  Typography,
+  Tooltip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+} from "@mui/material";
 import { IconButton } from "@zesty-io/material";
 import {
   SaveRounded,
   CloseRounded,
   CloudUploadRounded,
+  ArrowDropDownRounded,
+  CalendarTodayRounded,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
@@ -18,12 +29,15 @@ import {
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { ConfirmPublishesModal } from "./ConfirmPublishesModal";
 import { useSelectedItems } from "./SelectedItemsContext";
+import { SchedulePublishesModal } from "./SchedulePublishesModal";
 
 export const UpdateListActions = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
   const langCode = params.get("lang");
   const [itemsToPublish, setItemsToPublish] = useState<string[]>([]);
+  const [itemsToSchedule, setItemsToSchedule] = useState<string[]>([]);
   const { data: items } = useGetContentModelItemsQuery({
     modelZUID,
     params: {
@@ -31,6 +45,7 @@ export const UpdateListActions = () => {
     },
   });
   const [showPublishesModal, setShowPublishesModal] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
   const { stagedChanges, updateStagedChanges, clearStagedChanges } =
     useStagedChanges();
   const [selectedItems, setSelectedItems] = useSelectedItems();
@@ -76,7 +91,7 @@ export const UpdateListActions = () => {
     }
   };
 
-  const handleSaveAndPublish = async () => {
+  const handleSaveAndPublish = async (isSchedule = false) => {
     try {
       const response = await updateContentItems({
         modelZUID,
@@ -91,8 +106,14 @@ export const UpdateListActions = () => {
           };
         }),
       });
-      // @ts-ignore
-      setItemsToPublish([...response?.data?.data]);
+
+      if (isSchedule) {
+        // @ts-ignore
+        setItemsToSchedule([...response?.data?.data]);
+      } else {
+        // @ts-ignore
+        setItemsToPublish([...response?.data?.data]);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -102,7 +123,13 @@ export const UpdateListActions = () => {
     if (itemsToPublish.length) {
       setShowPublishesModal(true);
     }
-  }, [itemsToPublish, items]);
+  }, [itemsToPublish]);
+
+  useEffect(() => {
+    if (itemsToSchedule.length) {
+      setShowScheduleModal(true);
+    }
+  }, [itemsToSchedule]);
 
   return (
     <>
@@ -201,22 +228,67 @@ export const UpdateListActions = () => {
                 {hasStagedChanges ? "Save & Publish" : "Publish"}
               </LoadingButton>
             </Tooltip>
-            {/* <Button
-            sx={{
-              color: "common.white",
-              width: 32,
-              // Override MUI default minWidth of 40px one-off
-              minWidth: "unset !important",
-            }}
-            onClick={(e) => {
-              setPublishMenu(e.currentTarget);
-            }}
-            disabled={publishing || publishAfterSave || isFetching}
-            data-cy="PublishMenuButton"
-          >
-            <ArrowDropDownRounded fontSize="small" />
-          </Button> */}
+            <Button
+              sx={{
+                color: "common.white",
+                width: 32,
+                // Override MUI default minWidth of 40px one-off
+                minWidth: "unset !important",
+              }}
+              onClick={(event) => {
+                setAnchorEl(event.currentTarget);
+              }}
+              disabled={isPublishing || isSaving}
+            >
+              <ArrowDropDownRounded fontSize="small" />
+            </Button>
           </ButtonGroup>
+          <Menu
+            onClose={() => setAnchorEl(null)}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: -8,
+              horizontal: "right",
+            }}
+            anchorEl={anchorEl}
+            open={!!anchorEl}
+          >
+            <MenuItem
+              onClick={() => {
+                if (hasStagedChanges) {
+                  handleSaveAndPublish();
+                } else {
+                  setItemsToPublish(selectedItems);
+                }
+                setAnchorEl(null);
+              }}
+            >
+              <ListItemIcon>
+                <CloudUploadRounded fontSize="small" />
+              </ListItemIcon>
+              {hasStagedChanges ? "Save & Publish Now" : "Publish Now"}
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                if (hasStagedChanges) {
+                  handleSaveAndPublish(true);
+                } else {
+                  setItemsToSchedule(selectedItems);
+                }
+                setAnchorEl(null);
+              }}
+            >
+              <ListItemIcon>
+                <CalendarTodayRounded fontSize="small" />
+              </ListItemIcon>
+              {hasStagedChanges
+                ? "Save & Schedule Publish"
+                : "Schedule Publish"}
+            </MenuItem>
+          </Menu>
         </Box>
       </Box>
       {showPublishesModal && (
@@ -245,6 +317,36 @@ export const UpdateListActions = () => {
               clearStagedChanges({});
               setSelectedItems([]);
               setShowPublishesModal(false);
+            });
+          }}
+        />
+      )}
+      {showScheduleModal && (
+        <SchedulePublishesModal
+          items={itemsToSchedule?.map((itemZUID) =>
+            items?.find((item) => item.meta.ZUID === itemZUID)
+          )}
+          onCancel={() => {
+            setItemsToSchedule([]);
+            clearStagedChanges({});
+            setShowScheduleModal(false);
+          }}
+          onConfirm={(items, publishDateTime) => {
+            createItemsPublishing({
+              modelZUID,
+              body: items?.map((item) => {
+                return {
+                  ZUID: item.meta.ZUID,
+                  version: item.meta.version,
+                  publishAt: publishDateTime ? publishDateTime : "now",
+                  unpublishAt: "never",
+                };
+              }),
+            }).then(() => {
+              setItemsToSchedule([]);
+              clearStagedChanges({});
+              setSelectedItems([]);
+              setShowScheduleModal(false);
             });
           }}
         />

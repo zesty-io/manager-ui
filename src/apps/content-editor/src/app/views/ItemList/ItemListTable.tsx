@@ -134,9 +134,8 @@ const fieldTypeColumnConfigMap = {
   },
   images: {
     width: 100,
-    renderCell: ({ row }: GridRenderCellParams) => {
-      const src =
-        row.data.images?.thumbnail || row.data.images?.split(",")?.[0];
+    renderCell: (params: GridRenderCellParams) => {
+      const src = params?.value?.thumbnail || params?.value?.split(",")?.[0];
       if (!src) return null;
       return (
         <img
@@ -290,7 +289,6 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
           })),
       ];
     }
-
     return result;
   }, [fields]);
 
@@ -386,10 +384,10 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
         {stagedChanges?.[params.row.id]?.[params.field] === null ||
         !field?.settings?.options
           ? "Select"
-          : field?.settings?.options[
+          : field?.settings?.options?.[
               stagedChanges?.[params.row.id]?.[params.field]
             ] ||
-            field?.settings?.options[params?.value] ||
+            field?.settings?.options?.[params?.value] ||
             "Select"}
       </Button>
       <Menu
