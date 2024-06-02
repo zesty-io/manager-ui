@@ -584,6 +584,20 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["ContentNav"],
     }),
+    deleteContentItems: builder.mutation<
+      any,
+      {
+        modelZUID: string;
+        body: string[];
+      }
+    >({
+      query: ({ modelZUID, body }) => ({
+        url: `content/models/${modelZUID}/items/batch`,
+        method: "DELETE",
+        body,
+      }),
+      invalidatesTags: ["ContentItems"],
+    }),
     // https://www.zesty.io/docs/instances/api-reference/web/stylesheets/variables/categories/#Get-Variable-Stylesheet-Categories
     getInstanceStylesCategories: builder.query<StyleCategory[], void>({
       query: () => `/web/stylesheets/variables/categories`,
@@ -637,4 +651,5 @@ export const {
   useGetInstanceStylesCategoriesQuery,
   useUpdateContentItemsMutation,
   useCreateItemsPublishingMutation,
+  useDeleteContentItemsMutation,
 } = instanceApi;

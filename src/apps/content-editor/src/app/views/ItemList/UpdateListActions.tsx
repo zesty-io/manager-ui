@@ -15,6 +15,7 @@ import {
   CloudUploadRounded,
   ArrowDropDownRounded,
   CalendarTodayRounded,
+  DeleteRounded,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
@@ -23,13 +24,15 @@ import { useStagedChanges } from "./StagedChangesContext";
 import { LoadingButton } from "@mui/lab";
 import {
   useCreateItemsPublishingMutation,
+  useDeleteContentItemsMutation,
   useGetContentModelItemsQuery,
   useUpdateContentItemsMutation,
 } from "../../../../../../shell/services/instance";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
-import { ConfirmPublishesModal } from "./ConfirmPublishesModal";
+import { ConfirmPublishesModal } from "./ConfirmPublishesDialog";
 import { useSelectedItems } from "./SelectedItemsContext";
-import { SchedulePublishesModal } from "./SchedulePublishesModal";
+import { SchedulePublishesModal } from "./SchedulePublishesDialog";
+import { ConfirmDeletesDialog } from "./ConfirmDeletesDialog";
 
 export const UpdateListActions = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -46,6 +49,7 @@ export const UpdateListActions = () => {
   });
   const [showPublishesModal, setShowPublishesModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showDeletesModal, setShowDeletesModal] = useState(false);
   const { stagedChanges, updateStagedChanges, clearStagedChanges } =
     useStagedChanges();
   const [selectedItems, setSelectedItems] = useSelectedItems();
@@ -55,6 +59,9 @@ export const UpdateListActions = () => {
 
   const [createItemsPublishing, { isLoading: isPublishing }] =
     useCreateItemsPublishingMutation();
+
+  const [deleteContentItems, { isLoading: isDeleting }] =
+    useDeleteContentItemsMutation();
 
   const saveShortcut = useMetaKey("s", () => {
     handleSave();
@@ -183,7 +190,18 @@ export const UpdateListActions = () => {
               </LoadingButton>
             </Tooltip>
           ) : (
-            <Button>delete</Button>
+            <LoadingButton
+              loading={isDeleting}
+              onClick={() => {
+                setShowDeletesModal(true);
+              }}
+              startIcon={<DeleteRounded color="action" />}
+              size="small"
+              variant="outlined"
+              color="inherit"
+            >
+              Delete
+            </LoadingButton>
           )}
           <ButtonGroup
             variant="contained"
@@ -347,6 +365,26 @@ export const UpdateListActions = () => {
               clearStagedChanges({});
               setSelectedItems([]);
               setShowScheduleModal(false);
+            });
+          }}
+        />
+      )}
+      {showDeletesModal && (
+        <ConfirmDeletesDialog
+          items={selectedItems?.map((itemZUID: string) =>
+            items?.find((item) => item.meta.ZUID === itemZUID)
+          )}
+          onCancel={() => {
+            setSelectedItems([]);
+            setShowDeletesModal(false);
+          }}
+          onConfirm={(items) => {
+            deleteContentItems({
+              modelZUID,
+              body: items?.map((item) => item.meta.ZUID),
+            }).then(() => {
+              setSelectedItems([]);
+              setShowDeletesModal(false);
             });
           }}
         />

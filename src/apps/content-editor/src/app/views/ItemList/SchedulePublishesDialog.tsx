@@ -10,25 +10,14 @@ import {
   Box,
   Alert,
   List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemText,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import moment from "moment-timezone";
-import { useSelector } from "react-redux";
 import { ContentItem } from "../../../../../../shell/services/types";
-import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
-import { AppState } from "../../../../../../shell/store/types";
-import {
-  useGetAllBinFilesQuery,
-  useGetBinsQuery,
-} from "../../../../../../shell/services/mediaManager";
-import { useParams } from "react-router";
 import { FieldTypeDateTime } from "../../../../../../shell/components/FieldTypeDateTime";
+import { DialogContentItem } from "./DialogContentItem";
 
 type SchedulePublishesModalProps = {
   items: ContentItem[];
@@ -40,24 +29,11 @@ export const SchedulePublishesModal = ({
   items,
   onConfirm,
 }: SchedulePublishesModalProps) => {
-  const { modelZUID } = useParams<{ modelZUID: string }>();
   const [publishDateTime, setPublishDateTime] = useState(
     moment().minute(0).second(0).add(1, "hours").format("yyyy-MM-DD HH:mm:ss")
   );
   const [publishTimezone, setPublishTimezone] = useState(
     moment.tz.guess() ?? "America/Los_Angeles"
-  );
-
-  const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
-  const instanceId = useSelector((state: AppState) => state.instance.ID);
-  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
-  const { data: bins } = useGetBinsQuery({
-    instanceId,
-    ecoId,
-  });
-  const { data: files } = useGetAllBinFilesQuery(
-    bins?.map((bin) => bin.id),
-    { skip: !bins?.length }
   );
 
   const isSelectedDatetimePast = moment
@@ -132,57 +108,11 @@ export const SchedulePublishesModal = ({
               immediately published.
             </Alert>
           )}
-          {items.map((item) => {
-            let heroImage = (
-              item?.data?.[
-                fields?.find((field) => field.datatype === "images")?.name
-              ] as string
-            )?.split(",")?.[0];
-            if (heroImage?.startsWith("3-")) {
-              heroImage = files?.find(
-                (file) => file.id === heroImage
-              )?.thumbnail;
-            }
-            return (
-              <List disablePadding>
-                <ListItem dense disableGutters divider>
-                  <ListItemAvatar>
-                    <Avatar
-                      sx={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 1,
-                        backgroundColor: (theme) => theme.palette.grey[100],
-                      }}
-                      src={heroImage}
-                      imgProps={{
-                        style: {
-                          objectFit: "contain",
-                        },
-                      }}
-                    >
-                      <Typography variant="body2" color="text.secondary">
-                        NA
-                      </Typography>
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      fontWeight: 600,
-                      color: "text.primary",
-                      noWrap: true,
-                    }}
-                    secondaryTypographyProps={{
-                      noWrap: true,
-                    }}
-                    primary={item?.web?.metaTitle}
-                    secondary={item?.web?.metaDescription}
-                  />
-                </ListItem>
-              </List>
-            );
-          })}
+          <List disablePadding>
+            {items.map((item, index) => (
+              <DialogContentItem key={index} item={item} />
+            ))}
+          </List>
         </>
       </DialogContent>
       <DialogActions>
