@@ -97,14 +97,39 @@ describe("Content List Actions", () => {
   });
 
   it("Saves bulk edits", () => {
-    cy.wait(5000);
-
+    cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
     cy.getBySelector("sortCell").first().find("button").first().click();
     cy.getBySelector("sortCell").eq(1).find("button").first().click();
     cy.getBySelector("MultiPageTableSaveChanges").click();
 
-    cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
     cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
+  });
+
+  it("Saves and publishes bulk edits", () => {
+    cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
+    cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
+      "batchPublish"
+    );
+    cy.getBySelector("sortCell").first().find("button").first().click();
+    cy.getBySelector("sortCell").eq(1).find("button").first().click();
+    cy.getBySelector("MultiPageTablePublish").click();
+    cy.getBySelector("ConfirmPublishButton").click();
+
+    cy.wait("@batchSave").its("response.statusCode").should("equal", 200);
+    cy.wait("@batchPublish").its("response.statusCode").should("equal", 201);
+  });
+
+  it.only("Selects items and publishes", () => {
+    cy.intercept("PUT", "/v1/content/models/*/items/batch").as("batchSave");
+    cy.intercept("POST", "/v1/content/models/*/items/publishings/batch").as(
+      "batchPublish"
+    );
+    cy.get("input[type=checkbox]").eq(1).click();
+    cy.get("input[type=checkbox]").eq(2).click();
+    cy.getBySelector("MultiPageTablePublish").click();
+    cy.getBySelector("ConfirmPublishButton").click();
+
+    cy.wait("@batchPublish").its("response.statusCode").should("equal", 201);
   });
 
   it("Opens the create new item view", () => {

@@ -253,8 +253,7 @@ export const UpdateListActions = () => {
                 loading={isPublishing || isSaving}
                 color="success"
                 variant="contained"
-                id="PublishButton"
-                data-cy="PublishButton"
+                data-cy="MultiPageTablePublish"
               >
                 {hasStagedChanges ? "Save & Publish" : "Publish"}
               </LoadingButton>
