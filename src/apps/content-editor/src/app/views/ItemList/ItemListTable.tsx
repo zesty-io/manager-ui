@@ -1,18 +1,5 @@
 import { useHistory, useParams as useRouterParams } from "react-router";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Chip,
-  Typography,
-  Stack,
-  Menu,
-  MenuItem,
-  Link,
-  ToggleButtonGroup,
-  ToggleButton,
-  Tooltip,
-} from "@mui/material";
+import { Box, CircularProgress, Chip, Typography, Link } from "@mui/material";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import {
   DataGridPro,
@@ -22,14 +9,15 @@ import {
   GridInitialState,
 } from "@mui/x-data-grid-pro";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { KeyboardArrowDownRounded } from "@mui/icons-material";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
-import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort";
-import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
-import { OneToManyColumn } from "./OneToManyColumn";
-import { UserCell } from "./UserCell";
+import { OneToManyCell } from "./TableCells/OneToManyCell";
+import { UserCell } from "./TableCells/UserCell";
 import { useSelectedItems } from "./SelectedItemsContext";
+import { VersionCell } from "./TableCells/VersionCell";
+import { DropDownCell } from "./TableCells/DropdownCell";
+import { SortCell } from "./TableCells/SortCell";
+import { BooleanCell } from "./TableCells/BooleanCell";
 
 type ItemListTableProps = {
   loading: boolean;
@@ -104,7 +92,7 @@ const fieldTypeColumnConfigMap = {
   one_to_many: {
     width: 240,
     renderCell: (params: GridRenderCellParams) => {
-      return <OneToManyColumn items={params.value?.split(",")} />;
+      return <OneToManyCell items={params.value?.split(",")} />;
     },
   },
   one_to_one: {
@@ -347,242 +335,5 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
         },
       }}
     />
-  );
-};
-
-export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
-  const { stagedChanges, updateStagedChanges } = useStagedChanges();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { modelZUID } = useRouterParams<{ modelZUID: string }>();
-  const { data: fields, isFetching: isFieldsFetching } =
-    useGetContentModelFieldsQuery(modelZUID);
-  const field = fields?.find((field) => field.name === params.field);
-  const handleChange = (value: any) => {
-    setAnchorEl(null);
-    updateStagedChanges(params.row.id, params.field, value);
-  };
-
-  return (
-    <>
-      <Button
-        sx={{
-          color: "text.disabled",
-          height: "24px",
-          minWidth: "unset",
-          padding: "2px",
-          " .MuiButton-endIcon": {
-            marginLeft: "4px",
-          },
-        }}
-        color="inherit"
-        endIcon={<KeyboardArrowDownRounded color="action" />}
-        onClick={(e) => {
-          e.stopPropagation();
-          setAnchorEl(e.currentTarget);
-        }}
-      >
-        {stagedChanges?.[params.row.id]?.[params.field] === null ||
-        !field?.settings?.options
-          ? "Select"
-          : field?.settings?.options?.[
-              stagedChanges?.[params.row.id]?.[params.field]
-            ] ||
-            field?.settings?.options?.[params?.value] ||
-            "Select"}
-      </Button>
-      <Menu
-        onClose={() => setAnchorEl(null)}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        anchorEl={anchorEl}
-        open={!!anchorEl}
-      >
-        <MenuItem
-          onClick={() => {
-            handleChange(null);
-          }}
-        >
-          Select
-        </MenuItem>
-        {field?.settings?.options &&
-          Object.entries(field?.settings?.options)?.map(([key, value]) => (
-            <MenuItem
-              key={key}
-              onClick={() => {
-                handleChange(key);
-              }}
-            >
-              {value}
-            </MenuItem>
-          ))}
-      </Menu>
-    </>
-  );
-};
-
-export const BooleanCell = ({ params }: { params: GridRenderCellParams }) => {
-  const { stagedChanges, updateStagedChanges } = useStagedChanges();
-  const { modelZUID } = useRouterParams<{ modelZUID: string }>();
-  const { data: fields, isFetching: isFieldsFetching } =
-    useGetContentModelFieldsQuery(modelZUID);
-  const field = fields?.find((field) => field.name === params.field);
-  const handleChange = (value: any) => {
-    updateStagedChanges(params.row.id, params.field, value);
-  };
-
-  return (
-    <ToggleButtonGroup
-      size="small"
-      color="primary"
-      value={stagedChanges?.[params.row.id]?.[params.field] ?? params.value}
-      exclusive
-      onChange={(e, value) => {
-        e.stopPropagation();
-        if (value === null) {
-          return;
-        }
-        handleChange(Number(value));
-      }}
-    >
-      {field?.settings?.options &&
-        Object.entries(field?.settings?.options)?.map(([key, value]) => (
-          <ToggleButton key={key} value={Number(key)}>
-            {value}
-          </ToggleButton>
-        ))}
-    </ToggleButtonGroup>
-  );
-};
-
-export const SortCell = ({ params }: { params: GridRenderCellParams }) => {
-  const { stagedChanges, updateStagedChanges } = useStagedChanges();
-  const handleChange = (value: any) => {
-    updateStagedChanges(params.row.id, params.field, value);
-  };
-
-  return (
-    <FieldTypeSort
-      data-cy="sortCell"
-      value={
-        stagedChanges?.[params.row.id]?.[params.field]?.toString() ??
-        (params.value?.toString() || "0")
-      }
-      onChange={(evt) => {
-        handleChange(parseInt(evt.target.value));
-      }}
-      height={40}
-    />
-  );
-};
-
-export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
-  const { data: users } = useGetUsersQuery();
-
-  const createdByUser = users?.find(
-    (user) => user.ZUID === params.row?.meta?.createdByUserZUID
-  );
-  const publishedByUser =
-    users?.find(
-      (user) => user.ZUID === params.row?.publishing?.publishedByUserZUID
-    ) ||
-    users?.find(
-      (user) => user.ZUID === params.row?.priorPublishing?.publishedByUserZUID
-    );
-  const isScheduledPublish =
-    new Date(
-      params.row?.publishing?.publishAt ||
-        params.row?.priorPublishing?.publishAt
-    )?.getTime() > new Date()?.getTime();
-
-  return (
-    <Stack spacing={0.25}>
-      {params.row?.meta?.version !== params.row?.publishing?.version && (
-        <Tooltip
-          enterDelay={1000}
-          enterNextDelay={1000}
-          title={`v${params.row?.meta?.version} saved on ${new Date(
-            params.row?.meta?.updatedAt
-          ).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            timeZoneName: "short",
-          })} by ${createdByUser?.firstName} ${createdByUser?.lastName}`}
-          slotProps={{
-            popper: {
-              style: {
-                width: 116,
-              },
-            },
-          }}
-          placement="bottom"
-        >
-          <Chip
-            label={`v${params.row?.meta?.version}`}
-            size="small"
-            color="info"
-          />
-        </Tooltip>
-      )}
-      {(params.row?.publishing?.version ||
-        params.row?.priorPublishing?.version) && (
-        <Tooltip
-          enterDelay={1000}
-          enterNextDelay={1000}
-          title={`v${
-            params.row?.publishing?.version ||
-            params.row?.priorPublishing?.version
-          } ${
-            isScheduledPublish ? "scheduled to publish" : "published"
-          } on ${new Date(
-            params.row?.publishing?.publishAt ||
-              params.row?.priorPublishing?.publishAt
-          ).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            timeZoneName: "short",
-          })} by ${publishedByUser?.firstName} ${publishedByUser?.lastName}`}
-          slotProps={{
-            popper: {
-              style: {
-                width: isScheduledPublish ? 116 : 146,
-              },
-            },
-          }}
-          placement="bottom"
-        >
-          <Chip
-            label={`v${
-              params.row?.publishing?.version ||
-              params.row?.priorPublishing?.version
-            }`}
-            size="small"
-            color={isScheduledPublish ? "warning" : "success"}
-          />
-        </Tooltip>
-      )}
-
-      {!params.row?.meta?.version && (
-        <Tooltip
-          enterDelay={1000}
-          enterNextDelay={1000}
-          title={"Item not yet created"}
-          placement="bottom"
-        >
-          <Chip label={"v0"} size="small" />
-        </Tooltip>
-      )}
-    </Stack>
   );
 };

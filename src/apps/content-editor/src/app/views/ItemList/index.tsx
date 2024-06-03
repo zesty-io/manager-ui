@@ -30,7 +30,7 @@ import { useSelectedItems } from "./SelectedItemsContext";
 import { isDate } from "moment-timezone";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 
-export const ItemList2 = () => {
+export const ItemList = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
   const langCode = params.get("lang");

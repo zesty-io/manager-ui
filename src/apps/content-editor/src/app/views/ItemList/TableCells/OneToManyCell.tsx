@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Box, Chip } from "@mui/material";
 import { useSelector } from "react-redux";
 
-import { AppState } from "../../../../../../shell/store/types";
+import { AppState } from "../../../../../../../shell/store/types";
 
 const getNumOfItemsToRender = (
   parentWidth: number,
@@ -24,10 +24,10 @@ const getNumOfItemsToRender = (
   return validIndex;
 };
 
-type OneToManyColumnProps = {
+type OneToManyCellProps = {
   items: any[];
 };
-export const OneToManyColumn = ({ items }: OneToManyColumnProps) => {
+export const OneToManyCell = ({ items }: OneToManyCellProps) => {
   const allItems = useSelector((state: AppState) => state.content);
   const chipContainerRef = useRef<HTMLDivElement>();
   const [lastValidIndex, setLastValidIndex] = useState(allItems?.length - 1);

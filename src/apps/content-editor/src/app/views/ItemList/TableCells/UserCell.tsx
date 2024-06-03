@@ -2,8 +2,8 @@ import React from "react";
 import { Stack, Avatar, Typography } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 
-import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
-import { MD5 } from "../../../../../../utility/md5";
+import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
+import { MD5 } from "../../../../../../../utility/md5";
 
 type UserCellProps = { params: GridRenderCellParams };
 export const UserCell = ({ params }: UserCellProps) => {
