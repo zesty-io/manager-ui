@@ -33,10 +33,13 @@ import { ConfirmPublishesModal } from "./ConfirmPublishesDialog";
 import { useSelectedItems } from "./SelectedItemsContext";
 import { SchedulePublishesModal } from "./SchedulePublishesDialog";
 import { ConfirmDeletesDialog } from "./ConfirmDeletesDialog";
+import { notify } from "../../../../../../shell/store/notifications";
+import { useDispatch } from "react-redux";
 
 export const UpdateListActions = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
+  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
   const langCode = params.get("lang");
   const [itemsToPublish, setItemsToPublish] = useState<string[]>([]);
@@ -94,7 +97,12 @@ export const UpdateListActions = () => {
       });
       clearStagedChanges({});
     } catch (err) {
-      console.error(err);
+      dispatch(
+        notify({
+          kind: "error",
+          message: `Error saving items: ${err?.data?.error}`,
+        })
+      );
     }
   };
 
@@ -122,7 +130,12 @@ export const UpdateListActions = () => {
         setItemsToPublish([...response?.data?.data]);
       }
     } catch (err) {
-      console.error(err);
+      dispatch(
+        notify({
+          kind: "error",
+          message: `Error saving items: ${err?.data?.error}`,
+        })
+      );
     }
   };
 
@@ -330,12 +343,22 @@ export const UpdateListActions = () => {
                   unpublishAt: "never",
                 };
               }),
-            }).then(() => {
-              setItemsToPublish([]);
-              clearStagedChanges({});
-              setSelectedItems([]);
-              setShowPublishesModal(false);
-            });
+            })
+              .unwrap()
+              .then(() => {
+                setItemsToPublish([]);
+                clearStagedChanges({});
+                setSelectedItems([]);
+                setShowPublishesModal(false);
+              })
+              .catch((res) => {
+                dispatch(
+                  notify({
+                    kind: "error",
+                    message: `Error publishing items: ${res?.data?.error}`,
+                  })
+                );
+              });
           }}
         />
       )}
@@ -360,12 +383,22 @@ export const UpdateListActions = () => {
                   unpublishAt: "never",
                 };
               }),
-            }).then(() => {
-              setItemsToSchedule([]);
-              clearStagedChanges({});
-              setSelectedItems([]);
-              setShowScheduleModal(false);
-            });
+            })
+              .unwrap()
+              .then((response) => {
+                setItemsToSchedule([]);
+                clearStagedChanges({});
+                setSelectedItems([]);
+                setShowScheduleModal(false);
+              })
+              .catch((res) => {
+                dispatch(
+                  notify({
+                    kind: "error",
+                    message: `Error publishing items: ${res?.data?.error}`,
+                  })
+                );
+              });
           }}
         />
       )}
