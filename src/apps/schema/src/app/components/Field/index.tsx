@@ -103,11 +103,11 @@ export const Field = ({
       let message = "";
 
       if (isFieldDeleted) {
-        message = `\"${field?.label}\" field is deactivated`;
+        message = `Field Deactivated: ${field?.label}`;
       }
 
       if (isFieldUndeleted) {
-        message = `\"${field?.label}\" field is reactivated`;
+        message = `Field Reactivated: ${field?.label}`;
       }
 
       dispatch(

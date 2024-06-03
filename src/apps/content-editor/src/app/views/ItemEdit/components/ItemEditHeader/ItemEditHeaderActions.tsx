@@ -394,28 +394,78 @@ export const ItemEditHeaderActions = ({
           }
           placement="bottom-start"
         >
-          <Box display="flex" alignItems="center" pl="10px" pr="4px">
-            <Box
-              display="flex"
-              gap={1}
-              alignItems="center"
-              data-cy="ContentScheduledIndicator"
-            >
-              <ScheduleRounded fontSize="small" color="warning" />
-              <Typography variant="body2" color="warning.main" fontWeight={500}>
-                Scheduled
-              </Typography>
-            </Box>
-            <IconButton
-              data-cy="PublishMenuButton"
+          {item?.scheduling?.version !== item?.meta?.version ? (
+            <ButtonGroup
+              variant="contained"
+              color="success"
               size="small"
-              onClick={(e) => {
-                setPublishMenu(e.currentTarget);
+              sx={{
+                "& .MuiButtonGroup-grouped:not(:last-of-type)": {
+                  borderColor: "green.600",
+                },
               }}
             >
-              <ArrowDropDownRounded fontSize="small" />
-            </IconButton>
-          </Box>
+              <LoadingButton
+                startIcon={<CloudUploadRounded />}
+                sx={{
+                  color: "common.white",
+                  whiteSpace: "nowrap",
+                }}
+                onClick={() => {
+                  setIsConfirmPublishModalOpen(true);
+                }}
+                loading={publishing || publishAfterSave || isFetching}
+                color="success"
+                variant="contained"
+                id="PublishButton"
+                data-cy="PublishButton"
+              >
+                Publish
+              </LoadingButton>
+              <Button
+                sx={{
+                  color: "common.white",
+                  width: 32,
+                  // Override MUI default minWidth of 40px one-off
+                  minWidth: "unset !important",
+                }}
+                onClick={(e) => {
+                  setPublishMenu(e.currentTarget);
+                }}
+                disabled={publishing || publishAfterSave || isFetching}
+                data-cy="PublishMenuButton"
+              >
+                <ArrowDropDownRounded fontSize="small" />
+              </Button>
+            </ButtonGroup>
+          ) : (
+            <Box display="flex" alignItems="center" pl="10px" pr="4px">
+              <Box
+                display="flex"
+                gap={1}
+                alignItems="center"
+                data-cy="ContentScheduledIndicator"
+              >
+                <ScheduleRounded fontSize="small" color="warning" />
+                <Typography
+                  variant="body2"
+                  color="warning.main"
+                  fontWeight={500}
+                >
+                  Scheduled
+                </Typography>
+              </Box>
+              <IconButton
+                data-cy="PublishMenuButton"
+                size="small"
+                onClick={(e) => {
+                  setPublishMenu(e.currentTarget);
+                }}
+              >
+                <ArrowDropDownRounded fontSize="small" />
+              </IconButton>
+            </Box>
+          )}
         </Tooltip>
       )}
 

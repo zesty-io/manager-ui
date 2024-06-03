@@ -46,12 +46,18 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
   }, [isSuccess]);
 
   useEffect(() => {
+    // @ts-ignore
+    let message = error?.data?.error || "Failed to delete model";
+    // @ts-ignore
+    if (error?.data?.error.includes("Failed to Delete Model")) {
+      message = `Cannot Delete Model: ${model.label}`;
+    }
+
     if (error) {
       dispatch(
         notify({
-          // @ts-ignore
-          message: error?.data?.error || "Failed to delete model",
-          kind: "warn",
+          message,
+          kind: "error",
         })
       );
     }
