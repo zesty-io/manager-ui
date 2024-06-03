@@ -1,4 +1,3 @@
-import React from "react";
 import { Stack, Avatar, Typography } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 

@@ -27,7 +27,6 @@ import { UpdateListActions } from "./UpdateListActions";
 import { getDateFilterFnByValues } from "../../../../../../shell/components/Filters/DateFilter/getDateFilter";
 import { ItemListTable } from "./ItemListTable";
 import { useSelectedItems } from "./SelectedItemsContext";
-import { isDate } from "moment-timezone";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 
 export const ItemList = () => {
