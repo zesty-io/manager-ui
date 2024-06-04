@@ -28,7 +28,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const commentResourceZuid = searchParams.get("commentResourceZuid");
 
   const parentComment = useMemo(() => {
-    return comment?.find((comment) => comment.resourceParentZUID === itemZUID);
+    return comment?.find((comment) => comment.resourceZUID === itemZUID);
   }, [comment, itemZUID]);
 
   useEffect(() => {
