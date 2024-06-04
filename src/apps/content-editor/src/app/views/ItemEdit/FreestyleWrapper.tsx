@@ -1,8 +1,17 @@
 import Cookies from "js-cookie";
-import { useRef, useState } from "react";
+import { MutableRefObject, forwardRef, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { useParams } from "react-router";
+import { withDAM } from "../../../../../../shell/components/withDAM";
+
+const IframeComponent = forwardRef(
+  (props: any, ref: MutableRefObject<HTMLIFrameElement>) => {
+    return <iframe ref={ref} {...props}></iframe>;
+  }
+);
+
+const IframeWithDAM = withDAM(IframeComponent);
 
 export const FreestyleWrapper = () => {
   const { modelZUID, itemZUID } = useParams<{
@@ -12,7 +21,6 @@ export const FreestyleWrapper = () => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const instance = useSelector((state: AppState) => state.instance);
-  // @ts-expect-error CONFIG not typed
   const [sessionToken] = useState(Cookies.get(CONFIG.COOKIE_NAME));
 
   const handleLoad = () => {
@@ -27,20 +35,18 @@ export const FreestyleWrapper = () => {
           itemZUID,
         },
       },
-      // @ts-expect-error CONFIG not typed
       `${CONFIG.URL_APPS}/freestyle/`
     );
   };
 
   return (
-    <iframe
-      // @ts-expect-error CONFIG not typed
+    <IframeWithDAM
       src={`${CONFIG.URL_APPS}/freestyle/`}
       ref={iframeRef}
       allow="clipboard-write"
       height="100%"
       width="100%"
       onLoad={handleLoad}
-    ></iframe>
+    ></IframeWithDAM>
   );
 };
