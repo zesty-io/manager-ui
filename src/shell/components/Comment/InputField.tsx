@@ -23,7 +23,7 @@ const EMAIL_MENTION_REGEX =
 type InputFieldProps = {
   isFirstComment: boolean;
   onCancel: () => void;
-  resourceZUID: string;
+  commentResourceZUID: string;
   parentCommentZUID: string;
   isEditMode?: boolean;
   editModeValue?: string;
@@ -31,7 +31,7 @@ type InputFieldProps = {
 export const InputField = ({
   isFirstComment,
   onCancel,
-  resourceZUID,
+  commentResourceZUID,
   parentCommentZUID,
   isEditMode = false,
   editModeValue = "",
@@ -82,16 +82,15 @@ export const InputField = ({
   const handleSubmit = () => {
     if (isFirstComment) {
       createComment({
-        resourceType: getResourceTypeByZuid(resourceZUID),
-        resourceZUID,
+        resourceZUID: itemZUID,
         content: inputValue,
-        resourceParentZUID: itemZUID,
+        scopeTo: commentResourceZUID,
       });
     } else {
       createReply({
         content: inputValue,
         commentZUID: parentCommentZUID,
-        resourceZUID,
+        resourceZUID: commentResourceZUID,
       });
     }
   };
@@ -99,7 +98,7 @@ export const InputField = ({
   const handleUpdate = () => {
     if (commentZUIDtoEdit.startsWith("24")) {
       updateComment({
-        resourceZUID,
+        resourceZUID: commentResourceZUID,
         commentZUID: commentZUIDtoEdit,
         content: inputValue,
       });
@@ -149,9 +148,9 @@ export const InputField = ({
   };
 
   useEffect(() => {
-    if (comments[resourceZUID]) {
-      setInitialValue(comments[resourceZUID]);
-      setInputValue(comments[resourceZUID]);
+    if (comments[commentResourceZUID]) {
+      setInitialValue(comments[commentResourceZUID]);
+      setInputValue(comments[commentResourceZUID]);
     }
   }, []);
 
@@ -159,7 +158,7 @@ export const InputField = ({
     // No need to save edit mode changes in draft
     if (inputValue && !isEditMode) {
       updateComments({
-        [resourceZUID]: inputValue === PLACEHOLDER ? "" : inputValue,
+        [commentResourceZUID]: inputValue === PLACEHOLDER ? "" : inputValue,
       });
     }
   }, [inputValue, isEditMode]);
@@ -169,7 +168,7 @@ export const InputField = ({
       tinymce?.activeEditor.setContent(PLACEHOLDER);
       setInputValue("");
       updateComments({
-        [resourceZUID]: "",
+        [commentResourceZUID]: "",
       });
     }
   }, [isCommentCreated, isReplyCreated]);

@@ -160,7 +160,7 @@ export const CommentsList = ({
             <InputField
               isFirstComment={!commentThread?.length}
               onCancel={onClose}
-              resourceZUID={commentResourceZUID}
+              commentResourceZUID={commentResourceZUID}
               parentCommentZUID={parentCommentZUID}
             />
           )}

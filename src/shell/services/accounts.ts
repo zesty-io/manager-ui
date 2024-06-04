@@ -75,24 +75,22 @@ export const accountsApi = createApi({
       any,
       {
         resourceZUID: string;
-        resourceParentZUID: string;
-        resourceType: CommentResourceType | "";
+        scopeTo: string;
         content: string;
       }
     >({
-      query: ({ resourceZUID, resourceType, content, resourceParentZUID }) => ({
+      query: ({ resourceZUID, content, scopeTo }) => ({
         url: "/comments",
         method: "POST",
         body: {
           resourceZUID,
-          resourceType,
           content,
           instanceZUID,
-          resourceParentZUID,
+          scopeTo,
         },
       }),
-      invalidatesTags: (_, __, { resourceZUID }) => [
-        { type: "Comments", id: resourceZUID },
+      invalidatesTags: (_, __, { scopeTo }) => [
+        { type: "Comments", id: scopeTo },
       ],
     }),
     createReply: builder.mutation<

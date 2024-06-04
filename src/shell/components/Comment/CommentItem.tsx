@@ -165,7 +165,7 @@ export const CommentItem = ({
         editModeValue={body}
         isFirstComment={false}
         onCancel={() => setCommentZUIDtoEdit(null)}
-        resourceZUID={commentResourceZUID}
+        commentResourceZUID={commentResourceZUID}
         parentCommentZUID={parentCommentZUID}
       />
     );
