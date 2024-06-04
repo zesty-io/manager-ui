@@ -32,7 +32,7 @@ export const MetricCard = ({
         padding: 2,
       }}
     >
-      <Box display="flex" justifyContent="space-between" gap={0.5}>
+      <Box display="flex" justifyContent="space-between">
         <Box flex={1}>
           <Typography variant="body2" fontWeight={600} color="text.secondary">
             {loading ? <Skeleton /> : title}
