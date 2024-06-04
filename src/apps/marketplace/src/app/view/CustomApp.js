@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import cx from "classnames";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
 import { Box } from "@mui/material";
@@ -9,6 +9,14 @@ import { NotFound } from "shell/components/NotFound";
 import { InstallApp } from "../components/InstallApp";
 
 import styles from "./CustomApp.less";
+import { withDAM } from "../../../../../shell/components/withDAM";
+
+const IframeComponent = forwardRef((props, ref) => {
+  return <iframe ref={ref} {...props}></iframe>;
+});
+
+const IframeWithDAM = withDAM(IframeComponent);
+
 export default function CustomApp() {
   return (
     <main className={cx(styles.CustomApp)}>
@@ -29,6 +37,8 @@ function LoadApp(props) {
 
   const instance = useSelector((state) => state.instance);
   const [sessionToken] = useState(Cookies.get(CONFIG.COOKIE_NAME));
+
+  const freestyleAppZUID = "80-d8abaff6ef-wxs830";
 
   useEffect(() => {
     if (frame.current) {
@@ -56,14 +66,25 @@ function LoadApp(props) {
 
   return app ? (
     <Box className={styles.IframeContainer}>
-      <iframe
-        src={app.url}
-        key={app.ZUID}
-        ref={frame}
-        frameBorder="0"
-        allow="clipboard-write"
-        scrolling="yes"
-      ></iframe>
+      {app.ZUID === freestyleAppZUID ? (
+        <IframeWithDAM
+          src={app.url}
+          key={app.ZUID}
+          ref={frame}
+          frameBorder="0"
+          allow="clipboard-write"
+          scrolling="yes"
+        />
+      ) : (
+        <iframe
+          src={app.url}
+          key={app.ZUID}
+          ref={frame}
+          frameBorder="0"
+          allow="clipboard-write"
+          scrolling="yes"
+        ></iframe>
+      )}
     </Box>
   ) : (
     <NotFound
