@@ -88,15 +88,23 @@ export const FieldTypeDateTime = ({
     });
   }, [isTimeFieldActive]);
 
-  const timezoneOptions = useMemo(() => {
+  const timezoneOptionsWithSuggestions = useMemo(() => {
     const userTimezone = TIMEZONES.find(
       (tz) => tz.id === currentSystemTimezoneID
     );
-    const filteredTimezones = TIMEZONES.filter(
-      (tz) => tz.id !== currentSystemTimezoneID
-    );
+    const timezoneSuggestions = [
+      {
+        ...userTimezone,
+        type: "suggestion",
+      },
+      {
+        label: "(GMT+00:00) Coordinated Universal Time",
+        id: "UTC",
+        type: "suggestion",
+      },
+    ];
 
-    return [userTimezone, ...filteredTimezones];
+    return [...timezoneSuggestions, ...TIMEZONES];
   }, [TIMEZONES, currentSystemTimezoneID]);
 
   const generateValuePreview = () => {
@@ -287,18 +295,26 @@ export const FieldTypeDateTime = ({
               fullWidth
               disableClearable
               size="small"
-              options={timezoneOptions}
-              value={TIMEZONES.find((tz) => tz.id === timezone)}
+              options={timezoneOptionsWithSuggestions}
+              value={timezoneOptionsWithSuggestions.find(
+                (tz) => tz.id === timezone
+              )}
               renderInput={(params) => <TextField {...params} />}
               renderOption={(props, option) => (
                 <ListItem
                   {...props}
-                  key={option.id}
+                  key={
+                    // @ts-ignore
+                    option.type === "suggestion"
+                      ? `${option.id}_suggestion`
+                      : option.id
+                  }
                   sx={{
                     "&.MuiListItem-root": {
                       color: "text.primary",
                       borderBottom: (theme) =>
-                        option.id === "UTC"
+                        // @ts-ignore
+                        option.id === "UTC" && option.type === "suggestion"
                           ? `1px solid ${theme.palette.border}`
                           : "none",
                     },
@@ -310,6 +326,20 @@ export const FieldTypeDateTime = ({
               onChange={(_, value) => {
                 setTimezone(value.id);
                 onTimezoneChange && onTimezoneChange(value.id);
+              }}
+              filterOptions={(options, state) => {
+                if (state.inputValue) {
+                  return options?.filter(
+                    (tz) =>
+                      tz.label
+                        .toLowerCase()
+                        .includes(state.inputValue.toLowerCase()) &&
+                      // @ts-ignore
+                      tz.type !== "suggestion"
+                  );
+                }
+
+                return options;
               }}
               ListboxProps={{
                 sx: {

@@ -100,10 +100,6 @@ const TIME_STRINGS = [
 ] as const;
 export const TIMEZONES = [
   {
-    label: "(GMT+00:00) Coordinated Universal Time",
-    id: "UTC",
-  },
-  {
     label: "(GMT-11:00) Niue Time",
     id: "Pacific/Niue",
   },
@@ -666,6 +662,10 @@ export const TIMEZONES = [
   {
     label: "(GMT-01:00) East Greenland Time",
     id: "America/Scoresbysund",
+  },
+  {
+    label: "(GMT+00:00) Coordinated Universal Time",
+    id: "UTC",
   },
   {
     label: "(GMT+00:00) Greenwich Mean Time",
