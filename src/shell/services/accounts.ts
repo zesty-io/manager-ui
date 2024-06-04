@@ -71,6 +71,7 @@ export const accountsApi = createApi({
       query: () => `instances/${instanceZUID}/app-installs`,
       transformResponse: getResponseData,
     }),
+    // Note: scopeTo needs to be null when fetching comments for non-content item field resources
     createComment: builder.mutation<
       any,
       {
@@ -133,16 +134,13 @@ export const accountsApi = createApi({
       transformResponse: (response: any) => [
         {
           ZUID: response.data?.ZUID,
+          commentZUID: null,
           content: response.data?.content,
           createdAt: response.data?.createdAt,
+          createdByUserEmail: response.data?.createdByUserEmail,
           createdByUserName: response.data?.createdByUserName,
           createdByUserZUID: response.data?.createdByUserZUID,
-          instanceZUID: response.data?.instanceZUID,
           mentions: response.data?.mentions,
-          replyCount: response.data?.replyCount,
-          resolved: response.data?.resolved,
-          resourceType: response.data?.resourceType,
-          resourceZUID: response.data?.resourceZUID,
           updatedAt: response.data?.updatedAt,
         },
         ...response.data?.replies,

@@ -519,18 +519,25 @@ export type Comment = {
   createdByUserName: string;
   createdByUserZUID: string;
   instanceZUID: string;
-  mentions: Mention[];
+  mentions?: Mention[];
   replyCount?: number;
   resolved: boolean;
   resourceType: CommentResourceType;
+  resourceUserEmail: string;
+  resourceUserZUID: string;
   resourceZUID: string;
+  scopeTo: string;
   updatedAt: string;
-  resourceParentZUID: string;
 };
 
-export type CommentReply = Omit<
-  Comment,
-  "replyCount" | "resourceParentZUID"
-> & {
+export type CommentReply = {
+  ZUID: string;
   commentZUID: string;
+  content: string;
+  createdAt: string;
+  createdByUserEmail: string;
+  createdByUserName: string;
+  createdByUserZUID: string;
+  mentions?: Mention[];
+  updatedAt: string;
 };
