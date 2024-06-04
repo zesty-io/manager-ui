@@ -113,9 +113,12 @@ export const accountsApi = createApi({
         { type: "CommentThread", id: commentZUID },
       ],
     }),
-    getCommentByResource: builder.query<Comment[], { resourceZUID: string }>({
-      query: ({ resourceZUID }) =>
-        `/instances/${instanceZUID}/comments?resource=${resourceZUID}&showResolved=true`,
+    getCommentByResource: builder.query<
+      Comment[],
+      { itemZUID: string; resourceZUID: string }
+    >({
+      query: ({ itemZUID, resourceZUID }) =>
+        `/instances/${instanceZUID}/comments?resource=${itemZUID}&scope=${resourceZUID}&showResolved=true`,
       transformResponse: (response: any) =>
         response.data?.sort((a: any, b: any) =>
           moment(b.createdAt).diff(a.createdAt)

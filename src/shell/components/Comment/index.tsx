@@ -16,7 +16,10 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const [_, __, ___, setCommentZUIDtoEdit] = useContext(CommentContext);
   const { itemZUID } = useParams<{ itemZUID: string }>();
   const { data: comment, isLoading: isLoadingComment } =
-    useGetCommentByResourceQuery({ resourceZUID }, { skip: !resourceZUID });
+    useGetCommentByResourceQuery(
+      { itemZUID, resourceZUID },
+      { skip: !resourceZUID }
+    );
   const buttonContainerRef = useRef<HTMLDivElement>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isCommentListOpen, setIsCommentListOpen] = useState(false);
