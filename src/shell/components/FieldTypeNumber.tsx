@@ -11,6 +11,7 @@ type FieldTypeNumberProps = {
   value: number;
   onChange: (value: number, name: string) => void;
   hasError: boolean;
+  allowNegative?: boolean;
 };
 export const FieldTypeNumber = ({
   required,
@@ -18,6 +19,7 @@ export const FieldTypeNumber = ({
   onChange,
   name,
   hasError,
+  allowNegative = true,
 }: FieldTypeNumberProps) => {
   const numberInputRef = useRef(null);
 
@@ -86,6 +88,7 @@ export const FieldTypeNumber = ({
         inputProps: {
           thousandSeparator: true,
           valueIsNumericString: true,
+          allowNegative,
         },
       }}
     />
