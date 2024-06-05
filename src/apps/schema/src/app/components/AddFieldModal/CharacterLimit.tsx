@@ -6,15 +6,30 @@ import {
   Typography,
 } from "@mui/material";
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
+import { MaxLengths } from "../../../../../content-editor/src/app/components/Editor/Editor";
 
 type CharacterLimitProps = {
+  type: "text" | "textarea";
   isCharacterLimitEnabled: boolean;
-  onToggleCharacterLimitState: () => void;
+  onToggleCharacterLimitState: (enabled: boolean) => void;
+  onChange: ({
+    inputName,
+    value,
+  }: {
+    inputName: string;
+    value: number;
+  }) => void;
+  minValue: number;
+  maxValue: number;
 };
 
 export const CharacterLimit = ({
+  type,
   isCharacterLimitEnabled,
   onToggleCharacterLimitState,
+  onChange,
+  minValue = 0,
+  maxValue = 150,
 }: CharacterLimitProps) => {
   return (
     <Box>
@@ -27,14 +42,16 @@ export const CharacterLimit = ({
             data-cy="DefaultValueCheckbox"
             checked={isCharacterLimitEnabled}
             size="small"
-            onChange={onToggleCharacterLimitState}
-            // onChange={(event) => {
-            //   setIsDefaultValueEnabled(event.target.checked);
-            //   if (!event.target.checked) {
-            //     onChange(null);
-            //     setIsDefaultValueEnabled(false);
-            //   }
-            // }}
+            onChange={(evt) => {
+              onToggleCharacterLimitState(evt.target.checked);
+              if (evt.target.checked) {
+                onChange({ inputName: "minCharLimit", value: 0 });
+                onChange({ inputName: "maxCharLimit", value: 150 });
+              } else {
+                onChange({ inputName: "minCharLimit", value: null });
+                onChange({ inputName: "maxCharLimit", value: null });
+              }
+            }}
           />
         }
         label={
@@ -65,8 +82,12 @@ export const CharacterLimit = ({
             control={
               <FieldTypeNumber
                 required={false}
-                value={0}
-                onChange={() => {}}
+                value={+minValue}
+                onChange={(value) => {
+                  if (value >= 0) {
+                    onChange({ inputName: "minCharLimit", value });
+                  }
+                }}
                 name="minimum"
                 hasError={false}
                 allowNegative={false}
@@ -88,11 +109,18 @@ export const CharacterLimit = ({
             control={
               <FieldTypeNumber
                 required={false}
-                value={150}
-                onChange={() => {}}
+                value={+maxValue}
+                onChange={(value) => {
+                  // console.log(value <= MaxLengths[type]);
+                  // if (value >= 0 && value <= MaxLengths[type]) {
+                  onChange({ inputName: "maxCharLimit", value });
+                  // }
+                }}
+                // onChange={() => {}}
                 name="maximum"
                 hasError={false}
                 allowNegative={false}
+                limit={MaxLengths[type]}
               />
             }
             label={

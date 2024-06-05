@@ -76,12 +76,16 @@ export const Rules = ({
         options={formData["options"] as FieldSettingsOptions[]}
       />
 
-      {["text", "textarea"].includes(type) && (
+      {(type === "text" || type === "textarea") && (
         <CharacterLimit
+          type={type}
           isCharacterLimitEnabled={isCharacterLimitEnabled}
-          onToggleCharacterLimitState={() =>
-            setIsCharacterLimitEnabled(!isCharacterLimitEnabled)
+          onToggleCharacterLimitState={(enabled) =>
+            setIsCharacterLimitEnabled(enabled)
           }
+          onChange={onFieldDataChanged}
+          minValue={formData["minCharLimit"] as number}
+          maxValue={formData["maxCharLimit"] as number}
         />
       )}
     </Stack>
