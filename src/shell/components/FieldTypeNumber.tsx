@@ -12,6 +12,7 @@ type FieldTypeNumberProps = {
   onChange: (value: number, name: string) => void;
   hasError: boolean;
   allowNegative?: boolean;
+  limit?: number;
 };
 export const FieldTypeNumber = ({
   required,
@@ -20,6 +21,7 @@ export const FieldTypeNumber = ({
   name,
   hasError,
   allowNegative = true,
+  limit,
 }: FieldTypeNumberProps) => {
   const numberInputRef = useRef(null);
 
@@ -47,7 +49,11 @@ export const FieldTypeNumber = ({
         break;
     }
 
-    onChange(+integerFractionalSplit.join("."), name);
+    const newValue = +integerFractionalSplit.join(".");
+
+    if (!limit || (limit && newValue <= limit)) {
+      onChange(newValue, name);
+    }
   };
 
   return (
@@ -63,6 +69,16 @@ export const FieldTypeNumber = ({
       }}
       onKeyDown={(evt) => {
         if ((evt.key === "Backspace" || evt.key === "Delete") && value === 0) {
+          evt.preventDefault();
+        }
+
+        if (
+          limit &&
+          ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(
+            evt.key
+          ) &&
+          +(value + evt.key) > limit
+        ) {
           evt.preventDefault();
         }
       }}
