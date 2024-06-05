@@ -20,7 +20,9 @@ describe("Content Item: Comments", () => {
   it("Replies to a comment", () => {
     cy.get("#commentInputField").click().type("Hello, this is a new reply!");
     cy.getBySelector("SubmitNewComment").click();
-    cy.intercept("/v1/comments/*?showReplies=true").as("getReplies");
+    cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
+      "getReplies"
+    );
     cy.wait("@getReplies");
     cy.getBySelector("CommentItem").should("have.length", 2);
   });
@@ -34,20 +36,38 @@ describe("Content Item: Comments", () => {
       .click()
       .type(`{selectall}{backspace}${UPDATED_TEXT}`);
     cy.getBySelector("SubmitNewComment").click();
-    cy.intercept("/v1/comments/*?showReplies=true").as("getReplies");
+    cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
+      "getReplies"
+    );
     cy.wait("@getReplies");
     cy.getBySelector("CommentItem").first().contains(UPDATED_TEXT);
   });
 
-  it.skip("Resolves a comment", () => {
+  it("Resolves a comment", () => {
     cy.getBySelector("ResolveCommentButton").click();
-    cy.intercept("/v1/comments/*?showReplies=true").as("getReplies");
+    cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
+      "getReplies"
+    );
     cy.intercept("/v1/instances/*/comments?resource=*").as(
       "getCommentResourceData"
     );
     cy.wait("@getReplies");
     cy.wait("@getCommentResourceData");
     cy.getBySelector("ResolveCommentButton").should("not.exist");
+  });
+
+  it("Reopens a comment when there is a new reply", () => {
+    cy.get("#commentInputField").click().type("Reopening ticket.");
+    cy.getBySelector("SubmitNewComment").click();
+    cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
+      "getReplies"
+    );
+    cy.intercept("/v1/instances/*/comments?resource=*").as(
+      "getCommentResourceData"
+    );
+    cy.wait("@getReplies");
+    cy.wait("@getCommentResourceData");
+    cy.getBySelector("ResolveCommentButton").should("exist");
   });
 
   it("Delete a comment", () => {
