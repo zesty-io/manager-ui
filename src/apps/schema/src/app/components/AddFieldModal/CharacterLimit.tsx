@@ -46,7 +46,10 @@ export const CharacterLimit = ({
               onToggleCharacterLimitState(evt.target.checked);
               if (evt.target.checked) {
                 onChange({ inputName: "minCharLimit", value: 0 });
-                onChange({ inputName: "maxCharLimit", value: 150 });
+                onChange({
+                  inputName: "maxCharLimit",
+                  value: type === "textarea" ? 16000 : 150,
+                });
               } else {
                 onChange({ inputName: "minCharLimit", value: null });
                 onChange({ inputName: "maxCharLimit", value: null });
