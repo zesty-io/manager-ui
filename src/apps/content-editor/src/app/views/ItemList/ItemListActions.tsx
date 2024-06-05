@@ -78,7 +78,7 @@ export const ItemListActions = forwardRef((props, ref) => {
     debounce((value) => {
       setParams(value, "search");
     }, 300),
-    []
+    [setParams]
   );
 
   const handleSearchChange = (event: any) => {
