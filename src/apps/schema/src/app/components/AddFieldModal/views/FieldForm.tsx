@@ -71,7 +71,7 @@ export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
 export interface FormData {
   [key: string]: FormValue;
 }
-interface Errors {
+export interface Errors {
   [key: string]: string | [string, string][];
 }
 interface Props {
@@ -669,53 +669,18 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && <Rules type={type} />}
-
-        {activeTab === "rules" && type === "uuid" && <ComingSoon />}
-
-        <Stack gap={2.5}>
-          {activeTab === "rules" && type === "images" && (
-            <MediaRules
-              fieldConfig={FORM_CONFIG["images"].rules}
-              onDataChange={handleFieldDataChange}
-              groups={mediaFoldersOptions}
-              fieldData={{
-                limit: formData["limit"],
-                group_id: formData["group_id"],
-              }}
-            />
-          )}
-
-          {activeTab === "rules" && type !== "uuid" && (
-            <DefaultValue
-              type={type}
-              value={formData["defaultValue"]}
-              onChange={(value) => {
-                handleFieldDataChange({ inputName: "defaultValue", value });
-              }}
-              isDefaultValueEnabled={isDefaultValueEnabled}
-              setIsDefaultValueEnabled={setIsDefaultValueEnabled}
-              error={isSubmitClicked && (errors["defaultValue"] as string)}
-              mediaRules={{
-                limit: formData["limit"],
-                group_id: formData["group_id"],
-              }}
-              relationshipFields={{
-                relatedModelZUID: formData["relatedModelZUID"] as string,
-                relatedFieldZUID: formData["relatedFieldZUID"] as string,
-              }}
-              options={formData["options"] as FieldSettingsOptions[]}
-            />
-          )}
-
-          {activeTab === "rules" && ["text", "textarea"].includes(type) && (
-            <CharacterLimit
-              isCharacterLimitEnabled
-              defaultMaxLimit={0}
-              defaultMinLimit={0}
-            />
-          )}
-        </Stack>
+        {activeTab === "rules" && (
+          <Rules
+            type={type}
+            onFieldDataChanged={handleFieldDataChange}
+            mediaFoldersOptions={mediaFoldersOptions}
+            formData={formData}
+            isSubmitClicked={isSubmitClicked}
+            errors={errors}
+            isDefaultValueEnabled={isDefaultValueEnabled}
+            setIsDefaultValueEnabled={setIsDefaultValueEnabled}
+          />
+        )}
 
         {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
