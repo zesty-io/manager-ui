@@ -114,12 +114,10 @@ export const CharacterLimit = ({
                 required={false}
                 value={+maxValue}
                 onChange={(value) => {
-                  // console.log(value <= MaxLengths[type]);
-                  // if (value >= 0 && value <= MaxLengths[type]) {
-                  onChange({ inputName: "maxCharLimit", value });
-                  // }
+                  if (value >= 0) {
+                    onChange({ inputName: "maxCharLimit", value });
+                  }
                 }}
-                // onChange={() => {}}
                 name="maximum"
                 hasError={false}
                 allowNegative={false}
