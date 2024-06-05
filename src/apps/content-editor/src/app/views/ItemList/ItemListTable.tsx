@@ -300,12 +300,16 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
       rows={rows}
       columns={[...columns, ...METADATA_COLUMNS]}
       rowHeight={54}
+      hideFooter
       onRowClick={(row) => {
         if (typeof row.id === "string" && row.id?.startsWith("new")) {
           history.push(`/content/${modelZUID}/new`);
         } else {
           history.push(`/content/${modelZUID}/${row.id}`);
         }
+      }}
+      components={{
+        NoRowsOverlay: () => <></>,
       }}
       checkboxSelection
       disableSelectionOnClick
@@ -319,6 +323,10 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
         !(stagedChanges && Object.keys(stagedChanges)?.length)
       }
       sx={{
+        ...(!rows?.length && {
+          height: 56,
+          flex: 0,
+        }),
         backgroundColor: "common.white",
         ".MuiDataGrid-row": {
           cursor: "pointer",
