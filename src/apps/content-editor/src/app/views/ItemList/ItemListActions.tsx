@@ -81,7 +81,7 @@ export const ItemListActions = forwardRef((props, ref) => {
     [setParams]
   );
 
-  const handleSearchChange = (event: any) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
     debouncedSetParams(value);

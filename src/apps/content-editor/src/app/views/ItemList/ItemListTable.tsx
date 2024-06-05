@@ -253,7 +253,7 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
       {
         field: "version",
         headerName: "Vers.",
-        width: 104,
+        width: 90,
         sortable: false,
         filterable: false,
         renderCell: (params: GridRenderCellParams) => (
