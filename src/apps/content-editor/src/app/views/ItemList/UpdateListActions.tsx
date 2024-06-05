@@ -407,7 +407,6 @@ export const UpdateListActions = () => {
             items?.find((item) => item.meta.ZUID === itemZUID)
           )}
           onCancel={() => {
-            setSelectedItems([]);
             setShowDeletesModal(false);
           }}
           onConfirm={(items) => {

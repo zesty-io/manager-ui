@@ -48,13 +48,13 @@ export const ConfirmDeletesDialog = ({
           <DeleteRounded color="error" />
         </Stack>
         <Box>Delete {items.length} Items:</Box>
-      </DialogTitle>
-      <DialogContent>
-        <Typography variant="body2" color="text.secondary" mb={2.5}>
+        <Typography variant="body2" color="text.secondary" mt={1}>
           Deleting these {items.length} items will remove it from all locations
           throughout your site and make it unavailable to API requests. This
           cannot be undone.
         </Typography>
+      </DialogTitle>
+      <DialogContent>
         <List disablePadding>
           {items.map((item, index) => (
             <DialogContentItem key={index} item={item} />

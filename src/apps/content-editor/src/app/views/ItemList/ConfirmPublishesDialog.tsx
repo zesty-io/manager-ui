@@ -48,13 +48,13 @@ export const ConfirmPublishesModal = ({
           <CloudUploadRoundedIcon color="success" />
         </Stack>
         <Box>Publish {items.length} Items:</Box>
-      </DialogTitle>
-      <DialogContent>
-        <Typography variant="body2" color="text.secondary" mb={2.5}>
+        <Typography variant="body2" color="text.secondary" mt={1}>
           This will make the the following 2 content items immediately available
           on all of your platforms. You can always unpublish this item later if
           needed.
         </Typography>
+      </DialogTitle>
+      <DialogContent>
         <List disablePadding>
           {items.map((item, index) => (
             <DialogContentItem key={index} item={item} />
