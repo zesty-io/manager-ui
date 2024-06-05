@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 
-import { TYPE_TEXT, FIELD_COPY_CONFIG, FieldListData } from "../configs";
+import {
+  TYPE_TEXT,
+  FIELD_COPY_CONFIG,
+  FieldListData,
+  FieldType,
+} from "../configs";
 import { stringStartsWithVowel, getCategory } from "../../utils";
 
 interface Props {
-  type: string;
+  type: FieldType;
 }
 export const Learn = ({ type }: Props) => {
   const category = getCategory(type);

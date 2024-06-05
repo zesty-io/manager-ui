@@ -1,8 +1,31 @@
 import { InputField } from "./AddFieldModal/FieldFormInput";
 import { ContentModelField } from "../../../../../shell/services/types";
 
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "wysiwyg_basic"
+  | "markdown"
+  | "images"
+  | "one_to_one"
+  | "one_to_many"
+  | "link"
+  | "internal_link"
+  | "number"
+  | "currency"
+  | "date"
+  | "datetime"
+  | "yes_no"
+  | "dropdown"
+  | "color"
+  | "sort"
+  | "uuid"
+  | "files"
+  | "fontawesome"
+  | "wysiwyg_advanced"
+  | "article_writer";
 interface FieldListData {
-  type: string;
+  type: FieldType;
   name: string;
   shortDescription: string;
   description: string;
@@ -305,7 +328,7 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
   ],
 };
 
-const TYPE_TEXT: { [key: string]: string } = {
+const TYPE_TEXT: Record<FieldType, string> = {
   article_writer: "Article Writer",
   color: "Color",
   currency: "Currency",
@@ -404,7 +427,7 @@ const COMMON_RULES: InputField[] = [
   },
 ];
 
-const FORM_CONFIG: { [key: string]: FormConfig } = {
+const FORM_CONFIG: Record<FieldType, FormConfig> = {
   article_writer: {
     details: [...COMMON_FIELDS],
     rules: [...COMMON_RULES],

@@ -50,12 +50,18 @@ import {
   ContentModelFieldValue,
   FieldSettingsOptions,
 } from "../../../../../../../shell/services/types";
-import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
+import {
+  FIELD_COPY_CONFIG,
+  TYPE_TEXT,
+  FORM_CONFIG,
+  FieldType,
+} from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { DefaultValue } from "../DefaultValue";
 import { CharacterLimit } from "../CharacterLimit";
+import { Rules } from "./Rules";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -69,7 +75,7 @@ interface Errors {
   [key: string]: string | [string, string][];
 }
 interface Props {
-  type: string;
+  type: FieldType;
   name: string;
   onModalClose: () => void;
   onBackClick?: () => void;
@@ -662,6 +668,8 @@ export const FieldForm = ({
             )}
           </Grid>
         )}
+
+        {activeTab === "rules" && <Rules type={type} />}
 
         {activeTab === "rules" && type === "uuid" && <ComingSoon />}
 
