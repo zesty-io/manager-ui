@@ -12,6 +12,7 @@ import {
   Tab,
   Button,
   Grid,
+  Stack,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
@@ -54,6 +55,7 @@ import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { DefaultValue } from "../DefaultValue";
+import { CharacterLimit } from "../CharacterLimit";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -661,41 +663,51 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && type === "images" && (
-          <MediaRules
-            fieldConfig={FORM_CONFIG["images"].rules}
-            onDataChange={handleFieldDataChange}
-            groups={mediaFoldersOptions}
-            fieldData={{
-              limit: formData["limit"],
-              group_id: formData["group_id"],
-            }}
-          />
-        )}
-
         {activeTab === "rules" && type === "uuid" && <ComingSoon />}
 
-        {activeTab === "rules" && type !== "uuid" && (
-          <DefaultValue
-            type={type}
-            value={formData["defaultValue"]}
-            onChange={(value) => {
-              handleFieldDataChange({ inputName: "defaultValue", value });
-            }}
-            isDefaultValueEnabled={isDefaultValueEnabled}
-            setIsDefaultValueEnabled={setIsDefaultValueEnabled}
-            error={isSubmitClicked && (errors["defaultValue"] as string)}
-            mediaRules={{
-              limit: formData["limit"],
-              group_id: formData["group_id"],
-            }}
-            relationshipFields={{
-              relatedModelZUID: formData["relatedModelZUID"] as string,
-              relatedFieldZUID: formData["relatedFieldZUID"] as string,
-            }}
-            options={formData["options"] as FieldSettingsOptions[]}
-          />
-        )}
+        <Stack gap={2.5}>
+          {activeTab === "rules" && type === "images" && (
+            <MediaRules
+              fieldConfig={FORM_CONFIG["images"].rules}
+              onDataChange={handleFieldDataChange}
+              groups={mediaFoldersOptions}
+              fieldData={{
+                limit: formData["limit"],
+                group_id: formData["group_id"],
+              }}
+            />
+          )}
+
+          {activeTab === "rules" && type !== "uuid" && (
+            <DefaultValue
+              type={type}
+              value={formData["defaultValue"]}
+              onChange={(value) => {
+                handleFieldDataChange({ inputName: "defaultValue", value });
+              }}
+              isDefaultValueEnabled={isDefaultValueEnabled}
+              setIsDefaultValueEnabled={setIsDefaultValueEnabled}
+              error={isSubmitClicked && (errors["defaultValue"] as string)}
+              mediaRules={{
+                limit: formData["limit"],
+                group_id: formData["group_id"],
+              }}
+              relationshipFields={{
+                relatedModelZUID: formData["relatedModelZUID"] as string,
+                relatedFieldZUID: formData["relatedFieldZUID"] as string,
+              }}
+              options={formData["options"] as FieldSettingsOptions[]}
+            />
+          )}
+
+          {activeTab === "rules" && ["text", "textarea"].includes(type) && (
+            <CharacterLimit
+              isCharacterLimitEnabled
+              defaultMaxLimit={0}
+              defaultMinLimit={0}
+            />
+          )}
+        </Stack>
 
         {activeTab === "learn" && <Learn type={type} />}
       </DialogContent>
