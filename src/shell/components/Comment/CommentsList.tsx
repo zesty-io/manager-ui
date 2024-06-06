@@ -12,10 +12,16 @@ import { Fragment, useContext, useEffect, useRef, useState } from "react";
 
 import { CommentItem } from "./CommentItem";
 import { InputField } from "./InputField";
-import { useParams as useSearchParams } from "../../hooks/useParams";
 import { useGetCommentThreadQuery } from "../../services/accounts";
 import { CommentContext } from "../../contexts/CommentProvider";
+import { useParams } from "react-router";
 
+type PathParams = {
+  modelZUID: string;
+  itemZUID: string;
+  resourceZUID: string;
+  commentZUID: string;
+};
 type CommentsListProps = {
   anchorEl: Element;
   onClose: () => void;
@@ -28,16 +34,13 @@ export const CommentsList = ({
   isResolved,
   parentCommentZUID,
 }: CommentsListProps) => {
-  const [searchParams] = useSearchParams();
+  const { resourceZUID, commentZUID } = useParams<PathParams>();
   const [_, __, commentZUIDtoEdit] = useContext(CommentContext);
   const [popperTopOffset, setPopperTopOffset] = useState(0);
   const [popperBottomOffset, setPopperBottomOffset] = useState(0);
   const [placement, setPlacement] =
     useState<PopperPlacementType>("bottom-start");
   const topOffsetRef = useRef<HTMLDivElement>();
-
-  const commentResourceZUID = searchParams.get("commentResourceZuid");
-  const highlightedReplyZUID = searchParams.get("replyZUID");
 
   const { data: commentThread, isLoading: isLoadingCommentThread } =
     useGetCommentThreadQuery(
@@ -74,13 +77,14 @@ export const CommentsList = ({
     // Scrolls to a specific reply indicated in the search params
     if (!isLoadingCommentThread) {
       setTimeout(() => {
-        const replyEl = document.getElementById(highlightedReplyZUID);
+        const replyEl = document.getElementById(commentZUID);
+
         if (replyEl) {
           replyEl.scrollIntoView();
         }
       });
     }
-  }, [highlightedReplyZUID, isLoadingCommentThread]);
+  }, [commentZUID, isLoadingCommentThread]);
 
   const calculateMaxHeight = () => {
     if (placement === "bottom-start") {
@@ -160,7 +164,7 @@ export const CommentsList = ({
             <InputField
               isFirstComment={!commentThread?.length}
               onCancel={onClose}
-              commentResourceZUID={commentResourceZUID}
+              commentResourceZUID={resourceZUID}
               parentCommentZUID={parentCommentZUID}
             />
           )}

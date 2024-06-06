@@ -117,11 +117,9 @@ export const CommentItem = ({
   }, [isCommentDeleted, isReplyDeleted]);
 
   const handleCopyClick = () => {
-    const resourceZUID = searchParams.get("commentResourceZuid");
-
     navigator?.clipboard
       ?.writeText(
-        `${window.location.origin}${location.pathname}?commentResourceZuid=${resourceZUID}&replyZUID=${commentZUID}`
+        `${window.location.origin}${location.pathname}/${commentZUID}`
       )
       .then(() => {
         setIsCopied(true);

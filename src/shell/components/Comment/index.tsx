@@ -2,30 +2,36 @@ import { IconButton, Button, alpha, Box, Tooltip } from "@mui/material";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
 import { useState, useRef, useEffect, useMemo, useContext } from "react";
-import { useParams } from "react-router";
+import { useParams, useHistory, useLocation } from "react-router";
 
 import { CommentsList } from "./CommentsList";
-import { useParams as useSearchParams } from "../../hooks/useParams";
 import { useGetCommentByResourceQuery } from "../../services/accounts";
 import { CommentContext } from "../../contexts/CommentProvider";
 
+type PathParams = {
+  modelZUID: string;
+  itemZUID: string;
+  resourceZUID: string;
+};
 type CommentProps = {
   resourceZUID: string;
 };
 export const Comment = ({ resourceZUID }: CommentProps) => {
+  const history = useHistory();
+  const location = useLocation();
   const [_, __, ___, setCommentZUIDtoEdit] = useContext(CommentContext);
-  const { itemZUID } = useParams<{ itemZUID: string }>();
+  const { itemZUID, resourceZUID: activeResourceZUID } =
+    useParams<PathParams>();
   const { data: comment, isLoading: isLoadingComment } =
     useGetCommentByResourceQuery(
       { itemZUID, resourceZUID },
       { skip: !resourceZUID }
     );
   const buttonContainerRef = useRef<HTMLDivElement>();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [isCommentListOpen, setIsCommentListOpen] = useState(false);
   const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
 
-  const commentResourceZuid = searchParams.get("commentResourceZuid");
+  // const commentResourceZuid = searchParams.get("commentResourceZuid");
 
   const parentComment = useMemo(() => {
     return comment?.find((comment) => comment.resourceZUID === itemZUID);
@@ -33,9 +39,9 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
 
   useEffect(() => {
     setIsCommentListOpen(
-      commentResourceZuid === resourceZUID && !!buttonContainerRef.current
+      activeResourceZUID === resourceZUID && !!buttonContainerRef.current
     );
-  }, [buttonContainerRef.current, commentResourceZuid]);
+  }, [buttonContainerRef.current, activeResourceZUID]);
 
   useEffect(() => {
     // Autoscrolls to the button before opening the comment list popup
@@ -44,6 +50,11 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       buttonContainerRef.current?.scrollIntoView();
     }
   }, [isCommentListOpen, isButtonAutoscroll]);
+
+  const handleOpenCommentsList = () => {
+    setIsButtonAutoscroll(false);
+    history.replace(`${location.pathname}/comment/${resourceZUID}`);
+  };
 
   return (
     <>
@@ -59,10 +70,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
               size="xsmall"
               endIcon={<CommentRoundedIcon />}
               disabled={isLoadingComment}
-              onClick={() => {
-                setIsButtonAutoscroll(false);
-                setSearchParams(resourceZUID, "commentResourceZuid");
-              }}
+              onClick={handleOpenCommentsList}
               sx={{
                 backgroundColor: (theme) =>
                   parentComment.resolved
@@ -116,10 +124,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
               data-cy="OpenCommentsButton"
               size="xxsmall"
               disabled={isLoadingComment}
-              onClick={() => {
-                setIsButtonAutoscroll(false);
-                setSearchParams(resourceZUID, "commentResourceZuid");
-              }}
+              onClick={handleOpenCommentsList}
               sx={{
                 backgroundColor: isCommentListOpen
                   ? (theme) => alpha(theme.palette.primary.main, 0.08)
@@ -144,8 +149,14 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
           onClose={() => {
             setIsButtonAutoscroll(false);
             setCommentZUIDtoEdit(null);
-            setSearchParams(null, "commentResourceZuid");
-            setSearchParams(null, "replyZUID");
+
+            // Makes sure that we can properly pop back to the component where the comment was rendered
+            const pathnameArr = location.pathname?.split("/");
+            const commentIndex = pathnameArr.findIndex(
+              (path) => path === "comment"
+            );
+
+            history.replace(pathnameArr?.slice(0, commentIndex)?.join("/"));
           }}
           isResolved={parentComment?.resolved}
         />
