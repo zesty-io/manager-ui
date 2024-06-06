@@ -175,9 +175,7 @@ export const ItemCreate = () => {
           }
           dispatch(
             notify({
-              message: `You are missing data in ${res.missingRequired
-                .map((f: any) => f.label)
-                .join(", ")}`,
+              message: "Missing Data in Required Fields",
               kind: "error",
             })
           );
@@ -236,7 +234,7 @@ export const ItemCreate = () => {
 
         dispatch(
           notify({
-            message: `Created new ${model.label} item`,
+            message: `Created Item: ${item.web.metaLinkText}`,
             kind: "success",
           })
         );
@@ -320,7 +318,6 @@ export const ItemCreate = () => {
               }}
             />
           </Box>
-
           <Box className={styles.Meta} minWidth={640} width="60%">
             <Divider
               sx={{
