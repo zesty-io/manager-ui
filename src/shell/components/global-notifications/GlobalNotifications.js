@@ -223,14 +223,14 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
         icon={props.icon}
         action={
           <Stack direction="row">
-            {props.heading && <Button sx={{ color: "white" }}>Action</Button>}
             <IconButton onClick={handleDismiss}>
               <CloseIcon sx={{ width: 20, height: 20, color: "white" }} />
             </IconButton>
           </Stack>
         }
         sx={{
-          width: 516,
+          width: 540,
+          height: props.heading ? "auto" : 44,
         }}
       >
         <Stack>
@@ -238,7 +238,7 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
             variant="body2"
             noWrap={props.severity === "success"}
             sx={{
-              maxWidth: "516px",
+              maxWidth: "540px",
               overflow: "hidden",
               textOverflow: "ellipsis",
               fontWeight: props.heading ? 700 : "normal",
@@ -252,7 +252,7 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
               variant="body2"
               noWrap={props.severity === "success"}
               sx={{
-                maxWidth: "516px",
+                maxWidth: "540px",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
               }}
