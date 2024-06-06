@@ -412,6 +412,12 @@ export const FieldForm = ({
           tooltip: formData.tooltip as string,
         }),
         defaultValue: formData.defaultValue as string,
+        ...(formData.maxCharLimit !== null && {
+          maxCharLimit: formData.maxCharLimit as number,
+        }),
+        ...(formData.minCharLimit !== null && {
+          minCharLimit: formData.minCharLimit as number,
+        }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
