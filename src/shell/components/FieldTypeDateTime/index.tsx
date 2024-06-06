@@ -332,8 +332,9 @@ export const FieldTypeDateTime = ({
                   return options?.filter(
                     (tz) =>
                       tz.label
+                        .replace(" - ", " ")
                         .toLowerCase()
-                        .includes(state.inputValue.toLowerCase()) &&
+                        .includes(state.inputValue.toLowerCase().trim()) &&
                       // @ts-ignore
                       tz.type !== "suggestion"
                   );
