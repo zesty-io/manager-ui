@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
-import { TextField, Autocomplete, Tooltip } from "@mui/material";
-import moment from "moment";
+import { useEffect, useState, useRef, useMemo } from "react";
+import { TextField, Autocomplete, Tooltip, ListItem } from "@mui/material";
+import moment from "moment-timezone";
 
 import { FieldTypeDate } from "../FieldTypeDate";
 import {
@@ -9,6 +9,7 @@ import {
   toISOString,
   to12HrTime,
   TIME_OPTIONS,
+  TIMEZONES,
 } from "./util";
 
 const TIME_FORMAT_REGEX = /^((1[0-2]|0?[1-9]):([0-5][0-9]) ?([ap][m]))$/gi;
@@ -19,6 +20,11 @@ type FieldTypeDateTimeProps = {
   error?: boolean;
   value: string;
   onChange: (date: string) => void;
+  showClearButton?: boolean;
+  showTimezonePicker?: boolean;
+  selectedTimezone?: string;
+  onTimezoneChange?: (timezone: string) => void;
+  disablePast?: boolean;
 };
 
 export const FieldTypeDateTime = ({
@@ -27,6 +33,11 @@ export const FieldTypeDateTime = ({
   name,
   value,
   onChange,
+  showClearButton = true,
+  showTimezonePicker,
+  selectedTimezone,
+  onTimezoneChange,
+  disablePast = false,
 }: FieldTypeDateTimeProps) => {
   const timeFieldRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -35,8 +46,12 @@ export const FieldTypeDateTime = ({
   const [isTimeFieldActive, setIsTimeFieldActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [invalidInput, setInvalidInput] = useState(false);
+  const [timezone, setTimezone] = useState(
+    selectedTimezone ?? "America/Los_Angeles"
+  );
 
   const [dateString, timeString] = value?.split(" ") ?? [null, null];
+  const currentSystemTimezoneID = moment.tz.guess() ?? "America/Los_Angeles";
 
   useEffect(() => {
     setTimeKeyCount(timeKeyCount + 1);
@@ -73,16 +88,49 @@ export const FieldTypeDateTime = ({
     });
   }, [isTimeFieldActive]);
 
+  const timezoneOptionsWithSuggestions = useMemo(() => {
+    const userTimezone = TIMEZONES.find(
+      (tz) => tz.id === currentSystemTimezoneID
+    );
+    const timezoneSuggestions = [
+      {
+        ...userTimezone,
+        type: "suggestion",
+      },
+      {
+        label: "(GMT+00:00) Coordinated Universal Time",
+        id: "UTC",
+        type: "suggestion",
+      },
+    ];
+
+    return [...timezoneSuggestions, ...TIMEZONES];
+  }, [TIMEZONES, currentSystemTimezoneID]);
+
+  const generateValuePreview = () => {
+    if (showTimezonePicker) {
+      return `Stored in UTC as ${moment
+        .utc(moment.tz(value, timezone))
+        .format()}`;
+    }
+
+    if (dateString && timeString) {
+      return `Stored as ${dateString} ${timeString}`;
+    }
+
+    return null;
+  };
+
   return (
     <>
       <FieldTypeDate
+        disablePast={disablePast}
         name={name}
         required={required}
         value={dateString ? moment(dateString).toDate() : null}
         ref={dateFieldRef}
-        valueFormatPreview={
-          dateString && timeString ? `${dateString} ${timeString}` : null
-        }
+        showClearButton={showClearButton}
+        valueFormatPreview={generateValuePreview()}
         onChange={(date) => {
           if (date) {
             onChange(
@@ -122,6 +170,17 @@ export const FieldTypeDateTime = ({
                     return to12HrTime(option);
                   }
                 }}
+                getOptionDisabled={(option) => {
+                  if (disablePast) {
+                    const isSelectedDatetimePast = moment
+                      .utc(moment.tz(`${dateString} ${option.value}`, timezone))
+                      .isBefore(moment.utc());
+
+                    return isSelectedDatetimePast;
+                  }
+
+                  return false;
+                }}
                 filterOptions={(e) => e}
                 isOptionEqualToValue={(option) => {
                   return option.inputValue === getDerivedTime(inputValue);
@@ -153,6 +212,7 @@ export const FieldTypeDateTime = ({
                 }}
                 sx={{
                   width: 96,
+                  flexShrink: 0,
                   "& .MuiAutocomplete-inputRoot": {
                     py: 0.75,
                     px: 1,
@@ -228,6 +288,65 @@ export const FieldTypeDateTime = ({
                 )}
               />
             </Tooltip>
+          ),
+          timezonePicker: showTimezonePicker && (
+            <Autocomplete
+              autoHighlight
+              fullWidth
+              disableClearable
+              size="small"
+              options={timezoneOptionsWithSuggestions}
+              value={timezoneOptionsWithSuggestions.find(
+                (tz) => tz.id === timezone
+              )}
+              renderInput={(params) => <TextField {...params} />}
+              renderOption={(props, option) => (
+                <ListItem
+                  {...props}
+                  key={
+                    // @ts-ignore
+                    option.type === "suggestion"
+                      ? `${option.id}_suggestion`
+                      : option.id
+                  }
+                  sx={{
+                    "&.MuiListItem-root": {
+                      color: "text.primary",
+                      borderBottom: (theme) =>
+                        // @ts-ignore
+                        option.id === "UTC" && option.type === "suggestion"
+                          ? `1px solid ${theme.palette.border}`
+                          : "none",
+                    },
+                  }}
+                >
+                  {option.label}
+                </ListItem>
+              )}
+              onChange={(_, value) => {
+                setTimezone(value.id);
+                onTimezoneChange && onTimezoneChange(value.id);
+              }}
+              filterOptions={(options, state) => {
+                if (state.inputValue) {
+                  return options?.filter(
+                    (tz) =>
+                      tz.label
+                        .toLowerCase()
+                        .includes(state.inputValue.toLowerCase()) &&
+                      // @ts-ignore
+                      tz.type !== "suggestion"
+                  );
+                }
+
+                return options;
+              }}
+              ListboxProps={{
+                sx: {
+                  maxHeight: 320,
+                },
+              }}
+            />
           ),
         }}
       />

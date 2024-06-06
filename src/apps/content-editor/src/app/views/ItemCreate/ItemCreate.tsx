@@ -29,9 +29,12 @@ import {
   useGetContentItemQuery,
   useGetContentModelFieldsQuery,
 } from "../../../../../../shell/services/instance";
-import { ScheduleFlyout } from "../ItemEdit/components/Header/ItemVersioning/ScheduleFlyout";
 import { Error } from "../../components/Editor/Field/FieldShell";
-import { ContentModelField } from "../../../../../../shell/services/types";
+import {
+  ContentItemWithDirtyAndPublishing,
+  ContentModelField,
+} from "../../../../../../shell/services/types";
+import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
 
 export type ActionAfterSave =
   | ""
@@ -172,9 +175,7 @@ export const ItemCreate = () => {
           }
           dispatch(
             notify({
-              message: `You are missing data in ${res.missingRequired
-                .map((f: any) => f.label)
-                .join(", ")}`,
+              message: "Missing Data in Required Fields",
               kind: "error",
             })
           );
@@ -233,7 +234,7 @@ export const ItemCreate = () => {
 
         dispatch(
           notify({
-            message: `Created new ${model.label} item`,
+            message: `Created Item: ${item.web.metaLinkText}`,
             kind: "success",
           })
         );
@@ -317,7 +318,6 @@ export const ItemCreate = () => {
               }}
             />
           </Box>
-
           <Box className={styles.Meta} minWidth={640} width="60%">
             <Divider
               sx={{
@@ -341,19 +341,20 @@ export const ItemCreate = () => {
           </Box>
         </Stack>
       </Box>
-      <ScheduleFlyout
-        isOpen={!isLoadingNewItem && isScheduleDialogOpen}
-        item={newItemData}
-        dispatch={dispatch}
-        toggleOpen={() => setIsScheduleDialogOpen(false)}
-        onScheduled={() => {
-          setIsScheduleDialogOpen(false);
+      {isScheduleDialogOpen && !isLoadingNewItem && (
+        <SchedulePublish
+          item={newItemData as ContentItemWithDirtyAndPublishing}
+          onClose={() => setIsScheduleDialogOpen(false)}
+          onPublishNow={() => handlePublish(newItemZUID)}
+          onScheduleSuccess={() => {
+            setIsScheduleDialogOpen(false);
 
-          if (willRedirect) {
-            history.push(`/content/${modelZUID}/${newItemData?.meta?.ZUID}`);
-          }
-        }}
-      />
+            if (willRedirect) {
+              history.push(`/content/${modelZUID}/${newItemData?.meta?.ZUID}`);
+            }
+          }}
+        />
+      )}
     </WithLoader>
   );
 };

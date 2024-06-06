@@ -1,3 +1,13 @@
+import moment from "moment";
+
+const yesterdayTimestamp = moment()
+  .hour(0)
+  .minute(0)
+  .second(0)
+  .millisecond(0)
+  .subtract(1, "day")
+  .format("x");
+
 describe("Actions in content editor", () => {
   const timestamp = Date.now();
 
@@ -9,7 +19,7 @@ describe("Actions in content editor", () => {
     cy.get("#12-13d590-9v2nr2 input").clear().should("have.value", "");
     cy.get("#SaveItemButton").click();
 
-    cy.get("[data-cy=toast]").contains("You are missing data");
+    cy.get("[data-cy=toast]").contains("Missing Data in Required Fields");
   });
 
   /**
@@ -34,7 +44,7 @@ describe("Actions in content editor", () => {
       }
     );
 
-    cy.get("[data-cy=toast]").contains("Saved a new ");
+    cy.get("[data-cy=toast]").contains("Item Saved");
   });
 
   it("Saves homepage item metadata", () => {
@@ -54,7 +64,7 @@ describe("Actions in content editor", () => {
       }
     );
 
-    cy.get("[data-cy=toast]").contains("Saved a new ");
+    cy.get("[data-cy=toast]").contains("Item Saved");
   });
 
   it("Publishes an item", () => {
@@ -80,48 +90,57 @@ describe("Actions in content editor", () => {
     cy.getBySelector("PublishButton").should("exist");
   });
 
-  // TODO: fix race condition so schedule publish will work
-  it.skip("Schedules a Publish for an item", () => {
-    // TODO: remove reload when UI state is consistent
-    cy.reload();
+  it("Schedules a Publish for an item", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
+    });
+
+    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishScheduleButton").click({ force: true });
+    cy.getBySelector("SchedulePublishButton").click();
+    cy.getBySelector("ContentScheduledIndicator").should("exist");
+  });
+
+  it("Unschedules a Publish for an item", () => {
     cy.getBySelector("PublishMenuButton").click();
     cy.getBySelector("PublishScheduleButton").click();
-    // select date and time
-    cy.get(".form-control").first().click();
-    cy.get(".flatpickr-calendar.open .flatpickr-next-month").click();
-    cy.get(".flatpickr-calendar.open .flatpickr-day:not(.prevMonthDay)")
-      .first()
-      .click();
-    cy.get(".flatpickr-calendar.open .flatpickr-confirm").click();
-    cy.get("[data-cy=SchedulePublishButton]").click();
-    cy.contains("Scheduled version").should("exist");
-    cy.get("#SchedulePublishClose").click();
+    cy.getBySelector("UnschedulePublishButton").click();
+    cy.getBySelector("ContentScheduledIndicator").should("not.exist");
   });
 
   it("Only allows future dates to be scheduled for publish", () => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+      cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
     });
 
     cy.getBySelector("PublishMenuButton").click();
     cy.getBySelector("PublishScheduleButton").click();
-    // cy.get(
-    //   ".ModalAligner--ptdt- .MuiOutlinedInput-root .MuiInputAdornment-root .MuiButtonBase-root"
-    // ).click();
-    cy.getBySelector("SchedulePublishDate").find("button").click();
+    cy.getBySelector("PublishScheduleModal")
+      .find("[data-cy='datePickerInputField']")
+      .click();
 
     cy.get(
-      '.MuiCalendarPicker-root .MuiPickersArrowSwitcher-root button[aria-label="Previous month"]'
+      '.MuiPickersArrowSwitcher-root button[aria-label="Previous month"]'
     ).should("be.disabled");
     cy.get(
-      '.MuiCalendarPicker-root .MuiPickersArrowSwitcher-root button[aria-label="Next month"]'
+      '.MuiPickersArrowSwitcher-root button[aria-label="Next month"]'
     ).should("not.be.disabled");
+    cy.getBySelector("CancelSchedulePublishButton").click({ force: true });
   });
 
-  it.skip("Unschedules a Publish for an item", () => {
-    cy.getBySelector("PublishMenuButton").click();
-    cy.getBySelector("PublishScheduleButton").click();
-    cy.get("#SchedulePublishClose").click();
+  it("Fills in default values for a new item", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0/new");
+    });
+
+    cy.get("#12-0c3934-8dz720 input").should(
+      "have.value",
+      "default single line text field"
+    );
+    cy.get("#12-d39a38-85sqdt").contains("zesty-io-logo-horizontal-dark.png");
+    cy.get("#12-bcd1dcc5f4-2rpm9p").contains(
+      "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
+    );
   });
 
   it("Fills in default values for a new item", () => {
@@ -147,7 +166,7 @@ describe("Actions in content editor", () => {
     cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created new ", { timeout: 5000 }).should("exist");
+    cy.contains("Created Item", { timeout: 5000 }).should("exist");
   });
 
   it("Saved item becomes publishable", () => {
@@ -194,9 +213,9 @@ describe("Actions in content editor", () => {
   //   // these waits are due to a delay
   //   // dealing with these specific endpoints
   //   // in any test environment we expect this to fail and display a message
-  //   cy.contains("There was an issue trying to purge the CDN cache", { timeout: 5000 }).should(
-  //     "exist"
-  //   );
+  //   cy.contains("There was an issue trying to purge the CDN cache", {
+  //     timeout: 5000,
+  //   }).should("exist");
   //   // cy.contains("The item has been purged from the CDN cache", { timeout: 5000 }).should("exist");
   // });
 });

@@ -12,7 +12,7 @@ import { useParams } from "react-router";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
-import { ContentItemWithDirtyAndPublishing } from ".";
+import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { useGetItemPublishingsQuery } from "../../../../../../../../shell/services/instance";
 
 export const PreviewMenu = () => {

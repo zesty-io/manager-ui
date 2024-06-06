@@ -700,6 +700,11 @@ export function fetchItemPublishing(modelZUID, itemZUID) {
               itemZUID,
             },
           });
+          dispatch(
+            instanceApi.util.invalidateTags([
+              { type: "ItemPublishing", id: itemZUID },
+            ])
+          );
         }
       },
     });

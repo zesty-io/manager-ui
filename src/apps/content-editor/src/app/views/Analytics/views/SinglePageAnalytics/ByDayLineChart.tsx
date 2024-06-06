@@ -442,7 +442,10 @@ export const ByDayLineChart = ({
                   ctx?: any;
                 }) => {
                   // eslint-disable-next-line no-underscore-dangle
-                  if (chart.tooltip._active && chart.tooltip._active.length) {
+                  if (
+                    chart?.tooltip?._active &&
+                    chart?.tooltip?._active?.length
+                  ) {
                     // find coordinates of tooltip
                     const activePoint = chart.tooltip._active[0];
                     const { ctx } = chart;
