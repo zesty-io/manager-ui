@@ -31,8 +31,6 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   const [isCommentListOpen, setIsCommentListOpen] = useState(false);
   const [isButtonAutoscroll, setIsButtonAutoscroll] = useState(true);
 
-  // const commentResourceZuid = searchParams.get("commentResourceZuid");
-
   const parentComment = useMemo(() => {
     return comment?.find((comment) => comment.resourceZUID === itemZUID);
   }, [comment, itemZUID]);
