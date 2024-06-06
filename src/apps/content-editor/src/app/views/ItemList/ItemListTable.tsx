@@ -126,8 +126,12 @@ const fieldTypeColumnConfigMap = {
       const src = params?.value?.thumbnail || params?.value?.split(",")?.[0];
       if (!src) return null;
       return (
-        <img
-          style={{ objectFit: "contain" }}
+        <Box
+          component="img"
+          sx={{
+            backgroundColor: (theme) => theme.palette.grey[100],
+            objectFit: "contain",
+          }}
           width="68px"
           height="58px"
           src={src}
