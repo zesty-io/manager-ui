@@ -24,6 +24,15 @@ type ItemListTableProps = {
   rows: ContentItem[];
 };
 
+const getHtmlText = (html: string) => {
+  const rawData = html;
+  let elementFromData = document.createElement("div");
+  elementFromData.innerHTML = rawData;
+  const strippedData =
+    elementFromData?.textContent || elementFromData?.innerText;
+  return strippedData?.replace(/<[^>]*>/g, "").slice(0, 120) || "";
+};
+
 const METADATA_COLUMNS = [
   {
     field: "createdBy",
@@ -76,12 +85,15 @@ const fieldTypeColumnConfigMap = {
   },
   wysiwyg_basic: {
     width: 360,
+    valueFormatter: (params: any) => getHtmlText(params.value),
   },
   wysiwyg_advanced: {
     width: 360,
+    valueFormatter: (params: any) => getHtmlText(params.value),
   },
   article_writer: {
     width: 360,
+    valueFormatter: (params: any) => getHtmlText(params.value),
   },
   markdown: {
     width: 360,

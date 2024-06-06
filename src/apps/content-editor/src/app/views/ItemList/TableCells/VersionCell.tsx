@@ -50,6 +50,9 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
             label={`v${params.row?.meta?.version}`}
             size="small"
             color="info"
+            sx={{
+              height: 20,
+            }}
           />
         </Tooltip>
       )}
@@ -90,6 +93,9 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
             }`}
             size="small"
             color={isScheduledPublish ? "warning" : "success"}
+            sx={{
+              height: 20,
+            }}
           />
         </Tooltip>
       )}
@@ -101,7 +107,13 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
           title={"Item not yet created"}
           placement="bottom"
         >
-          <Chip label={"v0"} size="small" />
+          <Chip
+            label={"v0"}
+            size="small"
+            sx={{
+              height: 20,
+            }}
+          />
         </Tooltip>
       )}
     </Stack>
