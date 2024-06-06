@@ -6,7 +6,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
   const { data: users } = useGetUsersQuery();
 
   const createdByUser = users?.find(
-    (user) => user.ZUID === params.row?.meta?.createdByUserZUID
+    (user) => user.ZUID === params.row?.web?.createdByUserZUID
   );
   const publishedByUser =
     users?.find(

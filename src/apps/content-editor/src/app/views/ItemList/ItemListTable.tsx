@@ -8,7 +8,14 @@ import {
   useGridApiRef,
   GridInitialState,
 } from "@mui/x-data-grid-pro";
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
 import { OneToManyCell } from "./TableCells/OneToManyCell";
@@ -216,7 +223,7 @@ const fieldTypeColumnConfigMap = {
   },
 } as const;
 
-export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
+export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const apiRef = useGridApiRef();
   const [initialState, setInitialState] = useState<GridInitialState>();
@@ -357,7 +364,15 @@ export const ItemListTable = ({ loading, rows }: ItemListTableProps) => {
         "& .MuiDataGrid-pinnedColumnHeaders": {
           backgroundColor: "inherit",
         },
+        ".MuiDataGrid-columnHeader": {
+          "&:hover .MuiDataGrid-columnSeparator": {
+            visibility: "visible",
+          },
+        },
+        ".MuiDataGrid-columnSeparator": {
+          visibility: "hidden",
+        },
       }}
     />
   );
-};
+});

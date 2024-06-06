@@ -74,11 +74,13 @@ export const ItemList = () => {
   const search = params.get("search");
   const sort = params.get("sort");
   const statusFilter = params.get("statusFilter");
-  const dateFilter = {
-    preset: params.get("datePreset") || "",
-    from: params.get("from") || "",
-    to: params.get("to") || "",
-  };
+  const dateFilter = useMemo(() => {
+    return {
+      preset: params.get("datePreset") || "",
+      from: params.get("from") || "",
+      to: params.get("to") || "",
+    };
+  }, [params]);
   const userFilter = params.get("user");
 
   const processedItems = useMemo(() => {
@@ -328,8 +330,9 @@ export const ItemList = () => {
       clonedItems = clonedItems?.filter((item) => {
         if (statusFilter === "published") {
           return (
-            item.publishing?.publishAt &&
-            new Date(item.publishing.publishAt) < new Date()
+            (item.publishing?.publishAt &&
+              new Date(item.publishing.publishAt) < new Date()) ||
+            item?.priorPublishing?.publishAt
           );
         } else if (statusFilter === "scheduled") {
           return (
@@ -337,7 +340,9 @@ export const ItemList = () => {
             new Date(item.publishing.publishAt) > new Date()
           );
         } else if (statusFilter === "notPublished") {
-          return !item.publishing?.publishAt;
+          return (
+            !item.publishing?.publishAt && !item?.priorPublishing?.publishAt
+          );
         }
       });
     }
