@@ -17,12 +17,11 @@ import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRena
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import moment from "moment";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { useSelector } from "react-redux";
 
 import { useUpdateCommentStatusMutation } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
-import { useParams as useSearchParams } from "../../hooks/useParams";
 import { InputField } from "./InputField";
 import { CommentContext } from "../../contexts/CommentProvider";
 import { AppState } from "../../store/types";
@@ -36,6 +35,12 @@ import {
 const URL_REGEX =
   /(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gm;
 
+type PathParams = {
+  modelZUID: string;
+  itemZUID: string;
+  resourceZUID: string;
+  commentZUID: string;
+};
 type CommentItemProps = {
   commentZUID: string;
   body: string;
@@ -58,7 +63,7 @@ export const CommentItem = ({
   withResolveButton,
   onParentCommentDeleted,
 }: CommentItemProps) => {
-  const [searchParams] = useSearchParams();
+  const { resourceZUID } = useParams<PathParams>();
   const location = useLocation();
   const [_, __, commentZUIDtoEdit, setCommentZUIDtoEdit] =
     useContext(CommentContext);
@@ -78,7 +83,6 @@ export const CommentItem = ({
   const commentBodyRef = useRef<HTMLParagraphElement>();
   const loggedInUser: User = useSelector((state: AppState) => state.user);
 
-  const commentResourceZUID = searchParams.get("commentResourceZuid");
   const isLoggedInUserCommentCreator = loggedInUser?.ZUID === creator?.ZUID;
 
   useEffect(() => {
@@ -135,12 +139,12 @@ export const CommentItem = ({
   const handleDeleteComment = () => {
     if (commentZUID.startsWith("24")) {
       deleteComment({
-        resourceZUID: commentResourceZUID,
+        resourceZUID,
         commentZUID,
       });
     } else {
       deleteReply({
-        resourceZUID: commentResourceZUID,
+        resourceZUID,
         commentZUID,
         parentCommentZUID,
       });
@@ -149,7 +153,7 @@ export const CommentItem = ({
 
   const handleUpdateCommentStatus = () => {
     updateCommentStatus({
-      resourceZUID: commentResourceZUID,
+      resourceZUID,
       commentZUID,
       parentCommentZUID,
       isResolved: true,
@@ -163,7 +167,7 @@ export const CommentItem = ({
         editModeValue={body}
         isFirstComment={false}
         onCancel={() => setCommentZUIDtoEdit(null)}
-        commentResourceZUID={commentResourceZUID}
+        commentResourceZUID={resourceZUID}
         parentCommentZUID={parentCommentZUID}
       />
     );
