@@ -234,7 +234,7 @@ export const ItemCreate = () => {
 
         dispatch(
           notify({
-            message: `Created Item: ${model.label}`,
+            message: `Created Item: ${item.web.metaLinkText}`,
             kind: "success",
           })
         );
@@ -318,7 +318,6 @@ export const ItemCreate = () => {
               }}
             />
           </Box>
-
           <Box className={styles.Meta} minWidth={640} width="60%">
             <Divider
               sx={{
