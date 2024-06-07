@@ -231,7 +231,7 @@ export default function LinkEdit() {
       dispatch(
         notify({
           message: `Link Deleted: ${state.metaTitle}`,
-          kind: "deleted",
+          kind: "error",
         })
       );
       dispatch(unpinTab({ pathname: `/content/link/${linkZUID}`, search: "" }));
