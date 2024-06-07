@@ -74,7 +74,7 @@ export const PublishStatus = ({ currentVersion }: PublishStatusProps) => {
           enterNextDelay={1000}
           title={
             <>
-              v{scheduledPublishing.version} scheduled on <br />
+              v{scheduledPublishing.version} scheduled to publish on <br />
               {formatDate(scheduledPublishing.publishAt)} <br />
               by {getUsername(scheduledPublishing.publishedByUserZUID)}
             </>
