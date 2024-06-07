@@ -4,9 +4,12 @@ import {
   Checkbox,
   FormControlLabel,
   Typography,
+  FormControl,
+  FormHelperText,
 } from "@mui/material";
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
 import { MaxLengths } from "../../../../../content-editor/src/app/components/Editor/Editor";
+import { Errors } from "./views/FieldForm";
 
 type CharacterLimitProps = {
   type: "text" | "textarea";
@@ -21,6 +24,7 @@ type CharacterLimitProps = {
   }) => void;
   minValue: number;
   maxValue: number;
+  errors: Errors;
 };
 
 export const CharacterLimit = ({
@@ -30,6 +34,7 @@ export const CharacterLimit = ({
   onChange,
   minValue = 0,
   maxValue = 150,
+  errors,
 }: CharacterLimitProps) => {
   return (
     <Box>
@@ -75,33 +80,36 @@ export const CharacterLimit = ({
       />
       {isCharacterLimitEnabled && (
         <Stack direction="row" gap={2} ml={3.5}>
-          <FormControlLabel
-            labelPlacement="top"
-            sx={{
-              alignItems: "flex-start",
-              m: 0,
-              flex: 1,
-            }}
-            control={
-              <FieldTypeNumber
-                required={false}
-                value={+minValue}
-                onChange={(value) => {
-                  if (value >= 0) {
-                    onChange({ inputName: "minCharLimit", value });
-                  }
-                }}
-                name="minimum"
-                hasError={false}
-                allowNegative={false}
-              />
-            }
-            label={
-              <Typography variant="body2" fontWeight="600" pb={0.5}>
-                Minimum character count (with spaces)
-              </Typography>
-            }
-          />
+          <FormControl error>
+            <FormControlLabel
+              labelPlacement="top"
+              sx={{
+                alignItems: "flex-start",
+                m: 0,
+                flex: 1,
+              }}
+              control={
+                <FieldTypeNumber
+                  required={false}
+                  value={+minValue}
+                  onChange={(value) => {
+                    if (value >= 0) {
+                      onChange({ inputName: "minCharLimit", value });
+                    }
+                  }}
+                  name="minimum"
+                  hasError={false}
+                  allowNegative={false}
+                />
+              }
+              label={
+                <Typography variant="body2" fontWeight="600" pb={0.5}>
+                  Minimum character count (with spaces)
+                </Typography>
+              }
+            />
+            <FormHelperText>Error</FormHelperText>
+          </FormControl>
           <FormControlLabel
             labelPlacement="top"
             sx={{
@@ -121,7 +129,6 @@ export const CharacterLimit = ({
                 name="maximum"
                 hasError={false}
                 allowNegative={false}
-                limit={MaxLengths[type]}
               />
             }
             label={
