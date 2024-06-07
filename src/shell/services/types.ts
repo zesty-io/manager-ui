@@ -195,6 +195,8 @@ export interface FieldSettings {
   list: boolean;
   tooltip?: string;
   defaultValue?: string;
+  minCharLimit?: number;
+  maxCharLimit?: number;
 }
 
 export type ContentModelFieldValue =

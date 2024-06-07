@@ -205,6 +205,10 @@ export const FieldForm = ({
             fieldData.settings.defaultValue !== undefined
               ? fieldData.settings.defaultValue
               : null;
+        } else if (field.name === "minCharLimit") {
+          formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
+        } else if (field.name === "maxCharLimit") {
+          formFields["maxCharLimit"] = fieldData.settings?.maxCharLimit ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -222,7 +226,11 @@ export const FieldForm = ({
         } else if (field.type === "toggle_options") {
           formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
         } else {
-          if (field.name === "defaultValue") {
+          if (
+            field.name === "defaultValue" ||
+            field.name === "minCharLimit" ||
+            field.name === "maxCharLimit"
+          ) {
             formFields[field.name] = null;
           } else {
             formFields[field.name] = "";

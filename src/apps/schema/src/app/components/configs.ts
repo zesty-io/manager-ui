@@ -427,6 +427,23 @@ const COMMON_RULES: InputField[] = [
   },
 ];
 
+const CHARACTER_LIMIT_RULES: InputField[] = [
+  {
+    name: "minCharLimit",
+    type: "input",
+    label: "Minimum character count (with spaces)",
+    required: false,
+    gridSize: 6,
+  },
+  {
+    name: "maxCharLimit",
+    type: "input",
+    label: "Maximum character count (with spaces)",
+    required: false,
+    gridSize: 6,
+  },
+];
+
 const FORM_CONFIG: Record<FieldType, FormConfig> = {
   article_writer: {
     details: [...COMMON_FIELDS],
@@ -570,11 +587,11 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
   },
   text: {
     details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
+    rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES],
   },
   textarea: {
     details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
+    rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES],
   },
   uuid: {
     details: [...COMMON_FIELDS],

@@ -36,7 +36,9 @@ export const Rules = ({
   isDefaultValueEnabled,
   setIsDefaultValueEnabled,
 }: RulesProps) => {
-  const [isCharacterLimitEnabled, setIsCharacterLimitEnabled] = useState(false);
+  const [isCharacterLimitEnabled, setIsCharacterLimitEnabled] = useState(
+    formData?.minCharLimit !== null && formData?.maxCharLimit !== null
+  );
 
   if (type === "uuid") {
     return <ComingSoon />;
