@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Chip } from "@mui/material";
+import { Box, Chip, Tooltip } from "@mui/material";
 import { useSelector } from "react-redux";
 
 import { AppState } from "../../../../../../../shell/store/types";
@@ -52,7 +52,14 @@ export const OneToManyCell = ({ items }: OneToManyCellProps) => {
             />
           );
         })}
-        {!!hiddenItems && <Chip label={`+${hiddenItems}`} size="small" />}
+        {!!hiddenItems && (
+          <Tooltip
+            title={`${items?.slice(lastValidIndex + 1)?.join(", ")}`}
+            placement="top-start"
+          >
+            <Chip label={`+${hiddenItems}`} size="small" />
+          </Tooltip>
+        )}
       </Box>
       {/** Element below is only needed to calculate the actual chip widths */}
       <Box visibility="hidden" display="flex" gap={0.5} ref={chipContainerRef}>
