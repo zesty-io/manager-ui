@@ -62,6 +62,7 @@ import { notify } from "../../../../../../../shell/store/notifications";
 import { DefaultValue } from "../DefaultValue";
 import { CharacterLimit } from "../CharacterLimit";
 import { Rules } from "./Rules";
+import { MaxLengths } from "../../../../../../content-editor/src/app/components/Editor/Editor";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -299,7 +300,33 @@ export const FieldForm = ({
       ) {
         newErrorsObj[inputName] = "Required Field. Please enter a value.";
       }
-      if (inputName in errors && inputName !== "defaultValue") {
+
+      if (type === "text" || type === "textarea") {
+        if (inputName === "minCharLimit" && !isNaN(+formData.minCharLimit)) {
+          if (formData.minCharLimit > MaxLengths[type]) {
+            newErrorsObj[
+              inputName
+            ] = `Cannot exceed ${MaxLengths[type]} characters`;
+          } else if (formData.minCharLimit > formData.maxCharLimit) {
+            newErrorsObj[inputName] = "Cannot exceed maximum character count";
+          }
+        }
+
+        if (
+          inputName === "maxCharLimit" &&
+          !isNaN(+formData.maxCharLimit) &&
+          formData.maxCharLimit > MaxLengths[type]
+        ) {
+          newErrorsObj[
+            inputName
+          ] = `Cannot exceed ${MaxLengths[type]} characters`;
+        }
+      }
+
+      if (
+        inputName in errors &&
+        !["defaultValue", "minCharLimit", "maxCharLimit"].includes(inputName)
+      ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
           (field) => field.name === inputName
         );

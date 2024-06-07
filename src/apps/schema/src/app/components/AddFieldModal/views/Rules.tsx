@@ -88,6 +88,7 @@ export const Rules = ({
           onChange={onFieldDataChanged}
           minValue={formData["minCharLimit"] as number}
           maxValue={formData["maxCharLimit"] as number}
+          errors={errors}
         />
       )}
     </Stack>
