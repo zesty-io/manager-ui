@@ -218,12 +218,12 @@ export const ItemList = () => {
     clonedItems?.sort((a: any, b: any) => {
       if (sort === "datePublished") {
         // Handle undefined publishAt by setting a default far-future date for sorting purposes
-        const dateA = a?.publishing?.publishAt
-          ? new Date(a.publishing.publishAt).getTime()
-          : Number.NEGATIVE_INFINITY;
-        const dateB = b?.publishing?.publishAt
-          ? new Date(b.publishing.publishAt).getTime()
-          : Number.NEGATIVE_INFINITY;
+
+        let dateA = a?.publishing?.publishAt || a?.priorPublishing?.publishAt;
+        dateA = dateA ? new Date(dateA).getTime() : Number.NEGATIVE_INFINITY;
+
+        let dateB = b?.publishing?.publishAt || b?.priorPublishing?.publishAt;
+        dateB = dateB ? new Date(dateB).getTime() : Number.NEGATIVE_INFINITY;
 
         return dateB - dateA;
       } else if (sort === "dateCreated") {
@@ -464,7 +464,7 @@ export const ItemList = () => {
                     >
                       <img src={noSearchResults} alt="No search results" />
                       <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        Your filter {search} could not find any results
+                        Your filter "{search}" could not find any results
                       </Typography>
                       <Typography variant="body2" pb={3} color="text.secondary">
                         Try adjusting your search. We suggest check all words

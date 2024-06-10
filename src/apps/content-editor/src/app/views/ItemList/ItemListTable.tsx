@@ -334,6 +334,12 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       components={{
         NoRowsOverlay: () => <></>,
       }}
+      getRowClassName={(params) => {
+        // if included in staged changes, highlight the row
+        if (stagedChanges?.[params.id]) {
+          return "Mui-selected";
+        }
+      }}
       checkboxSelection
       disableSelectionOnClick
       initialState={initialState}

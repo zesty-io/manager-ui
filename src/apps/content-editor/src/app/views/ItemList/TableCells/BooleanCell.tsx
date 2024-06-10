@@ -30,7 +30,13 @@ export const BooleanCell = ({ params }: { params: GridRenderCellParams }) => {
     >
       {field?.settings?.options &&
         Object.entries(field?.settings?.options)?.map(([key, value]) => (
-          <ToggleButton key={key} value={Number(key)}>
+          <ToggleButton
+            key={key}
+            value={Number(key)}
+            sx={{
+              textTransform: "none",
+            }}
+          >
             {value}
           </ToggleButton>
         ))}
