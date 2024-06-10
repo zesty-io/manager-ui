@@ -419,7 +419,7 @@ export const FieldForm = ({
     if (hasErrors) {
       // Switch the active tab to details to show the user the errors if
       // they're not on the details tab and they clicked the submit button
-      if (errors.defaultValue) {
+      if (errors.defaultValue || errors.minCharLimit || errors.maxCharLimit) {
         setActiveTab("rules");
       } else {
         setActiveTab("details");
