@@ -294,9 +294,14 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
             headerName: field.label,
             sortable: false,
             filterable: false,
-            // width: fieldTypeWidthMap[field.datatype] || 100,
             valueGetter: (params: any) => params.row.data[field.name],
             ...fieldTypeColumnConfigMap[field.datatype],
+            // if field is yes_no but it has custom options increase the width
+            ...(field.datatype === "yes_no" &&
+              field?.settings?.options?.[0] !== "No" &&
+              field?.settings?.options?.[1] !== "Yes" && {
+                width: 280,
+              }),
           })),
       ];
     }
