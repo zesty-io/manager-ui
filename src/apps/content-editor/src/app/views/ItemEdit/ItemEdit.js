@@ -223,8 +223,11 @@ export default function ItemEdit() {
   }
 
   async function save() {
-    setSaving(true);
     setSaveClicked(true);
+
+    if (hasErrors) return;
+
+    setSaving(true);
     try {
       const res = await dispatch(saveItem(itemZUID));
       if (res.err === "MISSING_REQUIRED") {
