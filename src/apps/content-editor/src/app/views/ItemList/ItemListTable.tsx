@@ -1,5 +1,12 @@
 import { useHistory, useParams as useRouterParams } from "react-router";
-import { Box, CircularProgress, Chip, Typography, Link } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Chip,
+  Typography,
+  Link,
+  Checkbox,
+} from "@mui/material";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import {
   DataGridPro,
@@ -338,6 +345,12 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       }}
       components={{
         NoRowsOverlay: () => <></>,
+        BaseCheckbox: (props) => (
+          <Checkbox
+            disabled={stagedChanges && Object.keys(stagedChanges)?.length}
+            {...props}
+          />
+        ),
       }}
       getRowClassName={(params) => {
         // if included in staged changes, highlight the row
