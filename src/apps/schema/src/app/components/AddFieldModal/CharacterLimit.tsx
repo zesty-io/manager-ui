@@ -79,8 +79,8 @@ export const CharacterLimit = ({
         }
       />
       {isCharacterLimitEnabled && (
-        <Stack direction="row" gap={2} ml={3.5}>
-          <FormControl error>
+        <Stack direction="row" gap={2} ml={3.5} alignItems="flex-start">
+          <FormControl error={!!errors?.minCharLimit}>
             <FormControlLabel
               labelPlacement="top"
               sx={{
@@ -98,7 +98,7 @@ export const CharacterLimit = ({
                     }
                   }}
                   name="minimum"
-                  hasError={false}
+                  hasError={!!errors?.minCharLimit}
                   allowNegative={false}
                 />
               }
@@ -108,35 +108,38 @@ export const CharacterLimit = ({
                 </Typography>
               }
             />
-            <FormHelperText>Error</FormHelperText>
+            <FormHelperText>{errors?.minCharLimit}</FormHelperText>
           </FormControl>
-          <FormControlLabel
-            labelPlacement="top"
-            sx={{
-              alignItems: "flex-start",
-              m: 0,
-              flex: 1,
-            }}
-            control={
-              <FieldTypeNumber
-                required={false}
-                value={+maxValue}
-                onChange={(value) => {
-                  if (value >= 0) {
-                    onChange({ inputName: "maxCharLimit", value });
-                  }
-                }}
-                name="maximum"
-                hasError={false}
-                allowNegative={false}
-              />
-            }
-            label={
-              <Typography variant="body2" fontWeight="600" pb={0.5}>
-                Maximum character count (with spaces)
-              </Typography>
-            }
-          />
+          <FormControl error={!!errors?.maxCharLimit}>
+            <FormControlLabel
+              labelPlacement="top"
+              sx={{
+                alignItems: "flex-start",
+                m: 0,
+                flex: 1,
+              }}
+              control={
+                <FieldTypeNumber
+                  required={false}
+                  value={+maxValue}
+                  onChange={(value) => {
+                    if (value >= 0) {
+                      onChange({ inputName: "maxCharLimit", value });
+                    }
+                  }}
+                  name="maximum"
+                  hasError={!!errors?.maxCharLimit}
+                  allowNegative={false}
+                />
+              }
+              label={
+                <Typography variant="body2" fontWeight="600" pb={0.5}>
+                  Maximum character count (with spaces)
+                </Typography>
+              }
+            />
+            <FormHelperText>{errors?.maxCharLimit}</FormHelperText>
+          </FormControl>
         </Stack>
       )}
     </Box>
