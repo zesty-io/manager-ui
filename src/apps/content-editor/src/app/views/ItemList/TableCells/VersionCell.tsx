@@ -27,20 +27,27 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
         <Tooltip
           enterDelay={1000}
           enterNextDelay={1000}
-          title={`v${params.row?.meta?.version} saved on ${new Date(
-            params.row?.meta?.updatedAt
-          ).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            timeZoneName: "short",
-          })} by ${createdByUser?.firstName} ${createdByUser?.lastName}`}
+          title={
+            <div>
+              v{params.row?.meta?.version} <br /> saved on{" "}
+              {new Date(params.row?.meta?.updatedAt).toLocaleDateString(
+                "en-US",
+                {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                  timeZoneName: "short",
+                }
+              )}{" "}
+              <br /> by {createdByUser?.firstName} {createdByUser?.lastName}
+            </div>
+          }
           slotProps={{
             popper: {
               style: {
-                width: 116,
+                width: 120,
               },
             },
           }}
@@ -59,24 +66,30 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
       {(params.row?.publishing?.version ||
         params.row?.priorPublishing?.version) && (
         <Tooltip
+          open
           enterDelay={1000}
           enterNextDelay={1000}
-          title={`v${
-            params.row?.publishing?.version ||
-            params.row?.priorPublishing?.version
-          } ${
-            isScheduledPublish ? "scheduled to publish" : "published"
-          } on ${new Date(
-            params.row?.publishing?.publishAt ||
-              params.row?.priorPublishing?.publishAt
-          ).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            timeZoneName: "short",
-          })} by ${publishedByUser?.firstName} ${publishedByUser?.lastName}`}
+          title={
+            <div>
+              v
+              {params.row?.publishing?.version ||
+                params.row?.priorPublishing?.version}{" "}
+              {isScheduledPublish ? "scheduled to publish" : "published"} on{" "}
+              <br />
+              {new Date(
+                params.row?.publishing?.publishAt ||
+                  params.row?.priorPublishing?.publishAt
+              ).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                timeZoneName: "short",
+              })}{" "}
+              <br /> by {publishedByUser?.firstName} {publishedByUser?.lastName}
+            </div>
+          }
           slotProps={{
             popper: {
               style: {
