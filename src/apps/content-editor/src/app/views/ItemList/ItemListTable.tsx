@@ -6,8 +6,9 @@ import {
   Typography,
   Link,
   Checkbox,
-  Tooltip,
+  Stack,
 } from "@mui/material";
+import { ReportGmailerrorred } from "@mui/icons-material";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import {
   DataGridPro,
@@ -151,7 +152,24 @@ const fieldTypeColumnConfigMap = {
     width: 100,
     renderCell: (params: GridRenderCellParams) => {
       const src = params?.value?.thumbnail || params?.value?.split(",")?.[0];
-      if (!src) return null;
+      console.log(src);
+      if (!src) {
+        return (
+          <Stack
+            sx={{
+              backgroundColor: "red.50",
+              width: "100%",
+              height: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            <ReportGmailerrorred fontSize="large" sx={{ color: "red.600" }} />
+          </Stack>
+        );
+      }
+
       return (
         <Box
           component="img"
