@@ -29,6 +29,22 @@ import { ItemListTable } from "./ItemListTable";
 import { useSelectedItems } from "./SelectedItemsContext";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 
+const formatDateTime = (source: string) => {
+  if (!source || isNaN(new Date(source).getTime())) return "";
+
+  const date = new Date(source)?.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+  const time = new Date(source)?.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+  });
+
+  return `${date} ${time}`;
+};
+
 export const ItemList = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
@@ -97,16 +113,7 @@ export const ItemList = () => {
         clonedItem.publishing = {
           ...clonedItem.publishing,
           publishAt: clonedItem?.publishing?.publishAt
-            ? new Date(clonedItem.publishing.publishAt)?.toLocaleDateString(
-                "en-US",
-                {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                }
-              )
+            ? formatDateTime(clonedItem?.publishing?.publishAt)
             : null,
         };
       }
@@ -119,35 +126,15 @@ export const ItemList = () => {
         clonedItem.priorPublishing = {
           ...clonedItem.priorPublishing,
           publishAt: clonedItem?.priorPublishing?.publishAt
-            ? new Date(
-                clonedItem.priorPublishing.publishAt
-              )?.toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-              })
+            ? formatDateTime(clonedItem.priorPublishing.publishAt)
             : null,
         };
       }
       clonedItem.meta.createdAt = clonedItem?.meta?.createdAt
-        ? new Date(clonedItem.meta.createdAt)?.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-          })
+        ? formatDateTime(clonedItem.meta.createdAt)
         : null;
       clonedItem.web.updatedAt = clonedItem?.web?.updatedAt
-        ? new Date(clonedItem.web.updatedAt)?.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-          })
+        ? formatDateTime(clonedItem.web.updatedAt)
         : null;
       const creatorData = users.find(
         (user) => user.ZUID === clonedItem?.meta?.createdByUserZUID
@@ -196,15 +183,7 @@ export const ItemList = () => {
         if (fieldType === "datetime") {
           if (!clonedItem.data[key]) return;
 
-          clonedItem.data[key] = new Date(
-            clonedItem.data[key]
-          )?.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-          });
+          clonedItem.data[key] = formatDateTime(clonedItem.data[key]);
         }
       });
 
