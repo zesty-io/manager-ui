@@ -6,6 +6,7 @@ import {
   Typography,
   Link,
   Checkbox,
+  Tooltip,
 } from "@mui/material";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import {
@@ -351,6 +352,23 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
             {...props}
           />
         ),
+      }}
+      componentsProps={{
+        baseTooltip: {
+          placement: "top-start",
+          slotProps: {
+            popper: {
+              modifiers: [
+                {
+                  name: "offset",
+                  options: {
+                    offset: [0, -30],
+                  },
+                },
+              ],
+            },
+          },
+        },
       }}
       getRowClassName={(params) => {
         // if included in staged changes, highlight the row
