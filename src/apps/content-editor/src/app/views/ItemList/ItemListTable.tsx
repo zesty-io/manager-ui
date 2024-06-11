@@ -247,13 +247,13 @@ const fieldTypeColumnConfigMap = {
                   : "none",
             }}
           />
-          <Typography>{params.value?.toUpperCase()}</Typography>
+          <Typography variant="body2">{params.value?.toUpperCase()}</Typography>
         </Box>
       );
     },
   },
   sort: {
-    width: 156,
+    width: 112,
     renderCell: (params: GridRenderCellParams) => <SortCell params={params} />,
   },
 } as const;
@@ -446,6 +446,9 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
         },
         "& .MuiDataGrid-columnHeader:focus-within": {
           outline: "none",
+        },
+        "& .MuiDataGrid-cell:has([data-cy='sortCell'])": {
+          padding: 0,
         },
       }}
     />
