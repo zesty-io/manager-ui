@@ -59,10 +59,25 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
         }}
         anchorEl={anchorEl}
         open={!!anchorEl}
+        slotProps={{
+          paper: {
+            sx: {
+              width: 228,
+              "& .MuiMenu-list": {
+                minWidth: 228,
+              },
+            },
+          },
+        }}
       >
         <MenuItem
+          dense
           onClick={() => {
             handleChange(null);
+          }}
+          sx={{
+            textWrap: "wrap",
+            wordBreak: "break-word",
           }}
         >
           Select
@@ -70,9 +85,14 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
         {field?.settings?.options &&
           Object.entries(field?.settings?.options)?.map(([key, value]) => (
             <MenuItem
+              dense
               key={key}
               onClick={() => {
                 handleChange(key);
+              }}
+              sx={{
+                textWrap: "wrap",
+                wordBreak: "break-word",
               }}
             >
               {value}
