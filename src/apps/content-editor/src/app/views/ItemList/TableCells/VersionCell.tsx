@@ -66,7 +66,6 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
       {(params.row?.publishing?.version ||
         params.row?.priorPublishing?.version) && (
         <Tooltip
-          open
           enterDelay={1000}
           enterNextDelay={1000}
           title={
@@ -93,7 +92,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
           slotProps={{
             popper: {
               style: {
-                width: isScheduledPublish ? 116 : 146,
+                width: isScheduledPublish ? 120 : 150,
               },
             },
           }}
