@@ -238,6 +238,10 @@ const fieldTypeColumnConfigMap = {
               height: 32,
               borderRadius: "8px",
               backgroundColor: params.value,
+              border: (theme) =>
+                params.value?.toLowerCase() === "#ffffff"
+                  ? `1px solid ${theme.palette.border}`
+                  : "none",
             }}
           />
           <Typography>{params.value?.toUpperCase()}</Typography>
