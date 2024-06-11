@@ -162,16 +162,12 @@ export const UpdateListActions = () => {
         <Box display={"flex"} gap={1.5} alignItems="center">
           <IconButton
             size="small"
-            sx={{
-              width: "20px",
-              height: "20px",
-            }}
             onClick={() => {
               clearStagedChanges({});
               setSelectedItems([]);
             }}
           >
-            <CloseRounded />
+            <CloseRounded sx={{ fontSize: "20px" }} />
           </IconButton>
           <Typography variant="h3" fontWeight={700}>
             {hasStagedChanges
