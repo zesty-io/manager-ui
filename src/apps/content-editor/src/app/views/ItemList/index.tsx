@@ -45,6 +45,8 @@ const formatDateTime = (source: string) => {
   return `${date} ${time}`;
 };
 
+const now = new Date();
+
 export const ItemList = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
@@ -211,9 +213,8 @@ export const ItemList = () => {
           new Date(a.meta.createdAt).getTime()
         );
       } else if (sort === "status") {
-        const now = new Date(); // Current date and time
-        const aPublishing = a?.publishing;
-        const bPublishing = b?.publishing;
+        const aPublishing = a?.publishing || a?.priorPublishing;
+        const bPublishing = b?.publishing || b?.priorPublishing;
 
         const aDate = aPublishing?.publishAt
           ? new Date(aPublishing.publishAt)
@@ -222,49 +223,42 @@ export const ItemList = () => {
           ? new Date(bPublishing.publishAt)
           : null;
 
-        // Check if A or B is scheduled or not
-        const aIsScheduled = aDate ? aDate > now : false;
-        const bIsScheduled = bDate ? bDate > now : false;
+        // Determine the status of each item
+        const aIsPublished = aDate && aDate <= now;
+        const bIsPublished = bDate && bDate <= now;
 
-        // Check if A or B has a date
-        const aHasDate = aDate !== null;
-        const bHasDate = bDate !== null;
+        const aIsScheduled = aDate && aDate > now;
+        const bIsScheduled = bDate && bDate > now;
 
-        // Handle sorting based on scheduled status and presence of publishAt date
-        if (aIsScheduled && !bIsScheduled) {
-          // A is scheduled, B is live or has no date
-          if (!bHasDate) {
-            // B has no date, A should still come first
-            return -1;
-          }
-          // B is live, A should come after B
+        // Check if meta.version exists
+        const aHasVersion = a?.meta?.version != null;
+        const bHasVersion = b?.meta?.version != null;
+
+        // Place items without meta.version at the bottom
+        if (!aHasVersion && bHasVersion) {
           return 1;
-        } else if (!aIsScheduled && bIsScheduled) {
-          // A is live or has no date, B is scheduled
-          if (!aHasDate) {
-            // A has no date, B should still come first
-            return 1;
-          }
-          // A is live, A should come before B
+        } else if (aHasVersion && !bHasVersion) {
           return -1;
-        } else if (!aHasDate && bHasDate) {
-          // A has no date, B has a date (either scheduled or live)
-          return 1; // B should come before A
-        } else if (aHasDate && !bHasDate) {
-          // A has a date (either scheduled or live), B has no date
-          return -1; // A should come before B
-        } else {
-          // Both have dates, or both have no dates, sort by publish date
-          if (aDate && bDate) {
-            // Both are scheduled, sort by publish date ascending
-            if (aIsScheduled && bIsScheduled) {
-              return aDate.getTime() - bDate.getTime();
-            }
-            // Both are live, sort by publish date descending
-            return bDate.getTime() - aDate.getTime();
-          }
-          return 0; // Neither have a date, consider them equal
         }
+
+        // Continue with the original sorting logic
+        if (aIsPublished && !bIsPublished) {
+          return -1; // A is published, B is not
+        } else if (!aIsPublished && bIsPublished) {
+          return 1; // B is published, A is not
+        } else if (aIsPublished && bIsPublished) {
+          return bDate.getTime() - aDate.getTime(); // Both are published, sort by publish date descending
+        }
+
+        if (aIsScheduled && !bIsScheduled) {
+          return -1; // A is scheduled, B is not
+        } else if (!aIsScheduled && bIsScheduled) {
+          return 1; // B is scheduled, A is not
+        } else if (aIsScheduled && bIsScheduled) {
+          return aDate.getTime() - bDate.getTime(); // Both are scheduled, sort by publish date ascending
+        }
+
+        return 0; // Neither is published nor scheduled, consider them equal
       } else {
         return (
           new Date(b.meta.updatedAt).getTime() -
