@@ -41,6 +41,8 @@ type ItemListTableProps = {
 };
 
 const getHtmlText = (html: string) => {
+  if (!html) return "";
+
   const rawData = html;
   let elementFromData = document.createElement("div");
   elementFromData.innerHTML = rawData;
