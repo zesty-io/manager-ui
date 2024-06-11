@@ -434,6 +434,12 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
         ".MuiDataGrid-columnSeparator": {
           visibility: "hidden",
         },
+        "& .MuiDataGrid-cell:focus-within": {
+          outline: "none",
+        },
+        "& .MuiDataGrid-columnHeader:focus-within": {
+          outline: "none",
+        },
       }}
     />
   );
