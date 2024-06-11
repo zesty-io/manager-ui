@@ -95,6 +95,10 @@ export const ItemListFilters = () => {
         open={!!anchorEl?.currentTarget && anchorEl.id === "sort"}
         onClose={() => setAnchorEl(null)}
         anchorEl={anchorEl?.currentTarget}
+        transformOrigin={{
+          vertical: -8,
+          horizontal: "left",
+        }}
       >
         {Object.entries(SORT_ORDER).map(([key, value]) => (
           <MenuItem
@@ -140,6 +144,10 @@ export const ItemListFilters = () => {
         open={!!anchorEl?.currentTarget && anchorEl.id === "statusFilter"}
         onClose={() => setAnchorEl(null)}
         anchorEl={anchorEl?.currentTarget}
+        transformOrigin={{
+          vertical: -8,
+          horizontal: "left",
+        }}
       >
         {Object.entries(STATUS_FILTER).map(([key, value]) => (
           <MenuItem

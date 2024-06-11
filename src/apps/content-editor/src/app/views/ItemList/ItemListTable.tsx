@@ -311,7 +311,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       {
         field: "version",
         headerName: "Vers.",
-        width: 90,
+        width: 59,
         sortable: false,
         filterable: false,
         renderCell: (params: GridRenderCellParams) => (
