@@ -203,11 +203,14 @@ const fieldTypeColumnConfigMap = {
     renderCell: (params: any) => {
       return (
         <Link
-          underline="none"
+          underline="hover"
           target="_blank"
           href={params.value}
           sx={{
             color: "primary.main",
+            "&:hover": {
+              textDecorationColor: (theme) => theme.palette.primary.main,
+            },
           }}
           onClick={(e) => e.stopPropagation()}
         >
