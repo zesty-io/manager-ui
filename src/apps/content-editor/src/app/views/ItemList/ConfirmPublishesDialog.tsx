@@ -14,6 +14,7 @@ import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { useRef } from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { DialogContentItem } from "./DialogContentItem";
+import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
 type ConfirmPublishesModalProps = {
   items: ContentItem[];
@@ -47,11 +48,13 @@ export const ConfirmPublishesModal = ({
         >
           <CloudUploadRoundedIcon color="success" />
         </Stack>
-        <Box>Publish {items.length} Items:</Box>
+        <Box>
+          Publish {items.length} {pluralizeWord("Item", items.length)}:
+        </Box>
         <Typography variant="body2" color="text.secondary" mt={1}>
-          This will make the the following 2 content items immediately available
-          on all of your platforms. You can always unpublish this item later if
-          needed.
+          This will make the the following {items.length} content{" "}
+          {pluralizeWord("item", items.length)} immediately available on all of
+          your platforms. You can always unpublish this item later if needed.
         </Typography>
       </DialogTitle>
       <DialogContent>

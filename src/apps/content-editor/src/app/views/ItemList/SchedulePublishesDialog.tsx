@@ -18,6 +18,7 @@ import moment from "moment-timezone";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { FieldTypeDateTime } from "../../../../../../shell/components/FieldTypeDateTime";
 import { DialogContentItem } from "./DialogContentItem";
+import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
 type SchedulePublishesModalProps = {
   items: ContentItem[];
@@ -68,7 +69,8 @@ export const SchedulePublishesModal = ({
           <Box>
             <Box mb={1}>
               <Typography variant="h5" fontWeight={700}>
-                Schedule Publish of Changes to {items.length} Items
+                Schedule Publish of Changes to {items.length}{" "}
+                {pluralizeWord("Item", items.length)}
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">
