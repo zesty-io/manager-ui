@@ -17,7 +17,7 @@ import {
   TableViewRounded,
   CheckRounded,
   CodeRounded,
-  ContentCopyRounded,
+  WidgetsRounded,
   BoltRounded,
   KeyboardArrowRightRounded,
   DataObjectRounded,
@@ -128,7 +128,16 @@ export const ItemListActions = forwardRef((props, ref) => {
           }}
         >
           <ListItemIcon>
-            {isCopied ? <CheckRounded /> : <ContentCopyRounded />}
+            {isCopied ? (
+              <CheckRounded />
+            ) : (
+              <WidgetsRounded
+                sx={{
+                  height: "20px",
+                  width: "20px",
+                }}
+              />
+            )}
           </ListItemIcon>
           Copy ZUID
         </MenuItem>

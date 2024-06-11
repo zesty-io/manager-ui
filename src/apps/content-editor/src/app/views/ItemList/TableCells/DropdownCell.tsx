@@ -59,16 +59,6 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
         }}
         anchorEl={anchorEl}
         open={!!anchorEl}
-        slotProps={{
-          paper: {
-            sx: {
-              width: 228,
-              "& .MuiMenu-list": {
-                minWidth: 228,
-              },
-            },
-          },
-        }}
       >
         <MenuItem
           dense
