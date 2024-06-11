@@ -152,7 +152,7 @@ const fieldTypeColumnConfigMap = {
     width: 100,
     renderCell: (params: GridRenderCellParams) => {
       const src = params?.value?.thumbnail || params?.value?.split(",")?.[0];
-      console.log(src);
+
       if (!src) {
         return (
           <Stack
