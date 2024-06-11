@@ -110,7 +110,7 @@ export const SchedulePublishesModal = ({
               immediately published.
             </Alert>
           )}
-          <List disablePadding>
+          <List disablePadding sx={{ pt: 2.5 }}>
             {items.map((item, index) => (
               <DialogContentItem key={index} item={item} />
             ))}
