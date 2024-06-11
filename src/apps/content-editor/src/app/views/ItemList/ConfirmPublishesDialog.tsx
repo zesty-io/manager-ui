@@ -36,7 +36,7 @@ export const ConfirmPublishesModal = ({
       PaperProps={{ sx: { width: 480 } }}
       TransitionProps={{ onEntered }}
     >
-      <DialogTitle component="div" sx={{ pb: 1 }}>
+      <DialogTitle component="div" sx={{ pb: 2.5 }}>
         <Stack
           height={40}
           width={40}
@@ -58,11 +58,9 @@ export const ConfirmPublishesModal = ({
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <List disablePadding>
-          {items.map((item, index) => (
-            <DialogContentItem key={index} item={item} />
-          ))}
-        </List>
+        {items.map((item, index) => (
+          <DialogContentItem key={index} item={item} />
+        ))}
       </DialogContent>
       <DialogActions>
         <Button variant="text" color="inherit" onClick={() => onCancel()}>
