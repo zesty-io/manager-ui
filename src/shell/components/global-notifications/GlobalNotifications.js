@@ -125,7 +125,7 @@ export default connect((state) => {
 
     return (
       <SnackbarProvider
-        autoHideDuration={8000}
+        autoHideDuration={4000}
         maxSnack={10}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         Components={{ custom: CustomNotification }}
