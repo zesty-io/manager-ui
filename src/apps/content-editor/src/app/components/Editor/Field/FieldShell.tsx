@@ -13,6 +13,7 @@ import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownR
 import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
 import { FieldTooltipBody } from "./FieldTooltipBody";
 import { ContentModelField } from "../../../../../../../shell/services/types";
+import pluralizeWord from "../../../../../../../utility/pluralizeWord";
 
 export type EditorType =
   | "markdown"
@@ -28,6 +29,7 @@ export const EditorTypes: Record<EditorType, string> = {
 export type Error = {
   MISSING_REQUIRED?: boolean;
   EXCEEDING_MAXLENGTH?: number;
+  LACKING_MINLENGTH?: number;
   CUSTOM_ERROR?: string;
 };
 
@@ -36,6 +38,7 @@ type FieldShellProps = {
   valueLength?: number;
   endLabel?: JSX.Element;
   maxLength?: number;
+  minLength?: number;
   withLengthCounter?: boolean;
   missingRequired?: boolean;
   onEditorChange?: (editorType: string) => void;
@@ -50,6 +53,7 @@ export const FieldShell = ({
   endLabel,
   valueLength,
   maxLength = 150,
+  minLength = 0,
   withLengthCounter = false,
   onEditorChange,
   editorType = "markdown",
@@ -66,7 +70,17 @@ export const FieldShell = ({
     }
 
     if (errors?.EXCEEDING_MAXLENGTH > 0) {
-      return `Exceeding by ${errors.EXCEEDING_MAXLENGTH} characters.`;
+      return `Exceeding by ${errors.EXCEEDING_MAXLENGTH} ${pluralizeWord(
+        "character",
+        errors.EXCEEDING_MAXLENGTH
+      )}.`;
+    }
+
+    if (errors?.LACKING_MINLENGTH > 0) {
+      return `Requires ${errors.LACKING_MINLENGTH} more ${pluralizeWord(
+        "character",
+        errors.LACKING_MINLENGTH
+      )}.`;
     }
 
     if (errors?.CUSTOM_ERROR) {
@@ -160,6 +174,8 @@ export const FieldShell = ({
         {withLengthCounter && (
           <Typography variant="body2" color="text.disabled">
             {valueLength}
+            {!!minLength &&
+              ` (min. ${minLength} ${pluralizeWord("character", minLength)})`}
             {!!maxLength && `/${maxLength}`}
           </Typography>
         )}

@@ -4,6 +4,7 @@ import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
 import { theme } from "@zesty-io/material";
 import { Error } from "./Field/FieldShell";
 import { ContentModelField } from "../../../../../../shell/services/types";
+import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
 type FieldErrorProps = {
   errors: Record<string, Error>;
@@ -29,7 +30,13 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
       if (errors?.MISSING_REQUIRED) {
         errorMessage = "Required Field. Please enter a value.";
       } else if (errors?.EXCEEDING_MAXLENGTH > 0) {
-        errorMessage = `Exceeding by ${errors.EXCEEDING_MAXLENGTH} characters.`;
+        errorMessage = `Exceeding by ${
+          errors.EXCEEDING_MAXLENGTH
+        } ${pluralizeWord("character", errors.EXCEEDING_MAXLENGTH)}.`;
+      } else if (errors?.LACKING_MINLENGTH > 0) {
+        errorMessage = `Requires ${
+          errors.LACKING_MINLENGTH
+        } more ${pluralizeWord("character", errors.LACKING_MINLENGTH)}.`;
       } else {
         errorMessage = "";
       }

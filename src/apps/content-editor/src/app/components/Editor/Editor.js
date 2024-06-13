@@ -112,6 +112,17 @@ export default memo(function Editor({
         }
       }
 
+      if (field?.settings?.minCharLimit) {
+        if (value.length < field?.settings?.minCharLimit) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            LACKING_MINLENGTH: field?.settings?.minCharLimit - value.length,
+          };
+        } else {
+          errors[name] = { ...(errors[name] ?? []), LACKING_MINLENGTH: 0 };
+        }
+      }
+
       onUpdateFieldErrors(errors);
 
       // Always dispatch the data update
@@ -254,6 +265,7 @@ export default memo(function Editor({
                   maxLength={
                     field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
                   }
+                  minLength={field.settings?.minCharLimit ?? 0}
                 />
               </div>
             );
