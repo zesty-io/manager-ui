@@ -12,6 +12,7 @@ import { notify } from "shell/store/notifications";
 import { useDispatch } from "react-redux";
 import EmailIcon from "@mui/icons-material/Email";
 import { UserHeaderTitle } from "../components/UserHeaderTitle";
+import { toUTC } from "../utils";
 
 export const UserDetails = () => {
   const dispatch = useDispatch();
@@ -50,10 +51,10 @@ export const UserDetails = () => {
     {
       userZUID: zuid,
       ...(params.get("from") && {
-        start_date: moment(params.get("from")).format("L"),
+        start_date: toUTC(params.get("from")),
       }),
       ...(params.get("to") && {
-        end_date: moment(params.get("to")).format("L"),
+        end_date: toUTC(params.get("to")),
       }),
     },
     { skip: !initialized }

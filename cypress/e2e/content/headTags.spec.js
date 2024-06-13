@@ -7,7 +7,7 @@ describe("Head Tags", () => {
 
     cy.contains("Create Head Tag").click();
 
-    cy.get("[data-cy=tagCard]")
+    cy.get("[data-cy=newTagCard]")
       .last()
       .find(".MuiSelect-select")
       .click({ force: true });
@@ -18,7 +18,7 @@ describe("Head Tags", () => {
       .click({ force: true });
 
     //cy.get("[data-cy=tagCard]:last-child")
-    cy.get("[data-cy=tagCard]")
+    cy.get("[data-cy=newTagCard]")
       .last()
       .contains("Value")
       .parent()
@@ -26,7 +26,7 @@ describe("Head Tags", () => {
       .clear()
       .type("Changing the value of content");
 
-    cy.get("[data-cy=tagCard]")
+    cy.get("[data-cy=newTagCard]")
       .last()
       .contains("Attribute")
       .parent()
@@ -35,13 +35,13 @@ describe("Head Tags", () => {
       .type("newAttr");
 
     // Saves Head Tag
-    cy.get("[data-cy=tagCard]").last().find("#SaveItemButton").click();
+    cy.get("[data-cy=newTagCard]").last().find("#SaveItemButton").click();
     cy.contains("New head tag created");
 
     // Deletes Head Tag
     cy.get("[data-cy=tagCard]")
       .last()
-      .contains("Delete Tag")
+      .contains("Delete Head Tag")
       .invoke("show")
       .click();
 

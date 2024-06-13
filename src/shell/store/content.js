@@ -382,7 +382,7 @@ export function fetchItems(modelZUID, options = {}) {
 export function saveItem(itemZUID, action = "") {
   return (dispatch, getState) => {
     const state = getState();
-    const item = state.content[itemZUID];
+    const item = cloneDeep(state.content[itemZUID]);
     const fields = Object.keys(state.fields)
       .filter(
         (fieldZUID) =>
@@ -700,6 +700,11 @@ export function fetchItemPublishing(modelZUID, itemZUID) {
               itemZUID,
             },
           });
+          dispatch(
+            instanceApi.util.invalidateTags([
+              { type: "ItemPublishing", id: itemZUID },
+            ])
+          );
         }
       },
     });

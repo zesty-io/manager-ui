@@ -178,8 +178,6 @@ export default connect((state) => {
 
   const images = faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : [];
 
-  console.log("testing images", images);
-
   return (
     <>
       <Modal
@@ -223,6 +221,7 @@ export default connect((state) => {
               name={"favicon"}
               onChange={handleImage}
               hideDrag
+              images={[]}
             />
             {imageModal && (
               <MemoryRouter>

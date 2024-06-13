@@ -32,7 +32,7 @@ A redux store is used to manage state across all of the potential sub-apps. The 
 
 ## Requirements
 
-- Node.js version 12 LTS
+- Node.js version 16 LTS
 - Web browser: Chrome / Firefox / Edge / Safari (latest)
 - Redux DevTools Extension - https://github.com/zalmoxisus/redux-devtools-extension
 
