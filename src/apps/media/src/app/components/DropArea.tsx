@@ -60,7 +60,7 @@ export const DropArea = ({
             ? "All Media"
             : currentGroup
             ? currentGroup.name
-            : currentBin.name}
+            : currentBin?.name}
         </Typography>
       </Box>
     </Box>
