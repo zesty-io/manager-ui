@@ -3,16 +3,15 @@ import { request } from "utility/request";
 import { Sentry } from "utility/sentry";
 import { notify } from "shell/store/notifications";
 
-export function user(
-  state = {
-    ZUID: "",
-    firstName: "",
-    email: "",
-    permissions: [],
-    selected_lang: "en-US",
-  },
-  action
-) {
+const INITIAL_STATE = {
+  ZUID: "",
+  firstName: "",
+  email: "",
+  permissions: [],
+  selected_lang: "en-US",
+};
+
+export function user(state = INITIAL_STATE, action) {
   switch (action.type) {
     case "VERIFY_SUCCESS":
     case "FETCH_LOGIN_SUCCESS":
@@ -37,6 +36,9 @@ export function user(
     case "LOADED_LOCAL_USER_LANG":
     case "USER_SELECTED_LANG":
       return { ...state, selected_lang: action.payload.lang };
+
+    case "RESET_USER_DATA":
+      return INITIAL_STATE;
 
     default:
       return state;
