@@ -22,6 +22,7 @@ export const FieldTypeNumber = ({
   hasError,
   allowNegative = true,
   limit,
+  ...props
 }: FieldTypeNumberProps) => {
   const numberInputRef = useRef(null);
 
@@ -58,6 +59,7 @@ export const FieldTypeNumber = ({
 
   return (
     <TextField
+      {...props}
       inputRef={numberInputRef}
       variant="outlined"
       fullWidth

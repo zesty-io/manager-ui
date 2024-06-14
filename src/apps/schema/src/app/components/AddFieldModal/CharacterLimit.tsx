@@ -44,7 +44,7 @@ export const CharacterLimit = ({
         }}
         control={
           <Checkbox
-            data-cy="DefaultValueCheckbox"
+            data-cy="CharacterLimitCheckbox"
             checked={isCharacterLimitEnabled}
             size="small"
             onChange={(evt) => {
@@ -90,6 +90,7 @@ export const CharacterLimit = ({
               }}
               control={
                 <FieldTypeNumber
+                  data-cy="MinCharacterLimitInput"
                   required={false}
                   value={+minValue}
                   onChange={(value) => {
@@ -108,7 +109,11 @@ export const CharacterLimit = ({
                 </Typography>
               }
             />
-            <FormHelperText>{errors?.minCharLimit}</FormHelperText>
+            {!!errors?.minCharLimit && (
+              <FormHelperText data-cy="MinCharacterErrorMsg">
+                {errors?.minCharLimit}
+              </FormHelperText>
+            )}
           </FormControl>
           <FormControl error={!!errors?.maxCharLimit}>
             <FormControlLabel
@@ -120,6 +125,7 @@ export const CharacterLimit = ({
               }}
               control={
                 <FieldTypeNumber
+                  data-cy="MaxCharacterLimitInput"
                   required={false}
                   value={+maxValue}
                   onChange={(value) => {
@@ -138,7 +144,11 @@ export const CharacterLimit = ({
                 </Typography>
               }
             />
-            <FormHelperText>{errors?.maxCharLimit}</FormHelperText>
+            {!!errors?.maxCharLimit && (
+              <FormHelperText data-cy="MaxCharacterErrorMsg">
+                {errors?.maxCharLimit}
+              </FormHelperText>
+            )}
           </FormControl>
         </Stack>
       )}
