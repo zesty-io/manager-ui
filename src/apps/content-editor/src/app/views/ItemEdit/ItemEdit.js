@@ -230,7 +230,7 @@ export default function ItemEdit() {
     setSaving(true);
     try {
       const res = await dispatch(saveItem(itemZUID));
-      if (res.err === "MISSING_REQUIRED") {
+      if (res.err === "VALIDATION_ERROR") {
         const missingRequiredFieldNames = res.missingRequired?.reduce(
           (acc, curr) => {
             acc = [curr.name, ...acc];
@@ -239,9 +239,9 @@ export default function ItemEdit() {
           []
         );
 
-        if (missingRequiredFieldNames?.length) {
-          const errors = cloneDeep(fieldErrors);
+        const errors = cloneDeep(fieldErrors);
 
+        if (missingRequiredFieldNames?.length) {
           missingRequiredFieldNames?.forEach((fieldName) => {
             errors[fieldName] = {
               ...(errors[fieldName] ?? {}),
@@ -249,16 +249,26 @@ export default function ItemEdit() {
             };
           });
 
-          setFieldErrors(errors);
+          dispatch(
+            notify({
+              heading: `Cannot Save: ${item.web.metaTitle}`,
+              message: "Missing Data in Required Fields",
+              kind: "error",
+            })
+          );
         }
 
-        dispatch(
-          notify({
-            heading: `Cannot Save: ${item.web.metaTitle}`,
-            message: "Missing Data in Required Fields",
-            kind: "error",
-          })
-        );
+        // Map min length validation errors
+        if (res.lackingCharLength?.length) {
+          res.lackingCharLength?.forEach((field) => {
+            errors[field.name] = {
+              ...(errors[field.name] ?? {}),
+              LACKING_MINLENGTH: field.settings?.minCharLimit,
+            };
+          });
+        }
+
+        setFieldErrors(errors);
         return;
       }
       if (res.status === 400) {

@@ -398,10 +398,20 @@ export function saveItem(itemZUID, action = "") {
         field.required &&
         (item.data[field.name] === "" || item.data[field.name] === null)
     );
-    if (missingRequired.length) {
+
+    // Check minlength is satisfied
+    const lackingCharLength = fields?.filter(
+      (field) =>
+        field.settings?.minCharLimit &&
+        (item.data[field.name]?.length < field.settings?.minCharLimit ||
+          !item.data[field.name])
+    );
+
+    if (missingRequired?.length || lackingCharLength?.length) {
       return Promise.resolve({
-        err: "MISSING_REQUIRED",
-        missingRequired,
+        err: "VALIDATION_ERROR",
+        ...(!!missingRequired?.length && { missingRequired }),
+        ...(!!lackingCharLength?.length && { lackingCharLength }),
       });
     }
 
@@ -500,10 +510,20 @@ export function createItem(modelZUID, itemZUID) {
       }
       return false;
     });
-    if (missingRequired.length) {
+
+    // Check minlength is satisfied
+    const lackingCharLength = fields?.filter(
+      (field) =>
+        field.settings?.minCharLimit &&
+        (item.data[field.name]?.length < field.settings?.minCharLimit ||
+          !item.data[field.name])
+    );
+
+    if (missingRequired?.length || lackingCharLength?.length) {
       return Promise.resolve({
-        err: "MISSING_REQUIRED",
-        missingRequired,
+        err: "VALIDATION_ERROR",
+        ...(!!missingRequired?.length && { missingRequired }),
+        ...(!!lackingCharLength?.length && { lackingCharLength }),
       });
     }
 

@@ -146,12 +146,16 @@ export const ItemCreate = () => {
   };
 
   const save = async (action: ActionAfterSave) => {
-    setSaving(true);
     setSaveClicked(true);
+
+    if (hasErrors) return;
+
+    setSaving(true);
+
     try {
       const res: any = await dispatch(createItem(modelZUID, itemZUID));
       if (res.err || res.error) {
-        if (res.missingRequired) {
+        if (res.missingRequired || res.lackingCharLength) {
           const missingRequiredFieldNames: string[] =
             res.missingRequired?.reduce(
               (acc: string[], curr: ContentModelField) => {
@@ -161,9 +165,9 @@ export const ItemCreate = () => {
               []
             );
 
-          if (missingRequiredFieldNames?.length) {
-            const errors = cloneDeep(fieldErrors);
+          const errors = cloneDeep(fieldErrors);
 
+          if (missingRequiredFieldNames?.length) {
             missingRequiredFieldNames?.forEach((fieldName) => {
               errors[fieldName] = {
                 ...(errors[fieldName] ?? {}),
@@ -171,17 +175,29 @@ export const ItemCreate = () => {
               };
             });
 
-            setFieldErrors(errors);
+            dispatch(
+              notify({
+                message: "Missing Data in Required Fields",
+                kind: "error",
+              })
+            );
           }
-          dispatch(
-            notify({
-              message: "Missing Data in Required Fields",
-              kind: "error",
-            })
-          );
+
+          // Map min length validation errors
+          if (res.lackingCharLength?.length) {
+            res.lackingCharLength?.forEach((field: ContentModelField) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                LACKING_MINLENGTH: field.settings?.minCharLimit,
+              };
+            });
+          }
+
+          setFieldErrors(errors);
 
           // scroll to required field
         }
+
         if (res.error) {
           dispatch(
             notify({

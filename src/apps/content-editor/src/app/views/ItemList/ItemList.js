@@ -281,7 +281,7 @@ export default connect((state, props) => {
         let success = false;
         // display notification for each missing required field on each item
         results.forEach((result) => {
-          if (result.err === "MISSING_REQUIRED") {
+          if (result.err === "VALIDATION_ERROR") {
             result.missingRequired.forEach((field) => {
               props.dispatch(
                 notify({
