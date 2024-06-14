@@ -64,6 +64,7 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
   return (
     <ThemeProvider theme={theme}>
       <Stack
+        data-cy="FieldErrorsList"
         ref={errorContainerEl}
         p={2}
         gap={1}
