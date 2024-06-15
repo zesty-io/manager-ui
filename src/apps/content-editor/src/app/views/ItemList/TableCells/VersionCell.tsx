@@ -25,11 +25,22 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
     <Stack spacing={0.25}>
       {params.row?.meta?.version !== params.row?.publishing?.version && (
         <Tooltip
+          placement="bottom-start"
           enterDelay={1000}
           enterNextDelay={1000}
+          PopperProps={{
+            modifiers: [
+              {
+                name: "offset",
+                options: {
+                  offset: [0, -8],
+                },
+              },
+            ],
+          }}
           title={
             <div>
-              v{params.row?.meta?.version} <br /> saved on{" "}
+              v{params.row?.meta?.version} saved on <br />
               {new Date(params.row?.meta?.updatedAt).toLocaleDateString(
                 "en-US",
                 {
@@ -51,7 +62,6 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
               },
             },
           }}
-          placement="bottom"
         >
           <Chip
             label={`v${params.row?.meta?.version}`}
@@ -66,8 +76,19 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
       {(params.row?.publishing?.version ||
         params.row?.priorPublishing?.version) && (
         <Tooltip
+          placement="bottom-start"
           enterDelay={1000}
           enterNextDelay={1000}
+          PopperProps={{
+            modifiers: [
+              {
+                name: "offset",
+                options: {
+                  offset: [0, -8],
+                },
+              },
+            ],
+          }}
           title={
             <div>
               v
@@ -96,7 +117,6 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
               },
             },
           }}
-          placement="bottom"
         >
           <Chip
             label={`v${
@@ -117,7 +137,17 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
           enterDelay={1000}
           enterNextDelay={1000}
           title={"Item not yet created"}
-          placement="bottom"
+          placement="bottom-start"
+          PopperProps={{
+            modifiers: [
+              {
+                name: "offset",
+                options: {
+                  offset: [0, -8],
+                },
+              },
+            ],
+          }}
         >
           <Chip
             label={"v0"}
