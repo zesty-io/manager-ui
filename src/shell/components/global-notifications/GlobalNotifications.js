@@ -213,6 +213,31 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
     closeSnackbar(id);
   }, [id, closeSnackbar]);
 
+  const parseStrToBold = (str, isHeading = false) => {
+    if (str.indexOf(":") !== -1) {
+      return (
+        <>
+          <strong>{str.substring(0, str.indexOf(":") + 1)}</strong>
+          {str.substring(str.indexOf(":") + 1)}
+        </>
+      );
+    } else if (str.indexOf(":") === -1 && isHeading)
+      return <strong>{str}</strong>;
+    else if (str.indexOf(":") === -1 && [undefined, ""].includes(props.heading))
+      return <strong>{str}</strong>;
+    else return str;
+  };
+
+  const typograpySX = {
+    maxWidth: "540px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    // this will only show 1 or 2 lines to prevent exceeding on the expected height
+    // depending what type of notification will be displayed.
+    display: props.severity === "success" ? "block" : "-webkit-box",
+    "-webkit-line-clamp": props.heading && props.message ? "1" : "2",
+    "-webkit-box-orient": "vertical",
+  };
   return (
     <SnackbarContent ref={ref}>
       <Alert
@@ -230,7 +255,7 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
         }
         sx={{
           width: 540,
-          height: props.heading ? "auto" : 44,
+          height: props.heading || props.message.length > 65 ? 56 : 44,
         }}
       >
         <Stack>
@@ -238,13 +263,12 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
             variant="body2"
             noWrap={props.severity === "success"}
             sx={{
-              maxWidth: "540px",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              fontWeight: props.heading ? 700 : "normal",
+              ...typograpySX,
             }}
           >
-            {props.heading ? props.heading : props.message}
+            {props.heading
+              ? props.heading && parseStrToBold(props.heading, true)
+              : props.message && parseStrToBold(props.message)}
           </Typography>
 
           {props.heading && (
@@ -252,12 +276,10 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
               variant="body2"
               noWrap={props.severity === "success"}
               sx={{
-                maxWidth: "540px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
+                ...typograpySX,
               }}
             >
-              {props.message}
+              {parseStrToBold(props.message)}
             </Typography>
           )}
         </Stack>
