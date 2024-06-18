@@ -207,11 +207,11 @@ export const ItemListFilters = () => {
         onClose={() => setAnchorEl(null)}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right",
+          horizontal: "left",
         }}
         transformOrigin={{
           vertical: -10,
-          horizontal: "right",
+          horizontal: "left",
         }}
         anchorEl={anchorEl?.currentTarget}
         open={!!anchorEl?.currentTarget && anchorEl.id === "language"}
