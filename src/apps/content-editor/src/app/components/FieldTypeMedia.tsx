@@ -686,7 +686,7 @@ const MediaItem = ({
           )}
           <Box display="flex" gap={1} justifyContent="flex-end">
             {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
-              <Tooltip title="Replace File" placement="bottom" enterDelay={800}>
+              <Tooltip title="Swap File" placement="bottom" enterDelay={800}>
                 <IconButton
                   size="small"
                   onClick={(event: any) => {
