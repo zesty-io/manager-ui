@@ -19,6 +19,7 @@ import { OTFEditor } from "./OTFEditor";
 import { File } from "../../../../../../shell/services/types";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { ReplaceFileModal } from "./ReplaceFileModal";
+import { ReplaceFileProvider } from "./ReplaceFileProvider";
 
 const styledModal = {
   position: "absolute",
@@ -50,6 +51,7 @@ export const FileModal: FC<Props> = ({
   const { data, isLoading, isError, isFetching } = useGetFileQuery(fileId);
   const [showEdit, setShowEdit] = useState(false);
   const [showReplaceFileModal, setShowReplaceFileModal] = useState(false);
+  const [fileToReplace, setFileToReplace] = useState<File | null>(null);
   const [params, setParams] = useParams();
   const [adjacentFiles, setAdjacentFiles] = useState({
     prevFile: null,
@@ -175,9 +177,7 @@ export const FileModal: FC<Props> = ({
   if (showReplaceFileModal) {
     return (
       <ReplaceFileModal
-        src=""
-        filename="test"
-        ZUID=""
+        data={data}
         onClose={() => setShowReplaceFileModal(false)}
       />
     );
@@ -278,6 +278,9 @@ export const FileModal: FC<Props> = ({
               createdAt={data.created_at}
               binId={data.bin_id}
               setShowEdit={setShowEdit}
+              onOpenReplaceFileModal={() => {
+                setShowReplaceFileModal(true);
+              }}
             />
           )}
         </Box>

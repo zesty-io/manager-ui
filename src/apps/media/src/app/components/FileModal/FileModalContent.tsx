@@ -62,6 +62,7 @@ interface Props {
   createdAt?: string;
   handleCloseModal: () => void;
   setShowEdit: (show: boolean) => void;
+  onOpenReplaceFileModal: () => void;
 }
 
 export const FileModalContent: FC<Props> = ({
@@ -75,6 +76,7 @@ export const FileModalContent: FC<Props> = ({
   createdAt,
   handleCloseModal,
   setShowEdit,
+  onOpenReplaceFileModal,
 }) => {
   const [newTitle, setNewTitle] = useState(title);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -301,7 +303,7 @@ export const FileModalContent: FC<Props> = ({
             <IconButton
               size="small"
               aria-label="Replace File Button"
-              onClick={() => console.log("Replace me")}
+              onClick={onOpenReplaceFileModal}
             >
               <FileReplace fontSize="small" />
             </IconButton>
