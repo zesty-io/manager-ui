@@ -18,6 +18,7 @@ import { useGetFileQuery } from "../../../../../../shell/services/mediaManager";
 import { OTFEditor } from "./OTFEditor";
 import { File } from "../../../../../../shell/services/types";
 import { useParams } from "../../../../../../shell/hooks/useParams";
+import { ReplaceFileModal } from "./ReplaceFileModal";
 
 const styledModal = {
   position: "absolute",
@@ -48,6 +49,7 @@ export const FileModal: FC<Props> = ({
   const location = useLocation();
   const { data, isLoading, isError, isFetching } = useGetFileQuery(fileId);
   const [showEdit, setShowEdit] = useState(false);
+  const [showReplaceFileModal, setShowReplaceFileModal] = useState(false);
   const [params, setParams] = useParams();
   const [adjacentFiles, setAdjacentFiles] = useState({
     prevFile: null,
@@ -150,128 +152,137 @@ export const FileModal: FC<Props> = ({
     };
   }, []);
 
+  if (isFetching || (!data && !isError)) {
+    return (
+      <Dialog
+        open={true}
+        PaperProps={{
+          style: {
+            backgroundColor: "transparent",
+            boxShadow: "none",
+            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            textAlign: "center",
+          },
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Dialog>
+    );
+  }
+
+  if (showReplaceFileModal) {
+    return (
+      <ReplaceFileModal
+        src=""
+        filename="test"
+        ZUID=""
+        onClose={() => setShowReplaceFileModal(false)}
+      />
+    );
+  }
+
   return (
-    <>
-      {data && !isError && !isFetching ? (
-        <Dialog
-          open={data.url && !isLoading}
-          fullScreen
-          maxWidth={false}
-          onClose={handleCloseModal}
-          PaperProps={{
-            sx: {
-              mx: 10,
-              my: 2.5,
-              maxHeight: "fill-available",
-              maxWidth: 3000,
-              overflow: "visible",
-            },
+    <Dialog
+      open={data.url && !isLoading}
+      fullScreen
+      maxWidth={false}
+      onClose={handleCloseModal}
+      PaperProps={{
+        sx: {
+          mx: 10,
+          my: 2.5,
+          maxHeight: "fill-available",
+          maxWidth: 3000,
+          overflow: "visible",
+        },
+      }}
+    >
+      {adjacentFiles.nextFile && (
+        <IconButton
+          size="large"
+          onClick={() => {
+            handleArrow(adjacentFiles.nextFile);
+          }}
+          sx={{
+            position: "absolute",
+            right: -72,
+            top: "50%",
           }}
         >
-          {adjacentFiles.nextFile && (
-            <IconButton
-              size="large"
-              onClick={() => {
-                handleArrow(adjacentFiles.nextFile);
-              }}
-              sx={{
-                position: "absolute",
-                right: -72,
-                top: "50%",
-              }}
-            >
-              <ArrowForwardIosRoundedIcon
-                sx={{ color: "common.white", width: 35, height: 35 }}
-              />
-            </IconButton>
-          )}
-          {adjacentFiles.prevFile && (
-            <Box>
-              <IconButton
-                size="large"
-                onClick={() => {
-                  handleArrow(adjacentFiles.prevFile);
-                }}
-                sx={{
-                  position: "absolute",
-                  left: -72,
-                  top: "50%",
-                }}
-              >
-                <ArrowBackIosRoundedIcon
-                  sx={{ color: "common.white", width: 35, height: 35 }}
-                />
-              </IconButton>
-            </Box>
-          )}
-          <DialogContent
+          <ArrowForwardIosRoundedIcon
+            sx={{ color: "common.white", width: 35, height: 35 }}
+          />
+        </IconButton>
+      )}
+      {adjacentFiles.prevFile && (
+        <Box>
+          <IconButton
+            size="large"
+            onClick={() => {
+              handleArrow(adjacentFiles.prevFile);
+            }}
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              p: 0,
-              overflow: "hidden",
+              position: "absolute",
+              left: -72,
+              top: "50%",
             }}
           >
-            {/* <WithLoader condition={isLoading}> */}
-            <Card
-              elevation={0}
-              sx={{
-                width: "100%",
-                overflow: "hidden",
-                borderRadius: "8px 0px 0px 8px",
-              }}
-            >
-              <FileTypePreview
-                src={data.url}
-                filename={data.filename}
-                imageSettings={imageSettings}
-              />
-            </Card>
-
-            <Box sx={{ minWidth: "420px", maxWidth: "420px" }}>
-              {showEdit ? (
-                <OTFEditor
-                  url={data.url}
-                  setShowEdit={setShowEdit}
-                  imageSettings={imageSettings}
-                  setImageSettings={setImageSettings}
-                />
-              ) : (
-                <FileModalContent
-                  handleCloseModal={handleCloseModal}
-                  id={data.id}
-                  src={data.url}
-                  filename={data.filename}
-                  title={data.title}
-                  groupId={data.group_id}
-                  createdAt={data.created_at}
-                  binId={data.bin_id}
-                  setShowEdit={setShowEdit}
-                />
-              )}
-            </Box>
-            {/* </WithLoader> */}
-          </DialogContent>
-        </Dialog>
-      ) : isFetching || (!data && !isError) ? (
-        <Dialog
-          open={true}
-          PaperProps={{
-            style: {
-              backgroundColor: "transparent",
-              boxShadow: "none",
-              overflow: "hidden",
-              display: "flex",
-              alignItems: "center",
-              textAlign: "center",
-            },
+            <ArrowBackIosRoundedIcon
+              sx={{ color: "common.white", width: 35, height: 35 }}
+            />
+          </IconButton>
+        </Box>
+      )}
+      <DialogContent
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          p: 0,
+          overflow: "hidden",
+        }}
+      >
+        {/* <WithLoader condition={isLoading}> */}
+        <Card
+          elevation={0}
+          sx={{
+            width: "100%",
+            overflow: "hidden",
+            borderRadius: "8px 0px 0px 8px",
           }}
         >
-          <CircularProgress color="primary" />
-        </Dialog>
-      ) : (
-        <></>
-      )}
-    </>
+          <FileTypePreview
+            src={data.url}
+            filename={data.filename}
+            imageSettings={imageSettings}
+          />
+        </Card>
+
+        <Box sx={{ minWidth: "420px", maxWidth: "420px" }}>
+          {showEdit ? (
+            <OTFEditor
+              url={data.url}
+              setShowEdit={setShowEdit}
+              imageSettings={imageSettings}
+              setImageSettings={setImageSettings}
+            />
+          ) : (
+            <FileModalContent
+              handleCloseModal={handleCloseModal}
+              id={data.id}
+              src={data.url}
+              filename={data.filename}
+              title={data.title}
+              groupId={data.group_id}
+              createdAt={data.created_at}
+              binId={data.bin_id}
+              setShowEdit={setShowEdit}
+            />
+          )}
+        </Box>
+        {/* </WithLoader> */}
+      </DialogContent>
+    </Dialog>
   );
 };
