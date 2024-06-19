@@ -45,6 +45,7 @@ import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import { FileReplace } from "@zesty-io/material";
 import DeleteFileModal from "./DeleteFileModal";
 import { MoveFileDialog } from "./MoveFileDialog";
 interface Props {
@@ -276,33 +277,53 @@ export const FileModalContent: FC<Props> = ({
           />
         </Stack>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <IconButton
-            onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
-            aria-controls={openSettings ? "settingsMenu" : undefined}
-            aria-haspopup="true"
-            aria-label="Open settings menu"
-            aria-expanded={openSettings ? "true" : undefined}
-            size="small"
-          >
-            <MoreHorizRoundedIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" onClick={() => setShowRenameFileModal(true)}>
-            <EditIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
-            aria-label="Trash Button"
-            onClick={() => setShowDeleteFileModal(true)}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => handleCloseModal()}
-            aria-label="Close Icon"
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
+          <Tooltip placement="bottom-start" title="More">
+            <IconButton
+              onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
+              aria-controls={openSettings ? "settingsMenu" : undefined}
+              aria-haspopup="true"
+              aria-label="Open settings menu"
+              aria-expanded={openSettings ? "true" : undefined}
+              size="small"
+            >
+              <MoreHorizRoundedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="bottom-start" title="Rename File">
+            <IconButton
+              size="small"
+              onClick={() => setShowRenameFileModal(true)}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="bottom-start" title="Replace File">
+            <IconButton
+              size="small"
+              aria-label="Replace File Button"
+              onClick={() => console.log("Replace me")}
+            >
+              <FileReplace fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="bottom-start" title="Delete File">
+            <IconButton
+              size="small"
+              aria-label="Trash Button"
+              onClick={() => setShowDeleteFileModal(true)}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="bottom-start" title="Close Preview">
+            <IconButton
+              size="small"
+              onClick={() => handleCloseModal()}
+              aria-label="Close Icon"
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
 
           {/* Settings Dropdown Menu */}
           <Menu
