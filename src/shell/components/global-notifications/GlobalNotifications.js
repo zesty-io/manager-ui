@@ -214,17 +214,24 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
   }, [id, closeSnackbar]);
 
   const parseStrToBold = (str, isHeading = false) => {
+    const styles = {
+      variant: "body2",
+      fontWeight: 700,
+      component: "span",
+    };
     if (str.indexOf(":") !== -1) {
       return (
         <>
-          <strong>{str.substring(0, str.indexOf(":") + 1)}</strong>
+          <Typography {...styles}>
+            {str.substring(0, str.indexOf(":") + 1)}
+          </Typography>
           {str.substring(str.indexOf(":") + 1)}
         </>
       );
     } else if (str.indexOf(":") === -1 && isHeading)
-      return <strong>{str}</strong>;
+      return <Typography {...styles}>{str}</Typography>;
     else if (str.indexOf(":") === -1 && [undefined, ""].includes(props.heading))
-      return <strong>{str}</strong>;
+      return <Typography {...styles}>{str}</Typography>;
     else return str;
   };
 
