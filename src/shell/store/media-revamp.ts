@@ -27,12 +27,18 @@ export type UploadFile = {
   loading?: boolean;
   bin_id?: string;
   group_id?: string;
+  replacementFile?: boolean;
 };
 
 type FileUploadStart = StoreFile & { file: File };
 type FileUploadSuccess = StoreFile & FileBase & { id: string };
 type FileUploadProgress = { uploadID: string; progress: number };
-type FileUploadStageArg = { file: File; bin_id: string; group_id: string };
+type FileUploadStageArg = {
+  file: File;
+  bin_id: string;
+  group_id: string;
+  replacementFile?: boolean;
+};
 
 type StagedUpload = {
   status: "staged";
@@ -146,6 +152,7 @@ const mediaSlice = createSlice({
           uploadID: uuidv4(),
           url: URL.createObjectURL(file.file),
           filename: file.file.name,
+          replacementFile: file.replacementFile,
           ...file,
         };
       });
@@ -347,6 +354,86 @@ async function getSignedUrl(file: any, bin: Bin) {
       message: "Failed getting signed url for large file upload",
     });
   }
+}
+
+export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
+  return async (dispatch: Dispatch, getState: () => AppState) => {
+    const bodyData = new FormData();
+    const req = new XMLHttpRequest();
+    const file = {
+      progress: 0,
+      loading: true,
+      ...newFile,
+    };
+
+    bodyData.append("file", file.file, originalFile.filename);
+    bodyData.append("file_id", originalFile.id);
+
+    req.upload.addEventListener("progress", function (e) {
+      file.progress = (e.loaded / e.total) * 100;
+
+      dispatch(fileUploadProgress(file));
+    });
+
+    function handleError() {
+      dispatch(fileUploadError(file));
+      dispatch(
+        notify({
+          message: "Failed uploading file",
+          kind: "error",
+        })
+      );
+    }
+
+    req.addEventListener("abort", handleError);
+    req.addEventListener("error", handleError);
+    req.addEventListener("load", (_) => {
+      const state: State = getState().mediaRevamp;
+      if (!state.uploads.length) {
+        dispatch(
+          notify({
+            message: `Successfully uploaded file`,
+            kind: "success",
+          })
+        );
+        dispatch(
+          mediaManagerApi.util.invalidateTags([
+            "BinFiles",
+            { type: "GroupData", id: file.group_id },
+          ])
+        );
+      }
+    });
+
+    req.withCredentials = true;
+    req.open(
+      "PUT",
+      //@ts-expect-error
+      `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`
+    );
+
+    req.addEventListener("load", () => {
+      if (req.status === 201) {
+        console.log(req);
+        const response = JSON.parse(req.response);
+        const uploadedFile = response.data[0];
+        uploadedFile.uploadID = file.uploadID;
+        dispatch(fileUploadSuccess(uploadedFile));
+      } else {
+        dispatch(
+          notify({
+            message: "Failed uploading file",
+            kind: "error",
+          })
+        );
+        dispatch(fileUploadError(file));
+      }
+    });
+
+    req.send(bodyData);
+
+    dispatch(fileUploadStart(file));
+  };
 }
 
 //type FileMonstrosity = {file: File } & FileAugmentation & FileBase

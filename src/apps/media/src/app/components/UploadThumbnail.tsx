@@ -13,13 +13,21 @@ import {
   Upload,
   fileUploadSetFilename,
   deleteUpload,
+  replaceFile,
 } from "../../../../../shell/store/media-revamp";
+import { File as ZestyMediaFile } from "../../../../../shell/services/types";
 
 interface Props {
   file: Upload;
+  action?: "new" | "replace";
+  originalFile?: ZestyMediaFile;
 }
 
-export const UploadThumbnail: FC<Props> = ({ file }) => {
+export const UploadThumbnail: FC<Props> = ({
+  file,
+  action = "new",
+  originalFile,
+}) => {
   const dispatch = useDispatch();
 
   const { data: bin } = mediaManagerApi.useGetBinQuery(file.bin_id, {
@@ -28,7 +36,11 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
 
   useEffect(() => {
     if (bin && file.status === "staged") {
-      dispatch(uploadFile(file, bin[0]));
+      if (action === "new") {
+        dispatch(uploadFile(file, bin[0]));
+      } else {
+        dispatch(replaceFile(file, originalFile));
+      }
     }
   }, [bin]);
 

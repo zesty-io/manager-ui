@@ -19,7 +19,6 @@ import { OTFEditor } from "./OTFEditor";
 import { File } from "../../../../../../shell/services/types";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { ReplaceFileModal } from "./ReplaceFileModal";
-import { ReplaceFileProvider } from "./ReplaceFileProvider";
 
 const styledModal = {
   position: "absolute",
@@ -177,15 +176,19 @@ export const FileModal: FC<Props> = ({
   if (showReplaceFileModal) {
     return (
       <ReplaceFileModal
-        data={data}
+        originalFile={data}
         onClose={() => setShowReplaceFileModal(false)}
       />
     );
   }
 
+  if (!data) {
+    return <></>;
+  }
+
   return (
     <Dialog
-      open={data.url && !isLoading}
+      open={data?.url && !isLoading}
       fullScreen
       maxWidth={false}
       onClose={handleCloseModal}
