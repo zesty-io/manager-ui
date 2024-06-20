@@ -29,6 +29,7 @@ export const UploadThumbnail: FC<Props> = ({
   originalFile,
 }) => {
   const dispatch = useDispatch();
+  console.log(file);
 
   const { data: bin } = mediaManagerApi.useGetBinQuery(file.bin_id, {
     skip: !file.bin_id,

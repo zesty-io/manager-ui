@@ -220,6 +220,7 @@ const mediaSlice = createSlice({
       }
     },
     fileUploadSuccess(state, action: { payload: FileUploadSuccess }) {
+      console.log(action.payload);
       const index = state.uploads.findIndex(
         (file) => file.uploadID === action.payload.uploadID
       );
@@ -388,33 +389,21 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
     req.addEventListener("abort", handleError);
     req.addEventListener("error", handleError);
     req.addEventListener("load", (_) => {
-      const state: State = getState().mediaRevamp;
-      if (!state.uploads.length) {
+      if (req.status === 200) {
         dispatch(
           notify({
             message: `Successfully uploaded file`,
             kind: "success",
           })
         );
-        dispatch(
-          mediaManagerApi.util.invalidateTags([
-            "BinFiles",
-            { type: "GroupData", id: file.group_id },
-          ])
-        );
-      }
-    });
-
-    req.withCredentials = true;
-    req.open(
-      "PUT",
-      //@ts-expect-error
-      `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`
-    );
-
-    req.addEventListener("load", () => {
-      if (req.status === 201) {
-        console.log(req);
+        // dispatch(
+        //   mediaManagerApi.util.invalidateTags([
+        //     "BinFiles",
+        //     { type: "GroupData", id: file.group_id },
+        //   ])
+        // );
+        // console.log(req);
+        // TODO: Set original data here to make sure that it retains url, title etc
         const response = JSON.parse(req.response);
         const uploadedFile = response.data[0];
         uploadedFile.uploadID = file.uploadID;
@@ -429,6 +418,13 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
         dispatch(fileUploadError(file));
       }
     });
+
+    req.withCredentials = true;
+    req.open(
+      "PUT",
+      //@ts-expect-error
+      `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`
+    );
 
     req.send(bodyData);
 
