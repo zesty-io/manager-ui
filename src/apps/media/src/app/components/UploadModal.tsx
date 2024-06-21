@@ -35,7 +35,9 @@ export const UploadModal: FC = () => {
     state.mediaRevamp.uploads.filter((upload) => !upload.replacementFile)
   );
   const filesToUpload = useSelector((state: AppState) =>
-    state.mediaRevamp.uploads.filter((upload) => upload.status !== "failed")
+    state.mediaRevamp.uploads.filter(
+      (upload) => upload.status !== "failed" && !upload.replacementFile
+    )
   );
   const ids = filesToUpload.length && {
     currentBinId: filesToUpload[0].bin_id,

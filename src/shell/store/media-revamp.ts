@@ -407,6 +407,7 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
           uploadID: file.uploadID,
           progress: 100,
           loading: false,
+          url: URL.createObjectURL(file.file),
         };
         dispatch(fileUploadSuccess(successFile));
       } else {

@@ -15,7 +15,10 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import { File as ZestyMediaFile } from "../../../../../../shell/services/types";
 import { fileExtension } from "../../utils/fileUtils";
-import { fileUploadStage } from "../../../../../../shell/store/media-revamp";
+import {
+  fileUploadReset,
+  fileUploadStage,
+} from "../../../../../../shell/store/media-revamp";
 import { UploadHeaderText } from "../UploadModal";
 import { AppState } from "../../../../../../shell/store/types";
 import { UploadThumbnail } from "../UploadThumbnail";
@@ -34,6 +37,7 @@ export const ReplaceFileModal = ({
   const hiddenFileInput = useRef(null);
   const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
   const filesToUpload = uploads.filter((upload) => upload.status !== "failed");
+  // console.log(filesToUpload);
 
   const acceptedExtension =
     fileExtension(originalFile?.url) === "jpg" ||
@@ -54,14 +58,20 @@ export const ReplaceFileModal = ({
         ])
       );
       setShowUploadingFileModal(true);
+      setNewFile(null);
     }
   }, [newFile]);
+
+  const handleClose = () => {
+    dispatch(fileUploadReset());
+    onClose();
+  };
 
   if (showUploadingFileModal) {
     return (
       <Dialog
         open
-        onClose={onClose}
+        onClose={handleClose}
         sx={{ "& .MuiPaper-root": { width: 540 } }}
       >
         <DialogTitle
@@ -74,14 +84,14 @@ export const ReplaceFileModal = ({
           }}
         >
           <UploadHeaderText uploads={uploads} headerKeyword="Replaced File" />
-          <IconButton onClick={onClose} size="small">
+          <IconButton onClick={handleClose} size="small">
             <CloseIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent>
           {!!filesToUpload.length && (
             <UploadThumbnail
-              file={filesToUpload[0]}
+              file={filesToUpload.slice(-1)?.[0]}
               action="replace"
               originalFile={originalFile}
             />
@@ -93,7 +103,7 @@ export const ReplaceFileModal = ({
 
   return (
     <>
-      <Dialog open onClose={onClose} maxWidth="xs">
+      <Dialog open onClose={handleClose} maxWidth="xs">
         <DialogTitle>
           <Box
             component="img"
@@ -122,7 +132,7 @@ export const ReplaceFileModal = ({
           </Alert>
         </DialogContent>
         <DialogActions>
-          <Button color="inherit" onClick={onClose}>
+          <Button color="inherit" onClick={handleClose}>
             Cancel
           </Button>
           <Button
