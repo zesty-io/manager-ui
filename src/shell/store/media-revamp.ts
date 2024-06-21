@@ -358,7 +358,7 @@ async function getSignedUrl(file: any, bin: Bin) {
 }
 
 export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
-  return async (dispatch: Dispatch, getState: () => AppState) => {
+  return async (dispatch: Dispatch) => {
     const bodyData = new FormData();
     const req = new XMLHttpRequest();
     const file = {
@@ -404,10 +404,16 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
         // );
         // console.log(req);
         // TODO: Set original data here to make sure that it retains url, title etc
-        const response = JSON.parse(req.response);
-        const uploadedFile = response.data[0];
-        uploadedFile.uploadID = file.uploadID;
-        dispatch(fileUploadSuccess(uploadedFile));
+        // const response = JSON.parse(req.response);
+        // const uploadedFile = response.data[0];
+        // uploadedFile.uploadID = file.uploadID;
+        const successFile = {
+          ...originalFile,
+          uploadID: file.uploadID,
+          progress: 100,
+          loading: false,
+        };
+        dispatch(fileUploadSuccess(successFile));
       } else {
         dispatch(
           notify({
