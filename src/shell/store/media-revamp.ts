@@ -396,17 +396,12 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
             kind: "success",
           })
         );
-        // dispatch(
-        //   mediaManagerApi.util.invalidateTags([
-        //     "BinFiles",
-        //     { type: "GroupData", id: file.group_id },
-        //   ])
-        // );
-        // console.log(req);
-        // TODO: Set original data here to make sure that it retains url, title etc
-        // const response = JSON.parse(req.response);
-        // const uploadedFile = response.data[0];
-        // uploadedFile.uploadID = file.uploadID;
+        dispatch(
+          mediaManagerApi.util.invalidateTags([
+            "BinFiles",
+            { type: "GroupData", id: file.group_id },
+          ])
+        );
         const successFile = {
           ...originalFile,
           uploadID: file.uploadID,
