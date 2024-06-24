@@ -68,7 +68,7 @@ describe("Global Search: Search Page", () => {
 
     cy.location("search").should(
       "equal",
-      `?q=somerandomstringthatdoesnotexist&sort=created&user=5-da8c91c9da-l9cqsz&datePreset=today`
+      `?q=somerandomstringthatdoesnotexist&sort=created&user=5-84d1e6d4ae-s3m974&datePreset=today`
     );
   });
 
