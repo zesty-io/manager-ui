@@ -36,9 +36,11 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
   }, [comment, itemZUID]);
 
   useEffect(() => {
-    setIsCommentListOpen(
-      activeResourceZUID === resourceZUID && !!buttonContainerRef.current
-    );
+    if (!!resourceZUID) {
+      setIsCommentListOpen(
+        activeResourceZUID === resourceZUID && !!buttonContainerRef.current
+      );
+    }
   }, [buttonContainerRef.current, activeResourceZUID]);
 
   useEffect(() => {
@@ -53,6 +55,10 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
     setIsButtonAutoscroll(false);
     history.replace(`${location.pathname}/comment/${resourceZUID}`);
   };
+
+  if (!resourceZUID) {
+    return <></>;
+  }
 
   return (
     <>
