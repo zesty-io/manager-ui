@@ -81,6 +81,7 @@ export const DateRangeFilterModal: FC<DateRangeFilterModal> = ({
       <DialogContent sx={{ px: 0, pb: 2.5 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateRangeCalendar
+            disableHighlightToday
             value={selectedDateRange}
             onChange={(newValue, selectionState) => {
               setSelectedDateRange(newValue);
