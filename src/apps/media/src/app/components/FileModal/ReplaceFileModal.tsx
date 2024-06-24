@@ -97,14 +97,16 @@ export const ReplaceFileModal = ({
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ p: 2.5 }}>
+        <DialogContent>
           {!!filesToUpload.length && (
-            <UploadThumbnail
-              file={filesToUpload.slice(-1)?.[0]}
-              action="replace"
-              originalFile={originalFile}
-              showRemove={false}
-            />
+            <Box pt={2.5}>
+              <UploadThumbnail
+                file={filesToUpload.slice(-1)?.[0]}
+                action="replace"
+                originalFile={originalFile}
+                showRemove={false}
+              />
+            </Box>
           )}
         </DialogContent>
         <DialogActions>
