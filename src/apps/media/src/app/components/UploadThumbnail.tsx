@@ -21,12 +21,14 @@ interface Props {
   file: Upload;
   action?: "new" | "replace";
   originalFile?: ZestyMediaFile;
+  showRemove?: boolean;
 }
 
 export const UploadThumbnail: FC<Props> = ({
   file,
   action = "new",
   originalFile,
+  showRemove = true,
 }) => {
   const dispatch = useDispatch();
   console.log(file);
@@ -76,8 +78,11 @@ export const UploadThumbnail: FC<Props> = ({
         src={file.url}
         filename={action === "replace" ? originalFile.filename : file.filename}
         imageHeight="300px"
-        isEditable={file.status === "success"}
+        isDraggable={file.status === "success"}
+        isDescriptionEditable={file.status === "success"}
+        isTitleEditable={file.status === "success" && action !== "replace"}
         onRemove={onRemove}
+        showRemove={showRemove}
         onFilenameChange={(filename) => {
           if (file.status === "success") {
             dispatch(

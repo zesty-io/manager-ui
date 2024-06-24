@@ -72,7 +72,12 @@ export const ReplaceFileModal = ({
       <Dialog
         open
         onClose={handleClose}
-        sx={{ "& .MuiPaper-root": { width: 540 } }}
+        sx={{
+          "& .MuiDialogContent-root": {
+            width: 540,
+            boxSizing: "border-box",
+          },
+        }}
       >
         <DialogTitle
           component="div"
@@ -83,20 +88,30 @@ export const ReplaceFileModal = ({
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
-          <UploadHeaderText uploads={uploads} headerKeyword="Replaced File" />
+          <UploadHeaderText
+            uploads={uploads}
+            headerKeyword="Replaced File"
+            showCount={false}
+          />
           <IconButton onClick={handleClose} size="small">
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ p: 2.5 }}>
           {!!filesToUpload.length && (
             <UploadThumbnail
               file={filesToUpload.slice(-1)?.[0]}
               action="replace"
               originalFile={originalFile}
+              showRemove={false}
             />
           )}
         </DialogContent>
+        <DialogActions>
+          <Button color="primary" variant="contained" onClick={handleClose}>
+            Done
+          </Button>
+        </DialogActions>
       </Dialog>
     );
   }

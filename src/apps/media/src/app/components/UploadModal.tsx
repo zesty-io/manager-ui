@@ -191,10 +191,12 @@ const UploadErrors = () => {
 type UploadHeaderTextProps = {
   uploads: Upload[];
   headerKeyword?: string;
+  showCount?: boolean;
 };
 export const UploadHeaderText = ({
   uploads,
   headerKeyword = "File",
+  showCount = true,
 }: UploadHeaderTextProps) => {
   const filesUploading = uploads?.filter(
     (upload) => upload.status === "inProgress"
@@ -233,9 +235,15 @@ export const UploadHeaderText = ({
         <CheckCircleRoundedIcon color="success" sx={{ p: 0.5 }} />
       )}
       <Typography variant="h5" color="text.primary" fontWeight={700}>
-        {filesUploading?.length > 0
-          ? filesUploading.length
-          : filesUploaded.length}{" "}
+        {showCount ? (
+          filesUploading?.length > 0 ? (
+            filesUploading.length
+          ) : (
+            filesUploaded.length
+          )
+        ) : (
+          <></>
+        )}{" "}
         {filesUploading?.length > 0
           ? pluralizeWord(headerKeyword, filesUploading.length)
           : pluralizeWord(headerKeyword, filesUploaded.length)}{" "}

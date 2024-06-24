@@ -17,16 +17,18 @@ interface Props {
   filename: string;
   onFilenameChange?: (value: string) => void;
   onTitleChange?: (value: string) => void;
-  isEditable?: boolean;
   isSelected?: boolean;
+  isTitleEditable?: boolean;
+  isDescriptionEditable?: boolean;
 }
 
 export const ThumbnailContent: FC<Props> = ({
   filename,
   onFilenameChange,
   onTitleChange,
-  isEditable,
   isSelected,
+  isTitleEditable,
+  isDescriptionEditable,
 }) => {
   const styledCardContent = {
     px: onFilenameChange ? 0 : 1,
@@ -54,7 +56,7 @@ export const ThumbnailContent: FC<Props> = ({
                 size="small"
                 variant="outlined"
                 fullWidth
-                disabled={!isEditable}
+                disabled={!isTitleEditable}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   onFilenameChange(e.target.value.replace(" ", "-"))
                 }
@@ -83,11 +85,11 @@ export const ThumbnailContent: FC<Props> = ({
             <Box>
               <TextField
                 placeholder={
-                  isEditable
+                  isDescriptionEditable
                     ? "Add File Title (for alt-text)"
                     : "Please wait to add File Title"
                 }
-                disabled={!isEditable}
+                disabled={!isDescriptionEditable}
                 size="small"
                 variant="outlined"
                 fullWidth

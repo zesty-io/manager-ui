@@ -53,7 +53,7 @@ interface ThumbnailProps {
   src?: string;
   url?: string;
   filename?: string;
-  isEditable?: boolean;
+  isDraggable?: boolean;
   showVideo?: boolean;
   id?: string;
   group_id?: string;
@@ -65,13 +65,16 @@ interface ThumbnailProps {
   onFilenameChange?: (value: string) => void;
   onTitleChange?: (value: string) => void;
   onClick?: () => void;
+  showRemove?: boolean;
+  isTitleEditable?: boolean;
+  isDescriptionEditable?: boolean;
 }
 
 export const Thumbnail: FC<ThumbnailProps> = ({
   src,
   url,
   filename,
-  isEditable,
+  isDraggable,
   showVideo,
   onRemove,
   onFilenameChange,
@@ -83,6 +86,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   onTitleChange,
   imageHeight,
   selectable,
+  showRemove = true,
+  isTitleEditable,
+  isDescriptionEditable,
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
@@ -119,6 +125,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   };
 
   const RemoveIcon = () => {
+    if (!showRemove) {
+      return <></>;
+    }
+
     return (
       <>
         {onRemove && (
@@ -331,7 +341,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
           data-cy={id}
         >
@@ -410,8 +420,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -425,7 +436,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           data-cy={id}
           onDragStart={(evt) => onDragStart(evt)}
         >
@@ -503,8 +514,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -516,7 +528,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -577,8 +589,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -588,7 +601,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -649,8 +662,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -663,7 +677,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -725,8 +739,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -737,7 +752,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -798,8 +813,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -812,7 +828,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -873,8 +889,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -889,7 +906,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -950,8 +967,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -972,7 +990,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           data-cy={id}
           onClick={isSelecting ? handleSelect : onClick}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1054,8 +1072,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1069,7 +1088,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           data-cy={id}
           onClick={isSelecting ? handleSelect : onClick}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1130,8 +1149,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1147,7 +1167,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1208,8 +1228,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1220,7 +1241,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1281,8 +1302,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1293,7 +1315,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1354,8 +1376,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1366,7 +1389,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           data-cy={id}
           onClick={isSelecting ? handleSelect : onClick}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1427,8 +1450,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1439,7 +1463,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           data-cy={id}
           onClick={isSelecting ? handleSelect : onClick}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1500,8 +1524,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1515,7 +1540,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           data-cy={id}
           onClick={isSelecting ? handleSelect : onClick}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1583,8 +1608,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1595,7 +1621,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1663,8 +1689,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1675,7 +1702,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
-          draggable={!isEditable}
+          draggable={!isDraggable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1750,8 +1777,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
-            isEditable={isEditable}
             isSelected={selectedFiles.some((file) => file.id === id)}
+            isDescriptionEditable={isDescriptionEditable}
+            isTitleEditable={isTitleEditable}
           />
         </Card>
       );
@@ -1759,6 +1787,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 };
 
 Thumbnail.defaultProps = {
-  isEditable: false,
+  isDraggable: false,
   showVideo: true,
 };
