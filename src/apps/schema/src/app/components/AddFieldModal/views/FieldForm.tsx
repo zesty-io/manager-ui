@@ -49,6 +49,7 @@ import {
   FieldSettings,
   ContentModelFieldValue,
   FieldSettingsOptions,
+  ContentModelFieldDataType,
 } from "../../../../../../../shell/services/types";
 import {
   FIELD_COPY_CONFIG,
@@ -76,7 +77,7 @@ export interface Errors {
   [key: string]: string | [string, string][];
 }
 interface Props {
-  type: FieldType;
+  type: ContentModelFieldDataType;
   name: string;
   onModalClose: () => void;
   onBackClick?: () => void;
@@ -303,7 +304,7 @@ export const FieldForm = ({
 
       if (type === "text" || type === "textarea") {
         if (inputName === "minCharLimit" && !isNaN(+formData.minCharLimit)) {
-          if (formData.minCharLimit > MaxLengths[type]) {
+          if ((formData.minCharLimit as number) > MaxLengths[type]) {
             newErrorsObj[
               inputName
             ] = `Cannot exceed ${MaxLengths[type]} characters`;
@@ -315,7 +316,7 @@ export const FieldForm = ({
         if (
           inputName === "maxCharLimit" &&
           !isNaN(+formData.maxCharLimit) &&
-          formData.maxCharLimit > MaxLengths[type]
+          (formData.maxCharLimit as number) > MaxLengths[type]
         ) {
           newErrorsObj[
             inputName

@@ -7,6 +7,7 @@ import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { FieldType } from "../configs";
+import { ContentModelFieldDataType } from "../../../../../../shell/services/types";
 
 type Params = {
   id: string;
@@ -79,7 +80,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       {viewMode === "new_field" && (
         <FieldForm
           fields={fields}
-          type={selectedField?.fieldType as FieldType}
+          type={selectedField?.fieldType as ContentModelFieldDataType}
           name={selectedField?.fieldName}
           onModalClose={onModalClose}
           onBackClick={() => setViewMode("fields_list")}
@@ -90,7 +91,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       {viewMode === "update_field" && (
         <FieldForm
           fields={fields}
-          type={fieldData?.datatype as FieldType}
+          type={fieldData?.datatype as ContentModelFieldDataType}
           name={fieldData?.label}
           onModalClose={onModalClose}
           fieldData={fieldData}

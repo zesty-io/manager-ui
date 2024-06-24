@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
+import instanceZUID from "../../utility/instanceZUID";
 
 const getUser = (state) => state.user;
 const getRole = (state) => state.userRole;
@@ -11,9 +12,11 @@ const selectRole = createSelector([getRole], (role) => role);
 
 /**
  * TODO given a specific ZUID, determine whether that user is allowed to do a certain action
+ * @param {string} action
+ * @param {string} zuid - default to instance ZUID
  * e.g. Can user publish content item
  */
-export function usePermission(action, zuid = "") {
+export function usePermission(action, zuid = instanceZUID) {
   const user = useSelector(selectUser);
   const role = useSelector(selectRole);
 
@@ -30,28 +33,26 @@ export function usePermission(action, zuid = "") {
       return true;
     }
 
-    // Check granular
-    // TODO check granular permission on specific ZUID
-    //   const granular = () => {
-    //     return false;
-    //   };
+    const granularRole = role?.granularRoles?.find(
+      (r) => r.resourceZUID === zuid
+    );
 
     // Check system
     switch (action) {
       case "CREATE":
-        return role.systemRole.create;
+        return granularRole?.create ?? role.systemRole.create;
 
       case "READ":
-        return role.systemRole.read;
+        return granularRole?.read ?? role.systemRole.read;
 
       case "UPDATE":
-        return role.systemRole.update;
+        return granularRole?.update ?? role.systemRole.update;
 
       case "DELETE":
-        return role.systemRole.delete;
+        return granularRole?.delete ?? role.systemRole.delete;
 
       case "PUBLISH":
-        return role.systemRole.publish;
+        return granularRole?.publish ?? role.systemRole.publish;
 
       // check for specific product access
       // NOTE this has been bolted on to the action check
