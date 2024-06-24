@@ -89,8 +89,12 @@ export function fetchNav() {
             const hiddenArr = hidden ? JSON.parse(hidden) : [];
             const hiddenZUIDS = hiddenArr.map((node) => node.ZUID);
 
+            const hasContentItemGranularRole = granularRoles?.some((zuid) =>
+              zuid?.startsWith("7-")
+            );
+            // Only filter content items by granular roles if there is at least one granular role that target content items
             const filteredByRole = res.data.filter((el) => {
-              if (granularRoles) {
+              if (granularRoles && hasContentItemGranularRole) {
                 return granularRoles.find((zuid) => zuid === el.ZUID);
               } else {
                 return el;
