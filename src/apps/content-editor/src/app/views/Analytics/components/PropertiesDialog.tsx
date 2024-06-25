@@ -32,7 +32,7 @@ import googleIcon from "../../../../../../../../public/images/googleIcon.svg";
 import {
   useDisconnectGoogleAnalyticsMutation,
   useGetAnalyticsPropertiesQuery,
-} from "../../../../../../../shell/services/cloudFunctions";
+} from "../../../../../../../shell/services/analytics";
 import {
   useCreateInstanceSettingsMutation,
   useGetInstanceSettingsQuery,
