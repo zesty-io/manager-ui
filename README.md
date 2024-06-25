@@ -125,3 +125,20 @@ In some case when sending null this will break the togglebutton UI, thus the rea
 ## Uploading Assets
 
 To upload assets for your projects put them on the CDN, do not put them in the repository. Assets can be uploaded at https://console.cloud.google.com/storage/browser/assets.zesty.io?project=zesty-prod , upload to the respective folder that match your project name, for example, the SVGs and PNG that are being commited to manager-ui should be moved into this storage bucket under the `manager` folder, once they are uploaded they accessible from https://assets.zesty.io e.g. https://assets.zesty.io/website/assets/images/dxp_bottom_bg.svg
+
+## Deeplinks
+
+For in-app deeplinks the preferred url structure using url path parameters as opposed to query parameters. Generally, paths are best used used to deep link into a specific view (a combination of UI layout and elements rendered on screen) whereas query parameters are used to refine a view.
+
+#### Example
+
+```
+Table view: /content/6-000-0000
+Table view filtered to published items: /content/6-000-0000?status=published
+
+Content edit view: /content/6-000-0000/7-000-0000
+Content edit view that displays deactivated field: /content/6-000-0000/7-000-0000?showDeactivated=true
+
+Comment in content edit view: /content/6-000-0000/7-000-0000/comment/12-000-0000/24-000-0000
+Comment in content edit view that displays deleted replies: /content/6-000-0000/7-000-0000/comment/12-000-0000/24-000-0000?showDeleted=true
+```
