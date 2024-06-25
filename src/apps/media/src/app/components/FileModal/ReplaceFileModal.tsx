@@ -16,20 +16,24 @@ import CloseIcon from "@mui/icons-material/Close";
 import { File as ZestyMediaFile } from "../../../../../../shell/services/types";
 import { fileExtension } from "../../utils/fileUtils";
 import {
+  dismissFileUploads,
   fileUploadReset,
   fileUploadStage,
 } from "../../../../../../shell/store/media-revamp";
 import { UploadHeaderText } from "../UploadModal";
 import { AppState } from "../../../../../../shell/store/types";
 import { UploadThumbnail } from "../UploadThumbnail";
+import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 
 type ReplaceFileModalProps = {
   originalFile: ZestyMediaFile;
   onClose: () => void;
+  onCancel: () => void;
 };
 export const ReplaceFileModal = ({
   onClose,
   originalFile,
+  onCancel,
 }: ReplaceFileModalProps) => {
   const dispatch = useDispatch();
   const [newFile, setNewFile] = useState<File>(null);
@@ -62,8 +66,18 @@ export const ReplaceFileModal = ({
     }
   }, [newFile]);
 
-  const handleClose = () => {
-    dispatch(fileUploadReset());
+  const handleCloseUploadingFileModal = () => {
+    dispatch(dismissFileUploads());
+
+    if (filesToUpload.length) {
+      dispatch(
+        mediaManagerApi.util.invalidateTags([
+          { type: "GroupData", id: originalFile.group_id },
+          "BinFiles",
+        ])
+      );
+    }
+
     onClose();
   };
 
@@ -71,7 +85,7 @@ export const ReplaceFileModal = ({
     return (
       <Dialog
         open
-        onClose={handleClose}
+        onClose={handleCloseUploadingFileModal}
         sx={{
           "& .MuiDialogContent-root": {
             width: 540,
@@ -93,7 +107,7 @@ export const ReplaceFileModal = ({
             headerKeyword="Replaced File"
             showCount={false}
           />
-          <IconButton onClick={handleClose} size="small">
+          <IconButton onClick={handleCloseUploadingFileModal} size="small">
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -110,7 +124,11 @@ export const ReplaceFileModal = ({
           )}
         </DialogContent>
         <DialogActions>
-          <Button color="primary" variant="contained" onClick={handleClose}>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={handleCloseUploadingFileModal}
+          >
             Done
           </Button>
         </DialogActions>
@@ -120,7 +138,7 @@ export const ReplaceFileModal = ({
 
   return (
     <>
-      <Dialog open onClose={handleClose} maxWidth="xs">
+      <Dialog open onClose={onCancel} maxWidth="xs">
         <DialogTitle>
           <Box
             component="img"
@@ -149,7 +167,7 @@ export const ReplaceFileModal = ({
           </Alert>
         </DialogContent>
         <DialogActions>
-          <Button color="inherit" onClick={handleClose}>
+          <Button color="inherit" onClick={onCancel}>
             Cancel
           </Button>
           <Button

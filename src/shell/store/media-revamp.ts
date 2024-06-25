@@ -392,15 +392,9 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       if (req.status === 200) {
         dispatch(
           notify({
-            message: `Successfully uploaded file`,
+            message: `File Replaced: ${originalFile.filename}`,
             kind: "success",
           })
-        );
-        dispatch(
-          mediaManagerApi.util.invalidateTags([
-            "BinFiles",
-            { type: "GroupData", id: file.group_id },
-          ])
         );
         const successFile = {
           ...originalFile,
@@ -681,16 +675,18 @@ export function dismissFileUploads() {
       );
     }
     if (successfulUploads.length) {
-      dispatch(
-        notify({
-          message: `Successfully uploaded ${successfulUploads.length} files${
-            inProgressUploads.length
-              ? `...${inProgressUploads.length} files still in progress`
-              : ""
-          }`,
-          kind: "success",
-        })
-      );
+      if (!successfulUploads[0].replacementFile) {
+        dispatch(
+          notify({
+            message: `Successfully uploaded ${successfulUploads.length} files${
+              inProgressUploads.length
+                ? `...${inProgressUploads.length} files still in progress`
+                : ""
+            }`,
+            kind: "success",
+          })
+        );
+      }
     }
     if (failedUploads.length) {
       dispatch(
@@ -707,6 +703,12 @@ export function dismissFileUploads() {
           kind: "warn",
         })
       );
+    } else {
+      successfulUploads?.forEach((upload) => {
+        dispatch(
+          mediaManagerApi.util.invalidateTags([{ type: "File", id: upload.id }])
+        );
+      });
     }
     dispatch(fileUploadReset());
   };

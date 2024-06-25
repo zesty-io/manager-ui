@@ -177,7 +177,8 @@ export const FileModal: FC<Props> = ({
     return (
       <ReplaceFileModal
         originalFile={data}
-        onClose={() => setShowReplaceFileModal(false)}
+        onCancel={() => setShowReplaceFileModal(false)}
+        onClose={handleCloseModal}
       />
     );
   }
