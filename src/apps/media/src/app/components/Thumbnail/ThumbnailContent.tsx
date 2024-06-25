@@ -20,6 +20,7 @@ interface Props {
   isSelected?: boolean;
   isTitleEditable?: boolean;
   isDescriptionEditable?: boolean;
+  title?: string;
 }
 
 export const ThumbnailContent: FC<Props> = ({
@@ -29,6 +30,7 @@ export const ThumbnailContent: FC<Props> = ({
   isSelected,
   isTitleEditable,
   isDescriptionEditable,
+  title,
 }) => {
   const styledCardContent = {
     px: onFilenameChange ? 0 : 1,
@@ -90,6 +92,7 @@ export const ThumbnailContent: FC<Props> = ({
                     : "Please wait to add File Title"
                 }
                 disabled={!isDescriptionEditable}
+                defaultValue={title}
                 size="small"
                 variant="outlined"
                 fullWidth

@@ -68,6 +68,7 @@ interface ThumbnailProps {
   showRemove?: boolean;
   isTitleEditable?: boolean;
   isDescriptionEditable?: boolean;
+  title?: string;
 }
 
 export const Thumbnail: FC<ThumbnailProps> = ({
@@ -89,6 +90,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   showRemove = true,
   isTitleEditable,
   isDescriptionEditable,
+  title,
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
@@ -418,6 +420,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             filename={filename}
+            title={title}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
