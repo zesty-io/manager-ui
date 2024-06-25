@@ -128,7 +128,7 @@ To upload assets for your projects put them on the CDN, do not put them in the r
 
 ## Deeplinks
 
-For in-app deeplinks the preferred url structure using url path parameters as opposed to query parameters. Generally, paths are best used used to deep link into a specific view (a combination of UI layout and elements rendered on screen) whereas query parameters are used to refine a view.
+For in-app deeplinks the preferred url structure is to use url path parameters as opposed to query parameters. Generally, paths are best used used to deep link into a specific view (a combination of UI layout and elements rendered on screen) whereas query parameters are used to refine a view.
 
 #### Example
 
