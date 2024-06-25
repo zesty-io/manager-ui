@@ -45,7 +45,7 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
     tabWindow?.close();
     tabWindow = window.open(
       // @ts-ignore
-      `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/authenticateGoogleAnalytics?user_id=${user.ID}&account_id=${instance.ID}`
+      `${CONFIG.API_ANALYTICS}/ga4/auth/connect?user_id=${user.ID}&account_id=${instance.ID}`
     );
   };
 
