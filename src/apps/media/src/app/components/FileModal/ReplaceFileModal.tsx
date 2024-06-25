@@ -160,9 +160,9 @@ export const ReplaceFileModal = ({
         </DialogTitle>
         <DialogContent>
           <Alert severity="warning">
-            The original file will be deleted and replaced by it’s new file.
-            This action cannot be undone and the file cannot be recovered. The
-            file will retain its URL and ZUID.
+            The original file will be deleted and replaced by its new file. This
+            action cannot be undone and the file cannot be recovered. The file
+            will retain its URL and ZUID.
           </Alert>
         </DialogContent>
         <DialogActions>
