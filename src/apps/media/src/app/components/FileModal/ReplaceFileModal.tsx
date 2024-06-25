@@ -148,6 +148,7 @@ export const ReplaceFileModal = ({
               objectFit: "contain",
               borderRadius: 2,
               mb: 1.5,
+              backgroundColor: "grey.100",
             }}
           />
           <Typography variant="h5" sx={{ wordBreak: "break-all" }}>
