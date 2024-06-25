@@ -41,7 +41,6 @@ export const ReplaceFileModal = ({
   const hiddenFileInput = useRef(null);
   const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
   const filesToUpload = uploads.filter((upload) => upload.status !== "failed");
-  // console.log(filesToUpload);
 
   const acceptedExtension =
     fileExtension(originalFile?.url) === "jpg" ||
