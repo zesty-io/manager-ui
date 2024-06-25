@@ -15,7 +15,7 @@ import {
 import { SearchPageList } from "./List/SearchPageList";
 import { BackButton } from "./BackButton";
 import { Filters } from "./Filters";
-import { getDateFilterFn } from "../../components/Filters/DateFilter";
+import { getDateFilterFnByValues } from "../../components/Filters/DateFilter/getDateFilter";
 import { useSearchModelsByKeyword } from "../../hooks/useSearchModelsByKeyword";
 import {
   ContentItem,
@@ -204,18 +204,7 @@ export const SearchPage: FC = () => {
       from: params.get("from") || "",
       to: params.get("to") || "",
     };
-    const isPreset = Boolean(dateFilter.preset);
-    const isBefore = Boolean(dateFilter.to) && !Boolean(dateFilter.from);
-    const isAfter = Boolean(dateFilter.from) && !Boolean(dateFilter.to);
-    const isOn =
-      Boolean(dateFilter.to) &&
-      Boolean(dateFilter.from) &&
-      dateFilter.to === dateFilter.from;
-    const isRange =
-      Boolean(dateFilter.to) &&
-      Boolean(dateFilter.from) &&
-      dateFilter.to !== dateFilter.from;
-    let dateFilterFn: (date: string) => boolean;
+    const dateFilterFn = getDateFilterFnByValues(dateFilter);
 
     // Filter by user
     if (userFilter) {
@@ -238,33 +227,6 @@ export const SearchPage: FC = () => {
         langs?.find((lang) => lang.code === languageFilter)?.ID ?? 0;
 
       _results = _results.filter((result) => result.langID === selectedLangID);
-    }
-
-    // Determine the date filter function to use
-    if (isPreset) {
-      dateFilterFn = getDateFilterFn({
-        type: "preset",
-        value: dateFilter.preset,
-      });
-    }
-
-    if (isBefore) {
-      dateFilterFn = getDateFilterFn({ type: "before", value: dateFilter.to });
-    }
-
-    if (isAfter) {
-      dateFilterFn = getDateFilterFn({ type: "after", value: dateFilter.from });
-    }
-
-    if (isOn) {
-      dateFilterFn = getDateFilterFn({ type: "on", value: dateFilter.from });
-    }
-
-    if (isRange) {
-      dateFilterFn = getDateFilterFn({
-        type: "daterange",
-        value: { from: dateFilter.from, to: dateFilter.to },
-      });
     }
 
     // Apply date filter if there is any
