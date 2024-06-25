@@ -67,13 +67,6 @@ export const ItemListFilters = () => {
     }));
   }, [users]);
 
-  useEffect(() => {
-    // if languages and no language param, set the first language as the active language
-    if (languages && !activeLanguageCode) {
-      setParams(languages[0].code, "lang");
-    }
-  }, [languages, activeLanguageCode]);
-
   return (
     <Box display="flex" gap={1.5} py={2}>
       <FilterButton
