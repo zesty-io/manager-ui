@@ -29,7 +29,7 @@ export const AuthView = ({ validateAuth, isDashboard }: Props) => {
   const receiveMessage = (event: MessageEvent<Message>) => {
     if (
       // @ts-ignore
-      event.origin === CONFIG.CLOUD_FUNCTIONS_DOMAIN &&
+      event.origin === CONFIG.API_ANALYTICS &&
       event.data.source === "zesty"
     ) {
       if (event.data.status === 200) {
