@@ -23,77 +23,10 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
-    getAnalyticsPropertyDataByQuery: builder.query<any, any>({
-      query: (body) => {
-        return {
-          url: `getPropertyDataByQuery`,
-          method: "POST",
-          body,
-          params: {
-            zuid: instanceZUID,
-          },
-        };
-      },
-    }),
-    getAnalyticsProperties: builder.query<any, void>({
-      query: () => {
-        return {
-          url: `getPropertyList`,
-          method: "GET",
-          params: {
-            zuid: instanceZUID,
-          },
-        };
-      },
-    }),
-    getAnalyticsPagePathsByFilter: builder.query<
-      string[],
-      {
-        filter: "popular" | "gainer" | "loser";
-        startDate: string;
-        endDate: string;
-        propertyId: string;
-        limit: number;
-        order: "asc" | "desc";
-      }
-    >({
-      query: ({ filter, startDate, endDate, propertyId, limit, order }) => {
-        return {
-          url: `getPagePathByFilter`,
-          method: "GET",
-          params: {
-            q: filter,
-            date_start: startDate,
-            date_end: endDate,
-            property_id: propertyId,
-            limit,
-            order,
-            zuid: instanceZUID,
-          },
-        };
-      },
-    }),
-    disconnectGoogleAnalytics: builder.mutation<void, void>({
-      query: () => {
-        return {
-          url: `disconnectGoogleAnalytics`,
-          method: "DELETE",
-          params: {
-            zuid: instanceZUID,
-          },
-        };
-      },
-    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {
-  useRefreshCacheMutation,
-  useAiGenerationMutation,
-  useGetAnalyticsPropertiesQuery,
-  useGetAnalyticsPropertyDataByQueryQuery,
-  useGetAnalyticsPagePathsByFilterQuery,
-  useDisconnectGoogleAnalyticsMutation,
-} = cloudFunctionsApi;
+export const { useRefreshCacheMutation, useAiGenerationMutation } =
+  cloudFunctionsApi;
