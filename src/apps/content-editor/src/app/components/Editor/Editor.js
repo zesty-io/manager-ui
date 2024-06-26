@@ -154,8 +154,6 @@ export default memo(function Editor({
         }
       }
 
-      console.log(errors);
-
       onUpdateFieldErrors(errors);
 
       // Always dispatch the data update

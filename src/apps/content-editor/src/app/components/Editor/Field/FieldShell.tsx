@@ -6,6 +6,7 @@ import {
   Menu,
   MenuItem,
   Button,
+  Box,
 } from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
@@ -67,29 +68,57 @@ export const FieldShell = ({
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
   const getErrorMessage = (errors: Error) => {
+    const errorMessages = [];
+
     if (errors?.MISSING_REQUIRED) {
-      return "Required Field. Please enter a value.";
+      errorMessages.push("Required Field. Please enter a value.");
     }
 
     if (errors?.EXCEEDING_MAXLENGTH > 0) {
-      return `Exceeding by ${errors.EXCEEDING_MAXLENGTH} ${pluralizeWord(
-        "character",
-        errors.EXCEEDING_MAXLENGTH
-      )}.`;
+      errorMessages.push(
+        `Exceeding by ${errors.EXCEEDING_MAXLENGTH} ${pluralizeWord(
+          "character",
+          errors.EXCEEDING_MAXLENGTH
+        )}.`
+      );
     }
 
     if (errors?.LACKING_MINLENGTH > 0) {
-      return `Requires ${errors.LACKING_MINLENGTH} more ${pluralizeWord(
-        "character",
-        errors.LACKING_MINLENGTH
-      )}.`;
+      errorMessages.push(
+        `Requires ${errors.LACKING_MINLENGTH} more ${pluralizeWord(
+          "character",
+          errors.LACKING_MINLENGTH
+        )}.`
+      );
+    }
+
+    if (errors?.REGEX_PATTERN_MISMATCH) {
+      errorMessages.push(errors.REGEX_PATTERN_MISMATCH);
+    }
+
+    if (errors?.REGEX_RESTRICT_PATTERN_MATCH) {
+      errorMessages.push(errors.REGEX_RESTRICT_PATTERN_MATCH);
     }
 
     if (errors?.CUSTOM_ERROR) {
-      return errors.CUSTOM_ERROR;
+      errorMessages.push(errors.CUSTOM_ERROR);
     }
 
-    return "";
+    if (errorMessages.length === 0) {
+      return "";
+    }
+
+    if (errorMessages.length === 1) {
+      return errorMessages[0];
+    }
+
+    return (
+      <Box component="ul" ml={3}>
+        {errorMessages.map((msg) => (
+          <li>{msg}</li>
+        ))}
+      </Box>
+    );
   };
 
   return (
