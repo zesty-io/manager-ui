@@ -6,11 +6,12 @@ import {
   useGetContentModelFieldsQuery,
   useGetContentModelItemsQuery,
   useGetContentModelQuery,
+  useGetLangsQuery,
 } from "../../../../../../shell/services/instance";
 import { theme } from "@zesty-io/material";
 import { ItemListEmpty } from "./ItemListEmpty";
 import { ItemListActions } from "./ItemListActions";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { SearchRounded, RestartAltRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
@@ -63,12 +64,17 @@ export const ItemList = () => {
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
   const { data: items, isFetching: isModelItemsFetching } =
-    useGetContentModelItemsQuery({
-      modelZUID,
-      params: {
-        lang: langCode,
+    useGetContentModelItemsQuery(
+      {
+        modelZUID,
+        params: {
+          lang: langCode,
+        },
       },
-    });
+      {
+        skip: !langCode,
+      }
+    );
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
   const { data: publishings, isFetching: isPublishingsFetching } =
@@ -85,6 +91,8 @@ export const ItemList = () => {
     { skip: !bins?.length }
   );
   const { data: users } = useGetUsersQuery();
+  const { data: languages } = useGetLangsQuery({});
+  const activeLanguageCode = params.get("lang");
 
   const { stagedChanges } = useStagedChanges();
   const [selectedItems] = useSelectedItems();
@@ -100,6 +108,13 @@ export const ItemList = () => {
     };
   }, [params]);
   const userFilter = params.get("user");
+
+  useEffect(() => {
+    // if languages and no language param, set the first language as the active language
+    if (languages && !activeLanguageCode) {
+      setParams(languages[0].code, "lang");
+    }
+  }, [languages, activeLanguageCode]);
 
   const processedItems = useMemo(() => {
     if (!items) return [];
@@ -334,7 +349,7 @@ export const ItemList = () => {
 
     if (userFilter) {
       clonedItems = clonedItems.filter(
-        (item) => item?.web?.createdByUserZUID === userFilter
+        (item) => item?.meta?.createdByUserZUID === userFilter
       );
     }
 
