@@ -415,10 +415,11 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
         !(stagedChanges && Object.keys(stagedChanges)?.length)
       }
       sx={{
-        ...(!rows?.length && {
-          height: 56,
-          flex: 0,
-        }),
+        ...(!rows?.length &&
+          !loading && {
+            height: 56,
+            flex: 0,
+          }),
         backgroundColor: "common.white",
         ".MuiDataGrid-row": {
           cursor: "pointer",
