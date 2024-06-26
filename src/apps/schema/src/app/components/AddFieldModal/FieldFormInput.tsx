@@ -43,7 +43,11 @@ export type FieldNames =
   | "tooltip"
   | "defaultValue"
   | "maxCharLimit"
-  | "minCharLimit";
+  | "minCharLimit"
+  | "regexMatchPattern"
+  | "regexMatchErrorMessage"
+  | "regexRestrictPattern"
+  | "regexRestrictErrorMessage";
 type FieldType =
   | "input"
   | "checkbox"

@@ -33,6 +33,8 @@ export type Error = {
   EXCEEDING_MAXLENGTH?: number;
   LACKING_MINLENGTH?: number;
   CUSTOM_ERROR?: string;
+  REGEX_PATTERN_MISMATCH?: string;
+  REGEX_RESTRICT_PATTERN_MATCH?: string;
 };
 
 type FieldShellProps = {

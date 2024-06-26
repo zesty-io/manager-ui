@@ -407,11 +407,36 @@ export function saveItem(itemZUID, action = "") {
           !item.data[field.name])
     );
 
-    if (missingRequired?.length || lackingCharLength?.length) {
+    const regexPatternMismatch = fields?.filter(
+      (field) =>
+        field.settings?.regexMatchPattern &&
+        !new RegExp(field.settings?.regexMatchPattern).test(
+          item.data[field.name]
+        )
+    );
+
+    const regexRestrictPatternMatch = fields?.filter(
+      (field) =>
+        field.settings?.regexRestrictPattern &&
+        new RegExp(field.settings?.regexRestrictPattern).test(
+          item.data[field.name]
+        )
+    );
+
+    if (
+      missingRequired?.length ||
+      lackingCharLength?.length ||
+      regexPatternMismatch?.length ||
+      regexRestrictPatternMatch?.length
+    ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",
         ...(!!missingRequired?.length && { missingRequired }),
         ...(!!lackingCharLength?.length && { lackingCharLength }),
+        ...(!!regexPatternMismatch?.length && { regexPatternMismatch }),
+        ...(!!regexRestrictPatternMatch?.length && {
+          regexRestrictPatternMatch,
+        }),
       });
     }
 
@@ -519,11 +544,36 @@ export function createItem(modelZUID, itemZUID) {
           !item.data[field.name])
     );
 
-    if (missingRequired?.length || lackingCharLength?.length) {
+    const regexPatternMismatch = fields?.filter(
+      (field) =>
+        field.settings?.regexMatchPattern &&
+        !new RegExp(field.settings?.regexMatchPattern).test(
+          item.data[field.name]
+        )
+    );
+
+    const regexRestrictPatternMatch = fields?.filter(
+      (field) =>
+        field.settings?.regexRestrictPattern &&
+        new RegExp(field.settings?.regexRestrictPattern).test(
+          item.data[field.name]
+        )
+    );
+
+    if (
+      missingRequired?.length ||
+      lackingCharLength?.length ||
+      regexPatternMismatch?.length ||
+      regexRestrictPatternMatch?.length
+    ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",
         ...(!!missingRequired?.length && { missingRequired }),
         ...(!!lackingCharLength?.length && { lackingCharLength }),
+        ...(!!regexPatternMismatch?.length && { regexPatternMismatch }),
+        ...(!!regexRestrictPatternMatch?.length && {
+          regexRestrictPatternMatch,
+        }),
       });
     }
 

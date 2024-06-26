@@ -444,6 +444,37 @@ const CHARACTER_LIMIT_RULES: InputField[] = [
   },
 ];
 
+const REGEX_RULES: InputField[] = [
+  {
+    name: "regexMatchPattern",
+    type: "input",
+    label: "Regex Match Pattern",
+    required: false,
+    gridSize: 6,
+  },
+  {
+    name: "regexMatchErrorMessage",
+    type: "input",
+    label: "Regex Match Error Message",
+    required: false,
+    gridSize: 6,
+  },
+  {
+    name: "regexRestrictPattern",
+    type: "input",
+    label: "Regex Restrict Pattern",
+    required: false,
+    gridSize: 6,
+  },
+  {
+    name: "regexRestrictErrorMessage",
+    type: "input",
+    label: "Regex Restrict Error Message",
+    required: false,
+    gridSize: 6,
+  },
+];
+
 const FORM_CONFIG: Record<FieldType, FormConfig> = {
   article_writer: {
     details: [...COMMON_FIELDS],
@@ -587,11 +618,11 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
   },
   text: {
     details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES],
+    rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES, ...REGEX_RULES],
   },
   textarea: {
     details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES],
+    rules: [...COMMON_RULES, ...CHARACTER_LIMIT_RULES, ...REGEX_RULES],
   },
   uuid: {
     details: [...COMMON_FIELDS],
