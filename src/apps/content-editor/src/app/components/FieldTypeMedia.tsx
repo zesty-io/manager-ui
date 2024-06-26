@@ -26,7 +26,7 @@ import {
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
 import { CompactView, Modal, Login } from "@bynder/compact-view";
-import { Bynder } from "@zesty-io/material";
+import { Bynder, FileReplace } from "@zesty-io/material";
 
 import {
   useGetBinsQuery,
@@ -43,6 +43,8 @@ import styles from "../../../../media/src/app/components/Thumbnail/Loading.less"
 import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
 import { useGetInstanceSettingsQuery } from "../../../../../shell/services/instance";
+import { ReplaceFileModal } from "../../../../media/src/app/components/FileModal/ReplaceFileModal";
+import { showReportDialog } from "@sentry/react";
 
 type FieldTypeMediaProps = {
   images: string[];
@@ -489,6 +491,7 @@ const MediaItem = ({
     skip: imageZUID?.substr(0, 4) === "http",
   });
   const [showRenameFileModal, setShowRenameFileModal] = useState(false);
+  const [isReplaceFileModalOpen, setIsReplaceFileModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
   const [newFilename, setNewFilename] = useState("");
@@ -753,6 +756,18 @@ const MediaItem = ({
                   <ListItemText>Rename</ListItemText>
                 </MenuItem>
               )}
+              <MenuItem
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setAnchorEl(null);
+                  setIsReplaceFileModalOpen(true);
+                }}
+              >
+                <ListItemIcon>
+                  <FileReplace />
+                </ListItemIcon>
+                <ListItemText>Replace File</ListItemText>
+              </MenuItem>
               {!isURL && !isBynderAsset && (
                 <MenuItem
                   onClick={(event) => {
@@ -804,6 +819,13 @@ const MediaItem = ({
           isLoadingUpdate={isLoadingUpdate}
           resetUpdate={resetUpdate}
           extension={fileExtension(data.filename)}
+        />
+      )}
+      {isReplaceFileModalOpen && (
+        <ReplaceFileModal
+          originalFile={data}
+          onClose={() => setIsReplaceFileModalOpen(false)}
+          onCancel={() => setIsReplaceFileModalOpen(false)}
         />
       )}
     </>

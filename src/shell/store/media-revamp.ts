@@ -220,7 +220,6 @@ const mediaSlice = createSlice({
       }
     },
     fileUploadSuccess(state, action: { payload: FileUploadSuccess }) {
-      console.log(action.payload);
       const index = state.uploads.findIndex(
         (file) => file.uploadID === action.payload.uploadID
       );
