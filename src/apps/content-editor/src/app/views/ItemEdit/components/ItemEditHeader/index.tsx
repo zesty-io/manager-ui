@@ -193,7 +193,11 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
                 )?.value || ""
               }
               onChange={(event, value) =>
-                history.push(`/content/${modelZUID}/${itemZUID}/${value}`)
+                history.push(
+                  value
+                    ? `/content/${modelZUID}/${itemZUID}/${value}`
+                    : `/content/${modelZUID}/${itemZUID}`
+                )
               }
               sx={{
                 position: "relative",
