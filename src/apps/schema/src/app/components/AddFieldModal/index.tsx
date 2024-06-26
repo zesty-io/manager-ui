@@ -6,6 +6,7 @@ import { theme } from "@zesty-io/material";
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
+import { ContentModelFieldDataType } from "../../../../../../shell/services/types";
 
 type Params = {
   id: string;
@@ -78,7 +79,7 @@ export const AddFieldModal = ({ onModalClose, mode, sortIndex }: Props) => {
       {viewMode === "new_field" && (
         <FieldForm
           fields={fields}
-          type={selectedField?.fieldType}
+          type={selectedField?.fieldType as ContentModelFieldDataType}
           name={selectedField?.fieldName}
           onModalClose={onModalClose}
           onBackClick={() => setViewMode("fields_list")}
