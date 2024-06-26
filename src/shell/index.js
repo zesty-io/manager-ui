@@ -33,6 +33,7 @@ import Shell from "./views/Shell";
 
 import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
 import { actions } from "shell/store/ui";
+import { CommentProvider } from "./contexts/CommentProvider";
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
@@ -50,6 +51,7 @@ window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZU
 
 MonacoSetup(store);
 
+// TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
   <StrictMode>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
@@ -57,11 +59,13 @@ const App = Sentry.withProfiler(() => (
         <CssBaseline>
           <Provider store={store}>
             <Router history={history}>
-              <PrivateRoute>
-                <LoadInstance>
-                  <Shell />
-                </LoadInstance>
-              </PrivateRoute>
+              <CommentProvider>
+                <PrivateRoute>
+                  <LoadInstance>
+                    <Shell />
+                  </LoadInstance>
+                </PrivateRoute>
+              </CommentProvider>
             </Router>
           </Provider>
         </CssBaseline>
