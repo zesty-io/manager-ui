@@ -123,6 +123,39 @@ export default memo(function Editor({
         }
       }
 
+      if (field?.settings?.regexMatchPattern) {
+        const regex = new RegExp(field?.settings?.regexMatchPattern);
+        if (!regex.test(value)) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_PATTERN_MISMATCH: field?.settings?.regexMatchErrorMessage,
+          };
+        } else {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_PATTERN_MISMATCH: "",
+          };
+        }
+      }
+
+      if (field?.settings?.regexRestrictPattern) {
+        const regex = new RegExp(field?.settings?.regexRestrictPattern);
+        if (regex.test(value)) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_RESTRICT_PATTERN_MATCH:
+              field?.settings?.regexRestrictErrorMessage,
+          };
+        } else {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_RESTRICT_PATTERN_MATCH: "",
+          };
+        }
+      }
+
+      console.log(errors);
+
       onUpdateFieldErrors(errors);
 
       // Always dispatch the data update

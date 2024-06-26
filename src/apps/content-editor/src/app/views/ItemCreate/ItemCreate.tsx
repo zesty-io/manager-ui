@@ -193,6 +193,27 @@ export const ItemCreate = () => {
             });
           }
 
+          if (res.regexPatternMismatch?.length) {
+            res.regexPatternMismatch?.forEach((field: ContentModelField) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
+              };
+            });
+          }
+
+          if (res.regexRestrictPatternMatch?.length) {
+            res.regexRestrictPatternMatch?.forEach(
+              (field: ContentModelField) => {
+                errors[field.name] = {
+                  ...(errors[field.name] ?? {}),
+                  REGEX_RESTRICT_PATTERN_MATCH:
+                    field.settings?.regexRestrictErrorMessage,
+                };
+              }
+            );
+          }
+
           setFieldErrors(errors);
 
           // scroll to required field

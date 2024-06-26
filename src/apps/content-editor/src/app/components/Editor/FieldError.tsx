@@ -37,6 +37,10 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
         errorMessage = `Requires ${
           errors.LACKING_MINLENGTH
         } more ${pluralizeWord("character", errors.LACKING_MINLENGTH)}.`;
+      } else if (errors?.REGEX_PATTERN_MISMATCH) {
+        errorMessage = errors?.REGEX_PATTERN_MISMATCH;
+      } else if (errors?.REGEX_RESTRICT_PATTERN_MATCH) {
+        errorMessage = errors?.REGEX_RESTRICT_PATTERN_MATCH;
       } else {
         errorMessage = "";
       }

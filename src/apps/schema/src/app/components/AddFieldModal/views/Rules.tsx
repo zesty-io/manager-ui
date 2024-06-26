@@ -9,6 +9,7 @@ import { ComingSoon } from "../ComingSoon";
 import { DefaultValue } from "../DefaultValue";
 import { MediaRules } from "../MediaRules";
 import { Errors, FormData, FormValue } from "./FieldForm";
+import { Regex } from "../Regex";
 
 type RulesProps = {
   type: FieldType;
@@ -79,17 +80,36 @@ export const Rules = ({
       />
 
       {(type === "text" || type === "textarea") && (
-        <CharacterLimit
-          type={type}
-          isCharacterLimitEnabled={isCharacterLimitEnabled}
-          onToggleCharacterLimitState={(enabled) =>
-            setIsCharacterLimitEnabled(enabled)
-          }
-          onChange={onFieldDataChanged}
-          minValue={formData["minCharLimit"] as number}
-          maxValue={formData["maxCharLimit"] as number}
-          errors={errors}
-        />
+        <>
+          <CharacterLimit
+            type={type}
+            isCharacterLimitEnabled={isCharacterLimitEnabled}
+            onToggleCharacterLimitState={(enabled) =>
+              setIsCharacterLimitEnabled(enabled)
+            }
+            onChange={onFieldDataChanged}
+            minValue={formData["minCharLimit"] as number}
+            maxValue={formData["maxCharLimit"] as number}
+            errors={errors}
+          />
+          <Regex
+            type={type}
+            isCharacterLimitEnabled={isCharacterLimitEnabled}
+            onToggleCharacterLimitState={(enabled) =>
+              setIsCharacterLimitEnabled(enabled)
+            }
+            onChange={onFieldDataChanged}
+            regexMatchPattern={formData["regexMatchPattern"] as string}
+            regexMatchErrorMessage={
+              formData["regexMatchErrorMessage"] as string
+            }
+            regexRestrictPattern={formData["regexRestrictPattern"] as string}
+            regexRestrictErrorMessage={
+              formData["regexRestrictErrorMessage"] as string
+            }
+            errors={errors}
+          />
+        </>
       )}
     </Stack>
   );

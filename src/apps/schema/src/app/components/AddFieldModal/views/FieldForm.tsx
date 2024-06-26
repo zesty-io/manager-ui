@@ -211,6 +211,14 @@ export const FieldForm = ({
           formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
         } else if (field.name === "maxCharLimit") {
           formFields["maxCharLimit"] = fieldData.settings?.maxCharLimit ?? null;
+        } else if (field.name === "regexMatchPattern") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "regexMatchErrorMessage") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "regexRestrictPattern") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "regexRestrictErrorMessage") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -231,7 +239,11 @@ export const FieldForm = ({
           if (
             field.name === "defaultValue" ||
             field.name === "minCharLimit" ||
-            field.name === "maxCharLimit"
+            field.name === "maxCharLimit" ||
+            field.name === "regexMatchPattern" ||
+            field.name === "regexMatchErrorMessage" ||
+            field.name === "regexRestrictPattern" ||
+            field.name === "regexRestrictErrorMessage"
           ) {
             formFields[field.name] = null;
           } else {
@@ -322,11 +334,54 @@ export const FieldForm = ({
             inputName
           ] = `Cannot exceed ${MaxLengths[type]} characters`;
         }
+
+        if (inputName === "regexMatchPattern" && formData.regexMatchPattern) {
+          try {
+            new RegExp(formData.regexMatchPattern as string);
+          } catch (e) {
+            newErrorsObj[inputName] = "Invalid regex pattern";
+          }
+        }
+
+        if (
+          inputName === "regexMatchErrorMessage" &&
+          formData.regexMatchPattern !== null &&
+          formData.regexMatchErrorMessage === ""
+        ) {
+          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+        }
+
+        if (
+          inputName === "regexRestrictPattern" &&
+          formData.regexRestrictPattern
+        ) {
+          try {
+            new RegExp(formData.regexRestrictPattern as string);
+          } catch (e) {
+            newErrorsObj[inputName] = "Invalid regex pattern";
+          }
+        }
+
+        if (
+          inputName === "regexRestrictErrorMessage" &&
+          formData.regexRestrictPattern !== null &&
+          formData.regexRestrictErrorMessage === ""
+        ) {
+          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+        }
       }
 
       if (
         inputName in errors &&
-        !["defaultValue", "minCharLimit", "maxCharLimit"].includes(inputName)
+        ![
+          "defaultValue",
+          "minCharLimit",
+          "maxCharLimit",
+          "regexMatchPattern",
+          "regexRestrictPattern",
+          "regexMatchErrorMessage",
+          "regexRestrictErrorMessage",
+        ].includes(inputName)
       ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
           (field) => field.name === inputName
@@ -420,7 +475,15 @@ export const FieldForm = ({
     if (hasErrors) {
       // Switch the active tab to details to show the user the errors if
       // they're not on the details tab and they clicked the submit button
-      if (errors.defaultValue || errors.minCharLimit || errors.maxCharLimit) {
+      if (
+        errors.defaultValue ||
+        errors.minCharLimit ||
+        errors.maxCharLimit ||
+        errors.regexMatchPattern ||
+        errors.regexMatchErrorMessage ||
+        errors.regexRestrictPattern ||
+        errors.regexRestrictErrorMessage
+      ) {
         setActiveTab("rules");
       } else {
         setActiveTab("details");
@@ -453,6 +516,19 @@ export const FieldForm = ({
         }),
         ...(formData.minCharLimit !== null && {
           minCharLimit: formData.minCharLimit as number,
+        }),
+        ...(formData.regexMatchPattern && {
+          regexMatchPattern: formData.regexMatchPattern as string,
+        }),
+        ...(formData.regexMatchErrorMessage && {
+          regexMatchErrorMessage: formData.regexMatchErrorMessage as string,
+        }),
+        ...(formData.regexRestrictPattern && {
+          regexRestrictPattern: formData.regexRestrictPattern as string,
+        }),
+        ...(formData.regexRestrictErrorMessage && {
+          regexRestrictErrorMessage:
+            formData.regexRestrictErrorMessage as string,
         }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
