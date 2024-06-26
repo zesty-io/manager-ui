@@ -19,7 +19,7 @@ describe("Actions in content editor", () => {
     cy.get("#12-13d590-9v2nr2 input").clear().should("have.value", "");
     cy.get("#SaveItemButton").click();
 
-    cy.get("[data-cy=toast]").contains("You are missing data");
+    cy.get("[data-cy=toast]").contains("Missing Data in Required Fields");
   });
 
   /**
@@ -44,7 +44,7 @@ describe("Actions in content editor", () => {
       }
     );
 
-    cy.get("[data-cy=toast]").contains("Saved a new ");
+    cy.get("[data-cy=toast]").contains("Item Saved");
   });
 
   it("Saves homepage item metadata", () => {
@@ -64,7 +64,7 @@ describe("Actions in content editor", () => {
       }
     );
 
-    cy.get("[data-cy=toast]").contains("Saved a new ");
+    cy.get("[data-cy=toast]").contains("Item Saved");
   });
 
   it("Publishes an item", () => {
@@ -143,6 +143,21 @@ describe("Actions in content editor", () => {
     );
   });
 
+  it("Fills in default values for a new item", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0/new");
+    });
+
+    cy.get("#12-0c3934-8dz720 input").should(
+      "have.value",
+      "default single line text field"
+    );
+    cy.get("#12-d39a38-85sqdt").contains("zesty-io-logo-horizontal-dark.png");
+    cy.get("#12-bcd1dcc5f4-2rpm9p").contains(
+      "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
+    );
+  });
+
   it("Creates a new item", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
@@ -151,7 +166,7 @@ describe("Actions in content editor", () => {
     cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created new ", { timeout: 5000 }).should("exist");
+    cy.contains("Created Item", { timeout: 5000 }).should("exist");
   });
 
   it("Saved item becomes publishable", () => {
@@ -198,9 +213,9 @@ describe("Actions in content editor", () => {
   //   // these waits are due to a delay
   //   // dealing with these specific endpoints
   //   // in any test environment we expect this to fail and display a message
-  //   cy.contains("There was an issue trying to purge the CDN cache", { timeout: 5000 }).should(
-  //     "exist"
-  //   );
+  //   cy.contains("There was an issue trying to purge the CDN cache", {
+  //     timeout: 5000,
+  //   }).should("exist");
   //   // cy.contains("The item has been purged from the CDN cache", { timeout: 5000 }).should("exist");
   // });
 });

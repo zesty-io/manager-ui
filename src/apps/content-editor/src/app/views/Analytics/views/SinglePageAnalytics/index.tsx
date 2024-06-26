@@ -165,7 +165,7 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
     const dr1EngagementTime =
       +findValuesForDimensions(metricsReport?.rows, ["date_range_1"], 4) ?? 0;
     const comparedEngagementTime =
-      +comparedMetricsReport?.rows?.[0].metricValues?.[4]?.value ?? 0;
+      +comparedMetricsReport?.rows?.[0]?.metricValues?.[4]?.value ?? 0;
 
     // Calculate avg engagement time
     const dr0AvgEngagementTime =
@@ -241,13 +241,16 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
             account manager for more details.
           </Typography>
         </Box>
-        <Box display="flex" justifyContent="space-between">
+        <Box display="flex" justifyContent="space-between" gap={2}>
           <Box display="flex" gap={1.5}>
             <AnalyticsDateFilter />
             {isLoading ? (
               <Skeleton variant="rectangular" width="137px" height="28px" />
             ) : compareItemZUID ? (
-              <ButtonGroup variant="contained" sx={{ height: "28px" }}>
+              <ButtonGroup
+                variant="contained"
+                sx={{ height: "28px", maxWidth: 460 }}
+              >
                 <Button
                   size="small"
                   startIcon={
@@ -257,9 +260,11 @@ export const SinglePageAnalytics = ({ item, loading }: Props) => {
                   }
                   onClick={() => setShowCompareDialog(true)}
                 >
-                  {compareItem?.web?.metaTitle ||
-                    compareItem?.web?.path ||
-                    compareItemZUID}
+                  <Typography noWrap color="inherit" variant="body2">
+                    {compareItem?.web?.metaTitle ||
+                      compareItem?.web?.path ||
+                      compareItemZUID}
+                  </Typography>
                 </Button>
                 <Button size="small" onClick={() => setParams(null, "compare")}>
                   <CloseRoundedIcon fontSize="small" />

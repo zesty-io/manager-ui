@@ -40,11 +40,22 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
     if (modelFields?.[0]?.datatype === "text") {
       fieldToChange = modelFields[0].name;
     }
+
+    const uuidFieldKeys = modelFields
+      ?.filter((field) => field.datatype === "uuid")
+      ?.map((field) => field.name);
+
+    const newData = { ...item.data };
+
+    uuidFieldKeys?.forEach((key) => {
+      newData[key] = null; // Set each uuid key to null
+    });
+
     createContentItem({
       modelZUID,
       body: {
         data: {
-          ...item.data,
+          ...newData,
           ...(fieldToChange && {
             [fieldToChange]: item.data[fieldToChange] + " (copy)",
           }),
@@ -52,9 +63,9 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
         web: {
           canonicalTagMode: item.web.canonicalTagMode,
           parentZUID: item.web.parentZUID,
-          metaLinkText: item.web.metaLinkText.slice(0, 143) + " (copy)",
-          metaTitle: item.web.metaTitle.slice(0, 143) + " (copy)",
-          metaDescription: item.web.metaDescription.slice(0, 153) + " (copy)",
+          metaLinkText: item.web.metaLinkText?.slice(0, 143) + " (copy)",
+          metaTitle: item.web.metaTitle?.slice(0, 143) + " (copy)",
+          metaDescription: item.web.metaDescription?.slice(0, 153) + " (copy)",
           pathPart: item.web.pathPart
             ? item.web.pathPart + `-${new Date().toISOString()}`
             : undefined,

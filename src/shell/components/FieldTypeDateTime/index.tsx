@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { TextField, Autocomplete, Tooltip, ListItem } from "@mui/material";
 import moment from "moment-timezone";
 
@@ -51,6 +51,7 @@ export const FieldTypeDateTime = ({
   );
 
   const [dateString, timeString] = value?.split(" ") ?? [null, null];
+  const currentSystemTimezoneID = moment.tz.guess() ?? "America/Los_Angeles";
 
   useEffect(() => {
     setTimeKeyCount(timeKeyCount + 1);
@@ -86,6 +87,25 @@ export const FieldTypeDateTime = ({
         ?.scrollIntoView({ block: "center" });
     });
   }, [isTimeFieldActive]);
+
+  const timezoneOptionsWithSuggestions = useMemo(() => {
+    const userTimezone = TIMEZONES.find(
+      (tz) => tz.id === currentSystemTimezoneID
+    );
+    const timezoneSuggestions = [
+      {
+        ...userTimezone,
+        type: "suggestion",
+      },
+      {
+        label: "(GMT+00:00) Coordinated Universal Time",
+        id: "UTC",
+        type: "suggestion",
+      },
+    ];
+
+    return [...timezoneSuggestions, ...TIMEZONES];
+  }, [TIMEZONES, currentSystemTimezoneID]);
 
   const generateValuePreview = () => {
     if (showTimezonePicker) {
@@ -275,16 +295,28 @@ export const FieldTypeDateTime = ({
               fullWidth
               disableClearable
               size="small"
-              options={TIMEZONES}
-              value={TIMEZONES.find((tz) => tz.id === timezone)}
+              options={timezoneOptionsWithSuggestions}
+              value={timezoneOptionsWithSuggestions.find(
+                (tz) => tz.id === timezone
+              )}
               renderInput={(params) => <TextField {...params} />}
               renderOption={(props, option) => (
                 <ListItem
                   {...props}
-                  key={option.id}
+                  key={
+                    // @ts-ignore
+                    option.type === "suggestion"
+                      ? `${option.id}_suggestion`
+                      : option.id
+                  }
                   sx={{
                     "&.MuiListItem-root": {
                       color: "text.primary",
+                      borderBottom: (theme) =>
+                        // @ts-ignore
+                        option.id === "UTC" && option.type === "suggestion"
+                          ? `1px solid ${theme.palette.border}`
+                          : "none",
                     },
                   }}
                 >
@@ -294,6 +326,21 @@ export const FieldTypeDateTime = ({
               onChange={(_, value) => {
                 setTimezone(value.id);
                 onTimezoneChange && onTimezoneChange(value.id);
+              }}
+              filterOptions={(options, state) => {
+                if (state.inputValue) {
+                  return options?.filter(
+                    (tz) =>
+                      tz.label
+                        .replace(" - ", " ")
+                        .toLowerCase()
+                        .includes(state.inputValue.toLowerCase().trim()) &&
+                      // @ts-ignore
+                      tz.type !== "suggestion"
+                  );
+                }
+
+                return options;
               }}
               ListboxProps={{
                 sx: {

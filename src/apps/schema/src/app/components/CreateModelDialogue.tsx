@@ -159,11 +159,23 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
 
   useEffect(() => {
     if (error) {
+      // @ts-ignore
+      let message = error?.data?.error || "Failed to create model",
+        heading = "";
+      // @ts-ignore
+      if (error?.data?.error.includes("label cannot be blank")) {
+        message = "Please Add Display Name";
+        heading = "Cannot Create Model";
+        // @ts-ignore
+      } else if (error?.data?.error.includes("name is already in use")) {
+        message = "Display name is already in use";
+        heading = "Cannot Create Model";
+      }
       dispatch(
         notify({
-          // @ts-ignore
-          message: error?.data?.error || "Failed to create model",
-          kind: "warn",
+          message,
+          heading,
+          kind: "error",
         })
       );
     }
