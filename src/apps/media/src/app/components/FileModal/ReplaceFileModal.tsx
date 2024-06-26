@@ -17,7 +17,6 @@ import { File as ZestyMediaFile } from "../../../../../../shell/services/types";
 import { fileExtension } from "../../utils/fileUtils";
 import {
   dismissFileUploads,
-  fileUploadReset,
   fileUploadStage,
 } from "../../../../../../shell/store/media-revamp";
 import { UploadHeaderText } from "../UploadModal";
@@ -25,6 +24,9 @@ import { AppState } from "../../../../../../shell/store/types";
 import { UploadThumbnail } from "../UploadThumbnail";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { FileTypePreview } from "./FileTypePreview";
+import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
+import instanceZUID from "../../../../../../utility/instanceZUID";
+import { NoPermission } from "../../../../../../shell/components/NoPermission";
 
 type ReplaceFileModalProps = {
   originalFile: ZestyMediaFile;
@@ -40,8 +42,13 @@ export const ReplaceFileModal = ({
   const [newFile, setNewFile] = useState<File>(null);
   const [showUploadingFileModal, setShowUploadingFileModal] = useState(false);
   const hiddenFileInput = useRef(null);
+  const { data: currentUserRoles } = useGetCurrentUserRolesQuery();
   const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
   const filesToUpload = uploads.filter((upload) => upload.status !== "failed");
+
+  const canReplaceImage = currentUserRoles
+    ?.filter((role) => role.entityZUID === instanceZUID)
+    ?.some((role) => ["admin", "owner"].includes(role.name?.toLowerCase()));
 
   const acceptedExtension =
     fileExtension(originalFile?.url) === "jpg" ||
@@ -80,6 +87,16 @@ export const ReplaceFileModal = ({
 
     onClose();
   };
+
+  if (!canReplaceImage) {
+    return (
+      <NoPermission
+        onClose={onCancel}
+        headerTitle="You do not have permission to replace files in this instance."
+        headerSubtitle="Contact the instance owner or administrators listed below to upgrade your role to Admin or Owner for the invite capability."
+      />
+    );
+  }
 
   if (showUploadingFileModal) {
     return (
