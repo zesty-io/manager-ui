@@ -79,8 +79,8 @@ export const UploadThumbnail: FC<Props> = ({
         title={action === "replace" ? originalFile?.title : null}
         imageHeight="300px"
         isDraggable={file.status === "success"}
-        isDescriptionEditable={file.status === "success"}
-        isTitleEditable={file.status === "success" && action !== "replace"}
+        isTitleEditable={file.status === "success"}
+        isFilenameEditable={file.status === "success" && action !== "replace"}
         onRemove={onRemove}
         showRemove={showRemove}
         onFilenameChange={(filename) => {

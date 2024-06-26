@@ -66,8 +66,8 @@ interface ThumbnailProps {
   onTitleChange?: (value: string) => void;
   onClick?: () => void;
   showRemove?: boolean;
+  isFilenameEditable?: boolean;
   isTitleEditable?: boolean;
-  isDescriptionEditable?: boolean;
   title?: string;
 }
 
@@ -88,8 +88,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   imageHeight,
   selectable,
   showRemove = true,
+  isFilenameEditable,
   isTitleEditable,
-  isDescriptionEditable,
   title,
 }) => {
   const theme = useTheme();
@@ -424,8 +424,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -518,8 +518,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -593,8 +593,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -666,8 +666,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -743,8 +743,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -817,8 +817,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -893,8 +893,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -971,8 +971,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1076,8 +1076,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1153,8 +1153,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1232,8 +1232,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1306,8 +1306,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1380,8 +1380,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1454,8 +1454,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1528,8 +1528,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1612,8 +1612,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1693,8 +1693,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
@@ -1781,8 +1781,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isSelected={selectedFiles.some((file) => file.id === id)}
-            isDescriptionEditable={isDescriptionEditable}
             isTitleEditable={isTitleEditable}
+            isFilenameEditable={isFilenameEditable}
           />
         </Card>
       );
