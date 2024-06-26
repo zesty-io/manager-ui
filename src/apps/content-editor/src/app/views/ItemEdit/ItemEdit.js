@@ -456,7 +456,11 @@ export default function ItemEdit() {
                 />
                 <Route
                   exact
-                  path="/content/:modelZUID/:itemZUID"
+                  path={[
+                    "/content/:modelZUID/:itemZUID",
+                    "/content/:modelZUID/:itemZUID/comment/:resourceZUID",
+                    "/content/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
+                  ]}
                   render={() => (
                     <Content
                       instance={instance}

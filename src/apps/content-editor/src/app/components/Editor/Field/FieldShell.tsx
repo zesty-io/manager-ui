@@ -9,11 +9,13 @@ import {
 } from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import { useLocation } from "react-router";
 
 import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
 import { FieldTooltipBody } from "./FieldTooltipBody";
 import { ContentModelField } from "../../../../../../../shell/services/types";
 import pluralizeWord from "../../../../../../../utility/pluralizeWord";
+import { Comment } from "../../../../../../../shell/components/Comment";
 
 export type EditorType =
   | "markdown"
@@ -62,6 +64,7 @@ export const FieldShell = ({
   errors,
   withInteractiveTooltip = true,
 }: FieldShellProps) => {
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
   const getErrorMessage = (errors: Error) => {
@@ -89,6 +92,8 @@ export const FieldShell = ({
 
     return "";
   };
+
+  const isCreateNewItemPage = location?.pathname?.split("/")?.pop() === "new";
 
   return (
     <Stack gap={0.5}>
@@ -155,6 +160,7 @@ export const FieldShell = ({
             </>
           )}
           {endLabel}
+          {!isCreateNewItemPage && <Comment resourceZUID={settings.ZUID} />}
         </Stack>
       </Stack>
       {settings?.description && (
