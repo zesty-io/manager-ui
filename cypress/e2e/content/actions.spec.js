@@ -50,6 +50,27 @@ describe("Actions in content editor", () => {
     cy.get("[data-cy=toast]").contains("Item Saved: New Schema All Fields");
   });
 
+  it.only("Must not save when regex is not matched", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a4f5f1beaa-zc5l6v/7-ce9ca8cfb0-cc1mnz");
+    });
+
+    cy.get("#12-b6d09d92d0-7911ld textarea").first().clear().type("aa");
+    cy.get("#SaveItemButton").click();
+    cy.getBySelector("FieldErrorsList").should("exist");
+    cy.getBySelector("FieldErrorsList")
+      .find("ol")
+      .find("li")
+      .first()
+      .contains("Must be an email (e.g. hello@zesty.io)");
+    cy.get("#12-b6d09d92d0-7911ld  textarea")
+      .first()
+      .clear()
+      .type("hello@zesty.io");
+    cy.get("#SaveItemButton").click();
+    cy.get("[data-cy=toast]").contains("Item Saved: New Schema All Fields");
+  });
+
   /**
    *  NOTE: this depends upon `toggle` field on the schema being marked as being required and deactivated. Because it's deactivated it doesn't render in the content editor and the expectation is the content item should save. there fore there is nothing to do and confirm that this item saves successfully. Adding this notes because nothing really happens inside this test but it's important this test remains.
    * */
