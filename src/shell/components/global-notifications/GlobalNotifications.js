@@ -262,7 +262,6 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
         }
         sx={{
           width: 540,
-          height: props.heading || props.message.length > 65 ? 56 : 44,
         }}
       >
         <Stack>
