@@ -52,7 +52,10 @@ export const ThumbnailContent: FC<Props> = ({
       <CardContent sx={styledCardContent} data-testid="media-thumbnail-content">
         {onFilenameChange ? (
           <Box>
-            <Box>
+            <Tooltip
+              title={isFilenameEditable ? "" : "You cannot edit the file name"}
+              followCursor
+            >
               <TextFieldWithCursorPosition
                 value={filename}
                 size="small"
@@ -83,7 +86,7 @@ export const ThumbnailContent: FC<Props> = ({
                   },
                 }}
               />
-            </Box>
+            </Tooltip>
             <Box>
               <TextField
                 placeholder={
