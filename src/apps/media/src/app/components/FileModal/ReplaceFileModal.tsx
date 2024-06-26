@@ -93,7 +93,7 @@ export const ReplaceFileModal = ({
       <NoPermission
         onClose={onCancel}
         headerTitle="You do not have permission to replace files in this instance."
-        headerSubtitle="Contact the instance owner or administrators listed below to upgrade your role to Admin or Owner for the invite capability."
+        headerSubtitle="Contact the instance owner or administrators listed below to upgrade your role to Admin or Owner for the replace file capability."
       />
     );
   }
