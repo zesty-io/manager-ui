@@ -24,6 +24,7 @@ import { UploadHeaderText } from "../UploadModal";
 import { AppState } from "../../../../../../shell/store/types";
 import { UploadThumbnail } from "../UploadThumbnail";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
+import { FileTypePreview } from "./FileTypePreview";
 
 type ReplaceFileModalProps = {
   originalFile: ZestyMediaFile;
@@ -140,17 +141,23 @@ export const ReplaceFileModal = ({
       <Dialog open onClose={onCancel} maxWidth="xs">
         <DialogTitle>
           <Box
-            component="img"
-            src={`${originalFile?.url}?width=120&optimize=high`}
+            width={120}
+            height={120}
+            mb={1.5}
             sx={{
-              width: 120,
-              height: 120,
-              objectFit: "contain",
-              borderRadius: 2,
-              mb: 1.5,
-              backgroundColor: "grey.100",
+              "& .MuiBox-root": {
+                borderRadius: 2,
+              },
             }}
-          />
+          >
+            <FileTypePreview
+              src={originalFile?.url}
+              filename={originalFile?.filename}
+              imageSettings={{
+                width: 120,
+              }}
+            />
+          </Box>
           <Typography variant="h5" sx={{ wordBreak: "break-all" }}>
             <Box component="span" fontWeight={700}>
               Replace File:
