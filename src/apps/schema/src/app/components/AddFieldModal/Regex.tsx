@@ -10,7 +10,9 @@ import {
   FormControl,
   FormHelperText,
   Link,
+  Tooltip,
 } from "@mui/material";
+import { InfoRounded } from "@mui/icons-material";
 import { Errors } from "./views/FieldForm";
 
 type RegexProps = {
@@ -113,7 +115,18 @@ export const Regex = ({
         <>
           <Box display="flex" gap={2} mt={1} pl={3.5}>
             <Box>
-              <InputLabel>Type</InputLabel>
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <InputLabel>Type</InputLabel>
+                <Tooltip title="Select from a list of preset Regex pattern types or write your own custom Regex pattern">
+                  <InfoRounded
+                    color="action"
+                    sx={{
+                      height: "12px",
+                      width: "12px",
+                    }}
+                  />
+                </Tooltip>
+              </Box>
               <Select
                 sx={{
                   width: 120,
@@ -153,9 +166,20 @@ export const Regex = ({
               </Select>
             </Box>
             <FormControl fullWidth error={!!errors?.regexMatchPattern}>
-              <Typography variant="body2" mb={0.5} fontWeight={600}>
-                Pattern
-              </Typography>
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <Typography variant="body2" mb={0.5} fontWeight={600}>
+                  Pattern
+                </Typography>
+                <Tooltip title="Enter a regular expression (regex) pattern - a sequence of characters used for pattern matching in strings">
+                  <InfoRounded
+                    color="action"
+                    sx={{
+                      height: "12px",
+                      width: "12px",
+                    }}
+                  />
+                </Tooltip>
+              </Box>
               <TextField
                 fullWidth
                 data-cy="RegexMatchPatternInput"
@@ -199,9 +223,20 @@ export const Regex = ({
               }}
               error={!!errors?.regexMatchErrorMessage}
             >
-              <Typography variant="body2" mb={0.5} fontWeight={600}>
-                Custom Error Message *
-              </Typography>
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <Typography variant="body2" mb={0.5} fontWeight={600}>
+                  Custom Error Message *
+                </Typography>
+                <Tooltip title="Displays if the user enters an input that does not meet the requirements">
+                  <InfoRounded
+                    color="action"
+                    sx={{
+                      height: "12px",
+                      width: "12px",
+                    }}
+                  />
+                </Tooltip>
+              </Box>
               <TextField
                 fullWidth
                 data-cy="RegexMatchErrorMessageInput"
@@ -266,7 +301,18 @@ export const Regex = ({
         <>
           <Box display="flex" gap={2} mt={1} pl={3.5}>
             <Box>
-              <InputLabel>Type</InputLabel>
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <InputLabel>Type</InputLabel>
+                <Tooltip title="Select from a list of preset Regex pattern types or write your own custom Regex pattern">
+                  <InfoRounded
+                    color="action"
+                    sx={{
+                      height: "12px",
+                      width: "12px",
+                    }}
+                  />
+                </Tooltip>
+              </Box>
               <Select
                 sx={{
                   width: 120,
@@ -306,9 +352,20 @@ export const Regex = ({
               </Select>
             </Box>
             <FormControl fullWidth error={!!errors?.regexRestrictPattern}>
-              <Typography variant="body2" mb={0.5} fontWeight={600}>
-                Pattern
-              </Typography>
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <Typography variant="body2" mb={0.5} fontWeight={600}>
+                  Pattern
+                </Typography>
+                <Tooltip title="Enter a regular expression (regex) pattern - a sequence of characters used for pattern matching in strings">
+                  <InfoRounded
+                    color="action"
+                    sx={{
+                      height: "12px",
+                      width: "12px",
+                    }}
+                  />
+                </Tooltip>
+              </Box>
               <TextField
                 fullWidth
                 data-cy="RegexRestrictPatternInput"
@@ -352,9 +409,20 @@ export const Regex = ({
               }}
               error={!!errors?.regexRestrictErrorMessage}
             >
-              <Typography variant="body2" mb={0.5} fontWeight={600}>
-                Custom Error Message *
-              </Typography>
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <Typography variant="body2" mb={0.5} fontWeight={600}>
+                  Custom Error Message *
+                </Typography>
+                <Tooltip title="Displays if the user enters an input that does not meet the requirements">
+                  <InfoRounded
+                    color="action"
+                    sx={{
+                      height: "12px",
+                      width: "12px",
+                    }}
+                  />
+                </Tooltip>
+              </Box>
               <TextField
                 fullWidth
                 data-cy="RegexRestrictErrorMessageInput"
