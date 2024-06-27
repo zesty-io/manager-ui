@@ -33,7 +33,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
               {
                 name: "offset",
                 options: {
-                  offset: [0, -8],
+                  offset: [0, -10],
                 },
               },
             ],
