@@ -452,7 +452,8 @@ export const ItemList = () => {
                     >
                       <img src={noSearchResults} alt="No search results" />
                       <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        Your filter "{search}" could not find any results
+                        Your filter <strong>"{search}"</strong> could not find
+                        any results
                       </Typography>
                       <Typography variant="body2" pb={3} color="text.secondary">
                         Try adjusting your search. We suggest check all words
