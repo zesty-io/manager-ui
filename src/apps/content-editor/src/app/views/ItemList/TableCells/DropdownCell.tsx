@@ -4,7 +4,6 @@ import { useGetContentModelFieldsQuery } from "../../../../../../../shell/servic
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 import { useState } from "react";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
-import { ContentItem } from "../../../../../../../shell/services/types";
 import { useStagedChanges } from "../StagedChangesContext";
 
 export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
@@ -18,6 +17,16 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
     setAnchorEl(null);
     updateStagedChanges(params.row.id, params.field, value);
   };
+
+  const currVal =
+    stagedChanges?.[params.row.id]?.[params.field] === null ||
+    !field?.settings?.options
+      ? "Select"
+      : field?.settings?.options?.[
+          stagedChanges?.[params.row.id]?.[params.field]
+        ] ||
+        field?.settings?.options?.[params?.value] ||
+        "Select";
 
   return (
     <>
@@ -38,14 +47,7 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
           setAnchorEl(e.currentTarget);
         }}
       >
-        {stagedChanges?.[params.row.id]?.[params.field] === null ||
-        !field?.settings?.options
-          ? "Select"
-          : field?.settings?.options?.[
-              stagedChanges?.[params.row.id]?.[params.field]
-            ] ||
-            field?.settings?.options?.[params?.value] ||
-            "Select"}
+        {currVal}
       </Button>
       <Menu
         onClose={() => setAnchorEl(null)}
@@ -80,6 +82,7 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
               onClick={() => {
                 handleChange(key);
               }}
+              selected={value === currVal}
               sx={{
                 textWrap: "wrap",
                 wordBreak: "break-word",
