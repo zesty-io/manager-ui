@@ -168,6 +168,7 @@ type FieldProps = {
   onSave: () => void;
   errors: Error;
   maxLength: number;
+  minLength: number;
 };
 export const Field = ({
   ZUID,
@@ -185,6 +186,7 @@ export const Field = ({
   onSave,
   errors,
   maxLength,
+  minLength,
 }: FieldProps) => {
   const dispatch = useDispatch();
   const allItems = useSelector((state: AppState) => state.content);
@@ -289,6 +291,7 @@ export const Field = ({
           }
           withLengthCounter
           maxLength={maxLength}
+          minLength={minLength}
           errors={errors}
           aiType="text"
         >
@@ -371,6 +374,7 @@ export const Field = ({
           errors={errors}
           aiType="paragraph"
           maxLength={maxLength}
+          minLength={minLength}
         >
           <TextField
             value={value}

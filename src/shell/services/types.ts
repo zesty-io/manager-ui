@@ -195,6 +195,12 @@ export interface FieldSettings {
   list: boolean;
   tooltip?: string;
   defaultValue?: string;
+  minCharLimit?: number;
+  maxCharLimit?: number;
+  regexMatchPattern?: string;
+  regexMatchErrorMessage?: string;
+  regexRestrictPattern?: string;
+  regexRestrictErrorMessage?: string;
 }
 
 export type ContentModelFieldValue =
