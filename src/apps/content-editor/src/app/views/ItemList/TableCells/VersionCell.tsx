@@ -58,7 +58,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
           slotProps={{
             popper: {
               style: {
-                width: 120,
+                width: 160,
               },
             },
           }}
@@ -113,7 +113,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
           slotProps={{
             popper: {
               style: {
-                width: isScheduledPublish ? 120 : 150,
+                width: 160,
               },
             },
           }}
