@@ -369,7 +369,7 @@ export const InputField = ({
           color="primary"
           size="small"
           onClick={isEditMode ? handleUpdate : handleSubmit}
-          disabled={!inputValue}
+          disabled={!inputValue || inputValue === PLACEHOLDER}
           loading={isLoading}
         >
           {getPrimaryButtonText()}
