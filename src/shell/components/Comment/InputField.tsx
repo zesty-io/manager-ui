@@ -243,6 +243,8 @@ export const InputField = ({
                   }
                 });
               },
+
+              content_style: "ul, ol { margin-left: 16px }",
             }}
             onClick={() => {
               // Removes the placeholder

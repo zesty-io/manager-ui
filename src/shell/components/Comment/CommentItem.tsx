@@ -237,7 +237,15 @@ export const CommentItem = ({
           <Typography
             variant="body2"
             ref={commentBodyRef}
-            sx={{ overflowWrap: "break-word" }}
+            sx={{
+              overflowWrap: "break-word",
+              "& ul": {
+                ml: 2,
+              },
+              "& ol": {
+                ml: 2,
+              },
+            }}
           ></Typography>
         </Stack>
         {menuAnchorEl && (
