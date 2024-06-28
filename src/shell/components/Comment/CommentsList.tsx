@@ -152,6 +152,7 @@ export const CommentsList = ({
                   email: comment.createdByUserEmail,
                 }}
                 withResolveButton={index === 0 && !isResolved}
+                withReopenButton={index === 0 && isResolved}
                 parentCommentZUID={parentCommentZUID}
                 onParentCommentDeleted={onClose}
               />
