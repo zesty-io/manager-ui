@@ -18,7 +18,10 @@ import moment from "moment-timezone";
 
 import { ContentModelField } from "../../../../../../../shell/services/types";
 import { FieldIcon } from "../../../../../../schema/src/app/components/Field/FieldIcon";
-import { TYPE_TEXT } from "../../../../../../schema/src/app/components/configs";
+import {
+  TYPE_TEXT,
+  FieldType,
+} from "../../../../../../schema/src/app/components/configs";
 
 type FieldTooltipBodyProps = {
   data: Partial<ContentModelField>;
@@ -45,7 +48,7 @@ export const FieldTooltipBody = ({ data }: FieldTooltipBodyProps) => {
               {data?.label} {data?.required && "*"}
             </Typography>
             <Typography variant="body3" fontWeight={600} color="text.secondary">
-              {TYPE_TEXT[data?.datatype]} Field
+              {TYPE_TEXT[data?.datatype as FieldType]} Field
             </Typography>
           </Stack>
         </Stack>

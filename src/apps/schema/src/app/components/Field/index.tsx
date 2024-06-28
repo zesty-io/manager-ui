@@ -27,7 +27,7 @@ import {
   useDeleteContentModelFieldMutation,
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../shell/services/instance";
-import { TYPE_TEXT, SystemField } from "../configs";
+import { TYPE_TEXT, SystemField, FieldType } from "../configs";
 import { notify } from "../../../../../../shell/store/notifications";
 
 type Params = {
@@ -286,7 +286,7 @@ export const Field = ({
           </Typography>
         </Tooltip>
         <Typography variant="body3" color="text.secondary">
-          {TYPE_TEXT[field.datatype]}
+          {TYPE_TEXT[field.datatype as FieldType]}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center" maxWidth="180px">
