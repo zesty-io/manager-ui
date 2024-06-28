@@ -63,18 +63,21 @@ export const ItemList = () => {
   );
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
-  const { data: items, isFetching: isModelItemsFetching } =
-    useGetContentModelItemsQuery(
-      {
-        modelZUID,
-        params: {
-          lang: langCode,
-        },
+  const {
+    data: items,
+    isFetching: isModelItemsFetching,
+    isUninitialized,
+  } = useGetContentModelItemsQuery(
+    {
+      modelZUID,
+      params: {
+        lang: langCode,
       },
-      {
-        skip: !langCode,
-      }
-    );
+    },
+    {
+      skip: !langCode,
+    }
+  );
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
   const { data: publishings, isFetching: isPublishingsFetching } =
@@ -418,7 +421,7 @@ export const ItemList = () => {
             flexDirection: "column",
           }}
         >
-          {!items?.length && !isModelItemsFetching ? (
+          {!items?.length && !isModelItemsFetching && !isUninitialized ? (
             <ItemListEmpty />
           ) : (
             <>
