@@ -293,7 +293,9 @@ export const InputField = ({
 
               // Closes the mention list
               if (
-                (evt.key === "ArrowLeft" || evt.key === "ArrowRight") &&
+                (evt.key === "ArrowLeft" ||
+                  evt.key === "ArrowRight" ||
+                  evt.key === "Escape") &&
                 !!mentionListAnchorEl
               ) {
                 setMentionListAnchorEl(null);
