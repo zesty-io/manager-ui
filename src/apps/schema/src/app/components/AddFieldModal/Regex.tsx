@@ -130,6 +130,17 @@ export const Regex = ({
               <Select
                 sx={{
                   width: 120,
+                  "& .MuiSelect-select": {
+                    color: (theme) =>
+                      `${theme.palette.text.primary} !important`,
+                  },
+                }}
+                MenuProps={{
+                  MenuListProps: {
+                    sx: {
+                      minWidth: "unset",
+                    },
+                  },
                 }}
                 data-cy="RegexMatchPatternSelect"
                 value={
@@ -316,6 +327,17 @@ export const Regex = ({
               <Select
                 sx={{
                   width: 120,
+                  "& .MuiSelect-select": {
+                    color: (theme) =>
+                      `${theme.palette.text.primary} !important`,
+                  },
+                }}
+                MenuProps={{
+                  MenuListProps: {
+                    sx: {
+                      minWidth: "unset",
+                    },
+                  },
                 }}
                 data-cy="RegexRestrictPatternSelect"
                 value={
