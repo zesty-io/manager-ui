@@ -354,26 +354,29 @@ export const InputField = ({
         justifyContent="end"
         mt={1.5}
       >
-        <Button
-          variant="outlined"
-          color="inherit"
-          size="small"
-          onClick={onCancel}
-          disabled={isLoading}
-        >
-          Cancel
-        </Button>
-        <LoadingButton
-          data-cy="SubmitNewComment"
-          variant="contained"
-          color="primary"
-          size="small"
-          onClick={isEditMode ? handleUpdate : handleSubmit}
-          disabled={!inputValue || inputValue === PLACEHOLDER}
-          loading={isLoading}
-        >
-          {getPrimaryButtonText()}
-        </LoadingButton>
+        {inputValue && inputValue !== PLACEHOLDER && (
+          <>
+            <Button
+              variant="outlined"
+              color="inherit"
+              size="small"
+              onClick={onCancel}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <LoadingButton
+              data-cy="SubmitNewComment"
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={isEditMode ? handleUpdate : handleSubmit}
+              loading={isLoading}
+            >
+              {getPrimaryButtonText()}
+            </LoadingButton>
+          </>
+        )}
       </Stack>
     </>
   );
