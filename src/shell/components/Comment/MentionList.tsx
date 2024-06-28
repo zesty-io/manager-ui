@@ -37,9 +37,17 @@ export const MentionList = forwardRef(
     const listRef = useRef<HTMLUListElement>();
 
     const sortedUsers = useMemo(() => {
+      const _filterKeyword = filterKeyword?.toLowerCase();
+
       return [...users]
         ?.sort((userA, userB) => userA.firstName.localeCompare(userB.firstName))
-        .filter((user) => user.email.includes(filterKeyword));
+        .filter(
+          (user) =>
+            user.email?.toLowerCase()?.includes(_filterKeyword) ||
+            `${user.firstName} ${user.lastName}`
+              ?.toLowerCase()
+              ?.includes(_filterKeyword)
+        );
     }, [users, filterKeyword]);
 
     useEffect(() => {

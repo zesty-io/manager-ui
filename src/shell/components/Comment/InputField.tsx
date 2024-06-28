@@ -263,6 +263,7 @@ export const InputField = ({
               // Checks if the mention list should be opened or not
               if (evt.key === "@") {
                 setTimeout(() => {
+                  setUserFilterKeyword("");
                   setMentionListAnchorEl(inputRef.current);
                 });
               }
@@ -292,9 +293,7 @@ export const InputField = ({
 
               // Closes the mention list
               if (
-                (evt.key === "ArrowLeft" ||
-                  evt.key === "ArrowRight" ||
-                  evt.key === " ") &&
+                (evt.key === "ArrowLeft" || evt.key === "ArrowRight") &&
                 !!mentionListAnchorEl
               ) {
                 setMentionListAnchorEl(null);
