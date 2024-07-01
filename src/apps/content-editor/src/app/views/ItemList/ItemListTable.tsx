@@ -139,6 +139,7 @@ const fieldTypeColumnConfigMap = {
       if (!params.value) return null;
       return new Intl.NumberFormat("en-US").format(params.value);
     },
+    align: "right",
   },
   currency: {
     width: 160,
@@ -149,6 +150,7 @@ const fieldTypeColumnConfigMap = {
         currency: "USD",
       }).format(params.value);
     },
+    align: "right",
   },
   images: {
     width: 100,
@@ -165,6 +167,7 @@ const fieldTypeColumnConfigMap = {
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
+              zIndex: -1,
             }}
           >
             <ReportGmailerrorred fontSize="large" sx={{ color: "red.600" }} />
@@ -178,6 +181,7 @@ const fieldTypeColumnConfigMap = {
           sx={{
             backgroundColor: (theme) => theme.palette.grey[100],
             objectFit: "contain",
+            zIndex: -1,
           }}
           width="68px"
           height="58px"
@@ -450,6 +454,9 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
         },
         "& .MuiDataGrid-cell:has([data-cy='sortCell'])": {
           padding: 0,
+        },
+        "& .MuiDataGrid-row.Mui-selected": {
+          borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
         },
       }}
     />
