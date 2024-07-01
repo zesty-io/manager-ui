@@ -262,6 +262,7 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
         }
         sx={{
           width: 540,
+          padding: props.severity === "success" ? "4px 8px" : "0px 8px",
         }}
       >
         <Stack>
