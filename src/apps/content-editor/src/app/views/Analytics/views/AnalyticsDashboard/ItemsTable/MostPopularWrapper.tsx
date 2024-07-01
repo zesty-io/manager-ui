@@ -1,5 +1,5 @@
 import { Moment } from "moment-timezone";
-import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../../shell/services/analytics";
 import { findTopDimensions, generateDateRangesForReport } from "../../../utils";
 import { ItemsTableContent } from "./ItemsTable";
 

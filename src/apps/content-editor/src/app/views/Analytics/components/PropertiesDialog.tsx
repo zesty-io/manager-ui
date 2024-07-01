@@ -32,7 +32,7 @@ import googleIcon from "../../../../../../../../public/images/googleIcon.svg";
 import {
   useDisconnectGoogleAnalyticsMutation,
   useGetAnalyticsPropertiesQuery,
-} from "../../../../../../../shell/services/cloudFunctions";
+} from "../../../../../../../shell/services/analytics";
 import {
   useCreateInstanceSettingsMutation,
   useGetInstanceSettingsQuery,
@@ -98,7 +98,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
   const receiveMessage = (event: MessageEvent<Message>) => {
     if (
       // @ts-ignore
-      event.origin === CONFIG.CLOUD_FUNCTIONS_DOMAIN &&
+      event.origin === CONFIG.API_ANALYTICS &&
       event.data.source === "zesty"
     ) {
       if (event.data.status === 200) {
@@ -114,7 +114,7 @@ export const PropertiesDialog = ({ onClose }: Props) => {
     tabWindow?.close();
     tabWindow = window.open(
       // @ts-ignore
-      `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/authenticateGoogleAnalytics?user_id=${user.ID}&account_id=${instance.ID}`
+      `${CONFIG.API_ANALYTICS}/ga4/auth/connect?user_id=${user.ID}&account_id=${instance.ID}`
     );
   };
 

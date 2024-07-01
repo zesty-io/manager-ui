@@ -22,7 +22,7 @@ import { AnalyticsDateFilter } from "../../components/AnalyticsDateFilter";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { Metric } from "../../components/Metric";
-import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../shell/services/analytics";
 import {
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,

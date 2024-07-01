@@ -1,5 +1,5 @@
 import { Moment } from "moment-timezone";
-import { useGetAnalyticsPagePathsByFilterQuery } from "../../../../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPagePathsByFilterQuery } from "../../../../../../../../../shell/services/analytics";
 import { ItemsTableContent } from "./ItemsTable";
 
 type Props = {

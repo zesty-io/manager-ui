@@ -11,7 +11,7 @@ import { DataGridPro, GridRenderCellParams } from "@mui/x-data-grid-pro";
 import {
   useGetAnalyticsPropertiesQuery,
   useGetAnalyticsPropertyDataByQueryQuery,
-} from "../../../../../../../../../shell/services/cloudFunctions";
+} from "../../../../../../../../../shell/services/analytics";
 import { Moment } from "moment-timezone";
 import {
   findTopDimensions,

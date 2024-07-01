@@ -20,7 +20,7 @@ import {
 import { UsersBarChart } from "./UsersBarChart";
 import { useParams as useQueryParams } from "../../../../../../../../shell/hooks/useParams";
 import { useHistory, useParams } from "react-router-dom";
-import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPropertyDataByQueryQuery } from "../../../../../../../../shell/services/analytics";
 import {
   convertSecondsToMinutesAndSeconds,
   findValuesForDimensions,
@@ -28,7 +28,7 @@ import {
   getDateRangeAndLabelsFromParams,
 } from "../../utils";
 import { Metric } from "../../components/Metric";
-import { useGetAnalyticsPropertiesQuery } from "../../../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPropertiesQuery } from "../../../../../../../../shell/services/analytics";
 import instanceZUID from "../../../../../../../../utility/instanceZUID";
 import { NotFound } from "../../../../../../../../shell/components/NotFound";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";

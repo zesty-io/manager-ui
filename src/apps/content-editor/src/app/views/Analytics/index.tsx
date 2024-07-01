@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import { AuthView } from "./components/AuthView";
-import { useGetAnalyticsPropertiesQuery } from "../../../../../../shell/services/cloudFunctions";
+import { useGetAnalyticsPropertiesQuery } from "../../../../../../shell/services/analytics";
 import SinglePageAnalytics from "./views/SinglePageAnalytics";
 import AnalyticsDashboard from "./views/AnalyticsDashboard";
 import { ContentItem } from "../../../../../../shell/services/types";
