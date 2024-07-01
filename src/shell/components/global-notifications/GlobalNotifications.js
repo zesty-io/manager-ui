@@ -125,7 +125,7 @@ export default connect((state) => {
 
     return (
       <SnackbarProvider
-        autoHideDuration={4000}
+        autoHideDuration={40000000}
         maxSnack={10}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         Components={{ custom: CustomNotification }}
@@ -262,7 +262,10 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
         }
         sx={{
           width: 540,
-          padding: props.severity === "success" ? "4px 8px" : "0px 8px",
+          padding:
+            !(props.heading && props.message) || props.severity === "success"
+              ? "4px 8px"
+              : "0px 8px",
         }}
       >
         <Stack>
@@ -275,7 +278,7 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
           >
             {props.heading
               ? props.heading && parseStrToBold(props.heading, true)
-              : props.message && parseStrToBold(props.message)}
+              : props.message && parseStrToBold(props.message.substring(0, 15))}
           </Typography>
 
           {props.heading && (
