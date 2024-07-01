@@ -288,6 +288,7 @@ export const ItemCreate = () => {
     } finally {
       if (isMounted.current) {
         setSaving(false);
+        setSaveClicked(false);
       }
     }
   };
