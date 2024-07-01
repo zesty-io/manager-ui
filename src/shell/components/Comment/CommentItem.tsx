@@ -163,19 +163,6 @@ export const CommentItem = ({
     });
   };
 
-  if (commentZUIDtoEdit === commentZUID) {
-    return (
-      <InputField
-        isEditMode
-        editModeValue={body}
-        isFirstComment={false}
-        onCancel={() => setCommentZUIDtoEdit(null)}
-        commentResourceZUID={resourceZUID}
-        parentCommentZUID={parentCommentZUID}
-      />
-    );
-  }
-
   return (
     <>
       <Box data-cy="CommentItem" id={commentZUID}>
@@ -234,19 +221,30 @@ export const CommentItem = ({
               </Tooltip>
             </Box>
           </Stack>
-          <Typography
-            variant="body2"
-            ref={commentBodyRef}
-            sx={{
-              overflowWrap: "break-word",
-              "& ul": {
-                ml: 2,
-              },
-              "& ol": {
-                ml: 2,
-              },
-            }}
-          ></Typography>
+          {commentZUIDtoEdit === commentZUID ? (
+            <InputField
+              isEditMode
+              editModeValue={body}
+              isFirstComment={false}
+              onCancel={() => setCommentZUIDtoEdit(null)}
+              commentResourceZUID={resourceZUID}
+              parentCommentZUID={parentCommentZUID}
+            />
+          ) : (
+            <Typography
+              variant="body2"
+              ref={commentBodyRef}
+              sx={{
+                overflowWrap: "break-word",
+                "& ul": {
+                  ml: 2,
+                },
+                "& ol": {
+                  ml: 2,
+                },
+              }}
+            ></Typography>
+          )}
         </Stack>
         {menuAnchorEl && (
           <Menu
