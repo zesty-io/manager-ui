@@ -33,7 +33,9 @@ const FieldsCell = ({ ZUID }: any) => {
 };
 
 const ContentItemsCell = ({ ZUID }: any) => {
-  const { data, isLoading } = useGetContentModelItemsQuery(ZUID);
+  const { data, isLoading } = useGetContentModelItemsQuery({
+    modelZUID: ZUID,
+  });
   if (isLoading) {
     return <Skeleton variant="rectangular" width="100%" />;
   }

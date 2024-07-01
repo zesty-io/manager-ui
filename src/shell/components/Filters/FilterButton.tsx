@@ -34,7 +34,11 @@ export const FilterButton: FC<FilterButton> = ({
           >
             {buttonText}
           </Button>
-          <Button size="small" onClick={onRemoveFilter}>
+          <Button
+            size="small"
+            onClick={onRemoveFilter}
+            data-cy={`${filterId}_clearFilter`}
+          >
             <CloseRoundedIcon fontSize="small" />
           </Button>
         </ButtonGroup>

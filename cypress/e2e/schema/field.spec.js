@@ -46,6 +46,11 @@ const SELECTORS = {
   SYSTEM_FIELDS: "SystemFields",
   DEFAULT_VALUE_CHECKBOX: "DefaultValueCheckbox",
   DEFAULT_VALUE_INPUT: "DefaultValueInput",
+  CHARACTER_LIMIT_CHECKBOX: "CharacterLimitCheckbox",
+  MIN_CHARACTER_LIMIT_INPUT: "MinCharacterLimitInput",
+  MAX_CHARACTER_LIMIT_INPUT: "MaxCharacterLimitInput",
+  MIN_CHARACTER_ERROR_MSG: "MinCharacterErrorMsg",
+  MAX_CHARACTER_ERROR_MSG: "MaxCharacterErrorMsg",
 };
 
 /**
@@ -109,6 +114,17 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT)
       .find("input")
       .should("have.value", "default value");
+
+    // Set min/max character limits
+    cy.getBySelector(SELECTORS.CHARACTER_LIMIT_CHECKBOX).click();
+    cy.getBySelector(SELECTORS.MAX_CHARACTER_LIMIT_INPUT).clear().type("10000");
+    cy.getBySelector(SELECTORS.MAX_CHARACTER_ERROR_MSG).should("exist");
+    cy.getBySelector(SELECTORS.MAX_CHARACTER_LIMIT_INPUT).clear().type("20");
+    cy.getBySelector(SELECTORS.MAX_CHARACTER_ERROR_MSG).should("not.exist");
+    cy.getBySelector(SELECTORS.MIN_CHARACTER_LIMIT_INPUT).clear().type("10000");
+    cy.getBySelector(SELECTORS.MIN_CHARACTER_ERROR_MSG).should("exist");
+    cy.getBySelector(SELECTORS.MIN_CHARACTER_LIMIT_INPUT).clear().type("5");
+    cy.getBySelector(SELECTORS.MIN_CHARACTER_ERROR_MSG).should("not.exist");
 
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();

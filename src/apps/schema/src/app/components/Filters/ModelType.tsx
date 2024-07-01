@@ -62,9 +62,6 @@ export const ModelType: FC<ModelTypeProps> = ({ value, onChange }) => {
               }
               key={index}
               onClick={() => handleFilterSelect(filter)}
-              sx={{
-                height: "40px",
-              }}
             >
               <ListItemIcon>
                 <SvgIcon component={modelIconMap[filter]} />

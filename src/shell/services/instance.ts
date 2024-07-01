@@ -49,6 +49,8 @@ export const instanceApi = createApi({
     "ContentItem",
     "ItemVersions",
     "HeadTags",
+    "ContentItems",
+    "ItemPublishings",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -77,6 +79,7 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       // TODO: Remove once all item publishing mutations are using rtk query
       keepUnusedDataFor: 0,
+      providesTags: ["ItemPublishings"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Create-Item-Publishing
     createItemPublishing: builder.mutation<
@@ -99,6 +102,14 @@ export const instanceApi = createApi({
       invalidatesTags: (result, error, id) => [
         { type: "ItemPublishing", id: id.itemZUID },
       ],
+    }),
+    createItemsPublishing: builder.mutation<any, any>({
+      query: ({ modelZUID, body }) => ({
+        url: `content/models/${modelZUID}/items/publishings/batch`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["ItemPublishings"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Delete-Item-Publishing
     deleteItemPublishing: builder.mutation<
@@ -175,16 +186,24 @@ export const instanceApi = createApi({
       },
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Get-All-Items
-    getContentModelItems: builder.query<ContentItem[], string>({
-      query: (ZUID) => ({
-        url: `content/models/${ZUID}/items`,
+    getContentModelItems: builder.query<
+      ContentItem[],
+      {
+        modelZUID: string;
+        params?: Record<string, string | number>;
+      }
+    >({
+      query: ({ modelZUID, params = {} }) => ({
+        url: `content/models/${modelZUID}/items`,
         params: {
           limit: 5000,
+          ...params,
         },
       }),
       transformResponse: getResponseData,
       // Restore cache when content/schema uses rtk query for mutations and can invalidate this
       keepUnusedDataFor: 0.0001,
+      providesTags: ["ContentItems"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/search/#Search
     searchContent: builder.query<ContentItem[], SearchQuery>({
@@ -540,6 +559,17 @@ export const instanceApi = createApi({
         { type: "ContentItem", id: arg.itemZUID },
       ],
     }),
+    // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Update-Item
+    updateContentItems: builder.mutation<any, { modelZUID: string; body: any }>(
+      {
+        query: ({ modelZUID, body }) => ({
+          url: `content/models/${modelZUID}/items/batch`,
+          method: "PUT",
+          body,
+        }),
+        invalidatesTags: ["ContentItems"],
+      }
+    ),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Delete-Item
     deleteContentItem: builder.mutation<
       any,
@@ -553,6 +583,20 @@ export const instanceApi = createApi({
         method: "DELETE",
       }),
       invalidatesTags: ["ContentNav"],
+    }),
+    deleteContentItems: builder.mutation<
+      any,
+      {
+        modelZUID: string;
+        body: string[];
+      }
+    >({
+      query: ({ modelZUID, body }) => ({
+        url: `content/models/${modelZUID}/items/batch`,
+        method: "DELETE",
+        body,
+      }),
+      invalidatesTags: ["ContentItems"],
     }),
     // https://www.zesty.io/docs/instances/api-reference/web/stylesheets/variables/categories/#Get-Variable-Stylesheet-Categories
     getInstanceStylesCategories: builder.query<StyleCategory[], void>({
@@ -605,4 +649,7 @@ export const {
   useCreateHeadTagMutation,
   useDeleteHeadTagMutation,
   useGetInstanceStylesCategoriesQuery,
+  useUpdateContentItemsMutation,
+  useCreateItemsPublishingMutation,
+  useDeleteContentItemsMutation,
 } = instanceApi;

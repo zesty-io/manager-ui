@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 /* 
   This hook serves to easily retrieve and add url parameters to the url.
@@ -14,18 +14,21 @@ export const useParams: () => UseParams = () => {
     [location.search]
   );
 
-  const setParams = (val: string, name: string) => {
-    if (val) {
-      params.set(name, val);
-    } else {
-      params.delete(name);
-    }
+  const setParams = useCallback(
+    (val: string | null, name: string) => {
+      if (val) {
+        params.set(name, val);
+      } else {
+        params.delete(name);
+      }
 
-    history.replace({
-      pathname: location.pathname,
-      search: params.toString(),
-    });
-  };
+      history.replace({
+        pathname: location.pathname,
+        search: params.toString(),
+      });
+    },
+    [history, location.pathname, params]
+  );
 
   return [params, setParams];
 };

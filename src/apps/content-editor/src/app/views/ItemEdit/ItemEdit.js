@@ -223,11 +223,14 @@ export default function ItemEdit() {
   }
 
   async function save() {
-    setSaving(true);
     setSaveClicked(true);
+
+    if (hasErrors) return;
+
+    setSaving(true);
     try {
       const res = await dispatch(saveItem(itemZUID));
-      if (res.err === "MISSING_REQUIRED") {
+      if (res.err === "VALIDATION_ERROR") {
         const missingRequiredFieldNames = res.missingRequired?.reduce(
           (acc, curr) => {
             acc = [curr.name, ...acc];
@@ -236,9 +239,9 @@ export default function ItemEdit() {
           []
         );
 
-        if (missingRequiredFieldNames?.length) {
-          const errors = cloneDeep(fieldErrors);
+        const errors = cloneDeep(fieldErrors);
 
+        if (missingRequiredFieldNames?.length) {
           missingRequiredFieldNames?.forEach((fieldName) => {
             errors[fieldName] = {
               ...(errors[fieldName] ?? {}),
@@ -246,16 +249,45 @@ export default function ItemEdit() {
             };
           });
 
-          setFieldErrors(errors);
+          dispatch(
+            notify({
+              heading: `Cannot Save: ${item.web.metaTitle}`,
+              message: "Missing Data in Required Fields",
+              kind: "error",
+            })
+          );
         }
 
-        dispatch(
-          notify({
-            heading: `Cannot Save: ${item.web.metaTitle}`,
-            message: "Missing Data in Required Fields",
-            kind: "error",
-          })
-        );
+        // Map min length validation errors
+        if (res.lackingCharLength?.length) {
+          res.lackingCharLength?.forEach((field) => {
+            errors[field.name] = {
+              ...(errors[field.name] ?? {}),
+              LACKING_MINLENGTH: field.settings?.minCharLimit,
+            };
+          });
+        }
+
+        if (res.regexPatternMismatch?.length) {
+          res.regexPatternMismatch?.forEach((field) => {
+            errors[field.name] = {
+              ...(errors[field.name] ?? {}),
+              REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
+            };
+          });
+        }
+
+        if (res.regexRestrictPatternMatch?.length) {
+          res.regexRestrictPatternMatch?.forEach((field) => {
+            errors[field.name] = {
+              ...(errors[field.name] ?? {}),
+              REGEX_RESTRICT_PATTERN_MATCH:
+                field.settings?.regexRestrictErrorMessage,
+            };
+          });
+        }
+
+        setFieldErrors(errors);
         return;
       }
       if (res.status === 400) {
@@ -288,6 +320,7 @@ export default function ItemEdit() {
     } finally {
       if (isMounted.current) {
         setSaving(false);
+        setSaveClicked(false);
       }
     }
   }
@@ -443,7 +476,11 @@ export default function ItemEdit() {
                 />
                 <Route
                   exact
-                  path="/content/:modelZUID/:itemZUID"
+                  path={[
+                    "/content/:modelZUID/:itemZUID",
+                    "/content/:modelZUID/:itemZUID/comment/:resourceZUID",
+                    "/content/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
+                  ]}
                   render={() => (
                     <Content
                       instance={instance}

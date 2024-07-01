@@ -7,12 +7,14 @@ import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
 export interface FieldTypeSortProps
   extends Omit<OutlinedTextFieldProps, "variant"> {
   value: string;
+  height?: number;
 }
 
 export const FieldTypeSort = ({
   value,
   InputProps,
   onChange,
+  height,
   ...props
 }: FieldTypeSortProps) => {
   const modifyValue = (action: "increment" | "decrement") => {
@@ -82,6 +84,7 @@ export const FieldTypeSort = ({
         width: "fit-content",
 
         "& .MuiInputBase-input.MuiOutlinedInput-input": {
+          height: height ?? "auto",
           width: value?.length + "ch",
         },
       }}

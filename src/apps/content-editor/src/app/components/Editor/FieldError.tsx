@@ -4,10 +4,51 @@ import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
 import { theme } from "@zesty-io/material";
 import { Error } from "./Field/FieldShell";
 import { ContentModelField } from "../../../../../../shell/services/types";
+import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
 type FieldErrorProps = {
   errors: Record<string, Error>;
   fields: ContentModelField[];
+};
+
+const getErrorMessage = (errors: Error) => {
+  const errorMessages = [];
+
+  if (errors?.MISSING_REQUIRED) {
+    errorMessages.push("Required Field. Please enter a value.");
+  }
+
+  if (errors?.EXCEEDING_MAXLENGTH > 0) {
+    errorMessages.push(
+      `Exceeding by ${errors.EXCEEDING_MAXLENGTH} ${pluralizeWord(
+        "character",
+        errors.EXCEEDING_MAXLENGTH
+      )}.`
+    );
+  }
+
+  if (errors?.LACKING_MINLENGTH > 0) {
+    errorMessages.push(
+      `Requires ${errors.LACKING_MINLENGTH} more ${pluralizeWord(
+        "character",
+        errors.LACKING_MINLENGTH
+      )}.`
+    );
+  }
+
+  if (errors?.REGEX_PATTERN_MISMATCH) {
+    errorMessages.push(errors.REGEX_PATTERN_MISMATCH);
+  }
+
+  if (errors?.REGEX_RESTRICT_PATTERN_MATCH) {
+    errorMessages.push(errors.REGEX_RESTRICT_PATTERN_MATCH);
+  }
+
+  if (errors?.CUSTOM_ERROR) {
+    errorMessages.push(errors.CUSTOM_ERROR);
+  }
+
+  return errorMessages;
 };
 
 export const FieldError = ({ errors, fields }: FieldErrorProps) => {
@@ -23,22 +64,14 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
   }, []);
 
   const fieldErrors = useMemo(() => {
-    const errorMap = Object.entries(errors)?.map(([name, errors]) => {
-      let errorMessage = "";
-
-      if (errors?.MISSING_REQUIRED) {
-        errorMessage = "Required Field. Please enter a value.";
-      } else if (errors?.EXCEEDING_MAXLENGTH > 0) {
-        errorMessage = `Exceeding by ${errors.EXCEEDING_MAXLENGTH} characters.`;
-      } else {
-        errorMessage = "";
-      }
+    const errorMap = Object.entries(errors)?.map(([name, errorDetails]) => {
+      const errorMessages = getErrorMessage(errorDetails);
 
       const fieldData = fields?.find((field) => field.name === name);
 
       return {
         label: fieldData?.label,
-        errorMessage,
+        errorMessages,
         sort: fieldData?.sort,
         ZUID: fieldData?.ZUID,
       };
@@ -47,7 +80,9 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
     return errorMap.sort((a, b) => a.sort - b.sort);
   }, [errors, fields]);
 
-  const fieldsWithErrors = fieldErrors?.filter((error) => error.errorMessage);
+  const fieldsWithErrors = fieldErrors?.filter(
+    (error) => error.errorMessages.length > 0
+  );
 
   const handleErrorClick = (fieldZUID: string) => {
     const fieldElement = document.getElementById(fieldZUID);
@@ -57,6 +92,7 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
   return (
     <ThemeProvider theme={theme}>
       <Stack
+        data-cy="FieldErrorsList"
         ref={errorContainerEl}
         p={2}
         gap={1}
@@ -73,7 +109,7 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
         </Typography>
         <Box component="ol" ml={2}>
           {fieldErrors?.map((error, index) => {
-            if (error.errorMessage) {
+            if (error.errorMessages.length > 0) {
               return (
                 <Typography key={index} variant="body2" component="li">
                   <Box
@@ -88,8 +124,16 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
                     onClick={() => handleErrorClick(error.ZUID)}
                   >
                     {error.label}
-                  </Box>{" "}
-                  - <i>{error.errorMessage}</i>
+                  </Box>
+                  {error.errorMessages.length === 1 ? (
+                    <i> - {error.errorMessages[0]}</i>
+                  ) : (
+                    <Box component="ul" sx={{ pl: 3, listStyleType: "disc" }}>
+                      {error.errorMessages.map((msg, idx) => (
+                        <li key={idx}>{msg}</li>
+                      ))}
+                    </Box>
+                  )}
                 </Typography>
               );
             }

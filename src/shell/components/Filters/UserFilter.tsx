@@ -1,4 +1,4 @@
-import { FC, useState, useMemo } from "react";
+import { FC, useState, useMemo, useRef } from "react";
 import {
   Menu,
   MenuItem,
@@ -10,6 +10,8 @@ import {
   IconButton,
   ListSubheader,
   ListItem,
+  Box,
+  MenuList,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -32,6 +34,7 @@ export const UserFilter: FC<UserFilterProps> = ({
   defaultButtonText = "Created By",
   options,
 }) => {
+  const userListRef = useRef<HTMLUListElement>(null);
   const [filter, setFilter] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
@@ -101,15 +104,31 @@ export const UserFilter: FC<UserFilterProps> = ({
             maxHeight: 420,
             width: 320,
             mt: 1,
+            overflow: "hidden",
           },
         }}
         MenuListProps={{
           sx: {
-            pt: 0,
-            pb: 1,
+            py: 0,
           },
         }}
         autoFocus={false}
+        onKeyDown={(evt) => {
+          evt.preventDefault();
+          evt.stopPropagation();
+
+          if (evt.key === "ArrowDown") {
+            userListRef.current?.querySelector("li")?.focus();
+            return;
+          }
+
+          if (evt.key === "ArrowUp") {
+            userListRef.current
+              ?.querySelector<HTMLLIElement>("li:last-of-type")
+              ?.focus();
+            return;
+          }
+        }}
       >
         <ListSubheader
           onKeyDown={(e: React.KeyboardEvent) => {
@@ -151,35 +170,54 @@ export const UserFilter: FC<UserFilterProps> = ({
         </ListSubheader>
 
         {!filteredUsers?.length && Boolean(filter) && (
-          <ListItem>
+          <ListItem sx={{ pb: 2 }}>
             <ListItemText>No users found</ListItemText>
           </ListItem>
         )}
 
-        {filteredUsers?.map((user) => {
-          return (
-            <MenuItem
-              key={user?.ZUID}
-              onClick={() => handleFilterSelect(user?.ZUID)}
-              selected={value ? value === user?.ZUID : false}
-              sx={{
-                height: "52px",
-              }}
-              data-cy={`filter_value_${user?.ZUID}`}
-            >
-              <ListItemAvatar>
-                <Avatar
-                  src={`https://www.gravatar.com/avatar/${MD5(
-                    user?.email
-                  )}?d=mm&s=40`}
-                />
-              </ListItemAvatar>
-              <ListItemText>
-                {user?.firstName} {user?.lastName}
-              </ListItemText>
-            </MenuItem>
-          );
-        })}
+        {!!filteredUsers?.length && (
+          <MenuList
+            ref={userListRef}
+            sx={{
+              overflowY: "auto",
+              maxHeight: 360,
+              pt: 0,
+            }}
+            onKeyDown={(evt) => {
+              evt.preventDefault();
+              evt.stopPropagation();
+
+              if (evt.key === "Escape") {
+                setMenuAnchorEl(null);
+              }
+            }}
+          >
+            {filteredUsers.map((user) => {
+              return (
+                <MenuItem
+                  key={user?.ZUID}
+                  onClick={() => handleFilterSelect(user?.ZUID)}
+                  selected={value ? value === user?.ZUID : false}
+                  sx={{
+                    height: "52px",
+                  }}
+                  data-cy={`filter_value_${user?.ZUID}`}
+                >
+                  <ListItemAvatar>
+                    <Avatar
+                      src={`https://www.gravatar.com/avatar/${MD5(
+                        user?.email
+                      )}?d=mm&s=40`}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText>
+                    {user?.firstName} {user?.lastName}
+                  </ListItemText>
+                </MenuItem>
+              );
+            })}
+          </MenuList>
+        )}
       </Menu>
     </FilterButton>
   );

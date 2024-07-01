@@ -41,7 +41,13 @@ export type FieldNames =
   | "group_id"
   | "limit"
   | "tooltip"
-  | "defaultValue";
+  | "defaultValue"
+  | "maxCharLimit"
+  | "minCharLimit"
+  | "regexMatchPattern"
+  | "regexMatchErrorMessage"
+  | "regexRestrictPattern"
+  | "regexRestrictErrorMessage";
 type FieldType =
   | "input"
   | "checkbox"

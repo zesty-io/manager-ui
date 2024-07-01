@@ -171,7 +171,8 @@ export const ContentNav = () => {
 
       setClippingsZUID(clippingsModel?.ZUID ?? "");
 
-      if (!!granularRoles?.length) {
+      // Only filter content items by granular roles if there is at least one granular role that target content items
+      if (granularRoles?.some((zuid) => zuid?.startsWith("7-"))) {
         // Filter nav based on user's granular role access
         filteredNavData = filteredNavData.filter((navItem) => {
           return granularRoles.includes(navItem.ZUID);
