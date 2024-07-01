@@ -132,6 +132,16 @@ export const MentionList = forwardRef(
         sx={{
           zIndex: theme.zIndex.modal,
         }}
+        popperOptions={{
+          modifiers: [
+            {
+              name: "offset",
+              options: {
+                offset: [0, 1],
+              },
+            },
+          ],
+        }}
       >
         <Paper
           elevation={8}
@@ -149,6 +159,11 @@ export const MentionList = forwardRef(
                 key={user.ZUID}
                 selected={selectedUserIndex === index}
                 onClick={() => onUserSelected(user.email)}
+                sx={{
+                  "&.Mui-selected": {
+                    backgroundColor: "action.hover",
+                  },
+                }}
               >
                 <ListItemAvatar>
                   <Avatar
