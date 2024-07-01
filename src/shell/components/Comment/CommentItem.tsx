@@ -111,7 +111,7 @@ export const CommentItem = ({
 
       commentBodyRef.current.innerHTML = hyperlinkedContent;
     }
-  }, [body, commentBodyRef]);
+  }, [body, commentBodyRef, commentZUIDtoEdit]);
 
   useEffect(() => {
     if (isCommentDeleted || isReplyDeleted) {
