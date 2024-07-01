@@ -37,9 +37,17 @@ export const MentionList = forwardRef(
     const listRef = useRef<HTMLUListElement>();
 
     const sortedUsers = useMemo(() => {
+      const _filterKeyword = filterKeyword?.toLowerCase();
+
       return [...users]
         ?.sort((userA, userB) => userA.firstName.localeCompare(userB.firstName))
-        .filter((user) => user.email.includes(filterKeyword));
+        .filter(
+          (user) =>
+            user.email?.toLowerCase()?.includes(_filterKeyword) ||
+            `${user.firstName} ${user.lastName}`
+              ?.toLowerCase()
+              ?.includes(_filterKeyword)
+        );
     }, [users, filterKeyword]);
 
     useEffect(() => {
@@ -124,6 +132,16 @@ export const MentionList = forwardRef(
         sx={{
           zIndex: theme.zIndex.modal,
         }}
+        popperOptions={{
+          modifiers: [
+            {
+              name: "offset",
+              options: {
+                offset: [0, 1],
+              },
+            },
+          ],
+        }}
       >
         <Paper
           elevation={8}
@@ -141,6 +159,11 @@ export const MentionList = forwardRef(
                 key={user.ZUID}
                 selected={selectedUserIndex === index}
                 onClick={() => onUserSelected(user.email)}
+                sx={{
+                  "&.Mui-selected": {
+                    backgroundColor: "action.hover",
+                  },
+                }}
               >
                 <ListItemAvatar>
                   <Avatar

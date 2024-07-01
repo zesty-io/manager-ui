@@ -16,6 +16,7 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import moment from "moment";
 import { useLocation, useParams } from "react-router";
 import { useSelector } from "react-redux";
@@ -52,6 +53,7 @@ type CommentItemProps = {
   createdOn: string;
   parentCommentZUID: string;
   withResolveButton?: boolean;
+  withReopenButton?: boolean;
   onParentCommentDeleted: () => void;
 };
 export const CommentItem = ({
@@ -61,6 +63,7 @@ export const CommentItem = ({
   createdOn,
   parentCommentZUID,
   withResolveButton,
+  withReopenButton,
   onParentCommentDeleted,
 }: CommentItemProps) => {
   const { resourceZUID } = useParams<PathParams>();
@@ -108,7 +111,7 @@ export const CommentItem = ({
 
       commentBodyRef.current.innerHTML = hyperlinkedContent;
     }
-  }, [body, commentBodyRef]);
+  }, [body, commentBodyRef, commentZUIDtoEdit]);
 
   useEffect(() => {
     if (isCommentDeleted || isReplyDeleted) {
@@ -151,27 +154,14 @@ export const CommentItem = ({
     }
   };
 
-  const handleUpdateCommentStatus = () => {
+  const handleUpdateCommentStatus = (isResolved: boolean) => {
     updateCommentStatus({
       resourceZUID,
       commentZUID,
       parentCommentZUID,
-      isResolved: true,
+      isResolved,
     });
   };
-
-  if (commentZUIDtoEdit === commentZUID) {
-    return (
-      <InputField
-        isEditMode
-        editModeValue={body}
-        isFirstComment={false}
-        onCancel={() => setCommentZUIDtoEdit(null)}
-        commentResourceZUID={resourceZUID}
-        parentCommentZUID={parentCommentZUID}
-      />
-    );
-  }
 
   return (
     <>
@@ -209,7 +199,7 @@ export const CommentItem = ({
                     data-cy="ResolveCommentButton"
                     color="primary"
                     size="small"
-                    onClick={handleUpdateCommentStatus}
+                    onClick={() => handleUpdateCommentStatus(true)}
                     disabled={isUpdatingCommentStatus}
                   >
                     <CheckRoundedIcon fontSize="small" />
@@ -231,11 +221,30 @@ export const CommentItem = ({
               </Tooltip>
             </Box>
           </Stack>
-          <Typography
-            variant="body2"
-            ref={commentBodyRef}
-            sx={{ overflowWrap: "break-word" }}
-          ></Typography>
+          {commentZUIDtoEdit === commentZUID ? (
+            <InputField
+              isEditMode
+              editModeValue={body}
+              isFirstComment={false}
+              onCancel={() => setCommentZUIDtoEdit(null)}
+              commentResourceZUID={resourceZUID}
+              parentCommentZUID={parentCommentZUID}
+            />
+          ) : (
+            <Typography
+              variant="body2"
+              ref={commentBodyRef}
+              sx={{
+                overflowWrap: "break-word",
+                "& ul": {
+                  ml: 2,
+                },
+                "& ol": {
+                  ml: 2,
+                },
+              }}
+            ></Typography>
+          )}
         </Stack>
         {menuAnchorEl && (
           <Menu
@@ -278,6 +287,19 @@ export const CommentItem = ({
               </ListItemIcon>
               <ListItemText>Copy Link</ListItemText>
             </MenuItem>
+            {withReopenButton && (
+              <MenuItem
+                onClick={() => {
+                  setMenuAnchorEl(null);
+                  handleUpdateCommentStatus(false);
+                }}
+              >
+                <ListItemIcon>
+                  <RestartAltRoundedIcon />
+                </ListItemIcon>
+                <ListItemText>Re-open</ListItemText>
+              </MenuItem>
+            )}
             {isLoggedInUserCommentCreator && (
               <MenuItem
                 data-cy="DeleteCommentButton"
