@@ -243,6 +243,8 @@ export const InputField = ({
                   }
                 });
               },
+
+              content_style: "ul, ol { margin-left: 16px }",
             }}
             onClick={() => {
               // Removes the placeholder
@@ -263,6 +265,7 @@ export const InputField = ({
               // Checks if the mention list should be opened or not
               if (evt.key === "@") {
                 setTimeout(() => {
+                  setUserFilterKeyword("");
                   setMentionListAnchorEl(inputRef.current);
                 });
               }
@@ -294,7 +297,7 @@ export const InputField = ({
               if (
                 (evt.key === "ArrowLeft" ||
                   evt.key === "ArrowRight" ||
-                  evt.key === " ") &&
+                  evt.key === "Escape") &&
                 !!mentionListAnchorEl
               ) {
                 setMentionListAnchorEl(null);
@@ -354,26 +357,29 @@ export const InputField = ({
         justifyContent="end"
         mt={1.5}
       >
-        <Button
-          variant="outlined"
-          color="inherit"
-          size="small"
-          onClick={onCancel}
-          disabled={isLoading}
-        >
-          Cancel
-        </Button>
-        <LoadingButton
-          data-cy="SubmitNewComment"
-          variant="contained"
-          color="primary"
-          size="small"
-          onClick={isEditMode ? handleUpdate : handleSubmit}
-          disabled={!inputValue}
-          loading={isLoading}
-        >
-          {getPrimaryButtonText()}
-        </LoadingButton>
+        {inputValue && inputValue !== PLACEHOLDER && (
+          <>
+            <Button
+              variant="outlined"
+              color="inherit"
+              size="small"
+              onClick={onCancel}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <LoadingButton
+              data-cy="SubmitNewComment"
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={isEditMode ? handleUpdate : handleSubmit}
+              loading={isLoading}
+            >
+              {getPrimaryButtonText()}
+            </LoadingButton>
+          </>
+        )}
       </Stack>
     </>
   );
