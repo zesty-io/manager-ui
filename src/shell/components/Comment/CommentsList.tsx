@@ -6,6 +6,8 @@ import {
   PopperPlacementType,
   Stack,
   Skeleton,
+  Avatar,
+  Typography,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { Fragment, useContext, useEffect, useRef, useState } from "react";
@@ -15,6 +17,10 @@ import { InputField } from "./InputField";
 import { useGetCommentThreadQuery } from "../../services/accounts";
 import { CommentContext } from "../../contexts/CommentProvider";
 import { useParams } from "react-router";
+import { User } from "../../services/types";
+import { useSelector } from "react-redux";
+import { AppState } from "../../store/types";
+import { MD5 } from "../../../utility/md5";
 
 type PathParams = {
   modelZUID: string;
@@ -41,6 +47,7 @@ export const CommentsList = ({
   const [placement, setPlacement] =
     useState<PopperPlacementType>("bottom-start");
   const topOffsetRef = useRef<HTMLDivElement>();
+  const loggedInUser: User = useSelector((state: AppState) => state.user);
 
   const { data: commentThread, isLoading: isLoadingCommentThread } =
     useGetCommentThreadQuery(
@@ -152,6 +159,7 @@ export const CommentsList = ({
                   email: comment.createdByUserEmail,
                 }}
                 withResolveButton={index === 0 && !isResolved}
+                withReopenButton={index === 0 && isResolved}
                 parentCommentZUID={parentCommentZUID}
                 onParentCommentDeleted={onClose}
               />
@@ -160,6 +168,28 @@ export const CommentsList = ({
               )}
             </Fragment>
           ))}
+          {!commentThread?.length && !isLoadingCommentThread && (
+            <Stack flex={1} direction="row" gap={1.5} alignItems="center">
+              <Avatar
+                sx={{ width: 32, height: 32 }}
+                src={`https://www.gravatar.com/avatar/${MD5(
+                  loggedInUser?.email || ""
+                )}?s=32`}
+              />
+              <Stack>
+                <Typography fontWeight={700} variant="body2">
+                  {loggedInUser?.firstName} {loggedInUser?.lastName}
+                </Typography>
+                <Typography
+                  variant="body3"
+                  fontWeight={600}
+                  color="text.secondary"
+                >
+                  right now
+                </Typography>
+              </Stack>
+            </Stack>
+          )}
           {!commentZUIDtoEdit && (
             <InputField
               isFirstComment={!commentThread?.length}
