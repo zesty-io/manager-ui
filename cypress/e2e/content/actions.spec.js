@@ -50,7 +50,7 @@ describe("Actions in content editor", () => {
     cy.get("[data-cy=toast]").contains("Item Saved: New Schema All Fields");
   });
 
-  it.only("Must not save when regex is not matched", () => {
+  it("Must not save when regex is not matched", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-a4f5f1beaa-zc5l6v/7-ce9ca8cfb0-cc1mnz");
     });
