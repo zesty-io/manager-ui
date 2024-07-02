@@ -280,6 +280,7 @@ export const FileModal: FC<Props> = ({
               title={data.title}
               groupId={data.group_id}
               createdAt={data.created_at}
+              updatedAt={data.updated_at}
               binId={data.bin_id}
               setShowEdit={setShowEdit}
               onOpenReplaceFileModal={() => {

@@ -60,6 +60,7 @@ interface Props {
     role?: string;
   };
   createdAt?: string;
+  updatedAt?: string;
   handleCloseModal: () => void;
   setShowEdit: (show: boolean) => void;
   onOpenReplaceFileModal: () => void;
@@ -74,6 +75,7 @@ export const FileModalContent: FC<Props> = ({
   title,
   user,
   createdAt,
+  updatedAt,
   handleCloseModal,
   setShowEdit,
   onOpenReplaceFileModal,
@@ -493,9 +495,7 @@ export const FileModalContent: FC<Props> = ({
           />
         </Box>
         <Box sx={{ mt: 3 }}>
-          <Typography color="text.secondary" sx={{ mt: 1 }} variant="body3">
-            UPLOADED ON
-          </Typography>
+          <Typography variant="body2">Uploaded On</Typography>
           <Box sx={{ display: "flex", mt: 1 }}>
             <Box
               sx={{
@@ -504,18 +504,18 @@ export const FileModalContent: FC<Props> = ({
                 alignItems: "center",
               }}
             >
-              <CalendarTodayIcon sx={{ color: "#101828", opacity: "0.4" }} />
+              <CalendarTodayIcon sx={{ color: "action.active" }} />
             </Box>
-            <Box sx={{ pl: 3 }}>
+            <Box sx={{ pl: 2 }}>
               <Typography variant="body2">
                 {moment(createdAt).format("LL")}
               </Typography>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 {moment(createdAt).calendar(null, {
-                  lastDay: "[Yesterday] [at] h:mm A ",
-                  sameDay: "[Today] [at] h:mm A ",
-                  lastWeek: "dddd [at] h:mm A ",
-                  sameElse: "dddd [at] h:mm A ",
+                  lastDay: "[Yesterday][,] h:mm A ",
+                  sameDay: "[Today][,] h:mm A ",
+                  lastWeek: "ddd[,] h:mm A ",
+                  sameElse: "ddd[,] h:mm A ",
                 })}
                 {new Date(createdAt)
                   .toLocaleDateString("en-US", {
@@ -527,6 +527,42 @@ export const FileModalContent: FC<Props> = ({
             </Box>
           </Box>
         </Box>
+        {/* TODO: Still pending confirmation about the data to render here since updated_at gets changed even if the user just renames the file */}
+        {/* {!!updatedAt && (
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="body2">Replaced On</Typography>
+            <Box sx={{ display: "flex", mt: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <CalendarTodayIcon sx={{ color: "action.active" }} />
+              </Box>
+              <Box sx={{ pl: 2 }}>
+                <Typography variant="body2">
+                  {moment(updatedAt).format("LL")}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  {moment(updatedAt).calendar(null, {
+                    lastDay: "[Yesterday][,] h:mm A ",
+                    sameDay: "[Today][,] h:mm A ",
+                    lastWeek: "ddd[,] h:mm A ",
+                    sameElse: "ddd[,] h:mm A ",
+                  })}
+                  {new Date(updatedAt)
+                    .toLocaleDateString("en-US", {
+                      day: "2-digit",
+                      timeZoneName: "short",
+                    })
+                    .slice(4)}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        )} */}
       </Box>
     </Box>
   );
