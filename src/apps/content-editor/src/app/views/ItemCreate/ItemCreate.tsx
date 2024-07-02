@@ -79,7 +79,6 @@ export const ItemCreate = () => {
   const [willRedirect, setWillRedirect] = useState(true);
   const [fieldErrors, setFieldErrors] = useState<FieldError>({});
   const [saveClicked, setSaveClicked] = useState(false);
-  const [skipNewItemGeneration, setSkipNewItemGeneration] = useState(false);
 
   const [
     createPublishing,
@@ -102,10 +101,11 @@ export const ItemCreate = () => {
 
   // if item doesn't exist, generate a new one
   useEffect(() => {
-    if (isEmpty(item) && !skipNewItemGeneration) {
+    if (isEmpty(item) && !saving) {
+      console.log("generate new draft");
       dispatch(generateItem(modelZUID));
     }
-  }, [modelZUID, item, skipNewItemGeneration]);
+  }, [modelZUID, item, saving]);
 
   // Redirect to the item once published
   useEffect(() => {
@@ -147,9 +147,6 @@ export const ItemCreate = () => {
   };
 
   const save = async (action: ActionAfterSave) => {
-    // We don't want a new draft created when these actions are made
-    setSkipNewItemGeneration(action === "" || action === "publishNow");
-
     setSaving(true);
     setSaveClicked(true);
     try {
