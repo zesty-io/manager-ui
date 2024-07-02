@@ -102,7 +102,6 @@ export const ItemCreate = () => {
   // if item doesn't exist, generate a new one
   useEffect(() => {
     if (isEmpty(item) && !saving) {
-      console.log("generate new draft");
       dispatch(generateItem(modelZUID));
     }
   }, [modelZUID, item, saving]);
