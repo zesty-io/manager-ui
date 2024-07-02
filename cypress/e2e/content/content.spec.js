@@ -217,7 +217,7 @@ describe("Content Specs", () => {
         .clear()
         .type("{rightArrow}12");
 
-      cy.get("#12-4e1914-kcqznz button").first().click();
+      cy.get("#12-4e1914-kcqznz button").eq(1).click();
 
       cy.get("#12-4e1914-kcqznz input[type='text']").should("have.value", "11");
 
