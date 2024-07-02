@@ -12,6 +12,7 @@ import {
   Tab,
   Button,
   Grid,
+  Stack,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
@@ -48,12 +49,21 @@ import {
   FieldSettings,
   ContentModelFieldValue,
   FieldSettingsOptions,
+  ContentModelFieldDataType,
 } from "../../../../../../../shell/services/types";
-import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
+import {
+  FIELD_COPY_CONFIG,
+  TYPE_TEXT,
+  FORM_CONFIG,
+  FieldType,
+} from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { DefaultValue } from "../DefaultValue";
+import { CharacterLimit } from "../CharacterLimit";
+import { Rules } from "./Rules";
+import { MaxLengths } from "../../../../../../content-editor/src/app/components/Editor/Editor";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -63,11 +73,11 @@ export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
 export interface FormData {
   [key: string]: FormValue;
 }
-interface Errors {
+export interface Errors {
   [key: string]: string | [string, string][];
 }
 interface Props {
-  type: string;
+  type: ContentModelFieldDataType;
   name: string;
   onModalClose: () => void;
   onBackClick?: () => void;
@@ -197,6 +207,18 @@ export const FieldForm = ({
             fieldData.settings.defaultValue !== undefined
               ? fieldData.settings.defaultValue
               : null;
+        } else if (field.name === "minCharLimit") {
+          formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
+        } else if (field.name === "maxCharLimit") {
+          formFields["maxCharLimit"] = fieldData.settings?.maxCharLimit ?? null;
+        } else if (field.name === "regexMatchPattern") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "regexMatchErrorMessage") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "regexRestrictPattern") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "regexRestrictErrorMessage") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -214,7 +236,15 @@ export const FieldForm = ({
         } else if (field.type === "toggle_options") {
           formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
         } else {
-          if (field.name === "defaultValue") {
+          if (
+            field.name === "defaultValue" ||
+            field.name === "minCharLimit" ||
+            field.name === "maxCharLimit" ||
+            field.name === "regexMatchPattern" ||
+            field.name === "regexMatchErrorMessage" ||
+            field.name === "regexRestrictPattern" ||
+            field.name === "regexRestrictErrorMessage"
+          ) {
             formFields[field.name] = null;
           } else {
             formFields[field.name] = "";
@@ -283,7 +313,76 @@ export const FieldForm = ({
       ) {
         newErrorsObj[inputName] = "Required Field. Please enter a value.";
       }
-      if (inputName in errors && inputName !== "defaultValue") {
+
+      if (type === "text" || type === "textarea") {
+        if (inputName === "minCharLimit" && !isNaN(+formData.minCharLimit)) {
+          if ((formData.minCharLimit as number) > MaxLengths[type]) {
+            newErrorsObj[
+              inputName
+            ] = `Cannot exceed ${MaxLengths[type]} characters`;
+          } else if (formData.minCharLimit > formData.maxCharLimit) {
+            newErrorsObj[inputName] = "Cannot exceed maximum character count";
+          }
+        }
+
+        if (
+          inputName === "maxCharLimit" &&
+          !isNaN(+formData.maxCharLimit) &&
+          (formData.maxCharLimit as number) > MaxLengths[type]
+        ) {
+          newErrorsObj[
+            inputName
+          ] = `Cannot exceed ${MaxLengths[type]} characters`;
+        }
+
+        if (inputName === "regexMatchPattern" && formData.regexMatchPattern) {
+          try {
+            new RegExp(formData.regexMatchPattern as string);
+          } catch (e) {
+            newErrorsObj[inputName] = "Invalid regex pattern";
+          }
+        }
+
+        if (
+          inputName === "regexMatchErrorMessage" &&
+          formData.regexMatchPattern !== null &&
+          formData.regexMatchErrorMessage === ""
+        ) {
+          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+        }
+
+        if (
+          inputName === "regexRestrictPattern" &&
+          formData.regexRestrictPattern
+        ) {
+          try {
+            new RegExp(formData.regexRestrictPattern as string);
+          } catch (e) {
+            newErrorsObj[inputName] = "Invalid regex pattern";
+          }
+        }
+
+        if (
+          inputName === "regexRestrictErrorMessage" &&
+          formData.regexRestrictPattern !== null &&
+          formData.regexRestrictErrorMessage === ""
+        ) {
+          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+        }
+      }
+
+      if (
+        inputName in errors &&
+        ![
+          "defaultValue",
+          "minCharLimit",
+          "maxCharLimit",
+          "regexMatchPattern",
+          "regexRestrictPattern",
+          "regexMatchErrorMessage",
+          "regexRestrictErrorMessage",
+        ].includes(inputName)
+      ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
           (field) => field.name === inputName
         );
@@ -376,7 +475,15 @@ export const FieldForm = ({
     if (hasErrors) {
       // Switch the active tab to details to show the user the errors if
       // they're not on the details tab and they clicked the submit button
-      if (errors.defaultValue) {
+      if (
+        errors.defaultValue ||
+        errors.minCharLimit ||
+        errors.maxCharLimit ||
+        errors.regexMatchPattern ||
+        errors.regexMatchErrorMessage ||
+        errors.regexRestrictPattern ||
+        errors.regexRestrictErrorMessage
+      ) {
         setActiveTab("rules");
       } else {
         setActiveTab("details");
@@ -404,6 +511,25 @@ export const FieldForm = ({
           tooltip: formData.tooltip as string,
         }),
         defaultValue: formData.defaultValue as string,
+        ...(formData.maxCharLimit !== null && {
+          maxCharLimit: formData.maxCharLimit as number,
+        }),
+        ...(formData.minCharLimit !== null && {
+          minCharLimit: formData.minCharLimit as number,
+        }),
+        ...(formData.regexMatchPattern && {
+          regexMatchPattern: formData.regexMatchPattern as string,
+        }),
+        ...(formData.regexMatchErrorMessage && {
+          regexMatchErrorMessage: formData.regexMatchErrorMessage as string,
+        }),
+        ...(formData.regexRestrictPattern && {
+          regexRestrictPattern: formData.regexRestrictPattern as string,
+        }),
+        ...(formData.regexRestrictErrorMessage && {
+          regexRestrictErrorMessage:
+            formData.regexRestrictErrorMessage as string,
+        }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
@@ -661,39 +787,16 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && type === "images" && (
-          <MediaRules
-            fieldConfig={FORM_CONFIG["images"].rules}
-            onDataChange={handleFieldDataChange}
-            groups={mediaFoldersOptions}
-            fieldData={{
-              limit: formData["limit"],
-              group_id: formData["group_id"],
-            }}
-          />
-        )}
-
-        {activeTab === "rules" && type === "uuid" && <ComingSoon />}
-
-        {activeTab === "rules" && type !== "uuid" && (
-          <DefaultValue
+        {activeTab === "rules" && (
+          <Rules
             type={type}
-            value={formData["defaultValue"]}
-            onChange={(value) => {
-              handleFieldDataChange({ inputName: "defaultValue", value });
-            }}
+            onFieldDataChanged={handleFieldDataChange}
+            mediaFoldersOptions={mediaFoldersOptions}
+            formData={formData}
+            isSubmitClicked={isSubmitClicked}
+            errors={errors}
             isDefaultValueEnabled={isDefaultValueEnabled}
             setIsDefaultValueEnabled={setIsDefaultValueEnabled}
-            error={isSubmitClicked && (errors["defaultValue"] as string)}
-            mediaRules={{
-              limit: formData["limit"],
-              group_id: formData["group_id"],
-            }}
-            relationshipFields={{
-              relatedModelZUID: formData["relatedModelZUID"] as string,
-              relatedFieldZUID: formData["relatedFieldZUID"] as string,
-            }}
-            options={formData["options"] as FieldSettingsOptions[]}
           />
         )}
 

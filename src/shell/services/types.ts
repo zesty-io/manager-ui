@@ -195,6 +195,12 @@ export interface FieldSettings {
   list: boolean;
   tooltip?: string;
   defaultValue?: string;
+  minCharLimit?: number;
+  maxCharLimit?: number;
+  regexMatchPattern?: string;
+  regexMatchErrorMessage?: string;
+  regexRestrictPattern?: string;
+  regexRestrictErrorMessage?: string;
 }
 
 export type ContentModelFieldValue =
@@ -204,13 +210,35 @@ export type ContentModelFieldValue =
   | FieldSettings
   | FieldSettingsOptions[];
 
+export type ContentModelFieldDataType =
+  | "text"
+  | "wysiwyg_basic"
+  | "wysiwyg_advanced"
+  | "article_writer"
+  | "markdown"
+  | "textarea"
+  | "one_to_many"
+  | "one_to_one"
+  | "uuid"
+  | "number"
+  | "currency"
+  | "date"
+  | "datetime"
+  | "images"
+  | "yes_no"
+  | "dropdown"
+  | "link"
+  | "internal_link"
+  | "yes_no"
+  | "color";
+
 export interface ContentModelField {
   ZUID: string;
   contentModelZUID: string;
   name: string;
   label: string;
   description: string;
-  datatype: string;
+  datatype: ContentModelFieldDataType;
   sort: number;
   required?: boolean;
   relationship?: any;
@@ -503,4 +531,41 @@ export type Announcement = {
   start_date_and_time: string;
   end_date_and_time: string;
   created_at: string;
+};
+
+export type CommentResourceType = "fields" | "items";
+export type Mention = {
+  email: string;
+  userZUID: string;
+};
+
+export type Comment = {
+  ZUID: string;
+  content: string;
+  createdAt: string;
+  createdByUserEmail: string;
+  createdByUserName: string;
+  createdByUserZUID: string;
+  instanceZUID: string;
+  mentions?: Mention[];
+  replyCount?: number;
+  resolved: boolean;
+  resourceType: CommentResourceType;
+  resourceUserEmail: string;
+  resourceUserZUID: string;
+  resourceZUID: string;
+  scopeTo: string;
+  updatedAt: string;
+};
+
+export type CommentReply = {
+  ZUID: string;
+  commentZUID: string;
+  content: string;
+  createdAt: string;
+  createdByUserEmail: string;
+  createdByUserName: string;
+  createdByUserZUID: string;
+  mentions?: Mention[];
+  updatedAt: string;
 };

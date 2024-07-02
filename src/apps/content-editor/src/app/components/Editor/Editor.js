@@ -80,23 +80,19 @@ export default memo(function Editor({
         throw new Error("Input is missing name attribute");
       }
 
-      const isFieldRequired = activeFields.find(
-        (field) => field.name === name
-      )?.required;
-      const fieldDatatype = activeFields.find(
-        (field) => field.name === name
-      )?.datatype;
-      const fieldMaxLength = MaxLengths[fieldDatatype];
+      const field = activeFields?.find((field) => field.name === name);
+      const fieldMaxLength =
+        field?.settings?.maxCharLimit ?? MaxLengths[field?.datatype];
       const errors = cloneDeep(fieldErrors);
 
       // Remove the required field error message when a value has been added
-      if (isFieldRequired) {
-        if (fieldDatatype === "yes_no" && value !== null) {
+      if (field?.required) {
+        if (field?.datatype === "yes_no" && value !== null) {
           errors[name] = {
             ...(errors[name] ?? {}),
             MISSING_REQUIRED: false,
           };
-        } else if (fieldDatatype !== "yes_no" && value) {
+        } else if (field?.datatype !== "yes_no" && value) {
           errors[name] = {
             ...(errors[name] ?? {}),
             MISSING_REQUIRED: false,
@@ -113,6 +109,48 @@ export default memo(function Editor({
           };
         } else {
           errors[name] = { ...(errors[name] ?? []), EXCEEDING_MAXLENGTH: 0 };
+        }
+      }
+
+      if (field?.settings?.minCharLimit) {
+        if (value.length < field?.settings?.minCharLimit) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            LACKING_MINLENGTH: field?.settings?.minCharLimit - value.length,
+          };
+        } else {
+          errors[name] = { ...(errors[name] ?? []), LACKING_MINLENGTH: 0 };
+        }
+      }
+
+      if (field?.settings?.regexMatchPattern) {
+        const regex = new RegExp(field?.settings?.regexMatchPattern);
+        if (!regex.test(value)) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_PATTERN_MISMATCH: field?.settings?.regexMatchErrorMessage,
+          };
+        } else {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_PATTERN_MISMATCH: "",
+          };
+        }
+      }
+
+      if (field?.settings?.regexRestrictPattern) {
+        const regex = new RegExp(field?.settings?.regexRestrictPattern);
+        if (regex.test(value)) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_RESTRICT_PATTERN_MATCH:
+              field?.settings?.regexRestrictErrorMessage,
+          };
+        } else {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_RESTRICT_PATTERN_MATCH: "",
+          };
         }
       }
 
@@ -255,7 +293,10 @@ export default memo(function Editor({
                   item={item}
                   langID={item?.meta?.langID}
                   errors={fieldErrors[field.name]}
-                  maxLength={MaxLengths[field.datatype]}
+                  maxLength={
+                    field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
+                  }
+                  minLength={field.settings?.minCharLimit ?? 0}
                 />
               </div>
             );

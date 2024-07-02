@@ -114,7 +114,6 @@ export const MediaRules = ({
             </Box>
           );
         })}
-        <Box></Box>
       </Box>
     </Box>
   );
