@@ -6,13 +6,17 @@ import {
   Menu,
   MenuItem,
   Button,
+  Box,
 } from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import { useLocation } from "react-router";
 
 import { InteractiveTooltip } from "../../../../../../../shell/components/InteractiveTooltip";
 import { FieldTooltipBody } from "./FieldTooltipBody";
 import { ContentModelField } from "../../../../../../../shell/services/types";
+import pluralizeWord from "../../../../../../../utility/pluralizeWord";
+import { Comment } from "../../../../../../../shell/components/Comment";
 
 export type EditorType =
   | "markdown"
@@ -28,7 +32,10 @@ export const EditorTypes: Record<EditorType, string> = {
 export type Error = {
   MISSING_REQUIRED?: boolean;
   EXCEEDING_MAXLENGTH?: number;
+  LACKING_MINLENGTH?: number;
   CUSTOM_ERROR?: string;
+  REGEX_PATTERN_MISMATCH?: string;
+  REGEX_RESTRICT_PATTERN_MATCH?: string;
 };
 
 type FieldShellProps = {
@@ -36,6 +43,7 @@ type FieldShellProps = {
   valueLength?: number;
   endLabel?: JSX.Element;
   maxLength?: number;
+  minLength?: number;
   withLengthCounter?: boolean;
   missingRequired?: boolean;
   onEditorChange?: (editorType: string) => void;
@@ -50,6 +58,7 @@ export const FieldShell = ({
   endLabel,
   valueLength,
   maxLength = 150,
+  minLength = 0,
   withLengthCounter = false,
   onEditorChange,
   editorType = "markdown",
@@ -58,23 +67,64 @@ export const FieldShell = ({
   errors,
   withInteractiveTooltip = true,
 }: FieldShellProps) => {
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
   const getErrorMessage = (errors: Error) => {
+    const errorMessages = [];
+
     if (errors?.MISSING_REQUIRED) {
-      return "Required Field. Please enter a value.";
+      errorMessages.push("Required Field. Please enter a value.");
     }
 
     if (errors?.EXCEEDING_MAXLENGTH > 0) {
-      return `Exceeding by ${errors.EXCEEDING_MAXLENGTH} characters.`;
+      errorMessages.push(
+        `Exceeding by ${errors.EXCEEDING_MAXLENGTH} ${pluralizeWord(
+          "character",
+          errors.EXCEEDING_MAXLENGTH
+        )}.`
+      );
+    }
+
+    if (errors?.LACKING_MINLENGTH > 0) {
+      errorMessages.push(
+        `Requires ${errors.LACKING_MINLENGTH} more ${pluralizeWord(
+          "character",
+          errors.LACKING_MINLENGTH
+        )}.`
+      );
+    }
+
+    if (errors?.REGEX_PATTERN_MISMATCH) {
+      errorMessages.push(errors.REGEX_PATTERN_MISMATCH);
+    }
+
+    if (errors?.REGEX_RESTRICT_PATTERN_MATCH) {
+      errorMessages.push(errors.REGEX_RESTRICT_PATTERN_MATCH);
     }
 
     if (errors?.CUSTOM_ERROR) {
-      return errors.CUSTOM_ERROR;
+      errorMessages.push(errors.CUSTOM_ERROR);
     }
 
-    return "";
+    if (errorMessages.length === 0) {
+      return "";
+    }
+
+    if (errorMessages.length === 1) {
+      return errorMessages[0];
+    }
+
+    return (
+      <Box component="ul" ml={3}>
+        {errorMessages.map((msg) => (
+          <li>{msg}</li>
+        ))}
+      </Box>
+    );
   };
+
+  const isCreateNewItemPage = location?.pathname?.split("/")?.pop() === "new";
 
   return (
     <Stack gap={0.5}>
@@ -141,6 +191,7 @@ export const FieldShell = ({
             </>
           )}
           {endLabel}
+          {!isCreateNewItemPage && <Comment resourceZUID={settings.ZUID} />}
         </Stack>
       </Stack>
       {settings?.description && (
@@ -160,6 +211,8 @@ export const FieldShell = ({
         {withLengthCounter && (
           <Typography variant="body2" color="text.disabled">
             {valueLength}
+            {!!minLength &&
+              ` (min. ${minLength} ${pluralizeWord("character", minLength)})`}
             {!!maxLength && `/${maxLength}`}
           </Typography>
         )}

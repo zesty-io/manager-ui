@@ -195,6 +195,12 @@ export interface FieldSettings {
   list: boolean;
   tooltip?: string;
   defaultValue?: string;
+  minCharLimit?: number;
+  maxCharLimit?: number;
+  regexMatchPattern?: string;
+  regexMatchErrorMessage?: string;
+  regexRestrictPattern?: string;
+  regexRestrictErrorMessage?: string;
 }
 
 export type ContentModelFieldValue =
@@ -525,4 +531,41 @@ export type Announcement = {
   start_date_and_time: string;
   end_date_and_time: string;
   created_at: string;
+};
+
+export type CommentResourceType = "fields" | "items";
+export type Mention = {
+  email: string;
+  userZUID: string;
+};
+
+export type Comment = {
+  ZUID: string;
+  content: string;
+  createdAt: string;
+  createdByUserEmail: string;
+  createdByUserName: string;
+  createdByUserZUID: string;
+  instanceZUID: string;
+  mentions?: Mention[];
+  replyCount?: number;
+  resolved: boolean;
+  resourceType: CommentResourceType;
+  resourceUserEmail: string;
+  resourceUserZUID: string;
+  resourceZUID: string;
+  scopeTo: string;
+  updatedAt: string;
+};
+
+export type CommentReply = {
+  ZUID: string;
+  commentZUID: string;
+  content: string;
+  createdAt: string;
+  createdByUserEmail: string;
+  createdByUserName: string;
+  createdByUserZUID: string;
+  mentions?: Mention[];
+  updatedAt: string;
 };

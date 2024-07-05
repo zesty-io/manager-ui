@@ -76,7 +76,7 @@ export const ConfirmPublishesModal = ({
           }}
           data-cy="ConfirmPublishButton"
         >
-          Publish Items ({items.length})
+          Publish Changes to ({items.length}) Items
         </Button>
       </DialogActions>
     </Dialog>
