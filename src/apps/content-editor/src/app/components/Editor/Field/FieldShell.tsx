@@ -221,6 +221,13 @@ export const FieldShell = ({
             {!!maxLength && `/${maxLength}`}
           </Typography>
         )}
+        {settings?.settings?.minValue !== undefined &&
+          settings?.settings?.maxValue !== undefined && (
+            <Typography variant="body2" color="text.disabled">
+              Min: {settings?.settings?.minValue} | Max:{" "}
+              {settings?.settings?.maxValue}
+            </Typography>
+          )}
       </Stack>
     </Stack>
   );
