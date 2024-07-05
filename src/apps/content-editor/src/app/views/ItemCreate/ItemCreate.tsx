@@ -101,10 +101,10 @@ export const ItemCreate = () => {
 
   // if item doesn't exist, generate a new one
   useEffect(() => {
-    if (isEmpty(item)) {
+    if (isEmpty(item) && !saving) {
       dispatch(generateItem(modelZUID));
     }
-  }, [modelZUID, item]);
+  }, [modelZUID, item, saving]);
 
   // Redirect to the item once published
   useEffect(() => {
