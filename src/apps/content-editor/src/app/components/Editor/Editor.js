@@ -154,6 +154,26 @@ export default memo(function Editor({
         }
       }
 
+      if (
+        field?.settings?.minValue !== null &&
+        field?.settings?.maxValue !== null
+      ) {
+        if (
+          value < field?.settings?.minValue ||
+          value > field?.settings?.maxValue
+        ) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            INVALID_RANGE: `Value must be between ${field?.settings?.minValue} and ${field?.settings?.maxValue}`,
+          };
+        } else {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            INVALID_RANGE: "",
+          };
+        }
+      }
+
       onUpdateFieldErrors(errors);
 
       // Always dispatch the data update
