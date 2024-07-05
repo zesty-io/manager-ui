@@ -214,6 +214,15 @@ export const ItemCreate = () => {
             );
           }
 
+          if (res.invalidRange?.length) {
+            res.invalidRange?.forEach((field: ContentModelField) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+              };
+            });
+          }
+
           setFieldErrors(errors);
 
           // scroll to required field
