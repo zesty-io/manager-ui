@@ -16,9 +16,6 @@ import { InfoRounded } from "@mui/icons-material";
 import { Errors } from "./views/FieldForm";
 
 type RegexProps = {
-  type: "text" | "textarea";
-  isCharacterLimitEnabled: boolean;
-  onToggleCharacterLimitState: (enabled: boolean) => void;
   onChange: ({
     inputName,
     value,

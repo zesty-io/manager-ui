@@ -36,6 +36,7 @@ export type Error = {
   CUSTOM_ERROR?: string;
   REGEX_PATTERN_MISMATCH?: string;
   REGEX_RESTRICT_PATTERN_MATCH?: string;
+  INVALID_RANGE?: string;
 };
 
 type FieldShellProps = {
@@ -101,6 +102,10 @@ export const FieldShell = ({
 
     if (errors?.REGEX_RESTRICT_PATTERN_MATCH) {
       errorMessages.push(errors.REGEX_RESTRICT_PATTERN_MATCH);
+    }
+
+    if (errors?.INVALID_RANGE) {
+      errorMessages.push(errors.INVALID_RANGE);
     }
 
     if (errors?.CUSTOM_ERROR) {

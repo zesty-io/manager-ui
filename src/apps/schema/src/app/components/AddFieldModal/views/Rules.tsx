@@ -10,6 +10,7 @@ import { DefaultValue } from "../DefaultValue";
 import { MediaRules } from "../MediaRules";
 import { Errors, FormData, FormValue } from "./FieldForm";
 import { Regex } from "../Regex";
+import { InputRange } from "../InputRange";
 
 type RulesProps = {
   type: FieldType;
@@ -93,11 +94,6 @@ export const Rules = ({
             errors={errors}
           />
           <Regex
-            type={type}
-            isCharacterLimitEnabled={isCharacterLimitEnabled}
-            onToggleCharacterLimitState={(enabled) =>
-              setIsCharacterLimitEnabled(enabled)
-            }
             onChange={onFieldDataChanged}
             regexMatchPattern={formData["regexMatchPattern"] as string}
             regexMatchErrorMessage={
@@ -110,6 +106,15 @@ export const Rules = ({
             errors={errors}
           />
         </>
+      )}
+
+      {(type === "number" || type === "currency") && (
+        <InputRange
+          onChange={onFieldDataChanged}
+          minValue={formData["minValue"] as number}
+          maxValue={formData["maxValue"] as number}
+          errors={errors}
+        />
       )}
     </Stack>
   );
