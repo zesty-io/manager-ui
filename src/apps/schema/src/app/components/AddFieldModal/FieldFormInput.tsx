@@ -47,7 +47,9 @@ export type FieldNames =
   | "regexMatchPattern"
   | "regexMatchErrorMessage"
   | "regexRestrictPattern"
-  | "regexRestrictErrorMessage";
+  | "regexRestrictErrorMessage"
+  | "minValue"
+  | "maxValue";
 type FieldType =
   | "input"
   | "checkbox"
