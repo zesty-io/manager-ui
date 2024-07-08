@@ -671,7 +671,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
   },
 };
 
-const SYSTEM_FIELDS: SystemField[] = [
+const SYSTEM_FIELDS: readonly SystemField[] = [
   {
     label: "Item ZUID",
     datatype: "uuid",
@@ -702,7 +702,30 @@ const SYSTEM_FIELDS: SystemField[] = [
     datatype: "uuid",
     name: "contentModelZUID",
   },
-];
+] as const;
+
+const SEO_FIELDS: readonly SystemField[] = [
+  {
+    label: "SEO Meta Title",
+    datatype: "text",
+    name: "seo_meta_title",
+  },
+  {
+    label: "SEO Meta Description",
+    datatype: "textarea",
+    name: "seo_meta_description",
+  },
+  {
+    label: "SEO Meta Keywords",
+    datatype: "textarea",
+    name: "seo_meta_keywords",
+  },
+  {
+    label: "SEO Link Title",
+    datatype: "text",
+    name: "seo_link_title",
+  },
+] as const;
 
 export {
   FieldListData,
@@ -711,4 +734,5 @@ export {
   FORM_CONFIG,
   SYSTEM_FIELDS,
   SystemField,
+  SEO_FIELDS,
 };

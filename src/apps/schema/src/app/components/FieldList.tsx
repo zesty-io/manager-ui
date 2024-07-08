@@ -28,7 +28,7 @@ import { FieldsListRight } from "./FieldsListRight";
 import { NoResults } from "./NoResults";
 import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
-import { SYSTEM_FIELDS, SystemField } from "./configs";
+import { SEO_FIELDS, SYSTEM_FIELDS, SystemField } from "./configs";
 
 type Params = {
   id: string;
@@ -332,7 +332,49 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             </Box>
           )}
 
-          {/* SYSTEM FIELDS */}
+          {/* SEO Meta Fields */}
+          <Box
+            data-cy="SEOFields"
+            ml={4}
+            pt={2.5}
+            mb={2.5}
+            borderTop="1px solid"
+            borderColor="grey.200"
+          >
+            <Typography variant="h6" mb={1} fontWeight={700}>
+              SEO Meta Fields
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Content models for single page and multipage come with SEO Meta
+              Fields that are accessible via API or Parsley. These fields are
+              available to help with discovery on search and are used for mass
+              search in the Zesty api. The value of these fields can be found
+              under the <strong>meta key</strong> in the{" "}
+              <Link
+                href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
+                target="_blank"
+                rel="noopener"
+              >
+                Instances API end point
+              </Link>
+              .
+            </Typography>
+            <Box display="flex" flexDirection="column" gap={1} mt={1.5}>
+              {SEO_FIELDS.map((field, index) => (
+                <Field
+                  key={index}
+                  field={field}
+                  index={index}
+                  disableDrag
+                  withDragIcon={false}
+                  withMenu={false}
+                  withHover={false}
+                />
+              ))}
+            </Box>
+          </Box>
+
+          {/* SYSTEM & SEO FIELDS */}
           {isSystemFieldsVisible === "true" && !search && (
             <Box
               data-cy="SystemFields"
