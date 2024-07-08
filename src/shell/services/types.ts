@@ -203,6 +203,8 @@ export interface FieldSettings {
   regexMatchErrorMessage?: string;
   regexRestrictPattern?: string;
   regexRestrictErrorMessage?: string;
+  minValue?: number;
+  maxValue?: number;
 }
 
 export type ContentModelFieldValue =
