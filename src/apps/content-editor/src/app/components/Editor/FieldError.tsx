@@ -44,6 +44,10 @@ const getErrorMessage = (errors: Error) => {
     errorMessages.push(errors.REGEX_RESTRICT_PATTERN_MATCH);
   }
 
+  if (errors?.INVALID_RANGE) {
+    errorMessages.push(errors.INVALID_RANGE);
+  }
+
   if (errors?.CUSTOM_ERROR) {
     errorMessages.push(errors.CUSTOM_ERROR);
   }
