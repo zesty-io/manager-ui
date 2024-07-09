@@ -125,6 +125,7 @@ export const MentionList = forwardRef(
 
     return (
       <Popper
+        disablePortal
         open
         placement={placement}
         anchorEl={anchorEl}
