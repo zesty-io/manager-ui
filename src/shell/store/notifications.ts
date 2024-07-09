@@ -46,6 +46,7 @@ export function notify(data: NotifyArgs) {
     type: "NEW_NOTIFICATION",
     data: {
       ...data,
+      message: data.message,
       active: true,
       epoch: Date.now(),
     },
