@@ -101,7 +101,7 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
     });
 
-    cy.get("textarea", { timeout: 10000 })
+    cy.get("textarea")
       .first()
       .type("{selectall}{backspace}This is an item meta description")
       .should("have.value", "This is an item meta description");
@@ -143,7 +143,7 @@ describe("Actions in content editor", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
     });
-    cy.wait(10000);
+
     cy.getBySelector("PublishMenuButton").click();
     cy.getBySelector("PublishScheduleButton").click({ force: true });
     cy.getBySelector("SchedulePublishButton").click();
