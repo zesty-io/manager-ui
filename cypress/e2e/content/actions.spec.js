@@ -212,10 +212,10 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
     });
 
-    cy.get("input[name=title]", { timeout: 10000 }).click().type(timestamp);
+    cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", { timeout: 10000 }).should("exist");
+    cy.get("[data-cy=toast]").contains("Created Item");
   });
 
   it("Saved item becomes publishable", () => {
