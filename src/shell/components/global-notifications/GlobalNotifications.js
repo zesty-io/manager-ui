@@ -278,7 +278,7 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
           >
             {props.heading
               ? props.heading && parseStrToBold(props.heading, true)
-              : props.message && parseStrToBold(props.message.substring(0, 15))}
+              : props.message && parseStrToBold(props.message)}
           </Typography>
 
           {props.heading && (
