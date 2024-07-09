@@ -21,6 +21,7 @@ import { User } from "../../services/types";
 import { useSelector } from "react-redux";
 import { AppState } from "../../store/types";
 import { MD5 } from "../../../utility/md5";
+import { ItemLockContext } from "../../../apps/content-editor/src/app/views/ItemEdit/ItemEdit";
 
 type PathParams = {
   modelZUID: string;
@@ -44,6 +45,7 @@ export const CommentsList = ({
 }: CommentsListProps) => {
   const { resourceZUID, commentZUID } = useParams<PathParams>();
   const [_, __, commentZUIDtoEdit] = useContext(CommentContext);
+  const isLocked = useContext<boolean>(ItemLockContext);
   const [popperTopOffset, setPopperTopOffset] = useState(0);
   const [popperBottomOffset, setPopperBottomOffset] = useState(0);
   const [placement, setPlacement] =
@@ -124,6 +126,7 @@ export const CommentsList = ({
     >
       <Popper
         open
+        disablePortal={isLocked}
         anchorEl={anchorEl}
         placement={placement}
         sx={{

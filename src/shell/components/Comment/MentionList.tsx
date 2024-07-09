@@ -141,6 +141,10 @@ export const MentionList = forwardRef(
                 offset: [0, 1],
               },
             },
+            {
+              name: "flip",
+              enabled: false,
+            },
           ],
         }}
       >
