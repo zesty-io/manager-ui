@@ -33,12 +33,14 @@ type CommentsListProps = {
   onClose: () => void;
   isResolved: boolean;
   parentCommentZUID: string;
+  isLoadingParentCommentZUID: boolean;
 };
 export const CommentsList = ({
   anchorEl,
   onClose,
   isResolved,
   parentCommentZUID,
+  isLoadingParentCommentZUID,
 }: CommentsListProps) => {
   const { resourceZUID, commentZUID } = useParams<PathParams>();
   const [_, __, commentZUIDtoEdit] = useContext(CommentContext);
@@ -49,11 +51,14 @@ export const CommentsList = ({
   const topOffsetRef = useRef<HTMLDivElement>();
   const loggedInUser: User = useSelector((state: AppState) => state.user);
 
-  const { data: commentThread, isLoading: isLoadingCommentThread } =
-    useGetCommentThreadQuery(
-      { commentZUID: parentCommentZUID },
-      { skip: !parentCommentZUID }
-    );
+  const {
+    data: commentThread,
+    isLoading: isLoadingCommentThread,
+    isUninitialized: isCommentThreadUninitialized,
+  } = useGetCommentThreadQuery(
+    { commentZUID: parentCommentZUID },
+    { skip: !parentCommentZUID }
+  );
 
   useEffect(() => {
     if (
@@ -146,7 +151,9 @@ export const CommentsList = ({
             boxSizing: "border-box",
           }}
         >
-          {isLoadingCommentThread && <CommentItemLoading />}
+          {(isLoadingCommentThread || isLoadingParentCommentZUID) && (
+            <CommentItemLoading />
+          )}
           {commentThread?.map((comment, index) => (
             <Fragment key={comment.ZUID}>
               <CommentItem
@@ -168,7 +175,10 @@ export const CommentsList = ({
               )}
             </Fragment>
           ))}
-          {!commentThread?.length && !isLoadingCommentThread && (
+          {((!isLoadingCommentThread &&
+            !isCommentThreadUninitialized &&
+            !commentThread?.length) ||
+            (!isLoadingParentCommentZUID && !parentCommentZUID)) && (
             <Stack flex={1} direction="row" gap={1.5} alignItems="center">
               <Avatar
                 sx={{ width: 32, height: 32 }}
