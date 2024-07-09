@@ -219,6 +219,10 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings[field.name] || null;
         } else if (field.name === "regexRestrictErrorMessage") {
           formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "minValue") {
+          formFields[field.name] = fieldData.settings[field.name] ?? null;
+        } else if (field.name === "maxValue") {
+          formFields[field.name] = fieldData.settings[field.name] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -243,7 +247,9 @@ export const FieldForm = ({
             field.name === "regexMatchPattern" ||
             field.name === "regexMatchErrorMessage" ||
             field.name === "regexRestrictPattern" ||
-            field.name === "regexRestrictErrorMessage"
+            field.name === "regexRestrictErrorMessage" ||
+            field.name === "minValue" ||
+            field.name === "maxValue"
           ) {
             formFields[field.name] = null;
           } else {
@@ -371,6 +377,22 @@ export const FieldForm = ({
         }
       }
 
+      if (inputName === "minValue" && formData.minValue) {
+        if (isNaN(+formData.minValue)) {
+          newErrorsObj[inputName] = "Invalid number";
+        } else if (formData.minValue > formData.maxValue) {
+          newErrorsObj[inputName] = "Cannot exceed maximum value";
+        }
+      }
+
+      if (inputName === "maxValue" && formData.maxValue) {
+        if (isNaN(+formData.maxValue)) {
+          newErrorsObj[inputName] = "Invalid number";
+        } else if (formData.maxValue < formData.minValue) {
+          newErrorsObj[inputName] = "Cannot be less than minimum value";
+        }
+      }
+
       if (
         inputName in errors &&
         ![
@@ -381,6 +403,8 @@ export const FieldForm = ({
           "regexRestrictPattern",
           "regexMatchErrorMessage",
           "regexRestrictErrorMessage",
+          "minValue",
+          "maxValue",
         ].includes(inputName)
       ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
@@ -482,7 +506,9 @@ export const FieldForm = ({
         errors.regexMatchPattern ||
         errors.regexMatchErrorMessage ||
         errors.regexRestrictPattern ||
-        errors.regexRestrictErrorMessage
+        errors.regexRestrictErrorMessage ||
+        errors.minValue ||
+        errors.maxValue
       ) {
         setActiveTab("rules");
       } else {
@@ -529,6 +555,12 @@ export const FieldForm = ({
         ...(formData.regexRestrictErrorMessage && {
           regexRestrictErrorMessage:
             formData.regexRestrictErrorMessage as string,
+        }),
+        ...(formData.minValue !== null && {
+          minValue: formData.minValue as number,
+        }),
+        ...(formData.maxValue !== null && {
+          maxValue: formData.maxValue as number,
         }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0

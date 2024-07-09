@@ -423,11 +423,20 @@ export function saveItem(itemZUID, action = "") {
         )
     );
 
+    const invalidRange = fields?.filter(
+      (field) =>
+        field.settings?.minValue !== null &&
+        field.settings?.maxValue !== null &&
+        (item.data[field.name] < field.settings?.minValue ||
+          item.data[field.name] > field.settings?.maxValue)
+    );
+
     if (
       missingRequired?.length ||
       lackingCharLength?.length ||
       regexPatternMismatch?.length ||
-      regexRestrictPatternMatch?.length
+      regexRestrictPatternMatch?.length ||
+      invalidRange?.length
     ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",
@@ -437,6 +446,7 @@ export function saveItem(itemZUID, action = "") {
         ...(!!regexRestrictPatternMatch?.length && {
           regexRestrictPatternMatch,
         }),
+        ...(!!invalidRange?.length && { invalidRange }),
       });
     }
 
@@ -560,11 +570,20 @@ export function createItem(modelZUID, itemZUID) {
         )
     );
 
+    const invalidRange = fields?.filter(
+      (field) =>
+        field.settings?.minValue !== null &&
+        field.settings?.maxValue !== null &&
+        (item.data[field.name] < field.settings?.minValue ||
+          item.data[field.name] > field.settings?.maxValue)
+    );
+
     if (
       missingRequired?.length ||
       lackingCharLength?.length ||
       regexPatternMismatch?.length ||
-      regexRestrictPatternMatch?.length
+      regexRestrictPatternMatch?.length ||
+      invalidRange?.length
     ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",
@@ -574,6 +593,7 @@ export function createItem(modelZUID, itemZUID) {
         ...(!!regexRestrictPatternMatch?.length && {
           regexRestrictPatternMatch,
         }),
+        ...(!!invalidRange?.length && { invalidRange }),
       });
     }
 
