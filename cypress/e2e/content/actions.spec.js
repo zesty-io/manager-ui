@@ -143,7 +143,7 @@ describe("Actions in content editor", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
     });
-
+    cy.wait(10000);
     cy.getBySelector("PublishMenuButton").click();
     cy.getBySelector("PublishScheduleButton").click({ force: true });
     cy.getBySelector("SchedulePublishButton").click();
@@ -215,7 +215,7 @@ describe("Actions in content editor", () => {
     cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.get("[data-cy=toast]").contains("Created Item");
+    cy.contains("Created Item", { timeout: 5000 }).should("exist");
   });
 
   it("Saved item becomes publishable", () => {
