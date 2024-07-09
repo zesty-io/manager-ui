@@ -245,43 +245,34 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
     "-webkit-line-clamp": props.heading && props.message ? "1" : "2",
     "-webkit-box-orient": "vertical",
   };
+
   return (
     <SnackbarContent ref={ref}>
-      <Alert
-        data-cy="toast"
-        key={id}
-        variant="filled"
-        severity={props.severity}
-        icon={props.icon}
-        action={
-          <Stack direction="row">
-            <IconButton onClick={handleDismiss}>
-              <CloseIcon sx={{ width: 20, height: 20, color: "white" }} />
-            </IconButton>
-          </Stack>
-        }
-        sx={{
-          width: 540,
-          padding:
-            !(props.heading && props.message) || props.severity === "success"
-              ? "4px 8px"
-              : "0px 8px",
-        }}
-      >
-        <Stack>
-          <Typography
-            variant="body2"
-            noWrap={props.severity === "success"}
-            sx={{
-              ...typograpySX,
-            }}
-          >
-            {props.heading
-              ? props.heading && parseStrToBold(props.heading, true)
-              : props.message && parseStrToBold(props.message)}
-          </Typography>
-
-          {props.heading && (
+      {typeof props.message === "object" ? (
+        ""
+      ) : (
+        <Alert
+          data-cy="toast"
+          key={id}
+          variant="filled"
+          severity={props.severity}
+          icon={props.icon}
+          action={
+            <Stack direction="row">
+              <IconButton onClick={handleDismiss}>
+                <CloseIcon sx={{ width: 20, height: 20, color: "white" }} />
+              </IconButton>
+            </Stack>
+          }
+          sx={{
+            width: 540,
+            padding:
+              !(props.heading && props.message) || props.severity === "success"
+                ? "4px 8px"
+                : "0px 8px",
+          }}
+        >
+          <Stack>
             <Typography
               variant="body2"
               noWrap={props.severity === "success"}
@@ -289,11 +280,25 @@ export const CustomNotification = forwardRef(({ id, ...props }, ref) => {
                 ...typograpySX,
               }}
             >
-              {parseStrToBold(props.message)}
+              {props.heading
+                ? props.heading && parseStrToBold(props.heading, true)
+                : props.message && parseStrToBold(props.message)}
             </Typography>
-          )}
-        </Stack>
-      </Alert>
+
+            {props.heading && (
+              <Typography
+                variant="body2"
+                noWrap={props.severity === "success"}
+                sx={{
+                  ...typograpySX,
+                }}
+              >
+                {parseStrToBold(props.message)}
+              </Typography>
+            )}
+          </Stack>
+        </Alert>
+      )}
     </SnackbarContent>
   );
 });
