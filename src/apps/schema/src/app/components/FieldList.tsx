@@ -12,7 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 import { useParams } from "react-router";
-import { filter, isEqual } from "lodash";
+import { isEqual } from "lodash";
 import { useLocalStorage } from "react-use";
 
 import {
