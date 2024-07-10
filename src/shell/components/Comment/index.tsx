@@ -148,6 +148,7 @@ export const Comment = ({ resourceZUID }: CommentProps) => {
       </Box>
       {isCommentListOpen && (
         <CommentsList
+          isLoadingParentCommentZUID={isLoadingComment}
           parentCommentZUID={parentComment?.ZUID}
           anchorEl={buttonContainerRef.current}
           onClose={() => {
