@@ -35,10 +35,14 @@ import { SchedulePublishesModal } from "./SchedulePublishesDialog";
 import { ConfirmDeletesDialog } from "./ConfirmDeletesDialog";
 import { notify } from "../../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
+import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 
 export const UpdateListActions = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
+  const canPublish = usePermission("PUBLISH");
+  const canDelete = usePermission("DELETE");
+  const canUpdate = usePermission("UPDATE");
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
   const langCode = params.get("lang");
@@ -71,6 +75,7 @@ export const UpdateListActions = () => {
   });
 
   const publishShortcut = useMetaKey("p", () => {
+    if (!canPublish) return;
     if (hasStagedChanges) {
       handleSaveAndPublish();
     } else {
@@ -176,7 +181,7 @@ export const UpdateListActions = () => {
           </Typography>
         </Box>
         <Box display="flex" gap={1} alignItems="center">
-          {hasStagedChanges ? (
+          {hasStagedChanges && canUpdate ? (
             <Tooltip
               enterDelay={1000}
               enterNextDelay={1000}
@@ -198,7 +203,7 @@ export const UpdateListActions = () => {
                 Save
               </LoadingButton>
             </Tooltip>
-          ) : (
+          ) : canDelete ? (
             <LoadingButton
               loading={isDeleting}
               onClick={() => {
@@ -211,64 +216,68 @@ export const UpdateListActions = () => {
             >
               Delete
             </LoadingButton>
-          )}
-          <ButtonGroup
-            variant="contained"
-            color="success"
-            size="small"
-            sx={{
-              "& .MuiButtonGroup-grouped:not(:last-of-type)": {
-                borderColor: "green.600",
-              },
-            }}
-          >
-            <Tooltip
-              enterDelay={1000}
-              enterNextDelay={1000}
-              title={
-                <div>
-                  {hasStagedChanges ? "Save & Publish Items" : "Publish Items"}{" "}
-                  <br />
-                  {publishShortcut}
-                </div>
-              }
+          ) : null}
+          {canPublish && canUpdate && (
+            <ButtonGroup
+              variant="contained"
+              color="success"
+              size="small"
+              sx={{
+                "& .MuiButtonGroup-grouped:not(:last-of-type)": {
+                  borderColor: "green.600",
+                },
+              }}
             >
-              <LoadingButton
-                startIcon={<CloudUploadRounded />}
+              <Tooltip
+                enterDelay={1000}
+                enterNextDelay={1000}
+                title={
+                  <div>
+                    {hasStagedChanges
+                      ? "Save & Publish Items"
+                      : "Publish Items"}{" "}
+                    <br />
+                    {publishShortcut}
+                  </div>
+                }
+              >
+                <LoadingButton
+                  startIcon={<CloudUploadRounded />}
+                  sx={{
+                    color: "common.white",
+                    whiteSpace: "nowrap",
+                  }}
+                  onClick={() => {
+                    if (hasStagedChanges) {
+                      handleSaveAndPublish();
+                    } else {
+                      setItemsToPublish(selectedItems);
+                    }
+                  }}
+                  loading={isPublishing || isSaving}
+                  color="success"
+                  variant="contained"
+                  data-cy="MultiPageTablePublish"
+                >
+                  {hasStagedChanges ? "Save & Publish" : "Publish"}
+                </LoadingButton>
+              </Tooltip>
+              <Button
                 sx={{
                   color: "common.white",
-                  whiteSpace: "nowrap",
+                  width: 32,
+                  // Override MUI default minWidth of 40px one-off
+                  minWidth: "unset !important",
                 }}
-                onClick={() => {
-                  if (hasStagedChanges) {
-                    handleSaveAndPublish();
-                  } else {
-                    setItemsToPublish(selectedItems);
-                  }
+                onClick={(event) => {
+                  setAnchorEl(event.currentTarget);
                 }}
-                loading={isPublishing || isSaving}
-                color="success"
-                variant="contained"
-                data-cy="MultiPageTablePublish"
+                disabled={isPublishing || isSaving}
               >
-                {hasStagedChanges ? "Save & Publish" : "Publish"}
-              </LoadingButton>
-            </Tooltip>
-            <Button
-              sx={{
-                color: "common.white",
-                width: 32,
-                // Override MUI default minWidth of 40px one-off
-                minWidth: "unset !important",
-              }}
-              onClick={(event) => {
-                setAnchorEl(event.currentTarget);
-              }}
-              disabled={isPublishing || isSaving}
-            >
-              <ArrowDropDownRounded fontSize="small" />
-            </Button>
-          </ButtonGroup>
+                <ArrowDropDownRounded fontSize="small" />
+              </Button>
+            </ButtonGroup>
+          )}
           <Menu
             onClose={() => setAnchorEl(null)}
             anchorOrigin={{
