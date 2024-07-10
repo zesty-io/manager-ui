@@ -347,11 +347,12 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                   SEO Meta Fields
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Content models for single-page and multi-page come with SEO
-                  meta fields that are accessible via API or Parsley. These
-                  fields are available to help with discovery on search and are
-                  used for mass search in the Zesty API. The value of these
-                  fields can be found under the <strong>meta key</strong> in the{" "}
+                  Content models for single-page, multi-page and dataset models
+                  come with SEO meta fields that are accessible via API or
+                  Parsley. These fields are available to help with discovery on
+                  search and are used for mass search in the Zesty API. The
+                  value of these fields can be found under the{" "}
+                  <strong>meta key</strong> in the{" "}
                   <Link
                     href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
                     target="_blank"
@@ -377,7 +378,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
               </Box>
             )}
 
-          {/* SYSTEM & SEO FIELDS */}
+          {/* SYSTEM FIELDS */}
           {isSystemFieldsVisible === "true" && !search && (
             <Box
               data-cy="SystemFields"
