@@ -475,6 +475,23 @@ const REGEX_RULES: InputField[] = [
   },
 ];
 
+const INPUT_RANGE_RULES: InputField[] = [
+  {
+    name: "minValue",
+    type: "input",
+    label: "Minimum Value",
+    required: false,
+    gridSize: 6,
+  },
+  {
+    name: "maxValue",
+    type: "input",
+    label: "Maximum Value",
+    required: false,
+    gridSize: 6,
+  },
+];
+
 const FORM_CONFIG: Record<FieldType, FormConfig> = {
   article_writer: {
     details: [...COMMON_FIELDS],
@@ -486,7 +503,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
   },
   currency: {
     details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
+    rules: [...COMMON_RULES, ...INPUT_RANGE_RULES],
   },
   date: {
     details: [...COMMON_FIELDS],
@@ -556,7 +573,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
   },
   number: {
     details: [...COMMON_FIELDS],
-    rules: [...COMMON_RULES],
+    rules: [...COMMON_RULES, ...INPUT_RANGE_RULES],
   },
   one_to_many: {
     details: [

@@ -101,10 +101,10 @@ export const ItemCreate = () => {
 
   // if item doesn't exist, generate a new one
   useEffect(() => {
-    if (isEmpty(item)) {
+    if (isEmpty(item) && !saving) {
       dispatch(generateItem(modelZUID));
     }
-  }, [modelZUID, item]);
+  }, [modelZUID, item, saving]);
 
   // Redirect to the item once published
   useEffect(() => {
@@ -212,6 +212,15 @@ export const ItemCreate = () => {
                 };
               }
             );
+          }
+
+          if (res.invalidRange?.length) {
+            res.invalidRange?.forEach((field: ContentModelField) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+              };
+            });
           }
 
           setFieldErrors(errors);

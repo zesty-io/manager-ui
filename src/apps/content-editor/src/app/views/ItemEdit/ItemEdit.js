@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, useMemo } from "react";
+import { Fragment, useEffect, useState, useMemo, createContext } from "react";
 import {
   Switch,
   Route,
@@ -63,6 +63,8 @@ const selectItemHeadTags = createSelector(
         return tagA.sort > tagB.sort ? 1 : -1;
       })
 );
+
+export const ItemLockContext = createContext();
 
 export default function ItemEdit() {
   const dispatch = useDispatch();
@@ -287,6 +289,15 @@ export default function ItemEdit() {
           });
         }
 
+        if (res.invalidRange?.length) {
+          res.invalidRange?.forEach((field) => {
+            errors[field.name] = {
+              ...(errors[field.name] ?? {}),
+              INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+            };
+          });
+        }
+
         setFieldErrors(errors);
         return;
       }
@@ -350,19 +361,21 @@ export default function ItemEdit() {
           }
         >
           {isLocked && (
-            <LockedItem
-              timestamp={lockState.timestamp}
-              userFirstName={lockState.firstName}
-              userLastName={lockState.lastName}
-              userEmail={lockState.email}
-              itemName={item?.web?.metaLinkText}
-              handleUnlock={forceUnlock}
-              handleCancel={(evt) => {
-                evt.stopPropagation();
-                history.goBack();
-              }}
-              isLocked={isLocked}
-            />
+            <Box sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}>
+              <LockedItem
+                timestamp={lockState.timestamp}
+                userFirstName={lockState.firstName}
+                userLastName={lockState.lastName}
+                userEmail={lockState.email}
+                itemName={item?.web?.metaLinkText}
+                handleUnlock={forceUnlock}
+                handleCancel={(evt) => {
+                  evt.stopPropagation();
+                  history.goBack();
+                }}
+                isLocked={isLocked}
+              />
+            </Box>
           )}
 
           <PendingEditsModal
@@ -482,26 +495,28 @@ export default function ItemEdit() {
                     "/content/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
                   ]}
                   render={() => (
-                    <Content
-                      instance={instance}
-                      modelZUID={modelZUID}
-                      model={model}
-                      fields={fields}
-                      itemZUID={itemZUID}
-                      item={item}
-                      items={items}
-                      user={user}
-                      onSave={save}
-                      dispatch={dispatch}
-                      loading={loading}
-                      saving={saving}
-                      saveClicked={saveClicked}
-                      onUpdateFieldErrors={(errors) => {
-                        setFieldErrors(errors);
-                      }}
-                      fieldErrors={fieldErrors}
-                      hasErrors={hasErrors}
-                    />
+                    <ItemLockContext.Provider value={isLocked}>
+                      <Content
+                        instance={instance}
+                        modelZUID={modelZUID}
+                        model={model}
+                        fields={fields}
+                        itemZUID={itemZUID}
+                        item={item}
+                        items={items}
+                        user={user}
+                        onSave={save}
+                        dispatch={dispatch}
+                        loading={loading}
+                        saving={saving}
+                        saveClicked={saveClicked}
+                        onUpdateFieldErrors={(errors) => {
+                          setFieldErrors(errors);
+                        }}
+                        fieldErrors={fieldErrors}
+                        hasErrors={hasErrors}
+                      />
+                    </ItemLockContext.Provider>
                   )}
                 />
                 <Route
