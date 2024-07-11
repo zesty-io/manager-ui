@@ -49,7 +49,8 @@ export const ConfirmPublishesModal = ({
           <CloudUploadRoundedIcon color="success" />
         </Stack>
         <Box>
-          Publish {items.length} {pluralizeWord("Item", items.length)}:
+          Publish Changes to {items.length}{" "}
+          {pluralizeWord("Item", items.length)}:
         </Box>
         <Typography variant="body2" color="text.secondary" mt={1}>
           This will make the the following {items.length} content{" "}
@@ -76,7 +77,7 @@ export const ConfirmPublishesModal = ({
           }}
           data-cy="ConfirmPublishButton"
         >
-          Publish Changes to ({items.length}) Items
+          Publish Items ({items.length})
         </Button>
       </DialogActions>
     </Dialog>
