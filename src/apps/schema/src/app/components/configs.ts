@@ -510,7 +510,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
         required: true,
         gridSize: 12,
         tooltip:
-          "The selected currency code, symbol, and flag will appear for this field in the content item and can be accessed via the field settings at an API level.",
+          "The selected currency code, symbol, and flag will be displayed for this field in the content item and can be accessed through the field settings via the API.",
         placeholder: "Select a Currency",
         autoFocus: true,
       },
