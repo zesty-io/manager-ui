@@ -13,6 +13,7 @@ import {
   Button,
   Grid,
   Stack,
+  ListItem,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
@@ -64,6 +65,11 @@ import { DefaultValue } from "../DefaultValue";
 import { CharacterLimit } from "../CharacterLimit";
 import { Rules } from "./Rules";
 import { MaxLengths } from "../../../../../../content-editor/src/app/components/Editor/Editor";
+import {
+  Currency,
+  currencies,
+} from "../../../../../../../shell/components/FieldTypeCurrency/currenciesV2";
+import getFlagEmoji from "../../../../../../../utility/getFlagEmoji";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -759,6 +765,7 @@ export const FieldForm = ({
 
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
+              let renderOption: any;
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
@@ -771,7 +778,25 @@ export const FieldForm = ({
               }
 
               if (fieldConfig.name === "currency") {
-                dropdownOptions = modelsOptions;
+                dropdownOptions = currencies;
+                renderOption = (props: any, value: Currency) => (
+                  <ListItem
+                    {...props}
+                    key={value.value}
+                    sx={{ color: "text.primary" }}
+                  >
+                    {getFlagEmoji(value.countryCode)}{" "}
+                    <Typography
+                      variant="body1"
+                      fontWeight={700}
+                      minWidth={72}
+                      pl={1}
+                    >
+                      {value.value} {value.symbol_native}
+                    </Typography>
+                    <Typography variant="body1">{value.label}</Typography>
+                  </ListItem>
+                );
               }
 
               return (
@@ -783,6 +808,7 @@ export const FieldForm = ({
                   prefillData={formData[fieldConfig.name]}
                   dropdownOptions={dropdownOptions || []}
                   disabled={disabled}
+                  renderOption={renderOption}
                 />
               );
             })}

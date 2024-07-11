@@ -14,6 +14,7 @@ import {
   Button,
   IconButton,
   Stack,
+  AutocompleteProps,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -25,6 +26,7 @@ import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
+import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currenciesV2";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -79,7 +81,7 @@ export interface DropdownOptions {
   label: string;
   value: string;
 }
-interface FieldFormInputProps {
+type FieldFormInputProps = {
   fieldConfig: InputField;
   errorMsg?: string | [string, string][];
   onDataChange: ({
@@ -90,9 +92,12 @@ interface FieldFormInputProps {
     value: FormValue;
   }) => void;
   prefillData?: FormValue;
-  dropdownOptions?: DropdownOptions[];
+  dropdownOptions?: DropdownOptions[] | Currency[];
   disabled?: boolean;
-}
+} & Pick<
+  AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
+  "renderOption"
+>;
 export const FieldFormInput = ({
   fieldConfig,
   errorMsg,
@@ -100,6 +105,7 @@ export const FieldFormInput = ({
   prefillData,
   dropdownOptions,
   disabled,
+  renderOption,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -257,6 +263,7 @@ export const FieldFormInput = ({
                 height: "40px",
               },
             }}
+            renderOption={renderOption}
           />
           {prefillData &&
             !dropdownOptions.find((option) => option.value === prefillData) && (
