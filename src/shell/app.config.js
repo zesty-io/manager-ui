@@ -45,7 +45,7 @@ module.exports = {
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
     TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
 
-    MARKETING_INSTANCE_DOMAIN: "https://www.zesty.io/",
+    MARKETING_INSTANCE_DOMAIN: "https://kfg6bckb-dev.webengine.zesty.io/",
     MARKETING_ANNOUNCEMENT_MODEL_ZUID: "6-90fbdcadfc-4lc0s5",
   },
   stage: {
