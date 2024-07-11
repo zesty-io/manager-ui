@@ -49,7 +49,8 @@ export type FieldNames =
   | "regexRestrictPattern"
   | "regexRestrictErrorMessage"
   | "minValue"
-  | "maxValue";
+  | "maxValue"
+  | "currency";
 type FieldType =
   | "input"
   | "checkbox"
@@ -212,9 +213,19 @@ export const FieldFormInput = ({
 
       {fieldConfig.type === "autocomplete" && (
         <>
-          <Typography variant="body2" mb={0.5} fontWeight={600}>
-            {fieldConfig.label}
-          </Typography>
+          <Stack flexDirection="row" alignItems="center" mb={0.5} height={18}>
+            <Typography variant="body2" fontWeight={600}>
+              {fieldConfig.label}
+            </Typography>
+            {fieldConfig.tooltip && (
+              <Tooltip placement="right" title={fieldConfig.tooltip}>
+                <InfoRoundedIcon
+                  sx={{ ml: 1, width: "12px", height: "12px" }}
+                  color="action"
+                />
+              </Tooltip>
+            )}
+          </Stack>
           <Autocomplete
             data-cy={`Autocomplete_${fieldConfig.name}`}
             size="small"

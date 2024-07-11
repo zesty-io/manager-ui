@@ -223,6 +223,8 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings[field.name] ?? null;
         } else if (field.name === "maxValue") {
           formFields[field.name] = fieldData.settings[field.name] ?? null;
+        } else if (field.name === "currency") {
+          formFields[field.name] = fieldData.settings?.currency ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -766,6 +768,10 @@ export const FieldForm = ({
               if (fieldConfig.name === "relatedFieldZUID") {
                 dropdownOptions = fieldsOptions;
                 disabled = isFetchingSelectedModelFields;
+              }
+
+              if (fieldConfig.name === "currency") {
+                dropdownOptions = modelsOptions;
               }
 
               return (

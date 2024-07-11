@@ -502,7 +502,23 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     rules: [...COMMON_RULES],
   },
   currency: {
-    details: [...COMMON_FIELDS],
+    details: [
+      {
+        name: "currency",
+        type: "autocomplete",
+        label: "Currency",
+        required: true,
+        gridSize: 12,
+        tooltip: "Lorem ipsum",
+        placeholder: "Select a Currency",
+        autoFocus: true,
+      },
+      {
+        ...COMMON_FIELDS[0],
+        autoFocus: false,
+      },
+      ...COMMON_FIELDS.slice(1),
+    ],
     rules: [...COMMON_RULES, ...INPUT_RANGE_RULES],
   },
   date: {
