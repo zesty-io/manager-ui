@@ -8,7 +8,7 @@ import {
   Checkbox,
   Stack,
 } from "@mui/material";
-import { ReportGmailerrorred } from "@mui/icons-material";
+import { ImageRounded } from "@mui/icons-material";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import {
   DataGridPro,
@@ -161,7 +161,7 @@ const fieldTypeColumnConfigMap = {
         return (
           <Stack
             sx={{
-              backgroundColor: "red.50",
+              backgroundColor: "grey.100",
               width: "100%",
               height: "100%",
               alignItems: "center",
@@ -170,7 +170,7 @@ const fieldTypeColumnConfigMap = {
               zIndex: -1,
             }}
           >
-            <ReportGmailerrorred fontSize="large" sx={{ color: "red.600" }} />
+            <ImageRounded fontSize="small" color="action" />
           </Stack>
         );
       }

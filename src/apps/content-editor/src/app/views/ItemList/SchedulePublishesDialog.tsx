@@ -74,7 +74,7 @@ export const SchedulePublishesModal = ({
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">
-              You can always cancel the publish later if needed
+              You can always cancel the scheduled publish later if needed
             </Typography>
           </Box>
         </Stack>
