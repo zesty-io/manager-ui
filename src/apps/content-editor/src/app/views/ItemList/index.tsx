@@ -194,7 +194,7 @@ export const ItemList = () => {
           if (!clonedItem.data[key]) return;
 
           clonedItem.data[key] = new Date(
-            clonedItem.data[key]
+            clonedItem.data[key] + "T00:00:00"
           )?.toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
