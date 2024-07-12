@@ -766,6 +766,7 @@ export const FieldForm = ({
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
               let renderOption: any;
+              let filterOptions: any;
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
@@ -785,18 +786,28 @@ export const FieldForm = ({
                     key={value.value}
                     sx={{ color: "text.primary" }}
                   >
-                    {getFlagEmoji(value.countryCode)}{" "}
-                    <Typography
-                      variant="body1"
-                      fontWeight={700}
-                      minWidth={72}
-                      pl={1}
-                    >
-                      {value.value} {value.symbol_native}
+                    {getFlagEmoji(value.countryCode)}
+                    <Typography variant="body1" fontWeight={700} pl={1}>
+                      {value.value} {value.symbol_native} &nbsp;
                     </Typography>
                     <Typography variant="body1">{value.label}</Typography>
                   </ListItem>
                 );
+                filterOptions = (options: Currency[], state: any) => {
+                  if (state.inputValue) {
+                    return options.filter(
+                      (option) =>
+                        option.label
+                          ?.toLowerCase()
+                          .includes(state.inputValue.toLowerCase()) ||
+                        option.value
+                          ?.toLowerCase()
+                          .includes(state.inputValue.toLowerCase())
+                    );
+                  } else {
+                    return options;
+                  }
+                };
               }
 
               return (
@@ -809,6 +820,7 @@ export const FieldForm = ({
                   dropdownOptions={dropdownOptions || []}
                   disabled={disabled}
                   renderOption={renderOption}
+                  filterOptions={filterOptions}
                 />
               );
             })}

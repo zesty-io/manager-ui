@@ -96,7 +96,7 @@ type FieldFormInputProps = {
   disabled?: boolean;
 } & Pick<
   AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
-  "renderOption"
+  "renderOption" | "filterOptions"
 >;
 export const FieldFormInput = ({
   fieldConfig,
@@ -106,6 +106,7 @@ export const FieldFormInput = ({
   dropdownOptions,
   disabled,
   renderOption,
+  filterOptions,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -264,6 +265,7 @@ export const FieldFormInput = ({
               },
             }}
             renderOption={renderOption}
+            filterOptions={filterOptions}
           />
           {prefillData &&
             !dropdownOptions.find((option) => option.value === prefillData) && (
