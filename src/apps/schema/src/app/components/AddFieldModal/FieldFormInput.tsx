@@ -248,6 +248,8 @@ export const FieldFormInput = ({
                 placeholder={fieldConfig.placeholder}
                 hiddenLabel
                 autoFocus={fieldConfig.autoFocus}
+                error={!!errorMsg}
+                helperText={errorMsg}
               />
             )}
             isOptionEqualToValue={(option, value) =>
@@ -269,13 +271,7 @@ export const FieldFormInput = ({
           />
           {prefillData &&
             !dropdownOptions.find((option) => option.value === prefillData) && (
-              <Typography
-                noWrap
-                color="error"
-                variant="caption"
-                ml={1.75}
-                mt={0.5}
-              >
+              <Typography noWrap color="error.dark" variant="body2" mt={0.5}>
                 {fieldConfig.name === "group_id" &&
                   "The folder this was locked to has been deleted"}
                 {fieldConfig.name === "relatedModelZUID" &&
@@ -344,12 +340,9 @@ export const FieldFormInput = ({
             error={Boolean(errorMsg)}
             helperText={
               errorMsg && (
-                <Typography
-                  data-cy={`ErrorMsg_${fieldConfig.name}`}
-                  variant="caption"
-                >
+                <Box component="span" data-cy={`ErrorMsg_${fieldConfig.name}`}>
                   {errorMsg}
-                </Typography>
+                </Box>
               )
             }
             type={fieldConfig.inputType || "text"}
@@ -465,9 +458,9 @@ const KeyValueInput = ({
             handleDataChanged("value", e.target?.value);
           }}
           helperText={
-            <Typography data-cy={`OptionLabelErrorMsg_${id}`} variant="caption">
+            <Box component="span" data-cy={`OptionLabelErrorMsg_${id}`}>
               {labelErrorMsg}
-            </Typography>
+            </Box>
           }
           error={Boolean(labelErrorMsg)}
           disabled={disabledFields.includes("value")}
@@ -483,9 +476,9 @@ const KeyValueInput = ({
             handleDataChanged("key", e.target?.value);
           }}
           helperText={
-            <Typography data-cy={`OptionValueErrorMsg_${id}`} variant="caption">
+            <Box component="span" data-cy={`OptionValueErrorMsg_${id}`}>
               {valueErrorMsg}
-            </Typography>
+            </Box>
           }
           error={Boolean(valueErrorMsg)}
           disabled={disabledFields.includes("key")}

@@ -230,7 +230,7 @@ export const FieldForm = ({
         } else if (field.name === "maxValue") {
           formFields[field.name] = fieldData.settings[field.name] ?? null;
         } else if (field.name === "currency") {
-          formFields[field.name] = fieldData.settings?.currency ?? null;
+          formFields[field.name] = fieldData.settings?.currency ?? "USD";
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -401,6 +401,10 @@ export const FieldForm = ({
         }
       }
 
+      if (inputName === "currency" && !formData.currency) {
+        newErrorsObj[inputName] = "Please select a currency";
+      }
+
       if (
         inputName in errors &&
         ![
@@ -413,6 +417,7 @@ export const FieldForm = ({
           "regexRestrictErrorMessage",
           "minValue",
           "maxValue",
+          "currency",
         ].includes(inputName)
       ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
@@ -569,6 +574,9 @@ export const FieldForm = ({
         }),
         ...(formData.maxValue !== null && {
           maxValue: formData.maxValue as number,
+        }),
+        ...(formData.currency !== null && {
+          currency: formData.currency as string,
         }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
