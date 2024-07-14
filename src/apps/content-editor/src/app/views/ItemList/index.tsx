@@ -127,7 +127,8 @@ export const ItemList = () => {
       clonedItem.publishing = publishings?.find(
         (publishing) =>
           publishing.itemZUID === item.meta.ZUID &&
-          publishing.version === item.meta.version
+          publishing.version === item.meta.version &&
+          publishing.unpublishAt === null
       );
       if (clonedItem.publishing) {
         clonedItem.publishing = {
@@ -140,7 +141,8 @@ export const ItemList = () => {
       clonedItem.priorPublishing = publishings?.find(
         (publishing) =>
           publishing.itemZUID === item.meta.ZUID &&
-          publishing.version !== item.meta.version
+          publishing.version !== item.meta.version &&
+          publishing.unpublishAt === null
       );
       if (clonedItem.priorPublishing) {
         clonedItem.priorPublishing = {
