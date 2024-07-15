@@ -14,6 +14,10 @@ import {
   Grid,
   Stack,
   ListItem,
+  FilledInputProps,
+  InputProps,
+  OutlinedInputProps,
+  InputAdornment,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
@@ -775,6 +779,10 @@ export const FieldForm = ({
               let disabled = false;
               let renderOption: any;
               let filterOptions: any;
+              let autocompleteInputProps:
+                | Partial<FilledInputProps>
+                | Partial<OutlinedInputProps>
+                | Partial<InputProps>;
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
@@ -787,6 +795,9 @@ export const FieldForm = ({
               }
 
               if (fieldConfig.name === "currency") {
+                const selectedValue = currencies.find(
+                  (currency) => currency.value === formData.currency
+                );
                 dropdownOptions = currencies;
                 renderOption = (props: any, value: Currency) => (
                   <ListItem
@@ -816,6 +827,28 @@ export const FieldForm = ({
                     return options;
                   }
                 };
+                autocompleteInputProps = {
+                  startAdornment: !!selectedValue && (
+                    <InputAdornment
+                      position="start"
+                      sx={{
+                        pl: 0.25,
+
+                        "&.MuiInputAdornment-root.MuiInputAdornment-positionStart":
+                          {
+                            color: "text.primary",
+                          },
+                      }}
+                    >
+                      <Stack height={24} alignItems="end">
+                        {getFlagEmoji(selectedValue.countryCode)}
+                      </Stack>
+                      <Typography variant="body1" fontWeight={700} pl={1}>
+                        {selectedValue.value} {selectedValue.symbol_native}
+                      </Typography>
+                    </InputAdornment>
+                  ),
+                };
               }
 
               return (
@@ -829,6 +862,7 @@ export const FieldForm = ({
                   disabled={disabled}
                   renderOption={renderOption}
                   filterOptions={filterOptions}
+                  autocompleteInputProps={autocompleteInputProps}
                 />
               );
             })}

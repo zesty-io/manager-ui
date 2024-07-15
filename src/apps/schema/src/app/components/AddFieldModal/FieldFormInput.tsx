@@ -15,6 +15,9 @@ import {
   IconButton,
   Stack,
   AutocompleteProps,
+  InputProps,
+  OutlinedInputProps,
+  FilledInputProps,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -94,6 +97,10 @@ type FieldFormInputProps = {
   prefillData?: FormValue;
   dropdownOptions?: DropdownOptions[] | Currency[];
   disabled?: boolean;
+  autocompleteInputProps?:
+    | Partial<FilledInputProps>
+    | Partial<OutlinedInputProps>
+    | Partial<InputProps>;
 } & Pick<
   AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
   "renderOption" | "filterOptions"
@@ -107,6 +114,7 @@ export const FieldFormInput = ({
   disabled,
   renderOption,
   filterOptions,
+  autocompleteInputProps,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -250,6 +258,10 @@ export const FieldFormInput = ({
                 autoFocus={fieldConfig.autoFocus}
                 error={!!errorMsg}
                 helperText={errorMsg}
+                InputProps={{
+                  ...params.InputProps,
+                  ...autocompleteInputProps,
+                }}
               />
             )}
             isOptionEqualToValue={(option, value) =>
