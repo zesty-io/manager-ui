@@ -127,7 +127,8 @@ export const ItemList = () => {
       clonedItem.publishing = publishings?.find(
         (publishing) =>
           publishing.itemZUID === item.meta.ZUID &&
-          publishing.version === item.meta.version
+          publishing.version === item.meta.version &&
+          publishing.unpublishAt === null
       );
       if (clonedItem.publishing) {
         clonedItem.publishing = {
@@ -140,7 +141,8 @@ export const ItemList = () => {
       clonedItem.priorPublishing = publishings?.find(
         (publishing) =>
           publishing.itemZUID === item.meta.ZUID &&
-          publishing.version !== item.meta.version
+          publishing.version !== item.meta.version &&
+          publishing.unpublishAt === null
       );
       if (clonedItem.priorPublishing) {
         clonedItem.priorPublishing = {
@@ -215,73 +217,98 @@ export const ItemList = () => {
   const sortedAndFilteredItems = useMemo(() => {
     let clonedItems = [...processedItems];
     clonedItems?.sort((a: any, b: any) => {
-      if (sort === "datePublished") {
-        // Handle undefined publishAt by setting a default far-future date for sorting purposes
+      if (sort) {
+        if (sort === "datePublished") {
+          // Handle undefined publishAt by setting a default far-future date for sorting purposes
 
-        let dateA = a?.publishing?.publishAt || a?.priorPublishing?.publishAt;
-        dateA = dateA ? new Date(dateA).getTime() : Number.NEGATIVE_INFINITY;
+          let dateA = a?.publishing?.publishAt || a?.priorPublishing?.publishAt;
+          dateA = dateA ? new Date(dateA).getTime() : Number.NEGATIVE_INFINITY;
 
-        let dateB = b?.publishing?.publishAt || b?.priorPublishing?.publishAt;
-        dateB = dateB ? new Date(dateB).getTime() : Number.NEGATIVE_INFINITY;
+          let dateB = b?.publishing?.publishAt || b?.priorPublishing?.publishAt;
+          dateB = dateB ? new Date(dateB).getTime() : Number.NEGATIVE_INFINITY;
 
-        return dateB - dateA;
-      } else if (sort === "dateCreated") {
-        return (
-          new Date(b.meta.createdAt).getTime() -
-          new Date(a.meta.createdAt).getTime()
-        );
-      } else if (sort === "status") {
-        const aPublishing = a?.publishing || a?.priorPublishing;
-        const bPublishing = b?.publishing || b?.priorPublishing;
+          return dateB - dateA;
+        } else if (sort === "dateCreated") {
+          return (
+            new Date(b.meta.createdAt).getTime() -
+            new Date(a.meta.createdAt).getTime()
+          );
+        } else if (sort === "status") {
+          const aPublishing = a?.publishing || a?.priorPublishing;
+          const bPublishing = b?.publishing || b?.priorPublishing;
 
-        const aDate = aPublishing?.publishAt
-          ? new Date(aPublishing.publishAt)
-          : null;
-        const bDate = bPublishing?.publishAt
-          ? new Date(bPublishing.publishAt)
-          : null;
+          const aDate = aPublishing?.publishAt
+            ? new Date(aPublishing.publishAt)
+            : null;
+          const bDate = bPublishing?.publishAt
+            ? new Date(bPublishing.publishAt)
+            : null;
 
-        // Determine the status of each item
-        const aIsPublished = aDate && aDate <= now;
-        const bIsPublished = bDate && bDate <= now;
+          // Determine the status of each item
+          const aIsPublished = aDate && aDate <= now;
+          const bIsPublished = bDate && bDate <= now;
 
-        const aIsScheduled = aDate && aDate > now;
-        const bIsScheduled = bDate && bDate > now;
+          const aIsScheduled = aDate && aDate > now;
+          const bIsScheduled = bDate && bDate > now;
 
-        // Check if meta.version exists
-        const aHasVersion = a?.meta?.version != null;
-        const bHasVersion = b?.meta?.version != null;
+          // Check if meta.version exists
+          const aHasVersion = a?.meta?.version != null;
+          const bHasVersion = b?.meta?.version != null;
 
-        // Place items without meta.version at the bottom
-        if (!aHasVersion && bHasVersion) {
-          return 1;
-        } else if (aHasVersion && !bHasVersion) {
-          return -1;
+          // Place items without meta.version at the bottom
+          if (!aHasVersion && bHasVersion) {
+            return 1;
+          } else if (aHasVersion && !bHasVersion) {
+            return -1;
+          }
+
+          // Continue with the original sorting logic
+          if (aIsPublished && !bIsPublished) {
+            return -1; // A is published, B is not
+          } else if (!aIsPublished && bIsPublished) {
+            return 1; // B is published, A is not
+          } else if (aIsPublished && bIsPublished) {
+            return bDate.getTime() - aDate.getTime(); // Both are published, sort by publish date descending
+          }
+
+          if (aIsScheduled && !bIsScheduled) {
+            return -1; // A is scheduled, B is not
+          } else if (!aIsScheduled && bIsScheduled) {
+            return 1; // B is scheduled, A is not
+          } else if (aIsScheduled && bIsScheduled) {
+            return aDate.getTime() - bDate.getTime(); // Both are scheduled, sort by publish date ascending
+          }
+
+          return 0; // Neither is published nor scheduled, consider them equal
+        } else if (fields?.find((field) => field.name === sort)) {
+          const dataType = fields?.find(
+            (field) => field.name === sort
+          )?.datatype;
+          if (typeof a.data[sort] === "number") {
+            if (a.data[sort] == null) return 1;
+            if (b.data[sort] == null) return -1;
+
+            return dataType === "sort"
+              ? a.data[sort] - b.data[sort]
+              : b.data[sort] - a.data[sort];
+          }
+          if (dataType === "date" || dataType === "datetime") {
+            return (
+              new Date(b.data[sort]).getTime() -
+              new Date(a.data[sort]).getTime()
+            );
+          }
+          const aValue =
+            dataType === "images" ? a.data[sort]?.filename : a.data[sort];
+          const bValue =
+            dataType === "images" ? b.data[sort]?.filename : b.data[sort];
+          return aValue?.trim()?.localeCompare(bValue?.trim());
+        } else {
+          return (
+            new Date(b.meta.updatedAt).getTime() -
+            new Date(a.meta.updatedAt).getTime()
+          );
         }
-
-        // Continue with the original sorting logic
-        if (aIsPublished && !bIsPublished) {
-          return -1; // A is published, B is not
-        } else if (!aIsPublished && bIsPublished) {
-          return 1; // B is published, A is not
-        } else if (aIsPublished && bIsPublished) {
-          return bDate.getTime() - aDate.getTime(); // Both are published, sort by publish date descending
-        }
-
-        if (aIsScheduled && !bIsScheduled) {
-          return -1; // A is scheduled, B is not
-        } else if (!aIsScheduled && bIsScheduled) {
-          return 1; // B is scheduled, A is not
-        } else if (aIsScheduled && bIsScheduled) {
-          return aDate.getTime() - bDate.getTime(); // Both are scheduled, sort by publish date ascending
-        }
-
-        return 0; // Neither is published nor scheduled, consider them equal
-      } else {
-        return (
-          new Date(b.meta.updatedAt).getTime() -
-          new Date(a.meta.updatedAt).getTime()
-        );
       }
     });
     if (search) {

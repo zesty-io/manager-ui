@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button, ButtonGroup } from "@mui/material";
+import { Button, ButtonGroup, Typography } from "@mui/material";
 import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -59,9 +59,12 @@ export const FilterButton: FC<FilterButton> = ({
         sx={{
           backgroundColor: "common.white",
           height: "28px",
+          maxWidth: "320px",
         }}
       >
-        {buttonText}
+        <Typography variant="inherit" noWrap>
+          {buttonText}
+        </Typography>
       </Button>
       {children}
     </>
