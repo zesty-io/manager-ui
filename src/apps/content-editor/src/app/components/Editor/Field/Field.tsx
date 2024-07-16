@@ -35,7 +35,7 @@ import {
 import { AppLink } from "@zesty-io/core/AppLink";
 import { MediaApp } from "../../../../../../media/src/app";
 import { FieldTypeUUID } from "../../../../../../../shell/components/FieldTypeUUID";
-import { FieldTypeCurrency } from "../../../../../../../shell/components/FieldTypeCurrency";
+import { FieldTypeCurrencyV2 as FieldTypeCurrency } from "../../../../../../../shell/components/FieldTypeCurrency";
 import { FieldTypeInternalLink } from "../../../../../../../shell/components/FieldTypeInternalLink";
 import { FieldTypeImage } from "../../../../../../../shell/components/FieldTypeImage";
 import { FieldTypeEditor } from "../../../../../../../shell/components/FieldTypeEditor";
@@ -881,10 +881,10 @@ export const Field = ({
           errors={errors}
         >
           <FieldTypeCurrency
-            // @ts-ignore component not typed
             name={name}
-            placeholder="0.00"
-            value={value}
+            // placeholder="0.00"
+            currency={settings?.currency}
+            value={String(value)}
             onChange={onChange}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />
