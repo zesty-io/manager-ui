@@ -17,14 +17,7 @@ import {
   useGridApiRef,
   GridInitialState,
 } from "@mui/x-data-grid-pro";
-import {
-  memo,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { memo, useCallback, useLayoutEffect, useMemo, useState } from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
 import { OneToManyCell } from "./TableCells/OneToManyCell";
@@ -83,9 +76,7 @@ const METADATA_COLUMNS = [
     width: 200,
     sortable: false,
     filterable: false,
-    valueGetter: (params: any) =>
-      params.row?.publishing?.publishAt ||
-      params.row?.priorPublishing?.publishAt,
+    valueGetter: (params: any) => params.row?.publishing?.publishAt,
   },
   {
     field: "zuid",
@@ -95,8 +86,7 @@ const METADATA_COLUMNS = [
     filterable: false,
     valueGetter: (params: any) => params.row?.meta?.ZUID,
   },
-] as const;
-
+];
 const fieldTypeColumnConfigMap = {
   text: {
     width: 360,
@@ -155,9 +145,7 @@ const fieldTypeColumnConfigMap = {
   images: {
     width: 100,
     renderCell: (params: GridRenderCellParams) => {
-      const src = params?.value?.thumbnail || params?.value?.split(",")?.[0];
-
-      if (!src) {
+      if (!params.value) {
         return (
           <Stack
             sx={{
@@ -185,7 +173,7 @@ const fieldTypeColumnConfigMap = {
           }}
           width="68px"
           height="58px"
-          src={src}
+          src={params.value}
         />
       );
     },
