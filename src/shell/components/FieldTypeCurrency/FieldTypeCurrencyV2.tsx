@@ -25,13 +25,17 @@ export const FieldTypeCurrencyV2 = ({
 
   return (
     <TextField
+      name={name}
       fullWidth
       value={value}
       placeholder="0.00"
+      error={error}
+      onChange={(evt: any) => onChange(evt?.target?.value?.value, name)}
       InputProps={{
         inputComponent: NumberFormatInput as any,
         inputProps: {
           thousandSeparator: true,
+          valueIsNumericString: true,
         },
         startAdornment: (
           <Typography variant="body2" color="text.disabled" pr={0.5}>
