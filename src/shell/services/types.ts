@@ -233,7 +233,8 @@ export type ContentModelFieldDataType =
   | "link"
   | "internal_link"
   | "yes_no"
-  | "color";
+  | "color"
+  | "sort";
 
 export interface ContentModelField {
   ZUID: string;
