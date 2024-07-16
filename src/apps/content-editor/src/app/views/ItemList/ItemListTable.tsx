@@ -145,7 +145,12 @@ const fieldTypeColumnConfigMap = {
   images: {
     width: 100,
     renderCell: (params: GridRenderCellParams) => {
-      if (!params.value) {
+      const [hasError, setHasError] = useState(false);
+      const handleImageError = () => {
+        setHasError(true);
+      };
+
+      if (!params.value || hasError) {
         return (
           <Stack
             sx={{
@@ -174,6 +179,7 @@ const fieldTypeColumnConfigMap = {
           width="68px"
           height="58px"
           src={params.value}
+          onError={handleImageError}
         />
       );
     },
