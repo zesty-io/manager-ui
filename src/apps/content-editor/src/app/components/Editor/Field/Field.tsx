@@ -882,8 +882,7 @@ export const Field = ({
         >
           <FieldTypeCurrency
             name={name}
-            // placeholder="0.00"
-            currency={settings?.currency}
+            currency={settings?.currency ?? "USD"}
             value={String(value)}
             onChange={onChange}
             error={errors && Object.values(errors)?.some((error) => !!error)}

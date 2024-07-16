@@ -38,7 +38,7 @@ export const FieldTypeCurrencyV2 = ({
             {selectedCurrency?.symbol_native}
           </Typography>
         ),
-        endAdornment: !!selectedCurrency?.countryCode && (
+        endAdornment: (
           <Stack pl={0.5} direction="row" alignItems="center">
             <Box pr={0.5}>{getFlagEmoji(selectedCurrency.countryCode)}</Box>
             <Typography variant="body2" color="text.disabled">
