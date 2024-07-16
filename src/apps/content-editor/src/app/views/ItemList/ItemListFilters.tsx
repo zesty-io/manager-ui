@@ -1,4 +1,4 @@
-import { Box, Menu, MenuItem, Button } from "@mui/material";
+import { Box, Menu, MenuItem, Button, Typography } from "@mui/material";
 import {
   DateFilter,
   FilterButton,
@@ -7,9 +7,13 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { ArrowDropDownOutlined } from "@mui/icons-material";
-import { useGetLangsQuery } from "../../../../../../shell/services/instance";
+import {
+  useGetContentModelFieldsQuery,
+  useGetLangsQuery,
+} from "../../../../../../shell/services/instance";
 import { useDateFilterParams } from "../../../../../../shell/hooks/useDateFilterParams";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
+import { useParams as useRouterParams } from "react-router";
 
 const SORT_ORDER = {
   dateSaved: "Date Saved",
@@ -23,6 +27,29 @@ const STATUS_FILTER = {
   scheduled: "Scheduled",
   notPublished: "Not Published",
 } as const;
+
+const FILTERABLE_DATA_TYPES = [
+  "text",
+  "wysiwyg_basic",
+  "wysiwyg_advanced",
+  "article_writer",
+  "markdown",
+  "textarea",
+  "number",
+  "images",
+  "date",
+  "datetime",
+  "one_to_many",
+  "one_to_one",
+  "uuid",
+  "number",
+  "currency",
+  "date",
+  "datetime",
+  "link",
+  "internal_link",
+  "sort",
+] as const;
 
 const getCountryCode = (langCode: string) => {
   if (!langCode) return "";
@@ -48,6 +75,7 @@ const getFlagEmojiFromIETFTag = (langCode: string) => {
 };
 
 export const ItemListFilters = () => {
+  const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [anchorEl, setAnchorEl] = useState({
     currentTarget: null,
     id: "",
@@ -57,6 +85,8 @@ export const ItemListFilters = () => {
   const { data: languages } = useGetLangsQuery({});
   const activeLanguageCode = params.get("lang");
   const { data: users } = useGetUsersQuery();
+  const { data: fields, isFetching: isFieldsFetching } =
+    useGetContentModelFieldsQuery(modelZUID);
 
   const userOptions = useMemo(() => {
     return users?.map((user) => ({
@@ -73,7 +103,9 @@ export const ItemListFilters = () => {
         filterId="sortByFilter"
         isFilterActive={false}
         buttonText={`Sort: ${
-          SORT_ORDER[params.get("sort") as keyof typeof SORT_ORDER] ??
+          (SORT_ORDER[params.get("sort") as keyof typeof SORT_ORDER] ||
+            fields?.find((field) => field.name === params.get("sort"))
+              ?.label) ??
           SORT_ORDER.dateSaved
         }`}
         onOpenMenu={(event: React.MouseEvent<HTMLButtonElement>) => {
@@ -91,6 +123,13 @@ export const ItemListFilters = () => {
         transformOrigin={{
           vertical: -8,
           horizontal: "left",
+        }}
+        // add set width to the menu
+        PaperProps={{
+          sx: {
+            width: "240px",
+            maxHeight: "420px",
+          },
         }}
       >
         {Object.entries(SORT_ORDER).map(([key, value]) => (
@@ -112,6 +151,40 @@ export const ItemListFilters = () => {
             {value}
           </MenuItem>
         ))}
+        <Typography
+          variant="body3"
+          color="text.secondary"
+          fontWeight={600}
+          sx={{
+            display: "block",
+            pt: 1,
+            pl: 2,
+            borderTop: (theme) => `1px solid ${theme.palette.border}`,
+          }}
+        >
+          FIELDS
+        </Typography>
+        {fields
+          ?.filter((field) =>
+            FILTERABLE_DATA_TYPES.includes(field.datatype as any)
+          )
+          ?.map((field) => (
+            <MenuItem
+              key={field.ZUID}
+              onClick={() => {
+                setParams(field.name, "sort");
+                setAnchorEl({
+                  currentTarget: null,
+                  id: "",
+                });
+              }}
+              selected={params.get("sort") === field.name}
+            >
+              <Typography variant="inherit" noWrap>
+                {field.label}
+              </Typography>
+            </MenuItem>
+          ))}
       </Menu>
       <FilterButton
         filterId="statusFilter"
