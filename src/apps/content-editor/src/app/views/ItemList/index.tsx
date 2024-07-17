@@ -2,16 +2,14 @@ import { useParams as useRouterParams } from "react-router";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
 import { Box, Button, ThemeProvider, Typography } from "@mui/material";
 import {
-  useGetAllPublishingsQuery,
   useGetContentModelFieldsQuery,
-  useGetContentModelItemsQuery,
   useGetContentModelQuery,
   useGetLangsQuery,
 } from "../../../../../../shell/services/instance";
 import { theme } from "@zesty-io/material";
 import { ItemListEmpty } from "./ItemListEmpty";
 import { ItemListActions } from "./ItemListActions";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchRounded, RestartAltRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
@@ -20,25 +18,30 @@ import {
   useGetAllBinFilesQuery,
   useGetBinsQuery,
 } from "../../../../../../shell/services/mediaManager";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
-import { cloneDeep } from "lodash";
 import { useStagedChanges } from "./StagedChangesContext";
 import { UpdateListActions } from "./UpdateListActions";
 import { getDateFilterFnByValues } from "../../../../../../shell/components/Filters/DateFilter/getDateFilter";
 import { ItemListTable } from "./ItemListTable";
 import { useSelectedItems } from "./SelectedItemsContext";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
+import {
+  ContentItem,
+  ContentItemWithDirtyAndPublishing,
+} from "../../../../../../shell/services/types";
+import { fetchItems } from "../../../../../../shell/store/content";
 
 const formatDateTime = (source: string) => {
-  if (!source || isNaN(new Date(source).getTime())) return "";
+  const dateObj = new Date(source);
+  if (!source || isNaN(dateObj.getTime())) return "";
 
-  const date = new Date(source)?.toLocaleDateString("en-US", {
+  const date = dateObj.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
-  const time = new Date(source)?.toLocaleTimeString("en-US", {
+  const time = dateObj.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "numeric",
   });
@@ -46,56 +49,52 @@ const formatDateTime = (source: string) => {
   return `${date} ${time}`;
 };
 
-const now = new Date();
+const formatDate = (source: string) => {
+  const dateObj = new Date(source + "T00:00:00");
+  if (!source || isNaN(dateObj.getTime())) return "";
+
+  return dateObj.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const selectFilteredItems = (
+  state: AppState,
+  modelZUID: string,
+  activeLangId: number,
+  skip = false
+) => {
+  if (skip) {
+    return [];
+  }
+  return Object.values(state.content).filter(
+    (item: ContentItem) =>
+      item.meta.contentModelZUID === modelZUID &&
+      item.meta.langID === activeLangId
+  );
+};
 
 export const ItemList = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
-  const langCode = params.get("lang");
-  const draftItems = useSelector((state: AppState) =>
-    Object.keys(state.content)
-      .filter(
-        (item) =>
-          state.content[item].meta?.contentModelZUID === modelZUID &&
-          state.content[item].meta.ZUID.slice(0, 3) === "new"
-      )
-      .map((item) => state.content[item])
-  );
+  const dispatch = useDispatch();
+  const activeLanguageCode = params.get("lang");
   const { data: model, isFetching: isModelFetching } =
     useGetContentModelQuery(modelZUID);
-  const {
-    data: items,
-    isFetching: isModelItemsFetching,
-    isUninitialized,
-  } = useGetContentModelItemsQuery(
-    {
-      modelZUID,
-      params: {
-        lang: langCode,
-      },
-    },
-    {
-      skip: !langCode,
-    }
-  );
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
-  const { data: publishings, isFetching: isPublishingsFetching } =
-    useGetAllPublishingsQuery();
-  const allItems = useSelector((state: AppState) => state.content);
-  const instanceId = useSelector((state: AppState) => state.instance.ID);
-  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
-  const { data: bins } = useGetBinsQuery({
-    instanceId,
-    ecoId,
-  });
-  const { data: files, isFetching: isFilesFetching } = useGetAllBinFilesQuery(
-    bins?.map((bin) => bin.id),
-    { skip: !bins?.length }
-  );
-  const { data: users } = useGetUsersQuery();
   const { data: languages } = useGetLangsQuery({});
-  const activeLanguageCode = params.get("lang");
+  const activeLangId =
+    languages?.find((lang) => lang.code === activeLanguageCode)?.ID || 1;
+  const [hasMounted, setHasMounted] = useState(false);
+  const items = useSelector((state: AppState) =>
+    selectFilteredItems(state, modelZUID, activeLangId, !hasMounted)
+  );
+  const { data: users, isFetching: isUsersFetching } = useGetUsersQuery();
+
+  const [isModelItemsFetching, setIsModelItemsFetching] = useState(true);
 
   const { stagedChanges } = useStagedChanges();
   const [selectedItems] = useSelectedItems();
@@ -113,6 +112,28 @@ export const ItemList = () => {
   const userFilter = params.get("user");
 
   useEffect(() => {
+    setTimeout(() => {
+      setHasMounted(true);
+    }, 0);
+  }, []);
+
+  useEffect(() => {
+    if (activeLanguageCode) {
+      setIsModelItemsFetching(true);
+      dispatch(
+        fetchItems(modelZUID, {
+          limit: 5000,
+          page: 1,
+          lang: activeLanguageCode,
+        })
+        // @ts-ignore
+      ).then(() => {
+        setIsModelItemsFetching(false);
+      });
+    }
+  }, [modelZUID, activeLanguageCode]);
+
+  useEffect(() => {
     // if languages and no language param, set the first language as the active language
     if (languages && !activeLanguageCode) {
       setParams(languages[0].code, "lang");
@@ -120,108 +141,129 @@ export const ItemList = () => {
   }, [languages, activeLanguageCode]);
 
   const processedItems = useMemo(() => {
-    if (!items) return [];
-    let clonedItems = [...draftItems, ...items].map((item: any) => {
-      const clonedItem = cloneDeep(item);
-      clonedItem.id = item.meta.ZUID;
-      clonedItem.publishing = publishings?.find(
-        (publishing) =>
-          publishing.itemZUID === item.meta.ZUID &&
-          publishing.version === item.meta.version
-      );
-      if (clonedItem.publishing) {
-        clonedItem.publishing = {
-          ...clonedItem.publishing,
-          publishAt: clonedItem?.publishing?.publishAt
-            ? formatDateTime(clonedItem?.publishing?.publishAt)
-            : null,
-        };
-      }
-      clonedItem.priorPublishing = publishings?.find(
-        (publishing) =>
-          publishing.itemZUID === item.meta.ZUID &&
-          publishing.version !== item.meta.version
-      );
-      if (clonedItem.priorPublishing) {
-        clonedItem.priorPublishing = {
-          ...clonedItem.priorPublishing,
-          publishAt: clonedItem?.priorPublishing?.publishAt
-            ? formatDateTime(clonedItem.priorPublishing.publishAt)
-            : null,
-        };
-      }
-      clonedItem.meta.createdAt = clonedItem?.meta?.createdAt
-        ? formatDateTime(clonedItem.meta.createdAt)
-        : null;
-      clonedItem.web.updatedAt = clonedItem?.web?.updatedAt
-        ? formatDateTime(clonedItem.web.updatedAt)
-        : null;
-      const creatorData = users.find(
-        (user) => user.ZUID === clonedItem?.meta?.createdByUserZUID
-      );
-      clonedItem.meta.createdByUserName = creatorData
-        ? `${creatorData?.firstName} ${creatorData?.lastName}`
-        : null;
+    if (!items || isFieldsFetching || isUsersFetching) return [];
 
-      Object.keys(clonedItem.data).forEach((key) => {
-        const fieldType = fields?.find((field) => field.name === key)?.datatype;
+    const fieldMap = fields?.reduce((acc, field) => {
+      // @ts-ignore
+      acc[field.name] = field.datatype;
+      return acc;
+    }, {});
+
+    return items.map((item: ContentItemWithDirtyAndPublishing) => {
+      const { meta, data, web, publishing } = item;
+      const metaUser = users.find(
+        (user) => user.ZUID === meta.createdByUserZUID
+      );
+      const webUser = users.find((user) => user.ZUID === web.createdByUserZUID);
+      const publishedByUser = users.find(
+        (user) => user.ZUID === item.publishing?.publishedByUserZUID
+      );
+      const scheduledByUser = users.find(
+        (user) => user.ZUID === item.scheduling?.publishedByUserZUID
+      );
+      const clonedItem = {
+        ...item,
+        id: meta.ZUID,
+        meta: {
+          ...meta,
+          createdAt: meta.createdAt ? formatDateTime(meta.createdAt) : null,
+          createdByUserName: metaUser?.firstName
+            ? `${metaUser.firstName} ${metaUser.lastName}`
+            : null,
+          createdByUserEmail: metaUser?.email || "",
+          publishedByUserName: publishedByUser?.firstName
+            ? `${publishedByUser.firstName} ${publishedByUser.lastName}`
+            : null,
+          scheduledByUserName: scheduledByUser?.firstName
+            ? `${scheduledByUser.firstName} ${scheduledByUser.lastName}`
+            : null,
+        },
+        web: {
+          ...web,
+          updatedAt: web.updatedAt ? formatDateTime(web.updatedAt) : null,
+          createdByUserName: webUser?.firstName
+            ? `${webUser.firstName} ${webUser.lastName}`
+            : null,
+        },
+        data: { ...data },
+        publishing: {
+          ...publishing,
+          publishAt: publishing?.publishAt
+            ? formatDateTime(publishing.publishAt)
+            : null,
+        },
+        fieldData: {},
+      };
+
+      Object.keys(data).forEach((key) => {
         // @ts-ignore
-        if (
-          fieldType === "images" &&
-          clonedItem.data[key]?.split(",")?.[0]?.startsWith("3-")
-        ) {
-          clonedItem.data[key] = files?.find(
-            (file) => file.id === clonedItem.data[key]?.split(",")?.[0]
-          );
-        }
-
-        if (fieldType === "internal_link" || fieldType === "one_to_one") {
-          clonedItem.data[key] =
-            allItems?.[clonedItem.data[key]]?.web?.metaTitle ||
-            clonedItem.data[key];
-        }
-
-        if (fieldType === "one_to_many") {
-          clonedItem.data[key] = clonedItem.data[key]
-            ?.split(",")
-            .map((id: string) => allItems?.[id]?.web?.metaTitle || id)
-            ?.join(",");
-        }
-
-        if (fieldType === "date") {
-          if (!clonedItem.data[key]) return;
-
-          clonedItem.data[key] = new Date(
-            clonedItem.data[key]
-          )?.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          });
-        }
-
-        if (fieldType === "datetime") {
-          if (!clonedItem.data[key]) return;
-
-          clonedItem.data[key] = formatDateTime(clonedItem.data[key]);
+        const fieldType = fieldMap?.[key];
+        const value = data[key] as string;
+        switch (fieldType) {
+          case "images":
+            clonedItem.data[key] = value?.split(",")[0]?.startsWith("3-")
+              ? `${
+                  // @ts-ignore
+                  CONFIG.SERVICE_MEDIA_RESOLVER
+                }/resolve/${
+                  value?.split(",")[0]
+                }/getimage/?w=${68}&h=${58}&type=fit`
+              : value?.split(",")?.[0];
+            break;
+          case "internal_link":
+          case "one_to_one":
+            // @ts-ignore
+            clonedItem.data[key] = items?.[value]?.web?.metaTitle || value;
+            break;
+          case "one_to_many":
+            clonedItem.data[key] = value
+              ?.split(",")
+              // @ts-ignore
+              ?.map((id) => items?.[id]?.web?.metaTitle || id)
+              ?.join(",");
+            break;
+          case "date":
+            clonedItem.data[key] = formatDate(value);
+            break;
+          case "datetime":
+            clonedItem.data[key] = formatDateTime(value);
+            break;
+          case "dropdown":
+          case "yes_no":
+            // @ts-ignore
+            clonedItem.fieldData[key] = fields.find(
+              (field) => field.name === key
+            );
+          default:
+            break;
         }
       });
 
       return clonedItem;
     });
-    return clonedItems;
-  }, [items, publishings, files, allItems, fields, users]);
+  }, [items, fields, users, isFieldsFetching, isUsersFetching]);
 
   const sortedAndFilteredItems = useMemo(() => {
     let clonedItems = [...processedItems];
     clonedItems?.sort((a: any, b: any) => {
-      if (sort === "datePublished") {
+      if (!sort || sort === "dateSaved") {
+        const dateA = new Date(a.web.createdAt).getTime();
+        const dateB = new Date(b.web.createdAt).getTime();
+
+        if (!a.web.createdAt) {
+          return -1;
+        } else if (!b.web.createdAt) {
+          return 1;
+        } else {
+          return dateB - dateA;
+        }
+      } else if (sort === "datePublished") {
         // Handle undefined publishAt by setting a default far-future date for sorting purposes
 
-        let dateA = a?.publishing?.publishAt || a?.priorPublishing?.publishAt;
+        let dateA = a?.scheduling?.publishAt || a?.publishing?.publishAt;
         dateA = dateA ? new Date(dateA).getTime() : Number.NEGATIVE_INFINITY;
 
-        let dateB = b?.publishing?.publishAt || b?.priorPublishing?.publishAt;
+        let dateB = b?.scheduling?.publishAt || b?.publishing?.publishAt;
         dateB = dateB ? new Date(dateB).getTime() : Number.NEGATIVE_INFINITY;
 
         return dateB - dateA;
@@ -231,22 +273,11 @@ export const ItemList = () => {
           new Date(a.meta.createdAt).getTime()
         );
       } else if (sort === "status") {
-        const aPublishing = a?.publishing || a?.priorPublishing;
-        const bPublishing = b?.publishing || b?.priorPublishing;
+        const aIsPublished = a?.publishing?.publishAt;
+        const bIsPublished = b?.publishing?.publishAt;
 
-        const aDate = aPublishing?.publishAt
-          ? new Date(aPublishing.publishAt)
-          : null;
-        const bDate = bPublishing?.publishAt
-          ? new Date(bPublishing.publishAt)
-          : null;
-
-        // Determine the status of each item
-        const aIsPublished = aDate && aDate <= now;
-        const bIsPublished = bDate && bDate <= now;
-
-        const aIsScheduled = aDate && aDate > now;
-        const bIsScheduled = bDate && bDate > now;
+        const aIsScheduled = a?.scheduling?.publishAt;
+        const bIsScheduled = b?.scheduling?.publishAt;
 
         // Check if meta.version exists
         const aHasVersion = a?.meta?.version != null;
@@ -259,24 +290,60 @@ export const ItemList = () => {
           return -1;
         }
 
-        // Continue with the original sorting logic
-        if (aIsPublished && !bIsPublished) {
-          return -1; // A is published, B is not
-        } else if (!aIsPublished && bIsPublished) {
-          return 1; // B is published, A is not
-        } else if (aIsPublished && bIsPublished) {
-          return bDate.getTime() - aDate.getTime(); // Both are published, sort by publish date descending
+        // Items with only publish date
+        if (aIsPublished && !aIsScheduled && bIsPublished && !bIsScheduled) {
+          return (
+            new Date(bIsPublished).getTime() - new Date(aIsPublished).getTime()
+          ); // Both have only published date, sort by publish date descending
+        } else if (aIsPublished && !aIsScheduled) {
+          return -1; // A has only published date, B does not
+        } else if (bIsPublished && !bIsScheduled) {
+          return 1; // B has only published date, A does not
         }
 
-        if (aIsScheduled && !bIsScheduled) {
+        // Items with scheduled date (and also publish date)
+        if (aIsScheduled && bIsScheduled) {
+          return (
+            new Date(aIsScheduled).getTime() - new Date(bIsScheduled).getTime()
+          ); // Both are scheduled, sort by scheduled date ascending
+        } else if (aIsScheduled) {
           return -1; // A is scheduled, B is not
-        } else if (!aIsScheduled && bIsScheduled) {
+        } else if (bIsScheduled) {
           return 1; // B is scheduled, A is not
-        } else if (aIsScheduled && bIsScheduled) {
-          return aDate.getTime() - bDate.getTime(); // Both are scheduled, sort by publish date ascending
         }
 
-        return 0; // Neither is published nor scheduled, consider them equal
+        // Items with neither publish nor schedule dates
+        if (aIsPublished && bIsPublished) {
+          return (
+            new Date(bIsPublished).getTime() - new Date(aIsPublished).getTime()
+          ); // Both are published, sort by publish date descending
+        } else if (aIsPublished) {
+          return -1; // A is published, B is not
+        } else if (bIsPublished) {
+          return 1; // B is published, A is not
+        }
+
+        return 0; // Neither are published or scheduled
+      } else if (fields?.find((field) => field.name === sort)) {
+        const dataType = fields?.find((field) => field.name === sort)?.datatype;
+        if (typeof a.data[sort] === "number") {
+          if (a.data[sort] == null) return 1;
+          if (b.data[sort] == null) return -1;
+
+          return dataType === "sort"
+            ? a.data[sort] - b.data[sort]
+            : b.data[sort] - a.data[sort];
+        }
+        if (dataType === "date" || dataType === "datetime") {
+          return (
+            new Date(b.data[sort]).getTime() - new Date(a.data[sort]).getTime()
+          );
+        }
+        const aValue =
+          dataType === "images" ? a.data[sort]?.filename : a.data[sort];
+        const bValue =
+          dataType === "images" ? b.data[sort]?.filename : b.data[sort];
+        return aValue?.trim()?.localeCompare(bValue?.trim());
       } else {
         return (
           new Date(b.meta.updatedAt).getTime() -
@@ -307,7 +374,7 @@ export const ItemList = () => {
           item?.publishing?.publishAt
             ?.toLowerCase()
             .includes(search.toLowerCase()) ||
-          item?.priorPublishing?.publishAt
+          item?.scheduling?.publishAt
             ?.toLowerCase()
             .includes(search.toLowerCase()) ||
           item?.meta?.ZUID?.toLowerCase().includes(search.toLowerCase()) ||
@@ -320,20 +387,11 @@ export const ItemList = () => {
     if (statusFilter) {
       clonedItems = clonedItems?.filter((item) => {
         if (statusFilter === "published") {
-          return (
-            (item.publishing?.publishAt &&
-              new Date(item.publishing.publishAt) < new Date()) ||
-            item?.priorPublishing?.publishAt
-          );
+          return item.publishing?.publishAt && !item.scheduling?.publishAt;
         } else if (statusFilter === "scheduled") {
-          return (
-            item.publishing?.publishAt &&
-            new Date(item.publishing.publishAt) > new Date()
-          );
+          return item.scheduling?.publishAt;
         } else if (statusFilter === "notPublished") {
-          return (
-            !item.publishing?.publishAt && !item?.priorPublishing?.publishAt
-          );
+          return !item.publishing?.publishAt && !item?.scheduling?.publishAt;
         }
       });
     }
@@ -386,7 +444,7 @@ export const ItemList = () => {
         >
           {(stagedChanges && Object.keys(stagedChanges)?.length) ||
           selectedItems?.length ? (
-            <UpdateListActions />
+            <UpdateListActions items={items as ContentItem[]} />
           ) : (
             <>
               <Box flex={1}>
@@ -421,19 +479,14 @@ export const ItemList = () => {
             flexDirection: "column",
           }}
         >
-          {!items?.length && !isModelItemsFetching && !isUninitialized ? (
+          {!items?.length && !isModelItemsFetching ? (
             <ItemListEmpty />
           ) : (
             <>
               <ItemListFilters />
               <ItemListTable
                 key={modelZUID}
-                loading={
-                  isModelItemsFetching ||
-                  isFieldsFetching ||
-                  isPublishingsFetching ||
-                  isFilesFetching
-                }
+                loading={isFieldsFetching || isUsersFetching}
                 rows={sortedAndFilteredItems}
               />
               {!sortedAndFilteredItems?.length &&
@@ -474,7 +527,13 @@ export const ItemList = () => {
                 )}
               {!sortedAndFilteredItems?.length &&
                 !isModelItemsFetching &&
-                !search && (
+                !search &&
+                (sort ||
+                  statusFilter ||
+                  dateFilter?.preset ||
+                  dateFilter?.from ||
+                  dateFilter?.to ||
+                  userFilter) && (
                   <Box
                     bgcolor="common.white"
                     flex={1}
