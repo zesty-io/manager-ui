@@ -1,25 +1,12 @@
 import { Chip, Stack, Tooltip } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
-import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
 
 export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
-  const { data: users } = useGetUsersQuery();
-
-  const createdByUser = users?.find(
-    (user) => user.ZUID === params.row?.web?.createdByUserZUID
-  );
-  const publishedByUser =
-    users?.find(
-      (user) => user.ZUID === params.row?.publishing?.publishedByUserZUID
-    ) ||
-    users?.find(
-      (user) => user.ZUID === params.row?.priorPublishing?.publishedByUserZUID
-    );
-  const isScheduledPublish =
-    new Date(
-      params.row?.publishing?.publishAt ||
-        params.row?.priorPublishing?.publishAt
-    )?.getTime() > new Date()?.getTime();
+  const createdByUserName = params.row?.web?.createdByUserName;
+  const isScheduledPublish = !!params.row?.scheduling?.publishAt;
+  const publishedByUserName = isScheduledPublish
+    ? params.row?.meta?.scheduledByUserName
+    : params.row?.meta?.publishedByUserName;
 
   return (
     <Stack spacing={0.25}>
@@ -52,7 +39,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
                   timeZoneName: "short",
                 }
               )}{" "}
-              <br /> by {createdByUser?.firstName} {createdByUser?.lastName}
+              <br /> by {createdByUserName}
             </div>
           }
           slotProps={{
@@ -73,8 +60,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
           />
         </Tooltip>
       )}
-      {(params.row?.publishing?.version ||
-        params.row?.priorPublishing?.version) && (
+      {(params.row?.publishing?.version || params.row?.scheduling?.version) && (
         <Tooltip
           placement="bottom-start"
           enterDelay={1000}
@@ -92,13 +78,14 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
           title={
             <div>
               v
-              {params.row?.publishing?.version ||
-                params.row?.priorPublishing?.version}{" "}
+              {params.row?.scheduling?.version ||
+                params.row?.publishing?.version}{" "}
               {isScheduledPublish ? "scheduled to publish" : "published"} on{" "}
               <br />
               {new Date(
-                params.row?.publishing?.publishAt ||
-                  params.row?.priorPublishing?.publishAt
+                isScheduledPublish
+                  ? params.row?.scheduling?.publishAt
+                  : params.row?.publishing?.publishAt
               ).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -107,7 +94,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
                 minute: "numeric",
                 timeZoneName: "short",
               })}{" "}
-              <br /> by {publishedByUser?.firstName} {publishedByUser?.lastName}
+              <br /> by {publishedByUserName}
             </div>
           }
           slotProps={{
@@ -120,8 +107,7 @@ export const VersionCell = ({ params }: { params: GridRenderCellParams }) => {
         >
           <Chip
             label={`v${
-              params.row?.publishing?.version ||
-              params.row?.priorPublishing?.version
+              params.row?.scheduling?.version || params.row?.publishing?.version
             }`}
             size="small"
             color={isScheduledPublish ? "warning" : "success"}
