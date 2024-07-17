@@ -4,7 +4,7 @@ import { MD5 } from "../../../../../../../utility/md5";
 
 type UserCellProps = { params: GridRenderCellParams };
 export const UserCell = ({ params }: UserCellProps) => {
-  if (!params?.row?.meta?.createdByUserName) <></>;
+  if (!params?.row?.meta?.createdByUserName) return <></>;
   return (
     <Stack direction="row" gap={1.5} alignItems="center">
       <Avatar
