@@ -44,7 +44,7 @@ import { fetchFields } from "../../../../../../shell/store/fields";
 import { FieldTypeInternalLink } from "../../../../../../shell/components/FieldTypeInternalLink";
 import { LinkOption } from "../../../../../content-editor/src/app/components/Editor/Field/LinkOption";
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
-import { FieldTypeCurrency } from "../../../../../../shell/components/FieldTypeCurrency";
+import { FieldTypeCurrencyV2 as FieldTypeCurrency } from "../../../../../../shell/components/FieldTypeCurrency";
 import { FieldTypeDate } from "../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeColor } from "../../../../../../shell/components/FieldTypeColor";
@@ -65,6 +65,7 @@ type DefaultValueInputProps = {
     relatedFieldZUID: string;
   };
   options: FieldSettingsOptions[];
+  currency?: string;
 };
 
 export const DefaultValueInput = ({
@@ -75,6 +76,7 @@ export const DefaultValueInput = ({
   mediaRules,
   relationshipFields: { relatedModelZUID, relatedFieldZUID },
   options,
+  currency,
 }: DefaultValueInputProps) => {
   const [imageModal, setImageModal] = useState(null);
   const dispatch = useDispatch();
@@ -573,12 +575,11 @@ export const DefaultValueInput = ({
       return (
         <FieldTypeCurrency
           data-cy="DefaultValueInput"
-          // @ts-ignore component not typed
-          name={"defaultValue"}
-          placeholder="0.00"
-          value={value}
+          name="defaultValue"
+          value={String(value)}
           onChange={onChange}
           error={error}
+          currency={currency}
         />
       );
     case "date":

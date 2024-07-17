@@ -78,6 +78,7 @@ export const Rules = ({
           relatedFieldZUID: formData["relatedFieldZUID"] as string,
         }}
         options={formData["options"] as FieldSettingsOptions[]}
+        currency={(formData["currency"] as string) || "USD"}
       />
 
       {(type === "text" || type === "textarea") && (
