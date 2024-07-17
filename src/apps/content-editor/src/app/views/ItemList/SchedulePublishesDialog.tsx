@@ -24,11 +24,13 @@ type SchedulePublishesModalProps = {
   items: ContentItem[];
   onCancel: () => void;
   onConfirm: (items: ContentItem[], publishDateTime?: string) => void;
+  loading: boolean;
 };
 export const SchedulePublishesModal = ({
   onCancel,
   items,
   onConfirm,
+  loading,
 }: SchedulePublishesModalProps) => {
   const [publishDateTime, setPublishDateTime] = useState(
     moment().minute(0).second(0).add(1, "hours").format("yyyy-MM-DD HH:mm:ss")
@@ -130,6 +132,7 @@ export const SchedulePublishesModal = ({
         <LoadingButton
           data-cy="SchedulePublishButton"
           variant="contained"
+          loading={loading}
           startIcon={<ScheduleRoundedIcon />}
           onClick={() => {
             if (isSelectedDatetimePast) {

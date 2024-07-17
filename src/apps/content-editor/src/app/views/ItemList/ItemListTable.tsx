@@ -17,14 +17,7 @@ import {
   useGridApiRef,
   GridInitialState,
 } from "@mui/x-data-grid-pro";
-import {
-  memo,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { memo, useCallback, useLayoutEffect, useMemo, useState } from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
 import { OneToManyCell } from "./TableCells/OneToManyCell";
@@ -34,6 +27,7 @@ import { VersionCell } from "./TableCells/VersionCell";
 import { DropDownCell } from "./TableCells/DropdownCell";
 import { SortCell } from "./TableCells/SortCell";
 import { BooleanCell } from "./TableCells/BooleanCell";
+import { ImageCell } from "./TableCells/ImageCell";
 
 type ItemListTableProps = {
   loading: boolean;
@@ -83,9 +77,7 @@ const METADATA_COLUMNS = [
     width: 200,
     sortable: false,
     filterable: false,
-    valueGetter: (params: any) =>
-      params.row?.publishing?.publishAt ||
-      params.row?.priorPublishing?.publishAt,
+    valueGetter: (params: any) => params.row?.publishing?.publishAt,
   },
   {
     field: "zuid",
@@ -95,8 +87,7 @@ const METADATA_COLUMNS = [
     filterable: false,
     valueGetter: (params: any) => params.row?.meta?.ZUID,
   },
-] as const;
-
+];
 const fieldTypeColumnConfigMap = {
   text: {
     width: 360,
@@ -155,39 +146,7 @@ const fieldTypeColumnConfigMap = {
   images: {
     width: 100,
     renderCell: (params: GridRenderCellParams) => {
-      const src = params?.value?.thumbnail || params?.value?.split(",")?.[0];
-
-      if (!src) {
-        return (
-          <Stack
-            sx={{
-              backgroundColor: "grey.100",
-              width: "100%",
-              height: "100%",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              zIndex: -1,
-            }}
-          >
-            <ImageRounded fontSize="small" color="action" />
-          </Stack>
-        );
-      }
-
-      return (
-        <Box
-          component="img"
-          sx={{
-            backgroundColor: (theme) => theme.palette.grey[100],
-            objectFit: "contain",
-            zIndex: -1,
-          }}
-          width="68px"
-          height="58px"
-          src={src}
-        />
-      );
+      return <ImageCell params={params} />;
     },
   },
   dropdown: {
