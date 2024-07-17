@@ -8,23 +8,25 @@ import {
   Box,
   Stack,
   ButtonBaseActions,
-  List,
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { useRef } from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { DialogContentItem } from "./DialogContentItem";
 import pluralizeWord from "../../../../../../utility/pluralizeWord";
+import { LoadingButton } from "@mui/lab";
 
 type ConfirmPublishesModalProps = {
   items: ContentItem[];
   onConfirm: (items: ContentItem[]) => void;
   onCancel: () => void;
+  loading: boolean;
 };
 export const ConfirmPublishesModal = ({
   items,
   onConfirm,
   onCancel,
+  loading,
 }: ConfirmPublishesModalProps) => {
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
@@ -67,7 +69,8 @@ export const ConfirmPublishesModal = ({
         <Button variant="text" color="inherit" onClick={() => onCancel()}>
           Cancel
         </Button>
-        <Button
+        <LoadingButton
+          loading={loading}
           action={(actions) => (actionRef.current = actions)}
           variant="contained"
           color="success"
@@ -78,7 +81,7 @@ export const ConfirmPublishesModal = ({
           data-cy="ConfirmPublishButton"
         >
           Publish Items ({items.length})
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

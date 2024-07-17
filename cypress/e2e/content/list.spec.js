@@ -90,9 +90,7 @@ describe("Content List Navigation", () => {
 describe("Content List Actions", () => {
   before(() => {
     cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/bin/*", () => {
-        cy.visit("/content/6-e3d0e0-965qp6");
-      });
+      cy.visit("/content/6-a8bae2f4d7-rffln5");
     });
   });
 
