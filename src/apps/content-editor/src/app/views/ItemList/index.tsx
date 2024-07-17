@@ -76,8 +76,6 @@ const selectFilteredItems = (
   );
 };
 
-const now = new Date();
-
 export const ItemList = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
@@ -93,16 +91,6 @@ export const ItemList = () => {
   const [hasMounted, setHasMounted] = useState(false);
   const items = useSelector((state: AppState) =>
     selectFilteredItems(state, modelZUID, activeLangId, !hasMounted)
-  );
-  const instanceId = useSelector((state: AppState) => state.instance.ID);
-  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
-  const { data: bins } = useGetBinsQuery({
-    instanceId,
-    ecoId,
-  });
-  const { data: files, isFetching: isFilesFetching } = useGetAllBinFilesQuery(
-    bins?.map((bin) => bin.id),
-    { skip: !bins?.length }
   );
   const { data: users, isFetching: isUsersFetching } = useGetUsersQuery();
 
@@ -153,8 +141,7 @@ export const ItemList = () => {
   }, [languages, activeLanguageCode]);
 
   const processedItems = useMemo(() => {
-    if (!items || isFilesFetching || isFieldsFetching || isUsersFetching)
-      return [];
+    if (!items || isFieldsFetching || isUsersFetching) return [];
 
     const fieldMap = fields?.reduce((acc, field) => {
       // @ts-ignore
@@ -254,15 +241,7 @@ export const ItemList = () => {
 
       return clonedItem;
     });
-  }, [
-    items,
-    files,
-    fields,
-    users,
-    isFilesFetching,
-    isFieldsFetching,
-    isUsersFetching,
-  ]);
+  }, [items, fields, users, isFieldsFetching, isUsersFetching]);
 
   const sortedAndFilteredItems = useMemo(() => {
     let clonedItems = [...processedItems];
@@ -507,7 +486,7 @@ export const ItemList = () => {
               <ItemListFilters />
               <ItemListTable
                 key={modelZUID}
-                loading={isFieldsFetching || isFilesFetching || isUsersFetching}
+                loading={isFieldsFetching || isUsersFetching}
                 rows={sortedAndFilteredItems}
               />
               {!sortedAndFilteredItems?.length &&

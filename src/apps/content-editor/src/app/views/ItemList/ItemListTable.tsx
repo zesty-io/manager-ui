@@ -27,6 +27,7 @@ import { VersionCell } from "./TableCells/VersionCell";
 import { DropDownCell } from "./TableCells/DropdownCell";
 import { SortCell } from "./TableCells/SortCell";
 import { BooleanCell } from "./TableCells/BooleanCell";
+import { ImageCell } from "./TableCells/ImageCell";
 
 type ItemListTableProps = {
   loading: boolean;
@@ -145,43 +146,7 @@ const fieldTypeColumnConfigMap = {
   images: {
     width: 100,
     renderCell: (params: GridRenderCellParams) => {
-      const [hasError, setHasError] = useState(false);
-      const handleImageError = () => {
-        setHasError(true);
-      };
-
-      if (!params.value || hasError) {
-        return (
-          <Stack
-            sx={{
-              backgroundColor: "grey.100",
-              width: "100%",
-              height: "100%",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              zIndex: -1,
-            }}
-          >
-            <ImageRounded fontSize="small" color="action" />
-          </Stack>
-        );
-      }
-
-      return (
-        <Box
-          component="img"
-          sx={{
-            backgroundColor: (theme) => theme.palette.grey[100],
-            objectFit: "contain",
-            zIndex: -1,
-          }}
-          width="68px"
-          height="58px"
-          src={params.value}
-          onError={handleImageError}
-        />
-      );
+      return <ImageCell params={params} />;
     },
   },
   dropdown: {
