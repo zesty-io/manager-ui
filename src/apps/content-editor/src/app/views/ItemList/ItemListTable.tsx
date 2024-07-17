@@ -34,8 +34,8 @@ import { VersionCell } from "./TableCells/VersionCell";
 import { DropDownCell } from "./TableCells/DropdownCell";
 import { SortCell } from "./TableCells/SortCell";
 import { BooleanCell } from "./TableCells/BooleanCell";
-import { currencies } from "../../../../../../shell/components/FieldTypeCurrency/currenciesV2";
-import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currenciesV2";
+import { currencies } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
+import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 
 type ItemListTableProps = {
   loading: boolean;

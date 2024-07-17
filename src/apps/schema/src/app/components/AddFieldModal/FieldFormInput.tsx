@@ -29,7 +29,7 @@ import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
-import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currenciesV2";
+import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 

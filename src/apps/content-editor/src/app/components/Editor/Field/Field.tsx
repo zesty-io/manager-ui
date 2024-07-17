@@ -35,7 +35,7 @@ import {
 import { AppLink } from "@zesty-io/core/AppLink";
 import { MediaApp } from "../../../../../../media/src/app";
 import { FieldTypeUUID } from "../../../../../../../shell/components/FieldTypeUUID";
-import { FieldTypeCurrencyV2 as FieldTypeCurrency } from "../../../../../../../shell/components/FieldTypeCurrency";
+import { FieldTypeCurrency } from "../../../../../../../shell/components/FieldTypeCurrency";
 import { FieldTypeInternalLink } from "../../../../../../../shell/components/FieldTypeInternalLink";
 import { FieldTypeImage } from "../../../../../../../shell/components/FieldTypeImage";
 import { FieldTypeEditor } from "../../../../../../../shell/components/FieldTypeEditor";

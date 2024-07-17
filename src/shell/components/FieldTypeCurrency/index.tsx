@@ -1,24 +1,24 @@
 import { useMemo } from "react";
 import { TextField, Typography, Box, Stack } from "@mui/material";
 
-import { currencies } from "./currenciesV2";
+import { currencies } from "./currencies";
 import { NumberFormatInput } from "../NumberFormatInput";
 import getFlagEmoji from "../../../utility/getFlagEmoji";
 
-type FieldTypeCurrencyV2Props = {
+type FieldTypeCurrencyProps = {
   name: string;
   value: string;
   currency: string;
   error: boolean;
   onChange: (value: string, name: string) => void;
 };
-export const FieldTypeCurrencyV2 = ({
+export const FieldTypeCurrency = ({
   name,
   currency,
   value,
   error,
   onChange,
-}: FieldTypeCurrencyV2Props) => {
+}: FieldTypeCurrencyProps) => {
   const selectedCurrency = useMemo(() => {
     return currencies.find((_currency) => _currency.value === currency);
   }, [currency]);

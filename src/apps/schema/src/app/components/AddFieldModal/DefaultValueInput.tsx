@@ -44,7 +44,7 @@ import { fetchFields } from "../../../../../../shell/store/fields";
 import { FieldTypeInternalLink } from "../../../../../../shell/components/FieldTypeInternalLink";
 import { LinkOption } from "../../../../../content-editor/src/app/components/Editor/Field/LinkOption";
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
-import { FieldTypeCurrencyV2 as FieldTypeCurrency } from "../../../../../../shell/components/FieldTypeCurrency";
+import { FieldTypeCurrency } from "../../../../../../shell/components/FieldTypeCurrency";
 import { FieldTypeDate } from "../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeColor } from "../../../../../../shell/components/FieldTypeColor";

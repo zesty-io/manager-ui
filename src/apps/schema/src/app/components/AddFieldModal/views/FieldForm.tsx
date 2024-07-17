@@ -72,7 +72,7 @@ import { MaxLengths } from "../../../../../../content-editor/src/app/components/
 import {
   Currency,
   currencies,
-} from "../../../../../../../shell/components/FieldTypeCurrency/currenciesV2";
+} from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
 import getFlagEmoji from "../../../../../../../utility/getFlagEmoji";
 
 type ActiveTab = "details" | "rules" | "learn";
