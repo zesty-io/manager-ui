@@ -805,7 +805,13 @@ export const FieldForm = ({
                     key={value.value}
                     sx={{ color: "text.primary" }}
                   >
-                    {getFlagEmoji(value.countryCode)}
+                    <Box
+                      component="img"
+                      height={16}
+                      src={`/images/flags/${value.countryCode?.toLowerCase()}.svg`}
+                      loading="lazy"
+                      alt={`${value.countryCode} flag`}
+                    />
                     <Typography variant="body1" fontWeight={700} pl={1}>
                       {value.value} {value.symbol_native} &nbsp;
                     </Typography>

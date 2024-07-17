@@ -44,7 +44,14 @@ export const FieldTypeCurrencyV2 = ({
         ),
         endAdornment: (
           <Stack pl={0.5} direction="row" alignItems="center">
-            <Box pr={0.5}>{getFlagEmoji(selectedCurrency.countryCode)}</Box>
+            <Box
+              component="img"
+              pr={0.5}
+              height={14}
+              src={`/images/flags/${selectedCurrency.countryCode?.toLowerCase()}.svg`}
+              loading="lazy"
+              alt={`${selectedCurrency.countryCode} flag`}
+            />
             <Typography variant="body2" color="text.disabled">
               {selectedCurrency.value}
             </Typography>
