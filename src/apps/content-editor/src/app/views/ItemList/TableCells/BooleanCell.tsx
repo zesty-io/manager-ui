@@ -1,15 +1,10 @@
-import { useParams as useRouterParams } from "react-router";
-import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 import { useStagedChanges } from "../StagedChangesContext";
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 
 export const BooleanCell = ({ params }: { params: GridRenderCellParams }) => {
   const { stagedChanges, updateStagedChanges } = useStagedChanges();
-  const { modelZUID } = useRouterParams<{ modelZUID: string }>();
-  const { data: fields, isFetching: isFieldsFetching } =
-    useGetContentModelFieldsQuery(modelZUID);
-  const field = fields?.find((field) => field.name === params.field);
+  const field = params.row.fieldData[params.field];
   const handleChange = (value: any) => {
     updateStagedChanges(params.row.id, params.field, value);
   };
