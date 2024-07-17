@@ -181,19 +181,20 @@ export const MoreMenu = () => {
           </ListItemIcon>
           Edit Template
         </MenuItem>
-        {canDelete}
-        <MenuItem
-          data-cy="DeleteContentItem"
-          onClick={() => {
-            setShowDeleteItemDialog(true);
-            setAnchorEl(null);
-          }}
-        >
-          <ListItemIcon>
-            <DeleteRounded />
-          </ListItemIcon>
-          Delete Item
-        </MenuItem>
+        {canDelete && (
+          <MenuItem
+            data-cy="DeleteContentItem"
+            onClick={() => {
+              setShowDeleteItemDialog(true);
+              setAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <DeleteRounded />
+            </ListItemIcon>
+            Delete Item
+          </MenuItem>
+        )}
       </Menu>
       {showDuplicateItemDialog && (
         <DuplicateItemDialog
