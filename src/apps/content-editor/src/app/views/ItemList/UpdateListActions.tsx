@@ -19,13 +19,11 @@ import {
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
-import { useParams } from "../../../../../../shell/hooks/useParams";
 import { useStagedChanges } from "./StagedChangesContext";
 import { LoadingButton } from "@mui/lab";
 import {
   useCreateItemsPublishingMutation,
   useDeleteContentItemsMutation,
-  useGetContentModelItemsQuery,
   useUpdateContentItemsMutation,
 } from "../../../../../../shell/services/instance";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
@@ -36,24 +34,25 @@ import { ConfirmDeletesDialog } from "./ConfirmDeletesDialog";
 import { notify } from "../../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
+import { ContentItem } from "../../../../../../shell/services/types";
+import {
+  fetchItem,
+  fetchItemPublishings,
+} from "../../../../../../shell/store/content";
 
-export const UpdateListActions = () => {
+type UpdateListActionsProps = {
+  items: ContentItem[];
+};
+
+export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
-  const [params, setParams] = useParams();
   const canPublish = usePermission("PUBLISH");
   const canDelete = usePermission("DELETE");
   const canUpdate = usePermission("UPDATE");
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
-  const langCode = params.get("lang");
   const [itemsToPublish, setItemsToPublish] = useState<string[]>([]);
   const [itemsToSchedule, setItemsToSchedule] = useState<string[]>([]);
-  const { data: items } = useGetContentModelItemsQuery({
-    modelZUID,
-    params: {
-      lang: langCode,
-    },
-  });
   const [showPublishesModal, setShowPublishesModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showDeletesModal, setShowDeletesModal] = useState(false);
@@ -61,14 +60,15 @@ export const UpdateListActions = () => {
     useStagedChanges();
   const [selectedItems, setSelectedItems] = useSelectedItems();
 
-  const [updateContentItems, { isLoading: isSaving }] =
-    useUpdateContentItemsMutation();
+  const [updateContentItems] = useUpdateContentItemsMutation();
 
-  const [createItemsPublishing, { isLoading: isPublishing }] =
-    useCreateItemsPublishingMutation();
+  const [createItemsPublishing] = useCreateItemsPublishingMutation();
 
   const [deleteContentItems, { isLoading: isDeleting }] =
     useDeleteContentItemsMutation();
+
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const saveShortcut = useMetaKey("s", () => {
     handleSave();
@@ -87,10 +87,11 @@ export const UpdateListActions = () => {
 
   const handleSave = async () => {
     try {
+      setIsSaving(true);
       await updateContentItems({
         modelZUID,
         body: Object.entries(stagedChanges).map(([id, changes]: any) => {
-          const item = items.find((item) => item.meta.ZUID === id);
+          const item = items.find((item: ContentItem) => item.meta.ZUID === id);
           return {
             ...item,
             data: {
@@ -100,8 +101,15 @@ export const UpdateListActions = () => {
           };
         }),
       });
+      await Promise.allSettled([
+        Object.keys(stagedChanges).forEach((itemZUID) => {
+          dispatch(fetchItem(modelZUID, itemZUID));
+        }),
+      ]);
+      setIsSaving(false);
       clearStagedChanges({});
     } catch (err) {
+      setIsSaving(false);
       dispatch(
         notify({
           kind: "error",
@@ -113,6 +121,7 @@ export const UpdateListActions = () => {
 
   const handleSaveAndPublish = async (isSchedule = false) => {
     try {
+      setIsSaving(true);
       const response = await updateContentItems({
         modelZUID,
         body: Object.entries(stagedChanges).map(([id, changes]: any) => {
@@ -127,6 +136,12 @@ export const UpdateListActions = () => {
         }),
       });
 
+      await Promise.allSettled([
+        Object.keys(stagedChanges).forEach((itemZUID) => {
+          dispatch(fetchItem(modelZUID, itemZUID));
+        }),
+      ]);
+      setIsSaving(false);
       if (isSchedule) {
         // @ts-ignore
         setItemsToSchedule([...response?.data?.data]);
@@ -135,6 +150,7 @@ export const UpdateListActions = () => {
         setItemsToPublish([...response?.data?.data]);
       }
     } catch (err) {
+      setIsSaving(false);
       dispatch(
         notify({
           kind: "error",
@@ -336,7 +352,9 @@ export const UpdateListActions = () => {
             clearStagedChanges({});
             setShowPublishesModal(false);
           }}
+          loading={isPublishing}
           onConfirm={(items) => {
+            setIsPublishing(true);
             createItemsPublishing({
               modelZUID,
               body: items?.map((item) => {
@@ -349,13 +367,15 @@ export const UpdateListActions = () => {
               }),
             })
               .unwrap()
-              .then(() => {
+              .then(async () => {
+                await dispatch(fetchItemPublishings());
                 setItemsToPublish([]);
                 clearStagedChanges({});
                 setSelectedItems([]);
                 setShowPublishesModal(false);
               })
               .catch((res) => {
+                setIsPublishing(false);
                 dispatch(
                   notify({
                     kind: "error",
@@ -376,7 +396,9 @@ export const UpdateListActions = () => {
             clearStagedChanges({});
             setShowScheduleModal(false);
           }}
+          loading={isPublishing}
           onConfirm={(items, publishDateTime) => {
+            setIsPublishing(true);
             createItemsPublishing({
               modelZUID,
               body: items?.map((item) => {
@@ -389,13 +411,15 @@ export const UpdateListActions = () => {
               }),
             })
               .unwrap()
-              .then((response) => {
+              .then(async (response) => {
+                await dispatch(fetchItemPublishings());
                 setItemsToSchedule([]);
                 clearStagedChanges({});
                 setSelectedItems([]);
                 setShowScheduleModal(false);
               })
               .catch((res) => {
+                setIsPublishing(false);
                 dispatch(
                   notify({
                     kind: "error",
@@ -419,7 +443,12 @@ export const UpdateListActions = () => {
               modelZUID,
               body: items?.map((item) => item.meta.ZUID),
             }).then(() => {
-              setSelectedItems([]);
+              items.forEach((item) => {
+                dispatch({
+                  type: "REMOVE_ITEM",
+                  itemZUID: item.meta.ZUID,
+                });
+              });
               setShowDeletesModal(false);
             });
           }}
