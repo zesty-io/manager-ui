@@ -18,6 +18,7 @@ export const FieldTypeCurrency = ({
   value,
   error,
   onChange,
+  ...otherProps
 }: FieldTypeCurrencyProps) => {
   const selectedCurrency = useMemo(() => {
     return currencies.find((_currency) => _currency.value === currency);
@@ -25,6 +26,7 @@ export const FieldTypeCurrency = ({
 
   return (
     <TextField
+      {...otherProps}
       name={name}
       fullWidth
       value={value}
