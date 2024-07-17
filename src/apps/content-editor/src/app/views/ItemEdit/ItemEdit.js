@@ -331,7 +331,6 @@ export default function ItemEdit() {
     } finally {
       if (isMounted.current) {
         setSaving(false);
-        setSaveClicked(false);
       }
     }
   }
