@@ -527,10 +527,9 @@ export const FileModalContent: FC<Props> = ({
             </Box>
           </Box>
         </Box>
-        {/* TODO: Still pending confirmation about the data to render here since updated_at gets changed even if the user just renames the file */}
-        {/* {!!updatedAt && (
+        {!!updatedAt && (
           <Box sx={{ mt: 3 }}>
-            <Typography variant="body2">Replaced On</Typography>
+            <Typography variant="body2">Updated On</Typography>
             <Box sx={{ display: "flex", mt: 1 }}>
               <Box
                 sx={{
@@ -562,7 +561,7 @@ export const FileModalContent: FC<Props> = ({
               </Box>
             </Box>
           </Box>
-        )} */}
+        )}
       </Box>
     </Box>
   );
