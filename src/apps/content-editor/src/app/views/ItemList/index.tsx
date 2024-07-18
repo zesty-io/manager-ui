@@ -213,13 +213,11 @@ export const ItemList = () => {
             break;
           case "internal_link":
           case "one_to_one":
-            // @ts-ignore
             clonedItem.data[key] = allItems?.[value]?.web?.metaTitle || value;
             break;
           case "one_to_many":
             clonedItem.data[key] = value
               ?.split(",")
-              // @ts-ignore
               ?.map((id) => allItems?.[id]?.web?.metaTitle || id)
               ?.join(",");
             break;
