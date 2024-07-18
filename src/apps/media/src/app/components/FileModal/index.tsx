@@ -260,6 +260,7 @@ export const FileModal: FC<Props> = ({
             src={data.url}
             filename={data.filename}
             imageSettings={imageSettings}
+            updatedAt={data.updated_at}
           />
         </Card>
 

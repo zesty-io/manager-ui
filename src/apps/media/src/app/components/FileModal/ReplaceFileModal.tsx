@@ -170,6 +170,7 @@ export const ReplaceFileModal = ({
             <FileTypePreview
               src={originalFile?.url}
               filename={originalFile?.filename}
+              updatedAt={originalFile?.updated_at}
               imageSettings={{
                 width: 120,
               }}

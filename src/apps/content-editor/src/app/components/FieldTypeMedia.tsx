@@ -652,6 +652,7 @@ const MediaItem = ({
             <FileTypePreview
               src={isURL ? imageZUID : data?.url}
               filename={isURL ? imageZUID : data?.filename}
+              updatedAt={data?.updated_at}
               isMediaThumbnail
             />
           )}

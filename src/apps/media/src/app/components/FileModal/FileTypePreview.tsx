@@ -32,6 +32,7 @@ import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 interface Props {
   src: string;
   filename: string;
+  updatedAt?: string;
   imageSettings?: any;
   isMediaThumbnail?: boolean;
 }
@@ -41,6 +42,7 @@ export const FileTypePreview: FC<Props> = ({
   filename,
   imageSettings,
   isMediaThumbnail,
+  updatedAt,
 }) => {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
@@ -86,6 +88,11 @@ export const FileTypePreview: FC<Props> = ({
     const defaultImageSettings = {
       width: 800,
       optimize: "high",
+      // Prevents browser image cache when a certain file has been already replaced
+      ...(!!updatedAt &&
+        !isNaN(new Date(updatedAt).getTime()) && {
+          versionHash: new Date(updatedAt).getTime(),
+        }),
     };
 
     if (isLargeScreen) {
