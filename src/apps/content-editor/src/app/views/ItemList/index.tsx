@@ -89,6 +89,7 @@ export const ItemList = () => {
   const activeLangId =
     languages?.find((lang) => lang.code === activeLanguageCode)?.ID || 1;
   const [hasMounted, setHasMounted] = useState(false);
+  const allItems = useSelector((state: AppState) => state.content);
   const items = useSelector((state: AppState) =>
     selectFilteredItems(state, modelZUID, activeLangId, !hasMounted)
   );
@@ -212,14 +213,12 @@ export const ItemList = () => {
             break;
           case "internal_link":
           case "one_to_one":
-            // @ts-ignore
-            clonedItem.data[key] = items?.[value]?.web?.metaTitle || value;
+            clonedItem.data[key] = allItems?.[value]?.web?.metaTitle || value;
             break;
           case "one_to_many":
             clonedItem.data[key] = value
               ?.split(",")
-              // @ts-ignore
-              ?.map((id) => items?.[id]?.web?.metaTitle || id)
+              ?.map((id) => allItems?.[id]?.web?.metaTitle || id)
               ?.join(",");
             break;
           case "date":
@@ -241,7 +240,7 @@ export const ItemList = () => {
 
       return clonedItem;
     });
-  }, [items, fields, users, isFieldsFetching, isUsersFetching]);
+  }, [items, allItems, fields, users, isFieldsFetching, isUsersFetching]);
 
   const sortedAndFilteredItems = useMemo(() => {
     let clonedItems = [...processedItems];
