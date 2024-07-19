@@ -60,20 +60,29 @@ describe("Schema: Fields", () => {
   const timestamp = Date.now();
 
   before(() => {
-    cy.waitOn("/v1/content/models", () => {
-      cy.visit("/schema");
+    cy.waitOn(
+      "/v1/content/models/6-ce80dbfe90-ptjpm6/fields?showDeleted=true",
+      () => {
+        cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
+          cy.waitOn("/v1/content/models", () => {
+            cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
 
-      cy.getBySelector("create_new_content_item").click();
+            cy.getBySelector("create_new_content_item").click();
 
-      cy.contains("Multi Page Model").click();
-      cy.contains("Next").click();
-      cy.contains("Display Name")
-        .next()
-        .type(`Cypress Test Model ${timestamp}`);
-      cy.get(".MuiDialog-container").within(() => {
-        cy.contains("Create Model").click();
-      });
-    });
+            cy.contains("Multi Page Model").click();
+            cy.contains("Next").click();
+            cy.contains("Display Name")
+              .next()
+              .type(`Cypress Test Model ${timestamp}`);
+            cy.get(".MuiDialog-container").within(() => {
+              cy.contains("Create Model").click();
+            });
+            cy.intercept("POST", "/models");
+            cy.intercept("GET", "/models");
+          });
+        });
+      }
+    );
   });
 
   it("Opens Add Field Modal via button click", () => {
