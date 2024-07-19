@@ -384,7 +384,8 @@ export const FileTypePreview: FC<Props> = ({
           <CardMedia
             component="video"
             controls={!isMediaThumbnail}
-            src={src}
+            // Prevents the browser cache
+            src={`${src}?versionHash=${new Date(updatedAt).getTime()}`}
             sx={{
               backgroundColor: "#000",
               display: "flex",

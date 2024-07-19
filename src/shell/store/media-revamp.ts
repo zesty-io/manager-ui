@@ -341,11 +341,11 @@ type FileAugmentation = {
   group_id?: string;
 };
 
-async function getSignedUrl(file: any, bin: Bin) {
+async function getSignedUrl(filename: string, storageName: string) {
   try {
     return request(
       //@ts-expect-error
-      `${CONFIG.SERVICE_MEDIA_STORAGE}/signed-url/${bin.storage_name}/${file.file.name}`
+      `${CONFIG.SERVICE_MEDIA_STORAGE}/signed-url/${storageName}/${filename}`
     ).then((res) => res.data.url);
   } catch (err) {
     console.error(err);
@@ -357,7 +357,7 @@ async function getSignedUrl(file: any, bin: Bin) {
 }
 
 export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
-  return async (dispatch: Dispatch) => {
+  return async (dispatch: Dispatch, getState: () => AppState) => {
     const bodyData = new FormData();
     const req = new XMLHttpRequest();
     const file = {
@@ -414,14 +414,89 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       }
     });
 
-    req.withCredentials = true;
-    req.open(
-      "PUT",
-      //@ts-expect-error
-      `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`
-    );
+    // Use signed url flow for large files
+    if (file.file.size > 32000000) {
+      /**
+       * GAE has an inherent 32mb limit at their global nginx load balancer
+       * We use a signed url for large file uploads directly to the assocaited bucket
+       */
 
-    req.send(bodyData);
+      const signedUrl = await getSignedUrl(
+        originalFile?.filename,
+        originalFile?.storage_name
+      );
+      req.open("PUT", signedUrl);
+
+      // The sent content-type needs to match what was provided when generating the signed url
+      // @see https://medium.com/imersotechblog/upload-files-to-google-cloud-storage-gcs-from-the-browser-159810bb11e3
+      req.setRequestHeader("Content-Type", file.file.type);
+
+      req.addEventListener("load", () => {
+        if (req.status === 200) {
+          return request(
+            //@ts-expect-error
+            `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${originalFile?.id}/purge?triggerUpdate=true`,
+            {
+              method: "POST",
+              json: true,
+            }
+          )
+            .then((res) => {
+              if (res.status === 200) {
+                const state: State = getState().mediaRevamp;
+                if (state.uploads.length) {
+                  dispatch(
+                    fileUploadSuccess({
+                      ...res.data,
+                      uploadID: file.uploadID,
+                    })
+                  );
+                } else {
+                  dispatch(
+                    notify({
+                      message: `Successfully uploaded file`,
+                      kind: "success",
+                    })
+                  );
+                }
+              } else {
+                throw res;
+              }
+            })
+            .catch((err) => {
+              dispatch(fileUploadError(file));
+              dispatch(
+                notify({
+                  message:
+                    "Failed creating file record after signed url upload",
+                  kind: "error",
+                })
+              );
+            });
+        } else {
+          dispatch(fileUploadError(file));
+          dispatch(
+            notify({
+              message: "Failed uploading file to signed url",
+              kind: "error",
+            })
+          );
+        }
+      });
+
+      // When sending directly to bucket it needs to be just the file
+      // and not the extra meta data for the zesty services
+      req.send(file.file);
+    } else {
+      req.withCredentials = true;
+      req.open(
+        "PUT",
+        //@ts-expect-error
+        `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`
+      );
+
+      req.send(bodyData);
+    }
 
     dispatch(fileUploadStart(file));
   };
@@ -495,7 +570,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
        * We use a signed url for large file uploads directly to the assocaited bucket
        */
 
-      const signedUrl = await getSignedUrl(file, bin);
+      const signedUrl = await getSignedUrl(file.file.name, bin.storage_name);
       req.open("PUT", signedUrl);
 
       // The sent content-type needs to match what was provided when generating the signed url
