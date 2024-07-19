@@ -304,7 +304,7 @@ describe("Schema: Fields", () => {
     // Select a related field
     cy.getBySelector(SELECTORS.AUTOCOMPLETE_FIELED_ZUID)
       .should("exist")
-      .type("title");
+      .click();
     cy.get("[role=listbox] [role=option]").first().click();
 
     // Navigate to rules tab and add default value
