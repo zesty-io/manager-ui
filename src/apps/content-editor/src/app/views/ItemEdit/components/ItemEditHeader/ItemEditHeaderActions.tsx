@@ -99,12 +99,14 @@ export const ItemEditHeaderActions = ({
   );
 
   const saveShortcut = useMetaKey("s", () => {
+    if (!canUpdate) return;
     if (itemState === ITEM_STATES.dirty) {
       onSave();
     }
   });
 
   const publishShortcut = useMetaKey("p", () => {
+    if (!canPublish) return;
     if (itemState === ITEM_STATES.dirty) {
       setPublishAfterSave(true);
       onSave();

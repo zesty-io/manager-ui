@@ -301,6 +301,8 @@ describe("Schema: Fields", () => {
 
     cy.wait("@getFields");
 
+    cy.wait(3000);
+
     // Select a related field
     cy.getBySelector(SELECTORS.AUTOCOMPLETE_FIELED_ZUID)
       .should("exist")
