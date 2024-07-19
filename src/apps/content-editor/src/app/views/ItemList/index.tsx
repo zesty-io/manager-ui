@@ -240,7 +240,7 @@ export const ItemList = () => {
 
       return clonedItem;
     });
-  }, [items, allItems, fields, users, isFieldsFetching, isUsersFetching]);
+  }, [items, allItems, fields, users, isFieldsFetching, isUsersFetching]); 
 
   const sortedAndFilteredItems = useMemo(() => {
     let clonedItems = [...processedItems];
