@@ -381,8 +381,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       sx={{
         ...(!rows?.length &&
           !loading && {
-            height: 56,
-            flex: 0,
+            maxHeight: 56,
           }),
         backgroundColor: "common.white",
         ".MuiDataGrid-row": {
