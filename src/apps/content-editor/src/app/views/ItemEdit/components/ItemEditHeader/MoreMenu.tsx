@@ -32,6 +32,7 @@ import { useGetDomainsQuery } from "../../../../../../../../shell/services/accou
 import { useFilePath } from "../../../../../../../../shell/hooks/useFilePath";
 import { DeleteItemDialog } from "./DeleteItemDialog";
 import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
+import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 
 export const MoreMenu = () => {
   const { modelZUID, itemZUID } = useParams<{
@@ -56,6 +57,7 @@ export const MoreMenu = () => {
   const { data: contentModels } = useGetContentModelsQuery();
   const type =
     contentModels?.find((model) => model.ZUID === modelZUID)?.type ?? "";
+  const canDelete = usePermission("DELETE");
 
   const handleCopyClick = (data: string) => {
     navigator?.clipboard
@@ -179,18 +181,20 @@ export const MoreMenu = () => {
           </ListItemIcon>
           Edit Template
         </MenuItem>
-        <MenuItem
-          data-cy="DeleteContentItem"
-          onClick={() => {
-            setShowDeleteItemDialog(true);
-            setAnchorEl(null);
-          }}
-        >
-          <ListItemIcon>
-            <DeleteRounded />
-          </ListItemIcon>
-          Delete Item
-        </MenuItem>
+        {canDelete && (
+          <MenuItem
+            data-cy="DeleteContentItem"
+            onClick={() => {
+              setShowDeleteItemDialog(true);
+              setAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <DeleteRounded />
+            </ListItemIcon>
+            Delete Item
+          </MenuItem>
+        )}
       </Menu>
       {showDuplicateItemDialog && (
         <DuplicateItemDialog
