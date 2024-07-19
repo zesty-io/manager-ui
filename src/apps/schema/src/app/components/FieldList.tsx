@@ -28,7 +28,7 @@ import { FieldsListRight } from "./FieldsListRight";
 import { NoResults } from "./NoResults";
 import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
-import { SYSTEM_FIELDS, SystemField } from "./configs";
+import { SEO_FIELDS, SYSTEM_FIELDS, SystemField } from "./configs";
 
 type Params = {
   id: string;
@@ -209,50 +209,6 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         </Box>
 
         <Box sx={{ overflowY: "auto", height: "100%", pr: 2 }}>
-          {/* SYSTEM FIELDS */}
-          {isSystemFieldsVisible === "true" && !search && (
-            <Box
-              data-cy="SystemFields"
-              ml={4}
-              pb={2}
-              mb={1.5}
-              borderBottom="1px solid"
-              borderColor="grey.200"
-            >
-              <Typography variant="h6" mb={1} fontWeight={600}>
-                System Fields
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Each content item (child) of a model in Zesty comes included
-                with non-editable system fields that represent the state of the
-                content such as when it was created, updated, and the version.
-                The value of these fields can be found under the{" "}
-                <strong>meta key</strong> in the{" "}
-                <Link
-                  href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  Instances API end point
-                </Link>
-                .
-              </Typography>
-              <Box display="flex" flexDirection="column" gap={1} mt={1.5}>
-                {SYSTEM_FIELDS.map((field, index) => (
-                  <Field
-                    key={index}
-                    field={field}
-                    index={index}
-                    disableDrag
-                    withDragIcon={false}
-                    withMenu={false}
-                    withHover={false}
-                  />
-                ))}
-              </Box>
-            </Box>
-          )}
-
           {/* NO SEARCH RESULTS */}
           {!Boolean(filteredFields?.length) && search && (
             <NoResults
@@ -272,18 +228,6 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {/* ACTIVE FIELDS ARE PRESENT */}
           {Boolean(filteredFields?.length) && (
             <>
-              {isSystemFieldsVisible === "true" && (
-                <Box pl={4} pb={2}>
-                  <Typography variant="h6" mb={1}>
-                    User Fields
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    These are editable fields that have been added in by a user
-                    of this instance. The value of these fields can be under the
-                    data key in the Instances API end point.
-                  </Typography>
-                </Box>
-              )}
               {filteredFields?.map((field, index) => {
                 return (
                   <Box key={field.ZUID}>
@@ -342,7 +286,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {!Boolean(filteredFields?.length) &&
             Boolean(deactivatedFields?.length) &&
             !search && (
-              <Box pb={2} pl={4}>
+              <Box pb={2.5} pl={4}>
                 <Typography variant="body2" color="text.secondary">
                   There are no active fields in this model.
                 </Typography>
@@ -351,9 +295,15 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
 
           {/* INACTIVE FIELDS ARE PRESENT */}
           {Boolean(deactivatedFields?.length) && !search && (
-            <Box mb={2} pl={4} display="flex" flexDirection="column" gap={1.5}>
+            <Box
+              mb={2.5}
+              pl={4}
+              display="flex"
+              flexDirection="column"
+              gap={1.5}
+            >
               <Box>
-                <Typography variant="h6" mb={1}>
+                <Typography variant="h6" mb={1} fontWeight={700}>
                   Deactivated Fields
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -379,6 +329,96 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                   </Box>
                 );
               })}
+            </Box>
+          )}
+
+          {/* SEO Meta Fields */}
+          {(!!filteredFields?.length || !!deactivatedFields?.length) &&
+            !search && (
+              <Box
+                data-cy="SEOFields"
+                ml={4}
+                pt={2.5}
+                mb={2.5}
+                borderTop="1px solid"
+                borderColor="grey.200"
+              >
+                <Typography variant="h6" mb={1} fontWeight={700}>
+                  SEO Meta Fields
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Content models for single-page, multi-page and dataset models
+                  come with SEO meta fields that are accessible via API or
+                  Parsley. These fields are available to help with discovery on
+                  search and are used for mass search in the Zesty API. The
+                  value of these fields can be found under the{" "}
+                  <strong>meta key</strong> in the{" "}
+                  <Link
+                    href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Instances API end point
+                  </Link>
+                  .
+                </Typography>
+                <Box display="flex" flexDirection="column" gap={1} mt={1.5}>
+                  {SEO_FIELDS.map((field, index) => (
+                    <Field
+                      key={index}
+                      field={field}
+                      index={index}
+                      disableDrag
+                      withDragIcon={false}
+                      withMenu={false}
+                      withHover={false}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            )}
+
+          {/* SYSTEM FIELDS */}
+          {isSystemFieldsVisible === "true" && !search && (
+            <Box
+              data-cy="SystemFields"
+              ml={4}
+              pt={2.5}
+              mb={2.5}
+              borderTop="1px solid"
+              borderColor="grey.200"
+            >
+              <Typography variant="h6" mb={1} fontWeight={700}>
+                System Fields
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Each content item (child) of a model in Zesty comes included
+                with non-editable system fields that represent the state of the
+                content such as when it was created, updated, and the version.
+                The value of these fields can be found under the{" "}
+                <strong>meta key</strong> in the{" "}
+                <Link
+                  href="https://instances-api.zesty.org/#a630bb24-0760-a273-d125-88dce3bcb5b2"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Instances API end point
+                </Link>
+                .
+              </Typography>
+              <Box display="flex" flexDirection="column" gap={1} mt={1.5}>
+                {SYSTEM_FIELDS.map((field, index) => (
+                  <Field
+                    key={index}
+                    field={field}
+                    index={index}
+                    disableDrag
+                    withDragIcon={false}
+                    withMenu={false}
+                    withHover={false}
+                  />
+                ))}
+              </Box>
             </Box>
           )}
         </Box>
