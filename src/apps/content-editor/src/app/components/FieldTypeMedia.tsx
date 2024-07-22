@@ -53,6 +53,7 @@ type FieldTypeMediaProps = {
   hasError?: boolean;
   hideDrag?: boolean;
   lockedToGroupId: string | null;
+  settings?: any;
 };
 
 export const FieldTypeMedia = ({
@@ -64,6 +65,7 @@ export const FieldTypeMedia = ({
   hasError,
   hideDrag,
   lockedToGroupId,
+  settings,
 }: FieldTypeMediaProps) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -77,6 +79,7 @@ export const FieldTypeMedia = ({
   const [imageToReplace, setImageToReplace] = useState("");
   const [isBynderOpen, setIsBynderOpen] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
+  const [selectionError, setSelectionError] = useState("");
 
   const bynderPortalUrlSetting = rawInstanceSettings?.find(
     (setting) => setting.key === "bynder_portal_url"
@@ -109,11 +112,46 @@ export const FieldTypeMedia = ({
   }, [bynderTokenSetting]);
 
   const addZestyImage = (selectedImages: any[]) => {
-    const newImageZUIDs = selectedImages.map((image) => image.id);
+    const removedImages: any[] = [];
+    const filteredSelectedImages = selectedImages?.filter((selectedImage) => {
+      //remove any images that do not match the file extension
+      if (settings?.fileExtensions) {
+        if (
+          settings?.fileExtensions?.includes(
+            `.${fileExtension(selectedImage.filename)}`
+          )
+        ) {
+          return true;
+        } else {
+          removedImages.push(selectedImage);
+          return false;
+        }
+      }
+    });
+
+    if (removedImages.length) {
+      const filenames = removedImages.map((image) => image.filename);
+      const formattedFilenames =
+        filenames.length > 1
+          ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
+          : filenames[0];
+
+      setSelectionError(
+        `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
+      );
+    } else {
+      setSelectionError("");
+    }
+
+    const newImageZUIDs = filteredSelectedImages?.map((image) => image.id);
+
     // remove any duplicates
     const filteredImageZUIDs = newImageZUIDs.filter(
       (zuid) => !images.includes(zuid)
     );
+
+    // Do not trigger onChange if no images are added
+    if (![...images, ...filteredImageZUIDs]?.length) return;
 
     onChange([...images, ...filteredImageZUIDs].join(","), name);
   };
@@ -121,14 +159,41 @@ export const FieldTypeMedia = ({
   const addBynderAsset = (selectedAsset: any[]) => {
     if (images.length > limit) return;
 
-    const newBynderAssets = selectedAsset
+    const removedAssets: any[] = [];
+    const filteredBynderAssets = selectedAsset?.filter((asset) => {
+      if (settings?.fileExtensions) {
+        const assetExtension = `.${asset.extensions[0]}`;
+        if (settings?.fileExtensions?.includes(assetExtension)) {
+          return true;
+        } else {
+          removedAssets.push(asset);
+          return false;
+        }
+      }
+    });
+
+    if (removedAssets.length) {
+      const filenames = removedAssets.map((asset) => asset.name);
+      const formattedFilenames =
+        filenames.length > 1
+          ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
+          : filenames[0];
+
+      setSelectionError(
+        `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
+      );
+    } else {
+      setSelectionError("");
+    }
+
+    const newBynderAssets = filteredBynderAssets
       .slice(0, limit - images.length)
       .map((asset) => asset.originalUrl);
-    const filteredBynderAssets = newBynderAssets.filter(
+    const filteredBynderAssetsUrls = newBynderAssets.filter(
       (asset) => !images.includes(asset)
     );
 
-    onChange([...images, ...filteredBynderAssets].join(","), name);
+    onChange([...images, ...filteredBynderAssetsUrls].join(","), name);
   };
 
   const removeImage = (imageId: string) => {
@@ -146,6 +211,21 @@ export const FieldTypeMedia = ({
     });
     // if selected replacement image is already in the list of images, do nothing
     if (localImageZUIDs.includes(imageZUID)) return;
+    // if extension is not allowed set error message
+    if (settings?.fileExtensions) {
+      if (
+        !settings?.fileExtensions?.includes(
+          `.${fileExtension(images[0].filename)}`
+        )
+      ) {
+        setSelectionError(
+          `Could not replace. ${settings?.fileExtensionsErrorMessage}`
+        );
+        return;
+      } else {
+        setSelectionError("");
+      }
+    }
     const newImageZUIDs = localImageZUIDs.map((zuid) => {
       if (zuid === imageToReplace) {
         return imageZUID;
@@ -153,12 +233,24 @@ export const FieldTypeMedia = ({
 
       return zuid;
     });
+
     onChange(newImageZUIDs.join(","), name);
   };
 
   const replaceBynderAsset = (selectedAsset: any) => {
     // Prevent adding bynder asset that has already been added
     if (localImageZUIDs.includes(selectedAsset.originalUrl)) return;
+
+    const assetExtension = `.${selectedAsset.extensions[0]}`;
+    if (
+      settings?.fileExtensions &&
+      !settings?.fileExtensions?.includes(assetExtension)
+    ) {
+      setSelectionError(
+        `Could not replace. ${settings?.fileExtensionsErrorMessage}`
+      );
+      return;
+    }
 
     const newImages = localImageZUIDs.map((image) => {
       if (image === imageToReplace) {
@@ -323,6 +415,11 @@ export const FieldTypeMedia = ({
               )}
             </Stack>
           </Box>
+          {selectionError && (
+            <Typography variant="body2" color="error">
+              {selectionError}
+            </Typography>
+          )}
         </div>
         <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
           <Login>
@@ -421,6 +518,11 @@ export const FieldTypeMedia = ({
           </Box>
         )}
       </Stack>
+      {selectionError && (
+        <Typography variant="body2" color="error">
+          {selectionError}
+        </Typography>
+      )}
       {showFileModal && (
         <FileModal
           fileId={showFileModal}

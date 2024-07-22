@@ -223,6 +223,10 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings[field.name] ?? null;
         } else if (field.name === "maxValue") {
           formFields[field.name] = fieldData.settings[field.name] ?? null;
+        } else if (field.name === "fileExtensions") {
+          formFields[field.name] = fieldData.settings[field.name] ?? null;
+        } else if (field.name === "fileExtensionsErrorMessage") {
+          formFields[field.name] = fieldData.settings[field.name] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -249,7 +253,9 @@ export const FieldForm = ({
             field.name === "regexRestrictPattern" ||
             field.name === "regexRestrictErrorMessage" ||
             field.name === "minValue" ||
-            field.name === "maxValue"
+            field.name === "maxValue" ||
+            field.name === "fileExtensions" ||
+            field.name === "fileExtensionsErrorMessage"
           ) {
             formFields[field.name] = null;
           } else {
@@ -394,6 +400,22 @@ export const FieldForm = ({
       }
 
       if (
+        inputName === "fileExtensions" &&
+        formData.fileExtensions !== null &&
+        !(formData.fileExtensions as string[])?.length
+      ) {
+        newErrorsObj[inputName] = "This field is required";
+      }
+
+      if (
+        inputName === "fileExtensionsErrorMessage" &&
+        formData.fileExtensions !== null &&
+        formData.fileExtensionsErrorMessage === ""
+      ) {
+        newErrorsObj[inputName] = "This field is required";
+      }
+
+      if (
         inputName in errors &&
         ![
           "defaultValue",
@@ -405,6 +427,8 @@ export const FieldForm = ({
           "regexRestrictErrorMessage",
           "minValue",
           "maxValue",
+          "fileExtensions",
+          "fileExtensionsErrorMessage",
         ].includes(inputName)
       ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
@@ -508,7 +532,9 @@ export const FieldForm = ({
         errors.regexRestrictPattern ||
         errors.regexRestrictErrorMessage ||
         errors.minValue ||
-        errors.maxValue
+        errors.maxValue ||
+        errors.fileExtensions ||
+        errors.fileExtensionsErrorMessage
       ) {
         setActiveTab("rules");
       } else {
@@ -561,6 +587,13 @@ export const FieldForm = ({
         }),
         ...(formData.maxValue !== null && {
           maxValue: formData.maxValue as number,
+        }),
+        ...(formData.fileExtensions && {
+          fileExtensions: formData.fileExtensions as string[],
+        }),
+        ...(formData.fileExtensionsErrorMessage && {
+          fileExtensionsErrorMessage:
+            formData.fileExtensionsErrorMessage as string,
         }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
