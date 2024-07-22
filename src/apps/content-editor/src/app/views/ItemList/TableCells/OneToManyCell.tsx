@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Box, Chip, Tooltip } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { AppState } from "../../../../../../../shell/store/types";
+import { searchItems } from "../../../../../../../shell/store/content";
 
 const getNumOfItemsToRender = (
   parentWidth: number,
@@ -28,11 +29,21 @@ type OneToManyCellProps = {
   items: any[];
 };
 export const OneToManyCell = ({ items }: OneToManyCellProps) => {
+  const dispatch = useDispatch();
   const allItems = useSelector((state: AppState) => state.content);
   const chipContainerRef = useRef<HTMLDivElement>();
   const [lastValidIndex, setLastValidIndex] = useState(allItems?.length - 1);
   const parentWidth = chipContainerRef.current?.parentElement?.clientWidth;
   const hiddenItems = items?.length - lastValidIndex - 1;
+
+  useEffect(() => {
+    items?.forEach((item) => {
+      // If value starts with '7-', that means it was unable to find the item in the store so we need to fetch it
+      if (item?.startsWith("7-")) {
+        dispatch(searchItems(item));
+      }
+    });
+  }, [items, dispatch]);
 
   useEffect(() => {
     setLastValidIndex(
