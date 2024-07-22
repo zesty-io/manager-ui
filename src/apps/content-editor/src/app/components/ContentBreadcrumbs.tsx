@@ -58,7 +58,7 @@ export const ContentBreadcrumbs = () => {
     }
 
     if (!itemZUID && isInMultipageTableView) {
-      // Remove the model as a path item when viewing in multipage table view
+      // Remove the model as a breadcrumb item when viewing in multipage table view
       crumbs?.pop();
     }
 
