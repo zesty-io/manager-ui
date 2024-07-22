@@ -20,6 +20,7 @@ export function fetchProducts() {
       // seo: 31-71cfc74-s30
       case "31-71cfc74-0wn3r":
       case "31-71cfc74-4dm13":
+      case "31-71cfc74-4cc4dm13":
         data = [
           "launchpad",
           "content",
@@ -35,6 +36,7 @@ export function fetchProducts() {
         ];
         break;
       case "31-71cfc74-d3v3l0p3r":
+      case "31-71cfc74-d3vc0n":
         data = [
           "launchpad",
           "content",
