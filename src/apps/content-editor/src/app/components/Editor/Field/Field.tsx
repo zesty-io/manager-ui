@@ -482,6 +482,7 @@ export const Field = ({
                   ),
                 });
               }}
+              settings={settings}
               name={name}
               onChange={onChange}
               lockedToGroupId={
