@@ -1,4 +1,12 @@
-import { Box, Menu, MenuItem, Button, Typography } from "@mui/material";
+import {
+  Box,
+  Menu,
+  MenuItem,
+  Button,
+  Typography,
+  MenuList,
+  ListItemText,
+} from "@mui/material";
 import {
   DateFilter,
   FilterButton,
@@ -6,7 +14,10 @@ import {
 } from "../../../../../../shell/components/Filters";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "../../../../../../shell/hooks/useParams";
-import { ArrowDropDownOutlined } from "@mui/icons-material";
+import {
+  ArrowDropDownOutlined,
+  ChevronRightOutlined,
+} from "@mui/icons-material";
 import {
   useGetContentModelFieldsQuery,
   useGetLangsQuery,
@@ -14,6 +25,7 @@ import {
 import { useDateFilterParams } from "../../../../../../shell/hooks/useDateFilterParams";
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { useParams as useRouterParams } from "react-router";
+import { CascadingMenuItem } from "../../../../../../shell/components/CascadingMenuItem";
 
 const SORT_ORDER = {
   dateSaved: "Last Saved",
@@ -134,6 +146,7 @@ export const ItemListFilters = () => {
       >
         {Object.entries(SORT_ORDER).map(([key, value]) => (
           <MenuItem
+            key={key}
             data-cy={`${key}FilterOption`}
             onClick={() => {
               setParams(key, "sort");
@@ -151,6 +164,25 @@ export const ItemListFilters = () => {
             {value}
           </MenuItem>
         ))}
+        <CascadingMenuItem
+          MenuItemComponent={
+            <>
+              <ListItemText>More</ListItemText>
+              <ChevronRightOutlined color="action" />
+            </>
+          }
+          PaperProps={{
+            sx: {
+              width: 240,
+            },
+          }}
+        >
+          <MenuList>
+            {/*TODO: Add functionality */}
+            <MenuItem>Created By</MenuItem>
+            <MenuItem>ZUID</MenuItem>
+          </MenuList>
+        </CascadingMenuItem>
         <Typography
           variant="body3"
           color="text.secondary"
