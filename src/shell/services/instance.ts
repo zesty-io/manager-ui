@@ -310,6 +310,7 @@ export const instanceApi = createApi({
       invalidatesTags: (result, error, arg) => [
         { type: "ContentModel", id: arg.ZUID },
         "ContentModels",
+        "ContentNav",
       ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/#Delete-Content-Model

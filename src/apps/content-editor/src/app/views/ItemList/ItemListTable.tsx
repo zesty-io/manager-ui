@@ -30,6 +30,7 @@ import { BooleanCell } from "./TableCells/BooleanCell";
 import { currencies } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 import { ImageCell } from "./TableCells/ImageCell";
+import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
 
 type ItemListTableProps = {
   loading: boolean;
@@ -133,7 +134,7 @@ const fieldTypeColumnConfigMap = {
   one_to_one: {
     width: 240,
     renderCell: (params: any) =>
-      params.value && <Chip label={params.value} size="small" />,
+      params.value && <SingleRelationshipCell params={params} />,
   },
   uuid: {
     width: 280,
@@ -202,7 +203,7 @@ const fieldTypeColumnConfigMap = {
   internal_link: {
     width: 240,
     renderCell: (params: any) =>
-      params.value && <Chip label={params.value} size="small" />,
+      params.value && <SingleRelationshipCell params={params} />,
   },
   yes_no: {
     width: 120,
@@ -406,8 +407,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       sx={{
         ...(!rows?.length &&
           !loading && {
-            height: 56,
-            flex: 0,
+            maxHeight: 56,
           }),
         backgroundColor: "common.white",
         ".MuiDataGrid-row": {

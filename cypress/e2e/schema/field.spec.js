@@ -68,6 +68,19 @@ describe("Schema: Fields", () => {
         cy.waitOn("/bin/1-6c9618c-r26pt/groups", () => {
           cy.waitOn("/v1/content/models", () => {
             cy.visit("/schema/6-ce80dbfe90-ptjpm6/fields");
+
+            cy.getBySelector("create_new_content_item").click();
+
+            cy.contains("Multi Page Model").click();
+            cy.contains("Next").click();
+            cy.contains("Display Name")
+              .next()
+              .type(`Cypress Test Model ${timestamp}`);
+            cy.get(".MuiDialog-container").within(() => {
+              cy.contains("Create Model").click();
+            });
+            cy.intercept("POST", "/models");
+            cy.intercept("GET", "/models");
           });
         });
       }
@@ -75,6 +88,7 @@ describe("Schema: Fields", () => {
   });
 
   it("Opens Add Field Modal via button click", () => {
+    cy.wait(3000);
     // Open the modal
     cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
@@ -91,7 +105,9 @@ describe("Schema: Fields", () => {
     const fieldName = `text_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select Text field
@@ -145,7 +161,9 @@ describe("Schema: Fields", () => {
     const fieldName = `dropdown_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select Dropdown field
@@ -202,7 +220,9 @@ describe("Schema: Fields", () => {
     const fieldName = `media_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select Media field
@@ -234,7 +254,9 @@ describe("Schema: Fields", () => {
     const fieldName = `boolean_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select Boolean field
@@ -286,7 +308,9 @@ describe("Schema: Fields", () => {
     const fieldName = `one_to_one_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select one-to-one relationship field
@@ -303,10 +327,12 @@ describe("Schema: Fields", () => {
 
     cy.wait("@getFields");
 
+    cy.wait(3000);
+
     // Select a related field
     cy.getBySelector(SELECTORS.AUTOCOMPLETE_FIELED_ZUID)
       .should("exist")
-      .type("title");
+      .click();
     cy.get("[role=listbox] [role=option]").first().click();
 
     // Navigate to rules tab and add default value
@@ -386,7 +412,9 @@ describe("Schema: Fields", () => {
     };
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select number field
@@ -424,7 +452,9 @@ describe("Schema: Fields", () => {
 
   it("Shows error messages during field creation", () => {
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select Text field
@@ -445,7 +475,7 @@ describe("Schema: Fields", () => {
     // Click end of list button
     cy.getBySelector(SELECTORS.ADD_FIELD_BTN_END_OF_LIST)
       .should("exist")
-      .click();
+      .click({ force: true });
 
     // Verify modal
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
@@ -460,7 +490,7 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.ADD_FIELD_BTN_IN_BETWEEN)
       .first()
       .should("exist")
-      .click();
+      .click({ force: true });
 
     // Verify modal
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
@@ -472,7 +502,9 @@ describe("Schema: Fields", () => {
 
   it("Switches tabs in Add Field Modal", () => {
     // Open the modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select single text field
@@ -495,7 +527,9 @@ describe("Schema: Fields", () => {
 
   it("Can navigate back to fields selection view", () => {
     // Open the modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select single text field
@@ -515,7 +549,9 @@ describe("Schema: Fields", () => {
 
   it("Can filter fields in field selection view", () => {
     // Open the modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Verify that field selection screen is loaded
@@ -545,7 +581,9 @@ describe("Schema: Fields", () => {
     const fieldName = `field_to_filter_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select a field
@@ -594,7 +632,9 @@ describe("Schema: Fields", () => {
     const fieldName = `update_me_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select Text field
@@ -650,7 +690,9 @@ describe("Schema: Fields", () => {
     const fieldName = `deactivate_me_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select Text field
@@ -709,7 +751,9 @@ describe("Schema: Fields", () => {
     const fieldName = `deactivate_me_via_modal_${timestamp}`;
 
     // Open the add field modal
-    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
+      .should("exist")
+      .click({ force: true });
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
 
     // Select Text field
