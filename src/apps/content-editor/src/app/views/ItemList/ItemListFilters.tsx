@@ -16,8 +16,8 @@ import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { useParams as useRouterParams } from "react-router";
 
 const SORT_ORDER = {
-  dateSaved: "Date Saved",
-  datePublished: "Date Published",
+  dateSaved: "Last Saved",
+  datePublished: "Last Published",
   dateCreated: "Date Created",
   status: "Status",
 } as const;

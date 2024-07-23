@@ -56,7 +56,7 @@ const METADATA_COLUMNS = [
   },
   {
     field: "createdOn",
-    headerName: "Created On",
+    headerName: "Date Created",
     width: 200,
     filterable: false,
     valueGetter: (params: any) => params.row?.meta?.createdAt,
