@@ -126,6 +126,8 @@ export const FieldTypeMedia = ({
           removedImages.push(selectedImage);
           return false;
         }
+      } else {
+        return true;
       }
     });
 
@@ -169,6 +171,8 @@ export const FieldTypeMedia = ({
           removedAssets.push(asset);
           return false;
         }
+      } else {
+        return true;
       }
     });
 
@@ -250,6 +254,8 @@ export const FieldTypeMedia = ({
         `Could not replace. ${settings?.fileExtensionsErrorMessage}`
       );
       return;
+    } else {
+      setSelectionError("");
     }
 
     const newImages = localImageZUIDs.map((image) => {
