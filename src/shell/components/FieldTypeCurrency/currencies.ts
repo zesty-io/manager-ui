@@ -1158,7 +1158,7 @@ export const currencies: Currency[] = [
     rounding: 0,
     value: "XOF",
     name_plural: "CFA francs BCEAO",
-    countryCode: "XO",
+    countryCode: "CI", // We're defaulting to Ivory Coast as the country for this currency
   },
   {
     symbol: "YR",
