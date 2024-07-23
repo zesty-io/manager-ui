@@ -846,9 +846,13 @@ export const FieldForm = ({
                           },
                       }}
                     >
-                      <Stack height={24} alignItems="end">
-                        {getFlagEmoji(selectedValue.countryCode)}
-                      </Stack>
+                      <Box
+                        component="img"
+                        height={16}
+                        src={`/images/flags/${selectedValue.countryCode?.toLowerCase()}.svg`}
+                        loading="lazy"
+                        alt={`${selectedValue.countryCode} flag`}
+                      />
                       <Typography variant="body1" fontWeight={700} pl={1}>
                         {selectedValue.value} {selectedValue.symbol_native}
                       </Typography>

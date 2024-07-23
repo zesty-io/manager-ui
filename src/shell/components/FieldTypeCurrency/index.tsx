@@ -3,7 +3,6 @@ import { TextField, Typography, Box, Stack } from "@mui/material";
 
 import { currencies } from "./currencies";
 import { NumberFormatInput } from "../NumberFormatInput";
-import getFlagEmoji from "../../../utility/getFlagEmoji";
 
 type FieldTypeCurrencyProps = {
   name: string;
