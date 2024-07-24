@@ -4,7 +4,7 @@ import {
   useGetContentNavItemsQuery,
 } from "../../../../../shell/services/instance";
 import { Home } from "@zesty-io/material";
-import { useHistory, useParams } from "react-router";
+import { useHistory, useParams, useLocation } from "react-router";
 import { useMemo } from "react";
 import { ContentNavItem } from "../../../../../shell/services/types";
 import { MODEL_ICON } from "../../../../../shell/constants";
@@ -18,8 +18,12 @@ export const ContentBreadcrumbs = () => {
     itemZUID: string;
   }>();
   const history = useHistory();
+  const location = useLocation();
 
   const breadcrumbData = useMemo(() => {
+    const isInMultipageTableView = !["new", "import"].includes(
+      location?.pathname?.split("/")?.pop()
+    );
     let activeItem: ContentNavItem;
     const crumbs = [];
 
@@ -52,6 +56,12 @@ export const ContentBreadcrumbs = () => {
         parent = null;
       }
     }
+
+    if (!itemZUID && isInMultipageTableView) {
+      // Remove the model as a breadcrumb item when viewing in multipage table view
+      crumbs?.pop();
+    }
+
     return crumbs.map((item) => ({
       node: <Breadcrumb contentNavItem={item} />,
       onClick: () => {
@@ -62,7 +72,7 @@ export const ContentBreadcrumbs = () => {
         }
       },
     }));
-  }, [nav, itemZUID]);
+  }, [nav, itemZUID, modelZUID, location]);
 
   return (
     <CustomBreadcrumbs

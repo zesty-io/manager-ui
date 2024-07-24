@@ -49,7 +49,9 @@ export type FieldNames =
   | "regexRestrictPattern"
   | "regexRestrictErrorMessage"
   | "minValue"
-  | "maxValue";
+  | "maxValue"
+  | "fileExtensions"
+  | "fileExtensionsErrorMessage";
 type FieldType =
   | "input"
   | "checkbox"

@@ -203,12 +203,15 @@ export interface FieldSettings {
   regexRestrictErrorMessage?: string;
   minValue?: number;
   maxValue?: number;
+  fileExtensions?: string[];
+  fileExtensionsErrorMessage?: string;
 }
 
 export type ContentModelFieldValue =
   | string
   | number
   | boolean
+  | string[]
   | FieldSettings
   | FieldSettingsOptions[];
 
