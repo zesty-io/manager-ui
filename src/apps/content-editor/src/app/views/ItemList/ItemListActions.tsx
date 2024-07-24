@@ -178,17 +178,19 @@ export const ItemListActions = forwardRef((props, ref) => {
           </ListItemIcon>
           Edit Model
         </MenuItem>
-        <MenuItem
-          data-cy="EditTemplateNavButton"
-          onClick={() => {
-            history.push(codePath);
-          }}
-        >
-          <ListItemIcon>
-            <CodeRounded />
-          </ListItemIcon>
-          Edit Template
-        </MenuItem>
+        {!isDataset && (
+          <MenuItem
+            data-cy="EditTemplateNavButton"
+            onClick={() => {
+              history.push(codePath);
+            }}
+          >
+            <ListItemIcon>
+              <CodeRounded />
+            </ListItemIcon>
+            Edit Template
+          </MenuItem>
+        )}
       </Menu>
       <Menu
         anchorEl={showApiEndpoints}
