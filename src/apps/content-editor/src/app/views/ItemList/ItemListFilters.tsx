@@ -117,17 +117,34 @@ export const ItemListFilters = () => {
     });
   };
 
+  const getButtonText = () => {
+    const activeSortOrder = params.get("sort");
+
+    if (activeSortOrder === "createdBy") {
+      return "Created By";
+    }
+
+    if (activeSortOrder === "zuid") {
+      return "ZUID";
+    }
+
+    if (SORT_ORDER.hasOwnProperty(activeSortOrder)) {
+      return SORT_ORDER[activeSortOrder as keyof typeof SORT_ORDER];
+    }
+
+    if (fields?.find((field) => field.name === params.get("sort"))?.label) {
+      return fields?.find((field) => field.name === params.get("sort"))?.label;
+    }
+
+    return SORT_ORDER.dateSaved;
+  };
+
   return (
     <Box display="flex" gap={1.5} py={2}>
       <FilterButton
         filterId="sortByFilter"
         isFilterActive={false}
-        buttonText={`Sort: ${
-          (SORT_ORDER[params.get("sort") as keyof typeof SORT_ORDER] ||
-            fields?.find((field) => field.name === params.get("sort"))
-              ?.label) ??
-          SORT_ORDER.dateSaved
-        }`}
+        buttonText={`Sort: ${getButtonText()}`}
         onOpenMenu={(event: React.MouseEvent<HTMLButtonElement>) => {
           setAnchorEl({
             currentTarget: event.currentTarget,
@@ -180,10 +197,16 @@ export const ItemListFilters = () => {
           }}
         >
           <MenuList>
-            <MenuItem onClick={() => handleUpdateSortOrder("createdBy")}>
+            <MenuItem
+              selected={params.get("sort") === "createdBy"}
+              onClick={() => handleUpdateSortOrder("createdBy")}
+            >
               Created By
             </MenuItem>
-            <MenuItem onClick={() => handleUpdateSortOrder("zuid")}>
+            <MenuItem
+              selected={params.get("sort") === "zuid"}
+              onClick={() => handleUpdateSortOrder("zuid")}
+            >
               ZUID
             </MenuItem>
           </MenuList>
