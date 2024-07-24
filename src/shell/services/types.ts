@@ -204,12 +204,15 @@ export interface FieldSettings {
   minValue?: number;
   maxValue?: number;
   currency?: string;
+  fileExtensions?: string[];
+  fileExtensionsErrorMessage?: string;
 }
 
 export type ContentModelFieldValue =
   | string
   | number
   | boolean
+  | string[]
   | FieldSettings
   | FieldSettingsOptions[];
 

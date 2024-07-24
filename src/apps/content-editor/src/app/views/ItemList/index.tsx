@@ -334,9 +334,16 @@ export const ItemList = () => {
             : b.data[sort] - a.data[sort];
         }
         if (dataType === "date" || dataType === "datetime") {
-          return (
-            new Date(b.data[sort]).getTime() - new Date(a.data[sort]).getTime()
-          );
+          if (!a.data[sort]) {
+            return 1;
+          } else if (!b.data[sort]) {
+            return -1;
+          } else {
+            return (
+              new Date(b.data[sort]).getTime() -
+              new Date(a.data[sort]).getTime()
+            );
+          }
         }
         const aValue =
           dataType === "images" ? a.data[sort]?.filename : a.data[sort];

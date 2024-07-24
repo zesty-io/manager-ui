@@ -55,7 +55,9 @@ export type FieldNames =
   | "regexRestrictErrorMessage"
   | "minValue"
   | "maxValue"
-  | "currency";
+  | "currency"
+  | "fileExtensions"
+  | "fileExtensionsErrorMessage";
 type FieldType =
   | "input"
   | "checkbox"

@@ -50,12 +50,15 @@ export const Rules = ({
     <Stack gap={2.5}>
       {type === "images" && (
         <MediaRules
+          errors={errors}
           fieldConfig={FORM_CONFIG["images"].rules}
           onDataChange={onFieldDataChanged}
           groups={mediaFoldersOptions}
           fieldData={{
             limit: formData["limit"],
             group_id: formData["group_id"],
+            fileExtensions: formData["fileExtensions"],
+            fileExtensionsErrorMessage: formData["fileExtensionsErrorMessage"],
           }}
         />
       )}
