@@ -180,7 +180,6 @@ export const ItemListFilters = () => {
           }}
         >
           <MenuList>
-            {/*TODO: Add functionality */}
             <MenuItem onClick={() => handleUpdateSortOrder("createdBy")}>
               Created By
             </MenuItem>
@@ -249,6 +248,7 @@ export const ItemListFilters = () => {
       >
         {Object.entries(STATUS_FILTER).map(([key, value]) => (
           <MenuItem
+            key={key}
             data-cy={`${key}FilterOption`}
             onClick={() => {
               setParams(key, "statusFilter");

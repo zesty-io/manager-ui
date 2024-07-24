@@ -323,6 +323,12 @@ export const ItemList = () => {
         }
 
         return 0; // Neither are published or scheduled
+      } else if (sort === "createdBy") {
+        return a.meta?.createdByUserName?.localeCompare(
+          b.meta?.createdByUserName
+        );
+      } else if (sort === "zuid") {
+        return a.meta?.ZUID?.localeCompare(b.meta?.ZUID);
       } else if (fields?.find((field) => field.name === sort)) {
         const dataType = fields?.find((field) => field.name === sort)?.datatype;
         if (typeof a.data[sort] === "number") {
