@@ -380,8 +380,6 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       sortModel={sortModel}
       sortingMode="server"
       onSortModelChange={(newSortModel) => {
-        console.log(newSortModel);
-        // TODO: This causes extreme lag due to double sorting with itemslist.tsx
         setSortModel(newSortModel);
       }}
       onSelectionModelChange={(newSelection) => setSelectedItems(newSelection)}
