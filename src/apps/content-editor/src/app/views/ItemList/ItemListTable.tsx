@@ -16,8 +16,16 @@ import {
   GRID_CHECKBOX_SELECTION_COL_DEF,
   useGridApiRef,
   GridInitialState,
+  GridComparatorFn,
 } from "@mui/x-data-grid-pro";
-import { memo, useCallback, useLayoutEffect, useMemo, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useState,
+  useContext,
+} from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
 import { OneToManyCell } from "./TableCells/OneToManyCell";
@@ -29,6 +37,8 @@ import { SortCell } from "./TableCells/SortCell";
 import { BooleanCell } from "./TableCells/BooleanCell";
 import { ImageCell } from "./TableCells/ImageCell";
 import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
+import { useParams } from "../../../../../../shell/hooks/useParams";
+import { TableSortContext } from "./TableSortProvider";
 
 type ItemListTableProps = {
   loading: boolean;
@@ -224,6 +234,8 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
   const history = useHistory();
   const { stagedChanges } = useStagedChanges();
   const [selectedItems, setSelectedItems] = useSelectedItems();
+  const [params, setParams] = useParams();
+  const [sortModel, setSortModel] = useContext(TableSortContext);
 
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
@@ -271,7 +283,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
         field: "version",
         headerName: "Vers.",
         width: 59,
-        sortable: false,
+        sortable: true,
         filterable: false,
         renderCell: (params: GridRenderCellParams) => (
           <VersionCell params={params} />
@@ -364,6 +376,14 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       checkboxSelection
       disableSelectionOnClick
       initialState={initialState}
+      sortingOrder={["desc", "asc", null]}
+      sortModel={sortModel}
+      sortingMode="server"
+      onSortModelChange={(newSortModel) => {
+        console.log(newSortModel);
+        // TODO: This causes extreme lag due to double sorting with itemslist.tsx
+        setSortModel(newSortModel);
+      }}
       onSelectionModelChange={(newSelection) => setSelectedItems(newSelection)}
       selectionModel={
         stagedChanges && Object.keys(stagedChanges)?.length ? [] : selectedItems

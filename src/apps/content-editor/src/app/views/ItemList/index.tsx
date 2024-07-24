@@ -9,7 +9,7 @@ import {
 import { theme } from "@zesty-io/material";
 import { ItemListEmpty } from "./ItemListEmpty";
 import { ItemListActions } from "./ItemListActions";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useContext } from "react";
 import { SearchRounded, RestartAltRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
@@ -31,6 +31,7 @@ import {
   ContentItemWithDirtyAndPublishing,
 } from "../../../../../../shell/services/types";
 import { fetchItems } from "../../../../../../shell/store/content";
+import { TableSortContext } from "./TableSortProvider";
 
 const formatDateTime = (source: string) => {
   const dateObj = new Date(source);
@@ -97,11 +98,12 @@ export const ItemList = () => {
 
   const [isModelItemsFetching, setIsModelItemsFetching] = useState(true);
 
+  const [sortModel] = useContext(TableSortContext);
   const { stagedChanges } = useStagedChanges();
   const [selectedItems] = useSelectedItems();
   const searchRef = useRef<HTMLInputElement>(null);
   const search = params.get("search");
-  const sort = params.get("sort");
+  // const sort = params.get("sort");
   const statusFilter = params.get("statusFilter");
   const dateFilter = useMemo(() => {
     return {
@@ -243,9 +245,11 @@ export const ItemList = () => {
   }, [items, allItems, fields, users, isFieldsFetching, isUsersFetching]);
 
   const sortedAndFilteredItems = useMemo(() => {
+    const sort = sortModel?.[0]?.field;
+    const sortOrder = sortModel?.[0]?.sort;
     let clonedItems = [...processedItems];
     clonedItems?.sort((a: any, b: any) => {
-      if (!sort || sort === "dateSaved") {
+      if (!sort || sort === "lastSaved") {
         const dateA = new Date(a.web.createdAt).getTime();
         const dateB = new Date(b.web.createdAt).getTime();
 
@@ -254,9 +258,9 @@ export const ItemList = () => {
         } else if (!b.web.createdAt) {
           return 1;
         } else {
-          return dateB - dateA;
+          return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
         }
-      } else if (sort === "datePublished") {
+      } else if (sort === "lastPublished") {
         // Handle undefined publishAt by setting a default far-future date for sorting purposes
 
         let dateA = a?.scheduling?.publishAt || a?.publishing?.publishAt;
@@ -265,13 +269,20 @@ export const ItemList = () => {
         let dateB = b?.scheduling?.publishAt || b?.publishing?.publishAt;
         dateB = dateB ? new Date(dateB).getTime() : Number.NEGATIVE_INFINITY;
 
-        return dateB - dateA;
-      } else if (sort === "dateCreated") {
+        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      } else if (sort === "createdOn") {
+        if (sortOrder === "asc") {
+          return (
+            new Date(a.meta.createdAt).getTime() -
+            new Date(b.meta.createdAt).getTime()
+          );
+        }
+
         return (
           new Date(b.meta.createdAt).getTime() -
           new Date(a.meta.createdAt).getTime()
         );
-      } else if (sort === "status") {
+      } else if (sort === "version") {
         const aIsPublished = a?.publishing?.publishAt;
         const bIsPublished = b?.publishing?.publishAt;
 
@@ -291,6 +302,13 @@ export const ItemList = () => {
 
         // Items with only publish date
         if (aIsPublished && !aIsScheduled && bIsPublished && !bIsScheduled) {
+          if (sortOrder === "asc") {
+            return (
+              new Date(aIsPublished).getTime() -
+              new Date(bIsPublished).getTime()
+            );
+          }
+
           return (
             new Date(bIsPublished).getTime() - new Date(aIsPublished).getTime()
           ); // Both have only published date, sort by publish date descending
@@ -302,6 +320,13 @@ export const ItemList = () => {
 
         // Items with scheduled date (and also publish date)
         if (aIsScheduled && bIsScheduled) {
+          if (sortOrder === "asc") {
+            return (
+              new Date(bIsScheduled).getTime() -
+              new Date(aIsScheduled).getTime()
+            );
+          }
+
           return (
             new Date(aIsScheduled).getTime() - new Date(bIsScheduled).getTime()
           ); // Both are scheduled, sort by scheduled date ascending
@@ -313,6 +338,13 @@ export const ItemList = () => {
 
         // Items with neither publish nor schedule dates
         if (aIsPublished && bIsPublished) {
+          if (sortOrder === "asc") {
+            return (
+              new Date(aIsPublished).getTime() -
+              new Date(bIsPublished).getTime()
+            );
+          }
+
           return (
             new Date(bIsPublished).getTime() - new Date(aIsPublished).getTime()
           ); // Both are published, sort by publish date descending
@@ -324,18 +356,35 @@ export const ItemList = () => {
 
         return 0; // Neither are published or scheduled
       } else if (sort === "createdBy") {
-        return a.meta?.createdByUserName?.localeCompare(
-          b.meta?.createdByUserName
-        );
+        const userA = a?.meta?.createdByUserName;
+        const userB = b?.meta?.createdByUserName;
+
+        if (!userA) {
+          return 1;
+        } else if (!userB) {
+          return -1;
+        } else {
+          return sortOrder === "asc"
+            ? userB.localeCompare(userA)
+            : userA.localeCompare(userB);
+        }
       } else if (sort === "zuid") {
-        return a.meta?.ZUID?.localeCompare(b.meta?.ZUID);
+        return sortOrder === "asc"
+          ? b.meta?.ZUID?.localeCompare(a.meta?.ZUID)
+          : a.meta?.ZUID?.localeCompare(b.meta?.ZUID);
       } else if (fields?.find((field) => field.name === sort)) {
         const dataType = fields?.find((field) => field.name === sort)?.datatype;
         if (typeof a.data[sort] === "number") {
           if (a.data[sort] == null) return 1;
           if (b.data[sort] == null) return -1;
 
-          return dataType === "sort"
+          if (dataType === "sort") {
+            return sortOrder === "asc"
+              ? a.data[sort] - b.data[sort]
+              : b.data[sort] - a.data[sort];
+          }
+
+          return sortOrder === "asc"
             ? a.data[sort] - b.data[sort]
             : b.data[sort] - a.data[sort];
         }
@@ -345,22 +394,38 @@ export const ItemList = () => {
           } else if (!b.data[sort]) {
             return -1;
           } else {
-            return (
-              new Date(b.data[sort]).getTime() -
-              new Date(a.data[sort]).getTime()
-            );
+            return sortOrder === "asc"
+              ? new Date(a.data[sort]).getTime() -
+                  new Date(b.data[sort]).getTime()
+              : new Date(b.data[sort]).getTime() -
+                  new Date(a.data[sort]).getTime();
           }
         }
+
+        if (dataType === "yes_no") {
+          if (!a.data[sort]) {
+            return 1;
+          } else if (!b.data[sort]) {
+            return -1;
+          } else {
+            return sortOrder === "asc" ? a - b : b - a;
+          }
+        }
+
         const aValue =
           dataType === "images" ? a.data[sort]?.filename : a.data[sort];
         const bValue =
           dataType === "images" ? b.data[sort]?.filename : b.data[sort];
-        return aValue?.trim()?.localeCompare(bValue?.trim());
+
+        return sortOrder === "asc"
+          ? bValue?.trim()?.localeCompare(aValue?.trim())
+          : aValue?.trim()?.localeCompare(bValue?.trim());
       } else {
-        return (
-          new Date(b.meta.updatedAt).getTime() -
-          new Date(a.meta.updatedAt).getTime()
-        );
+        return sortOrder === "asc"
+          ? new Date(a.meta.updatedAt).getTime() -
+              new Date(b.meta.updatedAt).getTime()
+          : new Date(b.meta.updatedAt).getTime() -
+              new Date(a.meta.updatedAt).getTime();
       }
     });
     if (search) {
@@ -428,7 +493,7 @@ export const ItemList = () => {
 
     // filter items by all fields
     return clonedItems;
-  }, [processedItems, search, sort, statusFilter, dateFilter, userFilter]);
+  }, [processedItems, search, sortModel, statusFilter, dateFilter, userFilter]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -540,7 +605,7 @@ export const ItemList = () => {
               {!sortedAndFilteredItems?.length &&
                 !isModelItemsFetching &&
                 !search &&
-                (sort ||
+                (!!sortModel?.length ||
                   statusFilter ||
                   dateFilter?.preset ||
                   dateFilter?.from ||
