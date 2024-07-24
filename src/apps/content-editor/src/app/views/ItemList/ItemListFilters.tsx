@@ -109,6 +109,14 @@ export const ItemListFilters = () => {
     }));
   }, [users]);
 
+  const handleUpdateSortOrder = (sortType: string) => {
+    setParams(sortType, "sort");
+    setAnchorEl({
+      currentTarget: null,
+      id: "",
+    });
+  };
+
   return (
     <Box display="flex" gap={1.5} py={2}>
       <FilterButton
@@ -148,13 +156,7 @@ export const ItemListFilters = () => {
           <MenuItem
             key={key}
             data-cy={`${key}FilterOption`}
-            onClick={() => {
-              setParams(key, "sort");
-              setAnchorEl({
-                currentTarget: null,
-                id: "",
-              });
-            }}
+            onClick={() => handleUpdateSortOrder(key)}
             selected={
               key === "dateSaved"
                 ? !params.get("sort") || params.get("sort") === key
@@ -179,8 +181,12 @@ export const ItemListFilters = () => {
         >
           <MenuList>
             {/*TODO: Add functionality */}
-            <MenuItem>Created By</MenuItem>
-            <MenuItem>ZUID</MenuItem>
+            <MenuItem onClick={() => handleUpdateSortOrder("createdBy")}>
+              Created By
+            </MenuItem>
+            <MenuItem onClick={() => handleUpdateSortOrder("zuid")}>
+              ZUID
+            </MenuItem>
           </MenuList>
         </CascadingMenuItem>
         <Typography
@@ -203,13 +209,7 @@ export const ItemListFilters = () => {
           ?.map((field) => (
             <MenuItem
               key={field.ZUID}
-              onClick={() => {
-                setParams(field.name, "sort");
-                setAnchorEl({
-                  currentTarget: null,
-                  id: "",
-                });
-              }}
+              onClick={() => handleUpdateSortOrder(field.name)}
               selected={params.get("sort") === field.name}
             >
               <Typography variant="inherit" noWrap>
