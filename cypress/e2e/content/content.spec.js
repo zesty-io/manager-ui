@@ -184,7 +184,7 @@ describe("Content Specs", () => {
     });
 
     it("Currency Field", () => {
-      cy.get("#12-b35c68-jd1s8s input[type=number]")
+      cy.get("#12-b35c68-jd1s8s input")
         .focus()
         .clear()
         .type("100.00")

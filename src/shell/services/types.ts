@@ -205,6 +205,7 @@ export interface FieldSettings {
   regexRestrictErrorMessage?: string;
   minValue?: number;
   maxValue?: number;
+  currency?: string;
   fileExtensions?: string[];
   fileExtensionsErrorMessage?: string;
 }
