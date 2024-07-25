@@ -12,7 +12,7 @@ import {
   FilterButton,
   UserFilter,
 } from "../../../../../../shell/components/Filters";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import {
   ArrowDropDownOutlined,
@@ -26,12 +26,13 @@ import { useDateFilterParams } from "../../../../../../shell/hooks/useDateFilter
 import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { useParams as useRouterParams } from "react-router";
 import { CascadingMenuItem } from "../../../../../../shell/components/CascadingMenuItem";
+import { TableSortContext } from "./TableSortProvider";
 
 const SORT_ORDER = {
-  dateSaved: "Last Saved",
-  datePublished: "Last Published",
-  dateCreated: "Date Created",
-  status: "Status",
+  lastSaved: "Last Saved",
+  lastPublished: "Last Published",
+  createdOn: "Date Created",
+  version: "Status",
 } as const;
 
 const STATUS_FILTER = {
@@ -99,6 +100,9 @@ export const ItemListFilters = () => {
   const { data: users } = useGetUsersQuery();
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
+  const [sortModel, setSortModel] = useContext(TableSortContext);
+
+  const activeSortOrder = sortModel?.[0]?.field;
 
   const userOptions = useMemo(() => {
     return users?.map((user) => ({
@@ -110,15 +114,23 @@ export const ItemListFilters = () => {
   }, [users]);
 
   const handleUpdateSortOrder = (sortType: string) => {
-    setParams(sortType, "sort");
     setAnchorEl({
       currentTarget: null,
       id: "",
     });
+
+    setSortModel([
+      {
+        field: sortType,
+        sort: "desc",
+      },
+    ]);
   };
 
-  const getButtonText = () => {
-    const activeSortOrder = params.get("sort");
+  const getButtonText = (activeSortOrder: string) => {
+    if (!activeSortOrder) {
+      return SORT_ORDER.lastSaved;
+    }
 
     if (activeSortOrder === "createdBy") {
       return "Created By";
@@ -132,11 +144,10 @@ export const ItemListFilters = () => {
       return SORT_ORDER[activeSortOrder as keyof typeof SORT_ORDER];
     }
 
-    if (fields?.find((field) => field.name === params.get("sort"))?.label) {
-      return fields?.find((field) => field.name === params.get("sort"))?.label;
-    }
-
-    return SORT_ORDER.dateSaved;
+    const fieldLabel = fields?.find(
+      (field) => field.name === activeSortOrder
+    )?.label;
+    return fieldLabel;
   };
 
   return (
@@ -144,7 +155,7 @@ export const ItemListFilters = () => {
       <FilterButton
         filterId="sortByFilter"
         isFilterActive={false}
-        buttonText={`Sort: ${getButtonText()}`}
+        buttonText={`Sort: ${getButtonText(activeSortOrder)}`}
         onOpenMenu={(event: React.MouseEvent<HTMLButtonElement>) => {
           setAnchorEl({
             currentTarget: event.currentTarget,
@@ -175,9 +186,9 @@ export const ItemListFilters = () => {
             data-cy={`${key}FilterOption`}
             onClick={() => handleUpdateSortOrder(key)}
             selected={
-              key === "dateSaved"
-                ? !params.get("sort") || params.get("sort") === key
-                : params.get("sort") === key
+              key === "lastSaved"
+                ? !activeSortOrder || activeSortOrder === "lastSaved"
+                : activeSortOrder === key
             }
           >
             {value}
@@ -198,13 +209,13 @@ export const ItemListFilters = () => {
         >
           <MenuList>
             <MenuItem
-              selected={params.get("sort") === "createdBy"}
+              selected={activeSortOrder === "createdBy"}
               onClick={() => handleUpdateSortOrder("createdBy")}
             >
               Created By
             </MenuItem>
             <MenuItem
-              selected={params.get("sort") === "zuid"}
+              selected={activeSortOrder === "zuid"}
               onClick={() => handleUpdateSortOrder("zuid")}
             >
               ZUID
@@ -232,7 +243,7 @@ export const ItemListFilters = () => {
             <MenuItem
               key={field.ZUID}
               onClick={() => handleUpdateSortOrder(field.name)}
-              selected={params.get("sort") === field.name}
+              selected={activeSortOrder === field.name}
             >
               <Typography variant="inherit" noWrap>
                 {field.label}
