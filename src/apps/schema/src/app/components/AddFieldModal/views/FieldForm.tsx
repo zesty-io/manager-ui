@@ -233,6 +233,8 @@ export const FieldForm = ({
           formFields[field.name] = fieldData.settings[field.name] ?? null;
         } else if (field.name === "maxValue") {
           formFields[field.name] = fieldData.settings[field.name] ?? null;
+        } else if (field.name === "currency") {
+          formFields[field.name] = fieldData.settings?.currency ?? "USD";
         } else if (field.name === "fileExtensions") {
           formFields[field.name] = fieldData.settings[field.name] ?? null;
         } else if (field.name === "fileExtensionsErrorMessage") {
@@ -430,6 +432,22 @@ export const FieldForm = ({
       }
 
       if (
+        inputName === "fileExtensions" &&
+        formData.fileExtensions !== null &&
+        !(formData.fileExtensions as string[])?.length
+      ) {
+        newErrorsObj[inputName] = "This field is required";
+      }
+
+      if (
+        inputName === "fileExtensionsErrorMessage" &&
+        formData.fileExtensions !== null &&
+        formData.fileExtensionsErrorMessage === ""
+      ) {
+        newErrorsObj[inputName] = "This field is required";
+      }
+
+      if (
         inputName in errors &&
         ![
           "defaultValue",
@@ -441,6 +459,7 @@ export const FieldForm = ({
           "regexRestrictErrorMessage",
           "minValue",
           "maxValue",
+          "currency",
           "fileExtensions",
           "fileExtensionsErrorMessage",
         ].includes(inputName)
@@ -601,6 +620,9 @@ export const FieldForm = ({
         }),
         ...(formData.maxValue !== null && {
           maxValue: formData.maxValue as number,
+        }),
+        ...(formData.currency !== null && {
+          currency: formData.currency as string,
         }),
         ...(formData.fileExtensions && {
           fileExtensions: formData.fileExtensions as string[],
