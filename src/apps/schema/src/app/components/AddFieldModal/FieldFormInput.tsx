@@ -55,6 +55,7 @@ export type FieldNames =
   | "regexRestrictErrorMessage"
   | "minValue"
   | "maxValue"
+  | "currency"
   | "fileExtensions"
   | "fileExtensionsErrorMessage";
 type FieldType =
