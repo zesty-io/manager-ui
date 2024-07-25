@@ -13,6 +13,11 @@ import {
   Button,
   Grid,
   Stack,
+  ListItem,
+  FilledInputProps,
+  InputProps,
+  OutlinedInputProps,
+  InputAdornment,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
@@ -64,6 +69,11 @@ import { DefaultValue } from "../DefaultValue";
 import { CharacterLimit } from "../CharacterLimit";
 import { Rules } from "./Rules";
 import { MaxLengths } from "../../../../../../content-editor/src/app/components/Editor/Editor";
+import {
+  Currency,
+  currencies,
+} from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
+import getFlagEmoji from "../../../../../../../utility/getFlagEmoji";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -397,6 +407,10 @@ export const FieldForm = ({
         } else if (formData.maxValue < formData.minValue) {
           newErrorsObj[inputName] = "Cannot be less than minimum value";
         }
+      }
+
+      if (inputName === "currency" && !formData.currency) {
+        newErrorsObj[inputName] = "Please select a currency";
       }
 
       if (
@@ -790,6 +804,12 @@ export const FieldForm = ({
 
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
+              let renderOption: any;
+              let filterOptions: any;
+              let autocompleteInputProps:
+                | Partial<FilledInputProps>
+                | Partial<OutlinedInputProps>
+                | Partial<InputProps>;
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
@@ -801,6 +821,73 @@ export const FieldForm = ({
                 disabled = isFetchingSelectedModelFields;
               }
 
+              if (fieldConfig.name === "currency") {
+                const selectedValue = currencies.find(
+                  (currency) => currency.value === formData.currency
+                );
+                dropdownOptions = currencies;
+                renderOption = (props: any, value: Currency) => (
+                  <ListItem
+                    {...props}
+                    key={value.value}
+                    sx={{ color: "text.primary" }}
+                  >
+                    <Box
+                      component="img"
+                      height={16}
+                      src={`/images/flags/${value.countryCode?.toLowerCase()}.svg`}
+                      loading="lazy"
+                      alt={`${value.countryCode} flag`}
+                    />
+                    <Typography variant="body1" fontWeight={700} pl={1}>
+                      {value.value} {value.symbol_native} &nbsp;
+                    </Typography>
+                    <Typography variant="body1">{value.label}</Typography>
+                  </ListItem>
+                );
+                filterOptions = (options: Currency[], state: any) => {
+                  if (state.inputValue) {
+                    return options.filter(
+                      (option) =>
+                        option.label
+                          ?.toLowerCase()
+                          .includes(state.inputValue.toLowerCase()) ||
+                        option.value
+                          ?.toLowerCase()
+                          .includes(state.inputValue.toLowerCase())
+                    );
+                  } else {
+                    return options;
+                  }
+                };
+                autocompleteInputProps = {
+                  startAdornment: !!selectedValue && (
+                    <InputAdornment
+                      position="start"
+                      sx={{
+                        pl: 0.25,
+
+                        "&.MuiInputAdornment-root.MuiInputAdornment-positionStart":
+                          {
+                            color: "text.primary",
+                          },
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        height={16}
+                        src={`/images/flags/${selectedValue.countryCode?.toLowerCase()}.svg`}
+                        loading="lazy"
+                        alt={`${selectedValue.countryCode} flag`}
+                      />
+                      <Typography variant="body1" fontWeight={700} pl={1}>
+                        {selectedValue.value} {selectedValue.symbol_native}
+                      </Typography>
+                    </InputAdornment>
+                  ),
+                };
+              }
+
               return (
                 <FieldFormInput
                   key={index}
@@ -810,6 +897,9 @@ export const FieldForm = ({
                   prefillData={formData[fieldConfig.name]}
                   dropdownOptions={dropdownOptions || []}
                   disabled={disabled}
+                  renderOption={renderOption}
+                  filterOptions={filterOptions}
+                  autocompleteInputProps={autocompleteInputProps}
                 />
               );
             })}
