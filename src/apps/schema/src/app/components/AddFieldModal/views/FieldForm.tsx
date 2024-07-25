@@ -432,6 +432,22 @@ export const FieldForm = ({
       }
 
       if (
+        inputName === "fileExtensions" &&
+        formData.fileExtensions !== null &&
+        !(formData.fileExtensions as string[])?.length
+      ) {
+        newErrorsObj[inputName] = "This field is required";
+      }
+
+      if (
+        inputName === "fileExtensionsErrorMessage" &&
+        formData.fileExtensions !== null &&
+        formData.fileExtensionsErrorMessage === ""
+      ) {
+        newErrorsObj[inputName] = "This field is required";
+      }
+
+      if (
         inputName in errors &&
         ![
           "defaultValue",
