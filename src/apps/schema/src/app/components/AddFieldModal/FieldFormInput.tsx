@@ -14,10 +14,6 @@ import {
   Button,
   IconButton,
   Stack,
-  AutocompleteProps,
-  InputProps,
-  OutlinedInputProps,
-  FilledInputProps,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -29,7 +25,6 @@ import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
-import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -85,7 +80,7 @@ export interface DropdownOptions {
   label: string;
   value: string;
 }
-type FieldFormInputProps = {
+interface FieldFormInputProps {
   fieldConfig: InputField;
   errorMsg?: string | [string, string][];
   onDataChange: ({
@@ -96,16 +91,9 @@ type FieldFormInputProps = {
     value: FormValue;
   }) => void;
   prefillData?: FormValue;
-  dropdownOptions?: DropdownOptions[] | Currency[];
+  dropdownOptions?: DropdownOptions[];
   disabled?: boolean;
-  autocompleteInputProps?:
-    | Partial<FilledInputProps>
-    | Partial<OutlinedInputProps>
-    | Partial<InputProps>;
-} & Pick<
-  AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
-  "renderOption" | "filterOptions"
->;
+}
 export const FieldFormInput = ({
   fieldConfig,
   errorMsg,
@@ -113,9 +101,6 @@ export const FieldFormInput = ({
   prefillData,
   dropdownOptions,
   disabled,
-  renderOption,
-  filterOptions,
-  autocompleteInputProps,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -229,19 +214,9 @@ export const FieldFormInput = ({
 
       {fieldConfig.type === "autocomplete" && (
         <>
-          <Stack flexDirection="row" alignItems="center" mb={0.5} height={18}>
-            <Typography variant="body2" fontWeight={600}>
-              {fieldConfig.label}
-            </Typography>
-            {fieldConfig.tooltip && (
-              <Tooltip placement="right" title={fieldConfig.tooltip}>
-                <InfoRoundedIcon
-                  sx={{ ml: 1, width: "12px", height: "12px" }}
-                  color="action"
-                />
-              </Tooltip>
-            )}
-          </Stack>
+          <Typography variant="body2" mb={0.5} fontWeight={600}>
+            {fieldConfig.label}
+          </Typography>
           <Autocomplete
             data-cy={`Autocomplete_${fieldConfig.name}`}
             size="small"
@@ -257,12 +232,6 @@ export const FieldFormInput = ({
                 placeholder={fieldConfig.placeholder}
                 hiddenLabel
                 autoFocus={fieldConfig.autoFocus}
-                error={!!errorMsg}
-                helperText={errorMsg}
-                InputProps={{
-                  ...params.InputProps,
-                  ...autocompleteInputProps,
-                }}
               />
             )}
             isOptionEqualToValue={(option, value) =>
@@ -279,12 +248,16 @@ export const FieldFormInput = ({
                 height: "40px",
               },
             }}
-            renderOption={renderOption}
-            filterOptions={filterOptions}
           />
           {prefillData &&
             !dropdownOptions.find((option) => option.value === prefillData) && (
-              <Typography noWrap color="error.dark" variant="body2" mt={0.5}>
+              <Typography
+                noWrap
+                color="error"
+                variant="caption"
+                ml={1.75}
+                mt={0.5}
+              >
                 {fieldConfig.name === "group_id" &&
                   "The folder this was locked to has been deleted"}
                 {fieldConfig.name === "relatedModelZUID" &&
@@ -353,9 +326,12 @@ export const FieldFormInput = ({
             error={Boolean(errorMsg)}
             helperText={
               errorMsg && (
-                <Box component="span" data-cy={`ErrorMsg_${fieldConfig.name}`}>
+                <Typography
+                  data-cy={`ErrorMsg_${fieldConfig.name}`}
+                  variant="caption"
+                >
                   {errorMsg}
-                </Box>
+                </Typography>
               )
             }
             type={fieldConfig.inputType || "text"}
@@ -471,9 +447,9 @@ const KeyValueInput = ({
             handleDataChanged("value", e.target?.value);
           }}
           helperText={
-            <Box component="span" data-cy={`OptionLabelErrorMsg_${id}`}>
+            <Typography data-cy={`OptionLabelErrorMsg_${id}`} variant="caption">
               {labelErrorMsg}
-            </Box>
+            </Typography>
           }
           error={Boolean(labelErrorMsg)}
           disabled={disabledFields.includes("value")}
@@ -489,9 +465,9 @@ const KeyValueInput = ({
             handleDataChanged("key", e.target?.value);
           }}
           helperText={
-            <Box component="span" data-cy={`OptionValueErrorMsg_${id}`}>
+            <Typography data-cy={`OptionValueErrorMsg_${id}`} variant="caption">
               {valueErrorMsg}
-            </Box>
+            </Typography>
           }
           error={Boolean(valueErrorMsg)}
           disabled={disabledFields.includes("key")}

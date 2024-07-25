@@ -882,9 +882,10 @@ export const Field = ({
           errors={errors}
         >
           <FieldTypeCurrency
+            // @ts-ignore component not typed
             name={name}
-            currency={settings?.currency ?? "USD"}
-            value={String(value)}
+            placeholder="0.00"
+            value={value}
             onChange={onChange}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />

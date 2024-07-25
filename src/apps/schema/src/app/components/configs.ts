@@ -502,24 +502,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     rules: [...COMMON_RULES],
   },
   currency: {
-    details: [
-      {
-        name: "currency",
-        type: "autocomplete",
-        label: "Currency",
-        required: true,
-        gridSize: 12,
-        tooltip:
-          "The selected currency code, symbol, and flag will be displayed for this field in the content item and can be accessed through the field settings via the API.",
-        placeholder: "Select a Currency",
-        autoFocus: true,
-      },
-      {
-        ...COMMON_FIELDS[0],
-        autoFocus: false,
-      },
-      ...COMMON_FIELDS.slice(1),
-    ],
+    details: [...COMMON_FIELDS],
     rules: [...COMMON_RULES, ...INPUT_RANGE_RULES],
   },
   date: {

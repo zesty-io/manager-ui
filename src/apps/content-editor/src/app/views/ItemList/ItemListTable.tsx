@@ -27,8 +27,6 @@ import { VersionCell } from "./TableCells/VersionCell";
 import { DropDownCell } from "./TableCells/DropdownCell";
 import { SortCell } from "./TableCells/SortCell";
 import { BooleanCell } from "./TableCells/BooleanCell";
-import { currencies } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
-import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 import { ImageCell } from "./TableCells/ImageCell";
 import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
 
@@ -36,18 +34,6 @@ type ItemListTableProps = {
   loading: boolean;
   rows: ContentItem[];
 };
-
-const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
-  (acc, curr) => {
-    return {
-      ...acc,
-      [curr.value]: {
-        ...curr,
-      },
-    };
-  },
-  {}
-);
 
 const getHtmlText = (html: string) => {
   if (!html) return "";
@@ -150,14 +136,11 @@ const fieldTypeColumnConfigMap = {
   currency: {
     width: 160,
     valueFormatter: (params: any) => {
-      if (params.value?.value === undefined || params.value?.value === null)
-        return "";
-
-      return `${
-        CURRENCY_OBJECT[params.value?.currency]?.symbol_native
-      } ${new Intl.NumberFormat("en-US", {
-        minimumFractionDigits: 2,
-      }).format(params.value.value)}`;
+      if (!params.value) return null;
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(params.value);
     },
     align: "right",
   },
@@ -310,16 +293,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
             headerName: field.label,
             sortable: false,
             filterable: false,
-            valueGetter: (params: any) => {
-              if (field.datatype === "currency") {
-                return {
-                  value: params.row.data[field.name],
-                  currency: field.settings?.currency || "USD",
-                };
-              }
-
-              return params.row.data[field.name];
-            },
+            valueGetter: (params: any) => params.row.data[field.name],
             ...fieldTypeColumnConfigMap[field.datatype],
             // if field is yes_no but it has custom options increase the width
             ...(field.datatype === "yes_no" &&

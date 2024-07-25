@@ -65,7 +65,6 @@ type DefaultValueInputProps = {
     relatedFieldZUID: string;
   };
   options: FieldSettingsOptions[];
-  currency?: string;
 };
 
 export const DefaultValueInput = ({
@@ -76,7 +75,6 @@ export const DefaultValueInput = ({
   mediaRules,
   relationshipFields: { relatedModelZUID, relatedFieldZUID },
   options,
-  currency,
 }: DefaultValueInputProps) => {
   const [imageModal, setImageModal] = useState(null);
   const dispatch = useDispatch();
@@ -575,11 +573,12 @@ export const DefaultValueInput = ({
       return (
         <FieldTypeCurrency
           data-cy="DefaultValueInput"
-          name="defaultValue"
-          value={String(value)}
+          // @ts-ignore component not typed
+          name={"defaultValue"}
+          placeholder="0.00"
+          value={value}
           onChange={onChange}
           error={error}
-          currency={currency}
         />
       );
     case "date":

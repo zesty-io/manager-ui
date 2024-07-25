@@ -3,17 +3,10 @@ import {
   NumericFormatProps,
   InputAttributes,
   NumericFormat,
-  NumberFormatValues,
 } from "react-number-format";
 
-export type NumberFormatInputEvent = {
-  target: {
-    name: string;
-    value: NumberFormatValues;
-  };
-};
 type NumberFormatInputProps = {
-  onChange: (event: NumberFormatInputEvent) => void;
+  onChange: (event: { target: { name: string; value: number } }) => void;
   name: string;
 };
 export const NumberFormatInput = forwardRef<
@@ -30,7 +23,7 @@ export const NumberFormatInput = forwardRef<
         onChange({
           target: {
             name: props.name,
-            value: values,
+            value: values.floatValue || 0,
           },
         });
       }}

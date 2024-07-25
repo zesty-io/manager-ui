@@ -27,7 +27,6 @@ type DefaultValueProps = {
     relatedFieldZUID: string;
   };
   options: FieldSettingsOptions[];
-  currency?: string;
 };
 
 export const DefaultValue = ({
@@ -40,7 +39,6 @@ export const DefaultValue = ({
   mediaRules,
   relationshipFields,
   options,
-  currency,
 }: DefaultValueProps) => {
   return (
     <Box>
@@ -89,7 +87,6 @@ export const DefaultValue = ({
               mediaRules={mediaRules}
               relationshipFields={relationshipFields}
               options={options}
-              currency={currency}
             />
             <FormHelperText>
               <Box display="flex" justifyContent="space-between">

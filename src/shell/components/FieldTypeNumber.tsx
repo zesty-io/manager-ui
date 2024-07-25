@@ -66,10 +66,8 @@ export const FieldTypeNumber = ({
       value={value || 0}
       name={name}
       required={required}
-      onChange={(evt: any) => {
-        const value = evt?.target?.value?.floatValue ?? 0;
-
-        onChange(+value?.toString()?.replace(/^0+/, "") ?? 0, name);
+      onChange={(evt) => {
+        onChange(+evt.target.value?.toString()?.replace(/^0+/, "") ?? 0, name);
       }}
       onKeyDown={(evt) => {
         if ((evt.key === "Backspace" || evt.key === "Delete") && value === 0) {

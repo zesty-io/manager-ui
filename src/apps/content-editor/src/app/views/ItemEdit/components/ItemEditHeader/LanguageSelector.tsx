@@ -11,13 +11,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { ContentItem } from "../../../../../../../../shell/services/types";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { selectLang } from "../../../../../../../../shell/store/user";
-import getFlagEmoji from "../../../../../../../../utility/getFlagEmoji";
 
 const getCountryCode = (langCode: string) => {
   const splitTag = langCode.split("-");
   const countryCode =
     splitTag.length === 2 ? splitTag[1] : langCode.toUpperCase();
   return countryCode;
+};
+
+const getFlagEmojiFromIETFTag = (langCode: string) => {
+  const countryCode = getCountryCode(langCode);
+
+  // Convert country code to flag emoji.
+  // Unicode flag emojis are made up of regional indicator symbols, which are a sequence of two letters.
+  const baseOffset = 0x1f1e6;
+  return (
+    String.fromCodePoint(baseOffset + (countryCode.charCodeAt(0) - 65)) +
+    String.fromCodePoint(baseOffset + (countryCode.charCodeAt(1) - 65))
+  );
 };
 
 export const LanguageSelector = () => {
@@ -86,7 +97,7 @@ export const LanguageSelector = () => {
           data-cy="language-selector"
         >
           <Box component="span" color="text.primary">
-            {getFlagEmoji(getCountryCode(activeLanguage?.code))}
+            {getFlagEmojiFromIETFTag(activeLanguage?.code)}
           </Box>{" "}
           {activeLanguage?.code?.split("-")[0]?.toUpperCase()} (
           {getCountryCode(activeLanguage?.code)})
@@ -119,7 +130,7 @@ export const LanguageSelector = () => {
               onSelect(language.code);
             }}
           >
-            {getFlagEmoji(getCountryCode(language.code))}{" "}
+            {getFlagEmojiFromIETFTag(language.code)}{" "}
             {language.code.split("-")[0]?.toUpperCase()} (
             {getCountryCode(language.code)})
           </MenuItem>
