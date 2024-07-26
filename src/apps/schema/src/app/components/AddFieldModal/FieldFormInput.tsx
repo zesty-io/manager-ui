@@ -86,6 +86,13 @@ export interface DropdownOptions {
   label: string;
   value: string;
 }
+export type AutocompleteConfig = {
+  inputProps?:
+    | Partial<FilledInputProps>
+    | Partial<OutlinedInputProps>
+    | Partial<InputProps>;
+  maxHeight?: number;
+};
 type FieldFormInputProps = {
   fieldConfig: InputField;
   errorMsg?: string | [string, string][];
@@ -99,10 +106,7 @@ type FieldFormInputProps = {
   prefillData?: FormValue;
   dropdownOptions?: DropdownOptions[] | Currency[];
   disabled?: boolean;
-  autocompleteInputProps?:
-    | Partial<FilledInputProps>
-    | Partial<OutlinedInputProps>
-    | Partial<InputProps>;
+  autocompleteConfig?: AutocompleteConfig;
 } & Pick<
   AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
   "renderOption" | "filterOptions"
@@ -116,7 +120,7 @@ export const FieldFormInput = ({
   disabled,
   renderOption,
   filterOptions,
-  autocompleteInputProps,
+  autocompleteConfig,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -262,7 +266,7 @@ export const FieldFormInput = ({
                 helperText={errorMsg}
                 InputProps={{
                   ...params.InputProps,
-                  ...autocompleteInputProps,
+                  ...autocompleteConfig?.inputProps,
                 }}
               />
             )}
@@ -282,6 +286,16 @@ export const FieldFormInput = ({
             }}
             renderOption={renderOption}
             filterOptions={filterOptions}
+            slotProps={{
+              paper: {
+                sx: {
+                  "& .MuiAutocomplete-listbox": {
+                    maxHeight: autocompleteConfig?.maxHeight || "40vh",
+                    boxSizing: "border-box",
+                  },
+                },
+              },
+            }}
           />
           {prefillData &&
             !dropdownOptions.find((option) => option.value === prefillData) && (
