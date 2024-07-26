@@ -18,8 +18,6 @@ import {
   InputProps,
   OutlinedInputProps,
   FilledInputProps,
-  Theme,
-  SxProps,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
