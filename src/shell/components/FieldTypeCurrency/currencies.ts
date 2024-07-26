@@ -12,7 +12,7 @@ export type Currency = {
 export const currencies: Currency[] = [
   {
     symbol: " $ ",
-    label: "US Dollar",
+    label: "United States Dollar",
     symbol_native: "$",
     decimal_digits: 2,
     rounding: 0,
