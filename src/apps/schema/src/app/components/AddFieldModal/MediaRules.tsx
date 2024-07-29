@@ -152,12 +152,19 @@ export const MediaRules = ({
     newInputValue: string,
     ruleName: string
   ) => {
-    const formattedInput = "." + newInputValue.replace(/\./g, "");
-    setInputValue(formattedInput);
+    const formattedInput = newInputValue.trim().toLowerCase();
+    if (formattedInput && formattedInput[0] !== ".") {
+      setInputValue(`.${formattedInput}`);
+    } else {
+      setInputValue(formattedInput);
+    }
   };
 
   const handleKeyDown = (event: any, ruleName: string) => {
-    if (event.key === "Enter" || event.key === "," || event.key === " ") {
+    if (
+      (event.key === "Enter" || event.key === "," || event.key === " ") &&
+      inputValue
+    ) {
       event.preventDefault();
       const newOption = inputValue.toLowerCase().trim();
       if (
@@ -171,12 +178,22 @@ export const MediaRules = ({
         });
         setInputValue("");
       }
+    } else if (event.key === "Backspace" && !inputValue) {
+      const newTags = [...(fieldData[ruleName] as string[])];
+      newTags.pop();
+      if (!newTags.length) {
+        setExtensionsError(true);
+      }
+      onDataChange({
+        inputName: ruleName,
+        value: newTags,
+      });
     }
   };
 
   const handleDelete = (option: string, ruleName: string) => {
     const newTags = (fieldData[ruleName] as string[]).filter(
-      (item) => item !== option
+      (item) => item.trim() !== option.trim()
     );
     if (!newTags.length) {
       setExtensionsError(true);
