@@ -48,21 +48,6 @@ export const Rules = ({
 
   return (
     <Stack gap={2.5}>
-      {type === "images" && (
-        <MediaRules
-          errors={errors}
-          fieldConfig={FORM_CONFIG["images"].rules}
-          onDataChange={onFieldDataChanged}
-          groups={mediaFoldersOptions}
-          fieldData={{
-            limit: formData["limit"],
-            group_id: formData["group_id"],
-            fileExtensions: formData["fileExtensions"],
-            fileExtensionsErrorMessage: formData["fileExtensionsErrorMessage"],
-          }}
-        />
-      )}
-
       <DefaultValue
         type={type}
         value={formData["defaultValue"]}
@@ -83,6 +68,21 @@ export const Rules = ({
         options={formData["options"] as FieldSettingsOptions[]}
         currency={(formData["currency"] as string) || "USD"}
       />
+
+      {type === "images" && (
+        <MediaRules
+          errors={errors}
+          fieldConfig={FORM_CONFIG["images"].rules}
+          onDataChange={onFieldDataChanged}
+          groups={mediaFoldersOptions}
+          fieldData={{
+            limit: formData["limit"],
+            group_id: formData["group_id"],
+            fileExtensions: formData["fileExtensions"],
+            fileExtensionsErrorMessage: formData["fileExtensionsErrorMessage"],
+          }}
+        />
+      )}
 
       {(type === "text" || type === "textarea") && (
         <>
