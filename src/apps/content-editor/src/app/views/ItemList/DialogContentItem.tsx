@@ -5,6 +5,7 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
+  Stack,
 } from "@mui/material";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
@@ -16,6 +17,7 @@ import {
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { useMemo } from "react";
+import { ImageRounded } from "@mui/icons-material";
 
 export type DialogContentItemProps = {
   item: ContentItem;
@@ -50,26 +52,44 @@ export const DialogContentItem = ({ item }: DialogContentItemProps) => {
   return (
     <List disablePadding>
       <ListItem dense disableGutters divider>
-        <ListItemAvatar>
-          <Avatar
+        {!!heroImage ? (
+          <ListItemAvatar>
+            <Avatar
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 1,
+                backgroundColor: (theme) => theme.palette.grey[100],
+              }}
+              src={heroImage}
+              imgProps={{
+                style: {
+                  objectFit: "contain",
+                },
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                NA
+              </Typography>
+            </Avatar>
+          </ListItemAvatar>
+        ) : (
+          <Stack
             sx={{
+              backgroundColor: "grey.100",
               width: 40,
               height: 40,
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+              mr: 2,
+              my: 0.5,
               borderRadius: 1,
-              backgroundColor: (theme) => theme.palette.grey[100],
-            }}
-            src={heroImage}
-            imgProps={{
-              style: {
-                objectFit: "contain",
-              },
             }}
           >
-            <Typography variant="body2" color="text.secondary">
-              NA
-            </Typography>
-          </Avatar>
-        </ListItemAvatar>
+            <ImageRounded fontSize="small" color="action" />
+          </Stack>
+        )}
         <ListItemText
           primaryTypographyProps={{
             variant: "body2",
