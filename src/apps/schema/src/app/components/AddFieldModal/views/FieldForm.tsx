@@ -32,7 +32,11 @@ import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlin
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
-import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
+import {
+  FieldFormInput,
+  DropdownOptions,
+  AutocompleteConfig,
+} from "../FieldFormInput";
 import { useMediaRules } from "../../hooks/useMediaRules";
 import { MediaRules } from "../MediaRules";
 import {
@@ -432,22 +436,6 @@ export const FieldForm = ({
       }
 
       if (
-        inputName === "fileExtensions" &&
-        formData.fileExtensions !== null &&
-        !(formData.fileExtensions as string[])?.length
-      ) {
-        newErrorsObj[inputName] = "This field is required";
-      }
-
-      if (
-        inputName === "fileExtensionsErrorMessage" &&
-        formData.fileExtensions !== null &&
-        formData.fileExtensionsErrorMessage === ""
-      ) {
-        newErrorsObj[inputName] = "This field is required";
-      }
-
-      if (
         inputName in errors &&
         ![
           "defaultValue",
@@ -828,10 +816,7 @@ export const FieldForm = ({
               let disabled = false;
               let renderOption: any;
               let filterOptions: any;
-              let autocompleteInputProps:
-                | Partial<FilledInputProps>
-                | Partial<OutlinedInputProps>
-                | Partial<InputProps>;
+              let autocompleteConfig: AutocompleteConfig = {};
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
@@ -882,7 +867,7 @@ export const FieldForm = ({
                     return options;
                   }
                 };
-                autocompleteInputProps = {
+                autocompleteConfig.inputProps = {
                   startAdornment: !!selectedValue && (
                     <InputAdornment
                       position="start"
@@ -908,6 +893,7 @@ export const FieldForm = ({
                     </InputAdornment>
                   ),
                 };
+                autocompleteConfig.maxHeight = 256;
               }
 
               return (
@@ -921,7 +907,7 @@ export const FieldForm = ({
                   disabled={disabled}
                   renderOption={renderOption}
                   filterOptions={filterOptions}
-                  autocompleteInputProps={autocompleteInputProps}
+                  autocompleteConfig={autocompleteConfig}
                 />
               );
             })}

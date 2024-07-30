@@ -17,9 +17,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 import { resolvePathPart, publishFile } from "../../../store/files";
 import { collapseNavItem } from "../../../store/navCode";
-
+import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 import styles from "./FileList.less";
 export const FileList = memo(function FileList(props) {
+  const canPublish = usePermission("PUBLISH");
   // const [branch, setBranch] = useState(props.branch);
   const [shownFiles, setShownFiles] = useState(
     props.navCode.tree.sort(byLabel)
@@ -47,14 +48,20 @@ export const FileList = memo(function FileList(props) {
   };
 
   const actions = [
-    <FontAwesomeIcon
-      title="Publish file"
-      icon={faCloudUploadAlt}
-      className={styles.Action}
-      showIcon={true}
-      available={(file) => !file.isLive}
-      onClick={(file) => props.dispatch(publishFile(file.ZUID, file.status))}
-    />,
+    ...(canPublish
+      ? [
+          <FontAwesomeIcon
+            title="Publish file"
+            icon={faCloudUploadAlt}
+            className={styles.Action}
+            showIcon={true}
+            available={(file) => !file.isLive}
+            onClick={(file) =>
+              props.dispatch(publishFile(file.ZUID, file.status))
+            }
+          />,
+        ]
+      : []),
   ];
 
   return (
