@@ -6,7 +6,7 @@ import {
 } from "../../../../../../shell/components/Filters";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "../../../../../../shell/hooks/useParams";
-import { ArrowDropDownOutlined } from "@mui/icons-material";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import {
   useGetContentModelFieldsQuery,
   useGetLangsQuery,
@@ -255,7 +255,7 @@ export const ItemListFilters = () => {
         size="small"
         variant="outlined"
         color="inherit"
-        endIcon={<ArrowDropDownOutlined />}
+        endIcon={<KeyboardArrowDownRoundedIcon />}
         onClick={(e) =>
           setAnchorEl({
             currentTarget: e.currentTarget,

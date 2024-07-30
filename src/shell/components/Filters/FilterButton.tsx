@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Button, ButtonGroup, Typography } from "@mui/material";
-import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
@@ -53,7 +53,7 @@ export const FilterButton: FC<FilterButton> = ({
         variant="outlined"
         size="small"
         color="inherit"
-        endIcon={<ArrowDropDownOutlinedIcon />}
+        endIcon={<KeyboardArrowDownRoundedIcon />}
         onClick={onOpenMenu}
         data-cy={`${filterId}_default`}
         sx={{
