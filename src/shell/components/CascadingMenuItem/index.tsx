@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   MenuItem,
   MenuItemProps,
@@ -23,11 +23,37 @@ export const CascadingMenuItem: FC<CascadingMenuItemProps> = ({
   ...props
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [isChildHovered, setIsChildHovered] = useState(false);
+  const [isParentHovered, setIsParentHovered] = useState(false);
+
+  /**  Note: This essentially adds a small delay to allow a user to move their mouse
+   * to the child component instead of just immediately closing it outright
+   */
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (!isParentHovered) {
+      timeoutId = setTimeout(() => {
+        if (!isChildHovered) {
+          setAnchorEl(null);
+        }
+      }, 100);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [isParentHovered, isChildHovered]);
 
   return (
     <MenuItem
-      onMouseEnter={(evt) => setAnchorEl(evt.currentTarget)}
-      onMouseLeave={() => setAnchorEl(null)}
+      onMouseEnter={(evt) => {
+        setAnchorEl(evt.currentTarget);
+        setIsParentHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsParentHovered(false);
+      }}
       sx={{
         // HACK: Prevents the menu item to be in active style state when the sub-menu is opened.
         "&.MuiMenuItem-root": {
@@ -51,7 +77,17 @@ export const CascadingMenuItem: FC<CascadingMenuItemProps> = ({
           }}
           {...PopperProps}
         >
-          <Paper elevation={8} {...PaperProps}>
+          <Paper
+            elevation={8}
+            {...PaperProps}
+            onMouseEnter={() => {
+              setIsChildHovered(true);
+            }}
+            onMouseLeave={() => {
+              setIsChildHovered(false);
+              setAnchorEl(null);
+            }}
+          >
             {children}
           </Paper>
         </Popper>
