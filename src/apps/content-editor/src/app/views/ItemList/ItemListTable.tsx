@@ -16,9 +16,17 @@ import {
   GRID_CHECKBOX_SELECTION_COL_DEF,
   useGridApiRef,
   GridInitialState,
+  GridComparatorFn,
   GridPinnedColumns,
 } from "@mui/x-data-grid-pro";
-import { memo, useCallback, useLayoutEffect, useMemo, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useState,
+  useContext,
+} from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
 import { OneToManyCell } from "./TableCells/OneToManyCell";
@@ -32,6 +40,8 @@ import { currencies } from "../../../../../../shell/components/FieldTypeCurrency
 import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 import { ImageCell } from "./TableCells/ImageCell";
 import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
+import { useParams } from "../../../../../../shell/hooks/useParams";
+import { TableSortContext } from "./TableSortProvider";
 
 type ItemListTableProps = {
   loading: boolean;
@@ -66,15 +76,13 @@ const METADATA_COLUMNS = [
     field: "createdBy",
     headerName: "Created By",
     width: 240,
-    sortable: false,
     filterable: false,
     renderCell: (params: GridRenderCellParams) => <UserCell params={params} />,
   },
   {
     field: "createdOn",
-    headerName: "Created On",
+    headerName: "Date Created",
     width: 200,
-    sortable: false,
     filterable: false,
     valueGetter: (params: any) => params.row?.meta?.createdAt,
   },
@@ -83,7 +91,6 @@ const METADATA_COLUMNS = [
     field: "lastSaved",
     headerName: "Last Saved",
     width: 200,
-    sortable: false,
     filterable: false,
     valueGetter: (params: any) => params.row?.web?.updatedAt,
   },
@@ -91,7 +98,6 @@ const METADATA_COLUMNS = [
     field: "lastPublished",
     headerName: "Last Published",
     width: 200,
-    sortable: false,
     filterable: false,
     valueGetter: (params: any) => params.row?.publishing?.publishAt,
   },
@@ -99,7 +105,6 @@ const METADATA_COLUMNS = [
     field: "zuid",
     headerName: "ZUID",
     width: 200,
-    sortable: false,
     filterable: false,
     valueGetter: (params: any) => params.row?.meta?.ZUID,
   },
@@ -247,6 +252,8 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
   const history = useHistory();
   const { stagedChanges } = useStagedChanges();
   const [selectedItems, setSelectedItems] = useSelectedItems();
+  const [params, setParams] = useParams();
+  const [sortModel, setSortModel] = useContext(TableSortContext);
   const [pinnedColumns, setPinnedColumns] = useState<GridPinnedColumns>({});
 
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
@@ -288,7 +295,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
         field: "version",
         headerName: "Vers.",
         width: 59,
-        sortable: false,
+        sortable: true,
         filterable: false,
         renderCell: (params: GridRenderCellParams) => (
           <VersionCell params={params} />
@@ -303,7 +310,6 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
           ?.map((field) => ({
             field: field.name,
             headerName: field.label,
-            sortable: false,
             filterable: false,
             valueGetter: (params: any) => {
               if (field.datatype === "currency") {
@@ -395,6 +401,12 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       checkboxSelection
       disableSelectionOnClick
       initialState={initialState}
+      sortingOrder={["desc", "asc", null]}
+      sortModel={sortModel}
+      sortingMode="server"
+      onSortModelChange={(newSortModel) => {
+        setSortModel(newSortModel);
+      }}
       onSelectionModelChange={(newSelection) => setSelectedItems(newSelection)}
       selectionModel={
         stagedChanges && Object.keys(stagedChanges)?.length ? [] : selectedItems
