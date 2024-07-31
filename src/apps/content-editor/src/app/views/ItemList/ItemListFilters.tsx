@@ -15,8 +15,8 @@ import {
 import { useEffect, useMemo, useState, useContext } from "react";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import {
-  ArrowDropDownOutlined,
   ChevronRightOutlined,
+  KeyboardArrowDownRounded,
 } from "@mui/icons-material";
 import {
   useGetContentModelFieldsQuery,
@@ -321,7 +321,7 @@ export const ItemListFilters = () => {
         size="small"
         variant="outlined"
         color="inherit"
-        endIcon={<ArrowDropDownOutlined />}
+        endIcon={<KeyboardArrowDownRounded />}
         onClick={(e) =>
           setAnchorEl({
             currentTarget: e.currentTarget,
