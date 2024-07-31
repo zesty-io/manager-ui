@@ -70,22 +70,26 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
           Select
         </MenuItem>
         {field?.settings?.options &&
-          Object.entries(field?.settings?.options)?.map(([key, value]) => (
-            <MenuItem
-              dense
-              key={key}
-              onClick={() => {
-                handleChange(key);
-              }}
-              selected={value === currVal}
-              sx={{
-                textWrap: "wrap",
-                wordBreak: "break-word",
-              }}
-            >
-              {value}
-            </MenuItem>
-          ))}
+          Object.entries(field?.settings?.options)?.map(([key, value]) => {
+            if (!key && !value) return <></>;
+
+            return (
+              <MenuItem
+                dense
+                key={key}
+                onClick={() => {
+                  handleChange(key);
+                }}
+                selected={value === currVal}
+                sx={{
+                  textWrap: "wrap",
+                  wordBreak: "break-word",
+                }}
+              >
+                {value}
+              </MenuItem>
+            );
+          })}
       </Menu>
     </>
   );
