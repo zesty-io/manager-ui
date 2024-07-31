@@ -6,8 +6,6 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  Typography,
-  Chip,
 } from "@mui/material";
 import { Database, IconButton } from "@zesty-io/material";
 import {
@@ -21,8 +19,6 @@ import {
   BoltRounded,
   KeyboardArrowRightRounded,
   DataObjectRounded,
-  VisibilityRounded,
-  DesignServicesRounded,
 } from "@mui/icons-material";
 import { forwardRef, useState, useCallback } from "react";
 import { useHistory, useParams as useRouterParams } from "react-router";
@@ -30,36 +26,21 @@ import { useFilePath } from "../../../../../../shell/hooks/useFilePath";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { debounce } from "lodash";
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
-import { useGetDomainsQuery } from "../../../../../../shell/services/accounts";
-import { ApiType } from "../../../../../schema/src/app/components/ModelApi";
-import { AppState } from "../../../../../../shell/store/types";
-import { useSelector } from "react-redux";
 import { CascadingMenuItem } from "../../../../../../shell/components/CascadingMenuItem";
 import { APIEndpoints } from "../../components/APIEndpoints";
 
 export const ItemListActions = forwardRef((props, ref) => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const { data: contentModels } = useGetContentModelsQuery();
-  const { data: domains } = useGetDomainsQuery();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
   const codePath = useFilePath(modelZUID);
   const [isCopied, setIsCopied] = useState(false);
   const [params, setParams] = useParams();
   const [searchTerm, setSearchTerm] = useState(params.get("search") || "");
-  const instance = useSelector((state: AppState) => state.instance);
-  const [showApiEndpoints, setShowApiEndpoints] = useState<null | HTMLElement>(
-    null
-  );
-  const [apiEndpointType, setApiEndpointType] = useState("quick-access");
   const isDataset =
     contentModels?.find((model) => model.ZUID === modelZUID)?.type ===
     "dataset";
-  const apiTypeEndpointMap: Partial<Record<ApiType, string>> = {
-    "quick-access": `/-/instant/${modelZUID}.json`,
-    "site-generators": "/?toJSON",
-  };
-  const liveDomain = domains?.find((domain) => domain.branch == "live");
 
   const handleCopyClick = (data: string) => {
     navigator?.clipboard

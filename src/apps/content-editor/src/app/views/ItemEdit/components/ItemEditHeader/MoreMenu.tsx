@@ -1,12 +1,9 @@
 import {
-  Chip,
   IconButton,
   ListItemIcon,
   Menu,
   MenuItem,
-  Typography,
   Tooltip,
-  MenuList,
 } from "@mui/material";
 import {
   MoreHorizRounded,
@@ -22,12 +19,7 @@ import {
 import { useState } from "react";
 import { Database } from "@zesty-io/material";
 import { useHistory, useParams } from "react-router";
-import { useSelector } from "react-redux";
-import { AppState } from "../../../../../../../../shell/store/types";
-import { ContentItem } from "../../../../../../../../shell/services/types";
 import { DuplicateItemDialog } from "./DuplicateItemDialog";
-import { ApiType } from "../../../../../../../schema/src/app/components/ModelApi";
-import { useGetDomainsQuery } from "../../../../../../../../shell/services/accounts";
 import { useFilePath } from "../../../../../../../../shell/hooks/useFilePath";
 import { DeleteItemDialog } from "./DeleteItemDialog";
 import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
