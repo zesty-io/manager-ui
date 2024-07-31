@@ -7,7 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
 
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import CloseRounded from "@mui/icons-material/CloseRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import Divider from "@mui/material/Divider";
@@ -98,7 +98,7 @@ export const DateRangeFilter: FC = () => {
 
   const inactiveButton = (
     <Button
-      endIcon={<ArrowDropDownIcon />}
+      endIcon={<KeyboardArrowDownRoundedIcon />}
       onClick={handleClick}
       variant="outlined"
       size="small"
