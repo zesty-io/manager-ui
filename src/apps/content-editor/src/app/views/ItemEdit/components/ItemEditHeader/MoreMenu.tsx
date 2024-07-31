@@ -6,6 +6,7 @@ import {
   MenuItem,
   Typography,
   Tooltip,
+  MenuList,
 } from "@mui/material";
 import {
   MoreHorizRounded,
@@ -33,6 +34,7 @@ import { useFilePath } from "../../../../../../../../shell/hooks/useFilePath";
 import { DeleteItemDialog } from "./DeleteItemDialog";
 import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
+import { CascadingMenuItem } from "../../../../../../../../shell/components/CascadingMenuItem";
 
 export const MoreMenu = () => {
   const { modelZUID, itemZUID } = useParams<{
@@ -48,11 +50,6 @@ export const MoreMenu = () => {
   const [showDeleteItemDialog, setShowDeleteItemDialog] = useState(false);
   const [apiEndpointType, setApiEndpointType] = useState("quick-access");
   const history = useHistory();
-  const item = useSelector(
-    (state: AppState) => state.content[itemZUID] as ContentItem
-  );
-  const instance = useSelector((state: AppState) => state.instance);
-  const { data: domains } = useGetDomainsQuery();
   const codePath = useFilePath(modelZUID);
   const { data: contentModels } = useGetContentModelsQuery();
   const type =
@@ -72,13 +69,6 @@ export const MoreMenu = () => {
         console.error(err);
       });
   };
-
-  const apiTypeEndpointMap: Partial<Record<ApiType, string>> = {
-    "quick-access": `/-/instant/${itemZUID}.json`,
-    "site-generators": item ? `/${item?.web?.path}/?toJSON` : "/?toJSON",
-  };
-
-  const liveDomain = domains?.find((domain) => domain.branch == "live");
 
   return (
     <>
@@ -135,31 +125,33 @@ export const MoreMenu = () => {
           </ListItemIcon>
           Copy ZUID
         </MenuItem>
-        <MenuItem
-          onClick={(event) => {
-            setShowApiEndpoints(event.currentTarget);
-            setApiEndpointType("quick-access");
-          }}
+        <CascadingMenuItem
+          MenuItemComponent={
+            <>
+              <ListItemIcon>
+                <BoltRounded />
+              </ListItemIcon>
+              View Quick Access API
+              <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
+            </>
+          }
         >
-          <ListItemIcon>
-            <BoltRounded />
-          </ListItemIcon>
-          View Quick Access API
-          <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
-        </MenuItem>
+          <APIEndpoints type="quick-access" />
+        </CascadingMenuItem>
         {type !== "dataset" && (
-          <MenuItem
-            onClick={(event) => {
-              setShowApiEndpoints(event.currentTarget);
-              setApiEndpointType("site-generators");
-            }}
+          <CascadingMenuItem
+            MenuItemComponent={
+              <>
+                <ListItemIcon>
+                  <DataObjectRounded />
+                </ListItemIcon>
+                View Site Generators API
+                <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
+              </>
+            }
           >
-            <ListItemIcon>
-              <DataObjectRounded />
-            </ListItemIcon>
-            View Site Generators API
-            <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
-          </MenuItem>
+            <APIEndpoints type="site-generators" />
+          </CascadingMenuItem>
         )}
         <MenuItem
           onClick={() => {
@@ -201,29 +193,70 @@ export const MoreMenu = () => {
           onClose={() => setShowDuplicateItemDialog(false)}
         />
       )}
-      <Menu
-        anchorEl={showApiEndpoints}
-        open={!!showApiEndpoints}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        onClose={() => {
-          setShowApiEndpoints(null);
+      {showDeleteItemDialog && (
+        <DeleteItemDialog onClose={() => setShowDeleteItemDialog(false)} />
+      )}
+    </>
+  );
+};
+
+type APIEndpointsProps = {
+  type: Extract<ApiType, "quick-access" | "site-generators">;
+};
+const APIEndpoints = ({ type }: APIEndpointsProps) => {
+  const { itemZUID } = useParams<{
+    itemZUID: string;
+  }>();
+  const item = useSelector(
+    (state: AppState) => state.content[itemZUID] as ContentItem
+  );
+  const instance = useSelector((state: AppState) => state.instance);
+  const { data: domains } = useGetDomainsQuery();
+
+  const apiTypeEndpointMap: Partial<Record<ApiType, string>> = {
+    "quick-access": `/-/instant/${itemZUID}.json`,
+    "site-generators": item ? `/${item?.web?.path}/?toJSON` : "/?toJSON",
+  };
+
+  const liveDomain = domains?.find((domain) => domain.branch == "live");
+
+  return (
+    <MenuList>
+      <MenuItem
+        onClick={() => {
+          window.open(
+            // @ts-expect-error config not typed
+            `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`,
+            "_blank"
+          );
         }}
       >
+        <ListItemIcon>
+          <DesignServicesRounded />
+        </ListItemIcon>
+        <Typography
+          variant="inherit"
+          noWrap
+          sx={{
+            width: 172,
+          }}
+        >
+          {/* @ts-expect-error config not typed */}
+          {`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[type]}`}
+        </Typography>
+        <Chip size="small" label="Dev" />
+      </MenuItem>
+      {liveDomain && (
         <MenuItem
           onClick={() => {
-            setShowApiEndpoints(null);
             window.open(
-              // @ts-expect-error config not typed
-              `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[apiEndpointType]}`,
+              `https://${liveDomain.domain}${apiTypeEndpointMap[type]}`,
               "_blank"
             );
           }}
         >
           <ListItemIcon>
-            <DesignServicesRounded />
+            <VisibilityRounded />
           </ListItemIcon>
           <Typography
             variant="inherit"
@@ -232,48 +265,11 @@ export const MoreMenu = () => {
               width: 172,
             }}
           >
-            {/* @ts-expect-error config not typed */}
-            {`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[apiEndpointType]}`}
+            {`${liveDomain.domain}${apiTypeEndpointMap[type]}`}
           </Typography>
-          <Chip size="small" label="Dev" />
+          <Chip size="small" label="Prod" />
         </MenuItem>
-        {liveDomain && (
-          <MenuItem
-            onClick={() => {
-              setShowApiEndpoints(null);
-              window.open(
-                `https://${liveDomain.domain}${
-                  apiTypeEndpointMap[
-                    apiEndpointType as keyof typeof apiTypeEndpointMap
-                  ]
-                }`,
-                "_blank"
-              );
-            }}
-          >
-            <ListItemIcon>
-              <VisibilityRounded />
-            </ListItemIcon>
-            <Typography
-              variant="inherit"
-              noWrap
-              sx={{
-                width: 172,
-              }}
-            >
-              {`${liveDomain.domain}${
-                apiTypeEndpointMap[
-                  apiEndpointType as keyof typeof apiTypeEndpointMap
-                ]
-              }`}
-            </Typography>
-            <Chip size="small" label="Prod" />
-          </MenuItem>
-        )}
-      </Menu>
-      {showDeleteItemDialog && (
-        <DeleteItemDialog onClose={() => setShowDeleteItemDialog(false)} />
       )}
-    </>
+    </MenuList>
   );
 };
