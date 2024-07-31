@@ -10,7 +10,14 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
   const field = params.row.fieldData[params.field];
   const handleChange = (value: any) => {
     setAnchorEl(null);
-    updateStagedChanges(params.row.id, params.field, value);
+
+    if (value !== currVal) {
+      updateStagedChanges(
+        params.row.id,
+        params.field,
+        value === "Select" ? null : value
+      );
+    }
   };
 
   const currVal =
@@ -60,7 +67,7 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
         <MenuItem
           dense
           onClick={() => {
-            handleChange(null);
+            handleChange("Select");
           }}
           sx={{
             textWrap: "wrap",
@@ -70,26 +77,22 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
           Select
         </MenuItem>
         {field?.settings?.options &&
-          Object.entries(field?.settings?.options)?.map(([key, value]) => {
-            if (!key && !value) return <></>;
-
-            return (
-              <MenuItem
-                dense
-                key={key}
-                onClick={() => {
-                  handleChange(key);
-                }}
-                selected={value === currVal}
-                sx={{
-                  textWrap: "wrap",
-                  wordBreak: "break-word",
-                }}
-              >
-                {value}
-              </MenuItem>
-            );
-          })}
+          Object.entries(field?.settings?.options)?.map(([key, value]) => (
+            <MenuItem
+              dense
+              key={key}
+              onClick={() => {
+                handleChange(key);
+              }}
+              selected={value === currVal}
+              sx={{
+                textWrap: "wrap",
+                wordBreak: "break-word",
+              }}
+            >
+              {value}
+            </MenuItem>
+          ))}
       </Menu>
     </>
   );
