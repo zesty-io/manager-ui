@@ -34,6 +34,8 @@ import { useGetDomainsQuery } from "../../../../../../shell/services/accounts";
 import { ApiType } from "../../../../../schema/src/app/components/ModelApi";
 import { AppState } from "../../../../../../shell/store/types";
 import { useSelector } from "react-redux";
+import { CascadingMenuItem } from "../../../../../../shell/components/CascadingMenuItem";
+import { APIEndpoints } from "../../components/APIEndpoints";
 
 export const ItemListActions = forwardRef((props, ref) => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -141,31 +143,33 @@ export const ItemListActions = forwardRef((props, ref) => {
           </ListItemIcon>
           Copy ZUID
         </MenuItem>
-        <MenuItem
-          onClick={(event) => {
-            setShowApiEndpoints(event.currentTarget);
-            setApiEndpointType("quick-access");
-          }}
+        <CascadingMenuItem
+          MenuItemComponent={
+            <>
+              <ListItemIcon>
+                <BoltRounded />
+              </ListItemIcon>
+              View Quick Access API
+              <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
+            </>
+          }
         >
-          <ListItemIcon>
-            <BoltRounded />
-          </ListItemIcon>
-          View Quick Access API
-          <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
-        </MenuItem>
+          <APIEndpoints type="quick-access" />
+        </CascadingMenuItem>
         {!isDataset && (
-          <MenuItem
-            onClick={(event) => {
-              setShowApiEndpoints(event.currentTarget);
-              setApiEndpointType("site-generators");
-            }}
+          <CascadingMenuItem
+            MenuItemComponent={
+              <>
+                <ListItemIcon>
+                  <DataObjectRounded />
+                </ListItemIcon>
+                View Site Generators API
+                <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
+              </>
+            }
           >
-            <ListItemIcon>
-              <DataObjectRounded />
-            </ListItemIcon>
-            View Site Generators API
-            <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
-          </MenuItem>
+            <APIEndpoints type="site-generators" />
+          </CascadingMenuItem>
         )}
         <MenuItem
           data-cy="EditModelNavButton"
@@ -189,76 +193,6 @@ export const ItemListActions = forwardRef((props, ref) => {
               <CodeRounded />
             </ListItemIcon>
             Edit Template
-          </MenuItem>
-        )}
-      </Menu>
-      <Menu
-        anchorEl={showApiEndpoints}
-        open={!!showApiEndpoints}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        onClose={() => {
-          setShowApiEndpoints(null);
-        }}
-      >
-        <MenuItem
-          onClick={() => {
-            setShowApiEndpoints(null);
-            window.open(
-              // @ts-expect-error config not typed
-              `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[apiEndpointType]}`,
-              "_blank"
-            );
-          }}
-        >
-          <ListItemIcon>
-            <DesignServicesRounded />
-          </ListItemIcon>
-          <Typography
-            variant="inherit"
-            noWrap
-            sx={{
-              width: 172,
-            }}
-          >
-            {/* @ts-expect-error config not typed */}
-            {`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[apiEndpointType]}`}
-          </Typography>
-          <Chip size="small" label="Dev" />
-        </MenuItem>
-        {liveDomain && (
-          <MenuItem
-            onClick={() => {
-              setShowApiEndpoints(null);
-              window.open(
-                `https://${liveDomain.domain}${
-                  apiTypeEndpointMap[
-                    apiEndpointType as keyof typeof apiTypeEndpointMap
-                  ]
-                }`,
-                "_blank"
-              );
-            }}
-          >
-            <ListItemIcon>
-              <VisibilityRounded />
-            </ListItemIcon>
-            <Typography
-              variant="inherit"
-              noWrap
-              sx={{
-                width: 172,
-              }}
-            >
-              {`${liveDomain.domain}${
-                apiTypeEndpointMap[
-                  apiEndpointType as keyof typeof apiTypeEndpointMap
-                ]
-              }`}
-            </Typography>
-            <Chip size="small" label="Prod" />
           </MenuItem>
         )}
       </Menu>
