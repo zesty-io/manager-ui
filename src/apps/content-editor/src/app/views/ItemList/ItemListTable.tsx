@@ -17,6 +17,7 @@ import {
   useGridApiRef,
   GridInitialState,
   GridComparatorFn,
+  GridPinnedColumns,
 } from "@mui/x-data-grid-pro";
 import {
   memo,
@@ -253,6 +254,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
   const [selectedItems, setSelectedItems] = useSelectedItems();
   const [params, setParams] = useParams();
   const [sortModel, setSortModel] = useContext(TableSortContext);
+  const [pinnedColumns, setPinnedColumns] = useState<GridPinnedColumns>({});
 
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
@@ -273,18 +275,11 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
     );
 
     setInitialState(
-      stateFromLocalStorage
-        ? JSON.parse(stateFromLocalStorage)
-        : {
-            pinnedColumns: {
-              left: [
-                GRID_CHECKBOX_SELECTION_COL_DEF.field,
-                "version",
-                fields?.[0]?.name,
-              ],
-            },
-          }
+      stateFromLocalStorage ? JSON.parse(stateFromLocalStorage) : {}
     );
+    setPinnedColumns({
+      left: ["__check__", "version", fields?.[0]?.name],
+    });
 
     window.addEventListener("beforeunload", saveSnapshot);
 
@@ -358,6 +353,10 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       loading={loading}
       rows={rows}
       columns={[...columns, ...METADATA_COLUMNS]}
+      pinnedColumns={pinnedColumns}
+      onPinnedColumnsChange={(newPinnedColumns) =>
+        setPinnedColumns(newPinnedColumns)
+      }
       rowHeight={54}
       hideFooter
       onRowClick={(row) => {
