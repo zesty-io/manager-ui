@@ -10,5 +10,13 @@ export const prepareHeaders = (headers) => {
   return headers;
 };
 
-export const generateThumbnail = (file) =>
-  `${file.url}?width=300&height=300&fit=bounds`;
+export const generateThumbnail = (file) => {
+  if (!!file.updated_at && !isNaN(new Date(file.updated_at).getTime())) {
+    // Prevents browser image cache when a certain file has been already replaced
+    return `${file.url}?width=300&height=300&fit=bounds&versionHash=${new Date(
+      file.updated_at
+    ).getTime()}`;
+  }
+
+  return `${file.url}?width=300&height=300&fit=bounds`;
+};
