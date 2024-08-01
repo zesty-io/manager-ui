@@ -424,7 +424,7 @@ export const FieldTypeMedia = ({
             </Stack>
           </Box>
           {selectionError && (
-            <Typography variant="body2" color="error">
+            <Typography variant="body2" color="error.dark" mt={0.5}>
               {selectionError}
             </Typography>
           )}
@@ -527,7 +527,7 @@ export const FieldTypeMedia = ({
         )}
       </Stack>
       {selectionError && (
-        <Typography variant="body2" color="error">
+        <Typography variant="body2" color="error.dark" mt={0.5}>
           {selectionError}
         </Typography>
       )}

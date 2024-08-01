@@ -288,7 +288,7 @@ export const MediaRules = ({
               )}
 
               {Boolean(fieldData[rule.name]) && rule.name === "fileExtensions" && (
-                <Box ml={4} mt={2.5}>
+                <Box ml={3.5} mt={2.5}>
                   <InputLabel>Extensions *</InputLabel>
                   <Autocomplete
                     multiple
