@@ -45,6 +45,7 @@ import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import { FileReplace } from "@zesty-io/material";
 import DeleteFileModal from "./DeleteFileModal";
 import { MoveFileDialog } from "./MoveFileDialog";
 interface Props {
@@ -59,8 +60,10 @@ interface Props {
     role?: string;
   };
   createdAt?: string;
+  updatedAt?: string;
   handleCloseModal: () => void;
   setShowEdit: (show: boolean) => void;
+  onOpenReplaceFileModal: () => void;
 }
 
 export const FileModalContent: FC<Props> = ({
@@ -72,8 +75,10 @@ export const FileModalContent: FC<Props> = ({
   title,
   user,
   createdAt,
+  updatedAt,
   handleCloseModal,
   setShowEdit,
+  onOpenReplaceFileModal,
 }) => {
   const [newTitle, setNewTitle] = useState(title);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -276,33 +281,53 @@ export const FileModalContent: FC<Props> = ({
           />
         </Stack>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <IconButton
-            onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
-            aria-controls={openSettings ? "settingsMenu" : undefined}
-            aria-haspopup="true"
-            aria-label="Open settings menu"
-            aria-expanded={openSettings ? "true" : undefined}
-            size="small"
-          >
-            <MoreHorizRoundedIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" onClick={() => setShowRenameFileModal(true)}>
-            <EditIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
-            aria-label="Trash Button"
-            onClick={() => setShowDeleteFileModal(true)}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => handleCloseModal()}
-            aria-label="Close Icon"
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
+          <Tooltip placement="bottom-start" title="More">
+            <IconButton
+              onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
+              aria-controls={openSettings ? "settingsMenu" : undefined}
+              aria-haspopup="true"
+              aria-label="Open settings menu"
+              aria-expanded={openSettings ? "true" : undefined}
+              size="small"
+            >
+              <MoreHorizRoundedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="bottom-start" title="Rename File">
+            <IconButton
+              size="small"
+              onClick={() => setShowRenameFileModal(true)}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="bottom-start" title="Replace File">
+            <IconButton
+              size="small"
+              aria-label="Replace File Button"
+              onClick={onOpenReplaceFileModal}
+            >
+              <FileReplace fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="bottom-start" title="Delete File">
+            <IconButton
+              size="small"
+              aria-label="Trash Button"
+              onClick={() => setShowDeleteFileModal(true)}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="bottom-start" title="Close Preview">
+            <IconButton
+              size="small"
+              onClick={() => handleCloseModal()}
+              aria-label="Close Icon"
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
 
           {/* Settings Dropdown Menu */}
           <Menu
@@ -470,9 +495,7 @@ export const FileModalContent: FC<Props> = ({
           />
         </Box>
         <Box sx={{ mt: 3 }}>
-          <Typography color="text.secondary" sx={{ mt: 1 }} variant="body3">
-            UPLOADED ON
-          </Typography>
+          <Typography variant="body2">Uploaded On</Typography>
           <Box sx={{ display: "flex", mt: 1 }}>
             <Box
               sx={{
@@ -481,18 +504,18 @@ export const FileModalContent: FC<Props> = ({
                 alignItems: "center",
               }}
             >
-              <CalendarTodayIcon sx={{ color: "#101828", opacity: "0.4" }} />
+              <CalendarTodayIcon sx={{ color: "action.active" }} />
             </Box>
-            <Box sx={{ pl: 3 }}>
+            <Box sx={{ pl: 2 }}>
               <Typography variant="body2">
                 {moment(createdAt).format("LL")}
               </Typography>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 {moment(createdAt).calendar(null, {
-                  lastDay: "[Yesterday] [at] h:mm A ",
-                  sameDay: "[Today] [at] h:mm A ",
-                  lastWeek: "dddd [at] h:mm A ",
-                  sameElse: "dddd [at] h:mm A ",
+                  lastDay: "[Yesterday][,] h:mm A ",
+                  sameDay: "[Today][,] h:mm A ",
+                  lastWeek: "ddd[,] h:mm A ",
+                  sameElse: "ddd[,] h:mm A ",
                 })}
                 {new Date(createdAt)
                   .toLocaleDateString("en-US", {
@@ -504,6 +527,41 @@ export const FileModalContent: FC<Props> = ({
             </Box>
           </Box>
         </Box>
+        {!!updatedAt && (
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="body2">Updated On</Typography>
+            <Box sx={{ display: "flex", mt: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <CalendarTodayIcon sx={{ color: "action.active" }} />
+              </Box>
+              <Box sx={{ pl: 2 }}>
+                <Typography variant="body2">
+                  {moment(updatedAt).format("LL")}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  {moment(updatedAt).calendar(null, {
+                    lastDay: "[Yesterday][,] h:mm A ",
+                    sameDay: "[Today][,] h:mm A ",
+                    lastWeek: "ddd[,] h:mm A ",
+                    sameElse: "ddd[,] h:mm A ",
+                  })}
+                  {new Date(updatedAt)
+                    .toLocaleDateString("en-US", {
+                      day: "2-digit",
+                      timeZoneName: "short",
+                    })
+                    .slice(4)}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        )}
       </Box>
     </Box>
   );

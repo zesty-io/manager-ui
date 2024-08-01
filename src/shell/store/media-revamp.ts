@@ -27,12 +27,18 @@ export type UploadFile = {
   loading?: boolean;
   bin_id?: string;
   group_id?: string;
+  replacementFile?: boolean;
 };
 
 type FileUploadStart = StoreFile & { file: File };
 type FileUploadSuccess = StoreFile & FileBase & { id: string };
 type FileUploadProgress = { uploadID: string; progress: number };
-type FileUploadStageArg = { file: File; bin_id: string; group_id: string };
+type FileUploadStageArg = {
+  file: File;
+  bin_id: string;
+  group_id: string;
+  replacementFile?: boolean;
+};
 
 type StagedUpload = {
   status: "staged";
@@ -146,6 +152,7 @@ const mediaSlice = createSlice({
           uploadID: uuidv4(),
           url: URL.createObjectURL(file.file),
           filename: file.file.name,
+          replacementFile: file.replacementFile,
           ...file,
         };
       });
@@ -334,11 +341,11 @@ type FileAugmentation = {
   group_id?: string;
 };
 
-async function getSignedUrl(file: any, bin: Bin) {
+async function getSignedUrl(filename: string, storageName: string) {
   try {
     return request(
       //@ts-expect-error
-      `${CONFIG.SERVICE_MEDIA_STORAGE}/signed-url/${bin.storage_name}/${file.file.name}`
+      `${CONFIG.SERVICE_MEDIA_STORAGE}/signed-url/${storageName}/${filename}`
     ).then((res) => res.data.url);
   } catch (err) {
     console.error(err);
@@ -347,6 +354,152 @@ async function getSignedUrl(file: any, bin: Bin) {
       message: "Failed getting signed url for large file upload",
     });
   }
+}
+
+export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
+  return async (dispatch: Dispatch, getState: () => AppState) => {
+    const bodyData = new FormData();
+    const req = new XMLHttpRequest();
+    const file = {
+      progress: 0,
+      loading: true,
+      ...newFile,
+    };
+
+    bodyData.append("file", file.file, originalFile.filename);
+    bodyData.append("file_id", originalFile.id);
+
+    req.upload.addEventListener("progress", function (e) {
+      file.progress = (e.loaded / e.total) * 100;
+
+      dispatch(fileUploadProgress(file));
+    });
+
+    function handleError() {
+      dispatch(fileUploadError(file));
+      dispatch(
+        notify({
+          message: "Failed uploading file",
+          kind: "error",
+        })
+      );
+    }
+
+    req.addEventListener("abort", handleError);
+    req.addEventListener("error", handleError);
+    req.addEventListener("load", (_) => {
+      if (req.status === 200) {
+        dispatch(
+          notify({
+            message: `File Replaced: ${originalFile.filename}`,
+            kind: "success",
+          })
+        );
+        const successFile = {
+          ...originalFile,
+          uploadID: file.uploadID,
+          progress: 100,
+          loading: false,
+          url: URL.createObjectURL(file.file),
+        };
+        dispatch(fileUploadSuccess(successFile));
+      } else {
+        dispatch(
+          notify({
+            message: "Failed uploading file",
+            kind: "error",
+          })
+        );
+        dispatch(fileUploadError(file));
+      }
+    });
+
+    // Use signed url flow for large files
+    if (file.file.size > 32000000) {
+      /**
+       * GAE has an inherent 32mb limit at their global nginx load balancer
+       * We use a signed url for large file uploads directly to the assocaited bucket
+       */
+
+      const signedUrl = await getSignedUrl(
+        originalFile?.filename,
+        originalFile?.storage_name
+      );
+      req.open("PUT", signedUrl);
+
+      // The sent content-type needs to match what was provided when generating the signed url
+      // @see https://medium.com/imersotechblog/upload-files-to-google-cloud-storage-gcs-from-the-browser-159810bb11e3
+      req.setRequestHeader("Content-Type", file.file.type);
+
+      req.addEventListener("load", () => {
+        if (req.status === 200) {
+          return request(
+            //@ts-expect-error
+            `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${originalFile?.id}/purge?triggerUpdate=true`,
+            {
+              method: "POST",
+              json: true,
+            }
+          )
+            .then((res) => {
+              if (res.status === 200) {
+                const state: State = getState().mediaRevamp;
+                if (state.uploads.length) {
+                  dispatch(
+                    fileUploadSuccess({
+                      ...res.data,
+                      uploadID: file.uploadID,
+                    })
+                  );
+                } else {
+                  dispatch(
+                    notify({
+                      message: `Successfully uploaded file`,
+                      kind: "success",
+                    })
+                  );
+                }
+              } else {
+                throw res;
+              }
+            })
+            .catch((err) => {
+              dispatch(fileUploadError(file));
+              dispatch(
+                notify({
+                  message:
+                    "Failed creating file record after signed url upload",
+                  kind: "error",
+                })
+              );
+            });
+        } else {
+          dispatch(fileUploadError(file));
+          dispatch(
+            notify({
+              message: "Failed uploading file to signed url",
+              kind: "error",
+            })
+          );
+        }
+      });
+
+      // When sending directly to bucket it needs to be just the file
+      // and not the extra meta data for the zesty services
+      req.send(file.file);
+    } else {
+      req.withCredentials = true;
+      req.open(
+        "PUT",
+        //@ts-expect-error
+        `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`
+      );
+
+      req.send(bodyData);
+    }
+
+    dispatch(fileUploadStart(file));
+  };
 }
 
 //type FileMonstrosity = {file: File } & FileAugmentation & FileBase
@@ -417,7 +570,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
        * We use a signed url for large file uploads directly to the assocaited bucket
        */
 
-      const signedUrl = await getSignedUrl(file, bin);
+      const signedUrl = await getSignedUrl(file.file.name, bin.storage_name);
       req.open("PUT", signedUrl);
 
       // The sent content-type needs to match what was provided when generating the signed url
@@ -596,16 +749,18 @@ export function dismissFileUploads() {
       );
     }
     if (successfulUploads.length) {
-      dispatch(
-        notify({
-          message: `Successfully uploaded ${successfulUploads.length} files${
-            inProgressUploads.length
-              ? `...${inProgressUploads.length} files still in progress`
-              : ""
-          }`,
-          kind: "success",
-        })
-      );
+      if (!successfulUploads[0].replacementFile) {
+        dispatch(
+          notify({
+            message: `Successfully uploaded ${successfulUploads.length} files${
+              inProgressUploads.length
+                ? `...${inProgressUploads.length} files still in progress`
+                : ""
+            }`,
+            kind: "success",
+          })
+        );
+      }
     }
     if (failedUploads.length) {
       dispatch(
@@ -622,6 +777,12 @@ export function dismissFileUploads() {
           kind: "warn",
         })
       );
+    } else {
+      successfulUploads?.forEach((upload) => {
+        dispatch(
+          mediaManagerApi.util.invalidateTags([{ type: "File", id: upload.id }])
+        );
+      });
     }
     dispatch(fileUploadReset());
   };
