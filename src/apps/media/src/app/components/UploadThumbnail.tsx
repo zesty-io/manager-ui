@@ -13,13 +13,23 @@ import {
   Upload,
   fileUploadSetFilename,
   deleteUpload,
+  replaceFile,
 } from "../../../../../shell/store/media-revamp";
+import { File as ZestyMediaFile } from "../../../../../shell/services/types";
 
 interface Props {
   file: Upload;
+  action?: "new" | "replace";
+  originalFile?: ZestyMediaFile;
+  showRemove?: boolean;
 }
 
-export const UploadThumbnail: FC<Props> = ({ file }) => {
+export const UploadThumbnail: FC<Props> = ({
+  file,
+  action = "new",
+  originalFile,
+  showRemove = true,
+}) => {
   const dispatch = useDispatch();
 
   const { data: bin } = mediaManagerApi.useGetBinQuery(file.bin_id, {
@@ -28,7 +38,11 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
 
   useEffect(() => {
     if (bin && file.status === "staged") {
-      dispatch(uploadFile(file, bin[0]));
+      if (action === "new") {
+        dispatch(uploadFile(file, bin[0]));
+      } else {
+        dispatch(replaceFile(file, originalFile));
+      }
     }
   }, [bin]);
 
@@ -61,10 +75,14 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
       ></Box>
       <Thumbnail
         src={file.url}
-        filename={file.filename}
+        filename={action === "replace" ? originalFile.filename : file.filename}
+        title={action === "replace" ? originalFile?.title : null}
         imageHeight="300px"
-        isEditable={file.status === "success"}
+        isDraggable={file.status === "success"}
+        isTitleEditable={file.status === "success"}
+        isFilenameEditable={file.status === "success" && action !== "replace"}
         onRemove={onRemove}
+        showRemove={showRemove}
         onFilenameChange={(filename) => {
           if (file.status === "success") {
             dispatch(

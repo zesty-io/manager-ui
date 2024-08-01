@@ -17,16 +17,20 @@ interface Props {
   filename: string;
   onFilenameChange?: (value: string) => void;
   onTitleChange?: (value: string) => void;
-  isEditable?: boolean;
   isSelected?: boolean;
+  isFilenameEditable?: boolean;
+  isTitleEditable?: boolean;
+  title?: string;
 }
 
 export const ThumbnailContent: FC<Props> = ({
   filename,
   onFilenameChange,
   onTitleChange,
-  isEditable,
   isSelected,
+  isFilenameEditable,
+  isTitleEditable,
+  title,
 }) => {
   const styledCardContent = {
     px: onFilenameChange ? 0 : 1,
@@ -48,13 +52,16 @@ export const ThumbnailContent: FC<Props> = ({
       <CardContent sx={styledCardContent} data-testid="media-thumbnail-content">
         {onFilenameChange ? (
           <Box>
-            <Box>
+            <Tooltip
+              title={isFilenameEditable ? "" : "You cannot edit the file name"}
+              followCursor
+            >
               <TextFieldWithCursorPosition
                 value={filename}
                 size="small"
                 variant="outlined"
                 fullWidth
-                disabled={!isEditable}
+                disabled={!isFilenameEditable}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   onFilenameChange(e.target.value.replace(" ", "-"))
                 }
@@ -79,15 +86,16 @@ export const ThumbnailContent: FC<Props> = ({
                   },
                 }}
               />
-            </Box>
+            </Tooltip>
             <Box>
               <TextField
                 placeholder={
-                  isEditable
+                  isTitleEditable
                     ? "Add File Title (for alt-text)"
                     : "Please wait to add File Title"
                 }
-                disabled={!isEditable}
+                disabled={!isTitleEditable}
+                defaultValue={title}
                 size="small"
                 variant="outlined"
                 fullWidth
