@@ -71,15 +71,16 @@ export const DefaultValue = ({
               variant="body3"
               color="text.secondary"
               fontWeight="600"
-              sx={{ mb: 1, display: "block" }}
+              sx={{ display: "block" }}
             >
               Set a predefined value for this field
             </Typography>
           </Box>
         }
       />
-      <Box flex={1}>
-        {isDefaultValueEnabled && (
+
+      {isDefaultValueEnabled && (
+        <Box flex={1} mt={1}>
           <FormControl error={!!error} fullWidth>
             <DefaultValueInput
               type={type}
@@ -105,8 +106,8 @@ export const DefaultValue = ({
               </Box>
             </FormHelperText>
           </FormControl>
-        )}
-      </Box>
+        </Box>
+      )}
     </Box>
   );
 };
