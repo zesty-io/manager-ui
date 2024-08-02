@@ -32,7 +32,9 @@ export const OneToManyCell = ({ items }: OneToManyCellProps) => {
   const dispatch = useDispatch();
   const allItems = useSelector((state: AppState) => state.content);
   const chipContainerRef = useRef<HTMLDivElement>();
-  const [lastValidIndex, setLastValidIndex] = useState(allItems?.length - 1);
+  const [lastValidIndex, setLastValidIndex] = useState(
+    Object.keys(allItems)?.length - 1
+  );
   const parentWidth = chipContainerRef.current?.parentElement?.clientWidth;
   const hiddenItems = items?.length - lastValidIndex - 1;
 
