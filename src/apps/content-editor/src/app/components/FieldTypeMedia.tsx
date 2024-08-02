@@ -424,7 +424,7 @@ export const FieldTypeMedia = ({
             </Stack>
           </Box>
           {selectionError && (
-            <Typography variant="body2" color="error">
+            <Typography variant="body2" color="error.dark" mt={0.5}>
               {selectionError}
             </Typography>
           )}
@@ -527,7 +527,7 @@ export const FieldTypeMedia = ({
         )}
       </Stack>
       {selectionError && (
-        <Typography variant="body2" color="error">
+        <Typography variant="body2" color="error.dark" mt={0.5}>
           {selectionError}
         </Typography>
       )}
@@ -852,43 +852,43 @@ const MediaItem = ({
               }}
             >
               {!isURL && !isBynderAsset && (
-                <MenuItem
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setAnchorEl(null);
-                    setShowRenameFileModal(true);
-                  }}
-                >
-                  <ListItemIcon>
-                    <DriveFileRenameOutlineRounded />
-                  </ListItemIcon>
-                  <ListItemText>Rename</ListItemText>
-                </MenuItem>
-              )}
-              <MenuItem
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setAnchorEl(null);
-                  setIsReplaceFileModalOpen(true);
-                }}
-              >
-                <ListItemIcon>
-                  <FileReplace />
-                </ListItemIcon>
-                <ListItemText>Replace File</ListItemText>
-              </MenuItem>
-              {!isURL && !isBynderAsset && (
-                <MenuItem
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleCopyClick(imageZUID, true);
-                  }}
-                >
-                  <ListItemIcon>
-                    {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
-                  </ListItemIcon>
-                  <ListItemText>Copy ZUID</ListItemText>
-                </MenuItem>
+                <>
+                  <MenuItem
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setAnchorEl(null);
+                      setShowRenameFileModal(true);
+                    }}
+                  >
+                    <ListItemIcon>
+                      <DriveFileRenameOutlineRounded />
+                    </ListItemIcon>
+                    <ListItemText>Rename</ListItemText>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setAnchorEl(null);
+                      setIsReplaceFileModalOpen(true);
+                    }}
+                  >
+                    <ListItemIcon>
+                      <FileReplace />
+                    </ListItemIcon>
+                    <ListItemText>Replace File</ListItemText>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleCopyClick(imageZUID, true);
+                    }}
+                  >
+                    <ListItemIcon>
+                      {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
+                    </ListItemIcon>
+                    <ListItemText>Copy ZUID</ListItemText>
+                  </MenuItem>
+                </>
               )}
               <MenuItem
                 onClick={(event) => {
