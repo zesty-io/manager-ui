@@ -120,38 +120,40 @@ export const Meta = ({ isSaving }: MetaProps) => {
               errors={errors}
             />
           </Stack>
-          <Stack gap={3}>
-            <Box>
-              <Typography variant="h5" fontWeight={700} mb={0.5}>
-                URL Settings
-              </Typography>
-              <Typography color="text.secondary">
-                Define the URL of your web page
-              </Typography>
-            </Box>
-            {web?.pathPart !== "zesty_home" && (
-              <>
-                <ItemParent
-                  // @ts-expect-error untyped
-                  metaTitle={web.metaTitle}
-                  itemZUID={meta.ZUID}
-                  modelZUID={modelZUID}
-                  parentZUID={web.parentZUID}
-                  path={web.path}
-                  onChange={handleOnChange}
-                  currentItemLangID={meta?.langID}
-                />
-                <ItemRoute
-                  // @ts-expect-error untyped
-                  ZUID={meta?.ZUID}
-                  meta={meta}
-                  parentZUID={web?.parentZUID}
-                  path_part={web?.pathPart}
-                  path_to={web?.path}
-                />
-              </>
-            )}
-          </Stack>
+          {model?.type !== "dataset" && (
+            <Stack gap={3}>
+              <Box>
+                <Typography variant="h5" fontWeight={700} mb={0.5}>
+                  URL Settings
+                </Typography>
+                <Typography color="text.secondary">
+                  Define the URL of your web page
+                </Typography>
+              </Box>
+              {web?.pathPart !== "zesty_home" && (
+                <>
+                  <ItemParent
+                    // @ts-expect-error untyped
+                    metaTitle={web.metaTitle}
+                    itemZUID={meta.ZUID}
+                    modelZUID={modelZUID}
+                    parentZUID={web.parentZUID}
+                    path={web.path}
+                    onChange={handleOnChange}
+                    currentItemLangID={meta?.langID}
+                  />
+                  <ItemRoute
+                    // @ts-expect-error untyped
+                    ZUID={meta?.ZUID}
+                    meta={meta}
+                    parentZUID={web?.parentZUID}
+                    path_part={web?.pathPart}
+                    path_to={web?.path}
+                  />
+                </>
+              )}
+            </Stack>
+          )}
           <Stack gap={3} pb={2.5}>
             <Box>
               <Typography variant="h5" fontWeight={700} mb={0.5}>
@@ -161,19 +163,23 @@ export const Meta = ({ isSaving }: MetaProps) => {
                 Optimize your content item's SEO further
               </Typography>
             </Box>
-            <SitemapPriority
-              // @ts-expect-error untyped
-              sitemapPriority={web.sitemapPriority}
-              onChange={handleOnChange}
-            />
-            {!!web && (
-              <CanonicalTag
-                // @ts-expect-error untyped
-                mode={web.canonicalTagMode}
-                whitelist={web.canonicalQueryParamWhitelist}
-                custom={web.canonicalTagCustomValue}
-                onChange={handleOnChange}
-              />
+            {model?.type !== "dataset" && (
+              <>
+                <SitemapPriority
+                  // @ts-expect-error untyped
+                  sitemapPriority={web.sitemapPriority}
+                  onChange={handleOnChange}
+                />
+                {!!web && (
+                  <CanonicalTag
+                    // @ts-expect-error untyped
+                    mode={web.canonicalTagMode}
+                    whitelist={web.canonicalQueryParamWhitelist}
+                    custom={web.canonicalTagCustomValue}
+                    onChange={handleOnChange}
+                  />
+                )}
+              </>
             )}
             <MetaLinkText
               // @ts-expect-error untyped
