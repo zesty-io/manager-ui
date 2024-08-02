@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router";
 
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
@@ -14,6 +16,8 @@ import cx from "classnames";
 
 import styles from "./ContentInsights.less";
 export function ContentInsights(props) {
+  const { itemZUID } = useParams();
+  const item = useSelector((state) => state.content[itemZUID]);
   const [showAllWords, setShowAllWords] = useState(false);
 
   // clean up functions
@@ -191,7 +195,7 @@ export function ContentInsights(props) {
 
   // Working with Content
   // Content: combine all the text content we find from the item
-  for (const [key, value] of Object.entries(props.content)) {
+  for (const [key, value] of Object.entries(item?.data ?? {})) {
     combinedString += " " + value;
   }
 
@@ -205,11 +209,11 @@ export function ContentInsights(props) {
 
   // Meta: build combined string
   let combinedMetaString =
-    props.meta.metaTitle +
+    item?.web?.metaTitle +
     " " +
-    props.meta.path +
+    item?.web?.path +
     " " +
-    props.meta.metaDescription;
+    item?.web?.metaDescription;
   // Meta: clean the string
   combinedMetaString = stripDoubleSpace(
     stripPunctuation(stripDashesAndSlashes(combinedMetaString.toLowerCase()))
