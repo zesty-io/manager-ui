@@ -7,7 +7,7 @@ import {
   ContentItemWithDirtyAndPublishing,
   ContentNavItem,
 } from "../../../../../../../../shell/services/types";
-import { uniqBy } from "lodash";
+import { debounce, uniqBy } from "lodash";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { notify } from "../../../../../../../../shell/store/notifications";
@@ -105,10 +105,39 @@ export const ItemParent = ({ onChange, value }: ItemParentProps) => {
   const [options, setOptions] = useState(
     getParentOptions(item?.meta?.langID, item?.web?.path, items)
   );
+  const [isLoadingOptions, setIsLoadingOptions] = useState(false);
+
+  const handleSearchOptions = debounce((filterTerm) => {
+    if (filterTerm) {
+      dispatch(searchItems(filterTerm))
+        // @ts-expect-error untyped
+        .then((res) => {
+          setOptions(
+            getParentOptions(item?.meta?.langID, item?.web?.path, {
+              ...items,
+              // needs to reduce and converts this data as the same format of the items to
+              // prevent having an issue on having an itemZUID with an incorrect format
+              // the reason is that the item has a format of {[itemZUID]:data}
+              // while the res.data has a value of an array which cause the needs of converting
+              // the response to an object with a zuid as a key
+              ...res?.data.reduce(
+                (
+                  acc: Record<string, ContentItemWithDirtyAndPublishing>,
+                  curr: ContentItemWithDirtyAndPublishing
+                ) => {
+                  return { ...acc, [curr.meta.ZUID]: curr };
+                },
+                {}
+              ),
+            })
+          );
+        })
+        .finally(() => setIsLoadingOptions(false));
+    }
+  }, 1000);
 
   useEffect(() => {
     let { parentZUID } = item?.web;
-    console.log(parentZUID);
     const { ZUID: itemZUID } = item?.meta;
 
     // If it's a new item chase down the parentZUID within navigation
@@ -124,10 +153,9 @@ export const ItemParent = ({ onChange, value }: ItemParentProps) => {
     }
 
     // Try to preselect parent
-    if (parentZUID) {
+    if (parentZUID && parentZUID !== "0") {
       const parentItem = items[parentZUID];
       if (parentItem?.meta?.ZUID && parentItem?.web?.path) {
-        console.log("parent item", parentItem);
         setSelectedParent({
           value: parentItem.meta.ZUID,
           text: parentItem.web.path,
@@ -191,14 +219,14 @@ export const ItemParent = ({ onChange, value }: ItemParentProps) => {
   return (
     <FieldShell
       settings={{
-        label: "Select this Page's Parent",
+        label: "Page Parent",
+        required: true,
       }}
-      customTooltip="Set which page this one will be nested beneath. This effects both automatically generated navigation and the URL structure for this page."
+      customTooltip="Set what page, this content item's page will be nested under. This impacts automatically generated navigation and the URL structure for this page"
       withInteractiveTooltip={false}
       errors={{}}
     >
       <Autocomplete
-        disableClearable
         options={options}
         value={selectedParent}
         fullWidth
@@ -209,6 +237,18 @@ export const ItemParent = ({ onChange, value }: ItemParentProps) => {
           </ListItem>
         )}
         getOptionLabel={(option) => option.text}
+        onInputChange={(_, filterTerm) => {
+          if (filterTerm !== "/") {
+            setIsLoadingOptions(!!filterTerm);
+            handleSearchOptions(filterTerm);
+          }
+        }}
+        onChange={(_, value) => {
+          // Always default to homepage when no parent is selected
+          setSelectedParent(value !== null ? value : { text: "/", value: "0" });
+          onChange(value !== null ? value.value : "0", "parentZUID");
+        }}
+        loading={isLoadingOptions}
         sx={{
           "& .MuiOutlinedInput-root": {
             padding: "2px",
