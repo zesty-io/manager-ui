@@ -120,7 +120,7 @@ export const Meta = ({ isSaving }: MetaProps) => {
               errors={errors}
             />
           </Stack>
-          {model?.type !== "dataset" && (
+          {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (
             <Stack gap={3}>
               <Box>
                 <Typography variant="h5" fontWeight={700} mb={0.5}>
@@ -130,19 +130,15 @@ export const Meta = ({ isSaving }: MetaProps) => {
                   Define the URL of your web page
                 </Typography>
               </Box>
-              {web?.pathPart !== "zesty_home" && (
-                <>
-                  <ItemParent onChange={handleOnChange} />
-                  <ItemRoute
-                    // @ts-expect-error untyped
-                    ZUID={meta?.ZUID}
-                    meta={meta}
-                    parentZUID={web?.parentZUID}
-                    path_part={web?.pathPart}
-                    path_to={web?.path}
-                  />
-                </>
-              )}
+              <ItemParent onChange={handleOnChange} />
+              <ItemRoute
+                // @ts-expect-error untyped
+                ZUID={meta?.ZUID}
+                meta={meta}
+                parentZUID={web?.parentZUID}
+                path_part={web?.pathPart}
+                path_to={web?.path}
+              />
             </Stack>
           )}
           <Stack gap={3} pb={2.5}>
