@@ -132,16 +132,7 @@ export const Meta = ({ isSaving }: MetaProps) => {
               </Box>
               {web?.pathPart !== "zesty_home" && (
                 <>
-                  <ItemParent
-                    // @ts-expect-error untyped
-                    metaTitle={web.metaTitle}
-                    itemZUID={meta.ZUID}
-                    modelZUID={modelZUID}
-                    parentZUID={web.parentZUID}
-                    path={web.path}
-                    onChange={handleOnChange}
-                    currentItemLangID={meta?.langID}
-                  />
+                  <ItemParent onChange={handleOnChange} />
                   <ItemRoute
                     // @ts-expect-error untyped
                     ZUID={meta?.ZUID}

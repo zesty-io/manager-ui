@@ -83,9 +83,8 @@ const findNavParent = (zuid: string, nav: ContentNavItem[], count = 0): any => {
 
 type ItemParentProps = {
   onChange: (value: string, name: string) => void;
-  value: string;
 };
-export const ItemParent = ({ onChange, value }: ItemParentProps) => {
+export const ItemParent = ({ onChange }: ItemParentProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
