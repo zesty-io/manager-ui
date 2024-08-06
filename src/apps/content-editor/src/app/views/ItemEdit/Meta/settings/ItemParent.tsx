@@ -222,6 +222,7 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
       errors={{}}
     >
       <Autocomplete
+        data-cy="itemRoute"
         options={options}
         value={selectedParent}
         fullWidth
