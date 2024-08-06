@@ -1,5 +1,10 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { TextField, InputAdornment, CircularProgress } from "@mui/material";
+import {
+  TextField,
+  InputAdornment,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { debounce } from "lodash";
@@ -11,6 +16,8 @@ import { searchItems } from "../../../../../../../../shell/store/content";
 import { notify } from "../../../../../../../../shell/store/notifications";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
+import { useGetDomainsQuery } from "../../../../../../../../shell/services/accounts";
+import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -22,6 +29,7 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
   const { itemZUID } = useParams<{
     itemZUID: string;
   }>();
+  const domain = useDomain();
   const items = useSelector((state: AppState) => state.content);
   const item = items[itemZUID];
   const [pathPart, setPathPart] = useState(item?.web?.pathPart);
@@ -135,6 +143,13 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
             <Adornment isLoading={isLoading} isUnique={isUnique} />
           ),
         }}
+        helperText={
+          isUnique && (
+            <Typography variant="body2" color="info.dark">
+              {domain}/{parent ? parent.web?.path + pathPart : pathPart}
+            </Typography>
+          )
+        }
       />
     </FieldShell>
   );
