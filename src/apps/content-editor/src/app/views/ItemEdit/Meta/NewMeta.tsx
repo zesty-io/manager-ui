@@ -29,8 +29,9 @@ export const MaxLengths: Record<string, number> = {
 type Errors = Record<string, Error>;
 type MetaProps = {
   isSaving: boolean;
+  onUpdateSEOErrors: (hasErrors: boolean) => void;
 };
-export const Meta = ({ isSaving }: MetaProps) => {
+export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
   const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -90,6 +91,17 @@ export const Meta = ({ isSaving }: MetaProps) => {
       return;
     }
   }, [isSaving]);
+
+  useEffect(() => {
+    const hasErrors = Object.values(errors)
+      ?.map((error) => {
+        return Object.values(error) ?? [];
+      })
+      ?.flat()
+      .some((error) => !!error);
+
+    onUpdateSEOErrors(hasErrors);
+  }, [errors]);
 
   return (
     <ThemeProvider theme={theme}>

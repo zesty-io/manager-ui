@@ -87,6 +87,7 @@ export default function ItemEdit() {
   const [notFound, setNotFound] = useState("");
   const [saveClicked, setSaveClicked] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [hasSEOErrors, setHasSEOErrors] = useState(false);
   const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
@@ -228,7 +229,7 @@ export default function ItemEdit() {
   async function save() {
     setSaveClicked(true);
 
-    if (hasErrors) return;
+    if (hasErrors || hasSEOErrors) return;
 
     setSaving(true);
     try {
@@ -430,10 +431,10 @@ export default function ItemEdit() {
                   path="/content/:modelZUID/:itemZUID/meta"
                   render={() => (
                     <Meta
-                      onUpdateFieldErrors={(errors) => {
-                        setFieldErrors(errors);
+                      onUpdateSEOErrors={(hasErrors) => {
+                        setHasSEOErrors(hasErrors);
                       }}
-                      fieldErrors={fieldErrors}
+                      isSaving={saving}
                     />
                     // <Meta
                     //   instance={instance}
