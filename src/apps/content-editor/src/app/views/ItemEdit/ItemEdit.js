@@ -429,7 +429,12 @@ export default function ItemEdit() {
                   exact
                   path="/content/:modelZUID/:itemZUID/meta"
                   render={() => (
-                    <Meta />
+                    <Meta
+                      onUpdateFieldErrors={(errors) => {
+                        setFieldErrors(errors);
+                      }}
+                      fieldErrors={fieldErrors}
+                    />
                     // <Meta
                     //   instance={instance}
                     //   modelZUID={modelZUID}

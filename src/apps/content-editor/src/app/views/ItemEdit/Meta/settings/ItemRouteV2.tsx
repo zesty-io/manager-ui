@@ -45,7 +45,7 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
         return;
       }
 
-      const fullPath = parent ? parent.web?.path + path : path;
+      const fullPath = parent ? `${parent.web?.path}${path}/` : `/${path}/`;
 
       setIsLoading(true);
 
@@ -66,7 +66,7 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
                      */
                     return (
                       _item.meta.ZUID !== item?.meta?.ZUID &&
-                      _item.web.path === "/" + fullPath + "/"
+                      _item.web.path === fullPath
                     );
                   }
                 );
@@ -112,13 +112,10 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
     onChange(path, "pathPart");
   };
 
-  // update internal state if external path part changes
-  // useEffect(() => {
-  //   if (item?.web?.pathPart) {
-  //     validate(item?.web?.pathPart);
-  //     setPathPart(item?.web?.pathPart);
-  //   }
-  // }, [item?.web]);
+  // Revalidate when parent path changes
+  useEffect(() => {
+    validate(pathPart);
+  }, [parent?.web]);
 
   return (
     <FieldShell
@@ -146,7 +143,8 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
         helperText={
           isUnique && (
             <Typography variant="body2" color="info.dark">
-              {domain}/{parent ? parent.web?.path + pathPart : pathPart}
+              {domain}
+              {parent ? parent.web?.path + pathPart : `/${pathPart}`}
             </Typography>
           )
         }

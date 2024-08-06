@@ -8,7 +8,8 @@ import { ContentInsights } from "./ItemSettings/ContentInsights";
 import { useGetContentModelQuery } from "../../../../../../../shell/services/instance";
 import { CanonicalTag } from "./settings/CanonicalTag";
 import { ItemParent } from "./settings/ItemParent";
-import { ItemRoute } from "./settings/ItemRoute";
+// import { ItemRoute } from "./settings/ItemRoute";
+import { ItemRoute } from "./settings/ItemRouteV2";
 import MetaDescription from "./settings/MetaDescription";
 import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
@@ -60,6 +61,15 @@ export const Meta = ({ isSaving }: MetaProps) => {
               value?.length > MaxLengths[name]
                 ? value?.length - MaxLengths[name]
                 : 0,
+          },
+        });
+      }
+
+      if (name === "pathPart") {
+        setErrors({
+          ...errors,
+          [name]: {
+            MISSING_REQUIRED: !value,
           },
         });
       }
@@ -138,6 +148,7 @@ export const Meta = ({ isSaving }: MetaProps) => {
                 parentZUID={web?.parentZUID}
                 path_part={web?.pathPart}
                 path_to={web?.path}
+                onChange={handleOnChange}
               />
             </Stack>
           )}
