@@ -3,19 +3,15 @@ import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import {
-  ContentItem,
   ContentItemWithDirtyAndPublishing,
   ContentNavItem,
 } from "../../../../../../../../shell/services/types";
 import { debounce, uniqBy } from "lodash";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { notify } from "../../../../../../../../shell/store/notifications";
 import { searchItems } from "../../../../../../../../shell/store/content";
-import {
-  useGetContentItemsQuery,
-  useGetContentNavItemsQuery,
-} from "../../../../../../../../shell/services/instance";
+import { useGetContentNavItemsQuery } from "../../../../../../../../shell/services/instance";
 
 type ParentOption = {
   value: string;
