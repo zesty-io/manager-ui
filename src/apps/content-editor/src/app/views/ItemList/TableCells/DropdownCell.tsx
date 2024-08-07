@@ -10,7 +10,14 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
   const field = params.row.fieldData[params.field];
   const handleChange = (value: any) => {
     setAnchorEl(null);
-    updateStagedChanges(params.row.id, params.field, value);
+
+    if (value !== currVal) {
+      updateStagedChanges(
+        params.row.id,
+        params.field,
+        value === "Select" ? null : value
+      );
+    }
   };
 
   const currVal =
@@ -60,7 +67,7 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
         <MenuItem
           dense
           onClick={() => {
-            handleChange(null);
+            handleChange("Select");
           }}
           sx={{
             textWrap: "wrap",
