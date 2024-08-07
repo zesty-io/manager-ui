@@ -16,15 +16,27 @@ import { searchItems } from "../../../../../../../../shell/store/content";
 import { notify } from "../../../../../../../../shell/store/notifications";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
-import { useGetDomainsQuery } from "../../../../../../../../shell/services/accounts";
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
+import { Error } from "../../../../components/Editor/Field/FieldShell";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
+const hasErrors = (errors: Error) => {
+  if (!errors) return false;
+
+  return Object.values(errors).some((error) => !!error);
+};
+
 type ItemRouteProps = {
   onChange: (value: string, name: string) => void;
+  error: Error;
+  onUpdateErrors: (name: string, error: Error) => void;
 };
-export const ItemRoute = ({ onChange }: ItemRouteProps) => {
+export const ItemRoute = ({
+  onChange,
+  error,
+  onUpdateErrors,
+}: ItemRouteProps) => {
   const dispatch = useDispatch();
   const { itemZUID } = useParams<{
     itemZUID: string;
@@ -72,8 +84,16 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
                 );
 
                 setIsUnique(!matches.length);
+                onUpdateErrors("pathPart", {
+                  CUSTOM_ERROR: !!matches.length
+                    ? "This URL Path Part is already taken. Please enter a new different URL Path part."
+                    : "",
+                });
               } else {
                 setIsUnique(true);
+                onUpdateErrors("pathPart", {
+                  CUSTOM_ERROR: "",
+                });
               }
             } else {
               dispatch(
@@ -103,12 +123,6 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
     validate(path);
     setPathPart(path);
 
-    // dispatch({
-    //   type: "SET_ITEM_WEB",
-    //   itemZUID: item?.meta?.ZUID,
-    //   key: "pathPart",
-    //   value: path,
-    // });
     onChange(path, "pathPart");
   };
 
@@ -125,7 +139,7 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
       }}
       customTooltip="Also known as a URL slug, it is the last part of the URL address that serves as a unique identifier of the page. They must be unique within your instance, lowercased, and cannot contain non alphanumeric characters. This helps ensure you create SEO friendly structured and crawlabale URLs."
       withInteractiveTooltip={false}
-      errors={{}}
+      errors={error}
     >
       <TextFieldWithCursorPosition
         type="text"
@@ -141,6 +155,7 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
           ),
         }}
         helperText={
+          !!pathPart &&
           isUnique && (
             <Typography variant="body2" color="info.dark">
               {domain}
@@ -148,6 +163,7 @@ export const ItemRoute = ({ onChange }: ItemRouteProps) => {
             </Typography>
           )
         }
+        error={hasErrors(error)}
       />
     </FieldShell>
   );

@@ -161,6 +161,16 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
                 path_part={web?.pathPart}
                 path_to={web?.path}
                 onChange={handleOnChange}
+                error={errors?.pathPart}
+                onUpdateErrors={(name, error) => {
+                  setErrors({
+                    ...errors,
+                    [name]: {
+                      ...errors?.[name],
+                      ...error,
+                    },
+                  });
+                }}
               />
             </Stack>
           )}
