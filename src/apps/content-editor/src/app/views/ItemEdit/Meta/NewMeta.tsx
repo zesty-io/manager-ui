@@ -8,8 +8,7 @@ import { ContentInsights } from "./ItemSettings/ContentInsights";
 import { useGetContentModelQuery } from "../../../../../../../shell/services/instance";
 import { CanonicalTag } from "./settings/CanonicalTag";
 import { ItemParent } from "./settings/ItemParent";
-// import { ItemRoute } from "./settings/ItemRoute";
-import { ItemRoute } from "./settings/ItemRouteV2";
+import { ItemRoute } from "./settings/ItemRoute";
 import MetaDescription from "./settings/MetaDescription";
 import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
@@ -154,12 +153,6 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
               </Box>
               <ItemParent onChange={handleOnChange} />
               <ItemRoute
-                // @ts-expect-error untyped
-                ZUID={meta?.ZUID}
-                meta={meta}
-                parentZUID={web?.parentZUID}
-                path_part={web?.pathPart}
-                path_to={web?.path}
                 onChange={handleOnChange}
                 error={errors?.pathPart}
                 onUpdateErrors={(name, error) => {
