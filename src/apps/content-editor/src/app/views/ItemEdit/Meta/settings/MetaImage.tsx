@@ -1,15 +1,21 @@
-import { useState, useEffect } from "react";
-import { Dialog, IconButton } from "@mui/material";
+import { useState, useEffect, useMemo } from "react";
+import { Dialog, IconButton, Stack } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { AddRounded, Close } from "@mui/icons-material";
+import { AddRounded, Close, EditRounded } from "@mui/icons-material";
 import { MemoryRouter, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { AppState } from "../../../../../../../../shell/store/types";
-import { useCreateContentModelFieldMutation } from "../../../../../../../../shell/services/instance";
+import {
+  useCreateContentModelFieldMutation,
+  useGetContentModelFieldsQuery,
+} from "../../../../../../../../shell/services/instance";
 import { fetchItem } from "../../../../../../../../shell/store/content";
-import { FieldTypeMedia } from "../../../../components/FieldTypeMedia";
+import {
+  FieldTypeMedia,
+  MediaItem,
+} from "../../../../components/FieldTypeMedia";
 import { MediaApp } from "../../../../../../../media/src/app";
 
 type MetaImageProps = {
@@ -22,6 +28,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     itemZUID: string;
   }>();
   const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const [
     createContentModelField,
     {
@@ -32,7 +39,31 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
   ] = useCreateContentModelFieldMutation();
   const [imageModal, setImageModal] = useState(null);
 
-  // If there is any image field
+  const isBynderSessionValid =
+    localStorage.getItem("cvrt") && localStorage.getItem("cvad");
+
+  const usableTemporaryMetaImage = useMemo(() => {
+    if (modelFields?.length) {
+      const matchedFields = modelFields.filter(
+        (field) =>
+          !field.deletedAt &&
+          field.datatype === "images" &&
+          field?.name !== "og_image" &&
+          (field.label.toLowerCase().includes("image") ||
+            field.name.toLocaleLowerCase().includes("image"))
+      );
+      let image = "";
+
+      // Find the first matched field that already stores an image
+      matchedFields?.forEach((field) => {
+        if (!image && !!item?.data?.[field.name]) {
+          image = String(item?.data?.[field.name]);
+        }
+      });
+
+      return image;
+    }
+  }, [modelFields, item]);
 
   const handleCreateOgImageField = () => {
     createContentModelField({
@@ -65,7 +96,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
 
   // If there is already a field named og_image
   if ("og_image" in item?.data) {
-    const ogImageValue = item?.data?.["og_image"] as string;
+    const ogImageValue = String(item?.data?.["og_image"]);
 
     return (
       <>
@@ -128,6 +159,42 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
           </MemoryRouter>
         )}
       </>
+    );
+  }
+
+  // If there is a media field with an API ID containing the word "image" and is storing a file
+  if (!("og_image" in item?.data) && !!usableTemporaryMetaImage) {
+    return (
+      <FieldShell
+        settings={{
+          label: "Meta Image",
+          required: true,
+        }}
+        withInteractiveTooltip={false}
+        customTooltip="This image appears in search engine and social media previews. It is recommended that these images are at least 1200px by 630px and have a 1.91:1 aspect ratio."
+        errors={{}}
+      >
+        <Stack gap={1.25}>
+          <MediaItem
+            index={0}
+            imageZUID={usableTemporaryMetaImage}
+            isBynderAsset={usableTemporaryMetaImage.includes("bynder.com")}
+            isBynderSessionValid={!!isBynderSessionValid}
+            hideActionButtons
+            hideDrag
+          />
+          <LoadingButton
+            loading={isCreatingOgImageField}
+            size="large"
+            startIcon={<EditRounded />}
+            variant="outlined"
+            sx={{ width: "fit-content" }}
+            onClick={handleCreateOgImageField}
+          >
+            Customize Image
+          </LoadingButton>
+        </Stack>
+      </FieldShell>
     );
   }
 
