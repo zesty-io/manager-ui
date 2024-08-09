@@ -6,6 +6,12 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { ContentInsights } from "./ItemSettings/ContentInsights";
 import { useGetContentModelQuery } from "../../../../../../../shell/services/instance";
+import { AppState } from "../../../../../../../shell/store/types";
+import { Error } from "../../../components/Editor/Field/FieldShell";
+import { fetchGlobalItem } from "../../../../../../../shell/store/content";
+
+// Fields
+import { MetaImage } from "./settings/MetaImage";
 import { CanonicalTag } from "./settings/CanonicalTag";
 import { ItemParent } from "./settings/ItemParent";
 import { ItemRoute } from "./settings/ItemRoute";
@@ -14,9 +20,6 @@ import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
 import { MetaTitle } from "./settings/MetaTitle";
 import { SitemapPriority } from "./settings/SitemapPriority";
-import { AppState } from "../../../../../../../shell/store/types";
-import { Error } from "../../../components/Editor/Field/FieldShell";
-import { fetchGlobalItem } from "../../../../../../../shell/store/content";
 
 export const MaxLengths: Record<string, number> = {
   metaLinkText: 150,
@@ -140,6 +143,7 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
               onChange={handleOnChange}
               errors={errors}
             />
+            <MetaImage />
           </Stack>
           {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (
             <Stack gap={3}>
