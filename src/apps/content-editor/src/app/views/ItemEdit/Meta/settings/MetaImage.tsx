@@ -10,6 +10,7 @@ import { AppState } from "../../../../../../../../shell/store/types";
 import {
   useCreateContentModelFieldMutation,
   useGetContentModelFieldsQuery,
+  useUndeleteContentModelFieldMutation,
 } from "../../../../../../../../shell/services/instance";
 import { fetchItem } from "../../../../../../../../shell/store/content";
 import {
@@ -37,6 +38,10 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
       error: ogImageFieldCreationError,
     },
   ] = useCreateContentModelFieldMutation();
+  const [
+    undeleteContentModelField,
+    { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
+  ] = useUndeleteContentModelFieldMutation();
   const [imageModal, setImageModal] = useState(null);
 
   const isBynderSessionValid =
@@ -66,37 +71,58 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
   }, [modelFields, item]);
 
   const handleCreateOgImageField = () => {
-    createContentModelField({
-      modelZUID,
-      body: {
-        contentModelZUID: modelZUID,
-        datatype: "images",
-        description:
-          "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
-        label: "Meta Image",
-        name: "og_image",
-        required: false,
-        settings: {
-          defaultValue: null,
-          group_id: "",
-          limit: 1,
-          list: false,
+    const existingOgImageField = modelFields?.find(
+      (field) => field.name === "og_image"
+    );
+
+    if (!!existingOgImageField && !!existingOgImageField.deletedAt) {
+      // If the og_image field already exists in the model but was deactivated, reactivate it
+      undeleteContentModelField({
+        modelZUID,
+        fieldZUID: existingOgImageField.ZUID,
+      });
+    } else {
+      // If the model has no og_image field yet, create it
+      createContentModelField({
+        modelZUID,
+        body: {
+          contentModelZUID: modelZUID,
+          datatype: "images",
+          description:
+            "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
+          label: "Meta Image",
+          name: "og_image",
+          required: false,
+          settings: {
+            defaultValue: null,
+            group_id: "",
+            limit: 1,
+            list: false,
+          },
+          sort: modelFields?.length, // Adds it to the end of the current model's field list
         },
-        sort: Object.keys(item?.data)?.length,
-      },
-    });
+      });
+    }
   };
 
   useEffect(() => {
-    if (!isCreatingOgImageField && isOgImageFieldCreated) {
-      // Refetch the current item so that we can get the newly-created og_image field
+    if (
+      (!isCreatingOgImageField && isOgImageFieldCreated) ||
+      (!isUndeletingField && isFieldUndeleted)
+    ) {
+      // Refetch the current item so that we can get the newly-created/reactivated og_image field
       dispatch(fetchItem(modelZUID, itemZUID));
     }
-  }, [isOgImageFieldCreated, isCreatingOgImageField]);
+  }, [
+    isOgImageFieldCreated,
+    isCreatingOgImageField,
+    isUndeletingField,
+    isFieldUndeleted,
+  ]);
 
   // If there is already a field named og_image
   if ("og_image" in item?.data) {
-    const ogImageValue = String(item?.data?.["og_image"]);
+    const ogImageValue = item?.data?.["og_image"];
 
     return (
       <>
@@ -112,7 +138,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
           <FieldTypeMedia
             name="og_image"
             limit={1}
-            images={ogImageValue ? [ogImageValue] : []}
+            images={ogImageValue ? [String(ogImageValue)] : []}
             openMediaBrowser={(opts) => {
               setImageModal(opts);
             }}
@@ -184,7 +210,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
             hideDrag
           />
           <LoadingButton
-            loading={isCreatingOgImageField}
+            loading={isCreatingOgImageField || isUndeletingField}
             size="large"
             startIcon={<EditRounded />}
             variant="outlined"
