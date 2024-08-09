@@ -236,7 +236,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
       errors={{}}
     >
       <LoadingButton
-        loading={isCreatingOgImageField}
+        loading={isCreatingOgImageField || isUndeletingField}
         size="large"
         startIcon={<AddRounded />}
         variant="outlined"
