@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Dialog, IconButton, Stack } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { AddRounded, Close, EditRounded } from "@mui/icons-material";
@@ -29,6 +29,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     itemZUID: string;
   }>();
   const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const fieldTypeMedia = useRef(null);
   const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const [
     createContentModelField,
@@ -43,6 +44,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
   ] = useUndeleteContentModelFieldMutation();
   const [imageModal, setImageModal] = useState(null);
+  const [autoOpenMediaBrowser, setAutoOpenMediaBrowser] = useState(false);
 
   const isBynderSessionValid =
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
@@ -120,6 +122,16 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     isFieldUndeleted,
   ]);
 
+  useEffect(() => {
+    // Automatically opens the media browser when the og_image field has no value
+    if (autoOpenMediaBrowser && "og_image" in item?.data) {
+      if (!item?.data?.["og_image"]) {
+        fieldTypeMedia.current?.triggerOpenMediaBrowser();
+      }
+      setAutoOpenMediaBrowser(false);
+    }
+  }, [item?.data, autoOpenMediaBrowser]);
+
   // If there is already a field named og_image
   if ("og_image" in item?.data) {
     const ogImageValue = item?.data?.["og_image"];
@@ -136,6 +148,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
           errors={{}}
         >
           <FieldTypeMedia
+            ref={fieldTypeMedia}
             name="og_image"
             limit={1}
             images={ogImageValue ? [String(ogImageValue)] : []}
@@ -215,7 +228,10 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
             startIcon={<EditRounded />}
             variant="outlined"
             sx={{ width: "fit-content" }}
-            onClick={handleCreateOgImageField}
+            onClick={() => {
+              handleCreateOgImageField();
+              setAutoOpenMediaBrowser(true);
+            }}
           >
             Customize Image
           </LoadingButton>
