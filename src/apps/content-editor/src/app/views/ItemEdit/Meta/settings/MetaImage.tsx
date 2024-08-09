@@ -1,17 +1,21 @@
-import { Button } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Dialog, IconButton } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { AddRounded } from "@mui/icons-material";
-import { useParams } from "react-router";
+import { AddRounded, Close } from "@mui/icons-material";
+import { MemoryRouter, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useCreateContentModelFieldMutation } from "../../../../../../../../shell/services/instance";
-import { useEffect } from "react";
 import { fetchItem } from "../../../../../../../../shell/store/content";
+import { FieldTypeMedia } from "../../../../components/FieldTypeMedia";
+import { MediaApp } from "../../../../../../../media/src/app";
 
-type MetaImageProps = {};
-export const MetaImage = ({}: MetaImageProps) => {
+type MetaImageProps = {
+  onChange: (value: string, name: string) => void;
+};
+export const MetaImage = ({ onChange }: MetaImageProps) => {
   const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -26,10 +30,9 @@ export const MetaImage = ({}: MetaImageProps) => {
       error: ogImageFieldCreationError,
     },
   ] = useCreateContentModelFieldMutation();
+  const [imageModal, setImageModal] = useState(null);
 
-  // If there is already a field named og_image
   // If there is any image field
-  // If no image field
 
   const handleCreateOgImageField = () => {
     createContentModelField({
@@ -37,8 +40,9 @@ export const MetaImage = ({}: MetaImageProps) => {
       body: {
         contentModelZUID: modelZUID,
         datatype: "images",
-        description: "",
-        label: "og_image",
+        description:
+          "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
+        label: "Meta Image",
         name: "og_image",
         required: false,
         settings: {
@@ -59,6 +63,75 @@ export const MetaImage = ({}: MetaImageProps) => {
     }
   }, [isOgImageFieldCreated, isCreatingOgImageField]);
 
+  // If there is already a field named og_image
+  if ("og_image" in item?.data) {
+    const ogImageValue = item?.data?.["og_image"] as string;
+
+    return (
+      <>
+        <FieldShell
+          settings={{
+            label: "Meta Image",
+            required: true,
+          }}
+          withInteractiveTooltip={false}
+          customTooltip="This image appears in search engine and social media previews. It is recommended that these images are at least 1200px by 630px and have a 1.91:1 aspect ratio."
+          errors={{}}
+        >
+          <FieldTypeMedia
+            name="og_image"
+            limit={1}
+            images={ogImageValue ? [ogImageValue] : []}
+            openMediaBrowser={(opts) => {
+              setImageModal(opts);
+            }}
+            onChange={onChange}
+            lockedToGroupId={null}
+          />
+        </FieldShell>
+        {imageModal && (
+          <MemoryRouter>
+            <Dialog
+              open
+              fullScreen
+              sx={{ my: 2.5, mx: 10 }}
+              PaperProps={{
+                style: {
+                  borderRadius: "4px",
+                  overflow: "hidden",
+                },
+              }}
+              onClose={() => setImageModal(null)}
+            >
+              <IconButton
+                sx={{
+                  position: "fixed",
+                  right: 5,
+                  top: 0,
+                }}
+                onClick={() => setImageModal(null)}
+              >
+                <Close sx={{ color: "common.white" }} />
+              </IconButton>
+              <MediaApp
+                limitSelected={1}
+                isSelectDialog={true}
+                showHeaderActions={false}
+                lockedToGroupId={null}
+                addImagesCallback={(images) => {
+                  imageModal.callback(images);
+                  setImageModal(null);
+                }}
+                isReplace={imageModal.isReplace}
+              />
+            </Dialog>
+          </MemoryRouter>
+        )}
+      </>
+    );
+  }
+
+  // If no image field
   return (
     <FieldShell
       settings={{

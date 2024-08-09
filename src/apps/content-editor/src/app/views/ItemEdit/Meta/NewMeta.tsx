@@ -78,7 +78,8 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
       }
 
       dispatch({
-        type: "SET_ITEM_WEB",
+        // The og_image is stored as an ordinary field item and not a SEO field item
+        type: name === "og_image" ? "SET_ITEM_DATA" : "SET_ITEM_WEB",
         itemZUID: meta?.ZUID,
         key: name,
         value: value,
@@ -143,7 +144,7 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
               onChange={handleOnChange}
               errors={errors}
             />
-            <MetaImage />
+            <MetaImage onChange={handleOnChange} />
           </Stack>
           {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (
             <Stack gap={3}>
