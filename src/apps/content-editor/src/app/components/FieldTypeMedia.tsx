@@ -572,14 +572,15 @@ type MediaItemProps = {
   setDraggedIndex?: (index: number) => void;
   setHoveredIndex?: (index: number) => void;
   index: number;
-  onPreview: (imageZUID: string) => void;
-  onRemove: (imageZUID: string) => void;
-  onReplace: (imageZUID: string) => void;
+  onPreview?: (imageZUID: string) => void;
+  onRemove?: (imageZUID: string) => void;
+  onReplace?: (imageZUID: string) => void;
   hideDrag?: boolean;
   isBynderAsset: boolean;
   isBynderSessionValid: boolean;
+  hideActionButtons?: boolean;
 };
-const MediaItem = ({
+export const MediaItem = ({
   imageZUID,
   onReorder,
   setDraggedIndex,
@@ -591,6 +592,7 @@ const MediaItem = ({
   hideDrag,
   isBynderAsset,
   isBynderSessionValid,
+  hideActionButtons,
 }: MediaItemProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
@@ -698,7 +700,7 @@ const MediaItem = ({
         onClick={() => {
           if (isURL) return;
 
-          onPreview(imageZUID);
+          onPreview && onPreview(imageZUID);
         }}
         alignItems="center"
         sx={{
@@ -768,7 +770,9 @@ const MediaItem = ({
         <Box
           display="grid"
           // TODO: should there be a min width for the label?
-          gridTemplateColumns="minmax(0px, auto) 112px"
+          gridTemplateColumns={
+            hideActionButtons ? "1fr" : "minmax(0px, auto) 112px"
+          }
           alignItems="center"
           px={2}
           py={2.25}
@@ -796,125 +800,127 @@ const MediaItem = ({
               </Typography>
             </Box>
           )}
-          <Box display="flex" gap={1} justifyContent="flex-end">
-            {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
-              <Tooltip title="Swap File" placement="bottom" enterDelay={800}>
+          {!hideActionButtons && (
+            <Box display="flex" gap={1} justifyContent="flex-end">
+              {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
+                <Tooltip title="Swap File" placement="bottom" enterDelay={800}>
+                  <IconButton
+                    size="small"
+                    onClick={(event: any) => {
+                      event.stopPropagation();
+                      onReplace && onReplace(imageZUID);
+                    }}
+                  >
+                    <ImageSync fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <></>
+              )}
+              {!isURL && (
+                <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
+                  <IconButton size="small">
+                    <EditRounded fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Tooltip title="More Options" placement="bottom" enterDelay={800}>
                 <IconButton
                   size="small"
                   onClick={(event: any) => {
                     event.stopPropagation();
-                    onReplace(imageZUID);
+                    setAnchorEl(event.currentTarget);
                   }}
                 >
-                  <ImageSync fontSize="small" />
+                  <MoreHorizRounded fontSize="small" />
                 </IconButton>
               </Tooltip>
-            ) : (
-              <></>
-            )}
-            {!isURL && (
-              <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
-                <IconButton size="small">
-                  <EditRounded fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            )}
-            <Tooltip title="More Options" placement="bottom" enterDelay={800}>
-              <IconButton
-                size="small"
-                onClick={(event: any) => {
-                  event.stopPropagation();
-                  setAnchorEl(event.currentTarget);
-                }}
-              >
-                <MoreHorizRounded fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={(event: any) => {
-                event.stopPropagation();
-                setAnchorEl(null);
-              }}
-              PaperProps={{
-                style: {
-                  width: "288px",
-                },
-              }}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-            >
-              {!isURL && !isBynderAsset && (
-                <>
-                  <MenuItem
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setAnchorEl(null);
-                      setShowRenameFileModal(true);
-                    }}
-                  >
-                    <ListItemIcon>
-                      <DriveFileRenameOutlineRounded />
-                    </ListItemIcon>
-                    <ListItemText>Rename</ListItemText>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setAnchorEl(null);
-                      setIsReplaceFileModalOpen(true);
-                    }}
-                  >
-                    <ListItemIcon>
-                      <FileReplace />
-                    </ListItemIcon>
-                    <ListItemText>Replace File</ListItemText>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleCopyClick(imageZUID, true);
-                    }}
-                  >
-                    <ListItemIcon>
-                      {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
-                    </ListItemIcon>
-                    <ListItemText>Copy ZUID</ListItemText>
-                  </MenuItem>
-                </>
-              )}
-              <MenuItem
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleCopyClick(isURL ? imageZUID : data?.url, false);
-                }}
-              >
-                <ListItemIcon>
-                  {isCopied ? <CheckRounded /> : <LinkRounded />}
-                </ListItemIcon>
-                <ListItemText>Copy File Url</ListItemText>
-              </MenuItem>
-              <MenuItem
-                onClick={(event) => {
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={(event: any) => {
                   event.stopPropagation();
                   setAnchorEl(null);
-                  onRemove(imageZUID);
+                }}
+                PaperProps={{
+                  style: {
+                    width: "288px",
+                  },
+                }}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
                 }}
               >
-                <ListItemIcon>
-                  <CloseRounded />
-                </ListItemIcon>
-                <ListItemText>Remove</ListItemText>
-              </MenuItem>
-            </Menu>
-          </Box>
+                {!isURL && !isBynderAsset && (
+                  <>
+                    <MenuItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setAnchorEl(null);
+                        setShowRenameFileModal(true);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <DriveFileRenameOutlineRounded />
+                      </ListItemIcon>
+                      <ListItemText>Rename</ListItemText>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setAnchorEl(null);
+                        setIsReplaceFileModalOpen(true);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <FileReplace />
+                      </ListItemIcon>
+                      <ListItemText>Replace File</ListItemText>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleCopyClick(imageZUID, true);
+                      }}
+                    >
+                      <ListItemIcon>
+                        {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
+                      </ListItemIcon>
+                      <ListItemText>Copy ZUID</ListItemText>
+                    </MenuItem>
+                  </>
+                )}
+                <MenuItem
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleCopyClick(isURL ? imageZUID : data?.url, false);
+                  }}
+                >
+                  <ListItemIcon>
+                    {isCopied ? <CheckRounded /> : <LinkRounded />}
+                  </ListItemIcon>
+                  <ListItemText>Copy File Url</ListItemText>
+                </MenuItem>
+                <MenuItem
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setAnchorEl(null);
+                    onRemove && onRemove(imageZUID);
+                  }}
+                >
+                  <ListItemIcon>
+                    <CloseRounded />
+                  </ListItemIcon>
+                  <ListItemText>Remove</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Box>
+          )}
         </Box>
       </Box>
       {showRenameFileModal && (
