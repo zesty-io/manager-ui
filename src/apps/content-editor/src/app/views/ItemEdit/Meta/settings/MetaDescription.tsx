@@ -1,20 +1,25 @@
 import { useState, useEffect } from "react";
-import { connect } from "react-redux";
-import { TextField } from "@mui/material";
+import { connect, useDispatch } from "react-redux";
+import { TextField, Box } from "@mui/material";
 
-import { notify } from "shell/store/notifications";
+import { notify } from "../../../../../../../../shell/store/notifications";
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "../NewMeta";
 import { hasErrors } from "./util";
+import { Error } from "../../../../components/Editor/Field/FieldShell";
 
-import styles from "./MetaDescription.less";
+type MetaDescriptionProps = {
+  value: string;
+  onChange: (value: string, name: string) => void;
+  error: Error;
+};
 export default connect()(function MetaDescription({
   value,
   onChange,
-  dispatch,
-  errors,
-}) {
-  const [error, setError] = useState("");
+  error,
+}: MetaDescriptionProps) {
+  const dispatch = useDispatch();
+  const [contentValidationError, setContentValidationError] = useState("");
 
   useEffect(() => {
     if (value) {
@@ -40,21 +45,21 @@ export default connect()(function MetaDescription({
           "Found Microsoft Smart single quotes and apostrophe. These special characters are not allowed in meta descriptions.";
       }
 
-      setError(message);
+      setContentValidationError(message);
     }
   }, [value]);
 
-  if (error) {
+  if (contentValidationError) {
     dispatch(
       notify({
         kind: "warn",
-        message: error,
+        message: contentValidationError,
       })
     );
   }
 
   return (
-    <article className={styles.MetaDescription} data-cy="metaDescription">
+    <Box data-cy="metaDescription">
       <FieldShell
         settings={{
           label: "Meta Description",
@@ -66,12 +71,12 @@ export default connect()(function MetaDescription({
         maxLength={MaxLengths.metaDescription}
         valueLength={value?.length ?? 0}
         errors={
-          error
+          contentValidationError
             ? {
-                ...(errors || {}),
-                CUSTOM_ERROR: error,
+                ...(error || {}),
+                CUSTOM_ERROR: contentValidationError,
               }
-            : errors
+            : error
         }
       >
         <TextField
@@ -81,9 +86,9 @@ export default connect()(function MetaDescription({
           onChange={(evt) => onChange(evt.target.value, "metaDescription")}
           multiline
           rows={6}
-          error={hasErrors(errors)}
+          error={hasErrors(error) || !!contentValidationError}
         />
       </FieldShell>
-    </article>
+    </Box>
   );
 });

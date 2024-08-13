@@ -146,10 +146,9 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
               errors={errors?.metaTitle}
             />
             <MetaDescription
-              // @ts-expect-error untyped
               value={web.metaDescription}
               onChange={handleOnChange}
-              errors={errors?.metaDescription}
+              error={errors?.metaDescription}
             />
             <MetaImage onChange={handleOnChange} />
           </Stack>
