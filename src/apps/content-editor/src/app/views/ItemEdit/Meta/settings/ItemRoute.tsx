@@ -18,14 +18,9 @@ import { AppState } from "../../../../../../../../shell/store/types";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
+import { hasErrors } from "./util";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
-
-const hasErrors = (errors: Error) => {
-  if (!errors) return false;
-
-  return Object.values(errors).some((error) => !!error);
-};
 
 type ItemRouteProps = {
   onChange: (value: string, name: string) => void;

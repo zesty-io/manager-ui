@@ -20,6 +20,7 @@ import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
 import { MetaTitle } from "./settings/MetaTitle";
 import { SitemapPriority } from "./settings/SitemapPriority";
+import { cloneDeep } from "lodash";
 
 export const MaxLengths: Record<string, number> = {
   metaLinkText: 150,
@@ -27,6 +28,12 @@ export const MaxLengths: Record<string, number> = {
   metaDescription: 160,
   metaKeywords: 255,
 };
+const REQUIRED_FIELDS = [
+  "metaTitle",
+  "metaDescription",
+  "parentZUID",
+  "pathPart",
+] as const;
 
 type Errors = Record<string, Error>;
 type MetaProps = {
@@ -56,26 +63,26 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
         throw new Error("Input is missing name attribute");
       }
 
-      if (MaxLengths[name]) {
-        setErrors({
-          ...errors,
-          [name]: {
-            EXCEEDING_MAXLENGTH:
-              value?.length > MaxLengths[name]
-                ? value?.length - MaxLengths[name]
-                : 0,
-          },
-        });
+      const currentErrors = cloneDeep(errors);
+
+      if (REQUIRED_FIELDS.includes(name)) {
+        currentErrors[name] = {
+          ...currentErrors?.[name],
+          MISSING_REQUIRED: !value,
+        };
       }
 
-      if (name === "pathPart") {
-        setErrors({
-          ...errors,
-          [name]: {
-            MISSING_REQUIRED: !value,
-          },
-        });
+      if (MaxLengths[name]) {
+        currentErrors[name] = {
+          ...currentErrors?.[name],
+          EXCEEDING_MAXLENGTH:
+            value?.length > MaxLengths[name]
+              ? value?.length - MaxLengths[name]
+              : 0,
+        };
       }
+
+      setErrors(currentErrors);
 
       dispatch({
         // The og_image is stored as an ordinary field item and not a SEO field item
@@ -136,13 +143,13 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
               // @ts-expect-error untyped
               value={web.metaTitle}
               onChange={handleOnChange}
-              errors={errors}
+              errors={errors?.metaTitle}
             />
             <MetaDescription
               // @ts-expect-error untyped
               value={web.metaDescription}
               onChange={handleOnChange}
-              errors={errors}
+              errors={errors?.metaDescription}
             />
             <MetaImage onChange={handleOnChange} />
           </Stack>

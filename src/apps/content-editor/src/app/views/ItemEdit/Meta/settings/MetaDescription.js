@@ -5,6 +5,7 @@ import { TextField } from "@mui/material";
 import { notify } from "shell/store/notifications";
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "../NewMeta";
+import { hasErrors } from "./util";
 
 import styles from "./MetaDescription.less";
 export default connect()(function MetaDescription({
@@ -57,6 +58,7 @@ export default connect()(function MetaDescription({
       <FieldShell
         settings={{
           label: "Meta Description",
+          required: true,
         }}
         customTooltip="This is the description search engines should use in their results. This field is limited to 160 characters, the maximum amount search engines will display."
         withInteractiveTooltip={false}
@@ -66,10 +68,10 @@ export default connect()(function MetaDescription({
         errors={
           error
             ? {
-                ...(errors?.metaDescription ? errors.metaDescription : {}),
+                ...(errors || {}),
                 CUSTOM_ERROR: error,
               }
-            : errors?.metaDescription
+            : errors
         }
       >
         <TextField
@@ -79,6 +81,7 @@ export default connect()(function MetaDescription({
           onChange={(evt) => onChange(evt.target.value, "metaDescription")}
           multiline
           rows={6}
+          error={hasErrors(errors)}
         />
       </FieldShell>
     </article>
