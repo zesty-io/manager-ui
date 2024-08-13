@@ -1,15 +1,24 @@
 import { memo } from "react";
 
-import { TextField } from "@mui/material";
+import { TextField, Box } from "@mui/material";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "../NewMeta";
-import styles from "./MetaTitle.less";
 import { hasErrors } from "./util";
+import { Error } from "../../../../components/Editor/Field/FieldShell";
 
-export const MetaTitle = memo(function MetaTitle({ value, onChange, errors }) {
+type MetaTitleProps = {
+  value: string;
+  onChange: (value: string, name: string) => void;
+  error: Error;
+};
+export const MetaTitle = memo(function MetaTitle({
+  value,
+  onChange,
+  error,
+}: MetaTitleProps) {
   return (
-    <article className={styles.MetaTitle} data-cy="metaTitle">
+    <Box data-cy="metaTitle">
       <FieldShell
         settings={{
           label: "Meta Title",
@@ -20,16 +29,16 @@ export const MetaTitle = memo(function MetaTitle({ value, onChange, errors }) {
         withLengthCounter
         maxLength={MaxLengths.metaTitle}
         valueLength={value?.length ?? 0}
-        errors={errors ?? {}}
+        errors={error ?? {}}
       >
         <TextField
           name="metaTitle"
           value={value}
           placeholder="This is the title search engines should use in their results"
           onChange={(evt) => onChange(evt.target.value, "metaTitle")}
-          error={hasErrors(errors)}
+          error={hasErrors(error)}
         />
       </FieldShell>
-    </article>
+    </Box>
   );
 });
