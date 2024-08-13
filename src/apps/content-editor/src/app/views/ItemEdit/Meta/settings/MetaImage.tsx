@@ -68,7 +68,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
         }
       });
 
-      return image;
+      return image?.split(",")?.[0];
     }
   }, [modelFields, item]);
 
