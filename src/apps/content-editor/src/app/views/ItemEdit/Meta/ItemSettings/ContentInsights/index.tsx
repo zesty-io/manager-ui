@@ -15,6 +15,7 @@ import { Check, Search } from "@mui/icons-material";
 import { AppState } from "../../../../../../../../../shell/store/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../../shell/services/instance";
 import { WordCount } from "./WordCount";
+import { MatchedWords } from "./MatchedWords";
 
 const COMMON_WORDS: Readonly<string[]> = [
   "null",
@@ -172,15 +173,15 @@ const stripZUIDs = (string: string) => {
   return string.replace(/(\d-(.*?)-(.*?))(,| )/gi, " ");
 };
 
-const stripPunctuation = (string: string) => {
+export const stripPunctuation = (string: string) => {
   return string.replace(/("|,|:|;|\. |!)/gi, " ");
 };
 
-const stripDoubleSpace = (string: string) => {
+export const stripDoubleSpace = (string: string) => {
   return string.replace(/\s\s+/g, " ");
 };
 
-const stripDashesAndSlashes = (string: string) => {
+export const stripDashesAndSlashes = (string: string) => {
   return string.replace(/-|\//g, " ");
 };
 
@@ -262,48 +263,6 @@ export const ContentInsights = ({}) => {
     uniqueWordsArray?.filter((word) => !COMMON_WORDS.includes(word))
   );
 
-  const contentAndMetaWordMatches = useMemo(() => {
-    const textMetaFieldNames = [
-      "metaDescription",
-      "metaTitle",
-      "metaKeywords",
-      "pathPart",
-    ];
-
-    if (
-      item?.web &&
-      Object.values(item.web)?.length &&
-      uniqueNonCommonWordsArray?.length
-    ) {
-      const metaWords = Object.entries(item.web)?.reduce(
-        (accu: string[], [fieldName, value]) => {
-          if (textMetaFieldNames.includes(fieldName) && !!value) {
-            const cleanedValue = stripDoubleSpace(
-              stripPunctuation(
-                stripDashesAndSlashes(value.trim().toLowerCase())
-              )
-            );
-
-            accu = [...accu, ...cleanedValue?.split(" ")];
-
-            return accu;
-          }
-
-          return accu;
-        },
-        []
-      );
-
-      const uniqueMetaWords = Array.from(new Set(metaWords));
-
-      return uniqueMetaWords.filter((metaWord) =>
-        uniqueNonCommonWordsArray.includes(metaWord)
-      );
-    }
-
-    return [];
-  }, [uniqueNonCommonWordsArray, item?.web]);
-
   return (
     <>
       <WordCount
@@ -311,6 +270,7 @@ export const ContentInsights = ({}) => {
         totalUniqueWords={uniqueWordsArray?.length}
         totalUniqueNonCommonWords={uniqueNonCommonWordsArray?.length}
       />
+      <MatchedWords uniqueNonCommonWordsArray={uniqueNonCommonWordsArray} />
     </>
   );
 };
