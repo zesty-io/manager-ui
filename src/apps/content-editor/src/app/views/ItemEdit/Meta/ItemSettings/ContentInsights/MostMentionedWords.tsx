@@ -6,7 +6,7 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import { Search } from "@mui/icons-material";
+import { Search, Add, Remove } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import { COMMON_WORDS } from ".";
 
@@ -15,6 +15,7 @@ type MostMentionedWordsProps = {
 };
 export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
   const [filterKeyword, setFilterKeyword] = useState("");
+  const [showAll, setShowAll] = useState(false);
 
   const wordCount = useMemo(() => {
     if (!!wordsArray?.length) {
@@ -75,21 +76,32 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
         }}
       />
       <Stack direction="row" gap={1} flexWrap="wrap">
-        {filteredWords?.map(([word, count]) => (
+        {filteredWords
+          ?.slice(0, showAll ? undefined : 9)
+          ?.map(([word, count]) => (
+            <Chip
+              key={word}
+              label={
+                <>
+                  {word}
+                  <Box component="span" color="text.disabled" pl={1}>
+                    {count}
+                  </Box>
+                </>
+              }
+              size="small"
+              variant="outlined"
+            />
+          ))}
+        {filteredWords?.length > 10 && (
           <Chip
-            key={word}
-            label={
-              <>
-                {word}
-                <Box component="span" color="text.disabled" pl={1}>
-                  {count}
-                </Box>
-              </>
-            }
+            label={`See ${showAll ? "Less" : "More"}`}
             size="small"
             variant="outlined"
+            icon={showAll ? <Remove color="action" /> : <Add color="action" />}
+            onClick={() => setShowAll(!showAll)}
           />
-        ))}
+        )}
       </Stack>
     </Stack>
   );
