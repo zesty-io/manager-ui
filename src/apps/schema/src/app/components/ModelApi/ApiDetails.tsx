@@ -8,7 +8,7 @@ import {
   Stack,
   CircularProgress,
 } from "@mui/material";
-import { useHistory, useLocation } from "react-router";
+import { useHistory, useLocation, useParams } from "react-router";
 import { SvgIconComponent } from "@mui/icons-material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
@@ -24,8 +24,12 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { ApiDomainEndpoints } from "./ApiDomainEndpoints";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
-import { useGetInstanceSettingsQuery } from "../../../../../../shell/services/instance";
+import {
+  useGetContentModelQuery,
+  useGetInstanceSettingsQuery,
+} from "../../../../../../shell/services/instance";
 import { HeadlessSwitcher } from "./HeadlessSwitcher";
+import { useEffect, useMemo } from "react";
 
 const apiTypeIconMap: Record<ApiType, SvgIconComponent> = {
   "quick-access": BoltRoundedIcon,
@@ -46,6 +50,10 @@ const apiTypesWithEndpoints = [
 export const ApiDetails = () => {
   const history = useHistory();
   const location = useLocation();
+  const { contentModelZUID } = useParams<{ contentModelZUID: string }>();
+  const { data: modelData } = useGetContentModelQuery(contentModelZUID, {
+    skip: !contentModelZUID,
+  });
   const installedApps = useSelector((state: AppState) => state.apps.installed);
   const selectedType = location.pathname.split("/").pop() as ApiType;
   const { data: instanceSettings, isFetching } = useGetInstanceSettingsQuery(
@@ -55,6 +63,14 @@ export const ApiDetails = () => {
   const headlessEnabled =
     instanceSettings?.find((setting) => setting.key === "mode")?.value !==
     "traditional";
+
+  const filteredApiTypes = useMemo(() => {
+    if (modelData?.type === "dataset") {
+      return apiTypes.filter((apiType) => apiType !== "site-generators");
+    }
+
+    return apiTypes;
+  }, [modelData]);
 
   const handleVisualLayoutClick = () => {
     const layoutApp = installedApps?.find(
@@ -66,6 +82,12 @@ export const ApiDetails = () => {
       window.open("https://www.zesty.io/marketplace/apps/page-layout-designer");
     }
   };
+
+  useEffect(() => {
+    if (selectedType === "site-generators" && modelData?.type === "dataset") {
+      history.replace(`${location.pathname.split("/").slice(0, -1).join("/")}`);
+    }
+  }, [selectedType, modelData]);
 
   return (
     <Box display="flex" height="100%" sx={{ overflowY: "auto" }}>
@@ -92,7 +114,7 @@ export const ApiDetails = () => {
           </Button>
         </Box>
         <Box pr={1}>
-          {apiTypes.map((type) => (
+          {filteredApiTypes?.map((type) => (
             <ListItemButton
               key={type}
               sx={{ py: "6px", px: "12px", borderRadius: "4px" }}
