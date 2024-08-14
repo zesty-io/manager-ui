@@ -1,14 +1,9 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 
-import Divider from "@mui/material/Divider";
-import Button from "@mui/material/Button";
-
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import SavedSearchIcon from "@mui/icons-material/SavedSearch";
+import { Divider, Button, Card, CardHeader, CardContent } from "@mui/material";
+import { SavedSearch } from "@mui/icons-material";
 
 import { faCheck, faSearchDollar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,8 +11,10 @@ import cx from "classnames";
 
 import styles from "./ContentInsights.less";
 import { AppState } from "../../../../../../../../../shell/store/types";
+import { useGetContentModelFieldsQuery } from "../../../../../../../../../shell/services/instance";
+import { ActivityByResource } from "../../../../../../../../reports/src/app/views/ActivityLog/components/ActivityByResource";
 
-const COMMON_WORDS = [
+const COMMON_WORDS: Readonly<string[]> = [
   "null",
   "1",
   "2",
@@ -194,9 +191,116 @@ const findMatch = (needle: string, haystack: string[]) => {
 };
 
 export const ContentInsights = ({}) => {
-  const { itemZUID } = useParams<{ itemZUID: string }>();
+  const { itemZUID, modelZUID } = useParams<{
+    itemZUID: string;
+    modelZUID: string;
+  }>();
   const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID, {
+    skip: !modelZUID,
+  });
   const [showAllWords, setShowAllWords] = useState(false);
+
+  const textFieldNames = useMemo(() => {
+    if (modelFields?.length) {
+      const textFieldTypes = [
+        "text",
+        "wysiwyg_basic",
+        "wysiwyg_advanced",
+        "article_writer",
+        "markdown",
+        "textarea",
+      ];
+
+      return modelFields.reduce((accu: string[], curr) => {
+        if (textFieldTypes.includes(curr.datatype) && !curr.deletedAt) {
+          accu = [...accu, curr.name];
+          return accu;
+        }
+
+        return accu;
+      }, []);
+    }
+  }, [modelFields]);
+
+  const contentItemWordsArray = useMemo(() => {
+    if (
+      item?.data &&
+      Object.values(item.data)?.length &&
+      textFieldNames?.length
+    ) {
+      let words: string[] = [];
+
+      textFieldNames.forEach((fieldName) => {
+        let value = item?.data[fieldName];
+
+        if (!!value) {
+          value = stripDoubleSpace(
+            stripPunctuation(
+              stripHidden(
+                stripEncoded(
+                  stripTags(stripZUIDs(String(value).trim().toLowerCase()))
+                )
+              )
+            )
+          );
+
+          words = [...words, ...value.split(" ")];
+        }
+      });
+
+      return words;
+    }
+
+    return [];
+  }, [textFieldNames, item?.data]);
+
+  const uniqueWordsArray = Array.from(new Set(contentItemWordsArray));
+  const uniqueNonCommonWordsArray = Array.from(
+    uniqueWordsArray?.filter((word) => !COMMON_WORDS.includes(word))
+  );
+
+  const contentAndMetaWordMatches = useMemo(() => {
+    const textMetaFieldNames = [
+      "metaDescription",
+      "metaTitle",
+      "metaKeywords",
+      "pathPart",
+    ];
+
+    if (
+      item?.web &&
+      Object.values(item.web)?.length &&
+      uniqueNonCommonWordsArray?.length
+    ) {
+      const metaWords = Object.entries(item.web)?.reduce(
+        (accu: string[], [fieldName, value]) => {
+          if (textMetaFieldNames.includes(fieldName) && !!value) {
+            const cleanedValue = stripDoubleSpace(
+              stripPunctuation(
+                stripDashesAndSlashes(value.trim().toLowerCase())
+              )
+            );
+
+            accu = [...accu, ...cleanedValue?.split(" ")];
+
+            return accu;
+          }
+
+          return accu;
+        },
+        []
+      );
+
+      const uniqueMetaWords = Array.from(new Set(metaWords));
+
+      return uniqueMetaWords.filter((metaWord) =>
+        uniqueNonCommonWordsArray.includes(metaWord)
+      );
+    }
+
+    return [];
+  }, [uniqueNonCommonWordsArray, item?.web]);
 
   let combinedString = "";
   let wordCount: Record<string, number> = {};
@@ -304,7 +408,7 @@ export const ContentInsights = ({}) => {
       variant="outlined"
     >
       <CardHeader
-        avatar={<SavedSearchIcon fontSize="small" sx={{ fill: "#10182866" }} />}
+        avatar={<SavedSearch fontSize="small" sx={{ fill: "#10182866" }} />}
         title="Content Insights"
         sx={{
           backgroundColor: "grey.100",
@@ -322,13 +426,13 @@ export const ContentInsights = ({}) => {
       >
         <div className={styles.level}>
           <div>
-            Total Words <span>{totalWords}</span>
+            Total Words <span>{contentItemWordsArray?.length}</span>
           </div>
           <div>
-            Non-Common* Words <span>{totalNonCommonWords}</span>
+            Non-Common* Words <span>{uniqueNonCommonWordsArray?.length}</span>
           </div>
           <div>
-            Unique Words* <span>{totalUniqueNonCommonWords}</span>
+            Unique Words* <span>{uniqueWordsArray?.length}</span>
           </div>
         </div>
         <Divider
