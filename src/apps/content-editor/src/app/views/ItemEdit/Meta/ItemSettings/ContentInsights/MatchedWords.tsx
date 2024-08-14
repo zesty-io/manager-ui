@@ -69,7 +69,7 @@ export const MatchedWords = ({
       <Typography variant="h6" color="text.secondary" fontWeight={700} mb={1}>
         Content and Meta Matched Words
       </Typography>
-      <Stack direction="row" gap={1}>
+      <Stack direction="row" gap={1} flexWrap="wrap">
         {contentAndMetaWordMatches?.map((word) => (
           <Chip
             key={word}
