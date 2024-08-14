@@ -14,6 +14,7 @@ import { Check, Search } from "@mui/icons-material";
 
 import { AppState } from "../../../../../../../../../shell/store/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../../shell/services/instance";
+import { WordCount } from "./WordCount";
 
 const COMMON_WORDS: Readonly<string[]> = [
   "null",
@@ -305,54 +306,11 @@ export const ContentInsights = ({}) => {
 
   return (
     <>
-      <Stack
-        direction="row"
-        height={84}
-        bgcolor="background.paper"
-        border={1}
-        borderColor="border"
-        borderRadius={2}
-        width="100%"
-        p={2}
-        boxSizing="border-box"
-      >
-        <Box flex={1}>
-          <Typography variant="body2" color="text.secondary">
-            Words
-          </Typography>
-          <Typography variant="h4" color="text.primary">
-            {contentItemWordsArray?.length}
-          </Typography>
-        </Box>
-        <Divider
-          orientation="vertical"
-          variant="middle"
-          flexItem
-          sx={{ mx: 2, my: 0, borderRightWidth: "2px" }}
-        />
-        <Box flex={1}>
-          <Typography variant="body2" color="text.secondary">
-            Unique Words
-          </Typography>
-          <Typography variant="h4" color="text.primary">
-            {uniqueWordsArray?.length}
-          </Typography>
-        </Box>
-        <Divider
-          orientation="vertical"
-          variant="middle"
-          flexItem
-          sx={{ mx: 2, my: 0, borderRightWidth: "2px" }}
-        />
-        <Box flex={1}>
-          <Typography variant="body2" color="text.secondary">
-            Non Common Words
-          </Typography>
-          <Typography variant="h4" color="text.primary">
-            {uniqueNonCommonWordsArray?.length}
-          </Typography>
-        </Box>
-      </Stack>
+      <WordCount
+        totalWords={contentItemWordsArray?.length}
+        totalUniqueWords={uniqueWordsArray?.length}
+        totalUniqueNonCommonWords={uniqueNonCommonWordsArray?.length}
+      />
     </>
   );
 };
