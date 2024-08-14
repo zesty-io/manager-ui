@@ -219,7 +219,16 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
           </Stack>
         </Stack>
         {model?.type !== "dataset" && (
-          <Box flex={1} position="sticky" top={0}>
+          <Box
+            flex={1}
+            position="sticky"
+            top={0}
+            pb={2.5}
+            sx={{
+              scrollbarWidth: "none",
+              overflowY: "auto",
+            }}
+          >
             <ContentInsights />
           </Box>
         )}
