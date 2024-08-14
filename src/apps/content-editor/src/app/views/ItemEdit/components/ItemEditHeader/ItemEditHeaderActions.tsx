@@ -64,8 +64,8 @@ export const ItemEditHeaderActions = ({
     itemZUID: string;
   }>();
   const dispatch = useDispatch();
-  const canPublish = usePermission("PUBLISH");
-  const canUpdate = usePermission("UPDATE");
+  const canPublish = usePermission("PUBLISH", itemZUID);
+  const canUpdate = usePermission("UPDATE", itemZUID);
   const [publishMenu, setPublishMenu] = useState<null | HTMLElement>(null);
   const [publishAfterSave, setPublishAfterSave] = useState(false);
   const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
