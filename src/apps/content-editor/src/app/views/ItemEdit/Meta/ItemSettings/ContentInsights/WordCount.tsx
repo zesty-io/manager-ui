@@ -1,4 +1,3 @@
-import { NumberInputOwnerState } from "@mui/base";
 import { Stack, Box, Typography, Divider } from "@mui/material";
 
 type WordCountProps = {

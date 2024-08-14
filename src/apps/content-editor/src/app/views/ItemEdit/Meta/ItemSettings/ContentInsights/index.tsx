@@ -16,8 +16,9 @@ import { AppState } from "../../../../../../../../../shell/store/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../../shell/services/instance";
 import { WordCount } from "./WordCount";
 import { MatchedWords } from "./MatchedWords";
+import { MostMentionedWords } from "./MostMentionedWords";
 
-const COMMON_WORDS: Readonly<string[]> = [
+export const COMMON_WORDS: Readonly<string[]> = [
   "null",
   "1",
   "2",
@@ -271,6 +272,7 @@ export const ContentInsights = ({}) => {
         totalUniqueNonCommonWords={uniqueNonCommonWordsArray?.length}
       />
       <MatchedWords uniqueNonCommonWordsArray={uniqueNonCommonWordsArray} />
+      <MostMentionedWords wordsArray={contentItemWordsArray} />
     </>
   );
 };
