@@ -15,14 +15,20 @@ import {
 } from "@mui/material";
 import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 
-import { useGetUsersRolesQuery } from "../../services/accounts";
-import { MD5 } from "../../../utility/md5";
+import { useGetUsersRolesQuery } from "../services/accounts";
+import { MD5 } from "../../utility/md5";
 
 type NoPermissionProps = {
   onClose: () => void;
+  headerTitle?: string;
+  headerSubtitle?: string;
 };
 
-export const NoPermission = ({ onClose }: NoPermissionProps) => {
+export const NoPermission = ({
+  onClose,
+  headerSubtitle,
+  headerTitle,
+}: NoPermissionProps) => {
   const { data: users } = useGetUsersRolesQuery();
 
   const ownersAndAdmins = useMemo(() => {
@@ -51,12 +57,14 @@ export const NoPermission = ({ onClose }: NoPermissionProps) => {
           }}
         />
         <Box fontWeight={700} mb={1} mt={1.5}>
-          You do not have permission to invite users
+          {headerTitle
+            ? headerTitle
+            : "You do not have permission to invite users"}
         </Box>
         <Typography color="text.secondary" variant="body2">
-          Contact your instance owners or administrators listed below to change
-          your role to Admin or Owner on this instance for user invitation
-          priveleges.
+          {headerSubtitle
+            ? headerSubtitle
+            : "Contact your instance owners or administrators listed below to change your role to Admin or Owner on this instance for user invitation priveleges."}
         </Typography>
       </DialogTitle>
       <DialogContent>

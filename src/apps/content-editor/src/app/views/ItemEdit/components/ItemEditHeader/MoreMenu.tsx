@@ -1,10 +1,8 @@
 import {
-  Chip,
   IconButton,
   ListItemIcon,
   Menu,
   MenuItem,
-  Typography,
   Tooltip,
 } from "@mui/material";
 import {
@@ -16,23 +14,18 @@ import {
   CodeRounded,
   DeleteRounded,
   CheckRounded,
-  DesignServicesRounded,
-  VisibilityRounded,
   KeyboardArrowRightRounded,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { Database } from "@zesty-io/material";
 import { useHistory, useParams } from "react-router";
-import { useSelector } from "react-redux";
-import { AppState } from "../../../../../../../../shell/store/types";
-import { ContentItem } from "../../../../../../../../shell/services/types";
 import { DuplicateItemDialog } from "./DuplicateItemDialog";
-import { ApiType } from "../../../../../../../schema/src/app/components/ModelApi";
-import { useGetDomainsQuery } from "../../../../../../../../shell/services/accounts";
 import { useFilePath } from "../../../../../../../../shell/hooks/useFilePath";
 import { DeleteItemDialog } from "./DeleteItemDialog";
 import { useGetContentModelsQuery } from "../../../../../../../../shell/services/instance";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
+import { CascadingMenuItem } from "../../../../../../../../shell/components/CascadingMenuItem";
+import { APIEndpoints } from "../../../../components/APIEndpoints";
 
 export const MoreMenu = () => {
   const { modelZUID, itemZUID } = useParams<{
@@ -42,17 +35,8 @@ export const MoreMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [showDuplicateItemDialog, setShowDuplicateItemDialog] = useState(false);
-  const [showApiEndpoints, setShowApiEndpoints] = useState<null | HTMLElement>(
-    null
-  );
   const [showDeleteItemDialog, setShowDeleteItemDialog] = useState(false);
-  const [apiEndpointType, setApiEndpointType] = useState("quick-access");
   const history = useHistory();
-  const item = useSelector(
-    (state: AppState) => state.content[itemZUID] as ContentItem
-  );
-  const instance = useSelector((state: AppState) => state.instance);
-  const { data: domains } = useGetDomainsQuery();
   const codePath = useFilePath(modelZUID);
   const { data: contentModels } = useGetContentModelsQuery();
   const type =
@@ -72,13 +56,6 @@ export const MoreMenu = () => {
         console.error(err);
       });
   };
-
-  const apiTypeEndpointMap: Partial<Record<ApiType, string>> = {
-    "quick-access": `/-/instant/${itemZUID}.json`,
-    "site-generators": item ? `/${item?.web?.path}/?toJSON` : "/?toJSON",
-  };
-
-  const liveDomain = domains?.find((domain) => domain.branch == "live");
 
   return (
     <>
@@ -135,31 +112,33 @@ export const MoreMenu = () => {
           </ListItemIcon>
           Copy ZUID
         </MenuItem>
-        <MenuItem
-          onClick={(event) => {
-            setShowApiEndpoints(event.currentTarget);
-            setApiEndpointType("quick-access");
-          }}
+        <CascadingMenuItem
+          MenuItemComponent={
+            <>
+              <ListItemIcon>
+                <BoltRounded />
+              </ListItemIcon>
+              View Quick Access API
+              <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
+            </>
+          }
         >
-          <ListItemIcon>
-            <BoltRounded />
-          </ListItemIcon>
-          View Quick Access API
-          <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
-        </MenuItem>
+          <APIEndpoints type="quick-access" />
+        </CascadingMenuItem>
         {type !== "dataset" && (
-          <MenuItem
-            onClick={(event) => {
-              setShowApiEndpoints(event.currentTarget);
-              setApiEndpointType("site-generators");
-            }}
+          <CascadingMenuItem
+            MenuItemComponent={
+              <>
+                <ListItemIcon>
+                  <DataObjectRounded />
+                </ListItemIcon>
+                View Site Generators API
+                <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
+              </>
+            }
           >
-            <ListItemIcon>
-              <DataObjectRounded />
-            </ListItemIcon>
-            View Site Generators API
-            <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
-          </MenuItem>
+            <APIEndpoints type="site-generators" />
+          </CascadingMenuItem>
         )}
         <MenuItem
           onClick={() => {
@@ -201,76 +180,6 @@ export const MoreMenu = () => {
           onClose={() => setShowDuplicateItemDialog(false)}
         />
       )}
-      <Menu
-        anchorEl={showApiEndpoints}
-        open={!!showApiEndpoints}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        onClose={() => {
-          setShowApiEndpoints(null);
-        }}
-      >
-        <MenuItem
-          onClick={() => {
-            setShowApiEndpoints(null);
-            window.open(
-              // @ts-expect-error config not typed
-              `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[apiEndpointType]}`,
-              "_blank"
-            );
-          }}
-        >
-          <ListItemIcon>
-            <DesignServicesRounded />
-          </ListItemIcon>
-          <Typography
-            variant="inherit"
-            noWrap
-            sx={{
-              width: 172,
-            }}
-          >
-            {/* @ts-expect-error config not typed */}
-            {`${instance.randomHashID}${CONFIG.URL_PREVIEW}${apiTypeEndpointMap[apiEndpointType]}`}
-          </Typography>
-          <Chip size="small" label="Dev" />
-        </MenuItem>
-        {liveDomain && (
-          <MenuItem
-            onClick={() => {
-              setShowApiEndpoints(null);
-              window.open(
-                `https://${liveDomain.domain}${
-                  apiTypeEndpointMap[
-                    apiEndpointType as keyof typeof apiTypeEndpointMap
-                  ]
-                }`,
-                "_blank"
-              );
-            }}
-          >
-            <ListItemIcon>
-              <VisibilityRounded />
-            </ListItemIcon>
-            <Typography
-              variant="inherit"
-              noWrap
-              sx={{
-                width: 172,
-              }}
-            >
-              {`${liveDomain.domain}${
-                apiTypeEndpointMap[
-                  apiEndpointType as keyof typeof apiTypeEndpointMap
-                ]
-              }`}
-            </Typography>
-            <Chip size="small" label="Prod" />
-          </MenuItem>
-        )}
-      </Menu>
       {showDeleteItemDialog && (
         <DeleteItemDialog onClose={() => setShowDeleteItemDialog(false)} />
       )}

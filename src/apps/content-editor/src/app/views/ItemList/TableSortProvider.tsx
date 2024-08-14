@@ -15,7 +15,13 @@ type TableSortProviderType = {
   children?: React.ReactNode;
 };
 export const TableSortProvider = ({ children }: TableSortProviderType) => {
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  // Note: We always want it to default to lastSaved if no other sorting is applied
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    {
+      field: "lastSaved",
+      sort: "desc",
+    },
+  ]);
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
 
   useLayoutEffect(() => {

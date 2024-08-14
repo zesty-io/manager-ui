@@ -405,7 +405,16 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       sortModel={sortModel}
       sortingMode="server"
       onSortModelChange={(newSortModel) => {
-        setSortModel(newSortModel);
+        if (!Object.entries(newSortModel)?.length) {
+          setSortModel([
+            {
+              field: "lastSaved",
+              sort: "desc",
+            },
+          ]);
+        } else {
+          setSortModel(newSortModel);
+        }
       }}
       onSelectionModelChange={(newSelection) => setSelectedItems(newSelection)}
       selectionModel={
