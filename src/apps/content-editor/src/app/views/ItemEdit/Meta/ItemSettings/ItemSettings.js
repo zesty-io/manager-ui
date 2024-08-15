@@ -14,7 +14,7 @@ import MetaDescription from "./settings/MetaDescription";
 import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
 import { ItemRoute } from "./settings/ItemRoute";
-import { ContentInsights } from "./ContentInsights";
+import { ContentInsights } from "../ContentInsights";
 import { ItemParent } from "./settings/ItemParent";
 import { CanonicalTag } from "./settings/CanonicalTag";
 import { SitemapPriority } from "./settings/SitemapPriority";

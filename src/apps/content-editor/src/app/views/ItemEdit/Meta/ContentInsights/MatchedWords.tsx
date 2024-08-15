@@ -9,7 +9,7 @@ import {
   stripDoubleSpace,
   stripPunctuation,
 } from "./index";
-import { AppState } from "../../../../../../../../../shell/store/types";
+import { AppState } from "../../../../../../../../shell/store/types";
 
 type MatchedWordsProps = {
   uniqueNonCommonWordsArray: string[];
