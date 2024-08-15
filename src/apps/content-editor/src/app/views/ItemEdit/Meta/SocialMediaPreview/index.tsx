@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Tab, Tabs, Box } from "@mui/material";
 import { Google, Twitter, Facebook, LinkedIn } from "@mui/icons-material";
+import { GooglePreview } from "./GooglePreview";
 
 enum SocialMediaTab {
   Google,
@@ -15,44 +16,48 @@ export const SocialMediaPreview = ({}: SocialMediaPreviewProps) => {
   );
 
   return (
-    <Box
-      sx={{
-        borderBottom: (theme) => `2px solid ${theme?.palette?.border} `,
-      }}
-    >
-      <Tabs
-        value={activeTab}
-        onChange={(_, value) => setActiveTab(value)}
+    <>
+      <Box
         sx={{
-          position: "relative",
-          top: "2px",
+          mb: 1.5,
+          borderBottom: (theme) => `2px solid ${theme?.palette?.border} `,
         }}
       >
-        <Tab
-          icon={<Google />}
-          iconPosition="start"
-          label="Google"
-          value={SocialMediaTab.Google}
-        />
-        <Tab
-          icon={<Twitter />}
-          iconPosition="start"
-          label="Twitter (X)"
-          value={SocialMediaTab.Twitter}
-        />
-        <Tab
-          icon={<Facebook />}
-          iconPosition="start"
-          label="Facebook"
-          value={SocialMediaTab.Facebook}
-        />
-        <Tab
-          icon={<LinkedIn />}
-          iconPosition="start"
-          label="LinkedIn"
-          value={SocialMediaTab.LinkedIn}
-        />
-      </Tabs>
-    </Box>
+        <Tabs
+          value={activeTab}
+          onChange={(_, value) => setActiveTab(value)}
+          sx={{
+            position: "relative",
+            top: "2px",
+          }}
+        >
+          <Tab
+            icon={<Google />}
+            iconPosition="start"
+            label="Google"
+            value={SocialMediaTab.Google}
+          />
+          <Tab
+            icon={<Twitter />}
+            iconPosition="start"
+            label="Twitter (X)"
+            value={SocialMediaTab.Twitter}
+          />
+          <Tab
+            icon={<Facebook />}
+            iconPosition="start"
+            label="Facebook"
+            value={SocialMediaTab.Facebook}
+          />
+          <Tab
+            icon={<LinkedIn />}
+            iconPosition="start"
+            label="LinkedIn"
+            value={SocialMediaTab.LinkedIn}
+          />
+        </Tabs>
+      </Box>
+      {activeTab === SocialMediaTab.Google && <GooglePreview />}
+    </>
   );
 };
