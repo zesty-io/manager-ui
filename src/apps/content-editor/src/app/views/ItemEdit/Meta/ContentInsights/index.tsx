@@ -1,19 +1,9 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 
-import {
-  Divider,
-  Box,
-  Stack,
-  Typography,
-  TextField,
-  Chip,
-} from "@mui/material";
-import { Check, Search } from "@mui/icons-material";
-
-import { AppState } from "../../../../../../../../../shell/store/types";
-import { useGetContentModelFieldsQuery } from "../../../../../../../../../shell/services/instance";
+import { AppState } from "../../../../../../../../shell/store/types";
+import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
 import { WordCount } from "./WordCount";
 import { MatchedWords } from "./MatchedWords";
 import { MostMentionedWords } from "./MostMentionedWords";

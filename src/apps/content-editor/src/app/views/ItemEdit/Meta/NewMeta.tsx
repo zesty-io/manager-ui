@@ -4,7 +4,7 @@ import { theme } from "@zesty-io/material";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
-import { ContentInsights } from "./ItemSettings/ContentInsights";
+import { ContentInsights } from "./ContentInsights";
 import { useGetContentModelQuery } from "../../../../../../../shell/services/instance";
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
