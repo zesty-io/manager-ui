@@ -1,18 +1,23 @@
 import { memo } from "react";
 
-import { TextField } from "@mui/material";
+import { TextField, Box } from "@mui/material";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "../NewMeta";
-import styles from "./MetaKeywords.less";
+import { Error } from "../../../../components/Editor/Field/FieldShell";
 
+type MetaKeywordsProps = {
+  value: string;
+  onChange: (value: string, name: string) => void;
+  error: Error;
+};
 export const MetaKeywords = memo(function MetaKeywords({
   value,
   onChange,
-  errors,
-}) {
+  error,
+}: MetaKeywordsProps) {
   return (
-    <article className={styles.MetaKeywords} data-cy="metaKeywords">
+    <Box data-cy="metaKeywords">
       <FieldShell
         settings={{
           label: "Meta Keywords",
@@ -22,7 +27,7 @@ export const MetaKeywords = memo(function MetaKeywords({
         withLengthCounter
         maxLength={MaxLengths.metaKeywords}
         valueLength={value?.length ?? 0}
-        errors={errors?.metaKeywords ?? {}}
+        errors={error ?? {}}
       >
         <TextField
           name="metaKeywords"
@@ -33,6 +38,6 @@ export const MetaKeywords = memo(function MetaKeywords({
           onChange={(evt) => onChange(evt.target.value, "metaKeywords")}
         />
       </FieldShell>
-    </article>
+    </Box>
   );
 });

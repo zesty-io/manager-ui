@@ -205,16 +205,14 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
               </>
             )}
             <MetaLinkText
-              // @ts-expect-error untyped
               value={web.metaLinkText}
               onChange={handleOnChange}
-              errors={errors}
+              error={errors?.metaLinkText}
             />
             <MetaKeywords
-              // @ts-expect-error untyped
               value={web.metaKeywords}
               onChange={handleOnChange}
-              errors={errors}
+              error={errors?.metaKeywords}
             />
           </Stack>
         </Stack>

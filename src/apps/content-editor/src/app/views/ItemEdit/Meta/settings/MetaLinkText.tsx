@@ -1,17 +1,22 @@
 import { memo } from "react";
 
-import { TextField } from "@mui/material";
+import { TextField, Box } from "@mui/material";
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "../NewMeta";
+import { Error } from "../../../../components/Editor/Field/FieldShell";
 
-import styles from "./MetaLinkText.less";
+type MetaLinkTextProps = {
+  value: string;
+  onChange: (value: string, name: string) => void;
+  error: Error;
+};
 export const MetaLinkText = memo(function MetaLinkText({
   value,
   onChange,
-  errors,
-}) {
+  error,
+}: MetaLinkTextProps) {
   return (
-    <article className={styles.MetaLinkText} data-cy="metaLinkText">
+    <Box data-cy="metaLinkText">
       <FieldShell
         settings={{
           label: "Navigation Link Text",
@@ -23,7 +28,7 @@ export const MetaLinkText = memo(function MetaLinkText({
         withLengthCounter
         maxLength={MaxLengths.metaLinkText}
         valueLength={value?.length ?? 0}
-        errors={errors?.metaLinkText ?? {}}
+        errors={error ?? {}}
       >
         <TextField
           name="metaLinkText"
@@ -32,6 +37,6 @@ export const MetaLinkText = memo(function MetaLinkText({
           onChange={(evt) => onChange(evt.target.value, "metaLinkText")}
         />
       </FieldShell>
-    </article>
+    </Box>
   );
 });
