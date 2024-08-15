@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { Stack, Box, Typography, ThemeProvider } from "@mui/material";
+import { Stack, Box, Typography, ThemeProvider, Divider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,6 +21,7 @@ import { MetaLinkText } from "./settings/MetaLinkText";
 import { MetaTitle } from "./settings/MetaTitle";
 import { SitemapPriority } from "./settings/SitemapPriority";
 import { cloneDeep } from "lodash";
+import { SocialMediaPreview } from "./SocialMediaPreview";
 
 export const MaxLengths: Record<string, number> = {
   metaLinkText: 150,
@@ -227,6 +228,8 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
               overflowY: "auto",
             }}
           >
+            <SocialMediaPreview />
+            <Divider sx={{ my: 1.5 }} />
             <ContentInsights />
           </Box>
         )}
