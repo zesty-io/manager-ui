@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { Box, Stack, Typography, Breadcrumbs } from "@mui/material";
 import {
   MoreVertRounded,
@@ -12,24 +12,72 @@ import { useGetInstanceQuery } from "../../../../../../../../shell/services/acco
 import { InstanceAvatar } from "../../../../../../../../shell/components/global-sidebar/components/InstanceAvatar";
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
+import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
 
 type GooglePreviewProps = {};
 export const GooglePreview = ({}: GooglePreviewProps) => {
-  const { itemZUID } = useParams<{
+  const { modelZUID, itemZUID } = useParams<{
+    modelZUID: string;
     itemZUID: string;
   }>();
   const { data: instance, isLoading: isLoadingInstance } =
     useGetInstanceQuery();
   const domain = useDomain();
+  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const items = useSelector((state: AppState) => state.content);
   const item = items[itemZUID];
   const parent = items[item?.web?.parentZUID];
+
+  const imageURL = useMemo(() => {
+    if (!item?.data || !modelFields?.length) return;
+
+    let matchedURL: string | null = null;
+
+    if ("og_image" in item?.data) {
+      matchedURL = !!item?.data?.["og_image"]
+        ? (item?.data?.["og_image"] as string)
+        : null;
+    } else {
+      // Find possible image fields that can be used
+      const matchedFields = modelFields.filter(
+        (field) =>
+          !field.deletedAt &&
+          field.datatype === "images" &&
+          field?.name !== "og_image" &&
+          (field.label.toLowerCase().includes("image") ||
+            field.name.toLocaleLowerCase().includes("image"))
+      );
+
+      if (matchedFields?.length) {
+        // Find the first matched field that already stores an image and make sure
+        // to find the first valid image in that field
+        matchedFields.forEach((field) => {
+          if (!matchedURL && !!item?.data?.[field.name]) {
+            matchedURL = String(item?.data?.[field.name])?.split(",")?.[0];
+          }
+        });
+      }
+    }
+
+    if (matchedURL?.startsWith("3-")) {
+      return `${
+        // @ts-ignore
+        CONFIG.SERVICE_MEDIA_RESOLVER
+      }/resolve/${matchedURL}/getimage/?w=${85}&h=${85}&type=fit`;
+    } else {
+      return matchedURL;
+    }
+  }, [item?.data, modelFields]);
 
   const fullPathArray = useMemo(() => {
     let path: string[] = [domain];
 
     if (parent) {
-      path = [...path, ...parent.web?.path?.split("/"), item?.web?.pathPart];
+      path = [
+        ...path,
+        ...(parent.web?.path?.split("/") || []),
+        item?.web?.pathPart,
+      ];
     } else {
       path = [...path, item?.web?.pathPart];
     }
@@ -37,7 +85,6 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
     // Remove empty strings
     return path.filter((i) => !!i);
   }, [domain, parent, item?.web]);
-  // TODO: Maybe copy the image resolver in ItemList to render the images?
 
   return (
     <Stack
@@ -64,7 +111,7 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
                 flexWrap="wrap"
               >
                 {fullPathArray.map((path, index) => (
-                  <>
+                  <Fragment key={index}>
                     <Typography
                       variant="body2"
                       color="text.secondary"
@@ -78,7 +125,7 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
                         sx={{ fontSize: "10px" }}
                       />
                     )}
-                  </>
+                  </Fragment>
                 ))}
               </Stack>
               <MoreVertRounded
@@ -108,17 +155,32 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
           {item?.web?.metaDescription || "Meta Description"}
         </Typography>
       </Box>
-      <Stack
-        width={82}
-        height={82}
-        borderRadius={2}
-        bgcolor="grey.100"
-        justifyContent="center"
-        alignItems="center"
-        flexShrink={0}
-      >
-        <ImageRounded color="action" fontSize="large" />
-      </Stack>
+      {!!imageURL ? (
+        <Box
+          component="img"
+          sx={{
+            backgroundColor: (theme) => theme.palette.grey[100],
+            objectFit: "contain",
+          }}
+          width={82}
+          height={82}
+          src={imageURL}
+          flexShrink={0}
+          borderRadius={2}
+        />
+      ) : (
+        <Stack
+          width={82}
+          height={82}
+          borderRadius={2}
+          bgcolor="grey.100"
+          justifyContent="center"
+          alignItems="center"
+          flexShrink={0}
+        >
+          <ImageRounded color="action" fontSize="large" />
+        </Stack>
+      )}
     </Stack>
   );
 };
