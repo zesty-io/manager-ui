@@ -37,6 +37,7 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
     // Remove empty strings
     return path.filter((i) => !!i);
   }, [domain, parent, item?.web]);
+  // TODO: Maybe copy the image resolver in ItemList to render the images?
 
   return (
     <Stack
