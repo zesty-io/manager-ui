@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Tab, Tabs, Box } from "@mui/material";
 import { Google, Twitter, Facebook, LinkedIn } from "@mui/icons-material";
 import { GooglePreview } from "./GooglePreview";
+import { TwitterPreview } from "./TwitterPreview";
 
 enum SocialMediaTab {
   Google,
@@ -58,6 +59,7 @@ export const SocialMediaPreview = ({}: SocialMediaPreviewProps) => {
         </Tabs>
       </Box>
       {activeTab === SocialMediaTab.Google && <GooglePreview />}
+      {activeTab === SocialMediaTab.Twitter && <TwitterPreview />}
     </>
   );
 };
