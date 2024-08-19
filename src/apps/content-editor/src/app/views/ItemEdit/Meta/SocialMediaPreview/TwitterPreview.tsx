@@ -34,7 +34,7 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
           component="img"
           sx={{
             backgroundColor: (theme) => theme.palette.grey[100],
-            objectFit: "contain",
+            objectFit: "cover",
           }}
           width={128}
           height={128}

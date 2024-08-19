@@ -145,7 +145,7 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
           component="img"
           sx={{
             backgroundColor: (theme) => theme.palette.grey[100],
-            objectFit: "contain",
+            objectFit: "cover",
           }}
           width={82}
           height={82}

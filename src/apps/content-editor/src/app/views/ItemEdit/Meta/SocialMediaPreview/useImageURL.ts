@@ -5,6 +5,7 @@ import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/ser
 import { AppState } from "../../../../../../../../shell/store/types";
 
 type ImageDimension = {
+  type?: "crop" | "fit";
   width?: number;
   height?: number;
 };
@@ -51,7 +52,7 @@ export const useImageURL: () => UseImageURLProps = () => {
 
     if (matchedURL?.startsWith("3-")) {
       const params = {
-        type: "fit",
+        type: imageDimensions?.type || "crop",
         ...(!!imageDimensions?.width && {
           w: String(imageDimensions.width),
         }),

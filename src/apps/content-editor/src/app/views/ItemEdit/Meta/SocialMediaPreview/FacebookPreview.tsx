@@ -18,7 +18,7 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
   const item = useSelector((state: AppState) => state.content[itemZUID]);
 
   useEffect(() => {
-    setImageDimensions({ height: 290 });
+    setImageDimensions({ height: 290, type: "fit" });
   }, []);
 
   return (
@@ -28,10 +28,11 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
           component="img"
           sx={{
             backgroundColor: (theme) => theme.palette.grey[100],
-            objectFit: "contain",
+            objectFit: "cover",
             alignSelf: "center",
           }}
           height={290}
+          width="100%"
           src={imageURL}
           flexShrink={0}
         />
