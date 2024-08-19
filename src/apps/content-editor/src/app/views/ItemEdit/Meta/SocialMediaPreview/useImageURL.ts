@@ -1,16 +1,22 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
 import { AppState } from "../../../../../../../../shell/store/types";
 
-export const useImageURL: () => string = () => {
+type ImageDimension = {
+  width?: number;
+  height?: number;
+};
+type UseImageURLProps = [string, (imageDimensions: ImageDimension) => void];
+export const useImageURL: () => UseImageURLProps = () => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
   }>();
   const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const [imageDimensions, setImageDimensions] = useState<ImageDimension>({});
 
   const imageURL: string = useMemo(() => {
     if (!item?.data || !modelFields?.length) return;
@@ -44,14 +50,28 @@ export const useImageURL: () => string = () => {
     }
 
     if (matchedURL?.startsWith("3-")) {
-      return `${
-        // @ts-ignore
-        CONFIG.SERVICE_MEDIA_RESOLVER
-      }/resolve/${matchedURL}/getimage/?w=${85}&h=${85}&type=fit`;
+      const params = {
+        type: "fit",
+        ...(!!imageDimensions?.width && {
+          w: String(imageDimensions.width),
+        }),
+        ...(!!imageDimensions?.height && {
+          h: String(imageDimensions.height),
+        }),
+      };
+      const url = new URL(
+        `${
+          // @ts-ignore
+          CONFIG.SERVICE_MEDIA_RESOLVER
+        }/resolve/${matchedURL}/getimage/`
+      );
+      url.search = new URLSearchParams(params)?.toString();
+
+      return url.toString();
     } else {
       return matchedURL;
     }
-  }, [item?.data, modelFields]);
+  }, [item?.data, modelFields, imageDimensions]);
 
-  return imageURL;
+  return [imageURL, setImageDimensions];
 };
