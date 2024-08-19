@@ -112,8 +112,8 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
       (!isCreatingOgImageField && isOgImageFieldCreated) ||
       (!isUndeletingField && isFieldUndeleted)
     ) {
-      // Refetch the current item so that we can get the newly-created/reactivated og_image field
-      dispatch(fetchItem(modelZUID, itemZUID));
+      // Initiate the empty og_image field
+      onChange(null, "og_image");
     }
   }, [
     isOgImageFieldCreated,
