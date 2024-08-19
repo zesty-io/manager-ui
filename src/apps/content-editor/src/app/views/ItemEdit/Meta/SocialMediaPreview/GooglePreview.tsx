@@ -143,6 +143,16 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
           mt={1}
           mb={1.5}
           fontWeight={600}
+          sx={{
+            display: "-webkit-box",
+            "-webkit-line-clamp": "2",
+            "-webkit-box-orient": "vertical",
+            wordBreak: "break-word",
+            wordWrap: "break-word",
+            hyphens: "auto",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
         >
           {item?.web?.metaTitle || "Meta Title"}
         </Typography>
@@ -151,6 +161,16 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
           color="grey.500"
           fontWeight={500}
           minHeight={39}
+          sx={{
+            display: "-webkit-box",
+            "-webkit-line-clamp": "2",
+            "-webkit-box-orient": "vertical",
+            wordBreak: "break-word",
+            wordWrap: "break-word",
+            hyphens: "auto",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
         >
           {item?.web?.metaDescription || "Meta Description"}
         </Typography>
