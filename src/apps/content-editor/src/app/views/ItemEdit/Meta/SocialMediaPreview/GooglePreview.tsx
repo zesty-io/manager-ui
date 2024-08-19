@@ -13,6 +13,7 @@ import { InstanceAvatar } from "../../../../../../../../shell/components/global-
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
+import { useImageURL } from "./useImageURL";
 
 type GooglePreviewProps = {};
 export const GooglePreview = ({}: GooglePreviewProps) => {
@@ -23,51 +24,11 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
   const { data: instance, isLoading: isLoadingInstance } =
     useGetInstanceQuery();
   const domain = useDomain();
+  const imageURL = useImageURL();
   const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const items = useSelector((state: AppState) => state.content);
   const item = items[itemZUID];
   const parent = items[item?.web?.parentZUID];
-
-  const imageURL = useMemo(() => {
-    if (!item?.data || !modelFields?.length) return;
-
-    let matchedURL: string | null = null;
-
-    if ("og_image" in item?.data) {
-      matchedURL = !!item?.data?.["og_image"]
-        ? (item?.data?.["og_image"] as string)
-        : null;
-    } else {
-      // Find possible image fields that can be used
-      const matchedFields = modelFields.filter(
-        (field) =>
-          !field.deletedAt &&
-          field.datatype === "images" &&
-          field?.name !== "og_image" &&
-          (field.label.toLowerCase().includes("image") ||
-            field.name.toLocaleLowerCase().includes("image"))
-      );
-
-      if (matchedFields?.length) {
-        // Find the first matched field that already stores an image and make sure
-        // to find the first valid image in that field
-        matchedFields.forEach((field) => {
-          if (!matchedURL && !!item?.data?.[field.name]) {
-            matchedURL = String(item?.data?.[field.name])?.split(",")?.[0];
-          }
-        });
-      }
-    }
-
-    if (matchedURL?.startsWith("3-")) {
-      return `${
-        // @ts-ignore
-        CONFIG.SERVICE_MEDIA_RESOLVER
-      }/resolve/${matchedURL}/getimage/?w=${85}&h=${85}&type=fit`;
-    } else {
-      return matchedURL;
-    }
-  }, [item?.data, modelFields]);
 
   const fullPathArray = useMemo(() => {
     let path: string[] = [domain];
