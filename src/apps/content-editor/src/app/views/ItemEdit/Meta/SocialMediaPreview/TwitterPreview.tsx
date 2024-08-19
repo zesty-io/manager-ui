@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Typography, Box, Stack } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
@@ -9,12 +10,16 @@ import { useImageURL } from "./useImageURL";
 
 type TwitterPreviewProps = {};
 export const TwitterPreview = ({}: TwitterPreviewProps) => {
-  const imageURL = useImageURL();
+  const [imageURL, setImageDimensions] = useImageURL();
   const { itemZUID } = useParams<{
     itemZUID: string;
   }>();
   const domain = useDomain();
   const item = useSelector((state: AppState) => state.content[itemZUID]);
+
+  useEffect(() => {
+    setImageDimensions({ width: 128, height: 128 });
+  }, []);
 
   return (
     <Stack

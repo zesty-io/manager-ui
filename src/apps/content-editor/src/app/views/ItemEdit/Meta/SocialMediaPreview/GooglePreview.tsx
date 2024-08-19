@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useEffect } from "react";
 import { Box, Stack, Typography, Breadcrumbs } from "@mui/material";
 import {
   MoreVertRounded,
@@ -24,7 +24,7 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
   const { data: instance, isLoading: isLoadingInstance } =
     useGetInstanceQuery();
   const domain = useDomain();
-  const imageURL = useImageURL();
+  const [imageURL, setImageDimensions] = useImageURL();
   const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const items = useSelector((state: AppState) => state.content);
   const item = items[itemZUID];
@@ -46,6 +46,10 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
     // Remove empty strings
     return path.filter((i) => !!i);
   }, [domain, parent, item?.web]);
+
+  useEffect(() => {
+    setImageDimensions({ width: 82, height: 82 });
+  }, []);
 
   return (
     <Stack
