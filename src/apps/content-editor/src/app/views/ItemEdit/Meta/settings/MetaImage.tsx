@@ -156,10 +156,23 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
             }}
             onChange={onChange}
             lockedToGroupId={null}
+            settings={{
+              fileExtensions: [
+                ".png",
+                ".jpg",
+                ".jpeg",
+                ".svg",
+                ".gif",
+                ".tif",
+                ".webp",
+              ],
+              fileExtensionsErrorMessage:
+                "Only files with the following extensions are allowed: .png, .jpg, .jpeg, .svg, .gif, .tif, .webp",
+            }}
           />
         </FieldShell>
         {imageModal && (
-          <MemoryRouter>
+          <MemoryRouter initialEntries={["/media?filetype=Image"]}>
             <Dialog
               open
               fullScreen
