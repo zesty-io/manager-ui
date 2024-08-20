@@ -6,7 +6,8 @@ import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 import { cloneDeep } from "lodash";
 
-import { Divider, Box, Stack } from "@mui/material";
+import { Divider, Box, Stack, ThemeProvider } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
@@ -36,6 +37,7 @@ import {
 } from "../../../../../../shell/services/types";
 import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
 import { Meta } from "../ItemEdit/Meta/NewMeta";
+import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 
 export type ActionAfterSave =
   | ""
@@ -104,7 +106,14 @@ export const ItemCreate = () => {
   // if item doesn't exist, generate a new one
   useEffect(() => {
     if (isEmpty(item) && !saving) {
-      dispatch(generateItem(modelZUID));
+      const initialData = fields?.reduce((accu, curr) => {
+        if (!curr.deletedAt) {
+          accu[curr.name] = null;
+        }
+        return accu;
+      }, {});
+
+      dispatch(generateItem(modelZUID, initialData));
     }
   }, [modelZUID, item, saving]);
 
@@ -341,8 +350,10 @@ export const ItemCreate = () => {
           className={styles.ItemCreate}
           bgcolor="grey.50"
           alignItems="center"
+          direction="row"
+          gap={4}
         >
-          <Box minWidth={640} width="60%">
+          <Box width="60%" height="100%">
             <Editor
               // @ts-ignore no types
               hasErrors={hasErrors}
@@ -365,8 +376,6 @@ export const ItemCreate = () => {
                 setFieldErrors(errors);
               }}
             />
-          </Box>
-          <Box className={styles.Meta} minWidth={640} width="60%">
             <Divider
               sx={{
                 mt: 4,
@@ -380,6 +389,11 @@ export const ItemCreate = () => {
               isSaving={saving}
             />
           </Box>
+          <ThemeProvider theme={theme}>
+            <Box position="sticky" top={0} alignSelf="flex-start" width="40%">
+              <SocialMediaPreview />
+            </Box>
+          </ThemeProvider>
         </Stack>
       </Box>
       {isScheduleDialogOpen && !isLoadingNewItem && (
