@@ -35,6 +35,7 @@ import {
   ContentModelField,
 } from "../../../../../../shell/services/types";
 import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
+import { Meta } from "../ItemEdit/Meta/NewMeta";
 
 export type ActionAfterSave =
   | ""
@@ -79,6 +80,7 @@ export const ItemCreate = () => {
   const [willRedirect, setWillRedirect] = useState(true);
   const [fieldErrors, setFieldErrors] = useState<FieldError>({});
   const [saveClicked, setSaveClicked] = useState(false);
+  const [hasSEOErrors, setHasSEOErrors] = useState(false);
 
   const [
     createPublishing,
@@ -148,7 +150,7 @@ export const ItemCreate = () => {
   const save = async (action: ActionAfterSave) => {
     setSaveClicked(true);
 
-    if (hasErrors) return;
+    if (hasErrors || hasSEOErrors) return;
 
     setSaving(true);
 
@@ -371,19 +373,12 @@ export const ItemCreate = () => {
                 mb: 2,
               }}
             />
-            <h2 className={styles.title}>Meta Settings</h2>
-            {model && model?.type === "dataset" ? (
-              <DataSettings item={item} dispatch={dispatch} />
-            ) : (
-              <ItemSettings
-                // @ts-ignore no types
-                instance={instance}
-                modelZUID={modelZUID}
-                item={item}
-                content={content}
-                dispatch={dispatch}
-              />
-            )}
+            <Meta
+              onUpdateSEOErrors={(hasErrors) => {
+                setHasSEOErrors(hasErrors);
+              }}
+              isSaving={saving}
+            />
           </Box>
         </Stack>
       </Box>

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Typography, Box, Stack } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
@@ -11,11 +11,17 @@ import { useImageURL } from "./useImageURL";
 type FacebookPreviewProps = {};
 export const FacebookPreview = ({}: FacebookPreviewProps) => {
   const [imageURL, setImageDimensions] = useImageURL();
-  const { itemZUID } = useParams<{
+  const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
+    modelZUID: string;
   }>();
   const domain = useDomain();
-  const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const location = useLocation();
+  const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
+  const item = useSelector(
+    (state: AppState) =>
+      state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
+  );
 
   useEffect(() => {
     setImageDimensions({ height: 290, type: "fit" });

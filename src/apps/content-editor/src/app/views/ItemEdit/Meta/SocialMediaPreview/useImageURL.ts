@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
 import { AppState } from "../../../../../../../../shell/store/types";
 
@@ -16,7 +16,12 @@ export const useImageURL: () => UseImageURLProps = () => {
     itemZUID: string;
   }>();
   const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
-  const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const location = useLocation();
+  const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
+  const item = useSelector(
+    (state: AppState) =>
+      state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
+  );
   const [imageDimensions, setImageDimensions] = useState<ImageDimension>({});
 
   const imageURL: string = useMemo(() => {

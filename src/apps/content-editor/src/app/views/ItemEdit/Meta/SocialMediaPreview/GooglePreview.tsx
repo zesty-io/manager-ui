@@ -6,7 +6,7 @@ import {
   ImageRounded,
 } from "@mui/icons-material";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 
 import { useGetInstanceQuery } from "../../../../../../../../shell/services/accounts";
 import { InstanceAvatar } from "../../../../../../../../shell/components/global-sidebar/components/InstanceAvatar";
@@ -24,10 +24,12 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
   const { data: instance, isLoading: isLoadingInstance } =
     useGetInstanceQuery();
   const domain = useDomain();
+  const location = useLocation();
+  const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
   const [imageURL, setImageDimensions] = useImageURL();
   const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const items = useSelector((state: AppState) => state.content);
-  const item = items[itemZUID];
+  const item = items[isCreateItemPage ? `new:${modelZUID}` : itemZUID];
   const parent = items[item?.web?.parentZUID];
 
   const fullPathArray = useMemo(() => {

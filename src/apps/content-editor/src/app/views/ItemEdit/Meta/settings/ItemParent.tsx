@@ -8,7 +8,7 @@ import {
 } from "../../../../../../../../shell/services/types";
 import { debounce, uniqBy } from "lodash";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { notify } from "../../../../../../../../shell/store/notifications";
 import { searchItems } from "../../../../../../../../shell/store/content";
 import { useGetContentNavItemsQuery } from "../../../../../../../../shell/services/instance";
@@ -61,7 +61,7 @@ const getParentOptions = (
 
 const findNavParent = (zuid: string, nav: ContentNavItem[], count = 0): any => {
   count++;
-  const navEntry = nav.find((el: any) => el.ZUID === zuid);
+  const navEntry = nav?.find((el: any) => el.ZUID === zuid);
   if (navEntry) {
     // This first item should be the model we are resolving for so
     // continue on up the nav tree
@@ -90,8 +90,10 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
     itemZUID: string;
   }>();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
   const items = useSelector((state: AppState) => state.content);
-  const item = items[itemZUID];
+  const item = items[isCreateItemPage ? `new:${modelZUID}` : itemZUID];
   const { data: rawNavData } = useGetContentNavItemsQuery();
   const [selectedParent, setSelectedParent] = useState<ParentOption>({
     value: "0", // "0" = root level route

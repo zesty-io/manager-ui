@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { Dialog, IconButton, Stack } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { AddRounded, Close, EditRounded } from "@mui/icons-material";
-import { MemoryRouter, useParams } from "react-router";
+import { MemoryRouter, useLocation, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
@@ -24,11 +24,16 @@ type MetaImageProps = {
 };
 export const MetaImage = ({ onChange }: MetaImageProps) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
   }>();
-  const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const item = useSelector(
+    (state: AppState) =>
+      state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
+  );
   const fieldTypeMedia = useRef(null);
   const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const [

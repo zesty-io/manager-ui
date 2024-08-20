@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Stack, Box, Typography, ThemeProvider, Divider } from "@mui/material";
 import { theme } from "@zesty-io/material";
-import { useParams } from "react-router";
+import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
 import { ContentInsights } from "./ContentInsights";
@@ -43,6 +43,8 @@ type MetaProps = {
 };
 export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -51,7 +53,8 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
     skip: !modelZUID,
   });
   const { meta, data, web } = useSelector(
-    (state: AppState) => state.content[itemZUID]
+    (state: AppState) =>
+      state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
   const [errors, setErrors] = useState<Errors>({});
 
@@ -121,7 +124,7 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
         gap={4}
         bgcolor="grey.50"
         pt={2.5}
-        px={4}
+        px={isCreateItemPage ? 0 : 4}
         color="text.primary"
         sx={{
           scrollbarWidth: "none",
@@ -217,7 +220,7 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
             />
           </Stack>
         </Stack>
-        {model?.type !== "dataset" && (
+        {model?.type !== "dataset" && !isCreateItemPage && (
           <Box
             flex={1}
             position="sticky"

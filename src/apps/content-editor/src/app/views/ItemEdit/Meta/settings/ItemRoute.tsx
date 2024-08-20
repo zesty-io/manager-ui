@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { debounce } from "lodash";
 import { CheckCircleRounded, CancelRounded } from "@mui/icons-material";
 
@@ -33,12 +33,15 @@ export const ItemRoute = ({
   onUpdateErrors,
 }: ItemRouteProps) => {
   const dispatch = useDispatch();
-  const { itemZUID } = useParams<{
+  const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
+    modelZUID: string;
   }>();
   const domain = useDomain();
+  const location = useLocation();
+  const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
   const items = useSelector((state: AppState) => state.content);
-  const item = items[itemZUID];
+  const item = items[isCreateItemPage ? `new:${modelZUID}` : itemZUID];
   const [pathPart, setPathPart] = useState(item?.web?.pathPart);
   const [isLoading, setIsLoading] = useState(false);
   const [isUnique, setIsUnique] = useState(true);
