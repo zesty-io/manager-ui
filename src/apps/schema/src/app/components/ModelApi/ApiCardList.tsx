@@ -1,8 +1,24 @@
+import { useParams } from "react-router";
+import { useMemo } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { ApiCard } from "./ApiCard";
 import { apiTypes } from ".";
+import { useGetContentModelQuery } from "../../../../../../shell/services/instance";
 
 export const ApiCardList = () => {
+  const { contentModelZUID } = useParams<{ contentModelZUID: string }>();
+  const { data: modelData } = useGetContentModelQuery(contentModelZUID, {
+    skip: !contentModelZUID,
+  });
+
+  const filteredApiTypes = useMemo(() => {
+    if (modelData?.type === "dataset") {
+      return apiTypes.filter((apiType) => apiType !== "site-generators");
+    }
+
+    return apiTypes;
+  }, [modelData]);
+
   return (
     <Stack height="100%" pl={4} pt={2} sx={{ overflowY: "auto" }}>
       <Stack
@@ -37,7 +53,7 @@ export const ApiCardList = () => {
           height: "100%",
         }}
       >
-        {apiTypes.map((apiType) => (
+        {filteredApiTypes?.map((apiType) => (
           <ApiCard type={apiType} />
         ))}
       </Box>

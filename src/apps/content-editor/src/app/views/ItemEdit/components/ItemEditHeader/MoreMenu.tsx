@@ -41,7 +41,7 @@ export const MoreMenu = () => {
   const { data: contentModels } = useGetContentModelsQuery();
   const type =
     contentModels?.find((model) => model.ZUID === modelZUID)?.type ?? "";
-  const canDelete = usePermission("DELETE");
+  const canDelete = usePermission("DELETE", itemZUID);
 
   const handleCopyClick = (data: string) => {
     navigator?.clipboard
