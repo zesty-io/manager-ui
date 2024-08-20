@@ -127,7 +127,11 @@ export const ItemRoute = ({
   // Revalidate when parent path changes
   useEffect(() => {
     validate(pathPart);
-  }, [parent?.web]);
+  }, [parent?.web, pathPart]);
+
+  useEffect(() => {
+    setPathPart(item?.web?.pathPart || "");
+  }, [item?.web]);
 
   return (
     <FieldShell
