@@ -65,7 +65,7 @@ export default connect()(function MetaDescription({
           label: "Meta Description",
           required: true,
         }}
-        customTooltip="This is the description search engines should use in their results. This field is limited to 160 characters, the maximum amount search engines will display."
+        customTooltip="This description appears as text snippet below the title in search engine and social media previews. The ideal length for a meta description is 50 to 160 characters."
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.metaDescription}

@@ -217,7 +217,7 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
         label: "Page Parent",
         required: true,
       }}
-      customTooltip="Set what page, this content item's page will be nested under. This impacts automatically generated navigation and the URL structure for this page"
+      customTooltip="Set what page, this content item's page will be nested under. This impacts automatically generated navigation and the URL structure for this page."
       withInteractiveTooltip={false}
       errors={{}}
     >

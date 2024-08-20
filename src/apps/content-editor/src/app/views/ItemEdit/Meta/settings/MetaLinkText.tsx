@@ -21,9 +21,7 @@ export const MetaLinkText = memo(function MetaLinkText({
         settings={{
           label: "Navigation Link Text",
         }}
-        customTooltip="The meta link text is used in the content editor navigation and
-          programmatically generated navigation with the Parsley 'navigation()'
-          function."
+        customTooltip="The title of this item that appears in the Zesty navigation and programmatically generated navigation within the Parsley navigation() function."
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.metaLinkText}

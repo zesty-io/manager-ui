@@ -12,7 +12,7 @@ export const SitemapPriority = memo(function SitemapPriority(props) {
         settings={{
           label: "Sitemap Priority",
         }}
-        customTooltip="Sitemap priority helps search engines understand how often they should crawl pages on your site."
+        customTooltip="Sitemap priority helps search engines understand how often they should crawl the pages on your site."
         withInteractiveTooltip={false}
       >
         <Select

@@ -24,7 +24,7 @@ export const MetaTitle = memo(function MetaTitle({
           label: "Meta Title",
           required: true,
         }}
-        customTooltip="This is the title search engines should use in their results. The maximum amount of characters search engines show is 65 characters, but your title can be longer."
+        customTooltip="This title appears in search engine results and social media previews. The maximum amount of characters search engines show is 65, but your title can be longer."
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.metaTitle}
