@@ -13,8 +13,6 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
 import { Header } from "./Header";
 import { Editor } from "../../components/Editor";
-import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
-import { DataSettings } from "../ItemEdit/Meta/ItemSettings/DataSettings";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import {
   createItem,
@@ -36,7 +34,7 @@ import {
   ContentModelField,
 } from "../../../../../../shell/services/types";
 import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
-import { Meta } from "../ItemEdit/Meta/NewMeta";
+import { Meta } from "../ItemEdit/Meta";
 import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 
 export type ActionAfterSave =

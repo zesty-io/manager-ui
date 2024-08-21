@@ -3,7 +3,7 @@ import { memo } from "react";
 import { TextField, Box } from "@mui/material";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
-import { MaxLengths } from "../NewMeta";
+import { MaxLengths } from "..";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 

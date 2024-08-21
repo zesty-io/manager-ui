@@ -1,1 +1,0 @@
-export { ItemSettings } from "./ItemSettings";

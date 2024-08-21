@@ -4,7 +4,7 @@ import { TextField, Box } from "@mui/material";
 
 import { notify } from "../../../../../../../../shell/store/notifications";
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
-import { MaxLengths } from "../NewMeta";
+import { MaxLengths } from "..";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 

@@ -27,7 +27,6 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
-// import { Meta } from "./Meta";
 import { ItemHead } from "./ItemHead";
 
 import { NotFound } from "../NotFound";
@@ -47,7 +46,7 @@ import {
 import { DuoModeContext } from "../../../../../../shell/contexts/duoModeContext";
 import { useLocalStorage } from "react-use";
 import { FreestyleWrapper } from "./FreestyleWrapper";
-import { Meta } from "./Meta/NewMeta";
+import { Meta } from "./Meta";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
