@@ -435,19 +435,6 @@ export default function ItemEdit() {
                       }}
                       isSaving={saving}
                     />
-                    // <Meta
-                    //   instance={instance}
-                    //   modelZUID={modelZUID}
-                    //   model={model}
-                    //   itemZUID={itemZUID}
-                    //   item={item}
-                    //   items={items}
-                    //   fields={fields}
-                    //   user={user}
-                    //   onSave={save}
-                    //   dispatch={dispatch}
-                    //   saving={saving}
-                    // />
                   )}
                 />
                 <Route
