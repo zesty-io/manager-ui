@@ -224,7 +224,6 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
       <FieldShell
         settings={{
           label: "Meta Image",
-          required: true,
         }}
         withInteractiveTooltip={false}
         customTooltip="This image appears in search engine and social media previews. It is recommended that these images are at least 1200px by 630px and have a 1.91:1 aspect ratio."
@@ -262,7 +261,6 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     <FieldShell
       settings={{
         label: "Meta Image",
-        required: true,
       }}
       withInteractiveTooltip={false}
       customTooltip="This image appears in search engine and social media previews. It is recommended that these images are at least 1200px by 630px and have a 1.91:1 aspect ratio."
