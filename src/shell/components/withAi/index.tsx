@@ -1,5 +1,5 @@
 import { memo, useMemo } from "react";
-import { Popover, IconButton } from "@mui/material";
+import { Popover, Button, IconButton, alpha } from "@mui/material";
 import { Brain, theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { ComponentType, MouseEvent, useState } from "react";
@@ -79,30 +79,52 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
           key={key}
           endLabel={
             <ThemeProvider theme={theme}>
-              <IconButton
+              <Button
                 data-cy="AIOpen"
-                color="primary"
+                size="xsmall"
+                endIcon={<Brain />}
+                variant="text"
+                color="inherit"
+                onClick={handleClick}
                 sx={{
-                  svg: {
-                    color: (theme) =>
-                      focused
-                        ? "primary.main"
-                        : `${theme.palette.action.active}`,
-                  },
-                  "svg:hover": {
+                  backgroundColor: (theme) =>
+                    Boolean(anchorEl)
+                      ? alpha(theme.palette.primary.main, 0.08)
+                      : "transparent",
+                  minWidth: 0,
+                  fontWeight: 600,
+                  fontSize: 14,
+                  lineHeight: "14px",
+                  px: 0.5,
+                  py: 0.25,
+                  color: Boolean(anchorEl) ? "primary.main" : "text.disabled",
+
+                  "&:hover": {
+                    backgroundColor: (theme) =>
+                      alpha(theme.palette.primary.main, 0.08),
                     color: "primary.main",
                   },
+
+                  "&:hover .MuiButton-endIcon .MuiSvgIcon-root": {
+                    fill: (theme) => theme.palette.primary.main,
+                  },
+
+                  "& .MuiButton-endIcon": {
+                    ml: 0.5,
+                    mr: 0,
+                  },
+
+                  "& .MuiButton-endIcon .MuiSvgIcon-root": {
+                    fontSize: 16,
+                    fill: (theme) =>
+                      Boolean(anchorEl)
+                        ? theme.palette.primary.main
+                        : theme.palette.action.active,
+                  },
                 }}
-                onClick={(event: MouseEvent<HTMLButtonElement>) => {
-                  const target = event.target as HTMLElement;
-                  if (target.nodeName === "svg" || target.nodeName === "path") {
-                    handleClick(event);
-                  }
-                }}
-                size="xxsmall"
               >
-                <Brain sx={{ fontSize: 16 }} />
-              </IconButton>
+                AI
+              </Button>
             </ThemeProvider>
           }
           onFocus={() => setFocused(true)}
