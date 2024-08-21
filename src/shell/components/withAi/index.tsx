@@ -139,6 +139,8 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
               vertical: "top",
               horizontal: "right",
             }}
+            elevation={24}
+            onClose={handleClose}
           >
             <AIGenerator
               onApprove={handleApprove}
