@@ -81,35 +81,59 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
 
   if (isLoading) {
     return (
-      <Box
+      <Stack
         width={480}
         height={600}
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
+        sx={{
+          background:
+            "linear-gradient(180deg, rgba(255,93,10,1) 0%, rgba(18,183,106,1) 25%, rgba(11,165,236,1) 50%, rgba(238,70,188,1) 75%, rgba(105,56,239,1) 100%)",
+        }}
       >
-        <Box position="relative">
-          <CircularProgress />
-          <Brain
-            color="primary"
-            sx={{ position: "absolute", top: "8px", left: "8px" }}
-          />
-        </Box>
-        <Typography variant="h4" fontWeight={600} sx={{ mt: 3 }}>
-          Generating Content
-        </Typography>
-        <Button
-          size="small"
-          variant="outlined"
-          color="inherit"
-          startIcon={<StopRoundedIcon color="action" />}
-          sx={{ mt: 3 }}
-          onClick={() => request.current?.abort()}
+        <Stack
+          height="100%"
+          borderRadius={0.5}
+          margin={0.2}
+          border={1}
+          borderColor="common.white"
+          justifyContent="center"
+          alignItems="center"
+          bgcolor="background.paper"
+          p={2.5}
+          textAlign="center"
         >
-          Stop
-        </Button>
-      </Box>
+          <Box
+            position="absolute"
+            top={23}
+            right={23}
+            component="img"
+            src={openAIBadge}
+            alt="OpenAI Badge"
+          />
+          <Box position="relative">
+            <CircularProgress />
+            <Brain
+              color="primary"
+              sx={{ position: "absolute", top: "8px", left: "8px" }}
+            />
+          </Box>
+          <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 1 }}>
+            Generating Content
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Our AI assistant is generating your content based on your parameters
+          </Typography>
+          <Button
+            size="small"
+            variant="outlined"
+            color="inherit"
+            startIcon={<StopRoundedIcon color="action" />}
+            sx={{ mt: 3 }}
+            onClick={() => request.current?.abort()}
+          >
+            Stop
+          </Button>
+        </Stack>
+      </Stack>
     );
   }
 
@@ -157,13 +181,12 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
             </Stack>
             <Box component="img" src={openAIBadge} alt="OpenAI Badge" />
           </Stack>
-          <Stack gap={1}>
+          <Stack gap={1} width="100%">
             <Typography variant="h5" fontWeight={700}>
-              Generate {label}
+              Generate Content
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Our AI will scan your content and generate your{" "}
-              {label?.toLowerCase()} for you based on your parameters set below
+              Use our AI assistant to write content for you
             </Typography>
           </Stack>
         </Stack>
