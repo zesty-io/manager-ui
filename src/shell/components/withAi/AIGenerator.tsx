@@ -209,58 +209,55 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
             />
           </Box>
         ) : (
-          <>
-            <InputLabel>Topic</InputLabel>
-            <Typography variant="body2" color="text.secondary">
-              Describe what you want the AI to write for you
-            </Typography>
-            <TextField
-              value={topic}
-              onChange={(event) => setTopic(event.target.value)}
-              placeholder={`e.g. "Hikes in Washington"`}
-              multiline
-              rows={2}
-              fullWidth
-            />
-            <Box display="flex" gap={2} mt={1.5}>
-              <Box width="100%">
-                {aiType === "text" && (
-                  <>
-                    <InputLabel>Character Limit</InputLabel>
-                    <TextField
-                      type="number"
-                      value={limit}
-                      onChange={(event) =>
-                        setLimit(
-                          Number(event.target.value) || DEFAULT_LIMITS[aiType]
-                        )
-                      }
-                      fullWidth
-                    />
-                  </>
-                )}
-                {aiType === "paragraph" && (
-                  <>
-                    <InputLabel>Paragraph Limit</InputLabel>
-                    <Select
-                      value={limit}
-                      onChange={(event) =>
-                        setLimit(
-                          Number(event.target.value) || DEFAULT_LIMITS[aiType]
-                        )
-                      }
-                      fullWidth
-                    >
-                      {new Array(6).fill(0).map((_, i) => (
-                        <MenuItem key={i} value={String(i + 1)}>
-                          {i + 1}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </>
-                )}
-              </Box>
-              <Box width="100%">
+          <Stack gap={2.5}>
+            <Box>
+              <InputLabel>Topic</InputLabel>
+              <TextField
+                value={topic}
+                onChange={(event) => setTopic(event.target.value)}
+                placeholder={`e.g. Hikes in Washington`}
+                multiline
+                rows={3}
+                fullWidth
+              />
+            </Box>
+            <Stack direction="row" gap={2} width="100%">
+              {aiType === "text" && (
+                <Box flex={1}>
+                  <InputLabel>Character Limit</InputLabel>
+                  <TextField
+                    type="number"
+                    value={limit}
+                    onChange={(event) =>
+                      setLimit(
+                        Number(event.target.value) || DEFAULT_LIMITS[aiType]
+                      )
+                    }
+                    fullWidth
+                  />
+                </Box>
+              )}
+              {aiType === "paragraph" && (
+                <Box flex={1}>
+                  <InputLabel>Paragraph Limit</InputLabel>
+                  <Select
+                    value={limit}
+                    onChange={(event) =>
+                      setLimit(
+                        Number(event.target.value) || DEFAULT_LIMITS[aiType]
+                      )
+                    }
+                    fullWidth
+                  >
+                    {new Array(6).fill(0).map((_, i) => (
+                      <MenuItem key={i} value={String(i + 1)}>
+                        {i + 1}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              )}
+              <Box flex={1}>
                 <InputLabel>Language</InputLabel>
                 <Autocomplete
                   disableClearable
@@ -274,10 +271,17 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                   renderInput={(params: any) => (
                     <TextField {...params} fullWidth />
                   )}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        maxHeight: 300,
+                      },
+                    },
+                  }}
                 />
               </Box>
-            </Box>
-          </>
+            </Stack>
+          </Stack>
         )}
       </Box>
       <Box
