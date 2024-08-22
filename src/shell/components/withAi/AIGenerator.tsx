@@ -21,6 +21,7 @@ import { Brain } from "@zesty-io/material";
 import { useDispatch } from "react-redux";
 import { notify } from "../../store/notifications";
 import openAIBadge from "../../../../public/images/openai-badge.svg";
+import { FieldTypeNumber } from "../FieldTypeNumber";
 
 const DEFAULT_LIMITS: Record<AIType, number> = {
   text: 150,
@@ -224,6 +225,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
             <Stack direction="row" gap={2} width="100%">
               {aiType === "text" && (
                 <Box flex={1}>
+                  {/**}
                   <InputLabel>Character Limit</InputLabel>
                   <TextField
                     type="number"
@@ -234,6 +236,15 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                       )
                     }
                     fullWidth
+                  />
+                    {**/}
+                  <InputLabel>Character Limit</InputLabel>
+                  <FieldTypeNumber
+                    required={false}
+                    name="limit"
+                    value={limit}
+                    onChange={(value) => setLimit(value)}
+                    hasError={false}
                   />
                 </Box>
               )}
@@ -261,7 +272,6 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                 <InputLabel>Language</InputLabel>
                 <Autocomplete
                   disableClearable
-                  size="small"
                   isOptionEqualToValue={(option: any, value: any) =>
                     option.value === value.value
                   }
