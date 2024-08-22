@@ -91,14 +91,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
 
   if (isLoading) {
     return (
-      <Stack
-        width={480}
-        height={628}
-        sx={{
-          background:
-            "linear-gradient(180deg, rgba(255,93,10,1) 0%, rgba(18,183,106,1) 25%, rgba(11,165,236,1) 50%, rgba(238,70,188,1) 75%, rgba(105,56,239,1) 100%)",
-        }}
-      >
+      <Stack width={480} height={628} position="relative" zIndex={2}>
         <Stack
           height="100%"
           borderRadius={0.5}
@@ -113,8 +106,8 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
         >
           <Box
             position="absolute"
-            top={23}
-            right={23}
+            top={22}
+            right={22}
             component="img"
             src={openAIBadge}
             alt="OpenAI Badge"
@@ -212,7 +205,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
               value={data}
               onChange={(event) => setData(event.target.value)}
               multiline
-              rows={8}
+              rows={15}
               fullWidth
             />
           </Box>
