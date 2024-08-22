@@ -12,26 +12,15 @@ import {
   CircularProgress,
   Stack,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
-import { keyframes } from "@mui/system";
 import { useAiGenerationMutation } from "../../services/cloudFunctions";
 import { useGetLangsMappingQuery } from "../../services/instance";
 import { Brain } from "@zesty-io/material";
 import { useDispatch } from "react-redux";
 import { notify } from "../../store/notifications";
 import openAIBadge from "../../../../public/images/openai-badge.svg";
-
-const rotateAnimation = keyframes`
-	0% {
-		background-position: 0% 0%;
-	}
-	100% {
-		background-position: 0% 100%;
-	}
-`;
 
 interface Props {
   onApprove: (data: string) => void;
