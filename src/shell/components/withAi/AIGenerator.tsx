@@ -78,6 +78,8 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
     })
   );
 
+  const [trigger] = useState(true);
+
   if (isLoading) {
     return (
       <Stack width={480} height={628} position="relative" zIndex={2}>
@@ -169,10 +171,12 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
         </Stack>
         <Stack gap={1} width="100%">
           <Typography variant="h5" fontWeight={700}>
-            Generate Content
+            {!!data ? "Your Content is Generated!" : "Generate Content"}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Use our AI assistant to write content for you
+            {!!data
+              ? "Our AI assistant can make mistakes. Please check important info."
+              : "Use our AI assistant to write content for you"}
           </Typography>
         </Stack>
       </Stack>
@@ -187,7 +191,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
           borderColor: "border",
         }}
       >
-        {data ? (
+        {!!data ? (
           <Box>
             <InputLabel>{label}</InputLabel>
             <TextField
