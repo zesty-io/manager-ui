@@ -22,17 +22,25 @@ import { useDispatch } from "react-redux";
 import { notify } from "../../store/notifications";
 import openAIBadge from "../../../../public/images/openai-badge.svg";
 
+const DEFAULT_LIMITS: Record<AIType, number> = {
+  text: 150,
+  paragraph: 3,
+  description: 160,
+  title: 150,
+};
+
+type AIType = "text" | "paragraph" | "description" | "title";
 interface Props {
   onApprove: (data: string) => void;
   onClose: () => void;
-  aiType: string;
+  aiType: AIType;
   label: string;
 }
 
 export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
   const dispatch = useDispatch();
   const [topic, setTopic] = useState("");
-  const [limit, setLimit] = useState(aiType === "text" ? "150" : "3");
+  const [limit, setLimit] = useState(DEFAULT_LIMITS[aiType]);
   const request = useRef(null);
   const [language, setLanguage] = useState({
     label: "English (United States)",
@@ -77,8 +85,6 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
       value,
     })
   );
-
-  const [trigger] = useState(true);
 
   if (isLoading) {
     return (
@@ -224,7 +230,11 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                     <TextField
                       type="number"
                       value={limit}
-                      onChange={(event) => setLimit(event.target.value)}
+                      onChange={(event) =>
+                        setLimit(
+                          Number(event.target.value) || DEFAULT_LIMITS[aiType]
+                        )
+                      }
                       fullWidth
                     />
                   </>
@@ -234,7 +244,11 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                     <InputLabel>Paragraph Limit</InputLabel>
                     <Select
                       value={limit}
-                      onChange={(event) => setLimit(event.target.value)}
+                      onChange={(event) =>
+                        setLimit(
+                          Number(event.target.value) || DEFAULT_LIMITS[aiType]
+                        )
+                      }
                       fullWidth
                     >
                       {new Array(6).fill(0).map((_, i) => (
