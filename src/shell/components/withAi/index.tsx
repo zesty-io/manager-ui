@@ -3,11 +3,22 @@ import { Popover, Button, IconButton, alpha } from "@mui/material";
 import { Brain, theme } from "@zesty-io/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { ComponentType, MouseEvent, useState } from "react";
-import { AIGenerator } from "./AIGenerator";
 import { useSelector } from "react-redux";
-import { AppState } from "../../store/types";
+import { keyframes } from "@mui/system";
 import moment from "moment-timezone";
+
+import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
+import { AIGenerator } from "./AIGenerator";
+
+const rotateAnimation = keyframes`
+	0% {
+		background-position: 0% 0%;
+	}
+	100% {
+		background-position: 0% 100%;
+	}
+`;
 
 // This date is used determine if the AI feature is enabled
 const enabledDate = "2023-01-13";
@@ -141,6 +152,26 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
             }}
             elevation={24}
             onClose={handleClose}
+            slotProps={{
+              paper: {
+                sx: {
+                  overflowY: "hidden",
+
+                  "&:after": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    background:
+                      "linear-gradient(0deg, rgba(255,93,10,1) 0%, rgba(18,183,106,1) 25%, rgba(11,165,236,1) 50%, rgba(238,70,188,1) 75%, rgba(105,56,239,1) 100%)",
+                    animation: `${rotateAnimation} 1.5s linear alternate infinite`,
+                    backgroundSize: "300% 300%",
+                  },
+                },
+              },
+            }}
           >
             <AIGenerator
               onApprove={handleApprove}
