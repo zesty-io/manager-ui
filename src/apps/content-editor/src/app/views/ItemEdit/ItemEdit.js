@@ -101,7 +101,9 @@ export default function ItemEdit() {
         (setting.key === "basic_content_api_key" && setting.value) ||
         (setting.key === "headless_authorization_key" && setting.value) ||
         (setting.key === "authorization_key" && setting.value) ||
-        (setting.key === "x_frame_options" && setting.value)
+        (setting.key === "x_frame_options" &&
+          !!setting.value &&
+          setting.value !== "sameorigin")
       );
     }) ||
     model?.type === "dataset";
