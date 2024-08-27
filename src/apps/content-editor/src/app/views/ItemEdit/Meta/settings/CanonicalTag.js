@@ -2,7 +2,7 @@ import { memo, useState } from "react";
 
 import { TextField, Select, MenuItem } from "@mui/material";
 
-import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
+import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 
 const CANONICAL_OPTS = [
   {
@@ -52,7 +52,7 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
         settings={{
           label: "Canonical Tag",
         }}
-        customTooltip="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto creates tags on demand based on your settings."
+        customTooltip="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto-creates tags on demand based on your settings."
         withInteractiveTooltip={false}
       >
         {zestyStore.getState().instance.settings.seo[

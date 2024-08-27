@@ -46,9 +46,9 @@ type UpdateListActionsProps = {
 
 export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
-  const canPublish = usePermission("PUBLISH");
-  const canDelete = usePermission("DELETE");
-  const canUpdate = usePermission("UPDATE");
+  const canPublish = usePermission("PUBLISH", modelZUID);
+  const canDelete = usePermission("DELETE", modelZUID);
+  const canUpdate = usePermission("UPDATE", modelZUID);
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
   const [itemsToPublish, setItemsToPublish] = useState<string[]>([]);

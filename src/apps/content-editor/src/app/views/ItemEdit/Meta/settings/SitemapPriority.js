@@ -2,8 +2,9 @@ import { memo } from "react";
 
 import { Select, MenuItem } from "@mui/material";
 
-import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
+import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import styles from "./SitemapPriority.less";
+
 export const SitemapPriority = memo(function SitemapPriority(props) {
   return (
     <article className={styles.SitemapPriority} data-cy="sitemapPriority">
@@ -11,7 +12,7 @@ export const SitemapPriority = memo(function SitemapPriority(props) {
         settings={{
           label: "Sitemap Priority",
         }}
-        customTooltip="Sitemap priority helps search engines understand how often they should crawl pages on your site."
+        customTooltip="Sitemap priority helps search engines understand how often they should crawl the pages on your site."
         withInteractiveTooltip={false}
       >
         <Select

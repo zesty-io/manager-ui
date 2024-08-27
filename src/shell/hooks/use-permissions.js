@@ -33,9 +33,14 @@ export function usePermission(action, zuid = instanceZUID) {
       return true;
     }
 
-    const granularRole = role?.granularRoles?.find(
-      (r) => r.resourceZUID === zuid
-    );
+    /*
+      If the user is not a super user, check granular roles.
+      First check specific resource, if not found check instance level.
+      TODO: Check additional granular roles for parent resources depending on resource type (e.g. content model when checking content item)
+    */
+    const granularRole =
+      role?.granularRoles?.find((r) => r.resourceZUID === zuid) ||
+      role?.granularRoles?.find((r) => r.resourceZUID === instanceZUID);
 
     // Check system
     switch (action) {

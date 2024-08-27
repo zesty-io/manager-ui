@@ -1,6 +1,10 @@
 import { UIState } from "./ui";
 import { State as MediaRevampState } from "./media-revamp";
-import { InstalledApp, ModelType } from "../services/types";
+import {
+  InstalledApp,
+  ModelType,
+  ContentItemWithDirtyAndPublishing,
+} from "../services/types";
 /*
   TODO
   The UI state is well typed but the rest of the application state is entirely
@@ -32,7 +36,7 @@ export type AppState = {
   languages: any;
   models: any;
   fields: any;
-  content: any;
+  content: Record<string, ContentItemWithDirtyAndPublishing>;
   contentVersions: any;
   mediaRevamp: MediaRevampState;
   media: any;
