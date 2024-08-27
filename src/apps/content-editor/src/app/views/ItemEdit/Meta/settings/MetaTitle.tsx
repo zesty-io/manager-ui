@@ -6,6 +6,9 @@ import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "..";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
+import { withAI } from "../../../../../../../../shell/components/withAi";
+
+const AIFieldShell = withAI(FieldShell);
 
 type MetaTitleProps = {
   value: string;
@@ -19,7 +22,7 @@ export const MetaTitle = memo(function MetaTitle({
 }: MetaTitleProps) {
   return (
     <Box data-cy="metaTitle">
-      <FieldShell
+      <AIFieldShell
         settings={{
           label: "Meta Title",
           required: true,
@@ -30,6 +33,7 @@ export const MetaTitle = memo(function MetaTitle({
         maxLength={MaxLengths.metaTitle}
         valueLength={value?.length ?? 0}
         errors={error ?? {}}
+        aiType="title"
       >
         <TextField
           name="metaTitle"
@@ -38,7 +42,7 @@ export const MetaTitle = memo(function MetaTitle({
           onChange={(evt) => onChange(evt.target.value, "metaTitle")}
           error={hasErrors(error)}
         />
-      </FieldShell>
+      </AIFieldShell>
     </Box>
   );
 });

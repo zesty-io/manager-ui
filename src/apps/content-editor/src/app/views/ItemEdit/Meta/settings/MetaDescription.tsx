@@ -7,6 +7,9 @@ import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "..";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
+import { withAI } from "../../../../../../../../shell/components/withAi";
+
+const AIFieldShell = withAI(FieldShell);
 
 type MetaDescriptionProps = {
   value: string;
@@ -60,7 +63,7 @@ export default connect()(function MetaDescription({
 
   return (
     <Box data-cy="metaDescription">
-      <FieldShell
+      <AIFieldShell
         settings={{
           label: "Meta Description",
           required: true,
@@ -78,6 +81,7 @@ export default connect()(function MetaDescription({
               }
             : error
         }
+        aiType="description"
       >
         <TextField
           name="metaDescription"
@@ -88,7 +92,7 @@ export default connect()(function MetaDescription({
           rows={6}
           error={hasErrors(error) || !!contentValidationError}
         />
-      </FieldShell>
+      </AIFieldShell>
     </Box>
   );
 });
