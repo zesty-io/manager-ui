@@ -12,11 +12,13 @@ import {
   CircularProgress,
   Stack,
   InputAdornment,
+  Tooltip,
 } from "@mui/material";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { useAiGenerationMutation } from "../../services/cloudFunctions";
 import { useGetLangsMappingQuery } from "../../services/instance";
 import { Brain } from "@zesty-io/material";
@@ -244,7 +246,12 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
               />
             </Box>
             <Box>
-              <InputLabel>Tone</InputLabel>
+              <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
+                <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
+                <Tooltip title="lorem ipsum" placement="top">
+                  <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                </Tooltip>
+              </Stack>
               <Select
                 value={tone}
                 onChange={(evt) =>
@@ -259,10 +266,15 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
             </Box>
             <Stack direction="row" gap={2} width="100%">
               <Box flex={1}>
-                <InputLabel>
-                  {aiType === "text" && "Character"}
-                  {aiType === "paragraph" && "Word"} Limit
-                </InputLabel>
+                <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
+                  <InputLabel sx={{ mb: 0 }}>
+                    {aiType === "text" && "Character"}
+                    {aiType === "paragraph" && "Word"} Limit
+                  </InputLabel>
+                  <Tooltip title="lorem ipsum" placement="top">
+                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                  </Tooltip>
+                </Stack>
                 <FieldTypeNumber
                   required={false}
                   name="limit"
@@ -272,7 +284,12 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                 />
               </Box>
               <Box flex={1}>
-                <InputLabel>Language</InputLabel>
+                <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
+                  <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
+                  <Tooltip title="lorem ipsum" placement="top">
+                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                  </Tooltip>
+                </Stack>
                 <Autocomplete
                   disableClearable
                   isOptionEqualToValue={(option: any, value: any) =>
