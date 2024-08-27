@@ -29,7 +29,6 @@ type OneToManyCellProps = {
   items: any[];
 };
 export const OneToManyCell = ({ items }: OneToManyCellProps) => {
-  const dispatch = useDispatch();
   const allItems = useSelector((state: AppState) => state.content);
   const chipContainerRef = useRef<HTMLDivElement>();
   const [lastValidIndex, setLastValidIndex] = useState(
@@ -37,15 +36,6 @@ export const OneToManyCell = ({ items }: OneToManyCellProps) => {
   );
   const parentWidth = chipContainerRef.current?.parentElement?.clientWidth;
   const hiddenItems = items?.length - lastValidIndex - 1;
-
-  useEffect(() => {
-    items?.forEach((item) => {
-      // If value starts with '7-', that means it was unable to find the item in the store so we need to fetch it
-      if (item?.startsWith("7-")) {
-        dispatch(searchItems(item));
-      }
-    });
-  }, [items, dispatch]);
 
   useEffect(() => {
     setLastValidIndex(
@@ -56,15 +46,11 @@ export const OneToManyCell = ({ items }: OneToManyCellProps) => {
   return (
     <>
       <Box display="flex" gap={0.5}>
-        {items?.slice(0, lastValidIndex + 1)?.map((id: string) => {
-          return (
-            <Chip
-              key={id}
-              label={allItems?.[id]?.web?.metaTitle || id}
-              size="small"
-            />
-          );
-        })}
+        {items
+          ?.slice(0, lastValidIndex + 1)
+          ?.map((id: string, index: number) => {
+            return <Chip key={index} label={id} size="small" />;
+          })}
         {!!hiddenItems && (
           <Tooltip
             title={`${items?.slice(lastValidIndex + 1)?.join(", ")}`}
@@ -76,14 +62,8 @@ export const OneToManyCell = ({ items }: OneToManyCellProps) => {
       </Box>
       {/** Element below is only needed to calculate the actual chip widths */}
       <Box visibility="hidden" display="flex" gap={0.5} ref={chipContainerRef}>
-        {items?.map((id: string) => {
-          return (
-            <Chip
-              key={id}
-              label={allItems?.[id]?.web?.metaTitle || id}
-              size="small"
-            />
-          );
+        {items?.map((id: string, index: number) => {
+          return <Chip key={index} label={id} size="small" />;
         })}
       </Box>
     </>
