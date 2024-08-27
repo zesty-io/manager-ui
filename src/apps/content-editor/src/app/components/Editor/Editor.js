@@ -50,7 +50,9 @@ export default memo(function Editor({
 
   const activeFields = useMemo(() => {
     if (fields?.length) {
-      return fields.filter((field) => !field.deletedAt);
+      return fields.filter(
+        (field) => !field.deletedAt && field.name !== "og_image"
+      );
     }
 
     return [];

@@ -6,14 +6,13 @@ import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 import { cloneDeep } from "lodash";
 
-import { Divider, Box, Stack } from "@mui/material";
+import { Divider, Box, Stack, ThemeProvider } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
 import { Header } from "./Header";
 import { Editor } from "../../components/Editor";
-import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
-import { DataSettings } from "../ItemEdit/Meta/ItemSettings/DataSettings";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import {
   createItem,
@@ -35,6 +34,8 @@ import {
   ContentModelField,
 } from "../../../../../../shell/services/types";
 import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
+import { Meta } from "../ItemEdit/Meta";
+import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 
 export type ActionAfterSave =
   | ""
@@ -79,6 +80,7 @@ export const ItemCreate = () => {
   const [willRedirect, setWillRedirect] = useState(true);
   const [fieldErrors, setFieldErrors] = useState<FieldError>({});
   const [saveClicked, setSaveClicked] = useState(false);
+  const [hasSEOErrors, setHasSEOErrors] = useState(false);
 
   const [
     createPublishing,
@@ -102,7 +104,14 @@ export const ItemCreate = () => {
   // if item doesn't exist, generate a new one
   useEffect(() => {
     if (isEmpty(item) && !saving) {
-      dispatch(generateItem(modelZUID));
+      const initialData = fields?.reduce((accu, curr) => {
+        if (!curr.deletedAt) {
+          accu[curr.name] = null;
+        }
+        return accu;
+      }, {});
+
+      dispatch(generateItem(modelZUID, initialData));
     }
   }, [modelZUID, item, saving]);
 
@@ -148,7 +157,7 @@ export const ItemCreate = () => {
   const save = async (action: ActionAfterSave) => {
     setSaveClicked(true);
 
-    if (hasErrors) return;
+    if (hasErrors || hasSEOErrors) return;
 
     setSaving(true);
 
@@ -339,8 +348,10 @@ export const ItemCreate = () => {
           className={styles.ItemCreate}
           bgcolor="grey.50"
           alignItems="center"
+          direction="row"
+          gap={4}
         >
-          <Box minWidth={640} width="60%">
+          <Box width="60%" height="100%">
             <Editor
               // @ts-ignore no types
               hasErrors={hasErrors}
@@ -363,28 +374,24 @@ export const ItemCreate = () => {
                 setFieldErrors(errors);
               }}
             />
-          </Box>
-          <Box className={styles.Meta} minWidth={640} width="60%">
             <Divider
               sx={{
                 mt: 4,
                 mb: 2,
               }}
             />
-            <h2 className={styles.title}>Meta Settings</h2>
-            {model && model?.type === "dataset" ? (
-              <DataSettings item={item} dispatch={dispatch} />
-            ) : (
-              <ItemSettings
-                // @ts-ignore no types
-                instance={instance}
-                modelZUID={modelZUID}
-                item={item}
-                content={content}
-                dispatch={dispatch}
-              />
-            )}
+            <Meta
+              onUpdateSEOErrors={(hasErrors) => {
+                setHasSEOErrors(hasErrors);
+              }}
+              isSaving={saving}
+            />
           </Box>
+          <ThemeProvider theme={theme}>
+            <Box position="sticky" top={0} alignSelf="flex-start" width="40%">
+              <SocialMediaPreview />
+            </Box>
+          </ThemeProvider>
         </Stack>
       </Box>
       {isScheduleDialogOpen && !isLoadingNewItem && (
