@@ -25,9 +25,16 @@ import { FieldTypeNumber } from "../FieldTypeNumber";
 
 const DEFAULT_LIMITS: Record<AIType, number> = {
   text: 150,
-  paragraph: 3,
+  paragraph: 1500,
   description: 160,
   title: 150,
+};
+const TONE_OPTIONS = {
+  intriguing: "Intriguing - Curious, mysterious, and thought-provoking",
+  professional: "Professional - Serious, formal, and authoritative",
+  playful: "Playful - Fun, light-hearted, and whimsical",
+  sensational: "Sensational -  Bold, dramatic, and attention-grabbing",
+  succint: "Succinct - Clear, factual, with no hyperbole",
 };
 
 type AIType = "text" | "paragraph" | "description" | "title";
@@ -41,6 +48,8 @@ interface Props {
 export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
   const dispatch = useDispatch();
   const [topic, setTopic] = useState("");
+  const [audienceDescription, setAudienceDescription] = useState("");
+  const [tone, setTone] = useState<keyof typeof TONE_OPTIONS>("professional");
   const [limit, setLimit] = useState(DEFAULT_LIMITS[aiType]);
   const request = useRef(null);
   const [language, setLanguage] = useState({
@@ -55,6 +64,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
     useAiGenerationMutation();
 
   const handleGenerate = () => {
+    // TODO: Add the new fields to the api call
     request.current = aiGenerate({
       type: aiType,
       length: limit,
@@ -222,52 +232,43 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                 fullWidth
               />
             </Box>
+            <Box>
+              <InputLabel>Describe your Audience</InputLabel>
+              <TextField
+                value={audienceDescription}
+                onChange={(evt) => setAudienceDescription(evt.target.value)}
+                placeholder="e.g. Freelancers, Designers, ....."
+                fullWidth
+              />
+            </Box>
+            <Box>
+              <InputLabel>Tone</InputLabel>
+              <Select
+                value={tone}
+                onChange={(evt) =>
+                  setTone(evt.target.value as keyof typeof TONE_OPTIONS)
+                }
+                fullWidth
+              >
+                {Object.entries(TONE_OPTIONS).map(([value, text]) => (
+                  <MenuItem value={value}>{text}</MenuItem>
+                ))}
+              </Select>
+            </Box>
             <Stack direction="row" gap={2} width="100%">
-              {aiType === "text" && (
-                <Box flex={1}>
-                  {/**}
-                  <InputLabel>Character Limit</InputLabel>
-                  <TextField
-                    type="number"
-                    value={limit}
-                    onChange={(event) =>
-                      setLimit(
-                        Number(event.target.value) || DEFAULT_LIMITS[aiType]
-                      )
-                    }
-                    fullWidth
-                  />
-                    {**/}
-                  <InputLabel>Character Limit</InputLabel>
-                  <FieldTypeNumber
-                    required={false}
-                    name="limit"
-                    value={limit}
-                    onChange={(value) => setLimit(value)}
-                    hasError={false}
-                  />
-                </Box>
-              )}
-              {aiType === "paragraph" && (
-                <Box flex={1}>
-                  <InputLabel>Paragraph Limit</InputLabel>
-                  <Select
-                    value={limit}
-                    onChange={(event) =>
-                      setLimit(
-                        Number(event.target.value) || DEFAULT_LIMITS[aiType]
-                      )
-                    }
-                    fullWidth
-                  >
-                    {new Array(6).fill(0).map((_, i) => (
-                      <MenuItem key={i} value={String(i + 1)}>
-                        {i + 1}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Box>
-              )}
+              <Box flex={1}>
+                <InputLabel>
+                  {aiType === "text" && "Character"}
+                  {aiType === "paragraph" && "Word"} Limit
+                </InputLabel>
+                <FieldTypeNumber
+                  required={false}
+                  name="limit"
+                  value={limit}
+                  onChange={(value) => setLimit(value)}
+                  hasError={false}
+                />
+              </Box>
               <Box flex={1}>
                 <InputLabel>Language</InputLabel>
                 <Autocomplete
