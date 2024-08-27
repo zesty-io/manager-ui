@@ -11,10 +11,12 @@ import {
   Autocomplete,
   CircularProgress,
   Stack,
+  InputAdornment,
 } from "@mui/material";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import { useAiGenerationMutation } from "../../services/cloudFunctions";
 import { useGetLangsMappingQuery } from "../../services/instance";
 import { Brain } from "@zesty-io/material";
@@ -280,7 +282,18 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                   value={language as any}
                   options={languageOptions}
                   renderInput={(params: any) => (
-                    <TextField {...params} fullWidth />
+                    <TextField
+                      {...params}
+                      fullWidth
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LanguageRoundedIcon />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
                   )}
                   slotProps={{
                     paper: {
