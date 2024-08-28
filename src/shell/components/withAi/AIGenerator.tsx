@@ -54,6 +54,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
   const [topic, setTopic] = useState("");
   const [audienceDescription, setAudienceDescription] = useState("");
   const [tone, setTone] = useState<keyof typeof TONE_OPTIONS>("professional");
+  const [keywords, setKeywords] = useState("");
   const [limit, setLimit] = useState(DEFAULT_LIMITS[aiType]);
   const request = useRef(null);
   const [language, setLanguage] = useState({
@@ -132,10 +133,21 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
             />
           </Box>
           <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 1 }}>
-            Generating Content
+            Generating
+            {aiType === "title"
+              ? " Title"
+              : aiType === "description"
+              ? " Description"
+              : " Content"}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Our AI assistant is generating your content based on your parameters
+            Our AI assistant is generating your
+            {aiType === "title"
+              ? " meta title "
+              : aiType === "description"
+              ? " meta description "
+              : " content "}
+            based on your parameters
           </Typography>
           <Button
             size="small"
@@ -148,6 +160,214 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
             Stop
           </Button>
         </Stack>
+      </Stack>
+    );
+  }
+
+  if (aiType === "title" || aiType === "description") {
+    return (
+      <Stack
+        width={480}
+        height={628}
+        position="relative"
+        zIndex={2}
+        border="2px solid transparent"
+        boxSizing="border-box"
+      >
+        <Stack
+          justifyContent="space-between"
+          alignItems="center"
+          p={2.5}
+          gap={1.5}
+          bgcolor="background.paper"
+          borderRadius="2px 2px 0 0"
+        >
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            width="100%"
+          >
+            <Stack
+              width={40}
+              height={40}
+              borderRadius="50%"
+              justifyContent="center"
+              alignItems="center"
+              sx={{
+                background:
+                  "linear-gradient(90deg, rgba(11,165,236,1) 0%, rgba(238,70,188,1) 50%, rgba(105,56,239,1) 100%)",
+              }}
+            >
+              <Brain sx={{ color: (theme) => theme.palette.common.white }} />
+            </Stack>
+            <Box component="img" src={openAIBadge} alt="OpenAI Badge" />
+          </Stack>
+          <Stack gap={1} width="100%">
+            <Typography variant="h5" fontWeight={700}>
+              {!!data ? "Select" : "Generate"} Meta{" "}
+              {aiType === "title" ? "Title" : "Description"}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {!!data
+                ? `Select 1 out of the 3 Meta ${
+                    aiType === "title" ? "Titles" : "Descriptions"
+                  } our AI has generated for you.`
+                : `Our AI will scan your content and generate your meta ${
+                    aiType === "title" ? "title" : "description"
+                  }  for you based on your parameters set below`}
+            </Typography>
+          </Stack>
+        </Stack>
+        <Box
+          p={2.5}
+          bgcolor="grey.50"
+          flex={1}
+          sx={{
+            overflowY: "auto",
+            borderTop: 1,
+            borderBottom: 1,
+            borderColor: "border",
+          }}
+        >
+          {!!data ? (
+            <Box>
+              <InputLabel>{label}</InputLabel>
+              <TextField
+                value={data}
+                onChange={(event) => setData(event.target.value)}
+                multiline
+                rows={15}
+                fullWidth
+              />
+            </Box>
+          ) : (
+            <Stack gap={2.5}>
+              <Box>
+                <InputLabel>Describe your Audience</InputLabel>
+                <TextField
+                  value={audienceDescription}
+                  onChange={(evt) => setAudienceDescription(evt.target.value)}
+                  placeholder="e.g. Freelancers, Designers, ....."
+                  fullWidth
+                />
+              </Box>
+              <Box>
+                <InputLabel>
+                  Keywords to Include (separated by commas)
+                </InputLabel>
+                <TextField
+                  value={keywords}
+                  onChange={(evt) => setKeywords(evt.target.value)}
+                  placeholder="e.g. Hikes, snow"
+                  fullWidth
+                />
+              </Box>
+              <Box>
+                <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
+                  <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
+                  <Tooltip title="lorem ipsum" placement="top">
+                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                  </Tooltip>
+                </Stack>
+                <Select
+                  value={tone}
+                  onChange={(evt) =>
+                    setTone(evt.target.value as keyof typeof TONE_OPTIONS)
+                  }
+                  fullWidth
+                >
+                  {Object.entries(TONE_OPTIONS).map(([value, text]) => (
+                    <MenuItem value={value}>{text}</MenuItem>
+                  ))}
+                </Select>
+              </Box>
+              <Box>
+                <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
+                  <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
+                  <Tooltip title="lorem ipsum" placement="top">
+                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                  </Tooltip>
+                </Stack>
+                <Autocomplete
+                  disableClearable
+                  isOptionEqualToValue={(option: any, value: any) =>
+                    option.value === value.value
+                  }
+                  onChange={(event, value) => setLanguage(value)}
+                  value={language as any}
+                  options={languageOptions}
+                  renderInput={(params: any) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LanguageRoundedIcon />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        maxHeight: 300,
+                      },
+                    },
+                  }}
+                />
+              </Box>
+            </Stack>
+          )}
+        </Box>
+        <Box
+          bgcolor="background.paper"
+          p={2.5}
+          gap={2}
+          display="flex"
+          justifyContent="flex-end"
+          borderRadius="0 0 2px 2px"
+        >
+          <Button variant="outlined" color="inherit" onClick={onClose}>
+            Cancel
+          </Button>
+          {data ? (
+            <Box>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<RefreshRoundedIcon />}
+                onClick={() => setData(null)}
+              >
+                Generate Again
+              </Button>
+              <Button
+                data-cy="AIApprove"
+                variant="contained"
+                onClick={() => {
+                  onApprove(data);
+                  onClose();
+                }}
+                sx={{ ml: 2 }}
+                startIcon={<CheckRoundedIcon />}
+              >
+                Approve
+              </Button>
+            </Box>
+          ) : (
+            <Button
+              data-cy="AIGenerate"
+              variant="contained"
+              onClick={handleGenerate}
+              disabled={!topic}
+            >
+              Generate
+            </Button>
+          )}
+        </Box>
       </Stack>
     );
   }
