@@ -31,9 +31,13 @@ import pluralizeWord from "../../../../../utility/pluralizeWord";
 
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
-  const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
+  const uploads = useSelector((state: AppState) =>
+    state.mediaRevamp.uploads.filter((upload) => !upload.replacementFile)
+  );
   const filesToUpload = useSelector((state: AppState) =>
-    state.mediaRevamp.uploads.filter((upload) => upload.status !== "failed")
+    state.mediaRevamp.uploads.filter(
+      (upload) => upload.status !== "failed" && !upload.replacementFile
+    )
   );
   const ids = filesToUpload.length && {
     currentBinId: filesToUpload[0].bin_id,
@@ -186,8 +190,14 @@ const UploadErrors = () => {
 
 type UploadHeaderTextProps = {
   uploads: Upload[];
+  headerKeyword?: string;
+  showCount?: boolean;
 };
-const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
+export const UploadHeaderText = ({
+  uploads,
+  headerKeyword = "File",
+  showCount = true,
+}: UploadHeaderTextProps) => {
   const filesUploading = uploads?.filter(
     (upload) => upload.status === "inProgress"
   );
@@ -225,12 +235,18 @@ const UploadHeaderText = ({ uploads }: UploadHeaderTextProps) => {
         <CheckCircleRoundedIcon color="success" sx={{ p: 0.5 }} />
       )}
       <Typography variant="h5" color="text.primary" fontWeight={700}>
+        {showCount ? (
+          filesUploading?.length > 0 ? (
+            filesUploading.length
+          ) : (
+            filesUploaded.length
+          )
+        ) : (
+          <></>
+        )}{" "}
         {filesUploading?.length > 0
-          ? filesUploading.length
-          : filesUploaded.length}{" "}
-        {filesUploading?.length > 0
-          ? pluralizeWord("File", filesUploading.length)
-          : pluralizeWord("File", filesUploaded.length)}{" "}
+          ? pluralizeWord(headerKeyword, filesUploading.length)
+          : pluralizeWord(headerKeyword, filesUploaded.length)}{" "}
         {filesUploading?.length > 0 ? "Uploading" : "Uploaded"}
       </Typography>
     </Stack>

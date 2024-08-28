@@ -60,6 +60,8 @@ export interface File {
   deleted_at?: string;
   deleted_from_storage_at?: string;
   thumbnail: string;
+  storage_driver: string;
+  storage_name: string;
 }
 
 export type ModelType = "pageset" | "templateset" | "dataset";
@@ -203,12 +205,16 @@ export interface FieldSettings {
   regexRestrictErrorMessage?: string;
   minValue?: number;
   maxValue?: number;
+  currency?: string;
+  fileExtensions?: string[];
+  fileExtensionsErrorMessage?: string;
 }
 
 export type ContentModelFieldValue =
   | string
   | number
   | boolean
+  | string[]
   | FieldSettings
   | FieldSettingsOptions[];
 
@@ -232,7 +238,8 @@ export type ContentModelFieldDataType =
   | "link"
   | "internal_link"
   | "yes_no"
-  | "color";
+  | "color"
+  | "sort";
 
 export interface ContentModelField {
   ZUID: string;

@@ -502,7 +502,24 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     rules: [...COMMON_RULES],
   },
   currency: {
-    details: [...COMMON_FIELDS],
+    details: [
+      {
+        name: "currency",
+        type: "autocomplete",
+        label: "Currency",
+        required: true,
+        gridSize: 12,
+        tooltip:
+          "The selected currency code, symbol, and flag will be displayed for this field in the content item and can be accessed through the field settings via the API.",
+        placeholder: "Select a Currency",
+        autoFocus: true,
+      },
+      {
+        ...COMMON_FIELDS[0],
+        autoFocus: false,
+      },
+      ...COMMON_FIELDS.slice(1),
+    ],
     rules: [...COMMON_RULES, ...INPUT_RANGE_RULES],
   },
   date: {
@@ -553,6 +570,20 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
         name: "group_id",
         type: "autocomplete",
         label: "Select Folder",
+        required: false,
+        gridSize: 12,
+      },
+      {
+        name: "fileExtensions",
+        type: "input",
+        label: "File Extensions",
+        required: false,
+        gridSize: 12,
+      },
+      {
+        name: "fileExtensionsErrorMessage",
+        type: "input",
+        label: "File extensions error message",
         required: false,
         gridSize: 12,
       },
@@ -671,7 +702,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
   },
 };
 
-const SYSTEM_FIELDS: SystemField[] = [
+const SYSTEM_FIELDS: readonly SystemField[] = [
   {
     label: "Item ZUID",
     datatype: "uuid",
@@ -702,7 +733,30 @@ const SYSTEM_FIELDS: SystemField[] = [
     datatype: "uuid",
     name: "contentModelZUID",
   },
-];
+] as const;
+
+const SEO_FIELDS: readonly SystemField[] = [
+  {
+    label: "SEO Meta Title",
+    datatype: "text",
+    name: "seo_meta_title",
+  },
+  {
+    label: "SEO Meta Description",
+    datatype: "textarea",
+    name: "seo_meta_description",
+  },
+  {
+    label: "SEO Meta Keywords",
+    datatype: "textarea",
+    name: "seo_meta_keywords",
+  },
+  {
+    label: "SEO Link Title",
+    datatype: "text",
+    name: "seo_link_title",
+  },
+] as const;
 
 export {
   FieldListData,
@@ -711,4 +765,5 @@ export {
   FORM_CONFIG,
   SYSTEM_FIELDS,
   SystemField,
+  SEO_FIELDS,
 };

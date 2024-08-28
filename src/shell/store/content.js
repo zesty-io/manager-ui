@@ -208,13 +208,13 @@ export function content(state = {}, action) {
 }
 
 // create the new item in the store
-export function generateItem(modelZUID) {
+export function generateItem(modelZUID, data = {}) {
   return (dispatch, getState) => {
     const state = getState();
     const itemZUID = `new:${modelZUID}`;
     const item = {
       dirty: false,
-      data: {},
+      data,
       web: {
         canonicalTagMode: 1,
       },

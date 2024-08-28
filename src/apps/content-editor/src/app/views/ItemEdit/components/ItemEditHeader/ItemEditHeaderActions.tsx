@@ -64,8 +64,8 @@ export const ItemEditHeaderActions = ({
     itemZUID: string;
   }>();
   const dispatch = useDispatch();
-  const canPublish = usePermission("PUBLISH");
-  const canUpdate = usePermission("UPDATE");
+  const canPublish = usePermission("PUBLISH", itemZUID);
+  const canUpdate = usePermission("UPDATE", itemZUID);
   const [publishMenu, setPublishMenu] = useState<null | HTMLElement>(null);
   const [publishAfterSave, setPublishAfterSave] = useState(false);
   const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
@@ -99,12 +99,14 @@ export const ItemEditHeaderActions = ({
   );
 
   const saveShortcut = useMetaKey("s", () => {
+    if (!canUpdate) return;
     if (itemState === ITEM_STATES.dirty) {
       onSave();
     }
   });
 
   const publishShortcut = useMetaKey("p", () => {
+    if (!canPublish) return;
     if (itemState === ITEM_STATES.dirty) {
       setPublishAfterSave(true);
       onSave();

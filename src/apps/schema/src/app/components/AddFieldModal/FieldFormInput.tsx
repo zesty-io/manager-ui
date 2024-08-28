@@ -14,6 +14,10 @@ import {
   Button,
   IconButton,
   Stack,
+  AutocompleteProps,
+  InputProps,
+  OutlinedInputProps,
+  FilledInputProps,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -25,6 +29,7 @@ import { FormValue } from "./views/FieldForm";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
 import { convertDropdownValue } from "../../utils";
 import { withCursorPosition } from "../../../../../../shell/components/withCursorPosition";
+import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -49,7 +54,10 @@ export type FieldNames =
   | "regexRestrictPattern"
   | "regexRestrictErrorMessage"
   | "minValue"
-  | "maxValue";
+  | "maxValue"
+  | "currency"
+  | "fileExtensions"
+  | "fileExtensionsErrorMessage";
 type FieldType =
   | "input"
   | "checkbox"
@@ -78,7 +86,14 @@ export interface DropdownOptions {
   label: string;
   value: string;
 }
-interface FieldFormInputProps {
+export type AutocompleteConfig = {
+  inputProps?:
+    | Partial<FilledInputProps>
+    | Partial<OutlinedInputProps>
+    | Partial<InputProps>;
+  maxHeight?: number;
+};
+type FieldFormInputProps = {
   fieldConfig: InputField;
   errorMsg?: string | [string, string][];
   onDataChange: ({
@@ -89,9 +104,13 @@ interface FieldFormInputProps {
     value: FormValue;
   }) => void;
   prefillData?: FormValue;
-  dropdownOptions?: DropdownOptions[];
+  dropdownOptions?: DropdownOptions[] | Currency[];
   disabled?: boolean;
-}
+  autocompleteConfig?: AutocompleteConfig;
+} & Pick<
+  AutocompleteProps<DropdownOptions | Currency, false, false, false, "div">,
+  "renderOption" | "filterOptions"
+>;
 export const FieldFormInput = ({
   fieldConfig,
   errorMsg,
@@ -99,6 +118,9 @@ export const FieldFormInput = ({
   prefillData,
   dropdownOptions,
   disabled,
+  renderOption,
+  filterOptions,
+  autocompleteConfig,
 }: FieldFormInputProps) => {
   const options =
     fieldConfig.type === "options" ||
@@ -212,9 +234,19 @@ export const FieldFormInput = ({
 
       {fieldConfig.type === "autocomplete" && (
         <>
-          <Typography variant="body2" mb={0.5} fontWeight={600}>
-            {fieldConfig.label}
-          </Typography>
+          <Stack flexDirection="row" alignItems="center" mb={0.5} height={18}>
+            <Typography variant="body2" fontWeight={600}>
+              {fieldConfig.label}
+            </Typography>
+            {fieldConfig.tooltip && (
+              <Tooltip placement="right" title={fieldConfig.tooltip}>
+                <InfoRoundedIcon
+                  sx={{ ml: 1, width: "12px", height: "12px" }}
+                  color="action"
+                />
+              </Tooltip>
+            )}
+          </Stack>
           <Autocomplete
             data-cy={`Autocomplete_${fieldConfig.name}`}
             size="small"
@@ -230,6 +262,12 @@ export const FieldFormInput = ({
                 placeholder={fieldConfig.placeholder}
                 hiddenLabel
                 autoFocus={fieldConfig.autoFocus}
+                error={!!errorMsg}
+                helperText={errorMsg}
+                InputProps={{
+                  ...params.InputProps,
+                  ...autocompleteConfig?.inputProps,
+                }}
               />
             )}
             isOptionEqualToValue={(option, value) =>
@@ -246,16 +284,22 @@ export const FieldFormInput = ({
                 height: "40px",
               },
             }}
+            renderOption={renderOption}
+            filterOptions={filterOptions}
+            slotProps={{
+              paper: {
+                sx: {
+                  "& .MuiAutocomplete-listbox": {
+                    maxHeight: autocompleteConfig?.maxHeight || "40vh",
+                    boxSizing: "border-box",
+                  },
+                },
+              },
+            }}
           />
           {prefillData &&
             !dropdownOptions.find((option) => option.value === prefillData) && (
-              <Typography
-                noWrap
-                color="error"
-                variant="caption"
-                ml={1.75}
-                mt={0.5}
-              >
+              <Typography noWrap color="error.dark" variant="body2" mt={0.5}>
                 {fieldConfig.name === "group_id" &&
                   "The folder this was locked to has been deleted"}
                 {fieldConfig.name === "relatedModelZUID" &&
@@ -324,12 +368,9 @@ export const FieldFormInput = ({
             error={Boolean(errorMsg)}
             helperText={
               errorMsg && (
-                <Typography
-                  data-cy={`ErrorMsg_${fieldConfig.name}`}
-                  variant="caption"
-                >
+                <Box component="span" data-cy={`ErrorMsg_${fieldConfig.name}`}>
                   {errorMsg}
-                </Typography>
+                </Box>
               )
             }
             type={fieldConfig.inputType || "text"}
@@ -445,9 +486,9 @@ const KeyValueInput = ({
             handleDataChanged("value", e.target?.value);
           }}
           helperText={
-            <Typography data-cy={`OptionLabelErrorMsg_${id}`} variant="caption">
+            <Box component="span" data-cy={`OptionLabelErrorMsg_${id}`}>
               {labelErrorMsg}
-            </Typography>
+            </Box>
           }
           error={Boolean(labelErrorMsg)}
           disabled={disabledFields.includes("value")}
@@ -463,9 +504,9 @@ const KeyValueInput = ({
             handleDataChanged("key", e.target?.value);
           }}
           helperText={
-            <Typography data-cy={`OptionValueErrorMsg_${id}`} variant="caption">
+            <Box component="span" data-cy={`OptionValueErrorMsg_${id}`}>
               {valueErrorMsg}
-            </Typography>
+            </Box>
           }
           error={Boolean(valueErrorMsg)}
           disabled={disabledFields.includes("key")}

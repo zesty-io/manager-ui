@@ -27,7 +27,6 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
-import { Meta } from "./Meta";
 import { ItemHead } from "./ItemHead";
 
 import { NotFound } from "../NotFound";
@@ -47,6 +46,7 @@ import {
 import { DuoModeContext } from "../../../../../../shell/contexts/duoModeContext";
 import { useLocalStorage } from "react-use";
 import { FreestyleWrapper } from "./FreestyleWrapper";
+import { Meta } from "./Meta";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -86,6 +86,7 @@ export default function ItemEdit() {
   const [notFound, setNotFound] = useState("");
   const [saveClicked, setSaveClicked] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [hasSEOErrors, setHasSEOErrors] = useState(false);
   const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
@@ -101,7 +102,9 @@ export default function ItemEdit() {
         (setting.key === "basic_content_api_key" && setting.value) ||
         (setting.key === "headless_authorization_key" && setting.value) ||
         (setting.key === "authorization_key" && setting.value) ||
-        (setting.key === "x_frame_options" && setting.value)
+        (setting.key === "x_frame_options" &&
+          !!setting.value &&
+          setting.value !== "sameorigin")
       );
     }) ||
     model?.type === "dataset";
@@ -227,7 +230,7 @@ export default function ItemEdit() {
   async function save() {
     setSaveClicked(true);
 
-    if (hasErrors) return;
+    if (hasErrors || hasSEOErrors) return;
 
     setSaving(true);
     try {
@@ -331,7 +334,6 @@ export default function ItemEdit() {
     } finally {
       if (isMounted.current) {
         setSaving(false);
-        setSaveClicked(false);
       }
     }
   }
@@ -430,17 +432,10 @@ export default function ItemEdit() {
                   path="/content/:modelZUID/:itemZUID/meta"
                   render={() => (
                     <Meta
-                      instance={instance}
-                      modelZUID={modelZUID}
-                      model={model}
-                      itemZUID={itemZUID}
-                      item={item}
-                      items={items}
-                      fields={fields}
-                      user={user}
-                      onSave={save}
-                      dispatch={dispatch}
-                      saving={saving}
+                      onUpdateSEOErrors={(hasErrors) => {
+                        setHasSEOErrors(hasErrors);
+                      }}
+                      isSaving={saving}
                     />
                   )}
                 />

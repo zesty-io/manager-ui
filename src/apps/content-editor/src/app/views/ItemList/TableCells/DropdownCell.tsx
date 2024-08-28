@@ -1,6 +1,4 @@
-import { useParams as useRouterParams } from "react-router";
 import { Button, Menu, MenuItem } from "@mui/material";
-import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 import { useState } from "react";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
@@ -9,13 +7,17 @@ import { useStagedChanges } from "../StagedChangesContext";
 export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
   const { stagedChanges, updateStagedChanges } = useStagedChanges();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { modelZUID } = useRouterParams<{ modelZUID: string }>();
-  const { data: fields, isFetching: isFieldsFetching } =
-    useGetContentModelFieldsQuery(modelZUID);
-  const field = fields?.find((field) => field.name === params.field);
+  const field = params.row.fieldData[params.field];
   const handleChange = (value: any) => {
     setAnchorEl(null);
-    updateStagedChanges(params.row.id, params.field, value);
+
+    if (value !== currVal) {
+      updateStagedChanges(
+        params.row.id,
+        params.field,
+        value === "Select" ? null : value
+      );
+    }
   };
 
   const currVal =
@@ -65,7 +67,7 @@ export const DropDownCell = ({ params }: { params: GridRenderCellParams }) => {
         <MenuItem
           dense
           onClick={() => {
-            handleChange(null);
+            handleChange("Select");
           }}
           sx={{
             textWrap: "wrap",

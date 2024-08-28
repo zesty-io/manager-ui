@@ -8,7 +8,7 @@ import {
   Checkbox,
   Stack,
 } from "@mui/material";
-import { ReportGmailerrorred } from "@mui/icons-material";
+import { ImageRounded } from "@mui/icons-material";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import {
   DataGridPro,
@@ -16,14 +16,16 @@ import {
   GRID_CHECKBOX_SELECTION_COL_DEF,
   useGridApiRef,
   GridInitialState,
+  GridComparatorFn,
+  GridPinnedColumns,
 } from "@mui/x-data-grid-pro";
 import {
   memo,
   useCallback,
   useLayoutEffect,
   useMemo,
-  useRef,
   useState,
+  useContext,
 } from "react";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { useStagedChanges } from "./StagedChangesContext";
@@ -34,11 +36,29 @@ import { VersionCell } from "./TableCells/VersionCell";
 import { DropDownCell } from "./TableCells/DropdownCell";
 import { SortCell } from "./TableCells/SortCell";
 import { BooleanCell } from "./TableCells/BooleanCell";
+import { currencies } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
+import { Currency } from "../../../../../../shell/components/FieldTypeCurrency/currencies";
+import { ImageCell } from "./TableCells/ImageCell";
+import { SingleRelationshipCell } from "./TableCells/SingleRelationshipCell";
+import { useParams } from "../../../../../../shell/hooks/useParams";
+import { TableSortContext } from "./TableSortProvider";
 
 type ItemListTableProps = {
   loading: boolean;
   rows: ContentItem[];
 };
+
+const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
+  (acc, curr) => {
+    return {
+      ...acc,
+      [curr.value]: {
+        ...curr,
+      },
+    };
+  },
+  {}
+);
 
 const getHtmlText = (html: string) => {
   if (!html) return "";
@@ -56,15 +76,13 @@ const METADATA_COLUMNS = [
     field: "createdBy",
     headerName: "Created By",
     width: 240,
-    sortable: false,
     filterable: false,
     renderCell: (params: GridRenderCellParams) => <UserCell params={params} />,
   },
   {
     field: "createdOn",
-    headerName: "Created On",
+    headerName: "Date Created",
     width: 200,
-    sortable: false,
     filterable: false,
     valueGetter: (params: any) => params.row?.meta?.createdAt,
   },
@@ -73,7 +91,6 @@ const METADATA_COLUMNS = [
     field: "lastSaved",
     headerName: "Last Saved",
     width: 200,
-    sortable: false,
     filterable: false,
     valueGetter: (params: any) => params.row?.web?.updatedAt,
   },
@@ -81,22 +98,17 @@ const METADATA_COLUMNS = [
     field: "lastPublished",
     headerName: "Last Published",
     width: 200,
-    sortable: false,
     filterable: false,
-    valueGetter: (params: any) =>
-      params.row?.publishing?.publishAt ||
-      params.row?.priorPublishing?.publishAt,
+    valueGetter: (params: any) => params.row?.publishing?.publishAt,
   },
   {
     field: "zuid",
     headerName: "ZUID",
     width: 200,
-    sortable: false,
     filterable: false,
     valueGetter: (params: any) => params.row?.meta?.ZUID,
   },
-] as const;
-
+];
 const fieldTypeColumnConfigMap = {
   text: {
     width: 360,
@@ -128,7 +140,7 @@ const fieldTypeColumnConfigMap = {
   one_to_one: {
     width: 240,
     renderCell: (params: any) =>
-      params.value && <Chip label={params.value} size="small" />,
+      params.value && <SingleRelationshipCell params={params} />,
   },
   uuid: {
     width: 280,
@@ -144,50 +156,21 @@ const fieldTypeColumnConfigMap = {
   currency: {
     width: 160,
     valueFormatter: (params: any) => {
-      if (!params.value) return null;
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(params.value);
+      if (params.value?.value === undefined || params.value?.value === null)
+        return "";
+
+      return `${
+        CURRENCY_OBJECT[params.value?.currency]?.symbol_native
+      } ${new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 2,
+      }).format(params.value.value)}`;
     },
     align: "right",
   },
   images: {
     width: 100,
     renderCell: (params: GridRenderCellParams) => {
-      const src = params?.value?.thumbnail || params?.value?.split(",")?.[0];
-
-      if (!src) {
-        return (
-          <Stack
-            sx={{
-              backgroundColor: "red.50",
-              width: "100%",
-              height: "100%",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              zIndex: -1,
-            }}
-          >
-            <ReportGmailerrorred fontSize="large" sx={{ color: "red.600" }} />
-          </Stack>
-        );
-      }
-
-      return (
-        <Box
-          component="img"
-          sx={{
-            backgroundColor: (theme) => theme.palette.grey[100],
-            objectFit: "contain",
-            zIndex: -1,
-          }}
-          width="68px"
-          height="58px"
-          src={src}
-        />
-      );
+      return <ImageCell params={params} />;
     },
   },
   dropdown: {
@@ -226,7 +209,7 @@ const fieldTypeColumnConfigMap = {
   internal_link: {
     width: 240,
     renderCell: (params: any) =>
-      params.value && <Chip label={params.value} size="small" />,
+      params.value && <SingleRelationshipCell params={params} />,
   },
   yes_no: {
     width: 120,
@@ -269,6 +252,9 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
   const history = useHistory();
   const { stagedChanges } = useStagedChanges();
   const [selectedItems, setSelectedItems] = useSelectedItems();
+  const [params, setParams] = useParams();
+  const [sortModel, setSortModel] = useContext(TableSortContext);
+  const [pinnedColumns, setPinnedColumns] = useState<GridPinnedColumns>({});
 
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
@@ -289,18 +275,11 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
     );
 
     setInitialState(
-      stateFromLocalStorage
-        ? JSON.parse(stateFromLocalStorage)
-        : {
-            pinnedColumns: {
-              left: [
-                GRID_CHECKBOX_SELECTION_COL_DEF.field,
-                "version",
-                fields?.[0]?.name,
-              ],
-            },
-          }
+      stateFromLocalStorage ? JSON.parse(stateFromLocalStorage) : {}
     );
+    setPinnedColumns({
+      left: ["__check__", "version", fields?.[0]?.name],
+    });
 
     window.addEventListener("beforeunload", saveSnapshot);
 
@@ -316,7 +295,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
         field: "version",
         headerName: "Vers.",
         width: 59,
-        sortable: false,
+        sortable: true,
         filterable: false,
         renderCell: (params: GridRenderCellParams) => (
           <VersionCell params={params} />
@@ -331,9 +310,17 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
           ?.map((field) => ({
             field: field.name,
             headerName: field.label,
-            sortable: false,
             filterable: false,
-            valueGetter: (params: any) => params.row.data[field.name],
+            valueGetter: (params: any) => {
+              if (field.datatype === "currency") {
+                return {
+                  value: params.row.data[field.name],
+                  currency: field.settings?.currency || "USD",
+                };
+              }
+
+              return params.row.data[field.name];
+            },
             ...fieldTypeColumnConfigMap[field.datatype],
             // if field is yes_no but it has custom options increase the width
             ...(field.datatype === "yes_no" &&
@@ -366,6 +353,10 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       loading={loading}
       rows={rows}
       columns={[...columns, ...METADATA_COLUMNS]}
+      pinnedColumns={pinnedColumns}
+      onPinnedColumnsChange={(newPinnedColumns) =>
+        setPinnedColumns(newPinnedColumns)
+      }
       rowHeight={54}
       hideFooter
       onRowClick={(row) => {
@@ -410,6 +401,21 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       checkboxSelection
       disableSelectionOnClick
       initialState={initialState}
+      sortingOrder={["desc", "asc", null]}
+      sortModel={sortModel}
+      sortingMode="server"
+      onSortModelChange={(newSortModel) => {
+        if (!Object.entries(newSortModel)?.length) {
+          setSortModel([
+            {
+              field: "lastSaved",
+              sort: "desc",
+            },
+          ]);
+        } else {
+          setSortModel(newSortModel);
+        }
+      }}
       onSelectionModelChange={(newSelection) => setSelectedItems(newSelection)}
       selectionModel={
         stagedChanges && Object.keys(stagedChanges)?.length ? [] : selectedItems
@@ -421,8 +427,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       sx={{
         ...(!rows?.length &&
           !loading && {
-            height: 56,
-            flex: 0,
+            maxHeight: 56,
           }),
         backgroundColor: "common.white",
         ".MuiDataGrid-row": {
