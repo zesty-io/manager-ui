@@ -373,7 +373,7 @@ export const Field = ({
           }
           withLengthCounter
           errors={errors}
-          aiType="paragraph"
+          aiType="word"
           maxLength={maxLength}
           minLength={minLength}
           value={value}
@@ -402,7 +402,7 @@ export const Field = ({
             settings={fieldData}
             onChange={onChange}
             errors={errors}
-            aiType="paragraph"
+            aiType="word"
             datatype={fieldData?.datatype}
             withLengthCounter
             maxLength={maxLength}
@@ -439,7 +439,7 @@ export const Field = ({
             settings={fieldData}
             onChange={onChange}
             errors={errors}
-            aiType="paragraph"
+            aiType="word"
             datatype={fieldData?.datatype}
             editorType={editorType}
             onEditorChange={(value: EditorType) => setEditorType(value)}

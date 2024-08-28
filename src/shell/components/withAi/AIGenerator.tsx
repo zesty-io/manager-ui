@@ -31,7 +31,8 @@ import { FieldTypeNumber } from "../FieldTypeNumber";
 
 const DEFAULT_LIMITS: Record<AIType, number> = {
   text: 150,
-  paragraph: 1500,
+  paragraph: 3,
+  word: 1500,
   description: 160,
   title: 150,
 };
@@ -43,7 +44,7 @@ const TONE_OPTIONS = {
   succint: "Succinct - Clear, factual, with no hyperbole",
 };
 
-type AIType = "text" | "paragraph" | "description" | "title";
+type AIType = "text" | "paragraph" | "description" | "title" | "word";
 interface Props {
   onApprove: (data: string) => void;
   onClose: () => void;
@@ -84,12 +85,13 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
     useAiGenerationMutation();
 
   const handleGenerate = () => {
-    // TODO: Add the new fields to the api call
     request.current = aiGenerate({
       type: aiType,
       length: limit,
       phrase: topic,
       lang: language.value,
+      tone,
+      audience: audienceDescription,
     });
   };
 
@@ -118,6 +120,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
     })
   );
 
+  // Loading
   if (isLoading) {
     return (
       <Stack width={480} height={628} position="relative" zIndex={2}>
@@ -180,6 +183,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
     );
   }
 
+  // Meta Title and Meta Description field types
   if (aiType === "title" || aiType === "description") {
     return (
       <Stack
@@ -422,6 +426,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
     );
   }
 
+  // Content item field types
   return (
     <Stack
       width={480}
@@ -484,7 +489,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
       >
         {!!data?.length ? (
           <Box>
-            <InputLabel>{label}</InputLabel>
+            <InputLabel>Generated Content</InputLabel>
             <TextField
               value={data[0]}
               onChange={(event) => setData([event.target.value])}
