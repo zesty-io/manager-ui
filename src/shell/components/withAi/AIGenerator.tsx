@@ -13,6 +13,8 @@ import {
   Stack,
   InputAdornment,
   Tooltip,
+  alpha,
+  ListItemButton,
 } from "@mui/material";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
@@ -49,6 +51,18 @@ interface Props {
   label: string;
 }
 
+// TODO: Delete after testing
+const DUMMY_META_TITLE_DATA = [
+  "Unveiling Natural Treasures: Discover the Top 5 Hikes in Washington",
+  "Trailblazing Washington's Beauty: Unraveling the Top 5 Hiking Trails",
+  "Escape to the Wilderness: Explore Washington's Best 5 Hikes and Trails",
+];
+const DUMMY_META_DESCRIPTION_DATA = [
+  "Immerse yourself in the unspoiled splendor of Washington through an exploration of its top 5 hiking trails, each revealing the state's breathtaking natural marvels.",
+  "Discover Washington's untamed magnificence by embarking on the top 5 hiking trails that unveil the state's innate wonders, offering an unparalleled adventure amidst nature's grandeur.",
+  "Our AI is scanning your content and generating your meta description based on your parameters",
+];
+
 export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
   const dispatch = useDispatch();
   const [topic, setTopic] = useState("");
@@ -56,13 +70,14 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
   const [tone, setTone] = useState<keyof typeof TONE_OPTIONS>("professional");
   const [keywords, setKeywords] = useState("");
   const [limit, setLimit] = useState(DEFAULT_LIMITS[aiType]);
+  const [selectedContent, setSelectedContent] = useState<number>(null);
   const request = useRef(null);
   const [language, setLanguage] = useState({
     label: "English (United States)",
     value: "en-US",
   });
 
-  const [data, setData] = useState("");
+  const [data, setData] = useState([]);
   const { data: langMappings } = useGetLangsMappingQuery();
 
   const [aiGenerate, { isLoading, isError, data: aiResponse }] =
@@ -91,7 +106,8 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
 
   useEffect(() => {
     if (aiResponse?.data) {
-      setData(aiResponse.data);
+      //TODO: Verify from Allen if response will always be an array
+      setData([aiResponse.data]);
     }
   }, [aiResponse]);
 
@@ -205,11 +221,11 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
           </Stack>
           <Stack gap={1} width="100%">
             <Typography variant="h5" fontWeight={700}>
-              {!!data ? "Select" : "Generate"} Meta{" "}
+              {!!data?.length ? "Select" : "Generate"} Meta{" "}
               {aiType === "title" ? "Title" : "Description"}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {!!data
+              {!!data?.length
                 ? `Select 1 out of the 3 Meta ${
                     aiType === "title" ? "Titles" : "Descriptions"
                   } our AI has generated for you.`
@@ -230,17 +246,49 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
             borderColor: "border",
           }}
         >
-          {!!data ? (
-            <Box>
-              <InputLabel>{label}</InputLabel>
-              <TextField
-                value={data}
-                onChange={(event) => setData(event.target.value)}
-                multiline
-                rows={15}
-                fullWidth
-              />
-            </Box>
+          {!!data?.length ? (
+            <Stack gap={2.5}>
+              {data.map((value, index) => (
+                <ListItemButton
+                  key={index}
+                  selected={selectedContent === index}
+                  onClick={() => setSelectedContent(index)}
+                  sx={{
+                    borderRadius: 2,
+                    border: 1,
+                    borderColor: "border",
+                    backgroundColor: "common.white",
+                    p: 2,
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+
+                    "&.Mui-selected": {
+                      borderColor: "primary.main",
+                    },
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    fontWeight={600}
+                    color={
+                      selectedContent === index
+                        ? "primary.main"
+                        : "text.secondary"
+                    }
+                    sx={{ mb: 0.5 }}
+                  >
+                    OPTION {index + 1}
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    fontWeight={600}
+                    color="text.primary"
+                  >
+                    {value}
+                  </Typography>
+                </ListItemButton>
+              ))}
+            </Stack>
           ) : (
             <Stack gap={2.5}>
               <Box>
@@ -328,13 +376,13 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
           p={2.5}
           gap={2}
           display="flex"
-          justifyContent="flex-end"
+          justifyContent={!!data?.length ? "space-between" : "flex-end"}
           borderRadius="0 0 2px 2px"
         >
           <Button variant="outlined" color="inherit" onClick={onClose}>
             Cancel
           </Button>
-          {data ? (
+          {!!data?.length ? (
             <Box>
               <Button
                 variant="outlined"
@@ -342,19 +390,21 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                 startIcon={<RefreshRoundedIcon />}
                 onClick={() => setData(null)}
               >
-                Generate Again
+                Regenerate
               </Button>
               <Button
                 data-cy="AIApprove"
                 variant="contained"
                 onClick={() => {
-                  onApprove(data);
-                  onClose();
+                  if (selectedContent !== null) {
+                    onApprove(data[selectedContent]);
+                    onClose();
+                  }
                 }}
                 sx={{ ml: 2 }}
                 startIcon={<CheckRoundedIcon />}
               >
-                Approve
+                Insert
               </Button>
             </Box>
           ) : (
@@ -412,10 +462,10 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
         </Stack>
         <Stack gap={1} width="100%">
           <Typography variant="h5" fontWeight={700}>
-            {!!data ? "Your Content is Generated!" : "Generate Content"}
+            {!!data?.length ? "Your Content is Generated!" : "Generate Content"}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {!!data
+            {!!data?.length
               ? "Our AI assistant can make mistakes. Please check important info."
               : "Use our AI assistant to write content for you"}
           </Typography>
@@ -432,12 +482,12 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
           borderColor: "border",
         }}
       >
-        {!!data ? (
+        {!!data?.length ? (
           <Box>
             <InputLabel>{label}</InputLabel>
             <TextField
-              value={data}
-              onChange={(event) => setData(event.target.value)}
+              value={data[0]}
+              onChange={(event) => setData([event.target.value])}
               multiline
               rows={15}
               fullWidth
@@ -550,13 +600,13 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
         p={2.5}
         gap={2}
         display="flex"
-        justifyContent="flex-end"
+        justifyContent={!!data?.length ? "space-between" : "flex-end"}
         borderRadius="0 0 2px 2px"
       >
         <Button variant="outlined" color="inherit" onClick={onClose}>
           Cancel
         </Button>
-        {data ? (
+        {!!data?.length ? (
           <Box>
             <Button
               variant="outlined"
@@ -564,19 +614,19 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
               startIcon={<RefreshRoundedIcon />}
               onClick={() => setData(null)}
             >
-              Generate Again
+              Regenerate
             </Button>
             <Button
               data-cy="AIApprove"
               variant="contained"
               onClick={() => {
-                onApprove(data);
+                onApprove(data[0]);
                 onClose();
               }}
               sx={{ ml: 2 }}
               startIcon={<CheckRoundedIcon />}
             >
-              Approve
+              Insert
             </Button>
           </Box>
         ) : (
