@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { ChangeEvent, memo } from "react";
 
 import { TextField, Box } from "@mui/material";
 
@@ -34,6 +34,11 @@ export const MetaTitle = memo(function MetaTitle({
         valueLength={value?.length ?? 0}
         errors={error ?? {}}
         aiType="title"
+        name="metaTitle"
+        value={value}
+        onChange={(evt: ChangeEvent<HTMLInputElement>) =>
+          onChange(evt.target.value, "metaTitle")
+        }
       >
         <TextField
           name="metaTitle"

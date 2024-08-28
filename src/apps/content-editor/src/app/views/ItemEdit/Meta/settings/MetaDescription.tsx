@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { connect, useDispatch } from "react-redux";
 import { TextField, Box } from "@mui/material";
 
@@ -82,6 +82,11 @@ export default connect()(function MetaDescription({
             : error
         }
         aiType="description"
+        name="metaDescription"
+        value={value}
+        onChange={(evt: ChangeEvent<HTMLInputElement>) =>
+          onChange(evt.target.value, "metaDescription")
+        }
       >
         <TextField
           name="metaDescription"
