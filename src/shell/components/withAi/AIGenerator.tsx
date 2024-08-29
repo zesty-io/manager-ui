@@ -58,18 +58,6 @@ interface Props {
   label: string;
 }
 
-// TODO: Delete after testing
-const DUMMY_META_TITLE_DATA = [
-  "Unveiling Natural Treasures: Discover the Top 5 Hikes in Washington",
-  "Trailblazing Washington's Beauty: Unraveling the Top 5 Hiking Trails",
-  "Escape to the Wilderness: Explore Washington's Best 5 Hikes and Trails",
-];
-const DUMMY_META_DESCRIPTION_DATA = [
-  "Immerse yourself in the unspoiled splendor of Washington through an exploration of its top 5 hiking trails, each revealing the state's breathtaking natural marvels.",
-  "Discover Washington's untamed magnificence by embarking on the top 5 hiking trails that unveil the state's innate wonders, offering an unparalleled adventure amidst nature's grandeur.",
-  "Our AI is scanning your content and generating your meta description based on your parameters",
-];
-
 export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -164,13 +152,9 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
 
   useEffect(() => {
     if (aiResponse?.data) {
-      console.log("ai response: ", aiResponse.data);
-
       // For description and title, response will be a stringified array
       if (aiType === "description" || aiType === "title") {
         const responseArr = JSON.parse(aiResponse.data);
-        console.log(responseArr);
-
         setData(responseArr);
       } else {
         setData([aiResponse.data]);
