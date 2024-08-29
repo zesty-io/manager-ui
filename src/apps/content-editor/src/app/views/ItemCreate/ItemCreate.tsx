@@ -375,12 +375,6 @@ export const ItemCreate = () => {
                 setFieldErrors(errors);
               }}
             />
-            <Divider
-              sx={{
-                mt: 4,
-                mb: 2,
-              }}
-            />
             <Meta
               onUpdateSEOErrors={(hasErrors) => {
                 setHasSEOErrors(hasErrors);
