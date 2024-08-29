@@ -8,6 +8,7 @@ module.exports = {
     API_METRICS: "https://metrics.api.zesty.io",
     API_INSTANCE: ".api.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
+    API_ANALYTICS: "https://analytics.api.zesty.io",
 
     CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-prod.cloudfunctions.net",
 
@@ -56,6 +57,7 @@ module.exports = {
     API_METRICS: "https://metrics.api.stage.zesty.io",
     API_INSTANCE: ".api.stage.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
+    API_ANALYTICS: "https://analytics.api.stage.zesty.io",
 
     CLOUD_FUNCTIONS_DOMAIN:
       "https://us-central1-zesty-stage.cloudfunctions.net",
@@ -101,6 +103,7 @@ module.exports = {
     API_METRICS: "https://metrics.api.dev.zesty.io",
     API_INSTANCE: ".api.dev.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
+    API_ANALYTICS: "https://analytics-api-m3rbwjxm5q-uc.a.run.app",
 
     CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-dev.cloudfunctions.net",
 
@@ -147,6 +150,7 @@ module.exports = {
     API_ACCOUNTS: "//accounts.api.zesty.localdev:3022/v1",
     API_INSTANCE: ".api.zesty.localdev:3023/v1",
     API_INSTANCE_PROTOCOL: "http://",
+    API_ANALYTICS: "https://analytics-api-m3rbwjxm5q-uc.a.run.app",
 
     SERVICE_AUTH: "http://auth.api.zesty.localdev:3011",
     SERVICE_EMAIL: "",

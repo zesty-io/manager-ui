@@ -1,6 +1,6 @@
 describe("Analytics dashboard", () => {
   before(() => {
-    cy.waitOn("*getPropertyList*", () => {
+    cy.waitOn("*properties*", () => {
       cy.visit("/content");
     });
   });
