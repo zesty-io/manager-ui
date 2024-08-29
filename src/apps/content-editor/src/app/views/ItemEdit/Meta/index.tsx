@@ -1,8 +1,19 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { Stack, Box, Typography, ThemeProvider, Divider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import {
+  Stack,
+  Box,
+  Typography,
+  ThemeProvider,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  ListItemButton,
+} from "@mui/material";
+import { Brain, theme } from "@zesty-io/material";
 import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
+import { keyframes } from "@mui/system";
+import { EditRounded } from "@mui/icons-material";
 
 import { ContentInsights } from "./ContentInsights";
 import { useGetContentModelQuery } from "../../../../../../../shell/services/instance";
@@ -23,6 +34,34 @@ import { SitemapPriority } from "./settings/SitemapPriority";
 import { cloneDeep } from "lodash";
 import { SocialMediaPreview } from "./SocialMediaPreview";
 
+const rotateAnimation = keyframes`
+	0% {
+		background-position: 0% 0%;
+	}
+	100% {
+		background-position: 0% 100%;
+	}
+`;
+enum FlowType {
+  AIGenerated,
+  Manual,
+}
+const flowButtons = [
+  {
+    flowType: FlowType.AIGenerated,
+    icon: <Brain sx={{ fontSize: 32 }} />,
+    primaryText: "Yes, improve with AI Meta Data Assistant",
+    secondaryText:
+      "Our AI will scan your content and generate your meta data for you",
+  },
+  {
+    flowType: FlowType.Manual,
+    icon: <EditRounded sx={{ fontSize: 32 }} />,
+    primaryText: "No, I will improve and edit it myself",
+    secondaryText:
+      "Perfect if you already know what you want your Meta Data to be",
+  },
+];
 export const MaxLengths: Record<string, number> = {
   metaLinkText: 150,
   metaTitle: 150,
@@ -57,6 +96,7 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
   const [errors, setErrors] = useState<Errors>({});
+  const [flowType, setFlowType] = useState<FlowType>(null);
 
   // @ts-expect-error untyped
   const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
@@ -116,6 +156,79 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
 
     onUpdateSEOErrors(hasErrors);
   }, [errors]);
+
+  if (isCreateItemPage && flowType === null) {
+    return (
+      <ThemeProvider theme={theme}>
+        <Box
+          sx={{
+            mt: 2.5,
+            mb: 5,
+            borderRadius: 2,
+            p: 0.25,
+            background:
+              "linear-gradient(0deg, rgba(255,93,10,1) 0%, rgba(18,183,106,1) 25%, rgba(11,165,236,1) 50%, rgba(238,70,188,1) 75%, rgba(105,56,239,1) 100%)",
+            animation: `${rotateAnimation} 1.5s linear alternate infinite`,
+            backgroundSize: "300% 300%",
+          }}
+        >
+          <Stack gap={3} p={3} bgcolor="background.paper" borderRadius={1.5}>
+            <Box>
+              <Typography
+                variant="h5"
+                fontWeight={600}
+                mb={1}
+                color="text.primary"
+              >
+                Would you like to improve your Meta Title & Description?
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Our AI Assistant will scan your content and improve your meta
+                title and description to help improve search engine visibility.{" "}
+              </Typography>
+            </Box>
+            {flowButtons.map((data) => (
+              <ListItemButton
+                key={data.flowType}
+                onClick={() => setFlowType(data.flowType)}
+                sx={{
+                  borderRadius: 2,
+                  border: 1,
+                  borderColor: "border",
+                  backgroundColor: "common.white",
+                  py: 2,
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 48 }}>{data.icon}</ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography
+                      variant="h6"
+                      fontWeight={600}
+                      color="text.primary"
+                    >
+                      {data.primaryText}
+                    </Typography>
+                  }
+                  disableTypography
+                  sx={{ my: 0 }}
+                  secondary={
+                    <Typography
+                      variant="body2"
+                      sx={{ mt: 0.5 }}
+                      color="text.primary"
+                    >
+                      {data.secondaryText}
+                    </Typography>
+                  }
+                />
+              </ListItemButton>
+            ))}
+          </Stack>
+        </Box>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider theme={theme}>
