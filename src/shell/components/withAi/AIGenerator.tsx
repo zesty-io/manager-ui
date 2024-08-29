@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import {
   Button,
   Box,
@@ -21,13 +21,19 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import { useAiGenerationMutation } from "../../services/cloudFunctions";
-import { useGetLangsMappingQuery } from "../../services/instance";
 import { Brain } from "@zesty-io/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useParams } from "react-router";
+
 import { notify } from "../../store/notifications";
 import openAIBadge from "../../../../public/images/openai-badge.svg";
 import { FieldTypeNumber } from "../FieldTypeNumber";
+import { useAiGenerationMutation } from "../../services/cloudFunctions";
+import {
+  useGetContentModelFieldsQuery,
+  useGetLangsMappingQuery,
+} from "../../services/instance";
+import { AppState } from "../../store/types";
 
 const DEFAULT_LIMITS: Record<AIType, number> = {
   text: 150,
@@ -66,6 +72,19 @@ const DUMMY_META_DESCRIPTION_DATA = [
 
 export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
+  const { modelZUID, itemZUID } = useParams<{
+    modelZUID: string;
+    itemZUID: string;
+  }>();
+  const item = useSelector(
+    (state: AppState) =>
+      state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
+  );
+  const { data: fields } = useGetContentModelFieldsQuery(modelZUID, {
+    skip: !modelZUID,
+  });
   const [topic, setTopic] = useState("");
   const [audienceDescription, setAudienceDescription] = useState("");
   const [tone, setTone] = useState<keyof typeof TONE_OPTIONS>("professional");
@@ -84,15 +103,52 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
   const [aiGenerate, { isLoading, isError, data: aiResponse }] =
     useAiGenerationMutation();
 
+  const allTextFieldContent = useMemo(() => {
+    if (
+      (aiType !== "title" && aiType !== "description") ||
+      !fields?.length ||
+      !Object.keys(item?.data)?.length
+    )
+      return "";
+
+    const textFieldTypes = [
+      "text",
+      "wysiwyg_basic",
+      "wysiwyg_advanced",
+      "article_writer",
+      "markdown",
+      "textarea",
+    ];
+
+    return fields.reduce((accu, curr) => {
+      if (!curr.deletedAt && textFieldTypes.includes(curr.datatype)) {
+        return (accu = `${accu} ${item.data[curr.name] || ""}`);
+      }
+
+      return accu;
+    }, "");
+  }, [fields, item?.data]);
+
   const handleGenerate = () => {
-    request.current = aiGenerate({
-      type: aiType,
-      length: limit,
-      phrase: topic,
-      lang: language.value,
-      tone,
-      audience: audienceDescription,
-    });
+    if (aiType === "description" || aiType === "title") {
+      request.current = aiGenerate({
+        type: aiType,
+        lang: language.value,
+        tone,
+        audience: audienceDescription,
+        content: allTextFieldContent,
+        keywords,
+      });
+    } else {
+      request.current = aiGenerate({
+        type: aiType,
+        length: limit,
+        phrase: topic,
+        lang: language.value,
+        tone,
+        audience: audienceDescription,
+      });
+    }
   };
 
   useEffect(() => {
@@ -108,8 +164,17 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
 
   useEffect(() => {
     if (aiResponse?.data) {
-      //TODO: Verify from Allen if response will always be an array
-      setData([aiResponse.data]);
+      console.log("ai response: ", aiResponse.data);
+
+      // For description and title, response will be a stringified array
+      if (aiType === "description" || aiType === "title") {
+        const responseArr = JSON.parse(aiResponse.data);
+        console.log(responseArr);
+
+        setData(responseArr);
+      } else {
+        setData([aiResponse.data]);
+      }
     }
   }, [aiResponse]);
 
@@ -288,7 +353,7 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                     fontWeight={600}
                     color="text.primary"
                   >
-                    {value}
+                    {String(value)}
                   </Typography>
                 </ListItemButton>
               ))}
@@ -416,7 +481,6 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
               data-cy="AIGenerate"
               variant="contained"
               onClick={handleGenerate}
-              disabled={!topic}
             >
               Generate
             </Button>

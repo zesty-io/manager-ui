@@ -76,7 +76,7 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
       setKey(key + 1);
     } else {
       props.onChange(
-        { target: { value: `${props.value}${generatedText}` } },
+        { target: { value: `${props.value || ""}${generatedText}` } },
         props.name
       );
     }
