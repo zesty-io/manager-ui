@@ -50,6 +50,7 @@ const TONE_OPTIONS = {
   succint: "Succinct - Clear, factual, with no hyperbole",
 };
 
+// description and title are used for seo meta title & description
 type AIType = "text" | "paragraph" | "description" | "title" | "word";
 interface Props {
   onApprove: (data: string) => void;
@@ -92,6 +93,8 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
     useAiGenerationMutation();
 
   const allTextFieldContent = useMemo(() => {
+    // This is really only needed for seo meta title & description
+    // so we skip it for other types
     if (
       (aiType !== "title" && aiType !== "description") ||
       !fields?.length ||
