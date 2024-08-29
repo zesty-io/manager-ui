@@ -141,19 +141,6 @@ export const ItemCreate = () => {
     return hasErrors;
   }, [fieldErrors]);
 
-  const hasSingleLineTextFieldWithValue = useMemo(() => {
-    if (!fields?.length && !item?.data) return false;
-
-    return fields.some((field) => {
-      // TODO: Clarify if this check should only be for single line text fields
-      if (field.datatype === "text") {
-        return !!item.data[field.name];
-      }
-
-      return false;
-    });
-  }, [fields, item?.data]);
-
   const loadItemFields = async (modelZUID: string) => {
     setLoading(true);
     try {
@@ -404,36 +391,34 @@ export const ItemCreate = () => {
           <ThemeProvider theme={theme}>
             <Box position="sticky" top={0} alignSelf="flex-start" width="40%">
               <SocialMediaPreview />
-              {!!hasSingleLineTextFieldWithValue && (
-                <Button
-                  variant="text"
-                  color="inherit"
-                  size="large"
-                  startIcon={
-                    <>
-                      <svg width={0} height={0}>
-                        <linearGradient
-                          id="gradientFill"
-                          x1={1}
-                          y1={0}
-                          x2={1}
-                          y2={1}
-                        >
-                          <stop offset="0%" stopColor="#0BA5EC" />
-                          <stop offset="50%" stopColor="#EE46BC" />
-                          <stop offset="100%" stopColor="#6938EF" />
-                        </linearGradient>
-                      </svg>
-                      <Brain sx={{ fill: "url(#gradientFill)" }} />
-                    </>
-                  }
-                  sx={{
-                    mt: 1.5,
-                  }}
-                >
-                  Improve with AI
-                </Button>
-              )}
+              <Button
+                variant="text"
+                color="inherit"
+                size="large"
+                startIcon={
+                  <>
+                    <svg width={0} height={0}>
+                      <linearGradient
+                        id="gradientFill"
+                        x1={1}
+                        y1={0}
+                        x2={1}
+                        y2={1}
+                      >
+                        <stop offset="0%" stopColor="#0BA5EC" />
+                        <stop offset="50%" stopColor="#EE46BC" />
+                        <stop offset="100%" stopColor="#6938EF" />
+                      </linearGradient>
+                    </svg>
+                    <Brain sx={{ fill: "url(#gradientFill)" }} />
+                  </>
+                }
+                sx={{
+                  mt: 1.5,
+                }}
+              >
+                Improve with AI
+              </Button>
             </Box>
           </ThemeProvider>
         </Stack>
