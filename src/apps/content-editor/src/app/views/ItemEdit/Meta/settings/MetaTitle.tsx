@@ -14,11 +14,17 @@ type MetaTitleProps = {
   value: string;
   onChange: (value: string, name: string) => void;
   error: Error;
+  saveMetaTitleParameters?: boolean;
+  onResetFlowType: () => void;
+  onAIMetaTitleInserted?: () => void;
 };
 export const MetaTitle = memo(function MetaTitle({
   value,
   onChange,
   error,
+  saveMetaTitleParameters,
+  onResetFlowType,
+  onAIMetaTitleInserted,
 }: MetaTitleProps) {
   return (
     <Box data-cy="metaTitle">
@@ -36,9 +42,14 @@ export const MetaTitle = memo(function MetaTitle({
         aiType="title"
         name="metaTitle"
         value={value}
-        onChange={(evt: ChangeEvent<HTMLInputElement>) =>
-          onChange(evt.target.value, "metaTitle")
-        }
+        onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+          onChange(evt.target.value, "metaTitle");
+          onAIMetaTitleInserted?.();
+        }}
+        saveMetaTitleParameters={saveMetaTitleParameters}
+        onResetFlowType={() => {
+          onResetFlowType?.();
+        }}
       >
         <TextField
           name="metaTitle"

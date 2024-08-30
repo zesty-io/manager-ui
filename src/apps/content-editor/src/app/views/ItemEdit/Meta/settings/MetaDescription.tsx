@@ -15,11 +15,13 @@ type MetaDescriptionProps = {
   value: string;
   onChange: (value: string, name: string) => void;
   error: Error;
+  onResetFlowType: () => void;
 };
 export default connect()(function MetaDescription({
   value,
   onChange,
   error,
+  onResetFlowType,
 }: MetaDescriptionProps) {
   const dispatch = useDispatch();
   const [contentValidationError, setContentValidationError] = useState("");
@@ -84,9 +86,13 @@ export default connect()(function MetaDescription({
         aiType="description"
         name="metaDescription"
         value={value}
-        onChange={(evt: ChangeEvent<HTMLInputElement>) =>
-          onChange(evt.target.value, "metaDescription")
-        }
+        onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+          onChange(evt.target.value, "metaDescription");
+          onResetFlowType?.();
+        }}
+        onResetFlowType={() => {
+          onResetFlowType?.();
+        }}
       >
         <TextField
           name="metaDescription"

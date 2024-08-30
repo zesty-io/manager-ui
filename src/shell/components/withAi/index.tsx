@@ -53,6 +53,8 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
   };
 
   const handleClose = () => {
+    // Reset the meta details flow type
+    props.onResetFlowType?.();
     setAnchorEl(null);
   };
 
@@ -178,6 +180,7 @@ export const withAI = (WrappedComponent: ComponentType) => (props: any) => {
               onClose={handleClose}
               aiType={props.aiType}
               label={props.label}
+              saveMetaTitleParameters={props.saveMetaTitleParameters}
             />
           </Popover>
         </ThemeProvider>

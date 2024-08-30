@@ -20,6 +20,7 @@ import { useGetContentModelQuery } from "../../../../../../../shell/services/ins
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
 import { fetchGlobalItem } from "../../../../../../../shell/store/content";
+import { AIGeneratorParameterProvider } from "./AIGeneratorParameterProvider";
 
 // Fields
 import { MetaImage } from "./settings/MetaImage";
@@ -274,16 +275,49 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
                 media content in the preview on the right.
               </Typography>
             </Box>
-            <MetaTitle
-              value={web.metaTitle}
-              onChange={handleOnChange}
-              error={errors?.metaTitle}
-            />
-            <MetaDescription
-              value={web.metaDescription}
-              onChange={handleOnChange}
-              error={errors?.metaDescription}
-            />
+            <AIGeneratorParameterProvider>
+              <MetaTitle
+                value={web.metaTitle}
+                onChange={handleOnChange}
+                error={errors?.metaTitle}
+                saveMetaTitleParameters={flowType === FlowType.AIGenerated}
+                onResetFlowType={() => {
+                  if (flowType === FlowType.AIGenerated) {
+                    setFlowType(FlowType.Manual);
+                  }
+                }}
+                onAIMetaTitleInserted={() => {
+                  // Scroll to and open the meta description ai generator to continue
+                  // with the AI-assisted flow
+                  if (flowType === FlowType.AIGenerated) {
+                    const metaDescriptionEl = document.querySelector(
+                      "[data-cy='metaDescription']"
+                    );
+
+                    metaDescriptionEl?.scrollIntoView({ behavior: "smooth" });
+
+                    // Needed so that it only opens the popup once the field has
+                    // already scrolled to the top, otherwise the popup will
+                    // stay at the meta title's original location
+                    setTimeout(() => {
+                      metaDescriptionEl
+                        ?.querySelector<HTMLButtonElement>("[data-cy='AIOpen']")
+                        ?.click();
+                    });
+                  }
+                }}
+              />
+              <MetaDescription
+                value={web.metaDescription}
+                onChange={handleOnChange}
+                error={errors?.metaDescription}
+                onResetFlowType={() => {
+                  if (flowType === FlowType.AIGenerated) {
+                    setFlowType(FlowType.Manual);
+                  }
+                }}
+              />
+            </AIGeneratorParameterProvider>
             <MetaImage onChange={handleOnChange} />
           </Stack>
           {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (

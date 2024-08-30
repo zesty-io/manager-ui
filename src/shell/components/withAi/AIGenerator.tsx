@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useContext } from "react";
 import {
   Button,
   Box,
@@ -34,6 +34,7 @@ import {
   useGetLangsMappingQuery,
 } from "../../services/instance";
 import { AppState } from "../../store/types";
+import { AIGeneratorParameterContext } from "../../../apps/content-editor/src/app/views/ItemEdit/Meta/AIGeneratorParameterProvider";
 
 const DEFAULT_LIMITS: Record<AIType, number> = {
   text: 150,
@@ -57,9 +58,16 @@ interface Props {
   onClose: () => void;
   aiType: AIType;
   label: string;
+  saveMetaTitleParameters?: boolean;
 }
 
-export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
+export const AIGenerator = ({
+  onApprove,
+  onClose,
+  aiType,
+  label,
+  saveMetaTitleParameters,
+}: Props) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -87,6 +95,9 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
   });
 
   const [data, setData] = useState([]);
+  const [parameters, updateParameters] = useContext(
+    AIGeneratorParameterContext
+  );
   const { data: langMappings } = useGetLangsMappingQuery();
 
   const [aiGenerate, { isLoading, isError, data: aiResponse }] =
@@ -141,6 +152,35 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
       });
     }
   };
+
+  useEffect(() => {
+    if (aiType === "title") {
+      updateParameters?.(null);
+    }
+
+    if (aiType === "description") {
+      if (parameters) {
+        // Auto fill data of the ai generator for the meta description
+        // using the previously saved parameters used in the meta title.
+        // This is used during the AI-assisted metadata creation flow.
+        setTone(
+          (parameters.tone as keyof typeof TONE_OPTIONS) || "professional"
+        );
+        setAudienceDescription(parameters.audience || "");
+        setKeywords(parameters.keywords || "");
+        setLanguage(
+          languageOptions?.find(
+            (language) => language.value === parameters.lang
+          ) || {
+            label: "English (United States)",
+            value: "en-US",
+          }
+        );
+      }
+
+      updateParameters?.(null);
+    }
+  }, [aiType]);
 
   useEffect(() => {
     if (isError) {
@@ -382,7 +422,9 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                   fullWidth
                 >
                   {Object.entries(TONE_OPTIONS).map(([value, text]) => (
-                    <MenuItem value={value}>{text}</MenuItem>
+                    <MenuItem key={value} value={value}>
+                      {text}
+                    </MenuItem>
                   ))}
                 </Select>
               </Box>
@@ -453,6 +495,17 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                 variant="contained"
                 onClick={() => {
                   if (selectedContent !== null) {
+                    // Save the meta title ai parameters to memory so it can be
+                    // shared to the meta description ai popup during the AI-assisted
+                    // metadata creation flow
+                    if (saveMetaTitleParameters) {
+                      updateParameters?.({
+                        lang: language.value,
+                        tone,
+                        audience: audienceDescription,
+                        keywords,
+                      });
+                    }
                     onApprove(data[selectedContent]);
                     onClose();
                   }
@@ -586,7 +639,9 @@ export const AIGenerator = ({ onApprove, onClose, aiType, label }: Props) => {
                 fullWidth
               >
                 {Object.entries(TONE_OPTIONS).map(([value, text]) => (
-                  <MenuItem value={value}>{text}</MenuItem>
+                  <MenuItem key={value} value={value}>
+                    {text}
+                  </MenuItem>
                 ))}
               </Select>
             </Box>
