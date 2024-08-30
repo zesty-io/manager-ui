@@ -157,6 +157,24 @@ export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
     onUpdateSEOErrors(hasErrors);
   }, [errors]);
 
+  useEffect(() => {
+    // Automatically scroll into view the meta title field & open the ai generator
+    if (flowType === FlowType.AIGenerated) {
+      const metaTitleEl = document.querySelector("[data-cy='metaTitle']");
+
+      metaTitleEl?.scrollIntoView({ behavior: "smooth" });
+
+      // Needed so that it only opens the popup once the field has
+      // already scrolled to the top, otherwise the popup will
+      // stay at the meta title's original location
+      setTimeout(() => {
+        metaTitleEl
+          ?.querySelector<HTMLButtonElement>("[data-cy='AIOpen']")
+          ?.click();
+      });
+    }
+  }, [flowType]);
+
   if (isCreateItemPage && flowType === null) {
     return (
       <ThemeProvider theme={theme}>
