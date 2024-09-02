@@ -379,7 +379,11 @@ export function fetchItems(modelZUID, options = {}) {
 //   };
 // }
 
-export function saveItem(itemZUID, action = "") {
+export function saveItem({
+  itemZUID,
+  action = "",
+  skipContentItemValidation = false,
+}) {
   return (dispatch, getState) => {
     const state = getState();
     const item = cloneDeep(state.content[itemZUID]);
@@ -431,12 +435,15 @@ export function saveItem(itemZUID, action = "") {
           item.data[field.name] > field.settings?.maxValue)
     );
 
+    // When skipContentItemValidation is true, this means that only the
+    // SEO meta tags were changed, so we skip validating the content item
     if (
-      missingRequired?.length ||
-      lackingCharLength?.length ||
-      regexPatternMismatch?.length ||
-      regexRestrictPatternMatch?.length ||
-      invalidRange?.length
+      !skipContentItemValidation &&
+      (missingRequired?.length ||
+        lackingCharLength?.length ||
+        regexPatternMismatch?.length ||
+        regexRestrictPatternMatch?.length ||
+        invalidRange?.length)
     ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",

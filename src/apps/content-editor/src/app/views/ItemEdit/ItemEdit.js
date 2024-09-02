@@ -5,6 +5,7 @@ import {
   Redirect,
   useParams,
   useHistory,
+  useLocation,
 } from "react-router-dom";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
@@ -70,6 +71,7 @@ export default function ItemEdit() {
   const dispatch = useDispatch();
   const history = useHistory();
   const isMounted = useIsMounted();
+  const location = useLocation();
   const { modelZUID, itemZUID } = useParams();
   const item = useSelector((state) => state.content[itemZUID]);
   const items = useSelector((state) => state.content);
@@ -234,7 +236,15 @@ export default function ItemEdit() {
 
     setSaving(true);
     try {
-      const res = await dispatch(saveItem(itemZUID));
+      // Skip content item fields validation when in the meta tab since this
+      // means that the user only wants to update the meta fields
+      const res = await dispatch(
+        saveItem({
+          itemZUID,
+          skipContentItemValidation:
+            location?.pathname?.split("/")?.pop() === "meta",
+        })
+      );
       if (res.err === "VALIDATION_ERROR") {
         const missingRequiredFieldNames = res.missingRequired?.reduce(
           (acc, curr) => {
