@@ -302,7 +302,7 @@ export default function ItemEdit() {
         }
 
         setFieldErrors(errors);
-        return;
+        throw new Error(errors);
       }
       if (res.status === 400) {
         dispatch(
@@ -311,7 +311,7 @@ export default function ItemEdit() {
             kind: "error",
           })
         );
-        return;
+        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
       }
 
       dispatch(
@@ -326,6 +326,7 @@ export default function ItemEdit() {
       dispatch(fetchAuditTrailDrafting(itemZUID));
     } catch (err) {
       console.error(err);
+      throw new Error(err);
       // we need to set the item to dirty again because the save failed
       dispatch({
         type: "MARK_ITEM_DIRTY",
