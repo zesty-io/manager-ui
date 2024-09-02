@@ -878,7 +878,7 @@ export const MediaItem = ({
                 }}
               >
                 {!isURL && !isBynderAsset && (
-                  <>
+                  <Box>
                     <MenuItem
                       onClick={(event) => {
                         event.stopPropagation();
@@ -914,7 +914,7 @@ export const MediaItem = ({
                       </ListItemIcon>
                       <ListItemText>Copy ZUID</ListItemText>
                     </MenuItem>
-                  </>
+                  </Box>
                 )}
                 <MenuItem
                   onClick={(event) => {
