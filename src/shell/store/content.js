@@ -546,6 +546,11 @@ export function createItem(modelZUID, itemZUID) {
       return false;
     });
 
+    const hasMissingRequiredSEOFields =
+      !item?.web?.metaTitle ||
+      !item?.web?.metaDescription ||
+      !item?.web?.pathPart;
+
     // Check minlength is satisfied
     const lackingCharLength = fields?.filter(
       (field) =>
@@ -583,7 +588,8 @@ export function createItem(modelZUID, itemZUID) {
       lackingCharLength?.length ||
       regexPatternMismatch?.length ||
       regexRestrictPatternMatch?.length ||
-      invalidRange?.length
+      invalidRange?.length ||
+      hasMissingRequiredSEOFields
     ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",
