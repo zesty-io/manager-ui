@@ -36,13 +36,7 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
     let path: string[] = [domain];
 
     if (parent) {
-      path = [
-        ...path,
-        ...(parent.web?.path?.split("/") || []),
-        item?.web?.pathPart,
-      ];
-    } else {
-      path = [...path, item?.web?.pathPart];
+      path = [...path, ...(parent.web?.path?.split("/") || [])];
     }
 
     // Remove empty strings
