@@ -89,9 +89,7 @@ export default function ItemEdit() {
   const [saveClicked, setSaveClicked] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [hasSEOErrors, setHasSEOErrors] = useState(false);
-  const [headerTitle, setHeaderTitle] = useState(
-    item?.web?.metaTitle || item?.web?.metaLinkText || ""
-  );
+  const [headerTitle, setHeaderTitle] = useState("");
   const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
@@ -134,6 +132,12 @@ export default function ItemEdit() {
       releaseLock(itemZUID);
     };
   }, [modelZUID, itemZUID]);
+
+  useEffect(() => {
+    if (!loading) {
+      setHeaderTitle(item?.web?.metaTitle || item?.web?.metaLinkText || "");
+    }
+  }, [loading]);
 
   const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
