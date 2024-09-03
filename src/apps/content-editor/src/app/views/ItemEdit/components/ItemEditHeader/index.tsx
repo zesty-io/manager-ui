@@ -82,8 +82,14 @@ type HeaderProps = {
   saving: boolean;
   onSave: () => void;
   hasError: boolean;
+  headerTitle: string;
 };
-export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
+export const ItemEditHeader = ({
+  saving,
+  onSave,
+  hasError,
+  headerTitle,
+}: HeaderProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -138,7 +144,7 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
                   overflow: "hidden",
                 }}
               >
-                {item?.web?.metaTitle || item?.web?.metaLinkText}
+                {headerTitle || ""}
               </Typography>
             </Box>
             <Stack gap={1.25}>

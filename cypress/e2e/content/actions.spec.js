@@ -213,6 +213,10 @@ describe("Actions in content editor", () => {
     });
 
     cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
+    cy.getBySelector("metaDescription")
+      .find("textarea")
+      .first()
+      .type(timestamp);
     cy.getBySelector("CreateItemSaveButton").click();
 
     cy.contains("Created Item", { timeout: 5000 }).should("exist");

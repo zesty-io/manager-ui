@@ -113,7 +113,6 @@ export const ItemRoute = ({
     // Replace ampersand characters with 'and'
     // Only allow alphanumeric characters
     const path = evt.target.value
-      .trim()
       .toLowerCase()
       .replace(/\&/g, "and")
       .replace(/[^a-zA-Z0-9]/g, "-");

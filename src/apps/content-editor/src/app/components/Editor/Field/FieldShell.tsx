@@ -282,7 +282,7 @@ const FieldLabel = memo(
         {(!!customTooltip || settings?.settings?.tooltip) && (
           <Tooltip
             title={customTooltip ?? settings.settings.tooltip}
-            placement="top"
+            placement="right"
           >
             <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
           </Tooltip>
