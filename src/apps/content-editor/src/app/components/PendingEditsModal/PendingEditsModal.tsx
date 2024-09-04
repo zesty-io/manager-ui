@@ -44,12 +44,20 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
     switch (action) {
       case "save":
         setLoading(true);
-        props.onSave().then(() => {
-          setLoading(false);
-          setOpen(false);
-          // @ts-ignore
-          answer(true);
-        });
+        props
+          .onSave()
+          .then((i) => {
+            // @ts-ignore
+            answer(true);
+          })
+          .catch((err) => {
+            // @ts-ignore
+            answer(false);
+          })
+          .finally(() => {
+            setLoading(false);
+            setOpen(false);
+          });
         break;
       case "delete":
         setLoading(true);

@@ -5,6 +5,7 @@ import {
   Redirect,
   useParams,
   useHistory,
+  useLocation,
 } from "react-router-dom";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
@@ -70,6 +71,7 @@ export default function ItemEdit() {
   const dispatch = useDispatch();
   const history = useHistory();
   const isMounted = useIsMounted();
+  const location = useLocation();
   const { modelZUID, itemZUID } = useParams();
   const item = useSelector((state) => state.content[itemZUID]);
   const items = useSelector((state) => state.content);
@@ -87,6 +89,7 @@ export default function ItemEdit() {
   const [saveClicked, setSaveClicked] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [hasSEOErrors, setHasSEOErrors] = useState(false);
+  const [headerTitle, setHeaderTitle] = useState("");
   const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
@@ -129,6 +132,12 @@ export default function ItemEdit() {
       releaseLock(itemZUID);
     };
   }, [modelZUID, itemZUID]);
+
+  useEffect(() => {
+    if (!loading) {
+      setHeaderTitle(item?.web?.metaTitle || item?.web?.metaLinkText || "");
+    }
+  }, [loading]);
 
   const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
@@ -234,7 +243,15 @@ export default function ItemEdit() {
 
     setSaving(true);
     try {
-      const res = await dispatch(saveItem(itemZUID));
+      // Skip content item fields validation when in the meta tab since this
+      // means that the user only wants to update the meta fields
+      const res = await dispatch(
+        saveItem({
+          itemZUID,
+          skipContentItemValidation:
+            location?.pathname?.split("/")?.pop() === "meta",
+        })
+      );
       if (res.err === "VALIDATION_ERROR") {
         const missingRequiredFieldNames = res.missingRequired?.reduce(
           (acc, curr) => {
@@ -302,7 +319,7 @@ export default function ItemEdit() {
         }
 
         setFieldErrors(errors);
-        return;
+        throw new Error(errors);
       }
       if (res.status === 400) {
         dispatch(
@@ -311,9 +328,10 @@ export default function ItemEdit() {
             kind: "error",
           })
         );
-        return;
+        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
       }
 
+      setHeaderTitle(item?.web?.metaTitle || item?.web?.metaLinkText || "");
       dispatch(
         notify({
           message: `Item Saved: ${
@@ -326,6 +344,7 @@ export default function ItemEdit() {
       dispatch(fetchAuditTrailDrafting(itemZUID));
     } catch (err) {
       console.error(err);
+      throw new Error(err);
       // we need to set the item to dirty again because the save failed
       dispatch({
         type: "MARK_ITEM_DIRTY",
@@ -403,6 +422,7 @@ export default function ItemEdit() {
                 onSave={save}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
+                headerTitle={headerTitle}
               />
               <Switch>
                 <Route

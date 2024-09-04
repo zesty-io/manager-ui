@@ -1,4 +1,11 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { Stack, Box, Typography, ThemeProvider, Divider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useParams, useLocation } from "react-router";
@@ -9,6 +16,7 @@ import { useGetContentModelQuery } from "../../../../../../../shell/services/ins
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
 import { fetchGlobalItem } from "../../../../../../../shell/store/content";
+import { Web } from "../../../../../../../shell/services/types";
 
 // Fields
 import { MetaImage } from "./settings/MetaImage";
@@ -34,209 +42,250 @@ const REQUIRED_FIELDS = [
   "metaDescription",
   "parentZUID",
   "pathPart",
-] as const;
+];
 
 type Errors = Record<string, Error>;
 type MetaProps = {
   isSaving: boolean;
   onUpdateSEOErrors: (hasErrors: boolean) => void;
 };
-export const Meta = ({ isSaving, onUpdateSEOErrors }: MetaProps) => {
-  const dispatch = useDispatch();
-  const location = useLocation();
-  const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
-  const { modelZUID, itemZUID } = useParams<{
-    modelZUID: string;
-    itemZUID: string;
-  }>();
-  const { data: model } = useGetContentModelQuery(modelZUID, {
-    skip: !modelZUID,
-  });
-  const { meta, data, web } = useSelector(
-    (state: AppState) =>
-      state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
-  );
-  const [errors, setErrors] = useState<Errors>({});
+export const Meta = forwardRef(
+  ({ isSaving, onUpdateSEOErrors }: MetaProps, ref) => {
+    const dispatch = useDispatch();
+    const location = useLocation();
+    const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
+    const { modelZUID, itemZUID } = useParams<{
+      modelZUID: string;
+      itemZUID: string;
+    }>();
+    const { data: model } = useGetContentModelQuery(modelZUID, {
+      skip: !modelZUID,
+    });
+    const { meta, data, web } = useSelector(
+      (state: AppState) =>
+        state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
+    );
+    const [errors, setErrors] = useState<Errors>({});
 
-  // @ts-expect-error untyped
-  const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
+    // @ts-expect-error untyped
+    const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
 
-  const handleOnChange = useCallback(
-    (value, name) => {
-      if (!name) {
-        throw new Error("Input is missing name attribute");
-      }
+    const handleOnChange = useCallback(
+      (value, name) => {
+        if (!name) {
+          throw new Error("Input is missing name attribute");
+        }
 
-      const currentErrors = cloneDeep(errors);
+        const currentErrors = cloneDeep(errors);
 
-      if (REQUIRED_FIELDS.includes(name)) {
-        currentErrors[name] = {
-          ...currentErrors?.[name],
-          MISSING_REQUIRED: !value,
+        if (REQUIRED_FIELDS.includes(name)) {
+          currentErrors[name] = {
+            ...currentErrors?.[name],
+            MISSING_REQUIRED: !value,
+          };
+        }
+
+        if (MaxLengths[name]) {
+          currentErrors[name] = {
+            ...currentErrors?.[name],
+            EXCEEDING_MAXLENGTH:
+              value?.length > MaxLengths[name]
+                ? value?.length - MaxLengths[name]
+                : 0,
+          };
+        }
+
+        setErrors(currentErrors);
+
+        dispatch({
+          // The og_image is stored as an ordinary field item and not a SEO field item
+          type: name === "og_image" ? "SET_ITEM_DATA" : "SET_ITEM_WEB",
+          itemZUID: meta?.ZUID,
+          key: name,
+          value: value,
+        });
+      },
+      [meta?.ZUID, errors]
+    );
+
+    useImperativeHandle(
+      ref,
+      () => {
+        return {
+          validateMetaFields() {
+            const currentErrors = cloneDeep(errors);
+
+            REQUIRED_FIELDS.forEach((fieldName) => {
+              // @ts-expect-error
+              const value = web[fieldName];
+
+              currentErrors[fieldName] = {
+                ...currentErrors?.[fieldName],
+                MISSING_REQUIRED: !value,
+              };
+            });
+
+            Object.keys(MaxLengths).forEach((fieldName) => {
+              // @ts-expect-error
+              const value = web[fieldName];
+
+              currentErrors[fieldName] = {
+                ...currentErrors?.[fieldName],
+                EXCEEDING_MAXLENGTH:
+                  value?.length > MaxLengths[fieldName]
+                    ? value?.length - MaxLengths[fieldName]
+                    : 0,
+              };
+            });
+
+            setTimeout(() => {
+              setErrors(currentErrors);
+            });
+          },
         };
+      },
+      [errors, web]
+    );
+
+    useEffect(() => {
+      if (isSaving) {
+        setErrors({});
+        return;
       }
+    }, [isSaving]);
 
-      if (MaxLengths[name]) {
-        currentErrors[name] = {
-          ...currentErrors?.[name],
-          EXCEEDING_MAXLENGTH:
-            value?.length > MaxLengths[name]
-              ? value?.length - MaxLengths[name]
-              : 0,
-        };
-      }
+    useEffect(() => {
+      const hasErrors = Object.values(errors)
+        ?.map((error) => {
+          return Object.values(error) ?? [];
+        })
+        ?.flat()
+        .some((error) => !!error);
 
-      setErrors(currentErrors);
+      onUpdateSEOErrors(hasErrors);
+    }, [errors]);
 
-      dispatch({
-        // The og_image is stored as an ordinary field item and not a SEO field item
-        type: name === "og_image" ? "SET_ITEM_DATA" : "SET_ITEM_WEB",
-        itemZUID: meta?.ZUID,
-        key: name,
-        value: value,
-      });
-    },
-    [meta?.ZUID, errors]
-  );
-
-  useEffect(() => {
-    if (isSaving) {
-      setErrors({});
-      return;
-    }
-  }, [isSaving]);
-
-  useEffect(() => {
-    const hasErrors = Object.values(errors)
-      ?.map((error) => {
-        return Object.values(error) ?? [];
-      })
-      ?.flat()
-      .some((error) => !!error);
-
-    onUpdateSEOErrors(hasErrors);
-  }, [errors]);
-
-  return (
-    <ThemeProvider theme={theme}>
-      <Stack
-        direction="row"
-        gap={4}
-        bgcolor="grey.50"
-        pt={2.5}
-        px={isCreateItemPage ? 0 : 4}
-        color="text.primary"
-        sx={{
-          scrollbarWidth: "none",
-          overflowY: "auto",
-        }}
-      >
-        <Stack flex={1} gap={4}>
-          <Stack gap={3}>
-            <Box>
-              <Typography variant="h5" fontWeight={700} mb={0.5}>
-                SEO & Open Graph Settings
-              </Typography>
-              <Typography color="text.secondary">
-                Specify this page's title and description. You can see how
-                they'll look in search engine results pages (SERPs) and social
-                media content in the preview on the right.
-              </Typography>
-            </Box>
-            <MetaTitle
-              value={web.metaTitle}
-              onChange={handleOnChange}
-              error={errors?.metaTitle}
-            />
-            <MetaDescription
-              value={web.metaDescription}
-              onChange={handleOnChange}
-              error={errors?.metaDescription}
-            />
-            <MetaImage onChange={handleOnChange} />
-          </Stack>
-          {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (
+    return (
+      <ThemeProvider theme={theme}>
+        <Stack
+          direction="row"
+          gap={4}
+          bgcolor="grey.50"
+          pt={2.5}
+          px={isCreateItemPage ? 0 : 4}
+          color="text.primary"
+          sx={{
+            scrollbarWidth: "none",
+            overflowY: "auto",
+          }}
+        >
+          <Stack flex={1} gap={4}>
             <Stack gap={3}>
               <Box>
                 <Typography variant="h5" fontWeight={700} mb={0.5}>
-                  URL Settings
+                  SEO & Open Graph Settings
                 </Typography>
                 <Typography color="text.secondary">
-                  Define the URL of your web page
+                  Specify this page's title and description. You can see how
+                  they'll look in search engine results pages (SERPs) and social
+                  media content in the preview on the right.
                 </Typography>
               </Box>
-              <ItemParent onChange={handleOnChange} />
-              <ItemRoute
+              <MetaTitle
+                value={web.metaTitle}
                 onChange={handleOnChange}
-                error={errors?.pathPart}
-                onUpdateErrors={(name, error) => {
-                  setErrors({
-                    ...errors,
-                    [name]: {
-                      ...errors?.[name],
-                      ...error,
-                    },
-                  });
-                }}
+                error={errors?.metaTitle}
               />
+              <MetaDescription
+                value={web.metaDescription}
+                onChange={handleOnChange}
+                error={errors?.metaDescription}
+              />
+              <MetaImage onChange={handleOnChange} />
             </Stack>
-          )}
-          <Stack gap={3} pb={2.5}>
-            <Box>
-              <Typography variant="h5" fontWeight={700} mb={0.5}>
-                Advanced Settings
-              </Typography>
-              <Typography color="text.secondary">
-                Optimize your content item's SEO further
-              </Typography>
-            </Box>
-            {model?.type !== "dataset" && (
-              <>
-                <SitemapPriority
-                  // @ts-expect-error untyped
-                  sitemapPriority={web.sitemapPriority}
+            {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (
+              <Stack gap={3}>
+                <Box>
+                  <Typography variant="h5" fontWeight={700} mb={0.5}>
+                    URL Settings
+                  </Typography>
+                  <Typography color="text.secondary">
+                    Define the URL of your web page
+                  </Typography>
+                </Box>
+                <ItemParent onChange={handleOnChange} />
+                <ItemRoute
                   onChange={handleOnChange}
+                  error={errors?.pathPart}
+                  onUpdateErrors={(name, error) => {
+                    setErrors((errors) => ({
+                      ...errors,
+                      [name]: {
+                        ...errors?.[name],
+                        ...error,
+                      },
+                    }));
+                  }}
                 />
-                {!!web && (
-                  <CanonicalTag
+              </Stack>
+            )}
+            <Stack gap={3} pb={2.5}>
+              <Box>
+                <Typography variant="h5" fontWeight={700} mb={0.5}>
+                  Advanced Settings
+                </Typography>
+                <Typography color="text.secondary">
+                  Optimize your content item's SEO further
+                </Typography>
+              </Box>
+              {model?.type !== "dataset" && (
+                <>
+                  <SitemapPriority
                     // @ts-expect-error untyped
-                    mode={web.canonicalTagMode}
-                    whitelist={web.canonicalQueryParamWhitelist}
-                    custom={web.canonicalTagCustomValue}
+                    sitemapPriority={web.sitemapPriority}
                     onChange={handleOnChange}
                   />
-                )}
-              </>
-            )}
-            <MetaLinkText
-              value={web.metaLinkText}
-              onChange={handleOnChange}
-              error={errors?.metaLinkText}
-            />
-            <MetaKeywords
-              value={web.metaKeywords}
-              onChange={handleOnChange}
-              error={errors?.metaKeywords}
-            />
+                  {!!web && (
+                    <CanonicalTag
+                      // @ts-expect-error untyped
+                      mode={web.canonicalTagMode}
+                      whitelist={web.canonicalQueryParamWhitelist}
+                      custom={web.canonicalTagCustomValue}
+                      onChange={handleOnChange}
+                    />
+                  )}
+                </>
+              )}
+              <MetaLinkText
+                value={web.metaLinkText}
+                onChange={handleOnChange}
+                error={errors?.metaLinkText}
+              />
+              <MetaKeywords
+                value={web.metaKeywords}
+                onChange={handleOnChange}
+                error={errors?.metaKeywords}
+              />
+            </Stack>
           </Stack>
+          {model?.type !== "dataset" && !isCreateItemPage && (
+            <Box
+              flex={1}
+              position="sticky"
+              top={0}
+              pb={2.5}
+              sx={{
+                scrollbarWidth: "none",
+                overflowY: "auto",
+              }}
+            >
+              <SocialMediaPreview />
+              <Divider sx={{ my: 1.5 }} />
+              <ContentInsights />
+            </Box>
+          )}
         </Stack>
-        {model?.type !== "dataset" && !isCreateItemPage && (
-          <Box
-            flex={1}
-            position="sticky"
-            top={0}
-            pb={2.5}
-            sx={{
-              scrollbarWidth: "none",
-              overflowY: "auto",
-            }}
-          >
-            <SocialMediaPreview />
-            <Divider sx={{ my: 1.5 }} />
-            <ContentInsights />
-          </Box>
-        )}
-      </Stack>
-    </ThemeProvider>
-  );
-};
+      </ThemeProvider>
+    );
+  }
+);
