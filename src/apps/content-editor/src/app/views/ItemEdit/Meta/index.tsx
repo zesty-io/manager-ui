@@ -138,13 +138,18 @@ export const Meta = forwardRef(
               };
             });
 
+            // No need to validate pathPart for datasets
+            if (model?.type === "dataset") {
+              delete currentErrors.pathPart;
+            }
+
             setTimeout(() => {
               setErrors(currentErrors);
             });
           },
         };
       },
-      [errors, web]
+      [errors, web, model]
     );
 
     useEffect(() => {
