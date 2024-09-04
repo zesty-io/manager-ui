@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
@@ -82,6 +82,7 @@ export const ItemCreate = () => {
   const [fieldErrors, setFieldErrors] = useState<FieldError>({});
   const [saveClicked, setSaveClicked] = useState(false);
   const [hasSEOErrors, setHasSEOErrors] = useState(false);
+  const metaRef = useRef(null);
 
   const [
     createPublishing,
@@ -158,6 +159,7 @@ export const ItemCreate = () => {
   const save = async (action: ActionAfterSave) => {
     setSaveClicked(true);
 
+    metaRef.current?.validateMetaFields?.();
     if (hasErrors || hasSEOErrors) return;
 
     setSaving(true);
@@ -380,6 +382,7 @@ export const ItemCreate = () => {
                 setHasSEOErrors(hasErrors);
               }}
               isSaving={saving}
+              ref={metaRef}
             />
           </Box>
           <ThemeProvider theme={theme}>

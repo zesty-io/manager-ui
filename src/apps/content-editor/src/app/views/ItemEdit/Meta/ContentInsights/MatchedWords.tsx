@@ -1,6 +1,7 @@
 import { Box, Stack, Typography, Chip } from "@mui/material";
+import { Add, Remove } from "@mui/icons-material";
 import { Check } from "@mui/icons-material";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 
@@ -21,6 +22,7 @@ export const MatchedWords = ({
     itemZUID: string;
   }>();
   const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const [showAll, setShowAll] = useState(false);
 
   const contentAndMetaWordMatches = useMemo(() => {
     const textMetaFieldNames = [
@@ -70,15 +72,26 @@ export const MatchedWords = ({
         Content and Meta Matched Words
       </Typography>
       <Stack direction="row" gap={1} flexWrap="wrap">
-        {contentAndMetaWordMatches?.map((word) => (
+        {contentAndMetaWordMatches
+          ?.slice(0, showAll ? undefined : 9)
+          ?.map((word) => (
+            <Chip
+              key={word}
+              label={word}
+              size="small"
+              icon={<Check color="action" />}
+              variant="outlined"
+            />
+          ))}
+        {contentAndMetaWordMatches?.length > 10 && (
           <Chip
-            key={word}
-            label={word}
+            label={`See ${showAll ? "Less" : "More"}`}
             size="small"
-            icon={<Check color="action" />}
             variant="outlined"
+            icon={showAll ? <Remove color="action" /> : <Add color="action" />}
+            onClick={() => setShowAll(!showAll)}
           />
-        ))}
+        )}
       </Stack>
     </Box>
   );
