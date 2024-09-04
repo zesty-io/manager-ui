@@ -1,6 +1,5 @@
 import { Box, Stack, Typography, Chip } from "@mui/material";
-import { Add, Remove } from "@mui/icons-material";
-import { Check } from "@mui/icons-material";
+import { Check, Add, Remove } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";

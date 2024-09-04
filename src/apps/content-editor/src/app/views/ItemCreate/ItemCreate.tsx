@@ -6,9 +6,8 @@ import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 import { cloneDeep } from "lodash";
 
-import { Divider, Box, Stack, ThemeProvider, Button } from "@mui/material";
+import { Box, Stack, ThemeProvider, Button } from "@mui/material";
 import { theme, Brain } from "@zesty-io/material";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
