@@ -182,6 +182,13 @@ export const Meta = forwardRef(
             setTimeout(() => {
               setErrors(currentErrors);
             });
+
+            return Object.values(currentErrors)
+              ?.map((error) => {
+                return Object.values(error) ?? [];
+              })
+              ?.flat()
+              .some((error) => !!error);
           },
         };
       },
