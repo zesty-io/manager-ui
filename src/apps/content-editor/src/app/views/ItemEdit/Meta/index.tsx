@@ -207,6 +207,8 @@ export const Meta = forwardRef(
     }, [errors]);
 
     useEffect(() => {
+      if (!isCreateItemPage) return;
+
       // Automatically scroll into view the meta title field
       const metaTitleEl = document.querySelector("[data-cy='metaTitle']");
 
@@ -224,7 +226,7 @@ export const Meta = forwardRef(
             ?.click();
         });
       }
-    }, [flowType]);
+    }, [flowType, isCreateItemPage]);
 
     if (isCreateItemPage && flowType === null) {
       return (
