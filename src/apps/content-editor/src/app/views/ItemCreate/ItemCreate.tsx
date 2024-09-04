@@ -164,7 +164,13 @@ export const ItemCreate = () => {
     setSaving(true);
 
     try {
-      const res: any = await dispatch(createItem(modelZUID, itemZUID));
+      const res: any = await dispatch(
+        createItem({
+          modelZUID,
+          itemZUID,
+          skipPathPartValidation: model?.type === "dataset",
+        })
+      );
       if (res.err || res.error) {
         if (res.missingRequired || res.lackingCharLength) {
           const missingRequiredFieldNames: string[] =
