@@ -514,7 +514,7 @@ export function saveItem({
   };
 }
 
-export function createItem(modelZUID, itemZUID) {
+export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
   return (dispatch, getState) => {
     const state = getState();
 
@@ -553,10 +553,11 @@ export function createItem(modelZUID, itemZUID) {
       return false;
     });
 
-    const hasMissingRequiredSEOFields =
-      !item?.web?.metaTitle ||
-      !item?.web?.metaDescription ||
-      !item?.web?.pathPart;
+    const hasMissingRequiredSEOFields = skipPathPartValidation
+      ? !item?.web?.metaTitle || !item?.web?.metaDescription
+      : !item?.web?.metaTitle ||
+        !item?.web?.metaDescription ||
+        !item?.web?.pathPart;
 
     // Check minlength is satisfied
     const lackingCharLength = fields?.filter(
