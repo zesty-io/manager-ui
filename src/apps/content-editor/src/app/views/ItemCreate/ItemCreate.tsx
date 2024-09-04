@@ -338,7 +338,7 @@ export const ItemCreate = () => {
       }
       message="Creating New Item"
     >
-      <Box component="section">
+      <Stack component="section" height="100%">
         <Header
           onSave={save}
           model={model}
@@ -419,7 +419,7 @@ export const ItemCreate = () => {
             </Box>
           </ThemeProvider>
         </Stack>
-      </Box>
+      </Stack>
       {isScheduleDialogOpen && !isLoadingNewItem && (
         <SchedulePublish
           item={newItemData as ContentItemWithDirtyAndPublishing}
