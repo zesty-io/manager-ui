@@ -234,7 +234,7 @@ export const Meta = forwardRef(
           metaTitleEl
             ?.querySelector<HTMLButtonElement>("[data-cy='AIOpen']")
             ?.click();
-        });
+        }, 500);
       }
     }, [flowType, isCreateItemPage]);
 
