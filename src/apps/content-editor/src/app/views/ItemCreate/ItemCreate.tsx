@@ -392,6 +392,7 @@ export const ItemCreate = () => {
                 variant="text"
                 color="inherit"
                 size="large"
+                onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
                 startIcon={
                   <>
                     <svg width={0} height={0}>

@@ -190,6 +190,9 @@ export const Meta = forwardRef(
               ?.flat()
               .some((error) => !!error);
           },
+          triggerAIGeneratedFlow() {
+            setFlowType(FlowType.AIGenerated);
+          },
         };
       },
       [errors, web]
