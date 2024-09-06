@@ -607,6 +607,7 @@ export const AIGenerator = ({
             <Box>
               <InputLabel>Topic</InputLabel>
               <TextField
+                data-cy="AITopicField"
                 value={topic}
                 onChange={(event) => setTopic(event.target.value)}
                 placeholder={`e.g. Hikes in Washington`}
@@ -618,6 +619,7 @@ export const AIGenerator = ({
             <Box>
               <InputLabel>Describe your Audience</InputLabel>
               <TextField
+                data-cy="AIAudienceField"
                 value={audienceDescription}
                 onChange={(evt) => setAudienceDescription(evt.target.value)}
                 placeholder="e.g. Freelancers, Designers, ....."

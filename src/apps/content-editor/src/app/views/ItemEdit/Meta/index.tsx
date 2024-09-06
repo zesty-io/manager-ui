@@ -276,6 +276,11 @@ export const Meta = forwardRef(
               </Box>
               {flowButtons.map((data) => (
                 <ListItemButton
+                  data-cy={
+                    data.flowType === FlowType.AIGenerated
+                      ? "AIAssistedMetaFlow"
+                      : "ManualMetaFlow"
+                  }
                   key={data.flowType}
                   onClick={() => setFlowType(data.flowType)}
                   sx={{
