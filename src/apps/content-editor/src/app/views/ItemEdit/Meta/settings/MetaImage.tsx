@@ -18,6 +18,9 @@ import {
   MediaItem,
 } from "../../../../components/FieldTypeMedia";
 import { MediaApp } from "../../../../../../../media/src/app";
+import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
+import { isIS } from "@mui/x-date-pickers-pro";
+import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
 
 type MetaImageProps = {
   onChange: (value: string, name: string) => void;
@@ -48,34 +51,201 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     undeleteContentModelField,
     { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
   ] = useUndeleteContentModelFieldMutation();
+  const [getFile, { data }] = useLazyGetFileQuery();
   const [imageModal, setImageModal] = useState(null);
   const [autoOpenMediaBrowser, setAutoOpenMediaBrowser] = useState(false);
+  const [temporaryMetaImageURL, setTemporaryMetaImageURL] =
+    useState<string>(null);
 
   const isBynderSessionValid =
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
 
+  const contentImages = useMemo(() => {
+    if (!modelFields?.length || !Object.keys(item?.data ?? {})?.length) return;
+    const mediaFieldsWithImageOnTheName: string[] = [];
+    const otherMediaFields: string[] = [];
+
+    modelFields.forEach((field) => {
+      if (
+        !field.deletedAt &&
+        field.datatype === "images" &&
+        field?.name !== "og_image" &&
+        !!item?.data?.[field.name]
+      ) {
+        if (
+          field.label.toLowerCase().includes("image") ||
+          field.name.toLocaleLowerCase().includes("image")
+        ) {
+          // mediaFieldsWithImageOnTheName[field.name] = String(
+          //   item.data[field.name]
+          // ).split(",");
+          mediaFieldsWithImageOnTheName.push(
+            ...String(item.data[field.name]).split(",")
+          );
+        } else {
+          otherMediaFields.push(...String(item.data[field.name]).split(","));
+        }
+      }
+    });
+
+    return [...mediaFieldsWithImageOnTheName, ...otherMediaFields];
+  }, [modelFields, item?.data]);
+
+  useEffect(() => {
+    if (!contentImages.length || temporaryMetaImageURL) return;
+    // let breakLoop = false;
+
+    // new Promise((resolve, reject) => {
+    let validImages = contentImages.map(async (value, index) => {
+      // console.log("break loop 1", breakLoop);
+      // if (breakLoop) return true;
+
+      // values.forEach(async (value) => {
+      // console.log("break loop 2", breakLoop);
+      // if (breakLoop) return true;
+
+      const isZestyMediaFile = value.startsWith("3-");
+
+      // if (isZestyMediaFile) {
+      //   validImages.push(await getFile(value).unwrap());
+      // } else {
+      //   validImages.push(value);
+      // }
+
+      // if (value.startsWith("3-")) {
+      const res = isZestyMediaFile && (await getFile(value).unwrap());
+      const isImage = [
+        "png",
+        "jpg",
+        "jpeg",
+        "svg",
+        "gif",
+        "tif",
+        "webp",
+      ].includes(fileExtension(isZestyMediaFile ? res.url : value));
+
+      if (isImage) {
+        // breakLoop = true;
+        // setTemporaryMetaImageURL(value);
+        // validImages.push(value);
+        return value;
+      }
+
+      // if (index === contentImages.length - 1) {
+      // console.log(validImages);
+      // resolve(validImages);
+      // }
+      // } else {
+      //   const isImage = [
+      //     "png",
+      //     "jpg",
+      //     "jpeg",
+      //     "svg",
+      //     "gif",
+      //     "tif",
+      //     "webp",
+      //   ].includes(fileExtension(value));
+
+      //   if (isImage) {
+      //     setTemporaryMetaImageURL(value);
+      //   }
+      // }
+      // });
+    });
+    // }).then((value: string[]) => {
+    // console.log("resolved urls", value);
+    // setTemporaryMetaImageURL(value?.[0]);
+    // });
+    // Promise.all([validImages]).then(() => {
+    //   console.log();
+    // });
+
+    Promise.all(validImages).then((data) => {
+      // console.log(data);
+      setTemporaryMetaImageURL(data?.[0]);
+    });
+
+    // if (!!validImages.length) {
+    //   setTemporaryMetaImageURL(validImages[0]);
+    // }
+  }, [contentImages, temporaryMetaImageURL]);
+
+  const getTemporaryImage = (mediaFields: Record<string, string[]>) => {
+    let validImageUrl = "";
+
+    Object.values(mediaFields).some((values) => {
+      if (validImageUrl) return true;
+
+      values.forEach(async (value) => {
+        const isZestyMediaFile = value.startsWith("3-");
+        // if (value.startsWith("3-")) {
+        const res = isZestyMediaFile && (await getFile(value).unwrap());
+        const isImage = [
+          "png",
+          "jpg",
+          "jpeg",
+          "svg",
+          "gif",
+          "tif",
+          "webp",
+        ].includes(fileExtension(isZestyMediaFile ? res.url : value));
+
+        if (isImage) {
+          // console.log("is image", res.url);
+          validImageUrl = isZestyMediaFile ? res.url : value;
+        }
+        //   } else {
+        //     const isImage = [
+        //       "png",
+        //       "jpg",
+        //       "jpeg",
+        //       "svg",
+        //       "gif",
+        //       "tif",
+        //       "webp",
+        //     ].includes(fileExtension(value));
+
+        //     if (isImage) {
+        //       validImageUrl = value;
+        //     }
+        //   }
+      });
+    });
+    console.log("valid image url", validImageUrl);
+  };
+
   const usableTemporaryMetaImage = useMemo(() => {
     if (modelFields?.length) {
-      const matchedFields = modelFields.filter(
-        (field) =>
+      let imageFields: string[] = [];
+
+      modelFields.forEach((field) => {
+        if (
           !field.deletedAt &&
           field.datatype === "images" &&
           field?.name !== "og_image" &&
           (field.label.toLowerCase().includes("image") ||
-            field.name.toLocaleLowerCase().includes("image"))
-      );
-      let image = "";
-
-      // Find the first matched field that already stores an image
-      matchedFields?.forEach((field) => {
-        if (!image && !!item?.data?.[field.name]) {
-          image = String(item?.data?.[field.name]);
+            field.name.toLocaleLowerCase().includes("image")) &&
+          !!item?.data?.[field.name]
+        ) {
+          imageFields.push(String(item.data[field.name]));
         }
       });
 
-      return image?.split(",")?.[0];
+      // if (imageFields.length) {
+      //   imageFields.forEach(() => {});
+      // }
+
+      // Find the first matched field that already stores an image
+      // matchedFields?.forEach((field) => {
+      //   if (!image && !!item?.data?.[field.name]) {
+      //     image = String(item?.data?.[field.name]);
+      //   }
+      // });
+
+      // return image?.split(",")?.[0];
+      return "";
     }
-  }, [modelFields, item]);
+  }, [modelFields, item?.data]);
 
   const handleCreateOgImageField = () => {
     const existingOgImageField = modelFields?.find(
@@ -137,9 +307,9 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     }
   }, [item?.data, autoOpenMediaBrowser]);
 
-  // If there is already a field named og_image
-  if ("og_image" in item?.data) {
-    const ogImageValue = item?.data?.["og_image"];
+  // If there is already a field named og_image and it is storing a value
+  if ("og_image" in item?.data && !!item?.data?.og_image) {
+    const ogImageValue = item.data.og_image;
 
     return (
       <>
@@ -219,7 +389,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
   }
 
   // If there is a media field with an API ID containing the word "image" and is storing a file
-  if (!("og_image" in item?.data) && !!usableTemporaryMetaImage) {
+  if (!!temporaryMetaImageURL) {
     return (
       <FieldShell
         settings={{
@@ -232,8 +402,8 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
         <Stack gap={1.25}>
           <MediaItem
             index={0}
-            imageZUID={usableTemporaryMetaImage}
-            isBynderAsset={usableTemporaryMetaImage.includes("bynder.com")}
+            imageZUID={temporaryMetaImageURL}
+            isBynderAsset={temporaryMetaImageURL.includes("bynder.com")}
             isBynderSessionValid={!!isBynderSessionValid}
             hideActionButtons
             hideDrag
