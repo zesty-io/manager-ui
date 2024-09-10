@@ -51,11 +51,12 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     undeleteContentModelField,
     { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
   ] = useUndeleteContentModelFieldMutation();
-  const [getFile, { data }] = useLazyGetFileQuery();
+  const [getFile] = useLazyGetFileQuery();
   const [imageModal, setImageModal] = useState(null);
   const [autoOpenMediaBrowser, setAutoOpenMediaBrowser] = useState(false);
   const [temporaryMetaImageURL, setTemporaryMetaImageURL] =
     useState<string>(null);
+  const [showOGImageField, setShowOGImageField] = useState(false);
 
   const isBynderSessionValid =
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
@@ -76,9 +77,6 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
           field.label.toLowerCase().includes("image") ||
           field.name.toLocaleLowerCase().includes("image")
         ) {
-          // mediaFieldsWithImageOnTheName[field.name] = String(
-          //   item.data[field.name]
-          // ).split(",");
           mediaFieldsWithImageOnTheName.push(
             ...String(item.data[field.name]).split(",")
           );
@@ -92,27 +90,11 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
   }, [modelFields, item?.data]);
 
   useEffect(() => {
-    if (!contentImages.length || temporaryMetaImageURL) return;
-    // let breakLoop = false;
+    if (!contentImages.length) return;
 
-    // new Promise((resolve, reject) => {
-    let validImages = contentImages.map(async (value, index) => {
-      // console.log("break loop 1", breakLoop);
-      // if (breakLoop) return true;
-
-      // values.forEach(async (value) => {
-      // console.log("break loop 2", breakLoop);
-      // if (breakLoop) return true;
-
+    let validImages = contentImages.map(async (value) => {
       const isZestyMediaFile = value.startsWith("3-");
-
-      // if (isZestyMediaFile) {
-      //   validImages.push(await getFile(value).unwrap());
-      // } else {
-      //   validImages.push(value);
-      // }
-
-      // if (value.startsWith("3-")) {
+      // Need to resolve media zuids to determine if these are actually images
       const res = isZestyMediaFile && (await getFile(value).unwrap());
       const isImage = [
         "png",
@@ -125,127 +107,14 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
       ].includes(fileExtension(isZestyMediaFile ? res.url : value));
 
       if (isImage) {
-        // breakLoop = true;
-        // setTemporaryMetaImageURL(value);
-        // validImages.push(value);
         return value;
       }
-
-      // if (index === contentImages.length - 1) {
-      // console.log(validImages);
-      // resolve(validImages);
-      // }
-      // } else {
-      //   const isImage = [
-      //     "png",
-      //     "jpg",
-      //     "jpeg",
-      //     "svg",
-      //     "gif",
-      //     "tif",
-      //     "webp",
-      //   ].includes(fileExtension(value));
-
-      //   if (isImage) {
-      //     setTemporaryMetaImageURL(value);
-      //   }
-      // }
-      // });
     });
-    // }).then((value: string[]) => {
-    // console.log("resolved urls", value);
-    // setTemporaryMetaImageURL(value?.[0]);
-    // });
-    // Promise.all([validImages]).then(() => {
-    //   console.log();
-    // });
 
     Promise.all(validImages).then((data) => {
-      // console.log(data);
       setTemporaryMetaImageURL(data?.[0]);
     });
-
-    // if (!!validImages.length) {
-    //   setTemporaryMetaImageURL(validImages[0]);
-    // }
   }, [contentImages, temporaryMetaImageURL]);
-
-  const getTemporaryImage = (mediaFields: Record<string, string[]>) => {
-    let validImageUrl = "";
-
-    Object.values(mediaFields).some((values) => {
-      if (validImageUrl) return true;
-
-      values.forEach(async (value) => {
-        const isZestyMediaFile = value.startsWith("3-");
-        // if (value.startsWith("3-")) {
-        const res = isZestyMediaFile && (await getFile(value).unwrap());
-        const isImage = [
-          "png",
-          "jpg",
-          "jpeg",
-          "svg",
-          "gif",
-          "tif",
-          "webp",
-        ].includes(fileExtension(isZestyMediaFile ? res.url : value));
-
-        if (isImage) {
-          // console.log("is image", res.url);
-          validImageUrl = isZestyMediaFile ? res.url : value;
-        }
-        //   } else {
-        //     const isImage = [
-        //       "png",
-        //       "jpg",
-        //       "jpeg",
-        //       "svg",
-        //       "gif",
-        //       "tif",
-        //       "webp",
-        //     ].includes(fileExtension(value));
-
-        //     if (isImage) {
-        //       validImageUrl = value;
-        //     }
-        //   }
-      });
-    });
-    console.log("valid image url", validImageUrl);
-  };
-
-  const usableTemporaryMetaImage = useMemo(() => {
-    if (modelFields?.length) {
-      let imageFields: string[] = [];
-
-      modelFields.forEach((field) => {
-        if (
-          !field.deletedAt &&
-          field.datatype === "images" &&
-          field?.name !== "og_image" &&
-          (field.label.toLowerCase().includes("image") ||
-            field.name.toLocaleLowerCase().includes("image")) &&
-          !!item?.data?.[field.name]
-        ) {
-          imageFields.push(String(item.data[field.name]));
-        }
-      });
-
-      // if (imageFields.length) {
-      //   imageFields.forEach(() => {});
-      // }
-
-      // Find the first matched field that already stores an image
-      // matchedFields?.forEach((field) => {
-      //   if (!image && !!item?.data?.[field.name]) {
-      //     image = String(item?.data?.[field.name]);
-      //   }
-      // });
-
-      // return image?.split(",")?.[0];
-      return "";
-    }
-  }, [modelFields, item?.data]);
 
   const handleCreateOgImageField = () => {
     const existingOgImageField = modelFields?.find(
@@ -280,6 +149,8 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
         },
       });
     }
+
+    setShowOGImageField(true);
   };
 
   useEffect(() => {
@@ -308,7 +179,10 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
   }, [item?.data, autoOpenMediaBrowser]);
 
   // If there is already a field named og_image and it is storing a value
-  if ("og_image" in item?.data && !!item?.data?.og_image) {
+  if (
+    "og_image" in item?.data &&
+    (!!item?.data?.og_image || showOGImageField)
+  ) {
     const ogImageValue = item.data.og_image;
 
     return (
