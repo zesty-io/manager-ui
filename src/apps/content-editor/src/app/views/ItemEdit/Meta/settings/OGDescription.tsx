@@ -1,7 +1,6 @@
 import { TextField, Box } from "@mui/material";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
-import { MaxLengths } from "..";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 import { ContentModelField } from "../../../../../../../../shell/services/types";
@@ -33,7 +32,7 @@ export const OGDescription = ({
         errors={error ?? {}}
       >
         <TextField
-          name="OGTitle"
+          name="OGDescription"
           value={value}
           multiline
           rows={6}

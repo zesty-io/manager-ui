@@ -5,21 +5,26 @@ import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 import { ContentModelField } from "../../../../../../../../shell/services/types";
 
-type OGTitleProps = {
+type TCDescriptionProps = {
   value: string;
   onChange: (value: string, name: string) => void;
   error: Error;
   field: ContentModelField;
 };
-export const OGTitle = ({ value, onChange, error, field }: OGTitleProps) => {
+export const TCDescription = ({
+  value,
+  onChange,
+  error,
+  field,
+}: TCDescriptionProps) => {
   return (
-    <Box data-cy="OGTitle">
+    <Box data-cy="TCDescription">
       <FieldShell
         settings={{
-          label: "OG Title",
-          required: true,
+          label: "TC Description",
+          required: field.required,
         }}
-        customTooltip="This title appears in open graph social media previews (e.g. Facebook)."
+        customTooltip="This title appears in twitter card social media previews below the title."
         withInteractiveTooltip={false}
         withLengthCounter={!!field.settings.maxCharLimit}
         maxLength={field.settings.maxCharLimit}
@@ -27,9 +32,11 @@ export const OGTitle = ({ value, onChange, error, field }: OGTitleProps) => {
         errors={error ?? {}}
       >
         <TextField
-          name="OGTitle"
+          name="TCDescription"
           value={value}
-          onChange={(evt) => onChange(evt.target.value, "og_title")}
+          multiline
+          rows={6}
+          onChange={(evt) => onChange(evt.target.value, "tc_description")}
           error={hasErrors(error)}
         />
       </FieldShell>

@@ -38,6 +38,8 @@ import { MetaTitle } from "./settings/MetaTitle";
 import { SitemapPriority } from "./settings/SitemapPriority";
 import { OGTitle } from "./settings/OGTitle";
 import { OGDescription } from "./settings/OGDescription";
+import { TCTitle } from "./settings/TCTitle";
+import { TCDescription } from "./settings/TCDescription";
 
 export const MaxLengths: Record<string, number> = {
   metaLinkText: 150,
@@ -299,6 +301,22 @@ export const Meta = forwardRef(
                   onChange={handleOnChange}
                   error={errors?.og_description}
                   field={metaFields.og_description}
+                />
+              )}
+              {"tc_title" in metaFields && (
+                <TCTitle
+                  value={data.tc_title as string}
+                  onChange={handleOnChange}
+                  error={errors?.tc_title}
+                  field={metaFields.tc_title}
+                />
+              )}
+              {"tc_description" in metaFields && (
+                <TCDescription
+                  value={data.tc_description as string}
+                  onChange={handleOnChange}
+                  error={errors?.tc_description}
+                  field={metaFields.tc_description}
                 />
               )}
             </Stack>
