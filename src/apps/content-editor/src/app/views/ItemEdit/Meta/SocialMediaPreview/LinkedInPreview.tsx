@@ -57,7 +57,11 @@ export const LinkedInPreview = ({}: LinkedInPreviewProps) => {
         <Typography
           variant="h6"
           fontWeight={600}
-          color={item?.web?.metaTitle ? "text.primary" : "grey.500"}
+          color={
+            !!item?.data?.og_title || !!item?.web?.metaTitle
+              ? "text.primary"
+              : "grey.500"
+          }
           sx={{
             display: "-webkit-box",
             "-webkit-line-clamp": "1",
@@ -69,7 +73,7 @@ export const LinkedInPreview = ({}: LinkedInPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaTitle || "Meta Title"}
+          {item?.data?.og_title || item?.web?.metaTitle || "Meta Title"}
         </Typography>
         <Typography color="text.secondary">
           {domain.replace(/http:\/\/|https:\/\//gm, "")}

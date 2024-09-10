@@ -78,7 +78,11 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
         </Typography>
         <Typography
           variant="body2"
-          color={!!item?.web?.metaTitle ? "text.primary" : "grey.500"}
+          color={
+            !!item?.data?.tc_title || !!item?.web?.metaTitle
+              ? "text.primary"
+              : "grey.500"
+          }
           sx={{
             display: "-webkit-box",
             "-webkit-line-clamp": "1",
@@ -90,11 +94,15 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaTitle || "Meta Title"}
+          {item?.data?.tc_title || item?.web?.metaTitle || "Meta Title"}
         </Typography>
         <Typography
           variant="body2"
-          color={!!item?.web?.metaDescription ? "text.secondary" : "grey.500"}
+          color={
+            !!item?.data?.tc_title || !!item?.web?.metaDescription
+              ? "text.secondary"
+              : "grey.500"
+          }
           sx={{
             display: "-webkit-box",
             "-webkit-line-clamp": "2",
@@ -106,7 +114,9 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaDescription || "Meta Description"}
+          {item?.data?.tc_description ||
+            item?.web?.metaDescription ||
+            "Meta Description"}
         </Typography>
       </Stack>
     </Stack>

@@ -23,7 +23,7 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
 
-  useEffect(() => {
+  const metaTitle = useEffect(() => {
     setImageDimensions({ height: 290, type: "fit" });
   }, []);
 
@@ -60,7 +60,11 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
         <Typography
           variant="h6"
           fontWeight={600}
-          color={item?.web?.metaTitle ? "text.primary" : "grey.500"}
+          color={
+            !!item?.data?.og_title || !!item?.web?.metaTitle
+              ? "text.primary"
+              : "grey.500"
+          }
           sx={{
             display: "-webkit-box",
             "-webkit-line-clamp": "2",
@@ -72,7 +76,7 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaTitle || "Meta Title"}
+          {item?.data?.og_title || item?.web?.metaTitle || "Meta Title"}
         </Typography>
       </Stack>
     </Stack>
