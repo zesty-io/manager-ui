@@ -4,6 +4,7 @@ import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 import { ContentModelField } from "../../../../../../../../shell/services/types";
+import { MaxLengths } from "../index";
 
 type TCTitleProps = {
   value: string;
@@ -16,13 +17,13 @@ export const TCTitle = ({ value, onChange, error, field }: TCTitleProps) => {
     <Box data-cy="TCTitle">
       <FieldShell
         settings={{
-          label: "TC Title",
+          label: field.label,
           required: true,
         }}
         customTooltip="This title appears in twitter card social media previews."
         withInteractiveTooltip={false}
-        withLengthCounter={!!field.settings.maxCharLimit}
-        maxLength={field.settings.maxCharLimit}
+        withLengthCounter
+        maxLength={MaxLengths.tc_title}
         valueLength={value?.length ?? 0}
         errors={error ?? {}}
       >

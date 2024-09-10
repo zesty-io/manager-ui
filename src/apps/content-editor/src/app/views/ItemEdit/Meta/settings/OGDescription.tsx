@@ -4,6 +4,7 @@ import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 import { ContentModelField } from "../../../../../../../../shell/services/types";
+import { MaxLengths } from "..";
 
 type OGDescriptionProps = {
   value: string;
@@ -21,13 +22,13 @@ export const OGDescription = ({
     <Box data-cy="OGDescription">
       <FieldShell
         settings={{
-          label: "OG Description",
+          label: field.label,
           required: field.required,
         }}
         customTooltip="This title appears in open graph social media previews (e.g. Facebook) below the title."
         withInteractiveTooltip={false}
-        withLengthCounter={!!field.settings.maxCharLimit}
-        maxLength={field.settings.maxCharLimit}
+        withLengthCounter
+        maxLength={MaxLengths.og_description}
         valueLength={value?.length ?? 0}
         errors={error ?? {}}
       >

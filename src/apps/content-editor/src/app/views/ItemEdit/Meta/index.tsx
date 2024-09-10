@@ -46,6 +46,10 @@ export const MaxLengths: Record<string, number> = {
   metaTitle: 150,
   metaDescription: 160,
   metaKeywords: 255,
+  og_title: 150,
+  og_description: 160,
+  tc_title: 150,
+  tc_description: 160,
 };
 const REQUIRED_FIELDS = [
   "metaTitle",
@@ -137,16 +141,10 @@ export const Meta = forwardRef(
 
         if (DYNAMIC_META_FIELD_NAMES.includes(name) && name in metaFields) {
           const isRequired = metaFields[name].required;
-          const maxCharLimit = metaFields[name].settings?.maxCharLimit;
 
           currentErrors[name] = {
             ...currentErrors[name],
             MISSING_REQUIRED: isRequired ? !value : false,
-            EXCEEDING_MAXLENGTH: !!maxCharLimit
-              ? value?.length > maxCharLimit
-                ? value?.length - maxCharLimit
-                : 0
-              : 0,
           };
         }
 
@@ -183,8 +181,10 @@ export const Meta = forwardRef(
             });
 
             Object.keys(MaxLengths).forEach((fieldName) => {
-              // @ts-expect-error
-              const value = web[fieldName];
+              const value = DYNAMIC_META_FIELD_NAMES.includes(fieldName)
+                ? data[fieldName]
+                : // @ts-expect-error
+                  web[fieldName];
 
               currentErrors[fieldName] = {
                 ...currentErrors?.[fieldName],
@@ -203,11 +203,6 @@ export const Meta = forwardRef(
               currentErrors[name] = {
                 ...currentErrors?.[name],
                 MISSING_REQUIRED: isRequired ? !value : false,
-                EXCEEDING_MAXLENGTH: !!maxCharLimit
-                  ? value?.length > maxCharLimit
-                    ? value?.length - maxCharLimit
-                    : 0
-                  : 0,
               };
             });
 

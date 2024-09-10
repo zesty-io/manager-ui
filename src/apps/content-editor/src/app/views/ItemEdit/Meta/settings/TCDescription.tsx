@@ -4,6 +4,7 @@ import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 import { ContentModelField } from "../../../../../../../../shell/services/types";
+import { MaxLengths } from "../index";
 
 type TCDescriptionProps = {
   value: string;
@@ -21,13 +22,13 @@ export const TCDescription = ({
     <Box data-cy="TCDescription">
       <FieldShell
         settings={{
-          label: "TC Description",
+          label: field.label,
           required: field.required,
         }}
         customTooltip="This title appears in twitter card social media previews below the title."
         withInteractiveTooltip={false}
-        withLengthCounter={!!field.settings.maxCharLimit}
-        maxLength={field.settings.maxCharLimit}
+        withLengthCounter
+        maxLength={MaxLengths.tc_description}
         valueLength={value?.length ?? 0}
         errors={error ?? {}}
       >
