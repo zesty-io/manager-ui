@@ -23,7 +23,7 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
 
-  const metaTitle = useEffect(() => {
+  useEffect(() => {
     setImageDimensions({ height: 290, type: "fit" });
   }, []);
 
