@@ -451,15 +451,17 @@ export const instanceApi = createApi({
     }),
     undeleteContentModelField: builder.mutation<
       any,
-      { modelZUID: string; fieldZUID: string }
+      { modelZUID: string; fieldZUID: string; skipInvalidation?: boolean }
     >({
       query: ({ modelZUID, fieldZUID }) => ({
         url: `content/models/${modelZUID}/fields/${fieldZUID}?action=undelete`,
         method: "PUT",
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "ContentModelFields", id: arg.modelZUID },
-      ],
+      invalidatesTags: (result, error, arg) => {
+        if (arg.skipInvalidation) return [];
+
+        return [{ type: "ContentModelFields", id: arg.modelZUID }];
+      },
     }),
     getLegacyHeadTags: builder.query<LegacyHeader[], void>({
       query: () => `/web/headers`,
