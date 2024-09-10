@@ -126,7 +126,6 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
       undeleteContentModelField({
         modelZUID,
         fieldZUID: existingOgImageField.ZUID,
-        skipInvalidation: isCreateItemPage,
       });
     } else {
       // If the model has no og_image field yet, create it
@@ -148,7 +147,6 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
           },
           sort: modelFields?.length, // Adds it to the end of the current model's field list
         },
-        skipInvalidation: isCreateItemPage,
       });
     }
 
