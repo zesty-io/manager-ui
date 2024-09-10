@@ -53,7 +53,7 @@ const REQUIRED_FIELDS = [
   "parentZUID",
   "pathPart",
 ];
-const DYNAMIC_META_FIELD_NAMES = [
+export const DYNAMIC_META_FIELD_NAMES = [
   "og_title",
   "og_description",
   "tc_title",
