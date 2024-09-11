@@ -50,7 +50,7 @@ export default memo(function Editor({
   const [isLoaded, setIsLoaded] = useState(false);
 
   const metaFields = useMemo(() => {
-    if (fields.length) {
+    if (fields?.length) {
       return fields.reduce((accu, curr) => {
         if (
           !curr.deletedAt &&

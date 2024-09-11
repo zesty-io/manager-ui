@@ -207,8 +207,9 @@ export const Meta = forwardRef(
             });
 
             // No need to validate pathPart for datasets
-            if (model?.type === "dataset") {
+            if (model?.type === "dataset" || web?.pathPart === "zesty_home") {
               delete currentErrors.pathPart;
+              delete currentErrors.parentZUID;
             }
 
             setTimeout(() => {
