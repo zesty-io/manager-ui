@@ -6,11 +6,11 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
-import { useImageURL } from "./useImageURL";
 
-type TwitterPreviewProps = {};
-export const TwitterPreview = ({}: TwitterPreviewProps) => {
-  const [imageURL, setImageDimensions] = useImageURL();
+type TwitterPreviewProps = {
+  imageURL: string;
+};
+export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
   const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
     modelZUID: string;
@@ -22,10 +22,6 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
     (state: AppState) =>
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
-
-  useEffect(() => {
-    setImageDimensions({ width: 128, height: 128 });
-  }, []);
 
   return (
     <Stack
@@ -44,7 +40,7 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
           }}
           width={128}
           height={128}
-          src={imageURL}
+          src={`${imageURL}?width=128&height=128&fit=cover`}
           flexShrink={0}
         />
       ) : (

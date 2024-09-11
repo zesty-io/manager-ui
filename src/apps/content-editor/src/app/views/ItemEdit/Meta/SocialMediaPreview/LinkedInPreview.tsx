@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Typography, Box, Stack } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
 import { useLocation, useParams } from "react-router";
@@ -6,11 +5,11 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
-import { useImageURL } from "./useImageURL";
 
-type LinkedInPreviewProps = {};
-export const LinkedInPreview = ({}: LinkedInPreviewProps) => {
-  const [imageURL, setImageDimensions] = useImageURL();
+type LinkedInPreviewProps = {
+  imageURL: string;
+};
+export const LinkedInPreview = ({ imageURL }: LinkedInPreviewProps) => {
   const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
     modelZUID: string;
@@ -22,10 +21,6 @@ export const LinkedInPreview = ({}: LinkedInPreviewProps) => {
     (state: AppState) =>
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
-
-  useEffect(() => {
-    setImageDimensions({ height: 290, width: 500 });
-  }, []);
 
   return (
     <Stack bgcolor="grey.100">
@@ -39,7 +34,7 @@ export const LinkedInPreview = ({}: LinkedInPreviewProps) => {
           }}
           height={290}
           width="100%"
-          src={imageURL}
+          src={`${imageURL}?width=500&height=290&fit=cover`}
           flexShrink={0}
         />
       ) : (
