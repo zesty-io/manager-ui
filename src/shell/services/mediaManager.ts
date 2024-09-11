@@ -369,6 +369,7 @@ export const mediaManagerApi = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useGetFileQuery,
+  useLazyGetFileQuery,
   useGetBinQuery,
   useGetBinsQuery,
   useGetAllBinFilesQuery,
