@@ -24,7 +24,7 @@ export const LinkedInPreview = ({}: LinkedInPreviewProps) => {
   );
 
   useEffect(() => {
-    setImageDimensions({ height: 290, type: "fit" });
+    setImageDimensions({ height: 290, width: 500 });
   }, []);
 
   return (
