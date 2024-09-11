@@ -58,7 +58,7 @@ export const useImageURL: () => UseImageURLProps = () => {
   }, [modelFields, item?.data]);
 
   useEffect(() => {
-    if (!contentImages.length) return;
+    if (!contentImages?.length) return;
 
     const fastlyImageParams = new URLSearchParams({
       fit: "cover",

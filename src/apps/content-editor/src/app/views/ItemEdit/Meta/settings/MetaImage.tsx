@@ -90,7 +90,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
   }, [modelFields, item?.data]);
 
   useEffect(() => {
-    if (!contentImages.length) return;
+    if (!contentImages?.length) return;
 
     let validImages = contentImages.map(async (value) => {
       const isZestyMediaFile = value.startsWith("3-");
