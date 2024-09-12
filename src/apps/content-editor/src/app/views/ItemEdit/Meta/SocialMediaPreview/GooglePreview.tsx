@@ -13,10 +13,11 @@ import { InstanceAvatar } from "../../../../../../../../shell/components/global-
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
-import { useImageURL } from "./useImageURL";
 
-type GooglePreviewProps = {};
-export const GooglePreview = ({}: GooglePreviewProps) => {
+type GooglePreviewProps = {
+  imageURL: string;
+};
+export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -26,8 +27,6 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
   const domain = useDomain();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
-  const [imageURL, setImageDimensions] = useImageURL();
-  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const items = useSelector((state: AppState) => state.content);
   const item = items[isCreateItemPage ? `new:${modelZUID}` : itemZUID];
   const parent = items[item?.web?.parentZUID];
@@ -42,10 +41,6 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
     // Remove empty strings
     return path.filter((i) => !!i);
   }, [domain, parent, item?.web]);
-
-  useEffect(() => {
-    setImageDimensions({ width: 82, height: 82 });
-  }, []);
 
   return (
     <Stack
@@ -145,7 +140,7 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
           }}
           width={82}
           height={82}
-          src={imageURL}
+          src={`${imageURL}?width=82&height=82&fit=cover`}
           flexShrink={0}
           borderRadius={2}
         />
