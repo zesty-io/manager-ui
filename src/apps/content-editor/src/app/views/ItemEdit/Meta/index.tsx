@@ -254,6 +254,11 @@ export const Meta = forwardRef(
             }
 
             setTimeout(() => {
+              // Makes sure that the user sees the error blurbs on each
+              // field when in the create item page
+              if (isCreateItemPage) {
+                setFlowType(FlowType.Manual);
+              }
               setErrors(currentErrors);
             });
 
