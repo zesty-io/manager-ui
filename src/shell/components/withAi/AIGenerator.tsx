@@ -410,7 +410,10 @@ export const AIGenerator = ({
               <Box>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
                   <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
-                  <Tooltip title="lorem ipsum" placement="top">
+                  <Tooltip
+                    title="Set the desired style and mood of the generated text"
+                    placement="top"
+                  >
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                   </Tooltip>
                 </Stack>
@@ -431,7 +434,10 @@ export const AIGenerator = ({
               <Box>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
                   <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
-                  <Tooltip title="lorem ipsum" placement="top">
+                  <Tooltip
+                    title="Set the language in which you'd like the text to be generated."
+                    placement="top"
+                  >
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                   </Tooltip>
                 </Stack>
@@ -629,7 +635,10 @@ export const AIGenerator = ({
             <Box>
               <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
                 <InputLabel sx={{ mb: 0 }}>Tone</InputLabel>
-                <Tooltip title="lorem ipsum" placement="top">
+                <Tooltip
+                  title="Set the desired style and mood of the generated text"
+                  placement="top"
+                >
                   <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                 </Tooltip>
               </Stack>
@@ -654,7 +663,12 @@ export const AIGenerator = ({
                     {aiType === "text" && "Character"}
                     {aiType === "paragraph" && "Word"} Limit
                   </InputLabel>
-                  <Tooltip title="lorem ipsum" placement="top">
+                  <Tooltip
+                    title={`Set a ${
+                      aiType === "text" ? "character" : "word"
+                    } limit to control the length of the generated text`}
+                    placement="top"
+                  >
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                   </Tooltip>
                 </Stack>
@@ -669,7 +683,10 @@ export const AIGenerator = ({
               <Box flex={1}>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
                   <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
-                  <Tooltip title="lorem ipsum" placement="top">
+                  <Tooltip
+                    title="Set the language in which you'd like the text to be generated."
+                    placement="top"
+                  >
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                   </Tooltip>
                 </Stack>
