@@ -82,7 +82,7 @@ module.exports = {
     URL_ACCOUNTS: "https://accounts.stage.zesty.io",
     URL_MARKETPLACE:
       "https://kfg6bckb-dev.webengine.zesty.io/marketplace/apps/",
-    URL_APPS: "https://apps.stage.zesty.io",
+    URL_APPS: "https://apps-beta.zesty.io",
 
     COOKIE_NAME: "STAGE_APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
@@ -132,7 +132,7 @@ module.exports = {
     URL_ACCOUNTS: "https://zesty.io",
     URL_MARKETPLACE:
       "https://kfg6bckb-dev.webengine.zesty.io/marketplace/apps/",
-    URL_APPS: "https://apps.dev.zesty.io",
+    URL_APPS: "https://apps-beta.zesty.io",
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.io",

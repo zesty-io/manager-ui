@@ -21,14 +21,22 @@ import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { keyframes } from "@mui/system";
 import { EditRounded } from "@mui/icons-material";
+import { cloneDeep } from "lodash";
 
 import { ContentInsights } from "./ContentInsights";
-import { useGetContentModelQuery } from "../../../../../../../shell/services/instance";
+import {
+  useGetContentModelQuery,
+  useGetContentModelFieldsQuery,
+} from "../../../../../../../shell/services/instance";
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
 import { fetchGlobalItem } from "../../../../../../../shell/store/content";
 import { AIGeneratorParameterProvider } from "./AIGeneratorParameterProvider";
-import { Web } from "../../../../../../../shell/services/types";
+import {
+  ContentModelField,
+  Web,
+} from "../../../../../../../shell/services/types";
+import { SocialMediaPreview } from "./SocialMediaPreview";
 
 // Fields
 import { MetaImage } from "./settings/MetaImage";
@@ -40,8 +48,10 @@ import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
 import { MetaTitle } from "./settings/MetaTitle";
 import { SitemapPriority } from "./settings/SitemapPriority";
-import { cloneDeep } from "lodash";
-import { SocialMediaPreview } from "./SocialMediaPreview";
+import { OGTitle } from "./settings/OGTitle";
+import { OGDescription } from "./settings/OGDescription";
+import { TCTitle } from "./settings/TCTitle";
+import { TCDescription } from "./settings/TCDescription";
 
 const rotateAnimation = keyframes`
 	0% {
@@ -76,12 +86,22 @@ export const MaxLengths: Record<string, number> = {
   metaTitle: 150,
   metaDescription: 160,
   metaKeywords: 255,
+  og_title: 150,
+  og_description: 160,
+  tc_title: 150,
+  tc_description: 160,
 };
 const REQUIRED_FIELDS = [
   "metaTitle",
   "metaDescription",
   "parentZUID",
   "pathPart",
+];
+export const DYNAMIC_META_FIELD_NAMES = [
+  "og_title",
+  "og_description",
+  "tc_title",
+  "tc_description",
 ];
 
 type Errors = Record<string, Error>;
@@ -101,6 +121,7 @@ export const Meta = forwardRef(
     const { data: model } = useGetContentModelQuery(modelZUID, {
       skip: !modelZUID,
     });
+    const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
     const { meta, data, web } = useSelector(
       (state: AppState) =>
         state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
@@ -110,6 +131,29 @@ export const Meta = forwardRef(
 
     // @ts-expect-error untyped
     const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
+
+    const metaFields = useMemo(() => {
+      if (fields.length) {
+        return fields.reduce(
+          (
+            accu: Record<string, ContentModelField>,
+            curr: ContentModelField
+          ) => {
+            if (
+              !curr.deletedAt &&
+              DYNAMIC_META_FIELD_NAMES.includes(curr.name.toLowerCase())
+            ) {
+              accu[curr.name] = curr;
+            }
+
+            return accu;
+          },
+          {}
+        );
+      }
+
+      return {};
+    }, [fields]);
 
     const handleOnChange = useCallback(
       (value, name) => {
@@ -136,11 +180,22 @@ export const Meta = forwardRef(
           };
         }
 
+        if (DYNAMIC_META_FIELD_NAMES.includes(name) && name in metaFields) {
+          const isRequired = metaFields[name].required;
+
+          currentErrors[name] = {
+            ...currentErrors[name],
+            MISSING_REQUIRED: isRequired ? !value : false,
+          };
+        }
+
         setErrors(currentErrors);
 
         dispatch({
           // The og_image is stored as an ordinary field item and not a SEO field item
-          type: name === "og_image" ? "SET_ITEM_DATA" : "SET_ITEM_WEB",
+          type: [...DYNAMIC_META_FIELD_NAMES, "og_image"].includes(name)
+            ? "SET_ITEM_DATA"
+            : "SET_ITEM_WEB",
           itemZUID: meta?.ZUID,
           key: name,
           value: value,
@@ -167,8 +222,10 @@ export const Meta = forwardRef(
             });
 
             Object.keys(MaxLengths).forEach((fieldName) => {
-              // @ts-expect-error
-              const value = web[fieldName];
+              const value = DYNAMIC_META_FIELD_NAMES.includes(fieldName)
+                ? data[fieldName]
+                : // @ts-expect-error
+                  web[fieldName];
 
               currentErrors[fieldName] = {
                 ...currentErrors?.[fieldName],
@@ -179,9 +236,21 @@ export const Meta = forwardRef(
               };
             });
 
+            Object.entries(metaFields).forEach(([name, settings]) => {
+              const maxCharLimit = settings.settings?.maxCharLimit;
+              const isRequired = settings.required;
+              const value = data[name] as string;
+
+              currentErrors[name] = {
+                ...currentErrors?.[name],
+                MISSING_REQUIRED: isRequired ? !value : false,
+              };
+            });
+
             // No need to validate pathPart for datasets
-            if (model?.type === "dataset") {
+            if (model?.type === "dataset" || web?.pathPart === "zesty_home") {
               delete currentErrors.pathPart;
+              delete currentErrors.parentZUID;
             }
 
             setTimeout(() => {
@@ -200,7 +269,7 @@ export const Meta = forwardRef(
           },
         };
       },
-      [errors, web, model]
+      [errors, web, model, metaFields, data]
     );
 
     useEffect(() => {
@@ -394,6 +463,38 @@ export const Meta = forwardRef(
                 />
               </AIGeneratorParameterProvider>
               <MetaImage onChange={handleOnChange} />
+              {"og_title" in metaFields && (
+                <OGTitle
+                  value={data.og_title as string}
+                  onChange={handleOnChange}
+                  error={errors?.og_title}
+                  field={metaFields.og_title}
+                />
+              )}
+              {"og_description" in metaFields && (
+                <OGDescription
+                  value={data.og_description as string}
+                  onChange={handleOnChange}
+                  error={errors?.og_description}
+                  field={metaFields.og_description}
+                />
+              )}
+              {"tc_title" in metaFields && (
+                <TCTitle
+                  value={data.tc_title as string}
+                  onChange={handleOnChange}
+                  error={errors?.tc_title}
+                  field={metaFields.tc_title}
+                />
+              )}
+              {"tc_description" in metaFields && (
+                <TCDescription
+                  value={data.tc_description as string}
+                  onChange={handleOnChange}
+                  error={errors?.tc_description}
+                  field={metaFields.tc_description}
+                />
+              )}
             </Stack>
             {model?.type !== "dataset" && web?.pathPart !== "zesty_home" && (
               <Stack gap={3}>
