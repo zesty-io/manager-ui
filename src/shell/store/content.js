@@ -543,9 +543,16 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
       item.meta.createdByUserZUID = state.user.user_zuid;
     }
 
-    // Check required fields are not empty
+    // Check required fields are not empty, except the og and tc fields since these
+    // are handled by the meta component
     const missingRequired = fields.filter((field) => {
-      if (!field.deletedAt && field.required) {
+      if (
+        !field.deletedAt &&
+        !["og_title", "og_description", "tc_title", "tc_description"].includes(
+          field.name
+        ) &&
+        field.required
+      ) {
         if (!item.data[field.name] && item.data[field.name] != 0) {
           return true;
         }

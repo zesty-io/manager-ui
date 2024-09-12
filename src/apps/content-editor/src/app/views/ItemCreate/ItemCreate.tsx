@@ -94,7 +94,7 @@ export const ItemCreate = () => {
 
   const {
     isSuccess: isSuccessNewModelFields,
-    isFetching: isFetchingNewModelFields,
+    isLoading: isFetchingNewModelFields,
   } = useGetContentModelFieldsQuery(modelZUID);
 
   // on mount and update modelZUID, load item fields
