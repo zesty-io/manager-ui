@@ -216,15 +216,6 @@ export const ContentInsights = ({}) => {
         let value = item?.data[fieldName];
 
         if (!!value) {
-          // value = stripDoubleSpace(
-          //   stripPunctuation(
-          //     stripHidden(
-          //       stripEncoded(
-          //         stripTags(stripZUIDs(String(value).trim().toLowerCase()))
-          //       )
-          //     )
-          //   )
-          // );
           value = cleanContent(String(value));
 
           words = [...words, ...value.split(" ")];
