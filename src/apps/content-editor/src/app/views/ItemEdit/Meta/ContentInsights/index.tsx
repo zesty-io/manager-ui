@@ -7,6 +7,7 @@ import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/ser
 import { WordCount } from "./WordCount";
 import { MatchedWords } from "./MatchedWords";
 import { MostMentionedWords } from "./MostMentionedWords";
+import { DYNAMIC_META_FIELD_NAMES } from "../index";
 
 export const COMMON_WORDS: Readonly<string[]> = [
   "null",
@@ -148,33 +149,33 @@ export const COMMON_WORDS: Readonly<string[]> = [
 ] as const;
 
 // clean up functions
-const stripTags = (string: string) => {
-  return string.replace(/(<([^>]+)>)/gi, "");
-};
+// const stripTags = (string: string) => {
+//   return string.replace(/(<([^>]+)>)/gi, "");
+// };
 
-const stripEncoded = (string: string) => {
-  return string.replace(/(&(.*?);)/gi, " ");
-};
+// const stripEncoded = (string: string) => {
+//   return string.replace(/(&(.*?);)/gi, " ");
+// };
 
-const stripHidden = (string: string) => {
-  return string.replace(/(\r|\n|\t)/gi, " ");
-};
+// const stripHidden = (string: string) => {
+//   return string.replace(/(\r|\n|\t)/gi, " ");
+// };
 
-const stripZUIDs = (string: string) => {
-  return string.replace(/(\d-(.*?)-(.*?))(,| )/gi, " ");
-};
+// const stripZUIDs = (string: string) => {
+//   return string.replace(/(\d-(.*?)-(.*?))(,| )/gi, " ");
+// };
 
-export const stripPunctuation = (string: string) => {
-  return string.replace(/("|,|:|;|\. |!)/gi, " ");
-};
+// export const stripPunctuation = (string: string) => {
+//   return string.replace(/("|,|:|;|\. |!)/gi, " ");
+// };
 
-export const stripDoubleSpace = (string: string) => {
-  return string.replace(/\s\s+/g, " ");
-};
+// export const stripDoubleSpace = (string: string) => {
+//   return string.replace(/\s\s+/g, " ");
+// };
 
-export const stripDashesAndSlashes = (string: string) => {
-  return string.replace(/-|\//g, " ");
-};
+// export const stripDashesAndSlashes = (string: string) => {
+//   return string.replace(/-|\//g, " ");
+// };
 
 const findMatch = (needle: string, haystack: string[]) => {
   let truth = false;
@@ -182,6 +183,18 @@ const findMatch = (needle: string, haystack: string[]) => {
     if (word.toLowerCase() == needle.toLowerCase()) truth = true;
   });
   return truth;
+};
+
+export const cleanContent = (string: string) => {
+  return string
+    ?.replaceAll(/(\d-(.*?)-(.*?))(,| )/gi, "") // Remove zuids
+    ?.replaceAll(/(<([^>]+)>)/gi, "") // Remove html tags
+    ?.replaceAll(/(&(.*?);)/gi, " ") // Remove encoded characters
+    ?.replaceAll(/[^a-zA-Z0-9\s']|(?<![a-zA-Z])'(?![a-zA-Z])/gi, "") // Remove non-digits and non-letters except apostrophe if it's used between letters
+    ?.replaceAll(/\s\s+/g, " ") // Prevent double spaces
+    ?.replaceAll(/(\r|\n|\t)/gi, " ") // Remove all hidden whitespaces
+    ?.toLowerCase()
+    ?.trim();
 };
 
 export const ContentInsights = ({}) => {
@@ -207,7 +220,11 @@ export const ContentInsights = ({}) => {
       ];
 
       return modelFields.reduce((accu: string[], curr) => {
-        if (textFieldTypes.includes(curr.datatype) && !curr.deletedAt) {
+        if (
+          textFieldTypes.includes(curr.datatype) &&
+          !curr.deletedAt &&
+          !DYNAMIC_META_FIELD_NAMES.includes(curr.name)
+        ) {
           accu = [...accu, curr.name];
           return accu;
         }
@@ -229,15 +246,16 @@ export const ContentInsights = ({}) => {
         let value = item?.data[fieldName];
 
         if (!!value) {
-          value = stripDoubleSpace(
-            stripPunctuation(
-              stripHidden(
-                stripEncoded(
-                  stripTags(stripZUIDs(String(value).trim().toLowerCase()))
-                )
-              )
-            )
-          );
+          // value = stripDoubleSpace(
+          //   stripPunctuation(
+          //     stripHidden(
+          //       stripEncoded(
+          //         stripTags(stripZUIDs(String(value).trim().toLowerCase()))
+          //       )
+          //     )
+          //   )
+          // );
+          value = cleanContent(String(value));
 
           words = [...words, ...value.split(" ")];
         }

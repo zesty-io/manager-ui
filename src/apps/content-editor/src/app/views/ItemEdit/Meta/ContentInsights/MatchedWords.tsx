@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 
 import { AppState } from "../../../../../../../../shell/store/types";
+import { cleanContent } from "./index";
 
 type MatchedWordsProps = {
   uniqueNonCommonWordsArray: string[];
@@ -35,11 +36,7 @@ export const MatchedWords = ({
         (accu: string[], [fieldName, value]) => {
           if (textMetaFieldNames.includes(fieldName) && !!value) {
             // Replace all new line characters with a space and remove all special characters
-            const cleanedValue = value
-              ?.replace(/(\r|\n|\t)/gi, " ")
-              ?.replace(/[^a-zA-Z0-9\s]+/gi, "")
-              ?.toLowerCase()
-              ?.trim();
+            const cleanedValue = cleanContent(value);
 
             accu = [...accu, ...cleanedValue?.split(" ")];
 
