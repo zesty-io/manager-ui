@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 
 import { AppState } from "../../../../../../../../shell/store/types";
 import { cleanContent } from "./index";
+import { DYNAMIC_META_FIELD_NAMES } from "../index";
 
 type MatchedWordsProps = {
   uniqueNonCommonWordsArray: string[];
@@ -25,14 +26,17 @@ export const MatchedWords = ({
       "metaTitle",
       "metaKeywords",
       "pathPart",
+      ...DYNAMIC_META_FIELD_NAMES,
     ];
 
     if (
       item?.web &&
       Object.values(item.web)?.length &&
+      item?.data &&
+      Object.values(item.data)?.length &&
       uniqueNonCommonWordsArray?.length
     ) {
-      const metaWords = Object.entries(item.web)?.reduce(
+      const metaWords = Object.entries({ ...item.web, ...item.data })?.reduce(
         (accu: string[], [fieldName, value]) => {
           if (textMetaFieldNames.includes(fieldName) && !!value) {
             // Replace all new line characters with a space and remove all special characters
@@ -56,7 +60,7 @@ export const MatchedWords = ({
     }
 
     return [];
-  }, [uniqueNonCommonWordsArray, item?.web]);
+  }, [uniqueNonCommonWordsArray, item?.web, item?.data]);
 
   return (
     <Box mt={1.5} mb={2}>
