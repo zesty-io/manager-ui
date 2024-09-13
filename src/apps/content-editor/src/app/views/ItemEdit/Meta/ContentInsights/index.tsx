@@ -148,35 +148,6 @@ export const COMMON_WORDS: Readonly<string[]> = [
   "things",
 ] as const;
 
-// clean up functions
-// const stripTags = (string: string) => {
-//   return string.replace(/(<([^>]+)>)/gi, "");
-// };
-
-// const stripEncoded = (string: string) => {
-//   return string.replace(/(&(.*?);)/gi, " ");
-// };
-
-// const stripHidden = (string: string) => {
-//   return string.replace(/(\r|\n|\t)/gi, " ");
-// };
-
-// const stripZUIDs = (string: string) => {
-//   return string.replace(/(\d-(.*?)-(.*?))(,| )/gi, " ");
-// };
-
-// export const stripPunctuation = (string: string) => {
-//   return string.replace(/("|,|:|;|\. |!)/gi, " ");
-// };
-
-// export const stripDoubleSpace = (string: string) => {
-//   return string.replace(/\s\s+/g, " ");
-// };
-
-// export const stripDashesAndSlashes = (string: string) => {
-//   return string.replace(/-|\//g, " ");
-// };
-
 const findMatch = (needle: string, haystack: string[]) => {
   let truth = false;
   haystack.forEach((word) => {
@@ -206,7 +177,6 @@ export const ContentInsights = ({}) => {
   const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID, {
     skip: !modelZUID,
   });
-  const [showAllWords, setShowAllWords] = useState(false);
 
   const textFieldNames = useMemo(() => {
     if (modelFields?.length) {
