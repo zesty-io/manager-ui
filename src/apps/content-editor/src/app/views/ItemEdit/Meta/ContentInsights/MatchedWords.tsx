@@ -4,11 +4,6 @@ import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 
-import {
-  stripDashesAndSlashes,
-  stripDoubleSpace,
-  stripPunctuation,
-} from "./index";
 import { AppState } from "../../../../../../../../shell/store/types";
 
 type MatchedWordsProps = {
@@ -39,11 +34,12 @@ export const MatchedWords = ({
       const metaWords = Object.entries(item.web)?.reduce(
         (accu: string[], [fieldName, value]) => {
           if (textMetaFieldNames.includes(fieldName) && !!value) {
-            const cleanedValue = stripDoubleSpace(
-              stripPunctuation(
-                stripDashesAndSlashes(value.trim().toLowerCase())
-              )
-            );
+            // Replace all new line characters with a space and remove all special characters
+            const cleanedValue = value
+              ?.replace(/(\r|\n|\t)/gi, " ")
+              ?.replace(/[^a-zA-Z0-9\s]+/gi, "")
+              ?.toLowerCase()
+              ?.trim();
 
             accu = [...accu, ...cleanedValue?.split(" ")];
 
