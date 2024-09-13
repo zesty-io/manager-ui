@@ -34,9 +34,9 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
         {}
       );
 
-      return Object.entries(wordsWithCount ?? {})?.sort(
-        ([, a], [, b]) => b - a
-      );
+      return Object.entries(wordsWithCount ?? {})
+        ?.sort(([, a], [, b]) => b - a)
+        ?.filter(([, count]) => count > 1);
     }
 
     return [];
