@@ -272,7 +272,6 @@ describe("Actions in content editor", () => {
   //   // cy.contains("The item has been purged from the CDN cache", { timeout: 5000 }).should("exist");
   // });
 
-  // TODO: Continue making the test once the ai api is working again
   it("Creates a new content item using AI-generated data", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/content/models/*/fields?showDeleted=true", () => {
