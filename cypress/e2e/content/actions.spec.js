@@ -273,7 +273,7 @@ describe("Actions in content editor", () => {
   // });
 
   // TODO: Continue making the test once the ai api is working again
-  it.skip("Creates a new content item using AI-generated data", () => {
+  it.only("Creates a new content item using AI-generated data", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/content/models/*/fields?showDeleted=true", () => {
         cy.visit("/content/6-a1a600-k0b6f0/new");
@@ -281,6 +281,7 @@ describe("Actions in content editor", () => {
     });
 
     cy.intercept("/ai").as("ai");
+    cy.wait(5000);
 
     // Generate AI content for single line text
     cy.get("#12-0c3934-8dz720").find("[data-cy='AIOpen']").click();
@@ -303,11 +304,32 @@ describe("Actions in content editor", () => {
     cy.getBySelector("AIApprove").click();
 
     // Select AI-assisted metadata generation flow
-    cy.getBySelector("AIAssistedMetaFlow");
+    cy.getBySelector("ManualMetaFlow").click();
 
     // Generate AI content for meta title
     cy.getBySelector("metaTitle").find("input").clear();
+    cy.getBySelector("metaTitle").find("[data-cy='AIOpen']").click();
+    cy.getBySelector("AIGenerate").click();
+
+    cy.wait("@ai");
+
+    cy.getBySelector("AISuggestion1").click();
+    cy.getBySelector("AIApprove").click();
 
     // Generate AI content for meta description
+    cy.getBySelector("metaDescription")
+      .find("textarea[name='metaDescription']")
+      .clear({ force: true });
+    cy.getBySelector("metaDescription").find("[data-cy='AIOpen']").click();
+    cy.getBySelector("AIGenerate").click();
+
+    cy.wait("@ai");
+
+    cy.getBySelector("AISuggestion1").click();
+    cy.getBySelector("AIApprove").click();
+
+    cy.getBySelector("CreateItemSaveButton").click();
+
+    cy.contains("Created Item", { timeout: 5000 }).should("exist");
   });
 });

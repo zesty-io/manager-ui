@@ -346,6 +346,7 @@ export const AIGenerator = ({
             <Stack gap={2.5}>
               {data.map((value, index) => (
                 <ListItemButton
+                  data-cy={`AISuggestion${index + 1}`}
                   key={index}
                   selected={selectedContent === index}
                   onClick={() => setSelectedContent(index)}
