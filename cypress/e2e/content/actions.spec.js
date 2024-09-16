@@ -273,7 +273,7 @@ describe("Actions in content editor", () => {
   // });
 
   // TODO: Continue making the test once the ai api is working again
-  it.only("Creates a new content item using AI-generated data", () => {
+  it("Creates a new content item using AI-generated data", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/content/models/*/fields?showDeleted=true", () => {
         cy.visit("/content/6-a1a600-k0b6f0/new");
