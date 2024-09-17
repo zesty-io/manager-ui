@@ -5,6 +5,7 @@ import { GooglePreview } from "./GooglePreview";
 import { TwitterPreview } from "./TwitterPreview";
 import { FacebookPreview } from "./FacebookPreview";
 import { LinkedInPreview } from "./LinkedInPreview";
+import { useImageURL } from "./useImageURL";
 
 enum SocialMediaTab {
   Google,
@@ -14,6 +15,7 @@ enum SocialMediaTab {
 }
 type SocialMediaPreviewProps = {};
 export const SocialMediaPreview = ({}: SocialMediaPreviewProps) => {
+  const [imageURL] = useImageURL();
   const [activeTab, setActiveTab] = useState<SocialMediaTab>(
     SocialMediaTab.Google
   );
@@ -60,10 +62,18 @@ export const SocialMediaPreview = ({}: SocialMediaPreviewProps) => {
           />
         </Tabs>
       </Box>
-      {activeTab === SocialMediaTab.Google && <GooglePreview />}
-      {activeTab === SocialMediaTab.Twitter && <TwitterPreview />}
-      {activeTab === SocialMediaTab.Facebook && <FacebookPreview />}
-      {activeTab === SocialMediaTab.LinkedIn && <LinkedInPreview />}
+      {activeTab === SocialMediaTab.Google && (
+        <GooglePreview imageURL={imageURL} />
+      )}
+      {activeTab === SocialMediaTab.Twitter && (
+        <TwitterPreview imageURL={imageURL} />
+      )}
+      {activeTab === SocialMediaTab.Facebook && (
+        <FacebookPreview imageURL={imageURL} />
+      )}
+      {activeTab === SocialMediaTab.LinkedIn && (
+        <LinkedInPreview imageURL={imageURL} />
+      )}
     </>
   );
 };

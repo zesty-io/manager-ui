@@ -1,4 +1,11 @@
-import { Fragment, useEffect, useState, useMemo, createContext } from "react";
+import {
+  Fragment,
+  useEffect,
+  useState,
+  useMemo,
+  createContext,
+  useRef,
+} from "react";
 import {
   Switch,
   Route,
@@ -73,6 +80,7 @@ export default function ItemEdit() {
   const isMounted = useIsMounted();
   const location = useLocation();
   const { modelZUID, itemZUID } = useParams();
+  const metaRef = useRef(null);
   const item = useSelector((state) => state.content[itemZUID]);
   const items = useSelector((state) => state.content);
   const model = useSelector((state) => state.models[modelZUID]);
@@ -252,7 +260,8 @@ export default function ItemEdit() {
   async function save() {
     setSaveClicked(true);
 
-    if (hasErrors || hasSEOErrors) return;
+    if (hasErrors || hasSEOErrors || metaRef.current?.validateMetaFields?.())
+      return;
 
     setSaving(true);
     try {
@@ -465,6 +474,7 @@ export default function ItemEdit() {
                   path="/content/:modelZUID/:itemZUID/meta"
                   render={() => (
                     <Meta
+                      ref={metaRef}
                       onUpdateSEOErrors={(hasErrors) => {
                         setHasSEOErrors(hasErrors);
                       }}
