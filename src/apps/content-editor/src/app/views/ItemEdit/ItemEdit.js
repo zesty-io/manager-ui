@@ -128,6 +128,9 @@ export default function ItemEdit() {
         (setting.key === "x_frame_options" &&
           !!setting.value &&
           setting.value !== "sameorigin") ||
+        (setting.key === "referrer_policy" &&
+          !!setting.value &&
+          setting.value !== "strict-origin-when-cross-origin") ||
         invalidCSPSettings
       );
     }) ||
