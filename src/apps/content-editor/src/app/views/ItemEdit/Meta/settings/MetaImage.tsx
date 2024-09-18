@@ -21,6 +21,7 @@ import { MediaApp } from "../../../../../../../media/src/app";
 import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
 import { isIS } from "@mui/x-date-pickers-pro";
 import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
+import { fetchFields } from "../../../../../../../../shell/store/fields";
 
 type MetaImageProps = {
   onChange: (value: string, name: string) => void;
@@ -160,6 +161,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     ) {
       // Initiate the empty og_image field
       onChange(null, "og_image");
+      dispatch(fetchFields(modelZUID));
     }
   }, [
     isOgImageFieldCreated,
