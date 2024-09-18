@@ -12,14 +12,12 @@ import {
   useGetContentModelFieldsQuery,
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../../../shell/services/instance";
-import { fetchItem } from "../../../../../../../../shell/store/content";
 import {
   FieldTypeMedia,
   MediaItem,
 } from "../../../../components/FieldTypeMedia";
 import { MediaApp } from "../../../../../../../media/src/app";
 import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
-import { isIS } from "@mui/x-date-pickers-pro";
 import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
 import { fetchFields } from "../../../../../../../../shell/store/fields";
 
