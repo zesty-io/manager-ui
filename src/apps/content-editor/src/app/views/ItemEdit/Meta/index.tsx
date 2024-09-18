@@ -266,7 +266,7 @@ export const Meta = forwardRef(
                 <Typography variant="h5" fontWeight={700} mb={0.5}>
                   SEO & Open Graph Settings
                 </Typography>
-                <Typography color="text.secondary">
+                <Typography color="text.secondary" variant="body2">
                   Specify this page's title and description. You can see how
                   they'll look in search engine results pages (SERPs) and social
                   media content in the preview on the right.
