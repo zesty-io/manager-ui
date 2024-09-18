@@ -58,8 +58,6 @@ export const useImageURL: () => UseImageURLProps = () => {
   }, [modelFields, item?.data]);
 
   useEffect(() => {
-    if (!contentImages?.length) return;
-
     const fastlyImageParams = new URLSearchParams({
       fit: "cover",
       ...(imageDimensions.width && { width: String(imageDimensions.width) }),
@@ -78,6 +76,8 @@ export const useImageURL: () => UseImageURLProps = () => {
         setImageURL(String(item.data.og_image));
       }
     } else {
+      if (!contentImages?.length) return;
+
       let validImages = contentImages.map(async (value) => {
         const isZestyMediaFile = value.startsWith("3-");
         // Need to resolve media zuids to determine if these are actually images
