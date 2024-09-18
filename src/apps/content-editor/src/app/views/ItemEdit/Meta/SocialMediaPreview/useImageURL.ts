@@ -76,7 +76,10 @@ export const useImageURL: () => UseImageURLProps = () => {
         setImageURL(String(item.data.og_image));
       }
     } else {
-      if (!contentImages?.length) return;
+      if (!contentImages?.length) {
+        setImageURL(null);
+        return;
+      }
 
       let validImages = contentImages.map(async (value) => {
         const isZestyMediaFile = value.startsWith("3-");
@@ -103,7 +106,7 @@ export const useImageURL: () => UseImageURLProps = () => {
         setImageURL(data?.[0]);
       });
     }
-  }, [contentImages, imageDimensions]);
+  }, [JSON.stringify(contentImages), imageDimensions, item?.data?.og_image]);
 
   return [imageURL, setImageDimensions];
 };
