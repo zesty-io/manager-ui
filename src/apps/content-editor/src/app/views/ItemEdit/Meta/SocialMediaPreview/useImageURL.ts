@@ -7,12 +7,7 @@ import { useLazyGetFileQuery } from "../../../../../../../../shell/services/medi
 import { AppState } from "../../../../../../../../shell/store/types";
 import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
 
-type ImageDimension = {
-  width?: number;
-  height?: number;
-};
-type UseImageURLProps = [string, (imageDimensions: ImageDimension) => void];
-export const useImageURL: () => UseImageURLProps = () => {
+export const useImageURL: () => string = () => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -25,7 +20,6 @@ export const useImageURL: () => UseImageURLProps = () => {
     (state: AppState) =>
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
-  const [imageDimensions, setImageDimensions] = useState<ImageDimension>({});
   const [imageURL, setImageURL] = useState<string>(null);
 
   const contentImages = useMemo(() => {
@@ -58,19 +52,12 @@ export const useImageURL: () => UseImageURLProps = () => {
   }, [modelFields, item?.data]);
 
   useEffect(() => {
-    const fastlyImageParams = new URLSearchParams({
-      fit: "cover",
-      ...(imageDimensions.width && { width: String(imageDimensions.width) }),
-      ...(imageDimensions.height && { height: String(imageDimensions.height) }),
-    });
-
     if (!!item?.data?.og_image) {
       if (String(item.data.og_image).startsWith("3-")) {
         getFile(String(item.data.og_image))
           .unwrap()
           .then((res) => {
-            const url = `${res.url}?${fastlyImageParams.toString()}`;
-            setImageURL(url);
+            setImageURL(res.url);
           });
       } else {
         setImageURL(String(item.data.og_image));
@@ -96,9 +83,7 @@ export const useImageURL: () => UseImageURLProps = () => {
         ].includes(fileExtension(isZestyMediaFile ? res.url : value));
 
         if (isImage) {
-          return isZestyMediaFile
-            ? `${res.url}?${fastlyImageParams.toString()}`
-            : value;
+          return isZestyMediaFile ? res.url : value;
         }
       });
 
@@ -106,7 +91,7 @@ export const useImageURL: () => UseImageURLProps = () => {
         setImageURL(data?.[0]);
       });
     }
-  }, [JSON.stringify(contentImages), imageDimensions, item?.data?.og_image]);
+  }, [JSON.stringify(contentImages), item?.data?.og_image]);
 
-  return [imageURL, setImageDimensions];
+  return imageURL;
 };

@@ -15,7 +15,7 @@ enum SocialMediaTab {
 }
 type SocialMediaPreviewProps = {};
 export const SocialMediaPreview = ({}: SocialMediaPreviewProps) => {
-  const [imageURL] = useImageURL();
+  const imageURL = useImageURL();
   const [activeTab, setActiveTab] = useState<SocialMediaTab>(
     SocialMediaTab.Google
   );
