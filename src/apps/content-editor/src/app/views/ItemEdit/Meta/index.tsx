@@ -40,6 +40,7 @@ import { OGTitle } from "./settings/OGTitle";
 import { OGDescription } from "./settings/OGDescription";
 import { TCTitle } from "./settings/TCTitle";
 import { TCDescription } from "./settings/TCDescription";
+import { FieldError } from "../../../components/Editor/FieldError";
 
 export const MaxLengths: Record<string, number> = {
   metaLinkText: 150,
@@ -69,9 +70,10 @@ type MetaProps = {
   isSaving: boolean;
   onUpdateSEOErrors: (errors: Errors) => void;
   errors: Errors;
+  errorComponent?: React.ReactNode;
 };
 export const Meta = forwardRef(
-  ({ isSaving, onUpdateSEOErrors, errors }: MetaProps, ref) => {
+  ({ isSaving, onUpdateSEOErrors, errors, errorComponent }: MetaProps, ref) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -250,6 +252,7 @@ export const Meta = forwardRef(
         >
           <Stack flex={1} gap={4}>
             <Stack gap={3}>
+              {!!errorComponent && errorComponent}
               <Box>
                 <Typography variant="h5" fontWeight={700} mb={0.5}>
                   SEO & Open Graph Settings

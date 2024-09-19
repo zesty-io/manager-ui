@@ -55,6 +55,7 @@ import { DuoModeContext } from "../../../../../../shell/contexts/duoModeContext"
 import { useLocalStorage } from "react-use";
 import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
+import { FieldError } from "../../components/Editor/FieldError";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -96,7 +97,8 @@ export default function ItemEdit() {
   const [notFound, setNotFound] = useState("");
   const [saveClicked, setSaveClicked] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
-  const [hasSEOErrors, setHasSEOErrors] = useState(false);
+  const [SEOErrors, setSEOErrors] = useState({});
+  // const [hasSEOErrors, setHasSEOErrors] = useState(false);
   const [headerTitle, setHeaderTitle] = useState("");
   const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
@@ -161,6 +163,27 @@ export default function ItemEdit() {
 
     return hasErrors;
   }, [fieldErrors]);
+
+  const hasSEOErrors = useMemo(() => {
+    const hasErrors = Object.values(SEOErrors)
+      ?.map((error) => {
+        return Object.values(error) ?? [];
+      })
+      ?.flat()
+      .some((error) => !!error);
+
+    return hasErrors;
+  }, [SEOErrors]);
+
+  const activeFields = useMemo(() => {
+    if (fields?.length) {
+      return fields.filter(
+        (field) => !field.deletedAt && !["og_image"].includes(field.name)
+      );
+    }
+
+    return [];
+  }, [fields]);
 
   async function lockItem() {
     setCheckingLock(true);
@@ -353,12 +376,12 @@ export default function ItemEdit() {
       dispatch(fetchAuditTrailDrafting(itemZUID));
     } catch (err) {
       console.error(err);
-      throw new Error(err);
       // we need to set the item to dirty again because the save failed
       dispatch({
         type: "MARK_ITEM_DIRTY",
         itemZUID,
       });
+      throw new Error(err);
     } finally {
       if (isMounted.current) {
         setSaving(false);
@@ -462,10 +485,20 @@ export default function ItemEdit() {
                   render={() => (
                     <Meta
                       ref={metaRef}
-                      onUpdateSEOErrors={(hasErrors) => {
-                        setHasSEOErrors(hasErrors);
+                      onUpdateSEOErrors={(errors) => {
+                        setSEOErrors(errors);
                       }}
                       isSaving={saving}
+                      errors={SEOErrors}
+                      errorComponent={
+                        saveClicked &&
+                        (hasErrors || hasSEOErrors) && (
+                          <FieldError
+                            errors={{ ...fieldErrors, ...SEOErrors }}
+                            fields={activeFields}
+                          />
+                        )
+                      }
                     />
                   )}
                 />

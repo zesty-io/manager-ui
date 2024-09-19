@@ -383,7 +383,7 @@ export const ItemCreate = () => {
           gap={4}
         >
           <Box width="60%" height="100%">
-            {saveClicked && hasErrors && (
+            {saveClicked && (hasErrors || hasSEOErrors) && (
               <FieldError
                 errors={{ ...fieldErrors, ...SEOErrors }}
                 fields={activeFields}
