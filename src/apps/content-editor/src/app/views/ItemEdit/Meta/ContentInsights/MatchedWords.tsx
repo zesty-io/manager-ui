@@ -1,5 +1,5 @@
 import { Box, Stack, Typography, Chip } from "@mui/material";
-import { Check, Add, Remove } from "@mui/icons-material";
+import { Check, AddRounded, RemoveRounded } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
@@ -84,7 +84,13 @@ export const MatchedWords = ({
             label={`See ${showAll ? "Less" : "More"}`}
             size="small"
             variant="outlined"
-            icon={showAll ? <Remove color="action" /> : <Add color="action" />}
+            icon={
+              showAll ? (
+                <RemoveRounded color="action" />
+              ) : (
+                <AddRounded color="action" />
+              )
+            }
             onClick={() => setShowAll(!showAll)}
           />
         )}
