@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Tab, Tabs, Box } from "@mui/material";
-import { Google, Twitter, Facebook, LinkedIn } from "@mui/icons-material";
+import {
+  Google,
+  Twitter,
+  FacebookRounded,
+  LinkedIn,
+} from "@mui/icons-material";
 import { GooglePreview } from "./GooglePreview";
 import { TwitterPreview } from "./TwitterPreview";
 import { FacebookPreview } from "./FacebookPreview";
@@ -49,7 +54,7 @@ export const SocialMediaPreview = ({}: SocialMediaPreviewProps) => {
             value={SocialMediaTab.Twitter}
           />
           <Tab
-            icon={<Facebook />}
+            icon={<FacebookRounded />}
             iconPosition="start"
             label="Facebook"
             value={SocialMediaTab.Facebook}

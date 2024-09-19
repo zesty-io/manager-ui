@@ -42,6 +42,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
           height={128}
           src={`${imageURL}?width=128&height=128&fit=cover`}
           flexShrink={0}
+          borderRadius="8px 0 0 8px"
         />
       ) : (
         <Stack
@@ -51,6 +52,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
           justifyContent="center"
           alignItems="center"
           flexShrink={0}
+          borderRadius="8px 0 0 8px"
         >
           <ImageRounded color="action" fontSize="large" />
         </Stack>
