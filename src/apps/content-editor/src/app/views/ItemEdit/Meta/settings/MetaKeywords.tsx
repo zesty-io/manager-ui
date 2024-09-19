@@ -17,7 +17,7 @@ export const MetaKeywords = memo(function MetaKeywords({
   error,
 }: MetaKeywordsProps) {
   return (
-    <Box data-cy="metaKeywords">
+    <Box data-cy="metaKeywords" id="metaKeywords">
       <FieldShell
         settings={{
           label: "Meta Keywords",

@@ -59,7 +59,7 @@ export default connect()(function MetaDescription({
   }
 
   return (
-    <Box data-cy="metaDescription">
+    <Box data-cy="metaDescription" id="metaDescription">
       <FieldShell
         settings={{
           label: "Meta Description",

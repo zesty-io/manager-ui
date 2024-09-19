@@ -36,6 +36,7 @@ import {
 import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
 import { Meta } from "../ItemEdit/Meta";
 import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
+import { FieldError } from "../../components/Editor/FieldError";
 
 export type ActionAfterSave =
   | ""
@@ -55,7 +56,7 @@ const selectSortedModelFields = createSelector(
       .sort((a, b) => a.sort - b.sort)
 );
 
-type FieldError = {
+type FieldErrors = {
   [key: string]: Error;
 };
 
@@ -78,9 +79,10 @@ export const ItemCreate = () => {
   const [newItemZUID, setNewItemZUID] = useState();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [willRedirect, setWillRedirect] = useState(true);
-  const [fieldErrors, setFieldErrors] = useState<FieldError>({});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [saveClicked, setSaveClicked] = useState(false);
-  const [hasSEOErrors, setHasSEOErrors] = useState(false);
+  // const [hasSEOErrors, setHasSEOErrors] = useState(false);
+  const [SEOErrors, setSEOErrors] = useState<FieldErrors>({});
   const metaRef = useRef(null);
 
   const [
@@ -140,6 +142,27 @@ export const ItemCreate = () => {
 
     return hasErrors;
   }, [fieldErrors]);
+
+  const hasSEOErrors = useMemo(() => {
+    const hasErrors = Object.values(SEOErrors)
+      ?.map((error) => {
+        return Object.values(error) ?? [];
+      })
+      ?.flat()
+      .some((error) => !!error);
+
+    return hasErrors;
+  }, [SEOErrors]);
+
+  const activeFields = useMemo(() => {
+    if (fields?.length) {
+      return fields.filter(
+        (field) => !field.deletedAt && !["og_image"].includes(field.name)
+      );
+    }
+
+    return [];
+  }, [fields]);
 
   const loadItemFields = async (modelZUID: string) => {
     setLoading(true);
@@ -360,9 +383,14 @@ export const ItemCreate = () => {
           gap={4}
         >
           <Box width="60%" height="100%">
+            {saveClicked && hasErrors && (
+              <FieldError
+                errors={{ ...fieldErrors, ...SEOErrors }}
+                fields={activeFields}
+              />
+            )}
             <Editor
               // @ts-ignore no types
-              hasErrors={hasErrors}
               itemZUID={itemZUID}
               item={item}
               items={content}
@@ -375,10 +403,9 @@ export const ItemCreate = () => {
               loading={loading}
               saving={saving}
               isDirty={item?.dirty}
-              saveClicked={saveClicked}
               fieldErrors={fieldErrors}
               // @ts-ignore  untyped component
-              onUpdateFieldErrors={(errors: FieldError) => {
+              onUpdateFieldErrors={(errors: FieldErrors) => {
                 setFieldErrors(errors);
               }}
             />
@@ -389,11 +416,12 @@ export const ItemCreate = () => {
               }}
             />
             <Meta
-              onUpdateSEOErrors={(hasErrors) => {
-                setHasSEOErrors(hasErrors);
+              onUpdateSEOErrors={(errors: FieldErrors) => {
+                setSEOErrors(errors);
               }}
               isSaving={saving}
               ref={metaRef}
+              errors={SEOErrors}
             />
           </Box>
           <ThemeProvider theme={theme}>

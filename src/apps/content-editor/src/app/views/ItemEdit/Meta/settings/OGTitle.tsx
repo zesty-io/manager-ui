@@ -14,7 +14,7 @@ type OGTitleProps = {
 };
 export const OGTitle = ({ value, onChange, error, field }: OGTitleProps) => {
   return (
-    <Box data-cy="OGTitle">
+    <Box data-cy="OGTitle" id={field.ZUID}>
       <FieldShell
         settings={{
           label: field.label,

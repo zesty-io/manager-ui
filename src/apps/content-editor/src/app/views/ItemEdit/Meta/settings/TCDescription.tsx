@@ -19,7 +19,7 @@ export const TCDescription = ({
   field,
 }: TCDescriptionProps) => {
   return (
-    <Box data-cy="TCDescription">
+    <Box data-cy="TCDescription" id={field.ZUID}>
       <FieldShell
         settings={{
           label: field.label,

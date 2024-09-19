@@ -67,10 +67,11 @@ export const DYNAMIC_META_FIELD_NAMES = [
 type Errors = Record<string, Error>;
 type MetaProps = {
   isSaving: boolean;
-  onUpdateSEOErrors: (hasErrors: boolean) => void;
+  onUpdateSEOErrors: (errors: Errors) => void;
+  errors: Errors;
 };
 export const Meta = forwardRef(
-  ({ isSaving, onUpdateSEOErrors }: MetaProps, ref) => {
+  ({ isSaving, onUpdateSEOErrors, errors }: MetaProps, ref) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -86,7 +87,6 @@ export const Meta = forwardRef(
       (state: AppState) =>
         state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
     );
-    const [errors, setErrors] = useState<Errors>({});
 
     // @ts-expect-error untyped
     const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
@@ -148,7 +148,7 @@ export const Meta = forwardRef(
           };
         }
 
-        setErrors(currentErrors);
+        onUpdateSEOErrors(currentErrors);
 
         dispatch({
           // The og_image is stored as an ordinary field item and not a SEO field item
@@ -196,7 +196,6 @@ export const Meta = forwardRef(
             });
 
             Object.entries(metaFields).forEach(([name, settings]) => {
-              const maxCharLimit = settings.settings?.maxCharLimit;
               const isRequired = settings.required;
               const value = data[name] as string;
 
@@ -213,7 +212,7 @@ export const Meta = forwardRef(
             }
 
             setTimeout(() => {
-              setErrors(currentErrors);
+              onUpdateSEOErrors(currentErrors);
             });
 
             return Object.values(currentErrors)
@@ -230,21 +229,10 @@ export const Meta = forwardRef(
 
     useEffect(() => {
       if (isSaving) {
-        setErrors({});
+        onUpdateSEOErrors({});
         return;
       }
     }, [isSaving]);
-
-    useEffect(() => {
-      const hasErrors = Object.values(errors)
-        ?.map((error) => {
-          return Object.values(error) ?? [];
-        })
-        ?.flat()
-        .some((error) => !!error);
-
-      onUpdateSEOErrors(hasErrors);
-    }, [errors]);
 
     return (
       <ThemeProvider theme={theme}>
@@ -331,13 +319,13 @@ export const Meta = forwardRef(
                   onChange={handleOnChange}
                   error={errors?.pathPart}
                   onUpdateErrors={(name, error) => {
-                    setErrors((errors) => ({
+                    onUpdateSEOErrors({
                       ...errors,
                       [name]: {
                         ...errors?.[name],
                         ...error,
                       },
-                    }));
+                    });
                   }}
                 />
               </Stack>

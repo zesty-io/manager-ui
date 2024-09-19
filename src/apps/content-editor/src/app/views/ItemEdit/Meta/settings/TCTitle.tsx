@@ -14,7 +14,7 @@ type TCTitleProps = {
 };
 export const TCTitle = ({ value, onChange, error, field }: TCTitleProps) => {
   return (
-    <Box data-cy="TCTitle">
+    <Box data-cy="TCTitle" id={field.ZUID}>
       <FieldShell
         settings={{
           label: field.label,

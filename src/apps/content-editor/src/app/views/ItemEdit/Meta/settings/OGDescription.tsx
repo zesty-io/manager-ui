@@ -19,7 +19,7 @@ export const OGDescription = ({
   field,
 }: OGDescriptionProps) => {
   return (
-    <Box data-cy="OGDescription">
+    <Box data-cy="OGDescription" id={field.ZUID}>
       <FieldShell
         settings={{
           label: field.label,
