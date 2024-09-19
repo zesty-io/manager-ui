@@ -110,6 +110,18 @@ export default function ItemEdit() {
   const duoModeDisabled =
     isFetching ||
     instanceSettings?.find((setting) => {
+      // Makes sure that the CSP value is either empty or contains
+      // frame-ancestors 'self' zesty.io *.zesty.io anywhere in the value
+      const invalidCSPSettings =
+        setting.key === "content_security_policy" && !!setting.value
+          ? !setting.value.includes("frame-ancestors") ||
+            !setting.value.includes("'self'") ||
+            !(
+              setting.value.includes("zesty.io") ||
+              setting.value.includes("*.zesty.io")
+            )
+          : false;
+
       // if any of these settings are present then DuoMode is unavailable
       return (
         (setting.key === "basic_content_api_key" && setting.value) ||
@@ -117,7 +129,11 @@ export default function ItemEdit() {
         (setting.key === "authorization_key" && setting.value) ||
         (setting.key === "x_frame_options" &&
           !!setting.value &&
-          setting.value !== "sameorigin")
+          setting.value !== "sameorigin") ||
+        (setting.key === "referrer_policy" &&
+          !!setting.value &&
+          setting.value !== "strict-origin-when-cross-origin") ||
+        invalidCSPSettings
       );
     }) ||
     model?.type === "dataset";
