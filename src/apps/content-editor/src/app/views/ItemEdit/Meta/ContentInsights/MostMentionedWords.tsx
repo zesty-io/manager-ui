@@ -81,6 +81,11 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
         }}
       />
       <Stack direction="row" gap={1} flexWrap="wrap">
+        {!filteredWords?.length && !filterKeyword && (
+          <Typography variant="body2" color="text.secondary">
+            No words in your content item occur 2 or more times
+          </Typography>
+        )}
         {filteredWords
           ?.slice(0, showAll ? undefined : 9)
           ?.map(([word, count]) => (

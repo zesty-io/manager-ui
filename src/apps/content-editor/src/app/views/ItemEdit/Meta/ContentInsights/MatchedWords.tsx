@@ -68,6 +68,11 @@ export const MatchedWords = ({
         Content and Meta Matched Words
       </Typography>
       <Stack direction="row" gap={1} flexWrap="wrap">
+        {!contentAndMetaWordMatches?.length && (
+          <Typography variant="body2" color="text.secondary">
+            No Matching Words
+          </Typography>
+        )}
         {contentAndMetaWordMatches
           ?.slice(0, showAll ? undefined : 9)
           ?.map((word) => (
