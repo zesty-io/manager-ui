@@ -12,15 +12,14 @@ import {
   useGetContentModelFieldsQuery,
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../../../shell/services/instance";
-import { fetchItem } from "../../../../../../../../shell/store/content";
 import {
   FieldTypeMedia,
   MediaItem,
 } from "../../../../components/FieldTypeMedia";
 import { MediaApp } from "../../../../../../../media/src/app";
 import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
-import { isIS } from "@mui/x-date-pickers-pro";
 import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
+import { fetchFields } from "../../../../../../../../shell/store/fields";
 
 type MetaImageProps = {
   onChange: (value: string, name: string) => void;
@@ -90,7 +89,10 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
   }, [modelFields, item?.data]);
 
   useEffect(() => {
-    if (!contentImages?.length) return;
+    if (!contentImages?.length) {
+      setTemporaryMetaImageURL(null);
+      return;
+    }
 
     let validImages = contentImages.map(async (value) => {
       const isZestyMediaFile = value.startsWith("3-");
@@ -114,7 +116,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     Promise.all(validImages).then((data) => {
       setTemporaryMetaImageURL(data?.[0]);
     });
-  }, [contentImages, temporaryMetaImageURL]);
+  }, [JSON.stringify(contentImages), temporaryMetaImageURL]);
 
   const handleCreateOgImageField = () => {
     const existingOgImageField = modelFields?.find(
@@ -160,6 +162,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     ) {
       // Initiate the empty og_image field
       onChange(null, "og_image");
+      dispatch(fetchFields(modelZUID));
     }
   }, [
     isOgImageFieldCreated,
@@ -203,7 +206,13 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
             openMediaBrowser={(opts) => {
               setImageModal(opts);
             }}
-            onChange={onChange}
+            onChange={(value: string, name: string) => {
+              if (!value) {
+                setShowOGImageField(false);
+              }
+
+              onChange(value, name);
+            }}
             lockedToGroupId={null}
             settings={{
               fileExtensions: [

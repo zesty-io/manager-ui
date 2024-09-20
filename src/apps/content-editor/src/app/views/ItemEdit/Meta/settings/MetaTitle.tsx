@@ -18,7 +18,7 @@ export const MetaTitle = memo(function MetaTitle({
   error,
 }: MetaTitleProps) {
   return (
-    <Box data-cy="metaTitle">
+    <Box data-cy="metaTitle" id="metaTitle">
       <FieldShell
         settings={{
           label: "Meta Title",

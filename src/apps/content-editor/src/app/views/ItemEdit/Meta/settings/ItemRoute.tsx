@@ -4,6 +4,7 @@ import {
   InputAdornment,
   CircularProgress,
   Typography,
+  Box,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router";
@@ -133,40 +134,42 @@ export const ItemRoute = ({
   }, [item?.web]);
 
   return (
-    <FieldShell
-      settings={{
-        label: "URL Path Part",
-        required: true,
-      }}
-      customTooltip="Also known as a URL slug, it is the last part of the URL address that serves as a unique identifier of the page. They must be unique within your instance, lowercased, and cannot contain non alphanumeric characters. This helps ensure you create SEO friendly structured and crawlabale URLs."
-      withInteractiveTooltip={false}
-      errors={error}
-    >
-      <TextFieldWithCursorPosition
-        type="text"
-        name="pathPart"
-        value={pathPart}
-        onChange={handleInputChange}
-        variant="outlined"
-        color="primary"
-        fullWidth
-        InputProps={{
-          startAdornment: (
-            <Adornment isLoading={isLoading} isUnique={isUnique} />
-          ),
+    <Box id="pathPart">
+      <FieldShell
+        settings={{
+          label: "URL Path Part",
+          required: true,
         }}
-        helperText={
-          !!pathPart &&
-          isUnique && (
-            <Typography variant="body2" color="info.dark">
-              {domain}
-              {parent ? parent.web?.path + pathPart : `/${pathPart}`}
-            </Typography>
-          )
-        }
-        error={hasErrors(error)}
-      />
-    </FieldShell>
+        customTooltip="Also known as a URL slug, it is the last part of the URL address that serves as a unique identifier of the page. They must be unique within your instance, lowercased, and cannot contain non alphanumeric characters. This helps ensure you create SEO friendly structured and crawlabale URLs."
+        withInteractiveTooltip={false}
+        errors={error}
+      >
+        <TextFieldWithCursorPosition
+          type="text"
+          name="pathPart"
+          value={pathPart}
+          onChange={handleInputChange}
+          variant="outlined"
+          color="primary"
+          fullWidth
+          InputProps={{
+            startAdornment: (
+              <Adornment isLoading={isLoading} isUnique={isUnique} />
+            ),
+          }}
+          helperText={
+            !!pathPart &&
+            isUnique && (
+              <Typography variant="body2" color="info.dark">
+                {domain}
+                {parent ? parent.web?.path + pathPart : `/${pathPart}`}
+              </Typography>
+            )
+          }
+          error={hasErrors(error)}
+        />
+      </FieldShell>
+    </Box>
   );
 };
 

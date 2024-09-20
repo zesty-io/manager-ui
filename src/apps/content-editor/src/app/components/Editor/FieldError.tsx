@@ -6,6 +6,15 @@ import { Error } from "./Field/FieldShell";
 import { ContentModelField } from "../../../../../../shell/services/types";
 import pluralizeWord from "../../../../../../utility/pluralizeWord";
 
+const SEO_FIELD_LABELS = {
+  metaDescription: "Meta Description",
+  metaTitle: "Meta Title",
+  metaKeywords: "Meta Keywords",
+  metaLinkText: "Navigation Title",
+  parentZUID: "Page Parent",
+  pathPart: "URL Path Part",
+};
+
 type FieldErrorProps = {
   errors: Record<string, Error>;
   fields: ContentModelField[];
@@ -74,10 +83,12 @@ export const FieldError = ({ errors, fields }: FieldErrorProps) => {
       const fieldData = fields?.find((field) => field.name === name);
 
       return {
-        label: fieldData?.label,
+        label:
+          fieldData?.label ||
+          SEO_FIELD_LABELS[name as keyof typeof SEO_FIELD_LABELS],
         errorMessages,
         sort: fieldData?.sort,
-        ZUID: fieldData?.ZUID,
+        ZUID: fieldData?.ZUID || name,
       };
     });
 

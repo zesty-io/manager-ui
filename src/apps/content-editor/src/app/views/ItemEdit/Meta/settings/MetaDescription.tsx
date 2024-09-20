@@ -59,7 +59,7 @@ export default connect()(function MetaDescription({
   }
 
   return (
-    <Box data-cy="metaDescription">
+    <Box data-cy="metaDescription" id="metaDescription">
       <FieldShell
         settings={{
           label: "Meta Description",
@@ -85,7 +85,7 @@ export default connect()(function MetaDescription({
           placeholder="This is the description search engines should use in their results"
           onChange={(evt) => onChange(evt.target.value, "metaDescription")}
           multiline
-          rows={6}
+          rows={3}
           error={hasErrors(error) || !!contentValidationError}
         />
       </FieldShell>
