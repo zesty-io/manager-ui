@@ -165,6 +165,12 @@ export default function ItemEdit() {
     }
   }, [loading]);
 
+  useEffect(() => {
+    setSaveClicked(false);
+    setFieldErrors({});
+    setSEOErrors({});
+  }, [location.pathname]);
+
   const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
       ?.map((error) => {
@@ -508,7 +514,7 @@ export default function ItemEdit() {
                       errors={SEOErrors}
                       errorComponent={
                         saveClicked &&
-                        (hasErrors || hasSEOErrors) && (
+                        hasSEOErrors && (
                           <FieldError
                             errors={{ ...fieldErrors, ...SEOErrors }}
                             fields={activeFields}
@@ -589,6 +595,7 @@ export default function ItemEdit() {
                         }}
                         fieldErrors={fieldErrors}
                         hasErrors={hasErrors}
+                        activeFields={activeFields}
                       />
                     </ItemLockContext.Provider>
                   )}
