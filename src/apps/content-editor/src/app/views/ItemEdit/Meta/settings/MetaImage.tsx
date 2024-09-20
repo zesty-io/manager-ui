@@ -113,7 +113,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     Promise.all(validImages).then((data) => {
       setTemporaryMetaImageURL(data?.[0]);
     });
-  }, [contentImages, temporaryMetaImageURL]);
+  }, [JSON.stringify(contentImages), temporaryMetaImageURL]);
 
   const handleCreateOgImageField = () => {
     const existingOgImageField = modelFields?.find(
