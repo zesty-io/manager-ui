@@ -23,7 +23,16 @@ export const LinkedInPreview = ({ imageURL }: LinkedInPreviewProps) => {
   );
 
   return (
-    <Stack bgcolor="grey.100">
+    <Stack
+      py={1.5}
+      px={2}
+      bgcolor="background.paper"
+      direction="row"
+      gap={1.5}
+      borderRadius={2}
+      border={1}
+      borderColor="border"
+    >
       {!!imageURL ? (
         <Box
           component="img"
@@ -31,27 +40,30 @@ export const LinkedInPreview = ({ imageURL }: LinkedInPreviewProps) => {
             backgroundColor: (theme) => theme.palette.grey[100],
             objectFit: "cover",
             alignSelf: "center",
+            borderRadius: 2,
           }}
-          height={290}
-          width="100%"
-          src={`${imageURL}?width=500&height=290&fit=cover`}
+          height={72}
+          width={128}
+          src={`${imageURL}?width=128&height=72&fit=cover`}
           flexShrink={0}
         />
       ) : (
         <Stack
-          height={290}
+          height={72}
+          width={128}
           bgcolor="grey.100"
           justifyContent="center"
           alignItems="center"
           flexShrink={0}
+          borderRadius={2}
         >
           <ImageRounded color="action" fontSize="large" />
         </Stack>
       )}
-      <Stack p={1.5}>
+      <Stack justifyContent="center">
         <Typography
-          variant="h6"
-          fontWeight={600}
+          variant="body2"
+          fontWeight={700}
           color={
             !!item?.data?.og_title || !!item?.web?.metaTitle
               ? "text.primary"
@@ -66,11 +78,12 @@ export const LinkedInPreview = ({ imageURL }: LinkedInPreviewProps) => {
             hyphens: "auto",
             overflow: "hidden",
             textOverflow: "ellipsis",
+            mb: 0.75,
           }}
         >
           {item?.data?.og_title || item?.web?.metaTitle || "Meta Title"}
         </Typography>
-        <Typography color="text.secondary">
+        <Typography variant="body2" color="text.secondary">
           {domain.replace(/http:\/\/|https:\/\//gm, "")}
         </Typography>
       </Stack>

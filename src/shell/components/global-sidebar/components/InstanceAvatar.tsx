@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Avatar, Skeleton, Box } from "@mui/material";
+import { Avatar, Skeleton, Box, SxProps, Theme } from "@mui/material";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 
 import { useGetHeadTagsQuery } from "../../../services/instance";
@@ -11,10 +11,12 @@ import { actions } from "../../../store/ui";
 interface InstanceAvatar {
   canUpdateAvatar?: boolean;
   onFaviconModalOpen?: () => void;
+  avatarSx?: SxProps<Theme>;
 }
 export const InstanceAvatar: FC<InstanceAvatar> = ({
   canUpdateAvatar = true,
   onFaviconModalOpen,
+  avatarSx,
 }) => {
   const ui = useSelector((state: AppState) => state.ui);
   const dispatch = useDispatch();
@@ -65,6 +67,7 @@ export const InstanceAvatar: FC<InstanceAvatar> = ({
           height: 32,
           width: 32,
           backgroundColor: faviconURL ? "common.white" : "info.main",
+          ...avatarSx,
         }}
       >
         {(!faviconURL && instance?.name[0]?.toUpperCase()) || "A"}
