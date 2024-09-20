@@ -19,7 +19,7 @@ export const TCDescription = ({
   field,
 }: TCDescriptionProps) => {
   return (
-    <Box data-cy="TCDescription">
+    <Box data-cy="TCDescription" id={field.ZUID}>
       <FieldShell
         settings={{
           label: field.label,
@@ -36,7 +36,7 @@ export const TCDescription = ({
           name="TCDescription"
           value={value}
           multiline
-          rows={6}
+          rows={3}
           onChange={(evt) => onChange(evt.target.value, "tc_description")}
           error={hasErrors(error)}
         />

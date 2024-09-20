@@ -17,7 +17,7 @@ export const MetaKeywords = memo(function MetaKeywords({
   error,
 }: MetaKeywordsProps) {
   return (
-    <Box data-cy="metaKeywords">
+    <Box data-cy="metaKeywords" id="metaKeywords">
       <FieldShell
         settings={{
           label: "Meta Keywords",
@@ -33,7 +33,7 @@ export const MetaKeywords = memo(function MetaKeywords({
           name="metaKeywords"
           value={value ?? ""}
           placeholder="comma, separated, keywords"
-          rows={6}
+          rows={3}
           multiline
           onChange={(evt) => onChange(evt.target.value, "metaKeywords")}
         />

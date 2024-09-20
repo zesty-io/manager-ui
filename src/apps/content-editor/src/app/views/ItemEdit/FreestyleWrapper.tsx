@@ -2,8 +2,9 @@ import Cookies from "js-cookie";
 import { MutableRefObject, forwardRef, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
-import { useParams } from "react-router";
+import { useHistory, useParams } from "react-router";
 import { withDAM } from "../../../../../../shell/components/withDAM";
+import { Button, Dialog } from "@mui/material";
 
 const IframeComponent = forwardRef(
   (props: any, ref: MutableRefObject<HTMLIFrameElement>) => {
@@ -19,6 +20,7 @@ export const FreestyleWrapper = () => {
     itemZUID: string;
   }>();
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const history = useHistory();
 
   const instance = useSelector((state: AppState) => state.instance);
   const [sessionToken] = useState(Cookies.get(CONFIG.COOKIE_NAME));
@@ -39,14 +41,30 @@ export const FreestyleWrapper = () => {
     );
   };
 
+  const handleFreestyleExit = () => {
+    history.push(`/content/${modelZUID}/${itemZUID}`);
+  };
+
   return (
-    <IframeWithDAM
-      src={`${CONFIG.URL_APPS}/freestyle/`}
-      ref={iframeRef}
-      allow="clipboard-write"
-      height="100%"
-      width="100%"
-      onLoad={handleLoad}
-    ></IframeWithDAM>
+    <Dialog open fullScreen>
+      <Button
+        onClick={handleFreestyleExit}
+        sx={{
+          width: "66px",
+          height: "32px",
+          position: "fixed",
+          top: "0px",
+          right: "0px",
+        }}
+      ></Button>
+      <IframeWithDAM
+        src={`${CONFIG.URL_APPS}/freestyle/`}
+        ref={iframeRef}
+        allow="clipboard-write"
+        height="100%"
+        width="100%"
+        onLoad={handleLoad}
+      ></IframeWithDAM>
+    </Dialog>
   );
 };
