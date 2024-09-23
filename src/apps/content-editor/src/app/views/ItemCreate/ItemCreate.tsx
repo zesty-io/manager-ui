@@ -382,7 +382,7 @@ export const ItemCreate = () => {
           direction="row"
           gap={4}
         >
-          <Box width="60%" height="100%">
+          <Box width="60%" minWidth={640} height="100%">
             {saveClicked && (hasErrors || hasSEOErrors) && (
               <FieldError
                 errors={{ ...fieldErrors, ...SEOErrors }}
@@ -425,7 +425,13 @@ export const ItemCreate = () => {
             />
           </Box>
           <ThemeProvider theme={theme}>
-            <Box position="sticky" top={0} alignSelf="flex-start" width="40%">
+            <Box
+              position="sticky"
+              top={0}
+              alignSelf="flex-start"
+              width="40%"
+              maxWidth={620}
+            >
               <SocialMediaPreview />
             </Box>
           </ThemeProvider>
