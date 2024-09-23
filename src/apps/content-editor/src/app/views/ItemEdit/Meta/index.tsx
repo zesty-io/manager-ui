@@ -5,6 +5,7 @@ import {
   useEffect,
   forwardRef,
   useImperativeHandle,
+  useRef,
 } from "react";
 import {
   Stack,
@@ -131,6 +132,8 @@ export const Meta = forwardRef(
     );
     const [flowType, setFlowType] =
       useState<typeof FlowType[keyof typeof FlowType]>(null);
+    const metaDescriptionButtonRef = useRef(null);
+    const metaTitleButtonRef = useRef(null);
 
     // @ts-expect-error untyped
     const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
@@ -289,22 +292,8 @@ export const Meta = forwardRef(
     useEffect(() => {
       if (!isCreateItemPage) return;
 
-      // Automatically scroll into view the meta title field
-      const metaTitleEl = document.querySelector("[data-cy='metaTitle']");
-
-      metaTitleEl?.scrollIntoView({ behavior: "smooth" });
-
-      // Automatically open the ai generator popup if the selected
-      // flow is the AI-assisted option
       if (flowType === FlowType.AIGenerated) {
-        // Needed so that it only opens the popup once the field has
-        // already scrolled to the top, otherwise the popup will
-        // stay at the meta title's original location
-        setTimeout(() => {
-          metaTitleEl
-            ?.querySelector<HTMLButtonElement>("[data-cy='AIOpen']")
-            ?.click();
-        }, 500);
+        metaTitleButtonRef.current?.triggerAIButton?.();
       }
     }, [flowType, isCreateItemPage]);
 
@@ -416,6 +405,7 @@ export const Meta = forwardRef(
               </Box>
               <AIGeneratorParameterProvider>
                 <MetaTitle
+                  aiButtonRef={metaTitleButtonRef}
                   value={web.metaTitle}
                   onChange={handleOnChange}
                   error={errors?.metaTitle}
@@ -429,26 +419,12 @@ export const Meta = forwardRef(
                     // Scroll to and open the meta description ai generator to continue
                     // with the AI-assisted flow
                     if (flowType === FlowType.AIGenerated) {
-                      const metaDescriptionEl = document.querySelector(
-                        "[data-cy='metaDescription']"
-                      );
-
-                      metaDescriptionEl?.scrollIntoView({ behavior: "smooth" });
-
-                      // Needed so that it only opens the popup once the field has
-                      // already scrolled to the top, otherwise the popup will
-                      // stay at the meta title's original location
-                      setTimeout(() => {
-                        metaDescriptionEl
-                          ?.querySelector<HTMLButtonElement>(
-                            "[data-cy='AIOpen']"
-                          )
-                          ?.click();
-                      });
+                      metaDescriptionButtonRef.current?.triggerAIButton?.();
                     }
                   }}
                 />
                 <MetaDescription
+                  aiButtonRef={metaDescriptionButtonRef}
                   value={web.metaDescription}
                   onChange={handleOnChange}
                   error={errors?.metaDescription}

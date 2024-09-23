@@ -8,6 +8,7 @@ import { MaxLengths } from "..";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 import { withAI } from "../../../../../../../../shell/components/withAi";
+import { MutableRefObject } from "react";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -16,12 +17,14 @@ type MetaDescriptionProps = {
   onChange: (value: string, name: string) => void;
   error: Error;
   onResetFlowType: () => void;
+  aiButtonRef?: MutableRefObject<any>;
 };
 export default connect()(function MetaDescription({
   value,
   onChange,
   error,
   onResetFlowType,
+  aiButtonRef,
 }: MetaDescriptionProps) {
   const dispatch = useDispatch();
   const [contentValidationError, setContentValidationError] = useState("");
@@ -66,6 +69,7 @@ export default connect()(function MetaDescription({
   return (
     <Box data-cy="metaDescription" id="metaDescription">
       <AIFieldShell
+        ref={aiButtonRef}
         settings={{
           label: "Meta Description",
           required: true,

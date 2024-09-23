@@ -1,4 +1,4 @@
-import { ChangeEvent, memo } from "react";
+import { ChangeEvent, memo, MutableRefObject } from "react";
 
 import { TextField, Box } from "@mui/material";
 
@@ -17,6 +17,7 @@ type MetaTitleProps = {
   saveMetaTitleParameters?: boolean;
   onResetFlowType: () => void;
   onAIMetaTitleInserted?: () => void;
+  aiButtonRef?: MutableRefObject<any>;
 };
 export const MetaTitle = memo(function MetaTitle({
   value,
@@ -25,10 +26,12 @@ export const MetaTitle = memo(function MetaTitle({
   saveMetaTitleParameters,
   onResetFlowType,
   onAIMetaTitleInserted,
+  aiButtonRef,
 }: MetaTitleProps) {
   return (
     <Box data-cy="metaTitle" id="metaTitle">
       <AIFieldShell
+        ref={aiButtonRef}
         settings={{
           label: "Meta Title",
           required: true,
