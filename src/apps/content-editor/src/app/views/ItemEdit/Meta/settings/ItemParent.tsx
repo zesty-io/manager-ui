@@ -1,4 +1,4 @@
-import { Autocomplete, TextField, ListItem } from "@mui/material";
+import { Box, Autocomplete, TextField, ListItem } from "@mui/material";
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
@@ -214,45 +214,49 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
   }, []);
 
   return (
-    <FieldShell
-      settings={{
-        label: "Page Parent",
-        required: true,
-      }}
-      customTooltip="Set what page, this content item's page will be nested under. This impacts automatically generated navigation and the URL structure for this page."
-      withInteractiveTooltip={false}
-      errors={{}}
-    >
-      <Autocomplete
-        data-cy="itemRoute"
-        options={options}
-        value={selectedParent}
-        fullWidth
-        renderInput={(params) => <TextField {...params} />}
-        renderOption={(props, value) => (
-          <ListItem {...props} key={value.value}>
-            {value.text}
-          </ListItem>
-        )}
-        getOptionLabel={(option) => option.text}
-        onInputChange={(_, filterTerm) => {
-          if (filterTerm !== "/") {
-            setIsLoadingOptions(!!filterTerm);
-            handleSearchOptions(filterTerm);
-          }
+    <Box id="parentZUID">
+      <FieldShell
+        settings={{
+          label: "Page Parent",
+          required: true,
         }}
-        onChange={(_, value) => {
-          // Always default to homepage when no parent is selected
-          setSelectedParent(value !== null ? value : { text: "/", value: "0" });
-          onChange(value !== null ? value.value : "0", "parentZUID");
-        }}
-        loading={isLoadingOptions}
-        sx={{
-          "& .MuiOutlinedInput-root": {
-            padding: "2px",
-          },
-        }}
-      />
-    </FieldShell>
+        customTooltip="Set what page, this content item's page will be nested under. This impacts automatically generated navigation and the URL structure for this page."
+        withInteractiveTooltip={false}
+        errors={{}}
+      >
+        <Autocomplete
+          data-cy="itemRoute"
+          options={options}
+          value={selectedParent}
+          fullWidth
+          renderInput={(params) => <TextField {...params} />}
+          renderOption={(props, value) => (
+            <ListItem {...props} key={value.value}>
+              {value.text}
+            </ListItem>
+          )}
+          getOptionLabel={(option) => option.text}
+          onInputChange={(_, filterTerm) => {
+            if (filterTerm !== "/") {
+              setIsLoadingOptions(!!filterTerm);
+              handleSearchOptions(filterTerm);
+            }
+          }}
+          onChange={(_, value) => {
+            // Always default to homepage when no parent is selected
+            setSelectedParent(
+              value !== null ? value : { text: "/", value: "0" }
+            );
+            onChange(value !== null ? value.value : "0", "parentZUID");
+          }}
+          loading={isLoadingOptions}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              padding: "2px",
+            },
+          }}
+        />
+      </FieldShell>
+    </Box>
   );
 };

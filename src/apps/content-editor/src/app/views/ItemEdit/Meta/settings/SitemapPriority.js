@@ -1,9 +1,60 @@
 import { memo } from "react";
 
-import { Select, MenuItem } from "@mui/material";
+import { Autocomplete, TextField } from "@mui/material";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import styles from "./SitemapPriority.less";
+
+const OPTIONS = [
+  {
+    value: -1.0,
+    label: "Automatically Set Priority",
+  },
+  {
+    value: 1.0,
+    label: "1.0",
+  },
+  {
+    value: 0.9,
+    label: "0.9",
+  },
+  {
+    value: 0.8,
+    label: "0.8",
+  },
+  {
+    value: 0.7,
+    label: "0.7",
+  },
+  {
+    value: 0.6,
+    label: "0.6",
+  },
+  {
+    value: 0.5,
+    label: "0.5",
+  },
+  {
+    value: 0.4,
+    label: "0.4",
+  },
+  {
+    value: 0.3,
+    label: "0.3",
+  },
+  {
+    value: 0.2,
+    label: "0.2",
+  },
+  {
+    value: 0.1,
+    label: "0.1",
+  },
+  {
+    value: -2.0,
+    label: "Do Not Display in Sitemap",
+  },
+];
 
 export const SitemapPriority = memo(function SitemapPriority(props) {
   return (
@@ -15,29 +66,22 @@ export const SitemapPriority = memo(function SitemapPriority(props) {
         customTooltip="Sitemap priority helps search engines understand how often they should crawl the pages on your site."
         withInteractiveTooltip={false}
       >
-        <Select
-          name="sitemapPriority"
-          defaultValue={props.sitemapPriority || "-1.0"}
-          size="small"
-          onChange={(e) => {
-            // this value is coerced here due to API restrictions
-            props.onChange(Number(e.target.value), "sitemapPriority");
-          }}
+        <Autocomplete
+          options={OPTIONS}
+          value={
+            OPTIONS.find(
+              (option) => option.value === props.sitemapPriority
+            ) || {
+              value: -1.0,
+              label: "Automatically Set Priority",
+            }
+          }
           fullWidth
-        >
-          <MenuItem value={-1.0}>Automatically Set Priority</MenuItem>
-          <MenuItem value={1.0}>1.0</MenuItem>
-          <MenuItem value={0.9}>0.9</MenuItem>
-          <MenuItem value={0.8}>0.8</MenuItem>
-          <MenuItem value={0.7}>0.7</MenuItem>
-          <MenuItem value={0.6}>0.6</MenuItem>
-          <MenuItem value={0.5}>0.5</MenuItem>
-          <MenuItem value={0.4}>0.4</MenuItem>
-          <MenuItem value={0.3}>0.3</MenuItem>
-          <MenuItem value={0.2}>0.2</MenuItem>
-          <MenuItem value={0.1}>0.1</MenuItem>
-          <MenuItem value={-2.0}>Do Not Display in Sitemap</MenuItem>
-        </Select>
+          renderInput={(params) => <TextField {...params} />}
+          onChange={(_, value) => {
+            props.onChange(value ? value.value : -1.0, "sitemapPriority");
+          }}
+        />
       </FieldShell>
     </article>
   );

@@ -6,7 +6,7 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import { Search, Add, Remove } from "@mui/icons-material";
+import { Search, AddRounded, RemoveRounded } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import { COMMON_WORDS } from ".";
 
@@ -34,9 +34,9 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
         {}
       );
 
-      return Object.entries(wordsWithCount ?? {})?.sort(
-        ([, a], [, b]) => b - a
-      );
+      return Object.entries(wordsWithCount ?? {})
+        ?.filter(([, count]) => count > 1)
+        ?.sort(([, a], [, b]) => b - a);
     }
 
     return [];
@@ -55,7 +55,12 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
   return (
     <Stack gap={2}>
       <Box>
-        <Typography variant="h6" color="text.secondary" fontWeight={700}>
+        <Typography
+          variant="h6"
+          color="text.secondary"
+          fontWeight={700}
+          mb={0.25}
+        >
           Most Mentioned Words in Content Item
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -76,6 +81,11 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
         }}
       />
       <Stack direction="row" gap={1} flexWrap="wrap">
+        {!filteredWords?.length && !filterKeyword && (
+          <Typography variant="body2" color="text.secondary">
+            No words in your content item occur 2 or more times
+          </Typography>
+        )}
         {filteredWords
           ?.slice(0, showAll ? undefined : 9)
           ?.map(([word, count]) => (
@@ -98,7 +108,13 @@ export const MostMentionedWords = ({ wordsArray }: MostMentionedWordsProps) => {
             label={`See ${showAll ? "Less" : "More"}`}
             size="small"
             variant="outlined"
-            icon={showAll ? <Remove color="action" /> : <Add color="action" />}
+            icon={
+              showAll ? (
+                <RemoveRounded color="action" />
+              ) : (
+                <AddRounded color="action" />
+              )
+            }
             onClick={() => setShowAll(!showAll)}
           />
         )}

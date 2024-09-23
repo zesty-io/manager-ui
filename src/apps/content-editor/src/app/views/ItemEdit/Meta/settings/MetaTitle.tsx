@@ -27,7 +27,7 @@ export const MetaTitle = memo(function MetaTitle({
   onAIMetaTitleInserted,
 }: MetaTitleProps) {
   return (
-    <Box data-cy="metaTitle">
+    <Box data-cy="metaTitle" id="metaTitle">
       <AIFieldShell
         settings={{
           label: "Meta Title",

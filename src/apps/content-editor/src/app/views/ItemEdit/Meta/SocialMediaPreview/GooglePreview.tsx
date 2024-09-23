@@ -51,10 +51,15 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
       borderRadius={2}
       border={1}
       borderColor="border"
+      maxHeight={186}
+      boxSizing="border-box"
     >
       <Box flex={1}>
         <Stack direction="row" gap={1.5} alignItems="center">
-          <InstanceAvatar canUpdateAvatar={false} />
+          <InstanceAvatar
+            canUpdateAvatar={false}
+            avatarSx={{ width: 28, height: 28 }}
+          />
           <Box>
             <Typography variant="body2" color="text.primary" fontWeight={600}>
               {instance?.name}

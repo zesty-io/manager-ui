@@ -19,7 +19,7 @@ export const OGDescription = ({
   field,
 }: OGDescriptionProps) => {
   return (
-    <Box data-cy="OGDescription">
+    <Box data-cy="OGDescription" id={field.ZUID}>
       <FieldShell
         settings={{
           label: field.label,
@@ -36,7 +36,7 @@ export const OGDescription = ({
           name="OGDescription"
           value={value}
           multiline
-          rows={6}
+          rows={3}
           onChange={(evt) => onChange(evt.target.value, "og_description")}
           error={hasErrors(error)}
         />
