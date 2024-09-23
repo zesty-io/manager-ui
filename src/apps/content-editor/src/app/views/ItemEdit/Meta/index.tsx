@@ -62,10 +62,10 @@ const rotateAnimation = keyframes`
 		background-position: 0% 100%;
 	}
 `;
-enum FlowType {
-  AIGenerated,
-  Manual,
-}
+const FlowType = {
+  AIGenerated: "ai-generated",
+  Manual: "manual",
+} as const;
 const flowButtons = [
   {
     flowType: FlowType.AIGenerated,
@@ -129,7 +129,8 @@ export const Meta = forwardRef(
       (state: AppState) =>
         state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
     );
-    const [flowType, setFlowType] = useState<FlowType>(null);
+    const [flowType, setFlowType] =
+      useState<typeof FlowType[keyof typeof FlowType]>(null);
 
     // @ts-expect-error untyped
     const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
