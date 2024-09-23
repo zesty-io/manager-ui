@@ -249,8 +249,9 @@ export const Meta = forwardRef(
             scrollbarWidth: "none",
             overflowY: "auto",
           }}
+          height="100%"
         >
-          <Stack flex={1} gap={4}>
+          <Stack flex={1} gap={4} width="60%" minWidth={640}>
             <Stack gap={3}>
               {!!errorComponent && errorComponent}
               <Box>
@@ -374,6 +375,7 @@ export const Meta = forwardRef(
           </Stack>
           {model?.type !== "dataset" && !isCreateItemPage && (
             <Box
+              width="40%"
               flex={1}
               position="sticky"
               top={0}
@@ -383,9 +385,11 @@ export const Meta = forwardRef(
                 overflowY: "auto",
               }}
             >
-              <SocialMediaPreview />
-              <Divider sx={{ my: 1.5 }} />
-              <ContentInsights />
+              <Box maxWidth={620}>
+                <SocialMediaPreview />
+                <Divider sx={{ my: 1.5 }} />
+                <ContentInsights />
+              </Box>
             </Box>
           )}
         </Stack>
