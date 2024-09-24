@@ -25,6 +25,7 @@ import {
   Web,
 } from "../../../../../../../shell/services/types";
 import { SocialMediaPreview } from "./SocialMediaPreview";
+import { validateMetaDescription } from "./settings/util";
 
 // Fields
 import { MetaImage } from "./settings/MetaImage";
@@ -150,6 +151,15 @@ export const Meta = forwardRef(
           };
         }
 
+        if (name === "metaDescription") {
+          const metaDescriptionError = validateMetaDescription(value);
+
+          currentErrors.metaDescription = {
+            ...currentErrors.metaDescription,
+            CUSTOM_ERROR: !!metaDescriptionError ? metaDescriptionError : "",
+          };
+        }
+
         onUpdateSEOErrors(currentErrors);
 
         dispatch({
@@ -206,6 +216,16 @@ export const Meta = forwardRef(
                 MISSING_REQUIRED: isRequired ? !value : false,
               };
             });
+
+            // Validate meta description value
+            const metaDescriptionError = validateMetaDescription(
+              web.metaDescription
+            );
+
+            currentErrors.metaDescription = {
+              ...currentErrors.metaDescription,
+              CUSTOM_ERROR: !!metaDescriptionError ? metaDescriptionError : "",
+            };
 
             // No need to validate pathPart for datasets
             if (model?.type === "dataset" || web?.pathPart === "zesty_home") {
