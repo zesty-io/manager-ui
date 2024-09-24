@@ -292,11 +292,17 @@ export default function ItemEdit() {
   async function save() {
     setSaveClicked(true);
 
-    if (hasErrors || hasSEOErrors || metaRef.current?.validateMetaFields?.())
-      return;
-
-    setSaving(true);
     try {
+      if (
+        hasErrors ||
+        hasSEOErrors ||
+        metaRef.current?.validateMetaFields?.()
+      ) {
+        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
+      }
+
+      setSaving(true);
+
       // Skip content item fields validation when in the meta tab since this
       // means that the user only wants to update the meta fields
       const res = await dispatch(
@@ -412,6 +418,7 @@ export default function ItemEdit() {
   }
 
   function discard() {
+    console.log("discard changes");
     dispatch({
       type: "UNMARK_ITEMS_DIRTY",
       items: [itemZUID],
