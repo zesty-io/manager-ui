@@ -389,11 +389,13 @@ export const ItemCreate = () => {
         >
           <Box width="60%" minWidth={640} height="100%">
             {saveClicked && (hasErrors || hasSEOErrors) && (
-              <FieldError
-                ref={fieldErrorRef}
-                errors={{ ...fieldErrors, ...SEOErrors }}
-                fields={activeFields}
-              />
+              <Box mb={3}>
+                <FieldError
+                  ref={fieldErrorRef}
+                  errors={{ ...fieldErrors, ...SEOErrors }}
+                  fields={activeFields}
+                />
+              </Box>
             )}
             <Editor
               // @ts-ignore no types
