@@ -84,6 +84,7 @@ export const ItemCreate = () => {
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
   const [SEOErrors, setSEOErrors] = useState<FieldErrors>({});
   const metaRef = useRef(null);
+  const fieldErrorRef = useRef(null);
 
   const [
     createPublishing,
@@ -182,7 +183,10 @@ export const ItemCreate = () => {
     setSaveClicked(true);
 
     metaRef.current?.validateMetaFields?.();
-    if (hasErrors || hasSEOErrors) return;
+    if (hasErrors || hasSEOErrors) {
+      fieldErrorRef.current?.scrollToErrors?.();
+      return;
+    }
 
     setSaving(true);
 
@@ -266,6 +270,7 @@ export const ItemCreate = () => {
           setFieldErrors(errors);
 
           // scroll to required field
+          fieldErrorRef.current?.scrollToErrors?.();
         }
 
         if (res.error) {
@@ -385,6 +390,7 @@ export const ItemCreate = () => {
           <Box width="60%" minWidth={640} height="100%">
             {saveClicked && (hasErrors || hasSEOErrors) && (
               <FieldError
+                ref={fieldErrorRef}
                 errors={{ ...fieldErrors, ...SEOErrors }}
                 fields={activeFields}
               />

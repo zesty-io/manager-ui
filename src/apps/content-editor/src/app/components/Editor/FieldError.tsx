@@ -1,4 +1,10 @@
-import { useMemo, useRef, useEffect } from "react";
+import {
+  useMemo,
+  useRef,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { Stack, Typography, Box, ThemeProvider } from "@mui/material";
 import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
 import { theme } from "@zesty-io/material";
@@ -64,97 +70,115 @@ const getErrorMessage = (errors: Error) => {
   return errorMessages;
 };
 
-export const FieldError = ({ errors, fields }: FieldErrorProps) => {
-  const errorContainerEl = useRef(null);
+export const FieldError = forwardRef(
+  ({ errors, fields }: FieldErrorProps, ref) => {
+    const errorContainerEl = useRef(null);
 
-  // Scroll to the errors on mount
-  useEffect(() => {
-    errorContainerEl?.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "center",
-    });
-  }, []);
+    useImperativeHandle(
+      ref,
+      () => {
+        return {
+          scrollToErrors() {
+            errorContainerEl?.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "center",
+            });
+          },
+        };
+      },
+      [errorContainerEl]
+    );
 
-  const fieldErrors = useMemo(() => {
-    const errorMap = Object.entries(errors)?.map(([name, errorDetails]) => {
-      const errorMessages = getErrorMessage(errorDetails);
+    // Scroll to the errors on mount
+    useEffect(() => {
+      errorContainerEl?.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    }, []);
 
-      const fieldData = fields?.find((field) => field.name === name);
+    const fieldErrors = useMemo(() => {
+      const errorMap = Object.entries(errors)?.map(([name, errorDetails]) => {
+        const errorMessages = getErrorMessage(errorDetails);
 
-      return {
-        label:
-          fieldData?.label ||
-          SEO_FIELD_LABELS[name as keyof typeof SEO_FIELD_LABELS],
-        errorMessages,
-        sort: fieldData?.sort,
-        ZUID: fieldData?.ZUID || name,
-      };
-    });
+        const fieldData = fields?.find((field) => field.name === name);
 
-    return errorMap.sort((a, b) => a.sort - b.sort);
-  }, [errors, fields]);
+        return {
+          label:
+            fieldData?.label ||
+            SEO_FIELD_LABELS[name as keyof typeof SEO_FIELD_LABELS],
+          errorMessages,
+          sort: fieldData?.sort,
+          ZUID: fieldData?.ZUID || name,
+        };
+      });
 
-  const fieldsWithErrors = fieldErrors?.filter(
-    (error) => error.errorMessages.length > 0
-  );
+      return errorMap.sort((a, b) => a.sort - b.sort);
+    }, [errors, fields]);
 
-  const handleErrorClick = (fieldZUID: string) => {
-    const fieldElement = document.getElementById(fieldZUID);
-    fieldElement?.scrollIntoView({ behavior: "smooth" });
-  };
+    const fieldsWithErrors = fieldErrors?.filter(
+      (error) => error.errorMessages.length > 0
+    );
 
-  return (
-    <ThemeProvider theme={theme}>
-      <Stack
-        data-cy="FieldErrorsList"
-        ref={errorContainerEl}
-        p={2}
-        gap={1}
-        borderRadius={1}
-        sx={{ backgroundColor: "red.50", color: "error.dark" }}
-      >
-        <DangerousRoundedIcon color="inherit" fontSize="small" />
-        <Typography variant="h6">
-          Item cannot be saved due to invalid field values.
-        </Typography>
-        <Typography variant="body2">
-          Please correct the following {fieldsWithErrors?.length} field
-          {fieldsWithErrors?.length > 1 && "s"} before saving:
-        </Typography>
-        <Box component="ol" ml={2}>
-          {fieldErrors?.map((error, index) => {
-            if (error.errorMessages.length > 0) {
-              return (
-                <Typography key={index} variant="body2" component="li">
-                  <Box
-                    sx={{
-                      borderBottom: 1,
-                      borderColor: "error.dark",
-                      cursor: "pointer",
-                      height: 16,
-                      display: "inline-block",
-                    }}
-                    component="span"
-                    onClick={() => handleErrorClick(error.ZUID)}
-                  >
-                    {error.label}
-                  </Box>
-                  {error.errorMessages.length === 1 ? (
-                    <i> - {error.errorMessages[0]}</i>
-                  ) : (
-                    <Box component="ul" sx={{ pl: 3, listStyleType: "disc" }}>
-                      {error.errorMessages.map((msg, idx) => (
-                        <li key={idx}>{msg}</li>
-                      ))}
+    const handleErrorClick = (fieldZUID: string) => {
+      const fieldElement = document.getElementById(fieldZUID);
+      fieldElement?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    return (
+      <ThemeProvider theme={theme}>
+        <Stack
+          data-cy="FieldErrorsList"
+          ref={errorContainerEl}
+          p={2}
+          gap={1}
+          borderRadius={1}
+          sx={{ backgroundColor: "red.50", color: "error.dark" }}
+        >
+          <DangerousRoundedIcon color="inherit" fontSize="small" />
+          <Typography variant="h6">
+            Item cannot be saved due to invalid field values.
+          </Typography>
+          <Typography variant="body2">
+            Please correct the following {fieldsWithErrors?.length} field
+            {fieldsWithErrors?.length > 1 && "s"} before saving:
+          </Typography>
+          <Box component="ol" ml={2}>
+            {fieldErrors?.map((error, index) => {
+              if (error.errorMessages.length > 0) {
+                return (
+                  <Typography key={index} variant="body2" component="li">
+                    <Box
+                      sx={{
+                        borderBottom: 1,
+                        borderColor: "error.dark",
+                        cursor: "pointer",
+                        height: 16,
+                        display: "inline-block",
+                      }}
+                      component="span"
+                      onClick={() => handleErrorClick(error.ZUID)}
+                    >
+                      {error.label}
                     </Box>
-                  )}
-                </Typography>
-              );
-            }
-          })}
-        </Box>
-      </Stack>
-    </ThemeProvider>
-  );
-};
+                    {error.errorMessages.length === 1 ? (
+                      <i> - {error.errorMessages[0]}</i>
+                    ) : (
+                      <Box component="ul" sx={{ pl: 3, listStyleType: "disc" }}>
+                        {error.errorMessages.map((msg, idx) => (
+                          <li key={idx}>{msg}</li>
+                        ))}
+                      </Box>
+                    )}
+                  </Typography>
+                );
+              }
+            })}
+          </Box>
+        </Stack>
+      </ThemeProvider>
+    );
+  }
+);

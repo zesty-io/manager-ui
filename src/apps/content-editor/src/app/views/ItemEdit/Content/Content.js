@@ -74,6 +74,7 @@ export default function Content(props) {
           <Box width="100%">
             {props.saveClicked && props.hasErrors && (
               <FieldError
+                ref={props.fieldErrorRef}
                 errors={props.fieldErrors}
                 fields={props.activeFields}
               />
