@@ -51,6 +51,7 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
             answer(true);
           })
           .catch((err) => {
+            console.error(err);
             // @ts-ignore
             answer(false);
           })
