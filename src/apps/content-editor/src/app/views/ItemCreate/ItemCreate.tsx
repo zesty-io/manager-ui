@@ -432,7 +432,7 @@ export const ItemCreate = () => {
               width="40%"
               maxWidth={620}
             >
-              <SocialMediaPreview />
+              {model?.type !== "dataset" && <SocialMediaPreview />}
             </Box>
           </ThemeProvider>
         </Stack>
