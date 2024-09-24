@@ -82,6 +82,7 @@ export default function ItemEdit() {
   const location = useLocation();
   const { modelZUID, itemZUID } = useParams();
   const metaRef = useRef(null);
+  const fieldErrorRef = useRef(null);
   const item = useSelector((state) => state.content[itemZUID]);
   const items = useSelector((state) => state.content);
   const model = useSelector((state) => state.models[modelZUID]);
@@ -292,11 +293,17 @@ export default function ItemEdit() {
   async function save() {
     setSaveClicked(true);
 
-    if (hasErrors || hasSEOErrors || metaRef.current?.validateMetaFields?.())
-      return;
-
-    setSaving(true);
     try {
+      if (
+        hasErrors ||
+        hasSEOErrors ||
+        metaRef.current?.validateMetaFields?.()
+      ) {
+        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
+      }
+
+      setSaving(true);
+
       // Skip content item fields validation when in the meta tab since this
       // means that the user only wants to update the meta fields
       const res = await dispatch(
@@ -397,13 +404,12 @@ export default function ItemEdit() {
       // fetch new draft history
       dispatch(fetchAuditTrailDrafting(itemZUID));
     } catch (err) {
-      console.error(err);
-      throw new Error(err);
       // we need to set the item to dirty again because the save failed
       dispatch({
         type: "MARK_ITEM_DIRTY",
         itemZUID,
       });
+      fieldErrorRef.current?.scrollToErrors?.();
       throw new Error(err);
     } finally {
       if (isMounted.current) {
@@ -474,7 +480,7 @@ export default function ItemEdit() {
               sx={{ display: "flex", flexDirection: "column", height: "100%" }}
             >
               <ItemEditHeader
-                onSave={save}
+                onSave={() => save().catch((err) => console.error(err))}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
                 headerTitle={headerTitle}
@@ -517,6 +523,7 @@ export default function ItemEdit() {
                         saveClicked &&
                         hasSEOErrors && (
                           <FieldError
+                            ref={fieldErrorRef}
                             errors={{ ...fieldErrors, ...SEOErrors }}
                             fields={activeFields}
                           />
@@ -586,7 +593,7 @@ export default function ItemEdit() {
                         item={item}
                         items={items}
                         user={user}
-                        onSave={save}
+                        onSave={() => save().catch((err) => console.error(err))}
                         dispatch={dispatch}
                         loading={loading}
                         saving={saving}
@@ -597,6 +604,7 @@ export default function ItemEdit() {
                         fieldErrors={fieldErrors}
                         hasErrors={hasErrors}
                         activeFields={activeFields}
+                        fieldErrorRef={fieldErrorRef}
                       />
                     </ItemLockContext.Provider>
                   )}

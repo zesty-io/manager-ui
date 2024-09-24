@@ -18,7 +18,7 @@ export const TCTitle = ({ value, onChange, error, field }: TCTitleProps) => {
       <FieldShell
         settings={{
           label: field.label,
-          required: true,
+          required: field.required,
         }}
         customTooltip="This title appears in twitter card social media previews."
         withInteractiveTooltip={false}

@@ -18,7 +18,7 @@ export const OGTitle = ({ value, onChange, error, field }: OGTitleProps) => {
       <FieldShell
         settings={{
           label: field.label,
-          required: true,
+          required: field.required,
         }}
         customTooltip="This title appears in open graph social media previews (e.g. Facebook)."
         withInteractiveTooltip={false}

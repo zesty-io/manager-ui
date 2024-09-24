@@ -18,46 +18,6 @@ export default connect()(function MetaDescription({
   onChange,
   error,
 }: MetaDescriptionProps) {
-  const dispatch = useDispatch();
-  const [contentValidationError, setContentValidationError] = useState("");
-
-  useEffect(() => {
-    if (value) {
-      let message = "";
-
-      if (!(value.indexOf("\u0152") === -1)) {
-        message =
-          "Found OE ligature. These special characters are not allowed in meta descriptions.";
-      } else if (!(value.indexOf("\u0153") === -1)) {
-        message =
-          "Found oe ligature. These special characters are not allowed in meta descriptions.";
-      } else if (!(value.indexOf("\xAB") === -1)) {
-        message =
-          "Found << character. These special characters are not allowed in meta descriptions.";
-      } else if (!(value.indexOf("\xBB") === -1)) {
-        message =
-          "Found >> character. These special characters are not allowed in meta descriptions.";
-      } else if (/[\u201C\u201D\u201E]/.test(value)) {
-        message =
-          "Found Microsoft smart double quotes and apostrophe. These special characters are not allowed in meta descriptions.";
-      } else if (/[\u2018\u2019\u201A]/.test(value)) {
-        message =
-          "Found Microsoft Smart single quotes and apostrophe. These special characters are not allowed in meta descriptions.";
-      }
-
-      setContentValidationError(message);
-    }
-  }, [value]);
-
-  if (contentValidationError) {
-    dispatch(
-      notify({
-        kind: "warn",
-        message: contentValidationError,
-      })
-    );
-  }
-
   return (
     <Box data-cy="metaDescription" id="metaDescription">
       <FieldShell
@@ -70,14 +30,7 @@ export default connect()(function MetaDescription({
         withLengthCounter
         maxLength={MaxLengths.metaDescription}
         valueLength={value?.length ?? 0}
-        errors={
-          contentValidationError
-            ? {
-                ...(error || {}),
-                CUSTOM_ERROR: contentValidationError,
-              }
-            : error
-        }
+        errors={error}
       >
         <TextField
           name="metaDescription"
@@ -86,7 +39,7 @@ export default connect()(function MetaDescription({
           onChange={(evt) => onChange(evt.target.value, "metaDescription")}
           multiline
           rows={3}
-          error={hasErrors(error) || !!contentValidationError}
+          error={hasErrors(error)}
         />
       </FieldShell>
     </Box>

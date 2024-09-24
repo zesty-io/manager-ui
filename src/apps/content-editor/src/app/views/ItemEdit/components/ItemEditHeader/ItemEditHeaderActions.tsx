@@ -229,7 +229,7 @@ export const ItemEditHeaderActions = ({
             onClick={() => {
               onSave();
             }}
-            loading={saving && !publishAfterSave}
+            loading={saving}
             disabled={!canUpdate}
             id="SaveItemButton"
           >
@@ -314,7 +314,7 @@ export const ItemEditHeaderActions = ({
                     setIsConfirmPublishModalOpen(true);
                   }
                 }}
-                loading={publishing || publishAfterSave || isFetching}
+                loading={publishing || saving || isFetching}
                 color="success"
                 variant="contained"
                 id="PublishButton"
@@ -332,7 +332,7 @@ export const ItemEditHeaderActions = ({
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);
                 }}
-                disabled={publishing || publishAfterSave || isFetching}
+                disabled={publishing || saving || isFetching}
                 data-cy="PublishMenuButton"
               >
                 <ArrowDropDownRounded fontSize="small" />
