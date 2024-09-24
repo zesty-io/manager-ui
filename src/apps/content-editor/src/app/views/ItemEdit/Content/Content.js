@@ -73,10 +73,13 @@ export default function Content(props) {
         >
           <Box width="100%">
             {props.saveClicked && props.hasErrors && (
-              <FieldError
-                errors={props.fieldErrors}
-                fields={props.activeFields}
-              />
+              <Box mb={3}>
+                <FieldError
+                  ref={props.fieldErrorRef}
+                  errors={props.fieldErrors}
+                  fields={props.activeFields}
+                />
+              </Box>
             )}
             <Editor
               // active={this.state.makeActive}

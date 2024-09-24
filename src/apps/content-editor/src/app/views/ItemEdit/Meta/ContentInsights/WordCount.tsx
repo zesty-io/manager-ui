@@ -13,7 +13,6 @@ export const WordCount = ({
   return (
     <Stack
       direction="row"
-      height={84}
       bgcolor="background.paper"
       border={1}
       borderColor="border"
