@@ -373,7 +373,7 @@ export const Meta = forwardRef(
               />
             </Stack>
           </Stack>
-          {model?.type !== "dataset" && !isCreateItemPage && (
+          {!isCreateItemPage && (
             <Box
               width="40%"
               flex={1}
@@ -386,8 +386,12 @@ export const Meta = forwardRef(
               }}
             >
               <Box maxWidth={620}>
-                <SocialMediaPreview />
-                <Divider sx={{ my: 1.5 }} />
+                {model?.type !== "dataset" && (
+                  <>
+                    <SocialMediaPreview />
+                    <Divider sx={{ my: 1.5 }} />
+                  </>
+                )}
                 <ContentInsights />
               </Box>
             </Box>
