@@ -1,44 +1,46 @@
-import { memo } from "react";
-
 import { TextField, Box } from "@mui/material";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
-import { MaxLengths } from "..";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
+import { ContentModelField } from "../../../../../../../../shell/services/types";
+import { MaxLengths } from "../index";
 
-type MetaTitleProps = {
+type TCDescriptionProps = {
   value: string;
   onChange: (value: string, name: string) => void;
   error: Error;
+  field: ContentModelField;
 };
-export const MetaTitle = memo(function MetaTitle({
+export const TCDescription = ({
   value,
   onChange,
   error,
-}: MetaTitleProps) {
+  field,
+}: TCDescriptionProps) => {
   return (
-    <Box data-cy="metaTitle" id="metaTitle">
+    <Box data-cy="TCDescription" id={field.ZUID}>
       <FieldShell
         settings={{
-          label: "Meta Title",
-          required: true,
+          label: field.label,
+          required: field.required,
         }}
-        customTooltip="This title appears in search engine results and social media previews. The maximum amount of characters search engines show is 65, but your title can be longer."
+        customTooltip="This title appears in twitter card social media previews below the title."
         withInteractiveTooltip={false}
         withLengthCounter
-        maxLength={MaxLengths.metaTitle}
+        maxLength={MaxLengths.tc_description}
         valueLength={value?.length ?? 0}
         errors={error ?? {}}
       >
         <TextField
-          name="metaTitle"
+          name="TCDescription"
           value={value}
-          placeholder="This is the title search engines should use in their results"
-          onChange={(evt) => onChange(evt.target.value, "metaTitle")}
+          multiline
+          rows={3}
+          onChange={(evt) => onChange(evt.target.value, "tc_description")}
           error={hasErrors(error)}
         />
       </FieldShell>
     </Box>
   );
-});
+};

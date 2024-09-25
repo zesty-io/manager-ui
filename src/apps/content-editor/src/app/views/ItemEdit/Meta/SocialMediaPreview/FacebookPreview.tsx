@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Typography, Box, Stack } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
 import { useLocation, useParams } from "react-router";
@@ -6,11 +5,11 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
-import { useImageURL } from "./useImageURL";
 
-type FacebookPreviewProps = {};
-export const FacebookPreview = ({}: FacebookPreviewProps) => {
-  const [imageURL, setImageDimensions] = useImageURL();
+type FacebookPreviewProps = {
+  imageURL: string;
+};
+export const FacebookPreview = ({ imageURL }: FacebookPreviewProps) => {
   const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
     modelZUID: string;
@@ -22,10 +21,6 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
     (state: AppState) =>
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
-
-  useEffect(() => {
-    setImageDimensions({ height: 290, type: "fit" });
-  }, []);
 
   return (
     <Stack bgcolor="grey.100">
@@ -39,7 +34,7 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
           }}
           height={290}
           width="100%"
-          src={imageURL}
+          src={`${imageURL}?width=500&height=290&fit=cover`}
           flexShrink={0}
         />
       ) : (
@@ -60,7 +55,11 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
         <Typography
           variant="h6"
           fontWeight={600}
-          color={item?.web?.metaTitle ? "text.primary" : "grey.500"}
+          color={
+            !!item?.data?.og_title || !!item?.web?.metaTitle
+              ? "text.primary"
+              : "grey.500"
+          }
           sx={{
             display: "-webkit-box",
             "-webkit-line-clamp": "2",
@@ -72,7 +71,7 @@ export const FacebookPreview = ({}: FacebookPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaTitle || "Meta Title"}
+          {item?.data?.og_title || item?.web?.metaTitle || "Meta Title"}
         </Typography>
       </Stack>
     </Stack>

@@ -6,11 +6,11 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
-import { useImageURL } from "./useImageURL";
 
-type TwitterPreviewProps = {};
-export const TwitterPreview = ({}: TwitterPreviewProps) => {
-  const [imageURL, setImageDimensions] = useImageURL();
+type TwitterPreviewProps = {
+  imageURL: string;
+};
+export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
   const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
     modelZUID: string;
@@ -22,10 +22,6 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
     (state: AppState) =>
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
-
-  useEffect(() => {
-    setImageDimensions({ width: 128, height: 128 });
-  }, []);
 
   return (
     <Stack
@@ -44,8 +40,9 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
           }}
           width={128}
           height={128}
-          src={imageURL}
+          src={`${imageURL}?width=128&height=128&fit=cover`}
           flexShrink={0}
+          borderRadius="8px 0 0 8px"
         />
       ) : (
         <Stack
@@ -55,6 +52,7 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
           justifyContent="center"
           alignItems="center"
           flexShrink={0}
+          borderRadius="8px 0 0 8px"
         >
           <ImageRounded color="action" fontSize="large" />
         </Stack>
@@ -78,7 +76,11 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
         </Typography>
         <Typography
           variant="body2"
-          color={!!item?.web?.metaTitle ? "text.primary" : "grey.500"}
+          color={
+            !!item?.data?.tc_title || !!item?.web?.metaTitle
+              ? "text.primary"
+              : "grey.500"
+          }
           sx={{
             display: "-webkit-box",
             "-webkit-line-clamp": "1",
@@ -90,11 +92,15 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaTitle || "Meta Title"}
+          {item?.data?.tc_title || item?.web?.metaTitle || "Meta Title"}
         </Typography>
         <Typography
           variant="body2"
-          color={!!item?.web?.metaDescription ? "text.secondary" : "grey.500"}
+          color={
+            !!item?.data?.tc_title || !!item?.web?.metaDescription
+              ? "text.secondary"
+              : "grey.500"
+          }
           sx={{
             display: "-webkit-box",
             "-webkit-line-clamp": "2",
@@ -106,7 +112,9 @@ export const TwitterPreview = ({}: TwitterPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaDescription || "Meta Description"}
+          {item?.data?.tc_description ||
+            item?.web?.metaDescription ||
+            "Meta Description"}
         </Typography>
       </Stack>
     </Stack>

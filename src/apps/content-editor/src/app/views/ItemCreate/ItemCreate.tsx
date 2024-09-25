@@ -36,6 +36,7 @@ import {
 import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
 import { Meta } from "../ItemEdit/Meta";
 import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
+import { FieldError } from "../../components/Editor/FieldError";
 
 export type ActionAfterSave =
   | ""
@@ -55,7 +56,7 @@ const selectSortedModelFields = createSelector(
       .sort((a, b) => a.sort - b.sort)
 );
 
-type FieldError = {
+type FieldErrors = {
   [key: string]: Error;
 };
 
@@ -78,10 +79,12 @@ export const ItemCreate = () => {
   const [newItemZUID, setNewItemZUID] = useState();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [willRedirect, setWillRedirect] = useState(true);
-  const [fieldErrors, setFieldErrors] = useState<FieldError>({});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [saveClicked, setSaveClicked] = useState(false);
-  const [hasSEOErrors, setHasSEOErrors] = useState(false);
+  // const [hasSEOErrors, setHasSEOErrors] = useState(false);
+  const [SEOErrors, setSEOErrors] = useState<FieldErrors>({});
   const metaRef = useRef(null);
+  const fieldErrorRef = useRef(null);
 
   const [
     createPublishing,
@@ -94,7 +97,7 @@ export const ItemCreate = () => {
 
   const {
     isSuccess: isSuccessNewModelFields,
-    isFetching: isFetchingNewModelFields,
+    isLoading: isFetchingNewModelFields,
   } = useGetContentModelFieldsQuery(modelZUID);
 
   // on mount and update modelZUID, load item fields
@@ -141,6 +144,27 @@ export const ItemCreate = () => {
     return hasErrors;
   }, [fieldErrors]);
 
+  const hasSEOErrors = useMemo(() => {
+    const hasErrors = Object.values(SEOErrors)
+      ?.map((error) => {
+        return Object.values(error) ?? [];
+      })
+      ?.flat()
+      .some((error) => !!error);
+
+    return hasErrors;
+  }, [SEOErrors]);
+
+  const activeFields = useMemo(() => {
+    if (fields?.length) {
+      return fields.filter(
+        (field) => !field.deletedAt && !["og_image"].includes(field.name)
+      );
+    }
+
+    return [];
+  }, [fields]);
+
   const loadItemFields = async (modelZUID: string) => {
     setLoading(true);
     try {
@@ -159,7 +183,10 @@ export const ItemCreate = () => {
     setSaveClicked(true);
 
     metaRef.current?.validateMetaFields?.();
-    if (hasErrors || hasSEOErrors) return;
+    if (hasErrors || hasSEOErrors) {
+      fieldErrorRef.current?.scrollToErrors?.();
+      return;
+    }
 
     setSaving(true);
 
@@ -243,6 +270,7 @@ export const ItemCreate = () => {
           setFieldErrors(errors);
 
           // scroll to required field
+          fieldErrorRef.current?.scrollToErrors?.();
         }
 
         if (res.error) {
@@ -359,10 +387,18 @@ export const ItemCreate = () => {
           direction="row"
           gap={4}
         >
-          <Box width="60%" height="100%">
+          <Box width="60%" minWidth={640} height="100%">
+            {saveClicked && (hasErrors || hasSEOErrors) && (
+              <Box mb={3}>
+                <FieldError
+                  ref={fieldErrorRef}
+                  errors={{ ...fieldErrors, ...SEOErrors }}
+                  fields={activeFields}
+                />
+              </Box>
+            )}
             <Editor
               // @ts-ignore no types
-              hasErrors={hasErrors}
               itemZUID={itemZUID}
               item={item}
               items={content}
@@ -375,10 +411,9 @@ export const ItemCreate = () => {
               loading={loading}
               saving={saving}
               isDirty={item?.dirty}
-              saveClicked={saveClicked}
               fieldErrors={fieldErrors}
               // @ts-ignore  untyped component
-              onUpdateFieldErrors={(errors: FieldError) => {
+              onUpdateFieldErrors={(errors: FieldErrors) => {
                 setFieldErrors(errors);
               }}
             />
@@ -389,16 +424,23 @@ export const ItemCreate = () => {
               }}
             />
             <Meta
-              onUpdateSEOErrors={(hasErrors) => {
-                setHasSEOErrors(hasErrors);
+              onUpdateSEOErrors={(errors: FieldErrors) => {
+                setSEOErrors(errors);
               }}
               isSaving={saving}
               ref={metaRef}
+              errors={SEOErrors}
             />
           </Box>
           <ThemeProvider theme={theme}>
-            <Box position="sticky" top={0} alignSelf="flex-start" width="40%">
-              <SocialMediaPreview />
+            <Box
+              position="sticky"
+              top={0}
+              alignSelf="flex-start"
+              width="40%"
+              maxWidth={620}
+            >
+              {model?.type !== "dataset" && <SocialMediaPreview />}
             </Box>
           </ThemeProvider>
         </Stack>

@@ -12,12 +12,14 @@ import {
   useGetContentModelFieldsQuery,
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../../../shell/services/instance";
-import { fetchItem } from "../../../../../../../../shell/store/content";
 import {
   FieldTypeMedia,
   MediaItem,
 } from "../../../../components/FieldTypeMedia";
 import { MediaApp } from "../../../../../../../media/src/app";
+import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
+import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
+import { fetchFields } from "../../../../../../../../shell/store/fields";
 
 type MetaImageProps = {
   onChange: (value: string, name: string) => void;
@@ -48,34 +50,73 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     undeleteContentModelField,
     { isLoading: isUndeletingField, isSuccess: isFieldUndeleted },
   ] = useUndeleteContentModelFieldMutation();
+  const [getFile] = useLazyGetFileQuery();
   const [imageModal, setImageModal] = useState(null);
   const [autoOpenMediaBrowser, setAutoOpenMediaBrowser] = useState(false);
+  const [temporaryMetaImageURL, setTemporaryMetaImageURL] =
+    useState<string>(null);
+  const [showOGImageField, setShowOGImageField] = useState(false);
 
   const isBynderSessionValid =
     localStorage.getItem("cvrt") && localStorage.getItem("cvad");
 
-  const usableTemporaryMetaImage = useMemo(() => {
-    if (modelFields?.length) {
-      const matchedFields = modelFields.filter(
-        (field) =>
-          !field.deletedAt &&
-          field.datatype === "images" &&
-          field?.name !== "og_image" &&
-          (field.label.toLowerCase().includes("image") ||
-            field.name.toLocaleLowerCase().includes("image"))
-      );
-      let image = "";
+  const contentImages = useMemo(() => {
+    if (!modelFields?.length || !Object.keys(item?.data ?? {})?.length) return;
+    const mediaFieldsWithImageOnTheName: string[] = [];
+    const otherMediaFields: string[] = [];
 
-      // Find the first matched field that already stores an image
-      matchedFields?.forEach((field) => {
-        if (!image && !!item?.data?.[field.name]) {
-          image = String(item?.data?.[field.name]);
+    modelFields.forEach((field) => {
+      if (
+        !field.deletedAt &&
+        field.datatype === "images" &&
+        field?.name !== "og_image" &&
+        !!item?.data?.[field.name]
+      ) {
+        if (
+          field.label.toLowerCase().includes("image") ||
+          field.name.toLocaleLowerCase().includes("image")
+        ) {
+          mediaFieldsWithImageOnTheName.push(
+            ...String(item.data[field.name]).split(",")
+          );
+        } else {
+          otherMediaFields.push(...String(item.data[field.name]).split(","));
         }
-      });
+      }
+    });
 
-      return image?.split(",")?.[0];
+    return [...mediaFieldsWithImageOnTheName, ...otherMediaFields];
+  }, [modelFields, item?.data]);
+
+  useEffect(() => {
+    if (!contentImages?.length) {
+      setTemporaryMetaImageURL(null);
+      return;
     }
-  }, [modelFields, item]);
+
+    let validImages = contentImages.map(async (value) => {
+      const isZestyMediaFile = value.startsWith("3-");
+      // Need to resolve media zuids to determine if these are actually images
+      const res = isZestyMediaFile && (await getFile(value).unwrap());
+      const isImage = [
+        "png",
+        "jpg",
+        "jpeg",
+        "svg",
+        "gif",
+        "tif",
+        "webp",
+      ].includes(fileExtension(isZestyMediaFile ? res.url : value));
+
+      if (isImage) {
+        return value;
+      }
+    });
+
+    Promise.all(validImages).then((data) => {
+      setTemporaryMetaImageURL(data?.[0]);
+    });
+  }, [JSON.stringify(contentImages), temporaryMetaImageURL]);
 
   const handleCreateOgImageField = () => {
     const existingOgImageField = modelFields?.find(
@@ -110,6 +151,8 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
         },
       });
     }
+
+    setShowOGImageField(true);
   };
 
   useEffect(() => {
@@ -119,6 +162,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     ) {
       // Initiate the empty og_image field
       onChange(null, "og_image");
+      dispatch(fetchFields(modelZUID));
     }
   }, [
     isOgImageFieldCreated,
@@ -137,9 +181,12 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
     }
   }, [item?.data, autoOpenMediaBrowser]);
 
-  // If there is already a field named og_image
-  if ("og_image" in item?.data) {
-    const ogImageValue = item?.data?.["og_image"];
+  // If there is already a field named og_image and it is storing a value
+  if (
+    "og_image" in item?.data &&
+    (!!item?.data?.og_image || showOGImageField)
+  ) {
+    const ogImageValue = item.data.og_image;
 
     return (
       <>
@@ -159,7 +206,13 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
             openMediaBrowser={(opts) => {
               setImageModal(opts);
             }}
-            onChange={onChange}
+            onChange={(value: string, name: string) => {
+              if (!value) {
+                setShowOGImageField(false);
+              }
+
+              onChange(value, name);
+            }}
             lockedToGroupId={null}
             settings={{
               fileExtensions: [
@@ -219,7 +272,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
   }
 
   // If there is a media field with an API ID containing the word "image" and is storing a file
-  if (!("og_image" in item?.data) && !!usableTemporaryMetaImage) {
+  if (!!temporaryMetaImageURL) {
     return (
       <FieldShell
         settings={{
@@ -232,8 +285,8 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
         <Stack gap={1.25}>
           <MediaItem
             index={0}
-            imageZUID={usableTemporaryMetaImage}
-            isBynderAsset={usableTemporaryMetaImage.includes("bynder.com")}
+            imageZUID={temporaryMetaImageURL}
+            isBynderAsset={temporaryMetaImageURL.includes("bynder.com")}
             isBynderSessionValid={!!isBynderSessionValid}
             hideActionButtons
             hideDrag

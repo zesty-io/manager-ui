@@ -13,10 +13,11 @@ import { InstanceAvatar } from "../../../../../../../../shell/components/global-
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
-import { useImageURL } from "./useImageURL";
 
-type GooglePreviewProps = {};
-export const GooglePreview = ({}: GooglePreviewProps) => {
+type GooglePreviewProps = {
+  imageURL: string;
+};
+export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -26,8 +27,6 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
   const domain = useDomain();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
-  const [imageURL, setImageDimensions] = useImageURL();
-  const { data: modelFields } = useGetContentModelFieldsQuery(modelZUID);
   const items = useSelector((state: AppState) => state.content);
   const item = items[isCreateItemPage ? `new:${modelZUID}` : itemZUID];
   const parent = items[item?.web?.parentZUID];
@@ -43,10 +42,6 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
     return path.filter((i) => !!i);
   }, [domain, parent, item?.web]);
 
-  useEffect(() => {
-    setImageDimensions({ width: 82, height: 82 });
-  }, []);
-
   return (
     <Stack
       direction="row"
@@ -56,46 +51,55 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
       borderRadius={2}
       border={1}
       borderColor="border"
+      maxHeight={186}
+      boxSizing="border-box"
     >
       <Box flex={1}>
         <Stack direction="row" gap={1.5} alignItems="center">
-          <InstanceAvatar canUpdateAvatar={false} />
+          <InstanceAvatar
+            canUpdateAvatar={false}
+            avatarSx={{ width: 28, height: 28 }}
+          />
           <Box>
             <Typography variant="body2" color="text.primary" fontWeight={600}>
               {instance?.name}
             </Typography>
-            <Stack direction="row" gap={1.5} alignItems="center">
-              <Stack
-                direction="row"
-                gap={0.2}
-                alignItems="center"
-                flexWrap="wrap"
+            <Box
+              display="grid"
+              gridTemplateColumns="1fr auto"
+              gap={1.5}
+              alignItems="center"
+            >
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight={600}
+                sx={{
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  wordWrap: "break-word",
+                  wordBreak: "break-all",
+                  whiteSpace: "nowrap",
+                }}
               >
                 {fullPathArray.map((path, index) => (
                   <Fragment key={index}>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      fontWeight={600}
-                    >
-                      {path}
-                    </Typography>
+                    {path}
                     {index < fullPathArray?.length - 1 && (
-                      <ArrowForwardIosRounded
-                        color="action"
-                        sx={{ fontSize: "10px" }}
-                      />
+                      <Box component="span" mx={0.75}>
+                        ›
+                      </Box>
                     )}
                   </Fragment>
                 ))}
-              </Stack>
+              </Typography>
               <MoreVertRounded
                 sx={{
                   fontSize: "16px",
                   fill: (theme) => theme.palette.text.secondary,
                 }}
               />
-            </Stack>
+            </Box>
           </Box>
         </Stack>
         <Typography
@@ -145,7 +149,7 @@ export const GooglePreview = ({}: GooglePreviewProps) => {
           }}
           width={82}
           height={82}
-          src={imageURL}
+          src={`${imageURL}?width=82&height=82&fit=cover`}
           flexShrink={0}
           borderRadius={2}
         />
