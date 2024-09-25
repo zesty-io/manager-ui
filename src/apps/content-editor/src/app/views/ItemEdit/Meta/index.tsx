@@ -263,13 +263,13 @@ export const Meta = forwardRef(
           gap={4}
           bgcolor="grey.50"
           pt={2.5}
+          mb={isCreateItemPage ? 4 : 0}
           px={isCreateItemPage ? 0 : 4}
           color="text.primary"
           sx={{
             scrollbarWidth: "none",
             overflowY: "auto",
           }}
-          height="100%"
         >
           <Stack flex={1} gap={4} width="60%" minWidth={640}>
             <Stack gap={3}>
