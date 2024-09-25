@@ -436,6 +436,7 @@ export const ItemCreate = () => {
             >
               {model?.type !== "dataset" && (
                 <>
+                  <SocialMediaPreview />
                   <Button
                     variant="text"
                     color="inherit"
@@ -465,7 +466,6 @@ export const ItemCreate = () => {
                   >
                     Improve with AI
                   </Button>
-                  <SocialMediaPreview />
                 </>
               )}
             </Box>
