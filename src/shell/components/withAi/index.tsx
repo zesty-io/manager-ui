@@ -62,7 +62,7 @@ export const withAI = (WrappedComponent: ComponentType) =>
               // the scrollIntoView function is ran
               setTimeout(() => {
                 aiButtonRef.current?.click();
-              }, 100);
+              }, 500);
             }
           },
         };
