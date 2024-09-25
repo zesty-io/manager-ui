@@ -38,6 +38,7 @@ import {
   Web,
 } from "../../../../../../../shell/services/types";
 import { SocialMediaPreview } from "./SocialMediaPreview";
+import { validateMetaDescription } from "./settings/util";
 
 // Fields
 import { MetaImage } from "./settings/MetaImage";
@@ -195,6 +196,15 @@ export const Meta = forwardRef(
           };
         }
 
+        if (name === "metaDescription") {
+          const metaDescriptionError = validateMetaDescription(value);
+
+          currentErrors.metaDescription = {
+            ...currentErrors.metaDescription,
+            CUSTOM_ERROR: !!metaDescriptionError ? metaDescriptionError : "",
+          };
+        }
+
         onUpdateSEOErrors(currentErrors);
 
         dispatch({
@@ -251,6 +261,16 @@ export const Meta = forwardRef(
                 MISSING_REQUIRED: isRequired ? !value : false,
               };
             });
+
+            // Validate meta description value
+            const metaDescriptionError = validateMetaDescription(
+              web.metaDescription
+            );
+
+            currentErrors.metaDescription = {
+              ...currentErrors.metaDescription,
+              CUSTOM_ERROR: !!metaDescriptionError ? metaDescriptionError : "",
+            };
 
             // No need to validate pathPart for datasets
             if (model?.type === "dataset" || web?.pathPart === "zesty_home") {
@@ -383,6 +403,7 @@ export const Meta = forwardRef(
           gap={4}
           bgcolor="grey.50"
           pt={2.5}
+          mb={isCreateItemPage ? 4 : 0}
           px={isCreateItemPage ? 0 : 4}
           color="text.primary"
           sx={{
@@ -390,7 +411,7 @@ export const Meta = forwardRef(
             overflowY: "auto",
           }}
         >
-          <Stack flex={1} gap={4}>
+          <Stack flex={1} gap={4} width="60%" minWidth={640}>
             <Stack gap={3}>
               {!!errorComponent && errorComponent}
               <Box>
@@ -534,8 +555,9 @@ export const Meta = forwardRef(
               />
             </Stack>
           </Stack>
-          {model?.type !== "dataset" && !isCreateItemPage && (
+          {!isCreateItemPage && (
             <Box
+              width="40%"
               flex={1}
               position="sticky"
               top={0}
@@ -545,9 +567,15 @@ export const Meta = forwardRef(
                 overflowY: "auto",
               }}
             >
-              <SocialMediaPreview />
-              <Divider sx={{ my: 1.5 }} />
-              <ContentInsights />
+              <Box maxWidth={620}>
+                {model?.type !== "dataset" && (
+                  <>
+                    <SocialMediaPreview />
+                    <Divider sx={{ my: 1.5 }} />
+                  </>
+                )}
+                <ContentInsights />
+              </Box>
             </Box>
           )}
         </Stack>

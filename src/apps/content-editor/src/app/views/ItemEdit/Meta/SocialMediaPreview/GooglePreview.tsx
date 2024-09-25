@@ -64,38 +64,42 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
             <Typography variant="body2" color="text.primary" fontWeight={600}>
               {instance?.name}
             </Typography>
-            <Stack direction="row" gap={1.5} alignItems="center">
-              <Stack
-                direction="row"
-                gap={0.2}
-                alignItems="center"
-                flexWrap="wrap"
+            <Box
+              display="grid"
+              gridTemplateColumns="1fr auto"
+              gap={1.5}
+              alignItems="center"
+            >
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight={600}
+                sx={{
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  wordWrap: "break-word",
+                  wordBreak: "break-all",
+                  whiteSpace: "nowrap",
+                }}
               >
                 {fullPathArray.map((path, index) => (
                   <Fragment key={index}>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      fontWeight={600}
-                    >
-                      {path}
-                    </Typography>
+                    {path}
                     {index < fullPathArray?.length - 1 && (
-                      <ArrowForwardIosRounded
-                        color="action"
-                        sx={{ fontSize: "10px" }}
-                      />
+                      <Box component="span" mx={0.75}>
+                        ›
+                      </Box>
                     )}
                   </Fragment>
                 ))}
-              </Stack>
+              </Typography>
               <MoreVertRounded
                 sx={{
                   fontSize: "16px",
                   fill: (theme) => theme.palette.text.secondary,
                 }}
               />
-            </Stack>
+            </Box>
           </Box>
         </Stack>
         <Typography

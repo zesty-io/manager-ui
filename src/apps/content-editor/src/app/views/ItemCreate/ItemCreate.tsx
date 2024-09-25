@@ -84,6 +84,7 @@ export const ItemCreate = () => {
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
   const [SEOErrors, setSEOErrors] = useState<FieldErrors>({});
   const metaRef = useRef(null);
+  const fieldErrorRef = useRef(null);
 
   const [
     createPublishing,
@@ -182,7 +183,10 @@ export const ItemCreate = () => {
     setSaveClicked(true);
 
     metaRef.current?.validateMetaFields?.();
-    if (hasErrors || hasSEOErrors) return;
+    if (hasErrors || hasSEOErrors) {
+      fieldErrorRef.current?.scrollToErrors?.();
+      return;
+    }
 
     setSaving(true);
 
@@ -266,6 +270,7 @@ export const ItemCreate = () => {
           setFieldErrors(errors);
 
           // scroll to required field
+          fieldErrorRef.current?.scrollToErrors?.();
         }
 
         if (res.error) {
@@ -382,12 +387,15 @@ export const ItemCreate = () => {
           direction="row"
           gap={4}
         >
-          <Box width="60%" height="100%">
+          <Box width="60%" minWidth={640} height="100%">
             {saveClicked && (hasErrors || hasSEOErrors) && (
-              <FieldError
-                errors={{ ...fieldErrors, ...SEOErrors }}
-                fields={activeFields}
-              />
+              <Box mb={3}>
+                <FieldError
+                  ref={fieldErrorRef}
+                  errors={{ ...fieldErrors, ...SEOErrors }}
+                  fields={activeFields}
+                />
+              </Box>
             )}
             <Editor
               // @ts-ignore no types
@@ -419,37 +427,47 @@ export const ItemCreate = () => {
             />
           </Box>
           <ThemeProvider theme={theme}>
-            <Box position="sticky" top={0} alignSelf="flex-start" width="40%">
-              <SocialMediaPreview />
-              <Button
-                variant="text"
-                color="inherit"
-                size="large"
-                onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
-                startIcon={
-                  <>
-                    <svg width={0} height={0}>
-                      <linearGradient
-                        id="gradientFill"
-                        x1={1}
-                        y1={0}
-                        x2={1}
-                        y2={1}
-                      >
-                        <stop offset="0%" stopColor="#0BA5EC" />
-                        <stop offset="50%" stopColor="#EE46BC" />
-                        <stop offset="100%" stopColor="#6938EF" />
-                      </linearGradient>
-                    </svg>
-                    <Brain sx={{ fill: "url(#gradientFill)" }} />
-                  </>
-                }
-                sx={{
-                  mt: 1.5,
-                }}
-              >
-                Improve with AI
-              </Button>
+            <Box
+              position="sticky"
+              top={0}
+              alignSelf="flex-start"
+              width="40%"
+              maxWidth={620}
+            >
+              {model?.type !== "dataset" && (
+                <>
+                  <Button
+                    variant="text"
+                    color="inherit"
+                    size="large"
+                    onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
+                    startIcon={
+                      <>
+                        <svg width={0} height={0}>
+                          <linearGradient
+                            id="gradientFill"
+                            x1={1}
+                            y1={0}
+                            x2={1}
+                            y2={1}
+                          >
+                            <stop offset="0%" stopColor="#0BA5EC" />
+                            <stop offset="50%" stopColor="#EE46BC" />
+                            <stop offset="100%" stopColor="#6938EF" />
+                          </linearGradient>
+                        </svg>
+                        <Brain sx={{ fill: "url(#gradientFill)" }} />
+                      </>
+                    }
+                    sx={{
+                      mt: 1.5,
+                    }}
+                  >
+                    Improve with AI
+                  </Button>
+                  <SocialMediaPreview />
+                </>
+              )}
             </Box>
           </ThemeProvider>
         </Stack>

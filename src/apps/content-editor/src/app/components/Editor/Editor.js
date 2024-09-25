@@ -275,11 +275,21 @@ export default memo(function Editor({
         }
 
         if (firstContentField && firstContentField.name === name) {
+          // Remove tags and replace MS smart quotes with regular quotes
+          const cleanedValue = value
+            ?.replace(/<[^>]*>/g, "")
+            ?.replaceAll(/[\u2018\u2019\u201A]/gm, "'")
+            ?.replaceAll("&rsquo;", "'")
+            ?.replaceAll(/[\u201C\u201D\u201E]/gm, '"')
+            ?.replaceAll("&ldquo;", '"')
+            ?.replaceAll("&rdquo;", '"')
+            ?.slice(0, 160);
+
           dispatch({
             type: "SET_ITEM_WEB",
             itemZUID,
             key: "metaDescription",
-            value: value.replace(/<[^>]*>/g, "").slice(0, 160),
+            value: cleanedValue,
           });
 
           if ("og_description" in metaFields) {
@@ -287,7 +297,7 @@ export default memo(function Editor({
               type: "SET_ITEM_DATA",
               itemZUID,
               key: "og_description",
-              value: value.replace(/<[^>]*>/g, "").slice(0, 160),
+              value: cleanedValue,
             });
           }
 
@@ -296,7 +306,7 @@ export default memo(function Editor({
               type: "SET_ITEM_DATA",
               itemZUID,
               key: "tc_description",
-              value: value.replace(/<[^>]*>/g, "").slice(0, 160),
+              value: cleanedValue,
             });
           }
         }
