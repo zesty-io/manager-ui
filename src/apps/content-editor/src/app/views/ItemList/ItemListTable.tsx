@@ -306,7 +306,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       result = [
         ...result,
         ...fields
-          ?.filter((field) => !field.deletedAt)
+          ?.filter((field) => !field.deletedAt && field?.settings?.list)
           ?.map((field) => ({
             field: field.name,
             headerName: field.label,
