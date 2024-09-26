@@ -6,8 +6,8 @@ import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 import { cloneDeep } from "lodash";
 
-import { Divider, Box, Stack, ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { Box, Stack, ThemeProvider, Button } from "@mui/material";
+import { theme, Brain } from "@zesty-io/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
@@ -372,7 +372,7 @@ export const ItemCreate = () => {
       }
       message="Creating New Item"
     >
-      <Box component="section">
+      <Stack component="section" height="100%">
         <Header
           onSave={save}
           model={model}
@@ -417,12 +417,6 @@ export const ItemCreate = () => {
                 setFieldErrors(errors);
               }}
             />
-            <Divider
-              sx={{
-                mt: 4,
-                mb: 2,
-              }}
-            />
             <Meta
               onUpdateSEOErrors={(errors: FieldErrors) => {
                 setSEOErrors(errors);
@@ -440,11 +434,44 @@ export const ItemCreate = () => {
               width="40%"
               maxWidth={620}
             >
-              {model?.type !== "dataset" && <SocialMediaPreview />}
+              {model?.type !== "dataset" && (
+                <>
+                  <SocialMediaPreview />
+                  <Button
+                    variant="text"
+                    color="inherit"
+                    size="large"
+                    onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
+                    startIcon={
+                      <>
+                        <svg width={0} height={0}>
+                          <linearGradient
+                            id="gradientFill"
+                            x1={1}
+                            y1={0}
+                            x2={1}
+                            y2={1}
+                          >
+                            <stop offset="0%" stopColor="#0BA5EC" />
+                            <stop offset="50%" stopColor="#EE46BC" />
+                            <stop offset="100%" stopColor="#6938EF" />
+                          </linearGradient>
+                        </svg>
+                        <Brain sx={{ fill: "url(#gradientFill)" }} />
+                      </>
+                    }
+                    sx={{
+                      mt: 1.5,
+                    }}
+                  >
+                    Improve with AI
+                  </Button>
+                </>
+              )}
             </Box>
           </ThemeProvider>
         </Stack>
-      </Box>
+      </Stack>
       {isScheduleDialogOpen && !isLoadingNewItem && (
         <SchedulePublish
           item={newItemData as ContentItemWithDirtyAndPublishing}
