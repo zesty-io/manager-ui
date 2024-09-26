@@ -1,25 +1,25 @@
 import { memo, useState } from "react";
 
-import { TextField, Select, MenuItem } from "@mui/material";
+import { TextField, Select, MenuItem, Autocomplete } from "@mui/material";
 
-import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
+import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 
 const CANONICAL_OPTS = [
   {
     value: 0,
-    text: "Off",
+    label: "Off",
   },
   {
     value: 1,
-    text: "On (Ignores query parameters)",
+    label: "On (Ignores query parameters)",
   },
   {
     value: 2,
-    text: "On - Allow certain parameters",
+    label: "On - Allow certain parameters",
   },
   {
     value: 3,
-    text: "On - Custom Path or Custom URL",
+    label: "On - Custom Path or Custom URL",
   },
 ];
 
@@ -52,7 +52,7 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
         settings={{
           label: "Canonical Tag",
         }}
-        customTooltip="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto creates tags on demand based on your settings."
+        customTooltip="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto-creates tags on demand based on your settings."
         withInteractiveTooltip={false}
       >
         {zestyStore.getState().instance.settings.seo[
@@ -69,21 +69,15 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
           </small>
         ) : (
           <div className={styles.settings}>
-            <Select
-              name="canonicalTagMode"
-              onChange={(evt) =>
-                handleMode(evt.target.value, "canonicalTagMode")
-              }
-              value={CANONICAL_OPTS[mode] && CANONICAL_OPTS[mode].value}
-              size="small"
+            <Autocomplete
+              options={CANONICAL_OPTS}
+              value={CANONICAL_OPTS.find((option) => option.value === mode)}
               fullWidth
-            >
-              {CANONICAL_OPTS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.text}
-                </MenuItem>
-              ))}
-            </Select>
+              renderInput={(params) => <TextField {...params} />}
+              onChange={(_, value) => {
+                handleMode(value ? value.value : 1, "canonicalTagMode");
+              }}
+            />
 
             {mode == "2" ? (
               <div className="setting-field custom">

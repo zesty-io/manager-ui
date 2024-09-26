@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -58,171 +65,212 @@ type FieldTypeMediaProps = {
   settings?: any;
 };
 
-export const FieldTypeMedia = ({
-  images,
-  limit,
-  openMediaBrowser,
-  onChange,
-  name,
-  hasError,
-  hideDrag,
-  lockedToGroupId,
-  settings,
-}: FieldTypeMediaProps) => {
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [localImageZUIDs, setLocalImageZUIDs] = useState<string[]>(images);
-  const instanceId = useSelector((state: any) => state.instance.ID);
-  const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
-  const defaultBin = bins?.find((bin) => bin.default);
-  const dispatch = useDispatch();
-  const [showFileModal, setShowFileModal] = useState("");
-  const [imageToReplace, setImageToReplace] = useState("");
-  const [isBynderOpen, setIsBynderOpen] = useState(false);
-  const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
-  const [selectionError, setSelectionError] = useState("");
+export const FieldTypeMedia = forwardRef(
+  (
+    {
+      images,
+      limit,
+      openMediaBrowser,
+      onChange,
+      name,
+      hasError,
+      hideDrag,
+      lockedToGroupId,
+      settings,
+    }: FieldTypeMediaProps,
+    ref
+  ) => {
+    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const [localImageZUIDs, setLocalImageZUIDs] = useState<string[]>(images);
+    const instanceId = useSelector((state: any) => state.instance.ID);
+    const ecoId = useSelector((state: any) => state.instance.ecoID);
+    const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
+    const defaultBin = bins?.find((bin) => bin.default);
+    const dispatch = useDispatch();
+    const [showFileModal, setShowFileModal] = useState("");
+    const [imageToReplace, setImageToReplace] = useState("");
+    const [isBynderOpen, setIsBynderOpen] = useState(false);
+    const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
+    const [selectionError, setSelectionError] = useState("");
 
-  const bynderPortalUrlSetting = rawInstanceSettings?.find(
-    (setting) => setting.key === "bynder_portal_url"
-  );
-  const bynderTokenSetting = rawInstanceSettings?.find(
-    (setting) => setting.key === "bynder_token"
-  );
-  // Checks if the bynder portal and token are set
-  const isBynderSessionValid =
-    localStorage.getItem("cvrt") && localStorage.getItem("cvad");
+    const bynderPortalUrlSetting = rawInstanceSettings?.find(
+      (setting) => setting.key === "bynder_portal_url"
+    );
+    const bynderTokenSetting = rawInstanceSettings?.find(
+      (setting) => setting.key === "bynder_token"
+    );
+    // Checks if the bynder portal and token are set
+    const isBynderSessionValid =
+      localStorage.getItem("cvrt") && localStorage.getItem("cvad");
 
-  useEffect(() => {
-    setLocalImageZUIDs(images);
-  }, [images]);
+    useEffect(() => {
+      setLocalImageZUIDs(images);
+    }, [images]);
 
-  useEffect(() => {
-    if (bynderPortalUrlSetting?.value) {
-      localStorage.setItem("cvad", bynderPortalUrlSetting.value);
-    } else {
-      localStorage.removeItem("cvad");
-    }
-  }, [bynderPortalUrlSetting]);
+    useEffect(() => {
+      if (bynderPortalUrlSetting?.value) {
+        localStorage.setItem("cvad", bynderPortalUrlSetting.value);
+      } else {
+        localStorage.removeItem("cvad");
+      }
+    }, [bynderPortalUrlSetting]);
 
-  useEffect(() => {
-    if (bynderTokenSetting?.value) {
-      localStorage.setItem("cvrt", bynderTokenSetting.value);
-    } else {
-      localStorage.removeItem("cvrt");
-    }
-  }, [bynderTokenSetting]);
+    useEffect(() => {
+      if (bynderTokenSetting?.value) {
+        localStorage.setItem("cvrt", bynderTokenSetting.value);
+      } else {
+        localStorage.removeItem("cvrt");
+      }
+    }, [bynderTokenSetting]);
 
-  const addZestyImage = (selectedImages: any[]) => {
-    const removedImages: any[] = [];
-    const filteredSelectedImages = selectedImages?.filter((selectedImage) => {
-      //remove any images that do not match the file extension
+    useImperativeHandle(ref, () => ({
+      triggerOpenMediaBrowser() {
+        openMediaBrowser({
+          limit,
+          callback: addZestyImage,
+        });
+      },
+    }));
+
+    const addZestyImage = (selectedImages: any[]) => {
+      const removedImages: any[] = [];
+      const filteredSelectedImages = selectedImages?.filter((selectedImage) => {
+        //remove any images that do not match the file extension
+        if (settings?.fileExtensions) {
+          if (
+            settings?.fileExtensions?.includes(
+              `.${fileExtension(selectedImage.filename)}`
+            )
+          ) {
+            return true;
+          } else {
+            removedImages.push(selectedImage);
+            return false;
+          }
+        } else {
+          return true;
+        }
+      });
+
+      if (removedImages.length) {
+        const filenames = removedImages.map((image) => image.filename);
+        const formattedFilenames =
+          filenames.length > 1
+            ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
+            : filenames[0];
+
+        setSelectionError(
+          `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
+        );
+      } else {
+        setSelectionError("");
+      }
+
+      const newImageZUIDs = filteredSelectedImages?.map((image) => image.id);
+
+      // remove any duplicates
+      const filteredImageZUIDs = newImageZUIDs.filter(
+        (zuid) => !images.includes(zuid)
+      );
+
+      // Do not trigger onChange if no images are added
+      if (![...images, ...filteredImageZUIDs]?.length) return;
+
+      onChange([...images, ...filteredImageZUIDs].join(","), name);
+    };
+
+    const addBynderAsset = (selectedAsset: any[]) => {
+      if (images.length > limit) return;
+
+      const removedAssets: any[] = [];
+      const filteredBynderAssets = selectedAsset?.filter((asset) => {
+        if (settings?.fileExtensions) {
+          const assetExtension = `.${asset.extensions[0]}`;
+          if (settings?.fileExtensions?.includes(assetExtension)) {
+            return true;
+          } else {
+            removedAssets.push(asset);
+            return false;
+          }
+        } else {
+          return true;
+        }
+      });
+
+      if (removedAssets.length) {
+        const filenames = removedAssets.map((asset) => asset.name);
+        const formattedFilenames =
+          filenames.length > 1
+            ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
+            : filenames[0];
+
+        setSelectionError(
+          `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
+        );
+      } else {
+        setSelectionError("");
+      }
+
+      const newBynderAssets = filteredBynderAssets
+        .slice(0, limit - images.length)
+        .map((asset) => asset.originalUrl);
+      const filteredBynderAssetsUrls = newBynderAssets.filter(
+        (asset) => !images.includes(asset)
+      );
+
+      onChange([...images, ...filteredBynderAssetsUrls].join(","), name);
+    };
+
+    const removeImage = (imageId: string) => {
+      const newImageZUIDs = images.filter((image) => image !== imageId);
+
+      onChange(newImageZUIDs.join(","), name);
+    };
+
+    const replaceImage = (images: any[]) => {
+      const imageZUID = images.map((image) => image.id)?.[0];
+      let imageToReplace: string;
+      setImageToReplace((value: string) => {
+        imageToReplace = value;
+        return "";
+      });
+      // if selected replacement image is already in the list of images, do nothing
+      if (localImageZUIDs.includes(imageZUID)) return;
+      // if extension is not allowed set error message
       if (settings?.fileExtensions) {
         if (
-          settings?.fileExtensions?.includes(
-            `.${fileExtension(selectedImage.filename)}`
+          !settings?.fileExtensions?.includes(
+            `.${fileExtension(images[0].filename)}`
           )
         ) {
-          return true;
+          setSelectionError(
+            `Could not replace. ${settings?.fileExtensionsErrorMessage}`
+          );
+          return;
         } else {
-          removedImages.push(selectedImage);
-          return false;
+          setSelectionError("");
         }
-      } else {
-        return true;
       }
-    });
-
-    if (removedImages.length) {
-      const filenames = removedImages.map((image) => image.filename);
-      const formattedFilenames =
-        filenames.length > 1
-          ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
-          : filenames[0];
-
-      setSelectionError(
-        `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
-      );
-    } else {
-      setSelectionError("");
-    }
-
-    const newImageZUIDs = filteredSelectedImages?.map((image) => image.id);
-
-    // remove any duplicates
-    const filteredImageZUIDs = newImageZUIDs.filter(
-      (zuid) => !images.includes(zuid)
-    );
-
-    // Do not trigger onChange if no images are added
-    if (![...images, ...filteredImageZUIDs]?.length) return;
-
-    onChange([...images, ...filteredImageZUIDs].join(","), name);
-  };
-
-  const addBynderAsset = (selectedAsset: any[]) => {
-    if (images.length > limit) return;
-
-    const removedAssets: any[] = [];
-    const filteredBynderAssets = selectedAsset?.filter((asset) => {
-      if (settings?.fileExtensions) {
-        const assetExtension = `.${asset.extensions[0]}`;
-        if (settings?.fileExtensions?.includes(assetExtension)) {
-          return true;
-        } else {
-          removedAssets.push(asset);
-          return false;
+      const newImageZUIDs = localImageZUIDs.map((zuid) => {
+        if (zuid === imageToReplace) {
+          return imageZUID;
         }
-      } else {
-        return true;
-      }
-    });
 
-    if (removedAssets.length) {
-      const filenames = removedAssets.map((asset) => asset.name);
-      const formattedFilenames =
-        filenames.length > 1
-          ? filenames.slice(0, -1).join(", ") + " and " + filenames.slice(-1)
-          : filenames[0];
+        return zuid;
+      });
 
-      setSelectionError(
-        `Could not add ${formattedFilenames}. ${settings?.fileExtensionsErrorMessage}`
-      );
-    } else {
-      setSelectionError("");
-    }
+      onChange(newImageZUIDs.join(","), name);
+    };
 
-    const newBynderAssets = filteredBynderAssets
-      .slice(0, limit - images.length)
-      .map((asset) => asset.originalUrl);
-    const filteredBynderAssetsUrls = newBynderAssets.filter(
-      (asset) => !images.includes(asset)
-    );
+    const replaceBynderAsset = (selectedAsset: any) => {
+      // Prevent adding bynder asset that has already been added
+      if (localImageZUIDs.includes(selectedAsset.originalUrl)) return;
 
-    onChange([...images, ...filteredBynderAssetsUrls].join(","), name);
-  };
-
-  const removeImage = (imageId: string) => {
-    const newImageZUIDs = images.filter((image) => image !== imageId);
-
-    onChange(newImageZUIDs.join(","), name);
-  };
-
-  const replaceImage = (images: any[]) => {
-    const imageZUID = images.map((image) => image.id)?.[0];
-    let imageToReplace: string;
-    setImageToReplace((value: string) => {
-      imageToReplace = value;
-      return "";
-    });
-    // if selected replacement image is already in the list of images, do nothing
-    if (localImageZUIDs.includes(imageZUID)) return;
-    // if extension is not allowed set error message
-    if (settings?.fileExtensions) {
+      const assetExtension = `.${selectedAsset.extensions[0]}`;
       if (
-        !settings?.fileExtensions?.includes(
-          `.${fileExtension(images[0].filename)}`
-        )
+        settings?.fileExtensions &&
+        !settings?.fileExtensions?.includes(assetExtension)
       ) {
         setSelectionError(
           `Could not replace. ${settings?.fileExtensionsErrorMessage}`
@@ -231,210 +279,303 @@ export const FieldTypeMedia = ({
       } else {
         setSelectionError("");
       }
-    }
-    const newImageZUIDs = localImageZUIDs.map((zuid) => {
-      if (zuid === imageToReplace) {
-        return imageZUID;
-      }
 
-      return zuid;
-    });
+      const newImages = localImageZUIDs.map((image) => {
+        if (image === imageToReplace) {
+          return selectedAsset.originalUrl;
+        }
 
-    onChange(newImageZUIDs.join(","), name);
-  };
-
-  const replaceBynderAsset = (selectedAsset: any) => {
-    // Prevent adding bynder asset that has already been added
-    if (localImageZUIDs.includes(selectedAsset.originalUrl)) return;
-
-    const assetExtension = `.${selectedAsset.extensions[0]}`;
-    if (
-      settings?.fileExtensions &&
-      !settings?.fileExtensions?.includes(assetExtension)
-    ) {
-      setSelectionError(
-        `Could not replace. ${settings?.fileExtensionsErrorMessage}`
-      );
-      return;
-    } else {
-      setSelectionError("");
-    }
-
-    const newImages = localImageZUIDs.map((image) => {
-      if (image === imageToReplace) {
-        return selectedAsset.originalUrl;
-      }
-
-      return image;
-    });
-
-    setImageToReplace("");
-    onChange(newImages.join(","), name);
-  };
-
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      if (!defaultBin) return;
-
-      openMediaBrowser({
-        limit,
-        callback: addZestyImage,
+        return image;
       });
 
-      dispatch(
-        fileUploadStage(
-          acceptedFiles.map((file) => {
-            return {
-              file,
-              bin_id: defaultBin.id,
-              group_id: lockedToGroupId ? lockedToGroupId : defaultBin.id,
-            };
-          })
-        )
-      );
-    },
-    [defaultBin, dispatch, addZestyImage]
-  );
+      setImageToReplace("");
+      onChange(newImages.join(","), name);
+    };
 
-  const handleReorder = () => {
-    const newLocalImages = [...localImageZUIDs];
-    const draggedField = newLocalImages[draggedIndex];
-    newLocalImages.splice(draggedIndex, 1);
-    newLocalImages.splice(hoveredIndex, 0, draggedField);
+    const onDrop = useCallback(
+      (acceptedFiles: File[]) => {
+        if (!defaultBin) return;
 
-    setDraggedIndex(null);
-    setHoveredIndex(null);
-    setLocalImageZUIDs(newLocalImages);
-    onChange(newLocalImages.join(","), name);
-  };
+        openMediaBrowser({
+          limit,
+          callback: addZestyImage,
+        });
 
-  const sortedImages = useMemo(() => {
-    if (draggedIndex === null || hoveredIndex === null) {
-      return localImageZUIDs;
-    } else {
-      const newImages = [...localImageZUIDs];
-      const draggedImage = newImages[draggedIndex];
-      newImages.splice(draggedIndex, 1);
-      newImages.splice(hoveredIndex, 0, draggedImage);
-      return newImages;
-    }
-  }, [draggedIndex, hoveredIndex, localImageZUIDs]);
+        dispatch(
+          fileUploadStage(
+            acceptedFiles.map((file) => {
+              return {
+                file,
+                bin_id: defaultBin.id,
+                group_id: lockedToGroupId ? lockedToGroupId : defaultBin.id,
+              };
+            })
+          )
+        );
+      },
+      [defaultBin, dispatch, addZestyImage]
+    );
 
-  const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
-    onDrop,
-  });
+    const handleReorder = () => {
+      const newLocalImages = [...localImageZUIDs];
+      const draggedField = newLocalImages[draggedIndex];
+      newLocalImages.splice(draggedIndex, 1);
+      newLocalImages.splice(hoveredIndex, 0, draggedField);
 
-  if (!images?.length)
-    return (
-      <>
-        <div
-          {...getRootProps({
-            onClick: (evt) => evt.stopPropagation(),
-            onKeyDown: (evt) => evt.stopPropagation(),
-          })}
-        >
-          <input {...getInputProps()} />
-          <Box
-            sx={{
-              border: (theme) => `1px dashed ${theme.palette.primary.main}`,
-              borderRadius: "8px",
-              backgroundColor: (theme) =>
-                alpha(theme.palette.primary.main, 0.04),
-              borderColor: hasError ? "error.main" : "primary.main",
-            }}
+      setDraggedIndex(null);
+      setHoveredIndex(null);
+      setLocalImageZUIDs(newLocalImages);
+      onChange(newLocalImages.join(","), name);
+    };
+
+    const sortedImages = useMemo(() => {
+      if (draggedIndex === null || hoveredIndex === null) {
+        return localImageZUIDs;
+      } else {
+        const newImages = [...localImageZUIDs];
+        const draggedImage = newImages[draggedIndex];
+        newImages.splice(draggedIndex, 1);
+        newImages.splice(hoveredIndex, 0, draggedImage);
+        return newImages;
+      }
+    }, [draggedIndex, hoveredIndex, localImageZUIDs]);
+
+    const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
+      onDrop,
+    });
+
+    if (!images?.length)
+      return (
+        <>
+          <div
+            {...getRootProps({
+              onClick: (evt) => evt.stopPropagation(),
+              onKeyDown: (evt) => evt.stopPropagation(),
+            })}
           >
-            <Stack alignItems="center" gap={2} py={4} justifyContent="center">
-              {isDragActive ? (
-                <UploadRounded color="primary" />
-              ) : (
-                <AttachmentRounded color="primary" />
-              )}
-              <Typography
-                align="center"
-                variant="h5"
-                color="primary"
-                fontWeight={600}
-              >
+            <input {...getInputProps()} />
+            <Box
+              sx={{
+                border: (theme) => `1px dashed ${theme.palette.primary.main}`,
+                borderRadius: "8px",
+                backgroundColor: (theme) =>
+                  alpha(theme.palette.primary.main, 0.04),
+                borderColor: hasError ? "error.main" : "primary.main",
+              }}
+            >
+              <Stack alignItems="center" gap={2} py={4} justifyContent="center">
                 {isDragActive ? (
-                  "Drop your files here to Upload"
+                  <UploadRounded color="primary" />
                 ) : (
-                  <>
-                    Drag and drop your files here <br /> or
-                  </>
+                  <AttachmentRounded color="primary" />
                 )}
-              </Typography>
-              {!isDragActive && (
-                <Box
-                  display="flex"
-                  gap={1}
-                  width={400}
-                  justifyContent="center"
-                  flexWrap="wrap"
+                <Typography
+                  align="center"
+                  variant="h5"
+                  color="primary"
+                  fontWeight={600}
                 >
-                  <Button
-                    size="large"
-                    variant="outlined"
-                    onClick={open}
-                    startIcon={<UploadRounded />}
-                    fullWidth
-                    sx={{
-                      maxWidth: "196px",
-                      flexShrink: 0,
-                    }}
+                  {isDragActive ? (
+                    "Drop your files here to Upload"
+                  ) : (
+                    <>
+                      Drag and drop your files here <br /> or
+                    </>
+                  )}
+                </Typography>
+                {!isDragActive && (
+                  <Box
+                    display="flex"
+                    gap={1}
+                    width={400}
+                    justifyContent="center"
+                    flexWrap="wrap"
                   >
-                    Upload
-                  </Button>
-                  <Button
-                    data-cy="selectFromMediaButton"
-                    fullWidth
-                    size="large"
-                    startIcon={<AddRounded />}
-                    variant="outlined"
-                    onClick={() => {
-                      openMediaBrowser({
-                        limit,
-                        callback: addZestyImage,
-                      });
-                    }}
-                    sx={{
-                      maxWidth: "196px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    Add from Media
-                  </Button>
-                  {isBynderSessionValid && (
                     <Button
-                      data-cy="addFromBynderBtn"
                       size="large"
                       variant="outlined"
-                      onClick={() => setIsBynderOpen(true)}
-                      startIcon={<Bynder />}
+                      onClick={open}
+                      startIcon={<UploadRounded />}
                       fullWidth
                       sx={{
-                        maxWidth: "240px",
+                        maxWidth: "196px",
                         flexShrink: 0,
                       }}
                     >
-                      Add from Bynder
+                      Upload
                     </Button>
-                  )}
-                </Box>
+                    <Button
+                      data-cy="selectFromMediaButton"
+                      fullWidth
+                      size="large"
+                      startIcon={<AddRounded />}
+                      variant="outlined"
+                      onClick={() => {
+                        openMediaBrowser({
+                          limit,
+                          callback: addZestyImage,
+                        });
+                      }}
+                      sx={{
+                        maxWidth: "196px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      Add from Media
+                    </Button>
+                    {isBynderSessionValid && (
+                      <Button
+                        data-cy="addFromBynderBtn"
+                        size="large"
+                        variant="outlined"
+                        onClick={() => setIsBynderOpen(true)}
+                        startIcon={<Bynder />}
+                        fullWidth
+                        sx={{
+                          maxWidth: "240px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        Add from Bynder
+                      </Button>
+                    )}
+                  </Box>
+                )}
+              </Stack>
+            </Box>
+            {selectionError && (
+              <Typography variant="body2" color="error.dark" mt={0.5}>
+                {selectionError}
+              </Typography>
+            )}
+          </div>
+          <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
+            <Login>
+              <CompactView
+                onSuccess={(assets) => {
+                  if (assets?.length) {
+                    addBynderAsset(assets);
+                    setIsBynderOpen(false);
+                  }
+                }}
+              />
+            </Login>
+          </Modal>
+        </>
+      );
+
+    return (
+      <>
+        <Stack
+          gap={1}
+          sx={{
+            border: (theme) =>
+              hasError ? `1px solid ${theme.palette.error.main}` : "none",
+          }}
+        >
+          {sortedImages.map((image, index) => {
+            const isBynderAsset = image.includes("bynder.com");
+
+            return (
+              <MediaItem
+                key={image}
+                imageZUID={image}
+                index={index}
+                setDraggedIndex={setDraggedIndex}
+                setHoveredIndex={setHoveredIndex}
+                onReorder={handleReorder}
+                onPreview={(imageZUID: string) => setShowFileModal(imageZUID)}
+                onRemove={removeImage}
+                onReplace={(imageZUID) => {
+                  setImageToReplace(imageZUID);
+
+                  if (isBynderAsset) {
+                    setIsBynderOpen(true);
+                  } else {
+                    openMediaBrowser({
+                      callback: replaceImage,
+                      isReplace: true,
+                    });
+                  }
+                }}
+                hideDrag={hideDrag || limit === 1}
+                isBynderAsset={isBynderAsset}
+                isBynderSessionValid={!!isBynderSessionValid}
+              />
+            );
+          })}
+          {limit > images.length && (
+            <Box display="flex" gap={1}>
+              {!isBynderSessionValid && (
+                <Button
+                  size="large"
+                  variant="outlined"
+                  onClick={open}
+                  startIcon={<UploadRounded />}
+                  fullWidth
+                >
+                  Upload
+                </Button>
               )}
-            </Stack>
-          </Box>
-          {selectionError && (
-            <Typography variant="body2" color="error.dark" mt={0.5}>
-              {selectionError}
-            </Typography>
+              <Button
+                size="large"
+                variant="outlined"
+                onClick={() => {
+                  openMediaBrowser({
+                    limit,
+                    callback: addZestyImage,
+                  });
+                }}
+                fullWidth
+                startIcon={<AddRounded />}
+              >
+                Add More from Media
+              </Button>
+              {isBynderSessionValid && (
+                <Button
+                  data-cy="addFromBynderBtn"
+                  size="large"
+                  variant="outlined"
+                  onClick={() => setIsBynderOpen(true)}
+                  startIcon={<Bynder />}
+                  fullWidth
+                >
+                  Add from Bynder
+                </Button>
+              )}
+            </Box>
           )}
-        </div>
+        </Stack>
+        {selectionError && (
+          <Typography variant="body2" color="error.dark" mt={0.5}>
+            {selectionError}
+          </Typography>
+        )}
+        {showFileModal && (
+          <FileModal
+            fileId={showFileModal}
+            onClose={() => setShowFileModal("")}
+            currentFiles={
+              sortedImages?.filter(
+                (image) => typeof image === "string"
+              ) as string[]
+            }
+            onFileChange={(fileId) => {
+              setShowFileModal(fileId);
+            }}
+          />
+        )}
         <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
           <Login>
             <CompactView
               onSuccess={(assets) => {
                 if (assets?.length) {
-                  addBynderAsset(assets);
+                  if (imageToReplace) {
+                    replaceBynderAsset(assets[0]);
+                  } else {
+                    addBynderAsset(assets);
+                  }
+
                   setIsBynderOpen(false);
                 }
               }}
@@ -443,128 +584,8 @@ export const FieldTypeMedia = ({
         </Modal>
       </>
     );
-
-  return (
-    <>
-      <Stack
-        gap={1}
-        sx={{
-          border: (theme) =>
-            hasError ? `1px solid ${theme.palette.error.main}` : "none",
-        }}
-      >
-        {sortedImages.map((image, index) => {
-          const isBynderAsset = image.includes("bynder.com");
-
-          return (
-            <MediaItem
-              key={image}
-              imageZUID={image}
-              index={index}
-              setDraggedIndex={setDraggedIndex}
-              setHoveredIndex={setHoveredIndex}
-              onReorder={handleReorder}
-              onPreview={(imageZUID: string) => setShowFileModal(imageZUID)}
-              onRemove={removeImage}
-              onReplace={(imageZUID) => {
-                setImageToReplace(imageZUID);
-
-                if (isBynderAsset) {
-                  setIsBynderOpen(true);
-                } else {
-                  openMediaBrowser({
-                    callback: replaceImage,
-                    isReplace: true,
-                  });
-                }
-              }}
-              hideDrag={hideDrag || limit === 1}
-              isBynderAsset={isBynderAsset}
-              isBynderSessionValid={!!isBynderSessionValid}
-            />
-          );
-        })}
-        {limit > images.length && (
-          <Box display="flex" gap={1}>
-            {!isBynderSessionValid && (
-              <Button
-                size="large"
-                variant="outlined"
-                onClick={open}
-                startIcon={<UploadRounded />}
-                fullWidth
-              >
-                Upload
-              </Button>
-            )}
-            <Button
-              size="large"
-              variant="outlined"
-              onClick={() => {
-                openMediaBrowser({
-                  limit,
-                  callback: addZestyImage,
-                });
-              }}
-              fullWidth
-              startIcon={<AddRounded />}
-            >
-              Add More from Media
-            </Button>
-            {isBynderSessionValid && (
-              <Button
-                data-cy="addFromBynderBtn"
-                size="large"
-                variant="outlined"
-                onClick={() => setIsBynderOpen(true)}
-                startIcon={<Bynder />}
-                fullWidth
-              >
-                Add from Bynder
-              </Button>
-            )}
-          </Box>
-        )}
-      </Stack>
-      {selectionError && (
-        <Typography variant="body2" color="error.dark" mt={0.5}>
-          {selectionError}
-        </Typography>
-      )}
-      {showFileModal && (
-        <FileModal
-          fileId={showFileModal}
-          onClose={() => setShowFileModal("")}
-          currentFiles={
-            sortedImages?.filter(
-              (image) => typeof image === "string"
-            ) as string[]
-          }
-          onFileChange={(fileId) => {
-            setShowFileModal(fileId);
-          }}
-        />
-      )}
-      <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
-        <Login>
-          <CompactView
-            onSuccess={(assets) => {
-              if (assets?.length) {
-                if (imageToReplace) {
-                  replaceBynderAsset(assets[0]);
-                } else {
-                  addBynderAsset(assets);
-                }
-
-                setIsBynderOpen(false);
-              }
-            }}
-          />
-        </Login>
-      </Modal>
-    </>
-  );
-};
+  }
+);
 
 type MediaItemProps = {
   imageZUID: string;
@@ -572,14 +593,15 @@ type MediaItemProps = {
   setDraggedIndex?: (index: number) => void;
   setHoveredIndex?: (index: number) => void;
   index: number;
-  onPreview: (imageZUID: string) => void;
-  onRemove: (imageZUID: string) => void;
-  onReplace: (imageZUID: string) => void;
+  onPreview?: (imageZUID: string) => void;
+  onRemove?: (imageZUID: string) => void;
+  onReplace?: (imageZUID: string) => void;
   hideDrag?: boolean;
   isBynderAsset: boolean;
   isBynderSessionValid: boolean;
+  hideActionButtons?: boolean;
 };
-const MediaItem = ({
+export const MediaItem = ({
   imageZUID,
   onReorder,
   setDraggedIndex,
@@ -591,6 +613,7 @@ const MediaItem = ({
   hideDrag,
   isBynderAsset,
   isBynderSessionValid,
+  hideActionButtons,
 }: MediaItemProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggable, setIsDraggable] = useState(false);
@@ -698,7 +721,7 @@ const MediaItem = ({
         onClick={() => {
           if (isURL) return;
 
-          onPreview(imageZUID);
+          onPreview && onPreview(imageZUID);
         }}
         alignItems="center"
         sx={{
@@ -768,7 +791,9 @@ const MediaItem = ({
         <Box
           display="grid"
           // TODO: should there be a min width for the label?
-          gridTemplateColumns="minmax(0px, auto) 112px"
+          gridTemplateColumns={
+            hideActionButtons ? "1fr" : "minmax(0px, auto) 112px"
+          }
           alignItems="center"
           px={2}
           py={2.25}
@@ -796,125 +821,127 @@ const MediaItem = ({
               </Typography>
             </Box>
           )}
-          <Box display="flex" gap={1} justifyContent="flex-end">
-            {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
-              <Tooltip title="Swap File" placement="bottom" enterDelay={800}>
+          {!hideActionButtons && (
+            <Box display="flex" gap={1} justifyContent="flex-end">
+              {!isBynderAsset || (isBynderAsset && isBynderSessionValid) ? (
+                <Tooltip title="Swap File" placement="bottom" enterDelay={800}>
+                  <IconButton
+                    size="small"
+                    onClick={(event: any) => {
+                      event.stopPropagation();
+                      onReplace && onReplace(imageZUID);
+                    }}
+                  >
+                    <ImageSync fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <></>
+              )}
+              {!isURL && (
+                <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
+                  <IconButton size="small">
+                    <EditRounded fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Tooltip title="More Options" placement="bottom" enterDelay={800}>
                 <IconButton
                   size="small"
                   onClick={(event: any) => {
                     event.stopPropagation();
-                    onReplace(imageZUID);
+                    setAnchorEl(event.currentTarget);
                   }}
                 >
-                  <ImageSync fontSize="small" />
+                  <MoreHorizRounded fontSize="small" />
                 </IconButton>
               </Tooltip>
-            ) : (
-              <></>
-            )}
-            {!isURL && (
-              <Tooltip title="Edit File" placement="bottom" enterDelay={800}>
-                <IconButton size="small">
-                  <EditRounded fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            )}
-            <Tooltip title="More Options" placement="bottom" enterDelay={800}>
-              <IconButton
-                size="small"
-                onClick={(event: any) => {
-                  event.stopPropagation();
-                  setAnchorEl(event.currentTarget);
-                }}
-              >
-                <MoreHorizRounded fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={(event: any) => {
-                event.stopPropagation();
-                setAnchorEl(null);
-              }}
-              PaperProps={{
-                style: {
-                  width: "288px",
-                },
-              }}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-            >
-              {!isURL && !isBynderAsset && (
-                <>
-                  <MenuItem
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setAnchorEl(null);
-                      setShowRenameFileModal(true);
-                    }}
-                  >
-                    <ListItemIcon>
-                      <DriveFileRenameOutlineRounded />
-                    </ListItemIcon>
-                    <ListItemText>Rename</ListItemText>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setAnchorEl(null);
-                      setIsReplaceFileModalOpen(true);
-                    }}
-                  >
-                    <ListItemIcon>
-                      <FileReplace />
-                    </ListItemIcon>
-                    <ListItemText>Replace File</ListItemText>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleCopyClick(imageZUID, true);
-                    }}
-                  >
-                    <ListItemIcon>
-                      {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
-                    </ListItemIcon>
-                    <ListItemText>Copy ZUID</ListItemText>
-                  </MenuItem>
-                </>
-              )}
-              <MenuItem
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleCopyClick(isURL ? imageZUID : data?.url, false);
-                }}
-              >
-                <ListItemIcon>
-                  {isCopied ? <CheckRounded /> : <LinkRounded />}
-                </ListItemIcon>
-                <ListItemText>Copy File Url</ListItemText>
-              </MenuItem>
-              <MenuItem
-                onClick={(event) => {
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={(event: any) => {
                   event.stopPropagation();
                   setAnchorEl(null);
-                  onRemove(imageZUID);
+                }}
+                PaperProps={{
+                  style: {
+                    width: "288px",
+                  },
+                }}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
                 }}
               >
-                <ListItemIcon>
-                  <CloseRounded />
-                </ListItemIcon>
-                <ListItemText>Remove</ListItemText>
-              </MenuItem>
-            </Menu>
-          </Box>
+                {!isURL && !isBynderAsset && (
+                  <Box>
+                    <MenuItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setAnchorEl(null);
+                        setShowRenameFileModal(true);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <DriveFileRenameOutlineRounded />
+                      </ListItemIcon>
+                      <ListItemText>Rename</ListItemText>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setAnchorEl(null);
+                        setIsReplaceFileModalOpen(true);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <FileReplace />
+                      </ListItemIcon>
+                      <ListItemText>Replace File</ListItemText>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleCopyClick(imageZUID, true);
+                      }}
+                    >
+                      <ListItemIcon>
+                        {isCopiedZuid ? <CheckRounded /> : <WidgetsRounded />}
+                      </ListItemIcon>
+                      <ListItemText>Copy ZUID</ListItemText>
+                    </MenuItem>
+                  </Box>
+                )}
+                <MenuItem
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleCopyClick(isURL ? imageZUID : data?.url, false);
+                  }}
+                >
+                  <ListItemIcon>
+                    {isCopied ? <CheckRounded /> : <LinkRounded />}
+                  </ListItemIcon>
+                  <ListItemText>Copy File Url</ListItemText>
+                </MenuItem>
+                <MenuItem
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setAnchorEl(null);
+                    onRemove && onRemove(imageZUID);
+                  }}
+                >
+                  <ListItemIcon>
+                    <CloseRounded />
+                  </ListItemIcon>
+                  <ListItemText>Remove</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Box>
+          )}
         </Box>
       </Box>
       {showRenameFileModal && (

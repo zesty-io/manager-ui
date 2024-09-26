@@ -1,10 +1,18 @@
-import { Fragment, useEffect, useState, useMemo, createContext } from "react";
+import {
+  Fragment,
+  useEffect,
+  useState,
+  useMemo,
+  createContext,
+  useRef,
+} from "react";
 import {
   Switch,
   Route,
   Redirect,
   useParams,
   useHistory,
+  useLocation,
 } from "react-router-dom";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,7 +35,6 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
-import { Meta } from "./Meta";
 import { ItemHead } from "./ItemHead";
 
 import { NotFound } from "../NotFound";
@@ -47,6 +54,8 @@ import {
 import { DuoModeContext } from "../../../../../../shell/contexts/duoModeContext";
 import { useLocalStorage } from "react-use";
 import { FreestyleWrapper } from "./FreestyleWrapper";
+import { Meta } from "./Meta";
+import { FieldError } from "../../components/Editor/FieldError";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -70,7 +79,10 @@ export default function ItemEdit() {
   const dispatch = useDispatch();
   const history = useHistory();
   const isMounted = useIsMounted();
+  const location = useLocation();
   const { modelZUID, itemZUID } = useParams();
+  const metaRef = useRef(null);
+  const fieldErrorRef = useRef(null);
   const item = useSelector((state) => state.content[itemZUID]);
   const items = useSelector((state) => state.content);
   const model = useSelector((state) => state.models[modelZUID]);
@@ -86,6 +98,9 @@ export default function ItemEdit() {
   const [notFound, setNotFound] = useState("");
   const [saveClicked, setSaveClicked] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [SEOErrors, setSEOErrors] = useState({});
+  // const [hasSEOErrors, setHasSEOErrors] = useState(false);
+  const [headerTitle, setHeaderTitle] = useState("");
   const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
@@ -96,12 +111,30 @@ export default function ItemEdit() {
   const duoModeDisabled =
     isFetching ||
     instanceSettings?.find((setting) => {
+      // Makes sure that the CSP value is either empty or contains
+      // frame-ancestors 'self' zesty.io *.zesty.io anywhere in the value
+      const invalidCSPSettings =
+        setting.key === "content_security_policy" && !!setting.value
+          ? !setting.value.includes("frame-ancestors") ||
+            !setting.value.includes("'self'") ||
+            !(
+              setting.value.includes("zesty.io") ||
+              setting.value.includes("*.zesty.io")
+            )
+          : false;
+
       // if any of these settings are present then DuoMode is unavailable
       return (
         (setting.key === "basic_content_api_key" && setting.value) ||
         (setting.key === "headless_authorization_key" && setting.value) ||
         (setting.key === "authorization_key" && setting.value) ||
-        (setting.key === "x_frame_options" && setting.value)
+        (setting.key === "x_frame_options" &&
+          !!setting.value &&
+          setting.value !== "sameorigin") ||
+        (setting.key === "referrer_policy" &&
+          !!setting.value &&
+          setting.value !== "strict-origin-when-cross-origin") ||
+        invalidCSPSettings
       );
     }) ||
     model?.type === "dataset";
@@ -127,6 +160,18 @@ export default function ItemEdit() {
     };
   }, [modelZUID, itemZUID]);
 
+  useEffect(() => {
+    if (!loading) {
+      setHeaderTitle(item?.web?.metaTitle || item?.web?.metaLinkText || "");
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    setSaveClicked(false);
+    setFieldErrors({});
+    setSEOErrors({});
+  }, [location.pathname]);
+
   const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
       ?.map((error) => {
@@ -141,6 +186,27 @@ export default function ItemEdit() {
 
     return hasErrors;
   }, [fieldErrors]);
+
+  const hasSEOErrors = useMemo(() => {
+    const hasErrors = Object.values(SEOErrors)
+      ?.map((error) => {
+        return Object.values(error) ?? [];
+      })
+      ?.flat()
+      .some((error) => !!error);
+
+    return hasErrors;
+  }, [SEOErrors]);
+
+  const activeFields = useMemo(() => {
+    if (fields?.length) {
+      return fields.filter(
+        (field) => !field.deletedAt && !["og_image"].includes(field.name)
+      );
+    }
+
+    return [];
+  }, [fields]);
 
   async function lockItem() {
     setCheckingLock(true);
@@ -227,11 +293,26 @@ export default function ItemEdit() {
   async function save() {
     setSaveClicked(true);
 
-    if (hasErrors) return;
-
-    setSaving(true);
     try {
-      const res = await dispatch(saveItem(itemZUID));
+      if (
+        hasErrors ||
+        hasSEOErrors ||
+        metaRef.current?.validateMetaFields?.()
+      ) {
+        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
+      }
+
+      setSaving(true);
+
+      // Skip content item fields validation when in the meta tab since this
+      // means that the user only wants to update the meta fields
+      const res = await dispatch(
+        saveItem({
+          itemZUID,
+          skipContentItemValidation:
+            location?.pathname?.split("/")?.pop() === "meta",
+        })
+      );
       if (res.err === "VALIDATION_ERROR") {
         const missingRequiredFieldNames = res.missingRequired?.reduce(
           (acc, curr) => {
@@ -299,7 +380,7 @@ export default function ItemEdit() {
         }
 
         setFieldErrors(errors);
-        return;
+        throw new Error(errors);
       }
       if (res.status === 400) {
         dispatch(
@@ -308,9 +389,10 @@ export default function ItemEdit() {
             kind: "error",
           })
         );
-        return;
+        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
       }
 
+      setHeaderTitle(item?.web?.metaTitle || item?.web?.metaLinkText || "");
       dispatch(
         notify({
           message: `Item Saved: ${
@@ -322,12 +404,13 @@ export default function ItemEdit() {
       // fetch new draft history
       dispatch(fetchAuditTrailDrafting(itemZUID));
     } catch (err) {
-      console.error(err);
       // we need to set the item to dirty again because the save failed
       dispatch({
         type: "MARK_ITEM_DIRTY",
         itemZUID,
       });
+      fieldErrorRef.current?.scrollToErrors?.();
+      throw new Error(err);
     } finally {
       if (isMounted.current) {
         setSaving(false);
@@ -397,9 +480,10 @@ export default function ItemEdit() {
               sx={{ display: "flex", flexDirection: "column", height: "100%" }}
             >
               <ItemEditHeader
-                onSave={save}
+                onSave={() => save().catch((err) => console.error(err))}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
+                headerTitle={headerTitle}
               />
               <Switch>
                 <Route
@@ -429,17 +513,22 @@ export default function ItemEdit() {
                   path="/content/:modelZUID/:itemZUID/meta"
                   render={() => (
                     <Meta
-                      instance={instance}
-                      modelZUID={modelZUID}
-                      model={model}
-                      itemZUID={itemZUID}
-                      item={item}
-                      items={items}
-                      fields={fields}
-                      user={user}
-                      onSave={save}
-                      dispatch={dispatch}
-                      saving={saving}
+                      ref={metaRef}
+                      onUpdateSEOErrors={(errors) => {
+                        setSEOErrors(errors);
+                      }}
+                      isSaving={saving}
+                      errors={SEOErrors}
+                      errorComponent={
+                        saveClicked &&
+                        hasSEOErrors && (
+                          <FieldError
+                            ref={fieldErrorRef}
+                            errors={{ ...fieldErrors, ...SEOErrors }}
+                            fields={activeFields}
+                          />
+                        )
+                      }
                     />
                   )}
                 />
@@ -504,7 +593,7 @@ export default function ItemEdit() {
                         item={item}
                         items={items}
                         user={user}
-                        onSave={save}
+                        onSave={() => save().catch((err) => console.error(err))}
                         dispatch={dispatch}
                         loading={loading}
                         saving={saving}
@@ -514,6 +603,8 @@ export default function ItemEdit() {
                         }}
                         fieldErrors={fieldErrors}
                         hasErrors={hasErrors}
+                        activeFields={activeFields}
+                        fieldErrorRef={fieldErrorRef}
                       />
                     </ItemLockContext.Provider>
                   )}

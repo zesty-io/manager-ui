@@ -48,7 +48,6 @@ export function RedirectCreator(props) {
       )
       .then(() => {
         setFrom("");
-        setTo("");
         setContentSearchValue("");
       });
   };
@@ -123,7 +122,7 @@ export function RedirectCreator(props) {
             variant="outlined"
             size="small"
             fullWidth
-            defaultValue={to}
+            value={to}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

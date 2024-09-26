@@ -26,7 +26,7 @@ type NotifyArgs = {
   kind: "warn" | "error" | "success";
   HTML?: unknown;
   heading?: string;
-  message?: string;
+  message: string;
 };
 
 type Notification = NotifyArgs & {

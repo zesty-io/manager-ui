@@ -1,17 +1,23 @@
 import { memo } from "react";
 
-import { TextField } from "@mui/material";
+import { TextField, Box } from "@mui/material";
 
-import { FieldShell } from "../../../../../components/Editor/Field/FieldShell";
-import { MaxLengths } from "../ItemSettings";
-import styles from "./MetaKeywords.less";
+import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
+import { MaxLengths } from "..";
+import { Error } from "../../../../components/Editor/Field/FieldShell";
+
+type MetaKeywordsProps = {
+  value: string;
+  onChange: (value: string, name: string) => void;
+  error: Error;
+};
 export const MetaKeywords = memo(function MetaKeywords({
-  meta_keywords,
+  value,
   onChange,
-  errors,
-}) {
+  error,
+}: MetaKeywordsProps) {
   return (
-    <article className={styles.MetaKeywords} data-cy="metaKeywords">
+    <Box data-cy="metaKeywords" id="metaKeywords">
       <FieldShell
         settings={{
           label: "Meta Keywords",
@@ -20,18 +26,18 @@ export const MetaKeywords = memo(function MetaKeywords({
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.metaKeywords}
-        valueLength={meta_keywords?.length ?? 0}
-        errors={errors?.metaKeywords ?? {}}
+        valueLength={value?.length ?? 0}
+        errors={error ?? {}}
       >
         <TextField
           name="metaKeywords"
-          value={meta_keywords ?? ""}
+          value={value ?? ""}
           placeholder="comma, separated, keywords"
-          rows={6}
+          rows={3}
           multiline
           onChange={(evt) => onChange(evt.target.value, "metaKeywords")}
         />
       </FieldShell>
-    </article>
+    </Box>
   );
 });

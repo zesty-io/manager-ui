@@ -18,6 +18,7 @@ import { FieldError } from "./FieldError";
 import styles from "./Editor.less";
 import { cloneDeep } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
+import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 
 export const MaxLengths = {
   text: 150,
@@ -38,19 +39,44 @@ export default memo(function Editor({
   onSave,
   itemZUID,
   modelZUID,
-  saveClicked,
   onUpdateFieldErrors,
   fieldErrors,
-  hasErrors,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const metaFields = useMemo(() => {
+    if (fields?.length) {
+      return fields.reduce((accu, curr) => {
+        if (
+          !curr.deletedAt &&
+          DYNAMIC_META_FIELD_NAMES.includes(curr.name.toLowerCase())
+        ) {
+          accu[curr.name] = curr;
+        }
+
+        return accu;
+      }, {});
+    }
+
+    return {};
+  }, [fields]);
+
   const activeFields = useMemo(() => {
     if (fields?.length) {
-      return fields.filter((field) => !field.deletedAt);
+      return fields.filter(
+        (field) =>
+          !field.deletedAt &&
+          ![
+            "og_image",
+            "og_title",
+            "og_description",
+            "tc_title",
+            "tc_description",
+          ].includes(field.name)
+      );
     }
 
     return [];
@@ -201,6 +227,24 @@ export default memo(function Editor({
             value: value,
           });
 
+          if ("og_title" in metaFields) {
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID,
+              key: "og_title",
+              value: value,
+            });
+          }
+
+          if ("tc_title" in metaFields) {
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID,
+              key: "tc_title",
+              value: value,
+            });
+          }
+
           // Datasets do not get path parts
           if (model?.type !== "dataset") {
             dispatch({
@@ -231,16 +275,44 @@ export default memo(function Editor({
         }
 
         if (firstContentField && firstContentField.name === name) {
+          // Remove tags and replace MS smart quotes with regular quotes
+          const cleanedValue = value
+            ?.replace(/<[^>]*>/g, "")
+            ?.replaceAll(/[\u2018\u2019\u201A]/gm, "'")
+            ?.replaceAll("&rsquo;", "'")
+            ?.replaceAll(/[\u201C\u201D\u201E]/gm, '"')
+            ?.replaceAll("&ldquo;", '"')
+            ?.replaceAll("&rdquo;", '"')
+            ?.slice(0, 160);
+
           dispatch({
             type: "SET_ITEM_WEB",
             itemZUID,
             key: "metaDescription",
-            value: value.replace(/<[^>]*>/g, "").slice(0, 160),
+            value: cleanedValue,
           });
+
+          if ("og_description" in metaFields) {
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID,
+              key: "og_description",
+              value: cleanedValue,
+            });
+          }
+
+          if ("tc_description" in metaFields) {
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID,
+              key: "tc_description",
+              value: cleanedValue,
+            });
+          }
         }
       }
     },
-    [fieldErrors]
+    [fieldErrors, metaFields]
   );
 
   const applyDefaultValuesToItemData = useCallback(() => {
@@ -283,10 +355,6 @@ export default memo(function Editor({
   return (
     <ThemeProvider theme={theme}>
       <div className={styles.Fields}>
-        {saveClicked && hasErrors && (
-          <FieldError errors={fieldErrors} fields={activeFields} />
-        )}
-
         {activeFields.length ? (
           activeFields.map((field) => {
             return (

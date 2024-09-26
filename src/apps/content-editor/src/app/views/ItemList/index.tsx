@@ -9,7 +9,14 @@ import {
 import { theme } from "@zesty-io/material";
 import { ItemListEmpty } from "./ItemListEmpty";
 import { ItemListActions } from "./ItemListActions";
-import { useEffect, useMemo, useRef, useState, useContext } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useContext,
+  useCallback,
+} from "react";
 import { SearchRounded, RestartAltRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
@@ -29,9 +36,11 @@ import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import {
   ContentItem,
   ContentItemWithDirtyAndPublishing,
+  ContentModelFieldDataType,
 } from "../../../../../../shell/services/types";
 import { fetchItems } from "../../../../../../shell/store/content";
 import { TableSortContext } from "./TableSortProvider";
+import { fetchFields } from "../../../../../../shell/store/fields";
 
 const formatDateTime = (source: string) => {
   const dateObj = new Date(source);
@@ -94,6 +103,7 @@ export const ItemList = () => {
   const items = useSelector((state: AppState) =>
     selectFilteredItems(state, modelZUID, activeLangId, !hasMounted)
   );
+  const allFields = useSelector((state: AppState) => state.fields);
   const { data: users, isFetching: isUsersFetching } = useGetUsersQuery();
 
   const [isModelItemsFetching, setIsModelItemsFetching] = useState(true);
@@ -114,7 +124,44 @@ export const ItemList = () => {
   }, [params]);
   const userFilter = params.get("user");
 
+  const resolveFieldRelationshipTitle = useCallback(
+    (
+      fieldName: string,
+      fieldDataType: ContentModelFieldDataType,
+      relatedContentItemZUID: string
+    ) => {
+      if (
+        !fields?.length ||
+        !allFields ||
+        !allItems ||
+        !fieldName ||
+        !fieldDataType ||
+        !relatedContentItemZUID
+      ) {
+        return;
+      }
+
+      // Finds the related field zuid that's stored in the specific field's data
+      const fieldData = fields?.find(
+        (field) =>
+          field.name === fieldName &&
+          !field.deletedAt &&
+          field.datatype === fieldDataType
+      );
+
+      // Gets the data of the related field determined above
+      const relatedFieldData = allFields?.[fieldData?.relatedFieldZUID];
+
+      return (
+        allItems?.[relatedContentItemZUID]?.data?.[relatedFieldData?.name] ??
+        relatedContentItemZUID
+      );
+    },
+    [allItems, fields, allFields, modelZUID]
+  );
+
   useEffect(() => {
+    dispatch(fetchFields(modelZUID));
     setTimeout(() => {
       setHasMounted(true);
     }, 0);
@@ -215,12 +262,16 @@ export const ItemList = () => {
             break;
           case "internal_link":
           case "one_to_one":
-            clonedItem.data[key] = allItems?.[value]?.web?.metaTitle || value;
+            clonedItem.data[key] = resolveFieldRelationshipTitle(
+              key,
+              fieldType,
+              value
+            );
             break;
           case "one_to_many":
             clonedItem.data[key] = value
               ?.split(",")
-              ?.map((id) => allItems?.[id]?.web?.metaTitle || id)
+              ?.map((id) => resolveFieldRelationshipTitle(key, fieldType, id))
               ?.join(",");
             break;
           case "date":
