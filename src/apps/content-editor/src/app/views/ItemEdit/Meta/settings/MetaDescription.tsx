@@ -12,18 +12,20 @@ type MetaDescriptionProps = {
   value: string;
   onChange: (value: string, name: string) => void;
   error: Error;
+  required: boolean;
 };
 export default connect()(function MetaDescription({
   value,
   onChange,
   error,
+  required,
 }: MetaDescriptionProps) {
   return (
     <Box data-cy="metaDescription" id="metaDescription">
       <FieldShell
         settings={{
           label: "Meta Description",
-          required: true,
+          required,
         }}
         customTooltip="This description appears as text snippet below the title in search engine and social media previews. The ideal length for a meta description is 50 to 160 characters."
         withInteractiveTooltip={false}
