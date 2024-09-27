@@ -294,6 +294,7 @@ export const Field = ({
           minLength={minLength}
           errors={errors}
           aiType="text"
+          value={value}
         >
           <TextField
             value={value}
@@ -372,9 +373,10 @@ export const Field = ({
           }
           withLengthCounter
           errors={errors}
-          aiType="paragraph"
+          aiType="word"
           maxLength={maxLength}
           minLength={minLength}
+          value={value}
         >
           <TextField
             value={value}
@@ -400,10 +402,11 @@ export const Field = ({
             settings={fieldData}
             onChange={onChange}
             errors={errors}
-            aiType="paragraph"
+            aiType="word"
             datatype={fieldData?.datatype}
             withLengthCounter
             maxLength={maxLength}
+            value={value}
           >
             <FieldTypeTinyMCE
               name={name}
@@ -436,10 +439,11 @@ export const Field = ({
             settings={fieldData}
             onChange={onChange}
             errors={errors}
-            aiType="paragraph"
+            aiType="word"
             datatype={fieldData?.datatype}
             editorType={editorType}
             onEditorChange={(value: EditorType) => setEditorType(value)}
+            value={value}
           >
             <FieldTypeEditor
               // @ts-ignore component not typed
