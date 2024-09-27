@@ -94,12 +94,6 @@ export const MaxLengths: Record<string, number> = {
   tc_title: 150,
   tc_description: 160,
 };
-const REQUIRED_FIELDS = [
-  "metaTitle",
-  "metaDescription",
-  "parentZUID",
-  "pathPart",
-];
 export const DYNAMIC_META_FIELD_NAMES = [
   "og_title",
   "og_description",
@@ -161,6 +155,16 @@ export const Meta = forwardRef(
 
       return {};
     }, [fields]);
+
+    const REQUIRED_FIELDS = useMemo(() => {
+      const fields = ["metaTitle", "parentZUID", "pathPart"];
+
+      if (model?.type !== "dataset") {
+        fields.push("metaDescription");
+      }
+
+      return fields;
+    }, [model]);
 
     const handleOnChange = useCallback(
       (value, name) => {
@@ -264,7 +268,7 @@ export const Meta = forwardRef(
 
             // Validate meta description value
             const metaDescriptionError = validateMetaDescription(
-              web.metaDescription
+              web.metaDescription || ""
             );
 
             currentErrors.metaDescription = {
@@ -455,6 +459,7 @@ export const Meta = forwardRef(
                       setFlowType(FlowType.Manual);
                     }
                   }}
+                  required={REQUIRED_FIELDS.includes("metaDescription")}
                 />
               </AIGeneratorParameterProvider>
               <MetaImage onChange={handleOnChange} />
