@@ -398,8 +398,9 @@ export const Meta = forwardRef(
 
     return (
       <ThemeProvider theme={theme}>
-        <Stack
-          direction="row"
+        <Box
+          display="grid"
+          gridTemplateColumns="1fr minmax(auto, 40%)"
           gap={4}
           bgcolor="grey.50"
           pt={2.5}
@@ -411,7 +412,7 @@ export const Meta = forwardRef(
             overflowY: "auto",
           }}
         >
-          <Stack flex={1} gap={4} width="60%" minWidth={640}>
+          <Stack flex={1} gap={4} minWidth={640}>
             <Stack gap={3}>
               {!!errorComponent && errorComponent}
               <Box>
@@ -557,8 +558,6 @@ export const Meta = forwardRef(
           </Stack>
           {!isCreateItemPage && (
             <Box
-              width="40%"
-              flex={1}
               position="sticky"
               top={0}
               pb={2.5}
@@ -578,7 +577,7 @@ export const Meta = forwardRef(
               </Box>
             </Box>
           )}
-        </Stack>
+        </Box>
       </ThemeProvider>
     );
   }
