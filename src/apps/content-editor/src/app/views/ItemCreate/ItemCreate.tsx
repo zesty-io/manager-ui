@@ -379,15 +379,16 @@ export const ItemCreate = () => {
           isLoading={saving || isPublishing || isLoadingNewItem}
           isDirty={item?.dirty}
         />
-        <Stack
+        <Box
+          display="grid"
+          gridTemplateColumns="1fr minmax(0px, 40%)"
           component="main"
           className={styles.ItemCreate}
           bgcolor="grey.50"
           alignItems="center"
-          direction="row"
           gap={4}
         >
-          <Box width="60%" minWidth={640} height="100%">
+          <Box minWidth={640} height="100%">
             {saveClicked && (hasErrors || hasSEOErrors) && (
               <Box mb={3}>
                 <FieldError
@@ -431,7 +432,6 @@ export const ItemCreate = () => {
               position="sticky"
               top={0}
               alignSelf="flex-start"
-              width="40%"
               maxWidth={620}
             >
               {model?.type !== "dataset" && (
@@ -470,7 +470,7 @@ export const ItemCreate = () => {
               )}
             </Box>
           </ThemeProvider>
-        </Stack>
+        </Box>
       </Stack>
       {isScheduleDialogOpen && !isLoadingNewItem && (
         <SchedulePublish
