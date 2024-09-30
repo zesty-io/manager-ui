@@ -9,6 +9,8 @@ export const hasErrors = (errors: Error) => {
 export const validateMetaDescription = (value: string) => {
   let message = "";
 
+  if (!value) return message;
+
   if (!(value.indexOf("\u0152") === -1)) {
     message =
       "Found OE ligature. These special characters are not allowed in meta descriptions.";
