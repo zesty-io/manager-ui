@@ -477,7 +477,12 @@ export default function ItemEdit() {
           >
             <Box
               component="section"
-              sx={{ display: "flex", flexDirection: "column", height: "100%" }}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                bgcolor: "grey.50",
+              }}
             >
               <ItemEditHeader
                 onSave={() => save().catch((err) => console.error(err))}

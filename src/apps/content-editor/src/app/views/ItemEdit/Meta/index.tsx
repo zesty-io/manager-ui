@@ -400,9 +400,10 @@ export const Meta = forwardRef(
       <ThemeProvider theme={theme}>
         <Box
           display="grid"
-          gridTemplateColumns="1fr minmax(auto, 40%)"
+          gridTemplateColumns={
+            !isCreateItemPage ? "1fr minmax(auto, 40%)" : "1fr"
+          }
           gap={4}
-          bgcolor="grey.50"
           pt={2.5}
           mb={isCreateItemPage ? 4 : 0}
           px={isCreateItemPage ? 0 : 4}
@@ -561,6 +562,7 @@ export const Meta = forwardRef(
               position="sticky"
               top={0}
               pb={2.5}
+              alignSelf="start"
               sx={{
                 scrollbarWidth: "none",
                 overflowY: "auto",
