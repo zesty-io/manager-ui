@@ -32,7 +32,6 @@ import {
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
 import { fetchGlobalItem } from "../../../../../../../shell/store/content";
-import { AIGeneratorParameterProvider } from "./AIGeneratorParameterProvider";
 import {
   ContentModelField,
   Web,
@@ -426,38 +425,38 @@ export const Meta = forwardRef(
                   media content in the preview on the right.
                 </Typography>
               </Box>
-              <AIGeneratorParameterProvider>
-                <MetaTitle
-                  aiButtonRef={metaTitleButtonRef}
-                  value={web.metaTitle}
-                  onChange={handleOnChange}
-                  error={errors?.metaTitle}
-                  saveMetaTitleParameters={flowType === FlowType.AIGenerated}
-                  onResetFlowType={() => {
-                    if (flowType === FlowType.AIGenerated) {
-                      setFlowType(FlowType.Manual);
-                    }
-                  }}
-                  onAIMetaTitleInserted={() => {
-                    // Scroll to and open the meta description ai generator to continue
-                    // with the AI-assisted flow
-                    if (flowType === FlowType.AIGenerated) {
-                      metaDescriptionButtonRef.current?.triggerAIButton?.();
-                    }
-                  }}
-                />
-                <MetaDescription
-                  aiButtonRef={metaDescriptionButtonRef}
-                  value={web.metaDescription}
-                  onChange={handleOnChange}
-                  error={errors?.metaDescription}
-                  onResetFlowType={() => {
-                    if (flowType === FlowType.AIGenerated) {
-                      setFlowType(FlowType.Manual);
-                    }
-                  }}
-                />
-              </AIGeneratorParameterProvider>
+              <MetaTitle
+                aiButtonRef={metaTitleButtonRef}
+                value={web.metaTitle}
+                onChange={handleOnChange}
+                error={errors?.metaTitle}
+                onResetFlowType={() => {
+                  if (flowType === FlowType.AIGenerated) {
+                    console.log("reset on meta title");
+                    setFlowType(FlowType.Manual);
+                  }
+                }}
+                onAIMetaTitleInserted={() => {
+                  // Scroll to and open the meta description ai generator to continue
+                  // with the AI-assisted flow
+                  if (flowType === FlowType.AIGenerated) {
+                    metaDescriptionButtonRef.current?.triggerAIButton?.();
+                  }
+                }}
+              />
+              <MetaDescription
+                aiButtonRef={metaDescriptionButtonRef}
+                value={web.metaDescription}
+                onChange={handleOnChange}
+                error={errors?.metaDescription}
+                onResetFlowType={() => {
+                  if (flowType === FlowType.AIGenerated) {
+                    console.log("reset on meta description");
+                    setFlowType(FlowType.Manual);
+                  }
+                }}
+                isAIAssistedFlow={flowType === FlowType.AIGenerated}
+              />
               <MetaImage onChange={handleOnChange} />
               {"og_title" in metaFields && (
                 <OGTitle

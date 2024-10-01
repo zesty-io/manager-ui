@@ -1,4 +1,11 @@
-import { useEffect, useState, useRef, useMemo, useContext } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useContext,
+  useReducer,
+} from "react";
 import {
   Button,
   Box,
@@ -34,7 +41,7 @@ import {
   useGetLangsMappingQuery,
 } from "../../services/instance";
 import { AppState } from "../../store/types";
-import { AIGeneratorParameterContext } from "../../../apps/content-editor/src/app/views/ItemEdit/Meta/AIGeneratorParameterProvider";
+import { AIGeneratorContext } from "./AIGeneratorProvider";
 
 const DEFAULT_LIMITS: Record<AIType, number> = {
   text: 150,
@@ -43,7 +50,7 @@ const DEFAULT_LIMITS: Record<AIType, number> = {
   description: 160,
   title: 150,
 };
-const TONE_OPTIONS = {
+export const TONE_OPTIONS = {
   intriguing: "Intriguing - Curious, mysterious, and thought-provoking",
   professional: "Professional - Serious, formal, and authoritative",
   playful: "Playful - Fun, light-hearted, and whimsical",
@@ -51,14 +58,27 @@ const TONE_OPTIONS = {
   succint: "Succinct - Clear, factual, with no hyperbole",
 };
 
+type FieldData = {
+  topic?: string;
+  audienceDescription: string;
+  tone: keyof typeof TONE_OPTIONS;
+  keywords?: string;
+  limit?: number;
+  language: {
+    label: string;
+    value: string;
+  };
+};
+
 // description and title are used for seo meta title & description
 type AIType = "text" | "paragraph" | "description" | "title" | "word";
 interface Props {
   onApprove: (data: string) => void;
-  onClose: () => void;
+  onClose: (reason: "close" | "insert") => void;
   aiType: AIType;
   label: string;
-  saveMetaTitleParameters?: boolean;
+  fieldZUID: string;
+  isAIAssistedFlow: boolean;
 }
 
 export const AIGenerator = ({
@@ -66,7 +86,8 @@ export const AIGenerator = ({
   onClose,
   aiType,
   label,
-  saveMetaTitleParameters,
+  fieldZUID,
+  isAIAssistedFlow,
 }: Props) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -82,23 +103,35 @@ export const AIGenerator = ({
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID, {
     skip: !modelZUID,
   });
-  const [topic, setTopic] = useState("");
-  const [audienceDescription, setAudienceDescription] = useState("");
-  const [tone, setTone] = useState<keyof typeof TONE_OPTIONS>("professional");
-  const [keywords, setKeywords] = useState("");
-  const [limit, setLimit] = useState(DEFAULT_LIMITS[aiType]);
   const [selectedContent, setSelectedContent] = useState<number>(null);
   const request = useRef(null);
-  const [language, setLanguage] = useState({
-    label: "English (United States)",
-    value: "en-US",
-  });
-
-  const [data, setData] = useState([]);
-  const [parameters, updateParameters] = useContext(
-    AIGeneratorParameterContext
+  const [fieldData, updateFieldData] = useReducer(
+    (state: FieldData, action: Partial<FieldData>) => {
+      return {
+        ...state,
+        ...action,
+      };
+    },
+    {
+      topic: "",
+      audienceDescription: "",
+      tone: "professional",
+      keywords: "",
+      limit: DEFAULT_LIMITS[aiType],
+      language: {
+        label: "English (United States)",
+        value: "en-US",
+      },
+    }
   );
+  const [data, setData] = useState([]);
   const { data: langMappings } = useGetLangsMappingQuery();
+  const [
+    lastOpenedZUID,
+    updateLastOpenedZUID,
+    parameterData,
+    updateParameterData,
+  ] = useContext(AIGeneratorContext);
 
   const [aiGenerate, { isLoading, isError, data: aiResponse }] =
     useAiGenerationMutation();
@@ -135,52 +168,53 @@ export const AIGenerator = ({
     if (aiType === "description" || aiType === "title") {
       request.current = aiGenerate({
         type: aiType,
-        lang: language.value,
-        tone,
-        audience: audienceDescription,
+        lang: fieldData.language.value,
+        tone: fieldData.tone,
+        audience: fieldData.audienceDescription,
         content: allTextFieldContent,
-        keywords,
+        keywords: fieldData.keywords,
       });
     } else {
       request.current = aiGenerate({
         type: aiType,
-        length: limit,
-        phrase: topic,
-        lang: language.value,
-        tone,
-        audience: audienceDescription,
+        length: fieldData.limit,
+        phrase: fieldData.topic,
+        lang: fieldData.language.value,
+        tone: fieldData.tone,
+        audience: fieldData.audienceDescription,
       });
     }
   };
 
   useEffect(() => {
-    if (aiType === "title") {
-      updateParameters?.(null);
-    }
+    // Used to automatically popuplate the data if they reopened the AI Generator
+    // on the same field or if the current field is the metaDescription field and
+    // is currently going through the AI assisted flow
+    if (
+      lastOpenedZUID === fieldZUID ||
+      (isAIAssistedFlow && fieldZUID === "metaDescription")
+    ) {
+      try {
+        const key =
+          isAIAssistedFlow && fieldZUID === "metaDescription"
+            ? "metaTitle"
+            : fieldZUID;
+        const { topic, audienceDescription, tone, keywords, limit, language } =
+          parameterData[key];
 
-    if (aiType === "description") {
-      if (parameters) {
-        // Auto fill data of the ai generator for the meta description
-        // using the previously saved parameters used in the meta title.
-        // This is used during the AI-assisted metadata creation flow.
-        setTone(
-          (parameters.tone as keyof typeof TONE_OPTIONS) || "professional"
-        );
-        setAudienceDescription(parameters.audience || "");
-        setKeywords(parameters.keywords || "");
-        setLanguage(
-          languageOptions?.find(
-            (language) => language.value === parameters.lang
-          ) || {
-            label: "English (United States)",
-            value: "en-US",
-          }
-        );
+        updateFieldData({
+          topic,
+          audienceDescription,
+          tone,
+          ...(!!limit && { limit: limit }),
+          language,
+          keywords,
+        });
+      } catch (err) {
+        console.error(err);
       }
-
-      updateParameters?.(null);
     }
-  }, [aiType]);
+  }, [parameterData, lastOpenedZUID, isAIAssistedFlow]);
 
   useEffect(() => {
     if (isError) {
@@ -222,6 +256,26 @@ export const AIGenerator = ({
       value,
     })
   );
+
+  const handleClose = (reason: "close" | "insert") => {
+    // Temporarily save all the inputs when closing the popup so
+    // that if they reopen it again, we can repopulate the fields
+    updateLastOpenedZUID(fieldZUID);
+    updateParameterData({
+      [fieldZUID]: {
+        topic: fieldData.topic,
+        limit: fieldData.limit,
+        language: fieldData.language,
+        tone: fieldData.tone,
+        audienceDescription: fieldData.audienceDescription,
+        keywords: fieldData.keywords,
+      },
+    });
+
+    // Reason is used to determine if the AI assisted flow will be cancelled
+    // or not
+    onClose(reason);
+  };
 
   // Loading
   if (isLoading) {
@@ -402,8 +456,10 @@ export const AIGenerator = ({
               <Box>
                 <InputLabel>Describe your Audience</InputLabel>
                 <TextField
-                  value={audienceDescription}
-                  onChange={(evt) => setAudienceDescription(evt.target.value)}
+                  value={fieldData.audienceDescription}
+                  onChange={(evt) =>
+                    updateFieldData({ audienceDescription: evt.target.value })
+                  }
                   placeholder="e.g. Freelancers, Designers, ....."
                   fullWidth
                 />
@@ -413,8 +469,10 @@ export const AIGenerator = ({
                   Keywords to Include (separated by commas)
                 </InputLabel>
                 <TextField
-                  value={keywords}
-                  onChange={(evt) => setKeywords(evt.target.value)}
+                  value={fieldData.keywords}
+                  onChange={(evt) =>
+                    updateFieldData({ keywords: evt.target.value })
+                  }
                   placeholder="e.g. Hikes, snow"
                   fullWidth
                 />
@@ -430,9 +488,11 @@ export const AIGenerator = ({
                   </Tooltip>
                 </Stack>
                 <Select
-                  value={tone}
+                  value={fieldData.tone}
                   onChange={(evt) =>
-                    setTone(evt.target.value as keyof typeof TONE_OPTIONS)
+                    updateFieldData({
+                      tone: evt.target.value as keyof typeof TONE_OPTIONS,
+                    })
                   }
                   fullWidth
                 >
@@ -458,8 +518,10 @@ export const AIGenerator = ({
                   isOptionEqualToValue={(option: any, value: any) =>
                     option.value === value.value
                   }
-                  onChange={(event, value) => setLanguage(value)}
-                  value={language as any}
+                  onChange={(event, value) =>
+                    updateFieldData({ language: value })
+                  }
+                  value={fieldData.language as any}
                   options={languageOptions}
                   renderInput={(params: any) => (
                     <TextField
@@ -495,7 +557,13 @@ export const AIGenerator = ({
           justifyContent={!!data?.length ? "space-between" : "flex-end"}
           borderRadius="0 0 2px 2px"
         >
-          <Button variant="outlined" color="inherit" onClick={onClose}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={() => {
+              handleClose("close");
+            }}
+          >
             Cancel
           </Button>
           {!!data?.length ? (
@@ -513,19 +581,8 @@ export const AIGenerator = ({
                 variant="contained"
                 onClick={() => {
                   if (selectedContent !== null) {
-                    // Save the meta title ai parameters to memory so it can be
-                    // shared to the meta description ai popup during the AI-assisted
-                    // metadata creation flow
-                    if (saveMetaTitleParameters) {
-                      updateParameters?.({
-                        lang: language.value,
-                        tone,
-                        audience: audienceDescription,
-                        keywords,
-                      });
-                    }
                     onApprove(data[selectedContent]);
-                    onClose();
+                    handleClose("insert");
                   }
                 }}
                 sx={{ ml: 2 }}
@@ -626,8 +683,10 @@ export const AIGenerator = ({
               <InputLabel>Topic</InputLabel>
               <TextField
                 data-cy="AITopicField"
-                value={topic}
-                onChange={(event) => setTopic(event.target.value)}
+                value={fieldData.topic}
+                onChange={(event) =>
+                  updateFieldData({ topic: event.target.value })
+                }
                 placeholder={`e.g. Hikes in Washington`}
                 multiline
                 rows={3}
@@ -638,8 +697,10 @@ export const AIGenerator = ({
               <InputLabel>Describe your Audience</InputLabel>
               <TextField
                 data-cy="AIAudienceField"
-                value={audienceDescription}
-                onChange={(evt) => setAudienceDescription(evt.target.value)}
+                value={fieldData.audienceDescription}
+                onChange={(evt) =>
+                  updateFieldData({ audienceDescription: evt.target.value })
+                }
                 placeholder="e.g. Freelancers, Designers, ....."
                 fullWidth
               />
@@ -655,9 +716,11 @@ export const AIGenerator = ({
                 </Tooltip>
               </Stack>
               <Select
-                value={tone}
+                value={fieldData.tone}
                 onChange={(evt) =>
-                  setTone(evt.target.value as keyof typeof TONE_OPTIONS)
+                  updateFieldData({
+                    tone: evt.target.value as keyof typeof TONE_OPTIONS,
+                  })
                 }
                 fullWidth
               >
@@ -687,8 +750,8 @@ export const AIGenerator = ({
                 <FieldTypeNumber
                   required={false}
                   name="limit"
-                  value={limit}
-                  onChange={(value) => setLimit(value)}
+                  value={fieldData.limit}
+                  onChange={(value) => updateFieldData({ limit: value })}
                   hasError={false}
                 />
               </Box>
@@ -707,8 +770,10 @@ export const AIGenerator = ({
                   isOptionEqualToValue={(option: any, value: any) =>
                     option.value === value.value
                   }
-                  onChange={(event, value) => setLanguage(value)}
-                  value={language as any}
+                  onChange={(event, value) =>
+                    updateFieldData({ language: value })
+                  }
+                  value={fieldData.language as any}
                   options={languageOptions}
                   renderInput={(params: any) => (
                     <TextField
@@ -745,7 +810,13 @@ export const AIGenerator = ({
         justifyContent={!!data?.length ? "space-between" : "flex-end"}
         borderRadius="0 0 2px 2px"
       >
-        <Button variant="outlined" color="inherit" onClick={onClose}>
+        <Button
+          variant="outlined"
+          color="inherit"
+          onClick={() => {
+            handleClose("close");
+          }}
+        >
           Cancel
         </Button>
         {!!data?.length ? (
@@ -763,7 +834,7 @@ export const AIGenerator = ({
               variant="contained"
               onClick={() => {
                 onApprove(data[0]);
-                onClose();
+                handleClose("insert");
               }}
               sx={{ ml: 2 }}
               startIcon={<CheckRoundedIcon />}
@@ -776,7 +847,7 @@ export const AIGenerator = ({
             data-cy="AIGenerate"
             variant="contained"
             onClick={handleGenerate}
-            disabled={!topic}
+            disabled={!fieldData.topic}
           >
             Generate
           </Button>

@@ -56,6 +56,7 @@ import { useLocalStorage } from "react-use";
 import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
 import { FieldError } from "../../components/Editor/FieldError";
+import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -517,24 +518,26 @@ export default function ItemEdit() {
                   exact
                   path="/content/:modelZUID/:itemZUID/meta"
                   render={() => (
-                    <Meta
-                      ref={metaRef}
-                      onUpdateSEOErrors={(errors) => {
-                        setSEOErrors(errors);
-                      }}
-                      isSaving={saving}
-                      errors={SEOErrors}
-                      errorComponent={
-                        saveClicked &&
-                        hasSEOErrors && (
-                          <FieldError
-                            ref={fieldErrorRef}
-                            errors={{ ...fieldErrors, ...SEOErrors }}
-                            fields={activeFields}
-                          />
-                        )
-                      }
-                    />
+                    <AIGeneratorProvider>
+                      <Meta
+                        ref={metaRef}
+                        onUpdateSEOErrors={(errors) => {
+                          setSEOErrors(errors);
+                        }}
+                        isSaving={saving}
+                        errors={SEOErrors}
+                        errorComponent={
+                          saveClicked &&
+                          hasSEOErrors && (
+                            <FieldError
+                              ref={fieldErrorRef}
+                              errors={{ ...fieldErrors, ...SEOErrors }}
+                              fields={activeFields}
+                            />
+                          )
+                        }
+                      />
+                    </AIGeneratorProvider>
                   )}
                 />
                 <Route
@@ -589,28 +592,32 @@ export default function ItemEdit() {
                   ]}
                   render={() => (
                     <ItemLockContext.Provider value={isLocked}>
-                      <Content
-                        instance={instance}
-                        modelZUID={modelZUID}
-                        model={model}
-                        fields={fields}
-                        itemZUID={itemZUID}
-                        item={item}
-                        items={items}
-                        user={user}
-                        onSave={() => save().catch((err) => console.error(err))}
-                        dispatch={dispatch}
-                        loading={loading}
-                        saving={saving}
-                        saveClicked={saveClicked}
-                        onUpdateFieldErrors={(errors) => {
-                          setFieldErrors(errors);
-                        }}
-                        fieldErrors={fieldErrors}
-                        hasErrors={hasErrors}
-                        activeFields={activeFields}
-                        fieldErrorRef={fieldErrorRef}
-                      />
+                      <AIGeneratorProvider>
+                        <Content
+                          instance={instance}
+                          modelZUID={modelZUID}
+                          model={model}
+                          fields={fields}
+                          itemZUID={itemZUID}
+                          item={item}
+                          items={items}
+                          user={user}
+                          onSave={() =>
+                            save().catch((err) => console.error(err))
+                          }
+                          dispatch={dispatch}
+                          loading={loading}
+                          saving={saving}
+                          saveClicked={saveClicked}
+                          onUpdateFieldErrors={(errors) => {
+                            setFieldErrors(errors);
+                          }}
+                          fieldErrors={fieldErrors}
+                          hasErrors={hasErrors}
+                          activeFields={activeFields}
+                          fieldErrorRef={fieldErrorRef}
+                        />
+                      </AIGeneratorProvider>
                     </ItemLockContext.Provider>
                   )}
                 />
