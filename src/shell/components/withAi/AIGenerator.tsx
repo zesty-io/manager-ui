@@ -197,10 +197,21 @@ export const AIGenerator = ({
     if (aiResponse?.data) {
       // For description and title, response will be a stringified array
       if (aiType === "description" || aiType === "title") {
-        const responseArr = JSON.parse(aiResponse.data);
-        setData(responseArr);
+        try {
+          const responseArr = JSON.parse(aiResponse.data);
+
+          if (Array.isArray(responseArr)) {
+            const cleanedResponse = responseArr.map((response) =>
+              response?.replace(/^"(.*)"$/, "$1")
+            );
+
+            setData(cleanedResponse);
+          }
+        } catch (err) {
+          console.error("Error parsing AI response: ", err);
+        }
       } else {
-        setData([aiResponse.data]);
+        setData([aiResponse.data.replace(/^"(.*)"$/, "$1")]);
       }
     }
   }, [aiResponse]);
