@@ -92,6 +92,7 @@ export const AIGenerator = ({
   const dispatch = useDispatch();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
+  const [hasFieldError, setHasFieldError] = useState(false);
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -175,14 +176,18 @@ export const AIGenerator = ({
         keywords: fieldData.keywords,
       });
     } else {
-      request.current = aiGenerate({
-        type: aiType,
-        length: fieldData.limit,
-        phrase: fieldData.topic,
-        lang: fieldData.language.value,
-        tone: fieldData.tone,
-        audience: fieldData.audienceDescription,
-      });
+      if (fieldData.topic) {
+        request.current = aiGenerate({
+          type: aiType,
+          length: fieldData.limit,
+          phrase: fieldData.topic,
+          lang: fieldData.language.value,
+          tone: fieldData.tone,
+          audience: fieldData.audienceDescription,
+        });
+      } else {
+        setHasFieldError(true);
+      }
     }
   };
 
@@ -558,7 +563,7 @@ export const AIGenerator = ({
           borderRadius="0 0 2px 2px"
         >
           <Button
-            variant="outlined"
+            variant="text"
             color="inherit"
             onClick={() => {
               handleClose("close");
@@ -680,17 +685,26 @@ export const AIGenerator = ({
         ) : (
           <Stack gap={2.5}>
             <Box>
-              <InputLabel>Topic</InputLabel>
+              <InputLabel>Topic *</InputLabel>
               <TextField
                 data-cy="AITopicField"
                 value={fieldData.topic}
-                onChange={(event) =>
-                  updateFieldData({ topic: event.target.value })
-                }
+                onChange={(event) => {
+                  if (!!event.target.value) {
+                    setHasFieldError(false);
+                  }
+
+                  updateFieldData({ topic: event.target.value });
+                }}
                 placeholder={`e.g. Hikes in Washington`}
                 multiline
                 rows={3}
                 fullWidth
+                error={hasFieldError}
+                helperText={
+                  hasFieldError &&
+                  "This is field is required. Please enter a value."
+                }
               />
             </Box>
             <Box>
@@ -731,7 +745,7 @@ export const AIGenerator = ({
                 ))}
               </Select>
             </Box>
-            <Stack direction="row" gap={2} width="100%">
+            <Stack direction="row" gap={2.5} width="100%">
               <Box flex={1}>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
                   <InputLabel sx={{ mb: 0 }}>
@@ -811,7 +825,7 @@ export const AIGenerator = ({
         borderRadius="0 0 2px 2px"
       >
         <Button
-          variant="outlined"
+          variant="text"
           color="inherit"
           onClick={() => {
             handleClose("close");
@@ -847,7 +861,6 @@ export const AIGenerator = ({
             data-cy="AIGenerate"
             variant="contained"
             onClick={handleGenerate}
-            disabled={!fieldData.topic}
           >
             Generate
           </Button>
