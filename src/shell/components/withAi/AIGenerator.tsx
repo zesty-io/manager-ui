@@ -300,7 +300,12 @@ export const AIGenerator = ({
   // Loading
   if (isLoading) {
     return (
-      <Stack width={480} height={628} position="relative" zIndex={2}>
+      <Stack
+        width={480}
+        height={aiType === "title" || aiType === "description" ? 600 : 628}
+        position="relative"
+        zIndex={2}
+      >
         <Stack
           height="100%"
           borderRadius={0.5}
@@ -365,7 +370,7 @@ export const AIGenerator = ({
     return (
       <Stack
         width={480}
-        height={628}
+        height={600}
         position="relative"
         zIndex={2}
         border="2px solid transparent"
