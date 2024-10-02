@@ -556,8 +556,8 @@ export const AIGenerator = ({
                       InputProps={{
                         ...params.InputProps,
                         startAdornment: (
-                          <InputAdornment position="start">
-                            <LanguageRoundedIcon />
+                          <InputAdornment position="start" sx={{ width: 24 }}>
+                            <LanguageRoundedIcon fontSize="small" />
                           </InputAdornment>
                         ),
                       }}
@@ -816,8 +816,8 @@ export const AIGenerator = ({
                       InputProps={{
                         ...params.InputProps,
                         startAdornment: (
-                          <InputAdornment position="start">
-                            <LanguageRoundedIcon />
+                          <InputAdornment position="start" sx={{ width: 24 }}>
+                            <LanguageRoundedIcon fontSize="small" />
                           </InputAdornment>
                         ),
                       }}
