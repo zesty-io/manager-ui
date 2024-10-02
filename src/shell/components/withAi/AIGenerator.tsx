@@ -1,4 +1,11 @@
-import { useEffect, useState, useRef, useMemo, useContext } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useContext,
+  useReducer,
+} from "react";
 import {
   Button,
   Box,
@@ -34,7 +41,7 @@ import {
   useGetLangsMappingQuery,
 } from "../../services/instance";
 import { AppState } from "../../store/types";
-import { AIGeneratorParameterContext } from "../../../apps/content-editor/src/app/views/ItemEdit/Meta/AIGeneratorParameterProvider";
+import { AIGeneratorContext } from "./AIGeneratorProvider";
 
 const DEFAULT_LIMITS: Record<AIType, number> = {
   text: 150,
@@ -43,22 +50,50 @@ const DEFAULT_LIMITS: Record<AIType, number> = {
   description: 160,
   title: 150,
 };
-const TONE_OPTIONS = {
-  intriguing: "Intriguing - Curious, mysterious, and thought-provoking",
-  professional: "Professional - Serious, formal, and authoritative",
-  playful: "Playful - Fun, light-hearted, and whimsical",
-  sensational: "Sensational -  Bold, dramatic, and attention-grabbing",
-  succint: "Succinct - Clear, factual, with no hyperbole",
+export const TONE_OPTIONS = [
+  {
+    value: "intriguing",
+    label: "Intriguing - Curious, mysterious, and thought-provoking",
+  },
+  {
+    value: "professional",
+    label: "Professional - Serious, formal, and authoritative",
+  },
+  { value: "playful", label: "Playful - Fun, light-hearted, and whimsical" },
+  {
+    value: "sensational",
+    label: "Sensational -  Bold, dramatic, and attention-grabbing",
+  },
+  { value: "succint", label: "Succinct - Clear, factual, with no hyperbole" },
+] as const;
+export type ToneOption =
+  | "intriguing"
+  | "professional"
+  | "playful"
+  | "sensational"
+  | "succint";
+
+type FieldData = {
+  topic?: string;
+  audienceDescription: string;
+  tone: ToneOption;
+  keywords?: string;
+  limit?: number;
+  language: {
+    label: string;
+    value: string;
+  };
 };
 
 // description and title are used for seo meta title & description
 type AIType = "text" | "paragraph" | "description" | "title" | "word";
 interface Props {
   onApprove: (data: string) => void;
-  onClose: () => void;
+  onClose: (reason: "close" | "insert") => void;
   aiType: AIType;
   label: string;
-  saveMetaTitleParameters?: boolean;
+  fieldZUID: string;
+  isAIAssistedFlow: boolean;
 }
 
 export const AIGenerator = ({
@@ -66,11 +101,13 @@ export const AIGenerator = ({
   onClose,
   aiType,
   label,
-  saveMetaTitleParameters,
+  fieldZUID,
+  isAIAssistedFlow,
 }: Props) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
+  const [hasFieldError, setHasFieldError] = useState(false);
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -82,23 +119,35 @@ export const AIGenerator = ({
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID, {
     skip: !modelZUID,
   });
-  const [topic, setTopic] = useState("");
-  const [audienceDescription, setAudienceDescription] = useState("");
-  const [tone, setTone] = useState<keyof typeof TONE_OPTIONS>("professional");
-  const [keywords, setKeywords] = useState("");
-  const [limit, setLimit] = useState(DEFAULT_LIMITS[aiType]);
   const [selectedContent, setSelectedContent] = useState<number>(null);
   const request = useRef(null);
-  const [language, setLanguage] = useState({
-    label: "English (United States)",
-    value: "en-US",
-  });
-
-  const [data, setData] = useState([]);
-  const [parameters, updateParameters] = useContext(
-    AIGeneratorParameterContext
+  const [fieldData, updateFieldData] = useReducer(
+    (state: FieldData, action: Partial<FieldData>) => {
+      return {
+        ...state,
+        ...action,
+      };
+    },
+    {
+      topic: "",
+      audienceDescription: "",
+      tone: "professional",
+      keywords: "",
+      limit: DEFAULT_LIMITS[aiType],
+      language: {
+        label: "English (United States)",
+        value: "en-US",
+      },
+    }
   );
+  const [data, setData] = useState([]);
   const { data: langMappings } = useGetLangsMappingQuery();
+  const [
+    lastOpenedZUID,
+    updateLastOpenedZUID,
+    parameterData,
+    updateParameterData,
+  ] = useContext(AIGeneratorContext);
 
   const [aiGenerate, { isLoading, isError, data: aiResponse }] =
     useAiGenerationMutation();
@@ -135,52 +184,57 @@ export const AIGenerator = ({
     if (aiType === "description" || aiType === "title") {
       request.current = aiGenerate({
         type: aiType,
-        lang: language.value,
-        tone,
-        audience: audienceDescription,
+        lang: fieldData.language.value,
+        tone: fieldData.tone,
+        audience: fieldData.audienceDescription,
         content: allTextFieldContent,
-        keywords,
+        keywords: fieldData.keywords,
       });
     } else {
-      request.current = aiGenerate({
-        type: aiType,
-        length: limit,
-        phrase: topic,
-        lang: language.value,
-        tone,
-        audience: audienceDescription,
-      });
+      if (fieldData.topic) {
+        request.current = aiGenerate({
+          type: aiType,
+          length: fieldData.limit,
+          phrase: fieldData.topic,
+          lang: fieldData.language.value,
+          tone: fieldData.tone,
+          audience: fieldData.audienceDescription,
+        });
+      } else {
+        setHasFieldError(true);
+      }
     }
   };
 
   useEffect(() => {
-    if (aiType === "title") {
-      updateParameters?.(null);
-    }
+    // Used to automatically popuplate the data if they reopened the AI Generator
+    // on the same field or if the current field is the metaDescription field and
+    // is currently going through the AI assisted flow
+    if (
+      lastOpenedZUID === fieldZUID ||
+      (isAIAssistedFlow && fieldZUID === "metaDescription")
+    ) {
+      try {
+        const key =
+          isAIAssistedFlow && fieldZUID === "metaDescription"
+            ? "metaTitle"
+            : fieldZUID;
+        const { topic, audienceDescription, tone, keywords, limit, language } =
+          parameterData[key];
 
-    if (aiType === "description") {
-      if (parameters) {
-        // Auto fill data of the ai generator for the meta description
-        // using the previously saved parameters used in the meta title.
-        // This is used during the AI-assisted metadata creation flow.
-        setTone(
-          (parameters.tone as keyof typeof TONE_OPTIONS) || "professional"
-        );
-        setAudienceDescription(parameters.audience || "");
-        setKeywords(parameters.keywords || "");
-        setLanguage(
-          languageOptions?.find(
-            (language) => language.value === parameters.lang
-          ) || {
-            label: "English (United States)",
-            value: "en-US",
-          }
-        );
+        updateFieldData({
+          topic,
+          audienceDescription,
+          tone,
+          ...(!!limit && { limit: limit }),
+          language,
+          keywords,
+        });
+      } catch (err) {
+        console.error(err);
       }
-
-      updateParameters?.(null);
     }
-  }, [aiType]);
+  }, [parameterData, lastOpenedZUID, isAIAssistedFlow]);
 
   useEffect(() => {
     if (isError) {
@@ -197,10 +251,21 @@ export const AIGenerator = ({
     if (aiResponse?.data) {
       // For description and title, response will be a stringified array
       if (aiType === "description" || aiType === "title") {
-        const responseArr = JSON.parse(aiResponse.data);
-        setData(responseArr);
+        try {
+          const responseArr = JSON.parse(aiResponse.data);
+
+          if (Array.isArray(responseArr)) {
+            const cleanedResponse = responseArr.map((response) =>
+              response?.replace(/^"(.*)"$/, "$1")
+            );
+
+            setData(cleanedResponse);
+          }
+        } catch (err) {
+          console.error("Error parsing AI response: ", err);
+        }
       } else {
-        setData([aiResponse.data]);
+        setData([aiResponse.data.replace(/^"(.*)"$/, "$1")]);
       }
     }
   }, [aiResponse]);
@@ -212,10 +277,35 @@ export const AIGenerator = ({
     })
   );
 
+  const handleClose = (reason: "close" | "insert") => {
+    // Temporarily save all the inputs when closing the popup so
+    // that if they reopen it again, we can repopulate the fields
+    updateLastOpenedZUID(fieldZUID);
+    updateParameterData({
+      [fieldZUID]: {
+        topic: fieldData.topic,
+        limit: fieldData.limit,
+        language: fieldData.language,
+        tone: fieldData.tone,
+        audienceDescription: fieldData.audienceDescription,
+        keywords: fieldData.keywords,
+      },
+    });
+
+    // Reason is used to determine if the AI assisted flow will be cancelled
+    // or not
+    onClose(reason);
+  };
+
   // Loading
   if (isLoading) {
     return (
-      <Stack width={480} height={628} position="relative" zIndex={2}>
+      <Stack
+        width={480}
+        height={aiType === "title" || aiType === "description" ? 604 : 628}
+        position="relative"
+        zIndex={2}
+      >
         <Stack
           height="100%"
           borderRadius={0.5}
@@ -225,13 +315,13 @@ export const AIGenerator = ({
           justifyContent="center"
           alignItems="center"
           bgcolor="background.paper"
-          p={2.5}
+          p={2.25}
           textAlign="center"
         >
           <Box
             position="absolute"
-            top={22}
-            right={22}
+            top={20}
+            right={20}
             component="img"
             src={openAIBadge}
             alt="OpenAI Badge"
@@ -240,24 +330,24 @@ export const AIGenerator = ({
             <CircularProgress />
             <Brain
               color="primary"
-              sx={{ position: "absolute", top: "8px", left: "8px" }}
+              fontSize="small"
+              sx={{ position: "absolute", top: "10px", left: "10px" }}
             />
           </Box>
-          <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 1 }}>
+          <Typography variant="h5" fontWeight={700} sx={{ mt: 3, mb: 1 }}>
             Generating
             {aiType === "title"
-              ? " Title"
+              ? " Meta Title"
               : aiType === "description"
-              ? " Description"
+              ? " Meta Description"
               : " Content"}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Our AI assistant is generating your
             {aiType === "title"
-              ? " meta title "
+              ? "Our AI assistant is scanning your content and generating your meta title "
               : aiType === "description"
-              ? " meta description "
-              : " content "}
+              ? "Our AI assistant is scanning your content and generating your meta description "
+              : "Our AI assistant is generating your content "}
             based on your parameters
           </Typography>
           <Button
@@ -265,7 +355,7 @@ export const AIGenerator = ({
             variant="outlined"
             color="inherit"
             startIcon={<StopRoundedIcon color="action" />}
-            sx={{ mt: 3 }}
+            sx={{ mt: 4 }}
             onClick={() => request.current?.abort()}
           >
             Stop
@@ -280,7 +370,7 @@ export const AIGenerator = ({
     return (
       <Stack
         width={480}
-        height={628}
+        height={604}
         position="relative"
         zIndex={2}
         border="2px solid transparent"
@@ -289,7 +379,7 @@ export const AIGenerator = ({
         <Stack
           justifyContent="space-between"
           alignItems="center"
-          p={2.5}
+          p={2.25}
           gap={1.5}
           bgcolor="background.paper"
           borderRadius="2px 2px 0 0"
@@ -332,7 +422,7 @@ export const AIGenerator = ({
           </Stack>
         </Stack>
         <Box
-          p={2.5}
+          p={2.25}
           bgcolor="grey.50"
           flex={1}
           sx={{
@@ -355,7 +445,8 @@ export const AIGenerator = ({
                     border: 1,
                     borderColor: "border",
                     backgroundColor: "common.white",
-                    p: 2,
+                    px: 1.5,
+                    py: 2,
                     flexDirection: "column",
                     alignItems: "flex-start",
 
@@ -365,7 +456,7 @@ export const AIGenerator = ({
                   }}
                 >
                   <Typography
-                    variant="body2"
+                    variant="body3"
                     fontWeight={600}
                     color={
                       selectedContent === index
@@ -377,8 +468,8 @@ export const AIGenerator = ({
                     OPTION {index + 1}
                   </Typography>
                   <Typography
-                    variant="h6"
-                    fontWeight={600}
+                    variant={aiType === "title" ? "h6" : "body1"}
+                    fontWeight={aiType === "title" ? 600 : 400}
                     color="text.primary"
                   >
                     {String(value)}
@@ -391,8 +482,10 @@ export const AIGenerator = ({
               <Box>
                 <InputLabel>Describe your Audience</InputLabel>
                 <TextField
-                  value={audienceDescription}
-                  onChange={(evt) => setAudienceDescription(evt.target.value)}
+                  value={fieldData.audienceDescription}
+                  onChange={(evt) =>
+                    updateFieldData({ audienceDescription: evt.target.value })
+                  }
                   placeholder="e.g. Freelancers, Designers, ....."
                   fullWidth
                 />
@@ -402,8 +495,10 @@ export const AIGenerator = ({
                   Keywords to Include (separated by commas)
                 </InputLabel>
                 <TextField
-                  value={keywords}
-                  onChange={(evt) => setKeywords(evt.target.value)}
+                  value={fieldData.keywords}
+                  onChange={(evt) =>
+                    updateFieldData({ keywords: evt.target.value })
+                  }
                   placeholder="e.g. Hikes, snow"
                   fullWidth
                 />
@@ -418,38 +513,18 @@ export const AIGenerator = ({
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                   </Tooltip>
                 </Stack>
-                <Select
-                  value={tone}
-                  onChange={(evt) =>
-                    setTone(evt.target.value as keyof typeof TONE_OPTIONS)
-                  }
-                  fullWidth
-                >
-                  {Object.entries(TONE_OPTIONS).map(([value, text]) => (
-                    <MenuItem key={value} value={value}>
-                      {text}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Box>
-              <Box>
-                <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
-                  <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
-                  <Tooltip
-                    title="Set the language in which you'd like the text to be generated."
-                    placement="top"
-                  >
-                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
-                  </Tooltip>
-                </Stack>
                 <Autocomplete
                   disableClearable
                   isOptionEqualToValue={(option: any, value: any) =>
                     option.value === value.value
                   }
-                  onChange={(event, value) => setLanguage(value)}
-                  value={language as any}
-                  options={languageOptions}
+                  onChange={(_, value) =>
+                    updateFieldData({ tone: value.value })
+                  }
+                  value={TONE_OPTIONS.find(
+                    (option) => option.value === fieldData.tone
+                  )}
+                  options={TONE_OPTIONS}
                   renderInput={(params: any) => (
                     <TextField
                       {...params}
@@ -473,18 +548,67 @@ export const AIGenerator = ({
                   }}
                 />
               </Box>
+              <Box>
+                <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
+                  <InputLabel sx={{ mb: 0 }}>Language</InputLabel>
+                  <Tooltip
+                    title="Set the language in which you'd like the text to be generated."
+                    placement="top"
+                  >
+                    <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
+                  </Tooltip>
+                </Stack>
+                <Autocomplete
+                  disableClearable
+                  isOptionEqualToValue={(option: any, value: any) =>
+                    option.value === value.value
+                  }
+                  onChange={(event, value) =>
+                    updateFieldData({ language: value })
+                  }
+                  value={fieldData.language as any}
+                  options={languageOptions}
+                  renderInput={(params: any) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start" sx={{ width: 24 }}>
+                            <LanguageRoundedIcon fontSize="small" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        maxHeight: 300,
+                      },
+                    },
+                  }}
+                />
+              </Box>
             </Stack>
           )}
         </Box>
         <Box
           bgcolor="background.paper"
-          p={2.5}
+          p={2.25}
           gap={2}
           display="flex"
           justifyContent={!!data?.length ? "space-between" : "flex-end"}
           borderRadius="0 0 2px 2px"
         >
-          <Button variant="outlined" color="inherit" onClick={onClose}>
+          <Button
+            variant="text"
+            color="inherit"
+            onClick={() => {
+              handleClose("close");
+            }}
+          >
             Cancel
           </Button>
           {!!data?.length ? (
@@ -502,19 +626,8 @@ export const AIGenerator = ({
                 variant="contained"
                 onClick={() => {
                   if (selectedContent !== null) {
-                    // Save the meta title ai parameters to memory so it can be
-                    // shared to the meta description ai popup during the AI-assisted
-                    // metadata creation flow
-                    if (saveMetaTitleParameters) {
-                      updateParameters?.({
-                        lang: language.value,
-                        tone,
-                        audience: audienceDescription,
-                        keywords,
-                      });
-                    }
                     onApprove(data[selectedContent]);
-                    onClose();
+                    handleClose("insert");
                   }
                 }}
                 sx={{ ml: 2 }}
@@ -550,7 +663,7 @@ export const AIGenerator = ({
       <Stack
         justifyContent="space-between"
         alignItems="center"
-        p={2.5}
+        p={2.25}
         gap={1.5}
         bgcolor="background.paper"
         borderRadius="2px 2px 0 0"
@@ -588,7 +701,7 @@ export const AIGenerator = ({
         </Stack>
       </Stack>
       <Box
-        p={2.5}
+        p={2.25}
         bgcolor="grey.50"
         flex={1}
         sx={{
@@ -612,23 +725,36 @@ export const AIGenerator = ({
         ) : (
           <Stack gap={2.5}>
             <Box>
-              <InputLabel>Topic</InputLabel>
+              <InputLabel>Topic *</InputLabel>
               <TextField
                 data-cy="AITopicField"
-                value={topic}
-                onChange={(event) => setTopic(event.target.value)}
+                value={fieldData.topic}
+                onChange={(event) => {
+                  if (!!event.target.value) {
+                    setHasFieldError(false);
+                  }
+
+                  updateFieldData({ topic: event.target.value });
+                }}
                 placeholder={`e.g. Hikes in Washington`}
                 multiline
                 rows={3}
                 fullWidth
+                error={hasFieldError}
+                helperText={
+                  hasFieldError &&
+                  "This is field is required. Please enter a value."
+                }
               />
             </Box>
             <Box>
               <InputLabel>Describe your Audience</InputLabel>
               <TextField
                 data-cy="AIAudienceField"
-                value={audienceDescription}
-                onChange={(evt) => setAudienceDescription(evt.target.value)}
+                value={fieldData.audienceDescription}
+                onChange={(evt) =>
+                  updateFieldData({ audienceDescription: evt.target.value })
+                }
                 placeholder="e.g. Freelancers, Designers, ....."
                 fullWidth
               />
@@ -643,21 +769,22 @@ export const AIGenerator = ({
                   <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                 </Tooltip>
               </Stack>
-              <Select
-                value={tone}
-                onChange={(evt) =>
-                  setTone(evt.target.value as keyof typeof TONE_OPTIONS)
+              <Autocomplete
+                disableClearable
+                isOptionEqualToValue={(option: any, value: any) =>
+                  option.value === value.value
                 }
-                fullWidth
-              >
-                {Object.entries(TONE_OPTIONS).map(([value, text]) => (
-                  <MenuItem key={value} value={value}>
-                    {text}
-                  </MenuItem>
-                ))}
-              </Select>
+                onChange={(_, value) => updateFieldData({ tone: value.value })}
+                value={TONE_OPTIONS.find(
+                  (option) => option.value === fieldData.tone
+                )}
+                options={TONE_OPTIONS}
+                renderInput={(params: any) => (
+                  <TextField {...params} fullWidth />
+                )}
+              />
             </Box>
-            <Stack direction="row" gap={2} width="100%">
+            <Stack direction="row" gap={2.5} width="100%">
               <Box flex={1}>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
                   <InputLabel sx={{ mb: 0 }}>
@@ -676,8 +803,8 @@ export const AIGenerator = ({
                 <FieldTypeNumber
                   required={false}
                   name="limit"
-                  value={limit}
-                  onChange={(value) => setLimit(value)}
+                  value={fieldData.limit}
+                  onChange={(value) => updateFieldData({ limit: value })}
                   hasError={false}
                 />
               </Box>
@@ -696,8 +823,10 @@ export const AIGenerator = ({
                   isOptionEqualToValue={(option: any, value: any) =>
                     option.value === value.value
                   }
-                  onChange={(event, value) => setLanguage(value)}
-                  value={language as any}
+                  onChange={(event, value) =>
+                    updateFieldData({ language: value })
+                  }
+                  value={fieldData.language as any}
                   options={languageOptions}
                   renderInput={(params: any) => (
                     <TextField
@@ -706,8 +835,8 @@ export const AIGenerator = ({
                       InputProps={{
                         ...params.InputProps,
                         startAdornment: (
-                          <InputAdornment position="start">
-                            <LanguageRoundedIcon />
+                          <InputAdornment position="start" sx={{ width: 24 }}>
+                            <LanguageRoundedIcon fontSize="small" />
                           </InputAdornment>
                         ),
                       }}
@@ -728,13 +857,19 @@ export const AIGenerator = ({
       </Box>
       <Box
         bgcolor="background.paper"
-        p={2.5}
+        p={2.25}
         gap={2}
         display="flex"
         justifyContent={!!data?.length ? "space-between" : "flex-end"}
         borderRadius="0 0 2px 2px"
       >
-        <Button variant="outlined" color="inherit" onClick={onClose}>
+        <Button
+          variant="text"
+          color="inherit"
+          onClick={() => {
+            handleClose("close");
+          }}
+        >
           Cancel
         </Button>
         {!!data?.length ? (
@@ -752,7 +887,7 @@ export const AIGenerator = ({
               variant="contained"
               onClick={() => {
                 onApprove(data[0]);
-                onClose();
+                handleClose("insert");
               }}
               sx={{ ml: 2 }}
               startIcon={<CheckRoundedIcon />}
@@ -765,7 +900,6 @@ export const AIGenerator = ({
             data-cy="AIGenerate"
             variant="contained"
             onClick={handleGenerate}
-            disabled={!topic}
           >
             Generate
           </Button>

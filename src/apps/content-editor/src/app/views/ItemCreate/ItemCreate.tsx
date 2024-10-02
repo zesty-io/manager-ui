@@ -37,6 +37,7 @@ import { SchedulePublish } from "../../../../../../shell/components/SchedulePubl
 import { Meta } from "../ItemEdit/Meta";
 import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 import { FieldError } from "../../components/Editor/FieldError";
+import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 
 export type ActionAfterSave =
   | ""
@@ -398,34 +399,36 @@ export const ItemCreate = () => {
                 />
               </Box>
             )}
-            <Editor
-              // @ts-ignore no types
-              itemZUID={itemZUID}
-              item={item}
-              items={content}
-              instance={instance}
-              modelZUID={modelZUID}
-              model={model}
-              fields={fields}
-              onSave={save}
-              dispatch={dispatch}
-              loading={loading}
-              saving={saving}
-              isDirty={item?.dirty}
-              fieldErrors={fieldErrors}
-              // @ts-ignore  untyped component
-              onUpdateFieldErrors={(errors: FieldErrors) => {
-                setFieldErrors(errors);
-              }}
-            />
-            <Meta
-              onUpdateSEOErrors={(errors: FieldErrors) => {
-                setSEOErrors(errors);
-              }}
-              isSaving={saving}
-              ref={metaRef}
-              errors={SEOErrors}
-            />
+            <AIGeneratorProvider>
+              <Editor
+                // @ts-ignore no types
+                itemZUID={itemZUID}
+                item={item}
+                items={content}
+                instance={instance}
+                modelZUID={modelZUID}
+                model={model}
+                fields={fields}
+                onSave={save}
+                dispatch={dispatch}
+                loading={loading}
+                saving={saving}
+                isDirty={item?.dirty}
+                fieldErrors={fieldErrors}
+                // @ts-ignore  untyped component
+                onUpdateFieldErrors={(errors: FieldErrors) => {
+                  setFieldErrors(errors);
+                }}
+              />
+              <Meta
+                onUpdateSEOErrors={(errors: FieldErrors) => {
+                  setSEOErrors(errors);
+                }}
+                isSaving={saving}
+                ref={metaRef}
+                errors={SEOErrors}
+              />
+            </AIGeneratorProvider>
           </Box>
           <ThemeProvider theme={theme}>
             <Box

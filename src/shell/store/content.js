@@ -561,7 +561,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
     });
 
     const hasMissingRequiredSEOFields = skipPathPartValidation
-      ? !item?.web?.metaTitle || !item?.web?.metaDescription
+      ? !item?.web?.metaTitle
       : !item?.web?.metaTitle ||
         !item?.web?.metaDescription ||
         !item?.web?.pathPart;

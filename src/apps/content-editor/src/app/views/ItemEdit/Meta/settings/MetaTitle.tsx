@@ -31,6 +31,7 @@ export const MetaTitle = memo(function MetaTitle({
   return (
     <Box data-cy="metaTitle" id="metaTitle">
       <AIFieldShell
+        ZUID="metaTitle"
         ref={aiButtonRef}
         settings={{
           label: "Meta Title",
@@ -49,7 +50,6 @@ export const MetaTitle = memo(function MetaTitle({
           onChange(evt.target.value, "metaTitle");
           onAIMetaTitleInserted?.();
         }}
-        saveMetaTitleParameters={saveMetaTitleParameters}
         onResetFlowType={() => {
           onResetFlowType?.();
         }}

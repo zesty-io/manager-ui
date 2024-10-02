@@ -9,7 +9,7 @@ import moment from "moment-timezone";
 
 import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
-import { AIGenerator } from "./AIGenerator";
+import { AIGenerator, TONE_OPTIONS } from "./AIGenerator";
 
 const rotateAnimation = keyframes`
 	0% {
@@ -74,9 +74,14 @@ export const withAI = (WrappedComponent: ComponentType) =>
       setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = () => {
-      // Reset the meta details flow type
-      props.onResetFlowType?.();
+    const handleClose = (reason: "close" | "insert") => {
+      if (
+        reason === "close" ||
+        (reason === "insert" && props.ZUID === "metaDescription")
+      ) {
+        // Reset the meta details flow type
+        props.onResetFlowType?.();
+      }
       setAnchorEl(null);
     };
 
@@ -176,7 +181,10 @@ export const withAI = (WrappedComponent: ComponentType) =>
                 horizontal: "right",
               }}
               elevation={24}
-              onClose={handleClose}
+              onClose={() => {
+                console.log("closing ai generator");
+                handleClose("close");
+              }}
               slotProps={{
                 paper: {
                   sx: {
@@ -199,11 +207,12 @@ export const withAI = (WrappedComponent: ComponentType) =>
               }}
             >
               <AIGenerator
+                fieldZUID={props.ZUID}
                 onApprove={handleApprove}
-                onClose={handleClose}
+                onClose={(reason) => handleClose(reason)}
                 aiType={props.aiType}
                 label={props.label}
-                saveMetaTitleParameters={props.saveMetaTitleParameters}
+                isAIAssistedFlow={props.isAIAssistedFlow}
               />
             </Popover>
           </ThemeProvider>
