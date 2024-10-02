@@ -445,7 +445,8 @@ export const AIGenerator = ({
                     border: 1,
                     borderColor: "border",
                     backgroundColor: "common.white",
-                    p: 2,
+                    px: 1.5,
+                    py: 2,
                     flexDirection: "column",
                     alignItems: "flex-start",
 
@@ -455,7 +456,7 @@ export const AIGenerator = ({
                   }}
                 >
                   <Typography
-                    variant="body2"
+                    variant="body3"
                     fontWeight={600}
                     color={
                       selectedContent === index
@@ -467,8 +468,8 @@ export const AIGenerator = ({
                     OPTION {index + 1}
                   </Typography>
                   <Typography
-                    variant="h6"
-                    fontWeight={600}
+                    variant={aiType === "title" ? "h6" : "body1"}
+                    fontWeight={aiType === "title" ? 600 : 400}
                     color="text.primary"
                   >
                     {String(value)}
