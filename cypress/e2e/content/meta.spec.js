@@ -1,4 +1,4 @@
-const today = new Date().toString();
+const today = Date.now();
 
 describe("Content Meta", () => {
   // before(() => {
@@ -75,10 +75,8 @@ describe("Content Meta", () => {
       });
     });
 
-    cy.wait(1000);
-
-    cy.get("#12-7893a0-w4j9gk", { timeout: 10000 }).find("input").type(today);
-    cy.get("#SaveItemButton").click();
+    cy.get("#12-7893a0-w4j9gk", { timeout: 5000 }).find("input").type(today);
+    cy.getBySelector("CreateItemSaveButton").click();
     cy.get("[data-cy=toast]").contains("Created Item");
   });
 
@@ -91,9 +89,10 @@ describe("Content Meta", () => {
       });
     });
 
-    cy.wait(1000);
-
-    cy.getBySelector("metaDescription").find("textarea").first().type("test");
+    cy.getBySelector("metaDescription", { timeout: 10000 })
+      .find("textarea")
+      .first()
+      .type("test");
     cy.getBySelector("metaDescription")
       .find("textarea")
       .first()
