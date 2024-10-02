@@ -32,7 +32,6 @@ import {
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
 import { fetchGlobalItem } from "../../../../../../../shell/store/content";
-import { AIGeneratorParameterProvider } from "./AIGeneratorParameterProvider";
 import {
   ContentModelField,
   Web,
@@ -404,9 +403,10 @@ export const Meta = forwardRef(
       <ThemeProvider theme={theme}>
         <Box
           display="grid"
-          gridTemplateColumns="1fr minmax(auto, 40%)"
+          gridTemplateColumns={
+            !isCreateItemPage ? "1fr minmax(auto, 40%)" : "1fr"
+          }
           gap={4}
-          bgcolor="grey.50"
           pt={2.5}
           mb={isCreateItemPage ? 4 : 0}
           px={isCreateItemPage ? 0 : 4}
@@ -429,39 +429,39 @@ export const Meta = forwardRef(
                   media content in the preview on the right.
                 </Typography>
               </Box>
-              <AIGeneratorParameterProvider>
-                <MetaTitle
-                  aiButtonRef={metaTitleButtonRef}
-                  value={web.metaTitle}
-                  onChange={handleOnChange}
-                  error={errors?.metaTitle}
-                  saveMetaTitleParameters={flowType === FlowType.AIGenerated}
-                  onResetFlowType={() => {
-                    if (flowType === FlowType.AIGenerated) {
-                      setFlowType(FlowType.Manual);
-                    }
-                  }}
-                  onAIMetaTitleInserted={() => {
-                    // Scroll to and open the meta description ai generator to continue
-                    // with the AI-assisted flow
-                    if (flowType === FlowType.AIGenerated) {
-                      metaDescriptionButtonRef.current?.triggerAIButton?.();
-                    }
-                  }}
-                />
-                <MetaDescription
-                  aiButtonRef={metaDescriptionButtonRef}
-                  value={web.metaDescription}
-                  onChange={handleOnChange}
-                  error={errors?.metaDescription}
-                  onResetFlowType={() => {
-                    if (flowType === FlowType.AIGenerated) {
-                      setFlowType(FlowType.Manual);
-                    }
-                  }}
-                  required={REQUIRED_FIELDS.includes("metaDescription")}
-                />
-              </AIGeneratorParameterProvider>
+              <MetaTitle
+                aiButtonRef={metaTitleButtonRef}
+                value={web.metaTitle}
+                onChange={handleOnChange}
+                error={errors?.metaTitle}
+                onResetFlowType={() => {
+                  if (flowType === FlowType.AIGenerated) {
+                    console.log("reset on meta title");
+                    setFlowType(FlowType.Manual);
+                  }
+                }}
+                onAIMetaTitleInserted={() => {
+                  // Scroll to and open the meta description ai generator to continue
+                  // with the AI-assisted flow
+                  if (flowType === FlowType.AIGenerated) {
+                    metaDescriptionButtonRef.current?.triggerAIButton?.();
+                  }
+                }}
+              />
+              <MetaDescription
+                aiButtonRef={metaDescriptionButtonRef}
+                value={web.metaDescription}
+                onChange={handleOnChange}
+                error={errors?.metaDescription}
+                onResetFlowType={() => {
+                  if (flowType === FlowType.AIGenerated) {
+                    console.log("reset on meta description");
+                    setFlowType(FlowType.Manual);
+                  }
+                }}
+                isAIAssistedFlow={flowType === FlowType.AIGenerated}
+                required={REQUIRED_FIELDS.includes("metaDescription")}
+              />
               <MetaImage onChange={handleOnChange} />
               {"og_title" in metaFields && (
                 <OGTitle
@@ -566,6 +566,7 @@ export const Meta = forwardRef(
               position="sticky"
               top={0}
               pb={2.5}
+              alignSelf="start"
               sx={{
                 scrollbarWidth: "none",
                 overflowY: "auto",
