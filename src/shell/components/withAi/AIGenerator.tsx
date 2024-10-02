@@ -302,7 +302,7 @@ export const AIGenerator = ({
     return (
       <Stack
         width={480}
-        height={aiType === "title" || aiType === "description" ? 600 : 628}
+        height={aiType === "title" || aiType === "description" ? 604 : 628}
         position="relative"
         zIndex={2}
       >
@@ -370,7 +370,7 @@ export const AIGenerator = ({
     return (
       <Stack
         width={480}
-        height={600}
+        height={604}
         position="relative"
         zIndex={2}
         border="2px solid transparent"
