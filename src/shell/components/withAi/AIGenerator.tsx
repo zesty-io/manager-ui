@@ -310,13 +310,13 @@ export const AIGenerator = ({
           justifyContent="center"
           alignItems="center"
           bgcolor="background.paper"
-          p={2.5}
+          p={2.25}
           textAlign="center"
         >
           <Box
             position="absolute"
-            top={22}
-            right={22}
+            top={20}
+            right={20}
             component="img"
             src={openAIBadge}
             alt="OpenAI Badge"
@@ -325,24 +325,24 @@ export const AIGenerator = ({
             <CircularProgress />
             <Brain
               color="primary"
-              sx={{ position: "absolute", top: "8px", left: "8px" }}
+              fontSize="small"
+              sx={{ position: "absolute", top: "10px", left: "10px" }}
             />
           </Box>
-          <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 1 }}>
+          <Typography variant="h5" fontWeight={700} sx={{ mt: 3, mb: 1 }}>
             Generating
             {aiType === "title"
-              ? " Title"
+              ? " Meta Title"
               : aiType === "description"
-              ? " Description"
+              ? " Meta Description"
               : " Content"}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Our AI assistant is generating your
             {aiType === "title"
-              ? " meta title "
+              ? "Our AI assistant is scanning your content and generating your meta title "
               : aiType === "description"
-              ? " meta description "
-              : " content "}
+              ? "Our AI assistant is scanning your content and generating your meta description "
+              : "Our AI assistant is generating your content "}
             based on your parameters
           </Typography>
           <Button
@@ -350,7 +350,7 @@ export const AIGenerator = ({
             variant="outlined"
             color="inherit"
             startIcon={<StopRoundedIcon color="action" />}
-            sx={{ mt: 3 }}
+            sx={{ mt: 4 }}
             onClick={() => request.current?.abort()}
           >
             Stop
@@ -374,7 +374,7 @@ export const AIGenerator = ({
         <Stack
           justifyContent="space-between"
           alignItems="center"
-          p={2.5}
+          p={2.25}
           gap={1.5}
           bgcolor="background.paper"
           borderRadius="2px 2px 0 0"
@@ -417,7 +417,7 @@ export const AIGenerator = ({
           </Stack>
         </Stack>
         <Box
-          p={2.5}
+          p={2.25}
           bgcolor="grey.50"
           flex={1}
           sx={{
@@ -572,7 +572,7 @@ export const AIGenerator = ({
         </Box>
         <Box
           bgcolor="background.paper"
-          p={2.5}
+          p={2.25}
           gap={2}
           display="flex"
           justifyContent={!!data?.length ? "space-between" : "flex-end"}
@@ -639,7 +639,7 @@ export const AIGenerator = ({
       <Stack
         justifyContent="space-between"
         alignItems="center"
-        p={2.5}
+        p={2.25}
         gap={1.5}
         bgcolor="background.paper"
         borderRadius="2px 2px 0 0"
@@ -677,7 +677,7 @@ export const AIGenerator = ({
         </Stack>
       </Stack>
       <Box
-        p={2.5}
+        p={2.25}
         bgcolor="grey.50"
         flex={1}
         sx={{
@@ -833,7 +833,7 @@ export const AIGenerator = ({
       </Box>
       <Box
         bgcolor="background.paper"
-        p={2.5}
+        p={2.25}
         gap={2}
         display="flex"
         justifyContent={!!data?.length ? "space-between" : "flex-end"}
