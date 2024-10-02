@@ -50,18 +50,33 @@ const DEFAULT_LIMITS: Record<AIType, number> = {
   description: 160,
   title: 150,
 };
-export const TONE_OPTIONS = {
-  intriguing: "Intriguing - Curious, mysterious, and thought-provoking",
-  professional: "Professional - Serious, formal, and authoritative",
-  playful: "Playful - Fun, light-hearted, and whimsical",
-  sensational: "Sensational -  Bold, dramatic, and attention-grabbing",
-  succint: "Succinct - Clear, factual, with no hyperbole",
-};
+export const TONE_OPTIONS = [
+  {
+    value: "intriguing",
+    label: "Intriguing - Curious, mysterious, and thought-provoking",
+  },
+  {
+    value: "professional",
+    label: "Professional - Serious, formal, and authoritative",
+  },
+  { value: "playful", label: "Playful - Fun, light-hearted, and whimsical" },
+  {
+    value: "sensational",
+    label: "Sensational -  Bold, dramatic, and attention-grabbing",
+  },
+  { value: "succint", label: "Succinct - Clear, factual, with no hyperbole" },
+] as const;
+export type ToneOption =
+  | "intriguing"
+  | "professional"
+  | "playful"
+  | "sensational"
+  | "succint";
 
 type FieldData = {
   topic?: string;
   audienceDescription: string;
-  tone: keyof typeof TONE_OPTIONS;
+  tone: ToneOption;
   keywords?: string;
   limit?: number;
   language: {
@@ -492,21 +507,22 @@ export const AIGenerator = ({
                     <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                   </Tooltip>
                 </Stack>
-                <Select
-                  value={fieldData.tone}
-                  onChange={(evt) =>
-                    updateFieldData({
-                      tone: evt.target.value as keyof typeof TONE_OPTIONS,
-                    })
+                <Autocomplete
+                  disableClearable
+                  isOptionEqualToValue={(option: any, value: any) =>
+                    option.value === value.value
                   }
-                  fullWidth
-                >
-                  {Object.entries(TONE_OPTIONS).map(([value, text]) => (
-                    <MenuItem key={value} value={value}>
-                      {text}
-                    </MenuItem>
-                  ))}
-                </Select>
+                  onChange={(_, value) =>
+                    updateFieldData({ tone: value.value })
+                  }
+                  value={TONE_OPTIONS.find(
+                    (option) => option.value === fieldData.tone
+                  )}
+                  options={TONE_OPTIONS}
+                  renderInput={(params: any) => (
+                    <TextField {...params} fullWidth />
+                  )}
+                />
               </Box>
               <Box>
                 <Stack direction="row" gap={1} alignItems="center" mb={0.5}>
@@ -729,21 +745,20 @@ export const AIGenerator = ({
                   <InfoRoundedIcon color="action" sx={{ fontSize: 12 }} />
                 </Tooltip>
               </Stack>
-              <Select
-                value={fieldData.tone}
-                onChange={(evt) =>
-                  updateFieldData({
-                    tone: evt.target.value as keyof typeof TONE_OPTIONS,
-                  })
+              <Autocomplete
+                disableClearable
+                isOptionEqualToValue={(option: any, value: any) =>
+                  option.value === value.value
                 }
-                fullWidth
-              >
-                {Object.entries(TONE_OPTIONS).map(([value, text]) => (
-                  <MenuItem key={value} value={value}>
-                    {text}
-                  </MenuItem>
-                ))}
-              </Select>
+                onChange={(_, value) => updateFieldData({ tone: value.value })}
+                value={TONE_OPTIONS.find(
+                  (option) => option.value === fieldData.tone
+                )}
+                options={TONE_OPTIONS}
+                renderInput={(params: any) => (
+                  <TextField {...params} fullWidth />
+                )}
+              />
             </Box>
             <Stack direction="row" gap={2.5} width="100%">
               <Box flex={1}>

@@ -6,12 +6,12 @@ import {
   ReactNode,
 } from "react";
 
-import { TONE_OPTIONS } from "./AIGenerator";
+import { ToneOption } from "./AIGenerator";
 
 type ParameterData = {
   topic?: string;
   audienceDescription: string;
-  tone: keyof typeof TONE_OPTIONS;
+  tone: ToneOption;
   keywords?: string;
   limit?: number;
   language: {
