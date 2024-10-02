@@ -282,6 +282,7 @@ export const Field = ({
     case "text":
       return (
         <AIFieldShell
+          ZUID={fieldData?.ZUID}
           name={fieldData?.name}
           label={fieldData?.label}
           valueLength={(value as string)?.length ?? 0}
@@ -364,6 +365,7 @@ export const Field = ({
     case "textarea":
       return (
         <AIFieldShell
+          ZUID={fieldData?.ZUID}
           name={fieldData?.name}
           label={fieldData?.label}
           valueLength={(value as string)?.length ?? 0}
@@ -396,6 +398,7 @@ export const Field = ({
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AIFieldShell
+            ZUID={fieldData?.ZUID}
             name={fieldData?.name}
             label={fieldData?.label}
             valueLength={characterCount}
@@ -433,6 +436,7 @@ export const Field = ({
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AIFieldShell
+            ZUID={fieldData?.ZUID}
             name={fieldData?.name}
             label={fieldData?.label}
             valueLength={(value as string)?.length ?? 0}

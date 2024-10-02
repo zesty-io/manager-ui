@@ -18,6 +18,7 @@ type MetaDescriptionProps = {
   error: Error;
   onResetFlowType: () => void;
   aiButtonRef?: MutableRefObject<any>;
+  isAIAssistedFlow: boolean;
   required: boolean;
 };
 export default connect()(function MetaDescription({
@@ -26,11 +27,13 @@ export default connect()(function MetaDescription({
   error,
   onResetFlowType,
   aiButtonRef,
+  isAIAssistedFlow,
   required,
 }: MetaDescriptionProps) {
   return (
     <Box data-cy="metaDescription" id="metaDescription">
       <AIFieldShell
+        ZUID="metaDescription"
         ref={aiButtonRef}
         settings={{
           label: "Meta Description",
@@ -52,6 +55,7 @@ export default connect()(function MetaDescription({
         onResetFlowType={() => {
           onResetFlowType?.();
         }}
+        isAIAssistedFlow={isAIAssistedFlow}
       >
         <TextField
           name="metaDescription"
