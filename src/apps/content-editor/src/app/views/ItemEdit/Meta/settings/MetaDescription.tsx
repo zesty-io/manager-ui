@@ -19,6 +19,7 @@ type MetaDescriptionProps = {
   onResetFlowType: () => void;
   aiButtonRef?: MutableRefObject<any>;
   isAIAssistedFlow: boolean;
+  required: boolean;
 };
 export default connect()(function MetaDescription({
   value,
@@ -27,6 +28,7 @@ export default connect()(function MetaDescription({
   onResetFlowType,
   aiButtonRef,
   isAIAssistedFlow,
+  required,
 }: MetaDescriptionProps) {
   return (
     <Box data-cy="metaDescription" id="metaDescription">
@@ -35,7 +37,7 @@ export default connect()(function MetaDescription({
         ref={aiButtonRef}
         settings={{
           label: "Meta Description",
-          required: true,
+          required,
         }}
         customTooltip="This description appears as text snippet below the title in search engine and social media previews. The ideal length for a meta description is 50 to 160 characters."
         withInteractiveTooltip={false}
