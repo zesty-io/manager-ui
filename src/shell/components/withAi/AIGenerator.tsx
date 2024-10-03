@@ -528,13 +528,6 @@ export const AIGenerator = ({
                   renderInput={(params: any) => (
                     <TextField {...params} fullWidth />
                   )}
-                  slotProps={{
-                    paper: {
-                      sx: {
-                        maxHeight: 300,
-                      },
-                    },
-                  }}
                 />
               </Box>
               <Box>
