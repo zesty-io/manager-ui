@@ -526,26 +526,8 @@ export const AIGenerator = ({
                   )}
                   options={TONE_OPTIONS}
                   renderInput={(params: any) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start" sx={{ width: 24 }}>
-                            <LanguageRoundedIcon fontSize="small" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
+                    <TextField {...params} fullWidth />
                   )}
-                  slotProps={{
-                    paper: {
-                      sx: {
-                        maxHeight: 300,
-                      },
-                    },
-                  }}
                 />
               </Box>
               <Box>
