@@ -29,7 +29,7 @@ import RuleRoundedIcon from "@mui/icons-material/RuleRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
-import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
+import PlayCircleFilledRoundedIcon from "@mui/icons-material/PlayCircleFilledRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
 import {
@@ -112,6 +112,9 @@ export const FieldForm = ({
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("details");
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [fieldStateOnSaveAction, setFieldStateOnSaveAction] = useState<
+    "deactivate" | "reactivate"
+  >(fieldData?.deletedAt ? "reactivate" : "reactivate");
   const [isAddAnotherFieldClicked, setIsAddAnotherFieldClicked] =
     useState(false);
   const { mediaFoldersOptions } = useMediaRules();
@@ -650,7 +653,25 @@ export const FieldForm = ({
         modelZUID: id,
         fieldZUID: fieldData.ZUID,
         body: updateBody,
-      });
+      })
+        .unwrap()
+        .then(() => {
+          // Update the field state after field changes are done
+          if (fieldStateOnSaveAction === "reactivate" && fieldData?.deletedAt) {
+            undeleteContentModelField({
+              modelZUID: id,
+              fieldZUID: fieldData?.ZUID,
+            });
+          } else if (
+            fieldStateOnSaveAction === "deactivate" &&
+            !fieldData?.deletedAt
+          ) {
+            deleteContentModelField({
+              modelZUID: id,
+              fieldZUID: fieldData?.ZUID,
+            });
+          }
+        });
     } else {
       // We want to skip field cache invalidation when creating an in-between field
       // We'll let the bulk update rtk query do the invalidation after this call
@@ -915,33 +936,25 @@ export const FieldForm = ({
               <Grid item xs={12}>
                 <LoadingButton
                   data-cy="DeactivateReactivateFieldUpdateModal"
-                  variant={fieldData?.deletedAt ? "contained" : "outlined"}
-                  color={fieldData?.deletedAt ? "primary" : "inherit"}
+                  variant="outlined"
+                  color="inherit"
                   startIcon={
-                    fieldData?.deletedAt ? (
-                      <PlayCircleOutlineRoundedIcon />
+                    fieldStateOnSaveAction === "deactivate" ? (
+                      <PlayCircleFilledRoundedIcon color="action" />
                     ) : (
-                      <PauseCircleOutlineRoundedIcon
-                        color={isDeletingField ? "inherit" : "action"}
-                      />
+                      <PauseCircleOutlineRoundedIcon color="action" />
                     )
                   }
                   onClick={() => {
-                    if (fieldData?.deletedAt) {
-                      undeleteContentModelField({
-                        modelZUID: id,
-                        fieldZUID: fieldData?.ZUID,
-                      });
-                    } else {
-                      deleteContentModelField({
-                        modelZUID: id,
-                        fieldZUID: fieldData?.ZUID,
-                      });
-                    }
+                    setFieldStateOnSaveAction(
+                      fieldStateOnSaveAction === "deactivate"
+                        ? "reactivate"
+                        : "deactivate"
+                    );
                   }}
                   loading={isDeletingField || isUndeletingField}
                 >
-                  {fieldData?.deletedAt
+                  {fieldStateOnSaveAction === "deactivate"
                     ? "Reactivate Field"
                     : "Deactivate Field"}
                 </LoadingButton>
