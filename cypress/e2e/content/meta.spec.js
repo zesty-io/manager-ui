@@ -1,9 +1,11 @@
+const today = Date.now();
+
 describe("Content Meta", () => {
-  before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/meta");
-    });
-  });
+  // before(() => {
+  //   cy.waitOn("/v1/content/models*", () => {
+  //     cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/meta");
+  //   });
+  // });
 
   // skipping failing test in preparation for CI.
   it.skip("Modifies and saves Meta fields", () => {
@@ -62,5 +64,40 @@ describe("Content Meta", () => {
 
     cy.get("#SaveItemButton").click();
     cy.contains("Saved a new ").should("exist");
+  });
+
+  it("Does not validate meta description for dataset items", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.waitOn("/v1/env/nav", () => {
+        cy.waitOn("/v1/search/items*", () => {
+          cy.visit("/content/6-675028-84dq4s/new");
+        });
+      });
+    });
+
+    cy.get("#12-7893a0-w4j9gk", { timeout: 5000 }).find("input").type(today);
+    cy.getBySelector("CreateItemSaveButton").click();
+    cy.get("[data-cy=toast]").contains("Created Item");
+  });
+
+  it("Does validate meta description for non-dataset items", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.waitOn("/v1/env/nav", () => {
+        cy.waitOn("/v1/search/items*", () => {
+          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/meta");
+        });
+      });
+    });
+
+    cy.getBySelector("metaDescription", { timeout: 10000 })
+      .find("textarea")
+      .first()
+      .type("test");
+    cy.getBySelector("metaDescription")
+      .find("textarea")
+      .first()
+      .type("{selectall}{del}");
+    cy.get("#SaveItemButton").click();
+    cy.getBySelector("FieldErrorsList").should("exist");
   });
 });

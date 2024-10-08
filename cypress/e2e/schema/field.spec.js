@@ -784,7 +784,7 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_DEACTIVATE_REACTIVATE)
       .should("exist")
       .click();
-    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL_CLOSE).should("exist").click();
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
 
     cy.wait("@updateField");
     cy.wait("@getFields");
