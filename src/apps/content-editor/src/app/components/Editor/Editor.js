@@ -11,6 +11,7 @@ import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
+import { unescape } from "lodash";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
 import { FieldError } from "./FieldError";
@@ -276,14 +277,17 @@ export default memo(function Editor({
 
         if (firstContentField && firstContentField.name === name) {
           // Remove tags and replace MS smart quotes with regular quotes
-          const cleanedValue = value
-            ?.replace(/<[^>]*>/g, "")
-            ?.replaceAll(/[\u2018\u2019\u201A]/gm, "'")
-            ?.replaceAll("&rsquo;", "'")
-            ?.replaceAll(/[\u201C\u201D\u201E]/gm, '"')
-            ?.replaceAll("&ldquo;", '"')
-            ?.replaceAll("&rdquo;", '"')
-            ?.slice(0, 160);
+          const cleanedValue = unescape(
+            value
+              ?.replace(/<[^>]*>/g, "")
+              ?.replaceAll(/[\u2018\u2019\u201A]/gm, "'")
+              ?.replaceAll("&rsquo;", "'")
+              ?.replaceAll(/[\u201C\u201D\u201E]/gm, '"')
+              ?.replaceAll("&ldquo;", '"')
+              ?.replaceAll("&rdquo;", '"')
+              ?.replaceAll("&nbsp;", " ")
+              ?.slice(0, 160) || ""
+          );
 
           dispatch({
             type: "SET_ITEM_WEB",

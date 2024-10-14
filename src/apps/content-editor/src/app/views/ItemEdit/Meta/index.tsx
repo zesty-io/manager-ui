@@ -316,9 +316,24 @@ export const Meta = forwardRef(
       if (!isCreateItemPage) return;
 
       if (flowType === FlowType.AIGenerated) {
+        // Immediately clear out the existing values for the meta title and description
+        dispatch({
+          type: "SET_ITEM_WEB",
+          itemZUID: meta?.ZUID,
+          key: "metaTitle",
+          value: "",
+        });
+        dispatch({
+          type: "SET_ITEM_WEB",
+          itemZUID: meta?.ZUID,
+          key: "metaDescription",
+          value: "",
+        });
+
+        // Then trigger the AI assistant popup
         metaTitleButtonRef.current?.triggerAIButton?.();
       }
-    }, [flowType, isCreateItemPage]);
+    }, [flowType, isCreateItemPage, meta?.ZUID]);
 
     if (isCreateItemPage && flowType === null) {
       return (
