@@ -141,6 +141,14 @@ export const ItemList = () => {
         return;
       }
 
+      // Internal link has a simpler way of deriving the value
+      if (fieldDataType === "internal_link") {
+        return (
+          allItems?.[relatedContentItemZUID]?.web?.metaTitle ||
+          relatedContentItemZUID
+        );
+      }
+
       // Finds the related field zuid that's stored in the specific field's data
       const fieldData = fields?.find(
         (field) =>
