@@ -18,5 +18,7 @@ export const SingleRelationshipCell = ({
     }
   }, [params.value, dispatch]);
 
-  return <Chip label={params.value} size="small" />;
+  return (
+    <Chip data-cy="SingleRelationshipCell" label={params.value} size="small" />
+  );
 };
