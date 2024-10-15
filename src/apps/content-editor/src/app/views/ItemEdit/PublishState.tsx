@@ -31,24 +31,12 @@ export const PublishState = ({ reloadItem }: Props) => {
       {
         field: "_active",
         headerName: "Status",
-        width: 110,
+        width: 120,
         renderCell: (value: GridValueGetterParams) => {
           if (new Date(value.row.publishAt) > new Date()) {
-            return (
-              <Chip
-                label="Scheduled"
-                color="warning"
-                sx={{ color: "common.white" }}
-              />
-            );
+            return <Chip label="Scheduled" color="warning" />;
           } else if (value.row._active) {
-            return (
-              <Chip
-                label="Live"
-                color="success"
-                sx={{ color: "common.white" }}
-              />
-            );
+            return <Chip label="Live" color="success" />;
           } else {
             return <></>;
           }
