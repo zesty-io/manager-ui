@@ -8,6 +8,8 @@ describe("Content item list table", () => {
 
     cy.getBySelector("SingleRelationshipCell", { timeout: 10000 })
       .first()
-      .contains("All Field Types");
+      .contains(
+        "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
+      );
   });
 });
