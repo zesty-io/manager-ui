@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
@@ -6,14 +6,13 @@ import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 import { cloneDeep } from "lodash";
 
-import { Divider, Box, Stack } from "@mui/material";
+import { Divider, Box, Stack, ThemeProvider } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
 import { Header } from "./Header";
 import { Editor } from "../../components/Editor";
-import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
-import { DataSettings } from "../ItemEdit/Meta/ItemSettings/DataSettings";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import {
   createItem,
@@ -35,6 +34,9 @@ import {
   ContentModelField,
 } from "../../../../../../shell/services/types";
 import { SchedulePublish } from "../../../../../../shell/components/SchedulePublish";
+import { Meta } from "../ItemEdit/Meta";
+import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
+import { FieldError } from "../../components/Editor/FieldError";
 
 export type ActionAfterSave =
   | ""
@@ -54,7 +56,7 @@ const selectSortedModelFields = createSelector(
       .sort((a, b) => a.sort - b.sort)
 );
 
-type FieldError = {
+type FieldErrors = {
   [key: string]: Error;
 };
 
@@ -77,8 +79,12 @@ export const ItemCreate = () => {
   const [newItemZUID, setNewItemZUID] = useState();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [willRedirect, setWillRedirect] = useState(true);
-  const [fieldErrors, setFieldErrors] = useState<FieldError>({});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [saveClicked, setSaveClicked] = useState(false);
+  // const [hasSEOErrors, setHasSEOErrors] = useState(false);
+  const [SEOErrors, setSEOErrors] = useState<FieldErrors>({});
+  const metaRef = useRef(null);
+  const fieldErrorRef = useRef(null);
 
   const [
     createPublishing,
@@ -91,7 +97,7 @@ export const ItemCreate = () => {
 
   const {
     isSuccess: isSuccessNewModelFields,
-    isFetching: isFetchingNewModelFields,
+    isLoading: isFetchingNewModelFields,
   } = useGetContentModelFieldsQuery(modelZUID);
 
   // on mount and update modelZUID, load item fields
@@ -101,10 +107,17 @@ export const ItemCreate = () => {
 
   // if item doesn't exist, generate a new one
   useEffect(() => {
-    if (isEmpty(item)) {
-      dispatch(generateItem(modelZUID));
+    if (isEmpty(item) && !saving) {
+      const initialData = fields?.reduce((accu, curr) => {
+        if (!curr.deletedAt) {
+          accu[curr.name] = null;
+        }
+        return accu;
+      }, {});
+
+      dispatch(generateItem(modelZUID, initialData));
     }
-  }, [modelZUID, item]);
+  }, [modelZUID, item, saving]);
 
   // Redirect to the item once published
   useEffect(() => {
@@ -131,6 +144,27 @@ export const ItemCreate = () => {
     return hasErrors;
   }, [fieldErrors]);
 
+  const hasSEOErrors = useMemo(() => {
+    const hasErrors = Object.values(SEOErrors)
+      ?.map((error) => {
+        return Object.values(error) ?? [];
+      })
+      ?.flat()
+      .some((error) => !!error);
+
+    return hasErrors;
+  }, [SEOErrors]);
+
+  const activeFields = useMemo(() => {
+    if (fields?.length) {
+      return fields.filter(
+        (field) => !field.deletedAt && !["og_image"].includes(field.name)
+      );
+    }
+
+    return [];
+  }, [fields]);
+
   const loadItemFields = async (modelZUID: string) => {
     setLoading(true);
     try {
@@ -146,12 +180,26 @@ export const ItemCreate = () => {
   };
 
   const save = async (action: ActionAfterSave) => {
-    setSaving(true);
     setSaveClicked(true);
+
+    metaRef.current?.validateMetaFields?.();
+    if (hasErrors || hasSEOErrors) {
+      fieldErrorRef.current?.scrollToErrors?.();
+      return;
+    }
+
+    setSaving(true);
+
     try {
-      const res: any = await dispatch(createItem(modelZUID, itemZUID));
+      const res: any = await dispatch(
+        createItem({
+          modelZUID,
+          itemZUID,
+          skipPathPartValidation: model?.type === "dataset",
+        })
+      );
       if (res.err || res.error) {
-        if (res.missingRequired) {
+        if (res.missingRequired || res.lackingCharLength) {
           const missingRequiredFieldNames: string[] =
             res.missingRequired?.reduce(
               (acc: string[], curr: ContentModelField) => {
@@ -161,9 +209,9 @@ export const ItemCreate = () => {
               []
             );
 
-          if (missingRequiredFieldNames?.length) {
-            const errors = cloneDeep(fieldErrors);
+          const errors = cloneDeep(fieldErrors);
 
+          if (missingRequiredFieldNames?.length) {
             missingRequiredFieldNames?.forEach((fieldName) => {
               errors[fieldName] = {
                 ...(errors[fieldName] ?? {}),
@@ -171,17 +219,60 @@ export const ItemCreate = () => {
               };
             });
 
-            setFieldErrors(errors);
+            dispatch(
+              notify({
+                message: "Missing Data in Required Fields",
+                kind: "error",
+              })
+            );
           }
-          dispatch(
-            notify({
-              message: "Missing Data in Required Fields",
-              kind: "error",
-            })
-          );
+
+          // Map min length validation errors
+          if (res.lackingCharLength?.length) {
+            res.lackingCharLength?.forEach((field: ContentModelField) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                LACKING_MINLENGTH: field.settings?.minCharLimit,
+              };
+            });
+          }
+
+          if (res.regexPatternMismatch?.length) {
+            res.regexPatternMismatch?.forEach((field: ContentModelField) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
+              };
+            });
+          }
+
+          if (res.regexRestrictPatternMatch?.length) {
+            res.regexRestrictPatternMatch?.forEach(
+              (field: ContentModelField) => {
+                errors[field.name] = {
+                  ...(errors[field.name] ?? {}),
+                  REGEX_RESTRICT_PATTERN_MATCH:
+                    field.settings?.regexRestrictErrorMessage,
+                };
+              }
+            );
+          }
+
+          if (res.invalidRange?.length) {
+            res.invalidRange?.forEach((field: ContentModelField) => {
+              errors[field.name] = {
+                ...(errors[field.name] ?? {}),
+                INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
+              };
+            });
+          }
+
+          setFieldErrors(errors);
 
           // scroll to required field
+          fieldErrorRef.current?.scrollToErrors?.();
         }
+
         if (res.error) {
           dispatch(
             notify({
@@ -293,11 +384,21 @@ export const ItemCreate = () => {
           className={styles.ItemCreate}
           bgcolor="grey.50"
           alignItems="center"
+          direction="row"
+          gap={4}
         >
-          <Box minWidth={640} width="60%">
+          <Box width="60%" minWidth={640} height="100%">
+            {saveClicked && (hasErrors || hasSEOErrors) && (
+              <Box mb={3}>
+                <FieldError
+                  ref={fieldErrorRef}
+                  errors={{ ...fieldErrors, ...SEOErrors }}
+                  fields={activeFields}
+                />
+              </Box>
+            )}
             <Editor
               // @ts-ignore no types
-              hasErrors={hasErrors}
               itemZUID={itemZUID}
               item={item}
               items={content}
@@ -310,35 +411,38 @@ export const ItemCreate = () => {
               loading={loading}
               saving={saving}
               isDirty={item?.dirty}
-              saveClicked={saveClicked}
               fieldErrors={fieldErrors}
               // @ts-ignore  untyped component
-              onUpdateFieldErrors={(errors: FieldError) => {
+              onUpdateFieldErrors={(errors: FieldErrors) => {
                 setFieldErrors(errors);
               }}
             />
-          </Box>
-          <Box className={styles.Meta} minWidth={640} width="60%">
             <Divider
               sx={{
                 mt: 4,
                 mb: 2,
               }}
             />
-            <h2 className={styles.title}>Meta Settings</h2>
-            {model && model?.type === "dataset" ? (
-              <DataSettings item={item} dispatch={dispatch} />
-            ) : (
-              <ItemSettings
-                // @ts-ignore no types
-                instance={instance}
-                modelZUID={modelZUID}
-                item={item}
-                content={content}
-                dispatch={dispatch}
-              />
-            )}
+            <Meta
+              onUpdateSEOErrors={(errors: FieldErrors) => {
+                setSEOErrors(errors);
+              }}
+              isSaving={saving}
+              ref={metaRef}
+              errors={SEOErrors}
+            />
           </Box>
+          <ThemeProvider theme={theme}>
+            <Box
+              position="sticky"
+              top={0}
+              alignSelf="flex-start"
+              width="40%"
+              maxWidth={620}
+            >
+              {model?.type !== "dataset" && <SocialMediaPreview />}
+            </Box>
+          </ThemeProvider>
         </Stack>
       </Box>
       {isScheduleDialogOpen && !isLoadingNewItem && (

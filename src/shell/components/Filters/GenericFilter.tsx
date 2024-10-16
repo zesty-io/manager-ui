@@ -59,9 +59,6 @@ export const GenericFilter: FC<GenericFilterProps> = ({
         {options?.map((option, index) => (
           <MenuItem
             key={index}
-            sx={{
-              height: "40px",
-            }}
             onClick={() => handleFilterSelect(option.value)}
             selected={Boolean(value) ? option.value === value : index === 0}
             data-cy={`filter_value_${option.value}`}

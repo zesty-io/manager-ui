@@ -231,6 +231,9 @@ export function logout() {
         dispatch({
           type: "LOGOUT",
         });
+        dispatch({
+          type: "RESET_USER_DATA",
+        });
       })
       .catch((err) => {
         console.error(err);

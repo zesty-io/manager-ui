@@ -29,6 +29,9 @@ import "@zesty-io/core/vendor.css";
 import styles from "./ContentEditor.less";
 import Analytics from "./views/Analytics";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
+import { StagedChangesProvider } from "./views/ItemList/StagedChangesContext";
+import { SelectedItemsProvider } from "./views/ItemList/SelectedItemsContext";
+import { TableSortProvider } from "./views/ItemList/TableSortProvider";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 let customTheme = createTheme(legacyTheme, {
@@ -169,7 +172,15 @@ export default function ContentEditor() {
                     <Route
                       exact
                       path="/content/:modelZUID"
-                      component={ItemList}
+                      render={() => (
+                        <StagedChangesProvider>
+                          <SelectedItemsProvider>
+                            <TableSortProvider>
+                              <ItemList />
+                            </TableSortProvider>
+                          </SelectedItemsProvider>
+                        </StagedChangesProvider>
+                      )}
                     />
                     <Route path="*" component={NotFound} />
                   </Switch>

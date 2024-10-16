@@ -11,6 +11,8 @@ type FieldTypeNumberProps = {
   value: number;
   onChange: (value: number, name: string) => void;
   hasError: boolean;
+  allowNegative?: boolean;
+  limit?: number;
 };
 export const FieldTypeNumber = ({
   required,
@@ -18,6 +20,9 @@ export const FieldTypeNumber = ({
   onChange,
   name,
   hasError,
+  allowNegative = true,
+  limit,
+  ...props
 }: FieldTypeNumberProps) => {
   const numberInputRef = useRef(null);
 
@@ -45,22 +50,39 @@ export const FieldTypeNumber = ({
         break;
     }
 
-    onChange(+integerFractionalSplit.join("."), name);
+    const newValue = +integerFractionalSplit.join(".");
+
+    if (!limit || (limit && newValue <= limit)) {
+      onChange(newValue, name);
+    }
   };
 
   return (
     <TextField
+      {...props}
       inputRef={numberInputRef}
       variant="outlined"
       fullWidth
       value={value || 0}
       name={name}
       required={required}
-      onChange={(evt) => {
-        onChange(+evt.target.value?.toString()?.replace(/^0+/, "") ?? 0, name);
+      onChange={(evt: any) => {
+        const value = evt?.target?.value?.floatValue ?? 0;
+
+        onChange(+value?.toString()?.replace(/^0+/, "") ?? 0, name);
       }}
       onKeyDown={(evt) => {
         if ((evt.key === "Backspace" || evt.key === "Delete") && value === 0) {
+          evt.preventDefault();
+        }
+
+        if (
+          limit &&
+          ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(
+            evt.key
+          ) &&
+          +(value + evt.key) > limit
+        ) {
           evt.preventDefault();
         }
       }}
@@ -86,6 +108,7 @@ export const FieldTypeNumber = ({
         inputProps: {
           thousandSeparator: true,
           valueIsNumericString: true,
+          allowNegative,
         },
       }}
     />

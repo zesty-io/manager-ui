@@ -20,9 +20,9 @@ export function Actions(props) {
     return <Fragment />;
   }
 
-  const canPublish = usePermission("PUBLISH");
-  const canDelete = usePermission("DELETE");
-  const canUpdate = usePermission("UPDATE");
+  const canPublish = usePermission("PUBLISH", props.itemZUID);
+  const canDelete = usePermission("DELETE", props.itemZUID);
+  const canUpdate = usePermission("UPDATE", props.itemZUID);
   const domain = useDomain();
 
   const { publishing } = props.item;

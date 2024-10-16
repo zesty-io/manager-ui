@@ -208,13 +208,13 @@ export function content(state = {}, action) {
 }
 
 // create the new item in the store
-export function generateItem(modelZUID) {
+export function generateItem(modelZUID, data = {}) {
   return (dispatch, getState) => {
     const state = getState();
     const itemZUID = `new:${modelZUID}`;
     const item = {
       dirty: false,
-      data: {},
+      data,
       web: {
         canonicalTagMode: 1,
       },
@@ -379,7 +379,11 @@ export function fetchItems(modelZUID, options = {}) {
 //   };
 // }
 
-export function saveItem(itemZUID, action = "") {
+export function saveItem({
+  itemZUID,
+  action = "",
+  skipContentItemValidation = false,
+}) {
   return (dispatch, getState) => {
     const state = getState();
     const item = cloneDeep(state.content[itemZUID]);
@@ -398,10 +402,58 @@ export function saveItem(itemZUID, action = "") {
         field.required &&
         (item.data[field.name] === "" || item.data[field.name] === null)
     );
-    if (missingRequired.length) {
+
+    // Check minlength is satisfied
+    const lackingCharLength = fields?.filter(
+      (field) =>
+        field.settings?.minCharLimit &&
+        (item.data[field.name]?.length < field.settings?.minCharLimit ||
+          !item.data[field.name])
+    );
+
+    const regexPatternMismatch = fields?.filter(
+      (field) =>
+        field.settings?.regexMatchPattern &&
+        !new RegExp(field.settings?.regexMatchPattern).test(
+          item.data[field.name]
+        )
+    );
+
+    const regexRestrictPatternMatch = fields?.filter(
+      (field) =>
+        field.settings?.regexRestrictPattern &&
+        new RegExp(field.settings?.regexRestrictPattern).test(
+          item.data[field.name]
+        )
+    );
+
+    const invalidRange = fields?.filter(
+      (field) =>
+        field.settings?.minValue !== null &&
+        field.settings?.maxValue !== null &&
+        (item.data[field.name] < field.settings?.minValue ||
+          item.data[field.name] > field.settings?.maxValue)
+    );
+
+    // When skipContentItemValidation is true, this means that only the
+    // SEO meta tags were changed, so we skip validating the content item
+    if (
+      !skipContentItemValidation &&
+      (missingRequired?.length ||
+        lackingCharLength?.length ||
+        regexPatternMismatch?.length ||
+        regexRestrictPatternMatch?.length ||
+        invalidRange?.length)
+    ) {
       return Promise.resolve({
-        err: "MISSING_REQUIRED",
-        missingRequired,
+        err: "VALIDATION_ERROR",
+        ...(!!missingRequired?.length && { missingRequired }),
+        ...(!!lackingCharLength?.length && { lackingCharLength }),
+        ...(!!regexPatternMismatch?.length && { regexPatternMismatch }),
+        ...(!!regexRestrictPatternMatch?.length && {
+          regexRestrictPatternMatch,
+        }),
+        ...(!!invalidRange?.length && { invalidRange }),
       });
     }
 
@@ -462,7 +514,7 @@ export function saveItem(itemZUID, action = "") {
   };
 }
 
-export function createItem(modelZUID, itemZUID) {
+export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
   return (dispatch, getState) => {
     const state = getState();
 
@@ -491,19 +543,78 @@ export function createItem(modelZUID, itemZUID) {
       item.meta.createdByUserZUID = state.user.user_zuid;
     }
 
-    // Check required fields are not empty
+    // Check required fields are not empty, except the og and tc fields since these
+    // are handled by the meta component
     const missingRequired = fields.filter((field) => {
-      if (!field.deletedAt && field.required) {
+      if (
+        !field.deletedAt &&
+        !["og_title", "og_description", "tc_title", "tc_description"].includes(
+          field.name
+        ) &&
+        field.required
+      ) {
         if (!item.data[field.name] && item.data[field.name] != 0) {
           return true;
         }
       }
       return false;
     });
-    if (missingRequired.length) {
+
+    const hasMissingRequiredSEOFields = skipPathPartValidation
+      ? !item?.web?.metaTitle
+      : !item?.web?.metaTitle ||
+        !item?.web?.metaDescription ||
+        !item?.web?.pathPart;
+
+    // Check minlength is satisfied
+    const lackingCharLength = fields?.filter(
+      (field) =>
+        field.settings?.minCharLimit &&
+        (item.data[field.name]?.length < field.settings?.minCharLimit ||
+          !item.data[field.name])
+    );
+
+    const regexPatternMismatch = fields?.filter(
+      (field) =>
+        field.settings?.regexMatchPattern &&
+        !new RegExp(field.settings?.regexMatchPattern).test(
+          item.data[field.name]
+        )
+    );
+
+    const regexRestrictPatternMatch = fields?.filter(
+      (field) =>
+        field.settings?.regexRestrictPattern &&
+        new RegExp(field.settings?.regexRestrictPattern).test(
+          item.data[field.name]
+        )
+    );
+
+    const invalidRange = fields?.filter(
+      (field) =>
+        field.settings?.minValue !== null &&
+        field.settings?.maxValue !== null &&
+        (item.data[field.name] < field.settings?.minValue ||
+          item.data[field.name] > field.settings?.maxValue)
+    );
+
+    if (
+      missingRequired?.length ||
+      lackingCharLength?.length ||
+      regexPatternMismatch?.length ||
+      regexRestrictPatternMatch?.length ||
+      invalidRange?.length ||
+      hasMissingRequiredSEOFields
+    ) {
       return Promise.resolve({
-        err: "MISSING_REQUIRED",
-        missingRequired,
+        err: "VALIDATION_ERROR",
+        ...(!!missingRequired?.length && { missingRequired }),
+        ...(!!lackingCharLength?.length && { lackingCharLength }),
+        ...(!!regexPatternMismatch?.length && { regexPatternMismatch }),
+        ...(!!regexRestrictPatternMatch?.length && {
+          regexRestrictPatternMatch,
+        }),
+        ...(!!invalidRange?.length && { invalidRange }),
       });
     }
 

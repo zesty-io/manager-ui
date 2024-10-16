@@ -48,6 +48,7 @@ import { ReorderNav } from "../ReorderNav";
 import { HideContentItemDialog } from "../HideContentItemDialog";
 import { notify } from "../../../../../../shell/store/notifications";
 import { NavError } from "./NavError";
+import instanceZUID from "../../../../../../utility/instanceZUID";
 
 interface NavData {
   nav: TreeItem[];
@@ -131,8 +132,9 @@ export const ContentNav = () => {
   const granularRoles: string[] = useMemo(() => {
     if (!!currentUserRoles?.length) {
       // Get all the resource ZUIDs from all the user's granular roles
-      return currentUserRoles.reduce(
-        (granularResourceZUIDs: string[], role) => {
+      return currentUserRoles
+        .filter((role) => role.entityZUID === instanceZUID)
+        ?.reduce((granularResourceZUIDs: string[], role) => {
           if (role?.granularRoles?.length) {
             const resourceZUIDs: string[] = role?.granularRoles?.reduce(
               (acc: string[], curr) => {
@@ -150,9 +152,7 @@ export const ContentNav = () => {
           }
 
           return granularResourceZUIDs;
-        },
-        []
-      );
+        }, []);
     }
 
     return [];
@@ -171,7 +171,8 @@ export const ContentNav = () => {
 
       setClippingsZUID(clippingsModel?.ZUID ?? "");
 
-      if (!!granularRoles?.length) {
+      // Only filter content items by granular roles if there is at least one granular role that target content items
+      if (granularRoles?.some((zuid) => zuid?.startsWith("7-"))) {
         // Filter nav based on user's granular role access
         filteredNavData = filteredNavData.filter((navItem) => {
           return granularRoles.includes(navItem.ZUID);

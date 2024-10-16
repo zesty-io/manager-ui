@@ -64,8 +64,8 @@ export const ItemEditHeaderActions = ({
     itemZUID: string;
   }>();
   const dispatch = useDispatch();
-  const canPublish = usePermission("PUBLISH");
-  const canUpdate = usePermission("UPDATE");
+  const canPublish = usePermission("PUBLISH", itemZUID);
+  const canUpdate = usePermission("UPDATE", itemZUID);
   const [publishMenu, setPublishMenu] = useState<null | HTMLElement>(null);
   const [publishAfterSave, setPublishAfterSave] = useState(false);
   const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
@@ -99,12 +99,14 @@ export const ItemEditHeaderActions = ({
   );
 
   const saveShortcut = useMetaKey("s", () => {
+    if (!canUpdate) return;
     if (itemState === ITEM_STATES.dirty) {
       onSave();
     }
   });
 
   const publishShortcut = useMetaKey("p", () => {
+    if (!canPublish) return;
     if (itemState === ITEM_STATES.dirty) {
       setPublishAfterSave(true);
       onSave();
@@ -227,7 +229,7 @@ export const ItemEditHeaderActions = ({
             onClick={() => {
               onSave();
             }}
-            loading={saving && !publishAfterSave}
+            loading={saving}
             disabled={!canUpdate}
             id="SaveItemButton"
           >
@@ -312,7 +314,7 @@ export const ItemEditHeaderActions = ({
                     setIsConfirmPublishModalOpen(true);
                   }
                 }}
-                loading={publishing || publishAfterSave || isFetching}
+                loading={publishing || saving || isFetching}
                 color="success"
                 variant="contained"
                 id="PublishButton"
@@ -330,7 +332,7 @@ export const ItemEditHeaderActions = ({
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);
                 }}
-                disabled={publishing || publishAfterSave || isFetching}
+                disabled={publishing || saving || isFetching}
                 data-cy="PublishMenuButton"
               >
                 <ArrowDropDownRounded fontSize="small" />

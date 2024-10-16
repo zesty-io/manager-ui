@@ -33,6 +33,7 @@ import "tinymce/plugins/quickbars";
 import "tinymce/plugins/searchreplace";
 import "tinymce/plugins/table";
 import "tinymce/plugins/wordcount";
+import "tinymce/plugins/autoresize";
 import "./plugins/slashcommands";
 import "./plugins/socialmediaembed";
 import "./plugins/imageresizer";

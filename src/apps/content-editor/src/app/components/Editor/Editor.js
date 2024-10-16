@@ -18,6 +18,7 @@ import { FieldError } from "./FieldError";
 import styles from "./Editor.less";
 import { cloneDeep } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
+import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 
 export const MaxLengths = {
   text: 150,
@@ -38,19 +39,44 @@ export default memo(function Editor({
   onSave,
   itemZUID,
   modelZUID,
-  saveClicked,
   onUpdateFieldErrors,
   fieldErrors,
-  hasErrors,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const metaFields = useMemo(() => {
+    if (fields?.length) {
+      return fields.reduce((accu, curr) => {
+        if (
+          !curr.deletedAt &&
+          DYNAMIC_META_FIELD_NAMES.includes(curr.name.toLowerCase())
+        ) {
+          accu[curr.name] = curr;
+        }
+
+        return accu;
+      }, {});
+    }
+
+    return {};
+  }, [fields]);
+
   const activeFields = useMemo(() => {
     if (fields?.length) {
-      return fields.filter((field) => !field.deletedAt);
+      return fields.filter(
+        (field) =>
+          !field.deletedAt &&
+          ![
+            "og_image",
+            "og_title",
+            "og_description",
+            "tc_title",
+            "tc_description",
+          ].includes(field.name)
+      );
     }
 
     return [];
@@ -80,23 +106,19 @@ export default memo(function Editor({
         throw new Error("Input is missing name attribute");
       }
 
-      const isFieldRequired = activeFields.find(
-        (field) => field.name === name
-      )?.required;
-      const fieldDatatype = activeFields.find(
-        (field) => field.name === name
-      )?.datatype;
-      const fieldMaxLength = MaxLengths[fieldDatatype];
+      const field = activeFields?.find((field) => field.name === name);
+      const fieldMaxLength =
+        field?.settings?.maxCharLimit ?? MaxLengths[field?.datatype];
       const errors = cloneDeep(fieldErrors);
 
       // Remove the required field error message when a value has been added
-      if (isFieldRequired) {
-        if (fieldDatatype === "yes_no" && value !== null) {
+      if (field?.required) {
+        if (field?.datatype === "yes_no" && value !== null) {
           errors[name] = {
             ...(errors[name] ?? {}),
             MISSING_REQUIRED: false,
           };
-        } else if (fieldDatatype !== "yes_no" && value) {
+        } else if (field?.datatype !== "yes_no" && value) {
           errors[name] = {
             ...(errors[name] ?? {}),
             MISSING_REQUIRED: false,
@@ -113,6 +135,68 @@ export default memo(function Editor({
           };
         } else {
           errors[name] = { ...(errors[name] ?? []), EXCEEDING_MAXLENGTH: 0 };
+        }
+      }
+
+      if (field?.settings?.minCharLimit) {
+        if (value.length < field?.settings?.minCharLimit) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            LACKING_MINLENGTH: field?.settings?.minCharLimit - value.length,
+          };
+        } else {
+          errors[name] = { ...(errors[name] ?? []), LACKING_MINLENGTH: 0 };
+        }
+      }
+
+      if (field?.settings?.regexMatchPattern) {
+        const regex = new RegExp(field?.settings?.regexMatchPattern);
+        if (!regex.test(value)) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_PATTERN_MISMATCH: field?.settings?.regexMatchErrorMessage,
+          };
+        } else {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_PATTERN_MISMATCH: "",
+          };
+        }
+      }
+
+      if (field?.settings?.regexRestrictPattern) {
+        const regex = new RegExp(field?.settings?.regexRestrictPattern);
+        if (regex.test(value)) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_RESTRICT_PATTERN_MATCH:
+              field?.settings?.regexRestrictErrorMessage,
+          };
+        } else {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            REGEX_RESTRICT_PATTERN_MATCH: "",
+          };
+        }
+      }
+
+      if (
+        field?.settings?.minValue !== null &&
+        field?.settings?.maxValue !== null
+      ) {
+        if (
+          value < field?.settings?.minValue ||
+          value > field?.settings?.maxValue
+        ) {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            INVALID_RANGE: `Value must be between ${field?.settings?.minValue} and ${field?.settings?.maxValue}`,
+          };
+        } else {
+          errors[name] = {
+            ...(errors[name] ?? []),
+            INVALID_RANGE: "",
+          };
         }
       }
 
@@ -142,6 +226,24 @@ export default memo(function Editor({
             key: "metaTitle",
             value: value,
           });
+
+          if ("og_title" in metaFields) {
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID,
+              key: "og_title",
+              value: value,
+            });
+          }
+
+          if ("tc_title" in metaFields) {
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID,
+              key: "tc_title",
+              value: value,
+            });
+          }
 
           // Datasets do not get path parts
           if (model?.type !== "dataset") {
@@ -173,16 +275,44 @@ export default memo(function Editor({
         }
 
         if (firstContentField && firstContentField.name === name) {
+          // Remove tags and replace MS smart quotes with regular quotes
+          const cleanedValue = value
+            ?.replace(/<[^>]*>/g, "")
+            ?.replaceAll(/[\u2018\u2019\u201A]/gm, "'")
+            ?.replaceAll("&rsquo;", "'")
+            ?.replaceAll(/[\u201C\u201D\u201E]/gm, '"')
+            ?.replaceAll("&ldquo;", '"')
+            ?.replaceAll("&rdquo;", '"')
+            ?.slice(0, 160);
+
           dispatch({
             type: "SET_ITEM_WEB",
             itemZUID,
             key: "metaDescription",
-            value: value.replace(/<[^>]*>/g, "").slice(0, 160),
+            value: cleanedValue,
           });
+
+          if ("og_description" in metaFields) {
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID,
+              key: "og_description",
+              value: cleanedValue,
+            });
+          }
+
+          if ("tc_description" in metaFields) {
+            dispatch({
+              type: "SET_ITEM_DATA",
+              itemZUID,
+              key: "tc_description",
+              value: cleanedValue,
+            });
+          }
         }
       }
     },
-    [fieldErrors]
+    [fieldErrors, metaFields]
   );
 
   const applyDefaultValuesToItemData = useCallback(() => {
@@ -225,10 +355,6 @@ export default memo(function Editor({
   return (
     <ThemeProvider theme={theme}>
       <div className={styles.Fields}>
-        {saveClicked && hasErrors && (
-          <FieldError errors={fieldErrors} fields={activeFields} />
-        )}
-
         {activeFields.length ? (
           activeFields.map((field) => {
             return (
@@ -255,7 +381,10 @@ export default memo(function Editor({
                   item={item}
                   langID={item?.meta?.langID}
                   errors={fieldErrors[field.name]}
-                  maxLength={MaxLengths[field.datatype]}
+                  maxLength={
+                    field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
+                  }
+                  minLength={field.settings?.minCharLimit ?? 0}
                 />
               </div>
             );

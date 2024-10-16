@@ -184,7 +184,7 @@ describe("Content Specs", () => {
     });
 
     it("Currency Field", () => {
-      cy.get("#12-b35c68-jd1s8s input[type=number]")
+      cy.get("#12-b35c68-jd1s8s input")
         .focus()
         .clear()
         .type("100.00")
@@ -217,7 +217,7 @@ describe("Content Specs", () => {
         .clear()
         .type("{rightArrow}12");
 
-      cy.get("#12-4e1914-kcqznz button").first().click();
+      cy.get("#12-4e1914-kcqznz button").eq(1).click();
 
       cy.get("#12-4e1914-kcqznz input[type='text']").should("have.value", "11");
 

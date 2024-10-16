@@ -14,6 +14,7 @@ import { Actions } from "./Actions";
 import { useLocalStorage } from "react-use";
 import { useContext } from "react";
 import { DuoModeContext } from "../../../../../../../shell/contexts/duoModeContext";
+import { FieldError } from "../../../components/Editor/FieldError";
 
 export default function Content(props) {
   const [showSidebar, setShowSidebar] = useLocalStorage(
@@ -71,6 +72,15 @@ export default function Content(props) {
           flex="0 1 auto"
         >
           <Box width="100%">
+            {props.saveClicked && props.hasErrors && (
+              <Box mb={3}>
+                <FieldError
+                  ref={props.fieldErrorRef}
+                  errors={props.fieldErrors}
+                  fields={props.activeFields}
+                />
+              </Box>
+            )}
             <Editor
               // active={this.state.makeActive}
               // scrolled={() => this.setState({ makeActive: "" })}

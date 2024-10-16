@@ -299,6 +299,11 @@ export const FieldTypeDateTime = ({
               value={timezoneOptionsWithSuggestions.find(
                 (tz) => tz.id === timezone
               )}
+              sx={{
+                "& .MuiAutocomplete-inputRoot": {
+                  py: 0.75,
+                },
+              }}
               renderInput={(params) => <TextField {...params} />}
               renderOption={(props, option) => (
                 <ListItem

@@ -40,9 +40,17 @@ export const SelectModelParentInput = ({
           1
         );
       }
+      const currentItem = _navItems.find(
+        (item) => item.contentModelZUID === id
+      );
 
       return _navItems
-        ?.filter((item) => item.contentModelZUID !== id)
+        ?.filter(
+          (item) =>
+            item.contentModelZUID !== id &&
+            currentItem &&
+            currentItem.ZUID !== item.parentZUID
+        )
         ?.sort((a, b) => a.label.localeCompare(b.label));
     }
 

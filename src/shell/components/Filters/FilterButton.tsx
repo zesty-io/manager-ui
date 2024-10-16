@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { Button, ButtonGroup } from "@mui/material";
-import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
+import { Button, ButtonGroup, Typography } from "@mui/material";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
@@ -34,7 +34,11 @@ export const FilterButton: FC<FilterButton> = ({
           >
             {buttonText}
           </Button>
-          <Button size="small" onClick={onRemoveFilter}>
+          <Button
+            size="small"
+            onClick={onRemoveFilter}
+            data-cy={`${filterId}_clearFilter`}
+          >
             <CloseRoundedIcon fontSize="small" />
           </Button>
         </ButtonGroup>
@@ -49,15 +53,18 @@ export const FilterButton: FC<FilterButton> = ({
         variant="outlined"
         size="small"
         color="inherit"
-        endIcon={<ArrowDropDownOutlinedIcon />}
+        endIcon={<KeyboardArrowDownRoundedIcon />}
         onClick={onOpenMenu}
         data-cy={`${filterId}_default`}
         sx={{
           backgroundColor: "common.white",
           height: "28px",
+          maxWidth: "320px",
         }}
       >
-        {buttonText}
+        <Typography variant="inherit" noWrap>
+          {buttonText}
+        </Typography>
       </Button>
       {children}
     </>

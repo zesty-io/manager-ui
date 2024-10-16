@@ -12,6 +12,12 @@ import {
   Tab,
   Button,
   Grid,
+  Stack,
+  ListItem,
+  FilledInputProps,
+  InputProps,
+  OutlinedInputProps,
+  InputAdornment,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { isEmpty } from "lodash";
@@ -26,7 +32,11 @@ import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlin
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 
 import { FieldIcon } from "../../Field/FieldIcon";
-import { FieldFormInput, DropdownOptions } from "../FieldFormInput";
+import {
+  FieldFormInput,
+  DropdownOptions,
+  AutocompleteConfig,
+} from "../FieldFormInput";
 import { useMediaRules } from "../../hooks/useMediaRules";
 import { MediaRules } from "../MediaRules";
 import {
@@ -48,12 +58,26 @@ import {
   FieldSettings,
   ContentModelFieldValue,
   FieldSettingsOptions,
+  ContentModelFieldDataType,
 } from "../../../../../../../shell/services/types";
-import { FIELD_COPY_CONFIG, TYPE_TEXT, FORM_CONFIG } from "../../configs";
+import {
+  FIELD_COPY_CONFIG,
+  TYPE_TEXT,
+  FORM_CONFIG,
+  FieldType,
+} from "../../configs";
 import { ComingSoon } from "../ComingSoon";
 import { Learn } from "../Learn";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { DefaultValue } from "../DefaultValue";
+import { CharacterLimit } from "../CharacterLimit";
+import { Rules } from "./Rules";
+import { MaxLengths } from "../../../../../../content-editor/src/app/components/Editor/Editor";
+import {
+  Currency,
+  currencies,
+} from "../../../../../../../shell/components/FieldTypeCurrency/currencies";
+import getFlagEmoji from "../../../../../../../utility/getFlagEmoji";
 
 type ActiveTab = "details" | "rules" | "learn";
 type Params = {
@@ -63,11 +87,11 @@ export type FormValue = Exclude<ContentModelFieldValue, FieldSettings>;
 export interface FormData {
   [key: string]: FormValue;
 }
-interface Errors {
+export interface Errors {
   [key: string]: string | [string, string][];
 }
 interface Props {
-  type: string;
+  type: ContentModelFieldDataType;
   name: string;
   onModalClose: () => void;
   onBackClick?: () => void;
@@ -197,6 +221,28 @@ export const FieldForm = ({
             fieldData.settings.defaultValue !== undefined
               ? fieldData.settings.defaultValue
               : null;
+        } else if (field.name === "minCharLimit") {
+          formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
+        } else if (field.name === "maxCharLimit") {
+          formFields["maxCharLimit"] = fieldData.settings?.maxCharLimit ?? null;
+        } else if (field.name === "regexMatchPattern") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "regexMatchErrorMessage") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "regexRestrictPattern") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "regexRestrictErrorMessage") {
+          formFields[field.name] = fieldData.settings[field.name] || null;
+        } else if (field.name === "minValue") {
+          formFields[field.name] = fieldData.settings[field.name] ?? null;
+        } else if (field.name === "maxValue") {
+          formFields[field.name] = fieldData.settings[field.name] ?? null;
+        } else if (field.name === "currency") {
+          formFields[field.name] = fieldData.settings?.currency ?? "USD";
+        } else if (field.name === "fileExtensions") {
+          formFields[field.name] = fieldData.settings[field.name] ?? null;
+        } else if (field.name === "fileExtensionsErrorMessage") {
+          formFields[field.name] = fieldData.settings[field.name] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
@@ -214,7 +260,19 @@ export const FieldForm = ({
         } else if (field.type === "toggle_options") {
           formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
         } else {
-          if (field.name === "defaultValue") {
+          if (
+            field.name === "defaultValue" ||
+            field.name === "minCharLimit" ||
+            field.name === "maxCharLimit" ||
+            field.name === "regexMatchPattern" ||
+            field.name === "regexMatchErrorMessage" ||
+            field.name === "regexRestrictPattern" ||
+            field.name === "regexRestrictErrorMessage" ||
+            field.name === "minValue" ||
+            field.name === "maxValue" ||
+            field.name === "fileExtensions" ||
+            field.name === "fileExtensionsErrorMessage"
+          ) {
             formFields[field.name] = null;
           } else {
             formFields[field.name] = "";
@@ -283,7 +341,117 @@ export const FieldForm = ({
       ) {
         newErrorsObj[inputName] = "Required Field. Please enter a value.";
       }
-      if (inputName in errors && inputName !== "defaultValue") {
+
+      if (type === "text" || type === "textarea") {
+        if (inputName === "minCharLimit" && !isNaN(+formData.minCharLimit)) {
+          if ((formData.minCharLimit as number) > MaxLengths[type]) {
+            newErrorsObj[
+              inputName
+            ] = `Cannot exceed ${MaxLengths[type]} characters`;
+          } else if (formData.minCharLimit > formData.maxCharLimit) {
+            newErrorsObj[inputName] = "Cannot exceed maximum character count";
+          }
+        }
+
+        if (
+          inputName === "maxCharLimit" &&
+          !isNaN(+formData.maxCharLimit) &&
+          (formData.maxCharLimit as number) > MaxLengths[type]
+        ) {
+          newErrorsObj[
+            inputName
+          ] = `Cannot exceed ${MaxLengths[type]} characters`;
+        }
+
+        if (inputName === "regexMatchPattern" && formData.regexMatchPattern) {
+          try {
+            new RegExp(formData.regexMatchPattern as string);
+          } catch (e) {
+            newErrorsObj[inputName] = "Invalid regex pattern";
+          }
+        }
+
+        if (
+          inputName === "regexMatchErrorMessage" &&
+          formData.regexMatchPattern !== null &&
+          formData.regexMatchErrorMessage === ""
+        ) {
+          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+        }
+
+        if (
+          inputName === "regexRestrictPattern" &&
+          formData.regexRestrictPattern
+        ) {
+          try {
+            new RegExp(formData.regexRestrictPattern as string);
+          } catch (e) {
+            newErrorsObj[inputName] = "Invalid regex pattern";
+          }
+        }
+
+        if (
+          inputName === "regexRestrictErrorMessage" &&
+          formData.regexRestrictPattern !== null &&
+          formData.regexRestrictErrorMessage === ""
+        ) {
+          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+        }
+      }
+
+      if (inputName === "minValue" && formData.minValue) {
+        if (isNaN(+formData.minValue)) {
+          newErrorsObj[inputName] = "Invalid number";
+        } else if (formData.minValue > formData.maxValue) {
+          newErrorsObj[inputName] = "Cannot exceed maximum value";
+        }
+      }
+
+      if (inputName === "maxValue" && formData.maxValue) {
+        if (isNaN(+formData.maxValue)) {
+          newErrorsObj[inputName] = "Invalid number";
+        } else if (formData.maxValue < formData.minValue) {
+          newErrorsObj[inputName] = "Cannot be less than minimum value";
+        }
+      }
+
+      if (inputName === "currency" && !formData.currency) {
+        newErrorsObj[inputName] = "Please select a currency";
+      }
+
+      if (
+        inputName === "fileExtensions" &&
+        formData.fileExtensions !== null &&
+        !(formData.fileExtensions as string[])?.length
+      ) {
+        newErrorsObj[inputName] = "This field is required";
+      }
+
+      if (
+        inputName === "fileExtensionsErrorMessage" &&
+        formData.fileExtensions !== null &&
+        formData.fileExtensionsErrorMessage === ""
+      ) {
+        newErrorsObj[inputName] = "This field is required";
+      }
+
+      if (
+        inputName in errors &&
+        ![
+          "defaultValue",
+          "minCharLimit",
+          "maxCharLimit",
+          "regexMatchPattern",
+          "regexRestrictPattern",
+          "regexMatchErrorMessage",
+          "regexRestrictErrorMessage",
+          "minValue",
+          "maxValue",
+          "currency",
+          "fileExtensions",
+          "fileExtensionsErrorMessage",
+        ].includes(inputName)
+      ) {
         const { maxLength, label, validate } = FORM_CONFIG[type].details.find(
           (field) => field.name === inputName
         );
@@ -376,7 +544,19 @@ export const FieldForm = ({
     if (hasErrors) {
       // Switch the active tab to details to show the user the errors if
       // they're not on the details tab and they clicked the submit button
-      if (errors.defaultValue) {
+      if (
+        errors.defaultValue ||
+        errors.minCharLimit ||
+        errors.maxCharLimit ||
+        errors.regexMatchPattern ||
+        errors.regexMatchErrorMessage ||
+        errors.regexRestrictPattern ||
+        errors.regexRestrictErrorMessage ||
+        errors.minValue ||
+        errors.maxValue ||
+        errors.fileExtensions ||
+        errors.fileExtensionsErrorMessage
+      ) {
         setActiveTab("rules");
       } else {
         setActiveTab("details");
@@ -404,6 +584,41 @@ export const FieldForm = ({
           tooltip: formData.tooltip as string,
         }),
         defaultValue: formData.defaultValue as string,
+        ...(formData.maxCharLimit !== null && {
+          maxCharLimit: formData.maxCharLimit as number,
+        }),
+        ...(formData.minCharLimit !== null && {
+          minCharLimit: formData.minCharLimit as number,
+        }),
+        ...(formData.regexMatchPattern && {
+          regexMatchPattern: formData.regexMatchPattern as string,
+        }),
+        ...(formData.regexMatchErrorMessage && {
+          regexMatchErrorMessage: formData.regexMatchErrorMessage as string,
+        }),
+        ...(formData.regexRestrictPattern && {
+          regexRestrictPattern: formData.regexRestrictPattern as string,
+        }),
+        ...(formData.regexRestrictErrorMessage && {
+          regexRestrictErrorMessage:
+            formData.regexRestrictErrorMessage as string,
+        }),
+        ...(formData.minValue !== null && {
+          minValue: formData.minValue as number,
+        }),
+        ...(formData.maxValue !== null && {
+          maxValue: formData.maxValue as number,
+        }),
+        ...(formData.currency !== null && {
+          currency: formData.currency as string,
+        }),
+        ...(formData.fileExtensions && {
+          fileExtensions: formData.fileExtensions as string[],
+        }),
+        ...(formData.fileExtensionsErrorMessage && {
+          fileExtensionsErrorMessage:
+            formData.fileExtensionsErrorMessage as string,
+        }),
       },
       sort: isUpdateField ? fieldData.sort : sort, // Just use the length since sort starts at 0
     };
@@ -599,6 +814,9 @@ export const FieldForm = ({
 
               let dropdownOptions: DropdownOptions[];
               let disabled = false;
+              let renderOption: any;
+              let filterOptions: any;
+              let autocompleteConfig: AutocompleteConfig = {};
 
               if (fieldConfig.name === "relatedModelZUID") {
                 dropdownOptions = modelsOptions;
@@ -610,6 +828,74 @@ export const FieldForm = ({
                 disabled = isFetchingSelectedModelFields;
               }
 
+              if (fieldConfig.name === "currency") {
+                const selectedValue = currencies.find(
+                  (currency) => currency.value === formData.currency
+                );
+                dropdownOptions = currencies;
+                renderOption = (props: any, value: Currency) => (
+                  <ListItem
+                    {...props}
+                    key={value.value}
+                    sx={{ color: "text.primary" }}
+                  >
+                    <Box
+                      component="img"
+                      height={16}
+                      src={`/images/flags/${value.countryCode?.toLowerCase()}.svg`}
+                      loading="lazy"
+                      alt={`${value.countryCode} flag`}
+                    />
+                    <Typography variant="body1" fontWeight={700} pl={1}>
+                      {value.value} {value.symbol_native} &nbsp;
+                    </Typography>
+                    <Typography variant="body1">{value.label}</Typography>
+                  </ListItem>
+                );
+                filterOptions = (options: Currency[], state: any) => {
+                  if (state.inputValue) {
+                    return options.filter(
+                      (option) =>
+                        option.label
+                          ?.toLowerCase()
+                          .includes(state.inputValue.toLowerCase()) ||
+                        option.value
+                          ?.toLowerCase()
+                          .includes(state.inputValue.toLowerCase())
+                    );
+                  } else {
+                    return options;
+                  }
+                };
+                autocompleteConfig.inputProps = {
+                  startAdornment: !!selectedValue && (
+                    <InputAdornment
+                      position="start"
+                      sx={{
+                        pl: 0.25,
+
+                        "&.MuiInputAdornment-root.MuiInputAdornment-positionStart":
+                          {
+                            color: "text.primary",
+                          },
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        height={16}
+                        src={`/images/flags/${selectedValue.countryCode?.toLowerCase()}.svg`}
+                        loading="lazy"
+                        alt={`${selectedValue.countryCode} flag`}
+                      />
+                      <Typography variant="body1" fontWeight={700} pl={1}>
+                        {selectedValue.value} {selectedValue.symbol_native}
+                      </Typography>
+                    </InputAdornment>
+                  ),
+                };
+                autocompleteConfig.maxHeight = 256;
+              }
+
               return (
                 <FieldFormInput
                   key={index}
@@ -619,6 +905,9 @@ export const FieldForm = ({
                   prefillData={formData[fieldConfig.name]}
                   dropdownOptions={dropdownOptions || []}
                   disabled={disabled}
+                  renderOption={renderOption}
+                  filterOptions={filterOptions}
+                  autocompleteConfig={autocompleteConfig}
                 />
               );
             })}
@@ -661,39 +950,16 @@ export const FieldForm = ({
           </Grid>
         )}
 
-        {activeTab === "rules" && type === "images" && (
-          <MediaRules
-            fieldConfig={FORM_CONFIG["images"].rules}
-            onDataChange={handleFieldDataChange}
-            groups={mediaFoldersOptions}
-            fieldData={{
-              limit: formData["limit"],
-              group_id: formData["group_id"],
-            }}
-          />
-        )}
-
-        {activeTab === "rules" && type === "uuid" && <ComingSoon />}
-
-        {activeTab === "rules" && type !== "uuid" && (
-          <DefaultValue
+        {activeTab === "rules" && (
+          <Rules
             type={type}
-            value={formData["defaultValue"]}
-            onChange={(value) => {
-              handleFieldDataChange({ inputName: "defaultValue", value });
-            }}
+            onFieldDataChanged={handleFieldDataChange}
+            mediaFoldersOptions={mediaFoldersOptions}
+            formData={formData}
+            isSubmitClicked={isSubmitClicked}
+            errors={errors}
             isDefaultValueEnabled={isDefaultValueEnabled}
             setIsDefaultValueEnabled={setIsDefaultValueEnabled}
-            error={isSubmitClicked && (errors["defaultValue"] as string)}
-            mediaRules={{
-              limit: formData["limit"],
-              group_id: formData["group_id"],
-            }}
-            relationshipFields={{
-              relatedModelZUID: formData["relatedModelZUID"] as string,
-              relatedFieldZUID: formData["relatedFieldZUID"] as string,
-            }}
-            options={formData["options"] as FieldSettingsOptions[]}
           />
         )}
 
