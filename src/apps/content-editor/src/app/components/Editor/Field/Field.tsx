@@ -282,6 +282,7 @@ export const Field = ({
     case "text":
       return (
         <AIFieldShell
+          ZUID={fieldData?.ZUID}
           name={fieldData?.name}
           label={fieldData?.label}
           valueLength={(value as string)?.length ?? 0}
@@ -294,6 +295,7 @@ export const Field = ({
           minLength={minLength}
           errors={errors}
           aiType="text"
+          value={value}
         >
           <TextField
             value={value}
@@ -363,6 +365,7 @@ export const Field = ({
     case "textarea":
       return (
         <AIFieldShell
+          ZUID={fieldData?.ZUID}
           name={fieldData?.name}
           label={fieldData?.label}
           valueLength={(value as string)?.length ?? 0}
@@ -372,9 +375,10 @@ export const Field = ({
           }
           withLengthCounter
           errors={errors}
-          aiType="paragraph"
+          aiType="word"
           maxLength={maxLength}
           minLength={minLength}
+          value={value}
         >
           <TextField
             value={value}
@@ -394,16 +398,18 @@ export const Field = ({
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AIFieldShell
+            ZUID={fieldData?.ZUID}
             name={fieldData?.name}
             label={fieldData?.label}
             valueLength={characterCount}
             settings={fieldData}
             onChange={onChange}
             errors={errors}
-            aiType="paragraph"
+            aiType="word"
             datatype={fieldData?.datatype}
             withLengthCounter
             maxLength={maxLength}
+            value={value}
           >
             <FieldTypeTinyMCE
               name={name}
@@ -430,16 +436,18 @@ export const Field = ({
       return (
         <div className={styles.WYSIWYGFieldType}>
           <AIFieldShell
+            ZUID={fieldData?.ZUID}
             name={fieldData?.name}
             label={fieldData?.label}
             valueLength={(value as string)?.length ?? 0}
             settings={fieldData}
             onChange={onChange}
             errors={errors}
-            aiType="paragraph"
+            aiType="word"
             datatype={fieldData?.datatype}
             editorType={editorType}
             onEditorChange={(value: EditorType) => setEditorType(value)}
+            value={value}
           >
             <FieldTypeEditor
               // @ts-ignore component not typed

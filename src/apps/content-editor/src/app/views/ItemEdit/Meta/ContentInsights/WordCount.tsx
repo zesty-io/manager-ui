@@ -51,7 +51,7 @@ export const WordCount = ({
       />
       <Box flex={1}>
         <Typography variant="body2" color="text.secondary">
-          Non Common Words
+          Non Filler Words
         </Typography>
         <Typography variant="h4" color="text.primary" fontWeight={600}>
           {totalUniqueNonCommonWords}
