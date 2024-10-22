@@ -5,11 +5,23 @@ import {
   useEffect,
   forwardRef,
   useImperativeHandle,
+  useRef,
 } from "react";
-import { Stack, Box, Typography, ThemeProvider, Divider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import {
+  Stack,
+  Box,
+  Typography,
+  ThemeProvider,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  ListItemButton,
+} from "@mui/material";
+import { Brain, theme } from "@zesty-io/material";
 import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
+import { keyframes } from "@mui/system";
+import { EditRounded } from "@mui/icons-material";
 import { cloneDeep } from "lodash";
 
 import { ContentInsights } from "./ContentInsights";
@@ -43,6 +55,34 @@ import { TCTitle } from "./settings/TCTitle";
 import { TCDescription } from "./settings/TCDescription";
 import { FieldError } from "../../../components/Editor/FieldError";
 
+const rotateAnimation = keyframes`
+	0% {
+		background-position: 0% 0%;
+	}
+	100% {
+		background-position: 0% 100%;
+	}
+`;
+const FlowType = {
+  AIGenerated: "ai-generated",
+  Manual: "manual",
+} as const;
+const flowButtons = [
+  {
+    flowType: FlowType.AIGenerated,
+    icon: <Brain sx={{ fontSize: 32 }} />,
+    primaryText: "Yes, improve with AI Meta Data Assistant",
+    secondaryText:
+      "Our AI will scan your content and generate your meta data for you",
+  },
+  {
+    flowType: FlowType.Manual,
+    icon: <EditRounded sx={{ fontSize: 32 }} />,
+    primaryText: "No, I will improve and edit it myself",
+    secondaryText:
+      "Perfect if you already know what you want your Meta Data to be",
+  },
+];
 export const MaxLengths: Record<string, number> = {
   metaLinkText: 150,
   metaTitle: 150,
@@ -84,6 +124,10 @@ export const Meta = forwardRef(
       (state: AppState) =>
         state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
     );
+    const [flowType, setFlowType] =
+      useState<typeof FlowType[keyof typeof FlowType]>(null);
+    const metaDescriptionButtonRef = useRef(null);
+    const metaTitleButtonRef = useRef(null);
 
     // @ts-expect-error untyped
     const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
@@ -238,6 +282,11 @@ export const Meta = forwardRef(
             }
 
             setTimeout(() => {
+              // Makes sure that the user sees the error blurbs on each
+              // field when in the create item page
+              if (isCreateItemPage) {
+                setFlowType(FlowType.Manual);
+              }
               onUpdateSEOErrors(currentErrors);
             });
 
@@ -247,6 +296,9 @@ export const Meta = forwardRef(
               })
               ?.flat()
               .some((error) => !!error);
+          },
+          triggerAIGeneratedFlow() {
+            setFlowType(FlowType.AIGenerated);
           },
         };
       },
@@ -260,12 +312,116 @@ export const Meta = forwardRef(
       }
     }, [isSaving]);
 
+    useEffect(() => {
+      if (!isCreateItemPage) return;
+
+      if (flowType === FlowType.AIGenerated) {
+        // Immediately clear out the existing values for the meta title and description
+        dispatch({
+          type: "SET_ITEM_WEB",
+          itemZUID: meta?.ZUID,
+          key: "metaTitle",
+          value: "",
+        });
+        dispatch({
+          type: "SET_ITEM_WEB",
+          itemZUID: meta?.ZUID,
+          key: "metaDescription",
+          value: "",
+        });
+
+        // Then trigger the AI assistant popup
+        metaTitleButtonRef.current?.triggerAIButton?.();
+      }
+    }, [flowType, isCreateItemPage, meta?.ZUID]);
+
+    if (isCreateItemPage && flowType === null) {
+      return (
+        <ThemeProvider theme={theme}>
+          <Box
+            sx={{
+              mt: 2.5,
+              mb: 5,
+              borderRadius: 2,
+              p: 0.25,
+              background:
+                "linear-gradient(0deg, rgba(255,93,10,1) 0%, rgba(18,183,106,1) 25%, rgba(11,165,236,1) 50%, rgba(238,70,188,1) 75%, rgba(105,56,239,1) 100%)",
+              animation: `${rotateAnimation} 1.5s linear alternate infinite`,
+              backgroundSize: "300% 300%",
+            }}
+          >
+            <Stack gap={3} p={3} bgcolor="background.paper" borderRadius={1.5}>
+              <Box>
+                <Typography
+                  variant="h5"
+                  fontWeight={600}
+                  mb={1}
+                  color="text.primary"
+                >
+                  Would you like to improve your Meta Title & Description?
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Our AI Assistant will scan your content and improve your meta
+                  title and description to help improve search engine
+                  visibility.{" "}
+                </Typography>
+              </Box>
+              {flowButtons.map((data) => (
+                <ListItemButton
+                  data-cy={
+                    data.flowType === FlowType.AIGenerated
+                      ? "AIAssistedMetaFlow"
+                      : "ManualMetaFlow"
+                  }
+                  key={data.flowType}
+                  onClick={() => setFlowType(data.flowType)}
+                  sx={{
+                    borderRadius: 2,
+                    border: 1,
+                    borderColor: "border",
+                    backgroundColor: "common.white",
+                    py: 2,
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 48 }}>{data.icon}</ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography
+                        variant="h6"
+                        fontWeight={600}
+                        color="text.primary"
+                      >
+                        {data.primaryText}
+                      </Typography>
+                    }
+                    disableTypography
+                    sx={{ my: 0 }}
+                    secondary={
+                      <Typography
+                        variant="body2"
+                        sx={{ mt: 0.5 }}
+                        color="text.primary"
+                      >
+                        {data.secondaryText}
+                      </Typography>
+                    }
+                  />
+                </ListItemButton>
+              ))}
+            </Stack>
+          </Box>
+        </ThemeProvider>
+      );
+    }
+
     return (
       <ThemeProvider theme={theme}>
-        <Stack
-          direction="row"
+        <Box
+          display="grid"
+          gridTemplateColumns={
+            !isCreateItemPage ? "1fr minmax(auto, 40%)" : "1fr"
+          }
           gap={4}
-          bgcolor="grey.50"
           pt={2.5}
           mb={isCreateItemPage ? 4 : 0}
           px={isCreateItemPage ? 0 : 4}
@@ -275,7 +431,7 @@ export const Meta = forwardRef(
             overflowY: "auto",
           }}
         >
-          <Stack flex={1} gap={4} width="60%" minWidth={640}>
+          <Stack flex={1} gap={4} minWidth={640}>
             <Stack gap={3}>
               {!!errorComponent && errorComponent}
               <Box>
@@ -289,14 +445,36 @@ export const Meta = forwardRef(
                 </Typography>
               </Box>
               <MetaTitle
+                aiButtonRef={metaTitleButtonRef}
                 value={web.metaTitle}
                 onChange={handleOnChange}
                 error={errors?.metaTitle}
+                onResetFlowType={() => {
+                  if (flowType === FlowType.AIGenerated) {
+                    console.log("reset on meta title");
+                    setFlowType(FlowType.Manual);
+                  }
+                }}
+                onAIMetaTitleInserted={() => {
+                  // Scroll to and open the meta description ai generator to continue
+                  // with the AI-assisted flow
+                  if (flowType === FlowType.AIGenerated) {
+                    metaDescriptionButtonRef.current?.triggerAIButton?.();
+                  }
+                }}
               />
               <MetaDescription
+                aiButtonRef={metaDescriptionButtonRef}
                 value={web.metaDescription}
                 onChange={handleOnChange}
                 error={errors?.metaDescription}
+                onResetFlowType={() => {
+                  if (flowType === FlowType.AIGenerated) {
+                    console.log("reset on meta description");
+                    setFlowType(FlowType.Manual);
+                  }
+                }}
+                isAIAssistedFlow={flowType === FlowType.AIGenerated}
                 required={REQUIRED_FIELDS.includes("metaDescription")}
               />
               <MetaImage onChange={handleOnChange} />
@@ -400,11 +578,10 @@ export const Meta = forwardRef(
           </Stack>
           {!isCreateItemPage && (
             <Box
-              width="40%"
-              flex={1}
               position="sticky"
               top={0}
               pb={2.5}
+              alignSelf="start"
               sx={{
                 scrollbarWidth: "none",
                 overflowY: "auto",
@@ -421,7 +598,7 @@ export const Meta = forwardRef(
               </Box>
             </Box>
           )}
-        </Stack>
+        </Box>
       </ThemeProvider>
     );
   }

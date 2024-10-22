@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { connect, useDispatch } from "react-redux";
 import { TextField, Box } from "@mui/material";
 
@@ -7,22 +7,34 @@ import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "..";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
+import { withAI } from "../../../../../../../../shell/components/withAi";
+import { MutableRefObject } from "react";
+
+const AIFieldShell = withAI(FieldShell);
 
 type MetaDescriptionProps = {
   value: string;
   onChange: (value: string, name: string) => void;
   error: Error;
+  onResetFlowType: () => void;
+  aiButtonRef?: MutableRefObject<any>;
+  isAIAssistedFlow: boolean;
   required: boolean;
 };
 export default connect()(function MetaDescription({
   value,
   onChange,
   error,
+  onResetFlowType,
+  aiButtonRef,
+  isAIAssistedFlow,
   required,
 }: MetaDescriptionProps) {
   return (
     <Box data-cy="metaDescription" id="metaDescription">
-      <FieldShell
+      <AIFieldShell
+        ZUID="metaDescription"
+        ref={aiButtonRef}
         settings={{
           label: "Meta Description",
           required,
@@ -33,6 +45,17 @@ export default connect()(function MetaDescription({
         maxLength={MaxLengths.metaDescription}
         valueLength={value?.length ?? 0}
         errors={error}
+        aiType="description"
+        name="metaDescription"
+        value={value}
+        onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+          onChange(evt.target.value, "metaDescription");
+          onResetFlowType?.();
+        }}
+        onResetFlowType={() => {
+          onResetFlowType?.();
+        }}
+        isAIAssistedFlow={isAIAssistedFlow}
       >
         <TextField
           name="metaDescription"
@@ -43,7 +66,7 @@ export default connect()(function MetaDescription({
           rows={3}
           error={hasErrors(error)}
         />
-      </FieldShell>
+      </AIFieldShell>
     </Box>
   );
 });

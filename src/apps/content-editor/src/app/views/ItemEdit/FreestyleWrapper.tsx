@@ -46,7 +46,15 @@ export const FreestyleWrapper = () => {
   };
 
   return (
-    <Dialog open fullScreen>
+    <Dialog
+      open
+      fullScreen
+      PaperProps={{
+        sx: {
+          overflow: "hidden",
+        },
+      }}
+    >
       <Button
         onClick={handleFreestyleExit}
         sx={{
@@ -63,6 +71,7 @@ export const FreestyleWrapper = () => {
         allow="clipboard-write"
         height="100%"
         width="100%"
+        frameBorder="0"
         onLoad={handleLoad}
       ></IframeWithDAM>
     </Dialog>
