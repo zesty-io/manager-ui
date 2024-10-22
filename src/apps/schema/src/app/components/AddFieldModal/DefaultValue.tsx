@@ -80,7 +80,7 @@ export const DefaultValue = ({
       />
 
       {isDefaultValueEnabled && (
-        <Box flex={1} mt={1}>
+        <Box flex={1} mt={1} pl={3}>
           <FormControl error={!!error} fullWidth>
             <DefaultValueInput
               type={type}
