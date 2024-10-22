@@ -111,114 +111,110 @@ export const withAI = (WrappedComponent: ComponentType) =>
       }
     };
 
-    if (isEnabled) {
-      return (
-        <>
-          <WrappedComponent
-            {...props}
-            key={key}
-            endLabel={
-              <ThemeProvider theme={theme}>
-                <Button
-                  data-cy="AIOpen"
-                  size="xsmall"
-                  endIcon={<Brain />}
-                  variant="text"
-                  color="inherit"
-                  onClick={handleClick}
-                  ref={aiButtonRef}
-                  sx={{
+    return (
+      <>
+        <WrappedComponent
+          {...props}
+          key={key}
+          endLabel={
+            <ThemeProvider theme={theme}>
+              <Button
+                data-cy="AIOpen"
+                size="xsmall"
+                endIcon={<Brain />}
+                variant="text"
+                color="inherit"
+                onClick={handleClick}
+                ref={aiButtonRef}
+                sx={{
+                  backgroundColor: (theme) =>
+                    Boolean(anchorEl)
+                      ? alpha(theme.palette.primary.main, 0.08)
+                      : "transparent",
+                  minWidth: 0,
+                  fontWeight: 600,
+                  fontSize: 14,
+                  lineHeight: "14px",
+                  px: 0.5,
+                  py: 0.25,
+                  color: Boolean(anchorEl) ? "primary.main" : "text.disabled",
+
+                  "&:hover": {
                     backgroundColor: (theme) =>
+                      alpha(theme.palette.primary.main, 0.08),
+                    color: "primary.main",
+                  },
+
+                  "&:hover .MuiButton-endIcon .MuiSvgIcon-root": {
+                    fill: (theme) => theme.palette.primary.main,
+                  },
+
+                  "& .MuiButton-endIcon": {
+                    ml: 0.5,
+                    mr: 0,
+                  },
+
+                  "& .MuiButton-endIcon .MuiSvgIcon-root": {
+                    fontSize: 16,
+                    fill: (theme) =>
                       Boolean(anchorEl)
-                        ? alpha(theme.palette.primary.main, 0.08)
-                        : "transparent",
-                    minWidth: 0,
-                    fontWeight: 600,
-                    fontSize: 14,
-                    lineHeight: "14px",
-                    px: 0.5,
-                    py: 0.25,
-                    color: Boolean(anchorEl) ? "primary.main" : "text.disabled",
+                        ? theme.palette.primary.main
+                        : theme.palette.action.active,
+                  },
+                }}
+              >
+                AI
+              </Button>
+            </ThemeProvider>
+          }
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+        />
+        <ThemeProvider theme={theme}>
+          <Popover
+            data-cy="AIPopover"
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            elevation={24}
+            onClose={() => {
+              console.log("closing ai generator");
+              handleClose("close");
+            }}
+            slotProps={{
+              paper: {
+                sx: {
+                  overflowY: "hidden",
 
-                    "&:hover": {
-                      backgroundColor: (theme) =>
-                        alpha(theme.palette.primary.main, 0.08),
-                      color: "primary.main",
-                    },
-
-                    "&:hover .MuiButton-endIcon .MuiSvgIcon-root": {
-                      fill: (theme) => theme.palette.primary.main,
-                    },
-
-                    "& .MuiButton-endIcon": {
-                      ml: 0.5,
-                      mr: 0,
-                    },
-
-                    "& .MuiButton-endIcon .MuiSvgIcon-root": {
-                      fontSize: 16,
-                      fill: (theme) =>
-                        Boolean(anchorEl)
-                          ? theme.palette.primary.main
-                          : theme.palette.action.active,
-                    },
-                  }}
-                >
-                  AI
-                </Button>
-              </ThemeProvider>
-            }
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-          />
-          <ThemeProvider theme={theme}>
-            <Popover
-              data-cy="AIPopover"
-              open={Boolean(anchorEl)}
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              elevation={24}
-              onClose={() => {
-                console.log("closing ai generator");
-                handleClose("close");
-              }}
-              slotProps={{
-                paper: {
-                  sx: {
-                    overflowY: "hidden",
-
-                    "&:after": {
-                      content: '""',
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      bottom: 0,
-                      left: 0,
-                      background:
-                        "linear-gradient(0deg, rgba(255,93,10,1) 0%, rgba(18,183,106,1) 25%, rgba(11,165,236,1) 50%, rgba(238,70,188,1) 75%, rgba(105,56,239,1) 100%)",
-                      animation: `${rotateAnimation} 1.5s linear alternate infinite`,
-                      backgroundSize: "300% 300%",
-                    },
+                  "&:after": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    background:
+                      "linear-gradient(0deg, rgba(255,93,10,1) 0%, rgba(18,183,106,1) 25%, rgba(11,165,236,1) 50%, rgba(238,70,188,1) 75%, rgba(105,56,239,1) 100%)",
+                    animation: `${rotateAnimation} 1.5s linear alternate infinite`,
+                    backgroundSize: "300% 300%",
                   },
                 },
-              }}
-            >
-              <AIGenerator
-                fieldZUID={props.ZUID}
-                onApprove={handleApprove}
-                onClose={(reason) => handleClose(reason)}
-                aiType={props.aiType}
-                label={props.label}
-                isAIAssistedFlow={props.isAIAssistedFlow}
-              />
-            </Popover>
-          </ThemeProvider>
-        </>
-      );
-    } else {
-      return <WrappedComponent {...props} />;
-    }
+              },
+            }}
+          >
+            <AIGenerator
+              fieldZUID={props.ZUID}
+              onApprove={handleApprove}
+              onClose={(reason) => handleClose(reason)}
+              aiType={props.aiType}
+              label={props.label}
+              isAIAssistedFlow={props.isAIAssistedFlow}
+            />
+          </Popover>
+        </ThemeProvider>
+      </>
+    );
   });
