@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { ChangeEvent, memo, MutableRefObject } from "react";
 
 import { TextField, Box } from "@mui/material";
 
@@ -6,20 +6,33 @@ import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { MaxLengths } from "..";
 import { hasErrors } from "./util";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
+import { withAI } from "../../../../../../../../shell/components/withAi";
+
+const AIFieldShell = withAI(FieldShell);
 
 type MetaTitleProps = {
   value: string;
   onChange: (value: string, name: string) => void;
   error: Error;
+  saveMetaTitleParameters?: boolean;
+  onResetFlowType: () => void;
+  onAIMetaTitleInserted?: () => void;
+  aiButtonRef?: MutableRefObject<any>;
 };
 export const MetaTitle = memo(function MetaTitle({
   value,
   onChange,
   error,
+  saveMetaTitleParameters,
+  onResetFlowType,
+  onAIMetaTitleInserted,
+  aiButtonRef,
 }: MetaTitleProps) {
   return (
     <Box data-cy="metaTitle" id="metaTitle">
-      <FieldShell
+      <AIFieldShell
+        ZUID="metaTitle"
+        ref={aiButtonRef}
         settings={{
           label: "Meta Title",
           required: true,
@@ -30,6 +43,16 @@ export const MetaTitle = memo(function MetaTitle({
         maxLength={MaxLengths.metaTitle}
         valueLength={value?.length ?? 0}
         errors={error ?? {}}
+        aiType="title"
+        name="metaTitle"
+        value={value}
+        onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+          onChange(evt.target.value, "metaTitle");
+          onAIMetaTitleInserted?.();
+        }}
+        onResetFlowType={() => {
+          onResetFlowType?.();
+        }}
       >
         <TextField
           name="metaTitle"
@@ -38,7 +61,7 @@ export const MetaTitle = memo(function MetaTitle({
           onChange={(evt) => onChange(evt.target.value, "metaTitle")}
           error={hasErrors(error)}
         />
-      </FieldShell>
+      </AIFieldShell>
     </Box>
   );
 });

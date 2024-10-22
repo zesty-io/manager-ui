@@ -6,8 +6,8 @@ import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 import { cloneDeep } from "lodash";
 
-import { Divider, Box, Stack, ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { Box, Stack, ThemeProvider, Button } from "@mui/material";
+import { theme, Brain } from "@zesty-io/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
@@ -37,6 +37,7 @@ import { SchedulePublish } from "../../../../../../shell/components/SchedulePubl
 import { Meta } from "../ItemEdit/Meta";
 import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 import { FieldError } from "../../components/Editor/FieldError";
+import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 
 export type ActionAfterSave =
   | ""
@@ -372,22 +373,23 @@ export const ItemCreate = () => {
       }
       message="Creating New Item"
     >
-      <Box component="section">
+      <Stack component="section" height="100%">
         <Header
           onSave={save}
           model={model}
           isLoading={saving || isPublishing || isLoadingNewItem}
           isDirty={item?.dirty}
         />
-        <Stack
+        <Box
+          display="grid"
+          gridTemplateColumns="1fr minmax(0px, 40%)"
           component="main"
           className={styles.ItemCreate}
           bgcolor="grey.50"
           alignItems="center"
-          direction="row"
           gap={4}
         >
-          <Box width="60%" minWidth={640} height="100%">
+          <Box minWidth={640} height="100%">
             {saveClicked && (hasErrors || hasSEOErrors) && (
               <Box mb={3}>
                 <FieldError
@@ -397,54 +399,82 @@ export const ItemCreate = () => {
                 />
               </Box>
             )}
-            <Editor
-              // @ts-ignore no types
-              itemZUID={itemZUID}
-              item={item}
-              items={content}
-              instance={instance}
-              modelZUID={modelZUID}
-              model={model}
-              fields={fields}
-              onSave={save}
-              dispatch={dispatch}
-              loading={loading}
-              saving={saving}
-              isDirty={item?.dirty}
-              fieldErrors={fieldErrors}
-              // @ts-ignore  untyped component
-              onUpdateFieldErrors={(errors: FieldErrors) => {
-                setFieldErrors(errors);
-              }}
-            />
-            <Divider
-              sx={{
-                mt: 4,
-                mb: 2,
-              }}
-            />
-            <Meta
-              onUpdateSEOErrors={(errors: FieldErrors) => {
-                setSEOErrors(errors);
-              }}
-              isSaving={saving}
-              ref={metaRef}
-              errors={SEOErrors}
-            />
+            <AIGeneratorProvider>
+              <Editor
+                // @ts-ignore no types
+                itemZUID={itemZUID}
+                item={item}
+                items={content}
+                instance={instance}
+                modelZUID={modelZUID}
+                model={model}
+                fields={fields}
+                onSave={save}
+                dispatch={dispatch}
+                loading={loading}
+                saving={saving}
+                isDirty={item?.dirty}
+                fieldErrors={fieldErrors}
+                // @ts-ignore  untyped component
+                onUpdateFieldErrors={(errors: FieldErrors) => {
+                  setFieldErrors(errors);
+                }}
+              />
+              <Meta
+                onUpdateSEOErrors={(errors: FieldErrors) => {
+                  setSEOErrors(errors);
+                }}
+                isSaving={saving}
+                ref={metaRef}
+                errors={SEOErrors}
+              />
+            </AIGeneratorProvider>
           </Box>
           <ThemeProvider theme={theme}>
             <Box
               position="sticky"
               top={0}
               alignSelf="flex-start"
-              width="40%"
               maxWidth={620}
             >
-              {model?.type !== "dataset" && <SocialMediaPreview />}
+              {model?.type !== "dataset" && (
+                <>
+                  <SocialMediaPreview />
+                  <Button
+                    variant="text"
+                    color="inherit"
+                    size="large"
+                    onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
+                    startIcon={
+                      <>
+                        <svg width={0} height={0}>
+                          <linearGradient
+                            id="gradientFill"
+                            x1={1}
+                            y1={0}
+                            x2={1}
+                            y2={1}
+                          >
+                            <stop offset="0%" stopColor="#0BA5EC" />
+                            <stop offset="50%" stopColor="#EE46BC" />
+                            <stop offset="100%" stopColor="#6938EF" />
+                          </linearGradient>
+                        </svg>
+                        <Brain sx={{ fill: "url(#gradientFill)" }} />
+                      </>
+                    }
+                    sx={{
+                      mt: 1.5,
+                    }}
+                  >
+                    Improve with AI
+                  </Button>
+                </>
+              )}
             </Box>
           </ThemeProvider>
-        </Stack>
-      </Box>
+        </Box>
+      </Stack>
       {isScheduleDialogOpen && !isLoadingNewItem && (
         <SchedulePublish
           item={newItemData as ContentItemWithDirtyAndPublishing}
