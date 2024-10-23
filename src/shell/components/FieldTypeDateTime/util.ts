@@ -1470,16 +1470,18 @@ export const TIMEZONES = [
 ] as const;
 
 // Specify exact ISO format. This ensures consistent parsing across different browsers.
-const ISO_FORMAT = "MM/DD/YYYY HH:mm:ss.SSSSSS";
+const ISO_FORMAT = "YYYY-MM-DD h:mm a";
 
 export const toISOString = (timeString: string) => {
-  return moment(`01-01-2024 ${timeString}`, ISO_FORMAT).format(
+  return moment(`2024-01-01 ${timeString}`, ISO_FORMAT).format(
     "HH:mm:ss.SSSSSS"
   );
 };
 
 export const to12HrTime = (isoTime: string) => {
-  return moment(`01/01/2024 ${isoTime}`, ISO_FORMAT).format("h:mm a");
+  return moment(`2024-01-01 ${isoTime}`, "YYYY-MM-DD HH:mm:ss.SSSSSS").format(
+    "h:mm a"
+  );
 };
 
 const generateTimeOptions = () => {
