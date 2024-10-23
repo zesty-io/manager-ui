@@ -408,7 +408,7 @@ describe("Content Specs", () => {
       cy.get("#12-f3db44-c8kt0q")
         .find("[data-cy='dateTimeInputField']")
         .find("input")
-        .should("have.value", "11:00 pm");
+        .should("have.value", "12:00 pm");
     });
   });
 });
