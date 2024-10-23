@@ -27,6 +27,8 @@ import { useGetUsersQuery } from "../../../../../../shell/services/accounts";
 import { useParams as useRouterParams } from "react-router";
 import { CascadingMenuItem } from "../../../../../../shell/components/CascadingMenuItem";
 import { TableSortContext } from "./TableSortProvider";
+import { selectLang } from "../../../../../../shell/store/user";
+import { useDispatch } from "react-redux";
 
 const SORT_ORDER = {
   lastSaved: "Last Saved",
@@ -101,6 +103,7 @@ export const ItemListFilters = () => {
   const { data: fields, isFetching: isFieldsFetching } =
     useGetContentModelFieldsQuery(modelZUID);
   const [sortModel, setSortModel] = useContext(TableSortContext);
+  const dispatch = useDispatch();
 
   const activeSortOrder = sortModel?.[0]?.field;
 
@@ -360,6 +363,7 @@ export const ItemListFilters = () => {
             onClick={() => {
               setAnchorEl(null);
               setParams(language.code, "lang");
+              dispatch(selectLang(language.code));
             }}
           >
             {getFlagEmojiFromIETFTag(language.code)}{" "}
