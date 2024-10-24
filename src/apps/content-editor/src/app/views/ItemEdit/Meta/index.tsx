@@ -411,6 +411,9 @@ export const Meta = forwardRef(
               ))}
             </Stack>
           </Box>
+          <Box sx={{ display: "none" }}>
+            <ItemParent onChange={handleOnChange} />
+          </Box>
         </ThemeProvider>
       );
     }
