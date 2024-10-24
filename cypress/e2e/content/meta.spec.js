@@ -100,4 +100,27 @@ describe("Content Meta", () => {
     cy.get("#SaveItemButton").click();
     cy.getBySelector("FieldErrorsList").should("exist");
   });
+
+  it("Auto applies page parent when creating an item", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.waitOn("/v1/env/nav", () => {
+        cy.waitOn("/v1/search/items*", () => {
+          cy.visit("/content/6-0c960c-d1n0kx/new");
+        });
+      });
+    });
+
+    cy.iframe("#wysiwyg_basic_ifr")
+      .click()
+      .type(`{selectall}{backspace}meta description`);
+    cy.get("#12-849844-t8v5l6").find("input").type(`meta title ${today}`);
+
+    cy.getBySelector("CreateItemSaveButton").click();
+
+    cy.waitOn("/v1/content/models*", () => {
+      cy.get('[role="tablist"]').find("button").eq(1).click();
+    });
+
+    cy.contains("/page/otherpage/all-field-types/").should("exist");
+  });
 });
