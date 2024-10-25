@@ -63,7 +63,6 @@ jobs:
 
   # Delete the beta branch after it has been tagged
   delete_beta_branch:
-    needs: [create_release_tag]
     if: github.head_ref == 'beta'
     runs-on: ubuntu-latest
     steps:
@@ -74,7 +73,7 @@ jobs:
 
   # Delete the stable branch after it is merged into stable
   delete_stable_branch:
-    needs: [deploy_stable]
+    needs: [create_release_tag, deploy_stable]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
