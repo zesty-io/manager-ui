@@ -84,7 +84,7 @@ jobs:
           echo "origin_branch_list=$(git branch -r --list origin/stage)" >> "$GITHUB_ENV"
 
       - name: Ensure origin/stage branch exists
-        if: $origin_branch_list != 'origin/stage'
+        if: env.origin_branch_list != 'origin/stage'
         run: git checkout dev && git switch --create stage && git push -u origin stage
 
       - name: Check if PR exists
