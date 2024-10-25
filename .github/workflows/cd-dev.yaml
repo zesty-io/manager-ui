@@ -27,7 +27,7 @@ jobs:
         with:
           project_id: zesty-dev
       - name: Set up Node
-        uses: actions/setup-node@latest
+        uses: actions/setup-node@v4.1.0
         with:
           node-version: "16.5.0"
           cache: "npm"
