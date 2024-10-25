@@ -104,6 +104,7 @@ export const ItemList = () => {
     selectFilteredItems(state, modelZUID, activeLangId, !hasMounted)
   );
   const allFields = useSelector((state: AppState) => state.fields);
+  const user = useSelector((state: AppState) => state.user);
   const { data: users, isFetching: isUsersFetching } = useGetUsersQuery();
 
   const [isModelItemsFetching, setIsModelItemsFetching] = useState(true);
@@ -192,9 +193,9 @@ export const ItemList = () => {
   }, [modelZUID, activeLanguageCode]);
 
   useEffect(() => {
-    // if languages and no language param, set the first language as the active language
+    // if languages and no language param, set the user selected lang or first language as the active language
     if (languages && !activeLanguageCode) {
-      setParams(languages[0].code, "lang");
+      setParams(user?.selected_lang || languages[0].code, "lang");
     }
   }, [languages, activeLanguageCode]);
 
