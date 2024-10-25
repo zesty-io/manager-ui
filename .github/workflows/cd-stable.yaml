@@ -51,8 +51,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Switch branch to beta
-        run: git checkout beta
+      - name: Switch branch to stable
+        run: git checkout stable
       - name: Get commit short hash
         id: get_commit
         run: echo "hash=$(git rev-parse --short HEAD)"
