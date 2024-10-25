@@ -51,8 +51,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Switch branch to beta
-        run: git checkout beta
+      - name: Switch branch to stable
+        run: git checkout stable
       - name: Get commit short hash
         id: get_commit
         run: echo "hash=$(git rev-parse --short HEAD)"
@@ -61,9 +61,8 @@ jobs:
       - name: Push tag to remote
         run: git push origin tag release-${{steps.get_commit.hash}}
 
-  # Delete the beta branch after it is merged into beta
+  # Delete the beta branch after it has been tagged
   delete_beta_branch:
-    # needs: [deploy_stable]
     if: github.head_ref == 'beta'
     runs-on: ubuntu-latest
     steps:
@@ -74,7 +73,7 @@ jobs:
 
   # Delete the stable branch after it is merged into stable
   delete_stable_branch:
-    needs: [deploy_stable]
+    needs: [create_release_tag, deploy_stable]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
