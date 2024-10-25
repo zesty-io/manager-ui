@@ -102,7 +102,7 @@ jobs:
           echo "origin_branch_list=$(git branch -r --list origin/stable)" >> "$GITHUB_ENV"
 
       - name: Ensure origin/stable branch exists
-        if: $origin_branch_list != 'origin/stable'
+        if: env.origin_branch_list != 'origin/stable'
         run: git checkout beta && git switch --create stable && git push -u origin stable
 
       - name: Check if PR exists
