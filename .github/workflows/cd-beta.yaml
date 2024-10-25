@@ -1,5 +1,9 @@
 name: cd-beta
 
+concurrency:
+  group: beta
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -21,7 +25,7 @@ jobs:
   #           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
   #         if: "github.ref != 'refs/heads/master'"
   #       - name: Checkout Repo
-  #         uses: actions/checkout@v2
+  #         uses: actions/checkout@v4
   #       - name: Auth with Gcloud
   #         uses: google-github-actions/auth@v0
   #         with:
@@ -77,12 +81,25 @@ jobs:
   #           SLACK_USERNAME: Deploy Bot
   #           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-  create_stable_pr:
+  # Delete the stage branch after it is merged into beta
+  delete_stage_branch:
+    if: github.head_ref == 'stage'
     runs-on: ubuntu-latest
-    # needs: [deploy_beta]
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+      - name: Delete stage branch
+        run: git push origin :stage
+
+  create_stable_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Ensure origin/stable branch exists
+        if: git branch -r --list origin/stable != 'origin/stable'
+        run: it checkout beta && git switch --create stable && git push -u origin stable
 
       - name: Check if PR exists
         id: check
@@ -101,7 +118,6 @@ jobs:
 
       - name: Create Stable Release
         if: "!steps.check.outputs.skip"
-
         run: gh pr create -B stable -H beta --title 'Stable Release' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

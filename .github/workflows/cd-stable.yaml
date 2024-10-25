@@ -6,45 +6,81 @@ on:
       - stable
 
 jobs:
-#   deploy_stable:
-#     runs-on: ubuntu-latest
-#     env:
-#       ENV: "prod"
+  #   deploy_stable:
+  #     runs-on: ubuntu-latest
+  #     env:
+  #       ENV: "prod"
 
-#     steps:
-#       # This Clean step simply checks if there's already a workflow running from the last
-#       # commit and cancels it if there is. This helps us save on cloud cost in the long run.
-#       # See https://github.com/rokroskar/workflow-run-cleanup-action for more information.
-#       - name: Clean
-#         uses: rokroskar/workflow-run-cleanup-action@v0.2.2
-#         env:
-#           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-#         if: "github.ref != 'refs/heads/master'"
-#       - name: Checkout Repo
-#         uses: actions/checkout@v2
-#       - name: Auth with Gcloud
-#         uses: google-github-actions/auth@v0
-#         with:
-#           credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
-#       - name: Set up Gcloud SDK
-#         uses: google-github-actions/setup-gcloud@v0
-#         with:
-#           project_id: zesty-prod
-#       - name: Set up Node
-#         uses: actions/setup-node@v2
-#         with:
-#           node-version: "16.5.0"
-#           cache: "npm"
-#           cache-dependency-path: package-lock.json
-#       - name: Install Dependencies
-#         run: npm install
-#       - name: Build
-#         run: npm run build:prod
-#         env:
-#           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-#       - name: Deploy Stable
-#         run: gcloud app deploy app.yaml --quiet --project zesty-prod
+  #     steps:
+  #       # This Clean step simply checks if there's already a workflow running from the last
+  #       # commit and cancels it if there is. This helps us save on cloud cost in the long run.
+  #       # See https://github.com/rokroskar/workflow-run-cleanup-action for more information.
+  #       - name: Clean
+  #         uses: rokroskar/workflow-run-cleanup-action@v0.2.2
+  #         env:
+  #           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+  #         if: "github.ref != 'refs/heads/master'"
+  #       - name: Checkout Repo
+  #         uses: actions/checkout@v4
+  #       - name: Auth with Gcloud
+  #         uses: google-github-actions/auth@v0
+  #         with:
+  #           credentials_json: ${{ secrets.GCP_DEV_SA_KEY }}
+  #       - name: Set up Gcloud SDK
+  #         uses: google-github-actions/setup-gcloud@v0
+  #         with:
+  #           project_id: zesty-prod
+  #       - name: Set up Node
+  #         uses: actions/setup-node@v2
+  #         with:
+  #           node-version: "16.5.0"
+  #           cache: "npm"
+  #           cache-dependency-path: package-lock.json
+  #       - name: Install Dependencies
+  #         run: npm install
+  #       - name: Build
+  #         run: npm run build:prod
+  #         env:
+  #           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  #       - name: Deploy Stable
+  #         run: gcloud app deploy app.yaml --quiet --project zesty-prod
 
+  create_release_tag:
+    runs-on: ubuntu-latest
+    #  needs: [deploy_stable]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Switch branch to beta
+        run: git checkout beta
+      - name: Get commit short hash
+        id: get_commit
+        run: echo "hash=release-$(git rev-parse --short HEAD)"
+      - name: Tag Release
+        run: git tag ${{steps.get_commit.hash}}
+      - name: Push tag to remote
+        run: git push origin tag ${{steps.get_commit.hash}}
+
+  # Delete the beta branch after it is merged into beta
+  delete_beta_branch:
+    # needs: [deploy_stable]
+    if: github.head_ref == 'beta'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Delete beta branch
+        run: git push origin :beta
+
+  # Delete the stable branch after it is merged into stable
+  delete_stable_branch:
+    needs: [deploy_stable]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Delete stable branch
+        run: git push origin :stable
 #   failed_deploy_notification_to_slack:
 #     runs-on: ubuntu-latest
 #     if: ${{ failure() }}
