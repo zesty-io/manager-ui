@@ -80,7 +80,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Retrive latest branches
-        uses: git fetch origin
+        run: git fetch origin
 
       - name: Get origin branch list
         run: |

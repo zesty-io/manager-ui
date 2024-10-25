@@ -52,7 +52,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
       - name: Retrive latest branches
-        uses: git fetch origin
+        run: git fetch origin
       - name: Switch branch to stable
         run: git checkout stable
       - name: Get commit short hash
