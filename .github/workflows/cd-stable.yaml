@@ -31,7 +31,7 @@ jobs:
   #         with:
   #           project_id: zesty-prod
   #       - name: Set up Node
-  #         uses: actions/setup-node@v2
+  #         uses: actions/setup-node@v4.1.0
   #         with:
   #           node-version: "16.5.0"
   #           cache: "npm"
@@ -51,6 +51,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+      - name: Retrive latest branches
+        run: git fetch origin
       - name: Switch branch to stable
         run: git checkout stable
       - name: Get commit short hash

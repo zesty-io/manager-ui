@@ -30,7 +30,7 @@ jobs:
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
       - name: Set up Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4.1.0
         with:
           node-version: "16.5.0"
           cache: "npm"

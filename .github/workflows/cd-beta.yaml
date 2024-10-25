@@ -35,7 +35,7 @@ jobs:
   #         with:
   #           project_id: zesty-prod
   #       - name: Set up Node
-  #         uses: actions/setup-node@v2
+  #         uses: actions/setup-node@v4.1.0
   #         with:
   #           node-version: "16.5.0"
   #           cache: "npm"
@@ -97,9 +97,12 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Retrive latest branches
+        run: git fetch origin
+
       - name: Get origin branch list
         run: |
-          echo "origin_branch_list=$(git branch -r --list origin/stable)" >> "$GITHUB_ENV"
+          echo "origin_branch_list=$(git branch -r --list origin/stable | xargs)" >> "$GITHUB_ENV"
 
       - name: Ensure origin/stable branch exists
         if: env.origin_branch_list != 'origin/stable'
