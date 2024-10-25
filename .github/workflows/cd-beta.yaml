@@ -99,7 +99,7 @@ jobs:
 
       - name: Ensure origin/stable branch exists
         if: git branch -r --list origin/stable != 'origin/stable'
-        run: it checkout beta && git switch --create stable && git push -u origin stable
+        run: git checkout beta && git switch --create stable && git push -u origin stable
 
       - name: Check if PR exists
         id: check
