@@ -211,7 +211,7 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
           });
       }
     }
-  }, []);
+  }, [rawNavData]);
 
   return (
     <Box id="parentZUID">
