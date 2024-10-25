@@ -1,9 +1,14 @@
 name: cd-stage
 
+concurrency:
+  group: stage
+  cancel-in-progress: true
+
 on:
   push:
     branches:
       - stage
+
 jobs:
   deploy_stage:
     runs-on: ubuntu-latest
@@ -20,7 +25,7 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         if: "github.ref != 'refs/heads/master'"
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Auth with Gcloud
         uses: google-github-actions/auth@v0
         with:
@@ -44,7 +49,7 @@ jobs:
       - name: Deploy to Stage
         run: gcloud app deploy app.yaml --quiet --project zesty-stage
 
-  failed_deploy_notification_to_slack:
+  deploy_failed_notification_to_slack:
     runs-on: ubuntu-latest
     if: ${{ failure() }}
     needs: [deploy_stage]
@@ -60,7 +65,7 @@ jobs:
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-  success_deploy_notification_to_slack:
+  deploy_success_notification_to_slack:
     runs-on: ubuntu-latest
     if: ${{ success() }}
     needs: [deploy_stage]
@@ -78,10 +83,13 @@ jobs:
 
   create_beta_pr:
     runs-on: ubuntu-latest
-    # needs: [deploy_stage]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+
+      - name: Ensure origin/beta branch exists
+        if: git branch -r --list origin/beta != 'origin/beta'
+        run: git checkout stage && git switch --create beta && git push -u origin beta
 
       - name: Check if PR exists
         id: check

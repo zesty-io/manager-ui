@@ -5,9 +5,6 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  # Uncomment to work on CD in development mode.
-  # pull_request:
-  #   branches: [ master ]
   push:
     branches:
       - dev
@@ -44,7 +41,7 @@ jobs:
       - name: Deploy to Dev
         run: gcloud app deploy app.yaml --quiet --project zesty-dev
 
-  failed_deploy_notification_to_slack:
+  deploy_failed_notification_to_slack:
     runs-on: ubuntu-latest
     if: ${{ failure() }}
     needs: [deploy_dev]
@@ -60,7 +57,7 @@ jobs:
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-  success_deploy_notification_to_slack:
+  deploy_success_notification_to_slack:
     runs-on: ubuntu-latest
     if: ${{ success() }}
     needs: [deploy_dev]
@@ -76,41 +73,15 @@ jobs:
           SLACK_USERNAME: Deploy Bot
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-  # create_release:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v4
-  #     - name: create local branch
-  #       run: git switch --create stage
-  #     - name: push local branch to origin
-  #       run: git push -u origin stage
-  #     - name: make pr
-  #       run: gh pr create -B stage -H dev --title 'Stage Release' --body 'Created by Github action'
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # release-please:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v2
-  #     - uses: google-github-actions/release-please-action@v4
-  #       with:
-  #         # this assumes that you have created a personal access token
-  #         # (PAT) and configured it as a GitHub action secret named
-  #         # `MY_RELEASE_PLEASE_TOKEN` (this secret name is not important).
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         # this is a built-in strategy in release-please, see "Action Inputs"
-  #         # for more options
-  #         release-type: node
-  #         target-branch: stage
-
   create_stage_pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+
+      - name: Ensure origin/stage branch exists
+        if: git branch -r --list origin/stage != 'origin/stage'
+        run: git checkout dev && git switch --create stage && git push -u origin stage
 
       - name: Check if PR exists
         id: check
