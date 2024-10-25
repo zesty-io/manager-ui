@@ -33,10 +33,7 @@ import {
 import { AppState } from "../../../../../../../shell/store/types";
 import { Error } from "../../../components/Editor/Field/FieldShell";
 import { fetchGlobalItem } from "../../../../../../../shell/store/content";
-import {
-  ContentModelField,
-  Web,
-} from "../../../../../../../shell/services/types";
+import { ContentModelField } from "../../../../../../../shell/services/types";
 import { SocialMediaPreview } from "./SocialMediaPreview";
 import { validateMetaDescription } from "./settings/util";
 
@@ -54,7 +51,7 @@ import { OGTitle } from "./settings/OGTitle";
 import { OGDescription } from "./settings/OGDescription";
 import { TCTitle } from "./settings/TCTitle";
 import { TCDescription } from "./settings/TCDescription";
-import { FieldError } from "../../../components/Editor/FieldError";
+import { TCImage } from "./settings/TCImage";
 
 const rotateAnimation = keyframes`
 	0% {
@@ -99,6 +96,7 @@ export const DYNAMIC_META_FIELD_NAMES = [
   "og_description",
   "tc_title",
   "tc_description",
+  "tc_image",
 ];
 
 type Errors = Record<string, Error>;
@@ -512,6 +510,14 @@ export const Meta = forwardRef(
                   onChange={handleOnChange}
                   error={errors?.tc_description}
                   field={metaFields.tc_description}
+                />
+              )}
+              {"tc_image" in metaFields && (
+                <TCImage
+                  field={metaFields.tc_image}
+                  onChange={handleOnChange}
+                  error={errors?.tc_image}
+                  value={data.tc_image as string}
                 />
               )}
             </Stack>
