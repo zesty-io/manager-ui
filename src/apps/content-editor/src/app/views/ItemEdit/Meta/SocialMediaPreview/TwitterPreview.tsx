@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Typography, Box, Stack } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
 import { useLocation, useParams } from "react-router";
@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
+import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
 
 type TwitterPreviewProps = {
   imageURL: string;
@@ -17,11 +18,37 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
   }>();
   const domain = useDomain();
   const location = useLocation();
+  const [getFile] = useLazyGetFileQuery();
+  const [tcImageURL, setTcImageURL] = useState<string>(null);
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
   const item = useSelector(
     (state: AppState) =>
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
+
+  useEffect(() => {
+    if (!!item?.data?.tc_image) {
+      const tcImage = String(item?.data?.tc_image)
+        ?.split(",")
+        ?.filter((el: string) => el)?.[0];
+
+      if (tcImage.startsWith("3-")) {
+        getFile(String(item.data.tc_image), true)
+          .unwrap()
+          .then((res) => {
+            setTcImageURL(res.url);
+          })
+          .catch((err) => {
+            console.error(`Failed to retrieve image ${tcImage}: `, err);
+            setTcImageURL(null);
+          });
+      } else {
+        setTcImageURL(tcImage);
+      }
+    } else {
+      setTcImageURL(imageURL);
+    }
+  }, [item?.data?.tc_image]);
 
   return (
     <Stack
@@ -31,7 +58,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
       border={1}
       borderColor="border"
     >
-      {!!imageURL ? (
+      {!!tcImageURL ? (
         <Box
           component="img"
           sx={{
@@ -40,7 +67,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
           }}
           width={128}
           height={128}
-          src={`${imageURL}?width=128&height=128&fit=cover`}
+          src={`${tcImageURL}?width=128&height=128&fit=cover`}
           flexShrink={0}
           borderRadius="8px 0 0 8px"
         />
