@@ -52,6 +52,7 @@ export const SocialMediaPreview = ({}: SocialMediaPreviewProps) => {
             iconPosition="start"
             label="Twitter (X)"
             value={SocialMediaTab.Twitter}
+            data-cy="SocialMediaPreviewTwitter"
           />
           <Tab
             icon={<FacebookRounded />}

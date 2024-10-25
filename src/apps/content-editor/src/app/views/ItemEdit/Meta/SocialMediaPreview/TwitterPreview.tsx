@@ -60,6 +60,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
     >
       {!!tcImageURL ? (
         <Box
+          data-cy="TwitterCardImage"
           component="img"
           sx={{
             backgroundColor: (theme) => theme.palette.grey[100],
@@ -102,6 +103,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
           {domain.replace(/http:\/\/|https:\/\//gm, "")}
         </Typography>
         <Typography
+          data-cy="TwitterCardTitle"
           variant="body2"
           color={
             !!item?.data?.tc_title || !!item?.web?.metaTitle
@@ -122,6 +124,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
           {item?.data?.tc_title || item?.web?.metaTitle || "Meta Title"}
         </Typography>
         <Typography
+          data-cy="TwitterCardDescription"
           variant="body2"
           color={
             !!item?.data?.tc_title || !!item?.web?.metaDescription

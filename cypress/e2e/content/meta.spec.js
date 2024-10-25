@@ -123,4 +123,33 @@ describe("Content Meta", () => {
 
     cy.contains("/page/otherpage/all-field-types/").should("exist");
   });
+
+  it("Supports a dedicated Twitter title, description and image", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.waitOn("/v1/env/nav", () => {
+        cy.waitOn("/v1/search/items*", () => {
+          // TODO: Update the zuids once nightly sync is done
+          cy.visit("/content/6-92f180cbfb-fqv3m7/7-96d9a18a8a-sm9k6m/meta");
+        });
+      });
+    });
+
+    const title = `Twitter title ${today}`;
+    const description = `Twitter description ${today}`;
+
+    cy.getBySelector("TCTitle").find("input").type(`{selectAll}{del}${title}`);
+    cy.getBySelector("TCDescription")
+      .find("textarea")
+      .first()
+      .type(`{selectAll}{del}${description}`);
+    cy.getBySelector("SocialMediaPreviewTwitter").click();
+
+    cy.getBySelector("TwitterCardTitle").contains(title);
+    cy.getBySelector("TwitterCardDescription").contains(description);
+    cy.getBySelector("TwitterCardImage").should(
+      "have.attr",
+      "src",
+      "https://wave-trial.getbynder.com/m/45b0d3ba0b271504/original/kim-cruickshanks-176374.jpg?width=128&height=128&fit=cover"
+    );
+  });
 });
