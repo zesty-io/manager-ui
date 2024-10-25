@@ -87,6 +87,9 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Retrive latest branches
+        uses: git fetch origin
+
       - name: Get origin branch list
         run: |
           echo "origin_branch_list=$(git branch -r --list origin/beta)" >> "$GITHUB_ENV"
