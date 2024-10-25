@@ -87,8 +87,12 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Get origin branch list
+        run: |
+          echo "origin_branch_list=$(git branch -r --list origin/beta)" >> "$GITHUB_ENV"
+
       - name: Ensure origin/beta branch exists
-        if: git branch -r --list origin/beta != 'origin/beta'
+        if: $origin_branch_list != 'origin/beta'
         run: git checkout stage && git switch --create beta && git push -u origin beta
 
       - name: Check if PR exists
