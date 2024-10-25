@@ -102,7 +102,7 @@ jobs:
 
       - name: Get origin branch list
         run: |
-          echo "origin_branch_list=$(git branch -r --list origin/stable)" >> "$GITHUB_ENV"
+          echo "origin_branch_list=$(git branch -r --list origin/stable | xargs)" >> "$GITHUB_ENV"
 
       - name: Ensure origin/stable branch exists
         if: env.origin_branch_list != 'origin/stable'

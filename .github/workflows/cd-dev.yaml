@@ -84,7 +84,7 @@ jobs:
 
       - name: Get origin branch list
         run: |
-          echo "origin_branch_list=$(git branch -r --list origin/stage)" >> "$GITHUB_ENV"
+          echo "origin_branch_list=$(git branch -r --list origin/stage | xargs)" >> "$GITHUB_ENV"
 
       - name: Ensure origin/stage branch exists
         if: env.origin_branch_list != 'origin/stage'
