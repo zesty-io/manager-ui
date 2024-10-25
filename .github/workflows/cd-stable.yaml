@@ -55,11 +55,11 @@ jobs:
         run: git checkout beta
       - name: Get commit short hash
         id: get_commit
-        run: echo "hash=release-$(git rev-parse --short HEAD)"
+        run: echo "hash=$(git rev-parse --short HEAD)"
       - name: Tag Release
-        run: git tag ${{steps.get_commit.hash}}
+        run: git tag release-${{steps.get_commit.hash}} ${{steps.get_commit.hash}}
       - name: Push tag to remote
-        run: git push origin tag ${{steps.get_commit.hash}}
+        run: git push origin tag release-${{steps.get_commit.hash}}
 
   # Delete the beta branch after it is merged into beta
   delete_beta_branch:
