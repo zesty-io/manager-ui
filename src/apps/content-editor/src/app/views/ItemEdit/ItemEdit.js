@@ -589,6 +589,9 @@ export default function ItemEdit() {
                     "/content/:modelZUID/:itemZUID",
                     "/content/:modelZUID/:itemZUID/comment/:resourceZUID",
                     "/content/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
+                    "/blocks/:modelZUID/:itemZUID",
+                    "/blocks/:modelZUID/:itemZUID/comment/:resourceZUID",
+                    "/blocks/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
                   ]}
                   render={() => (
                     <ItemLockContext.Provider value={isLocked}>

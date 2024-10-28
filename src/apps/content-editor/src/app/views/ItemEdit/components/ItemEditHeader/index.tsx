@@ -105,6 +105,9 @@ export const ItemEditHeader = ({
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
   );
 
+  const modelLabel = contentModels?.find(
+    (model) => model.ZUID === modelZUID
+  )?.label;
   const type =
     contentModels?.find((model) => model.ZUID === modelZUID)?.type ?? "";
 
@@ -118,6 +121,7 @@ export const ItemEditHeader = ({
         <Box
           px={4}
           pt={4}
+          pb={type === "block" ? 1 : 0}
           sx={{
             backgroundColor: "background.paper",
             color: "text.primary",
@@ -130,7 +134,7 @@ export const ItemEditHeader = ({
         >
           <Box display="flex" justifyContent="space-between" gap={4}>
             <Box>
-              <ContentBreadcrumbs />
+              {type !== "block" && <ContentBreadcrumbs />}
               <Typography
                 variant="h3"
                 fontWeight="700"
@@ -144,7 +148,9 @@ export const ItemEditHeader = ({
                   overflow: "hidden",
                 }}
               >
-                {headerTitle || ""}
+                {(type === "block"
+                  ? `${modelLabel}: ${headerTitle}`
+                  : headerTitle) || ""}
               </Typography>
             </Box>
             <Stack gap={1.25}>
@@ -172,7 +178,13 @@ export const ItemEditHeader = ({
                     <ContentCopyRounded fontSize="small" />
                   </IconButton>
                 </Tooltip>
-                {type !== "dataset" && <PreviewMenu />}
+                {type !== "dataset" && type !== "block" && <PreviewMenu />}
+                {type === "block" && (
+                  <>
+                    <LanguageSelector />
+                    <VersionSelector />
+                  </>
+                )}
                 <ItemEditHeaderActions
                   saving={saving}
                   onSave={onSave}
@@ -182,56 +194,58 @@ export const ItemEditHeader = ({
               <PublishStatus currentVersion={item?.web?.version} />
             </Stack>
           </Box>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mt={2}
-          >
-            <Tabs
-              variant="scrollable"
-              scrollButtons={false}
-              value={
-                tabs.find(
-                  (tab) =>
-                    tab.label !== "Content" &&
-                    location.pathname.includes(tab.value)
-                )?.value || ""
-              }
-              onChange={(event, value) =>
-                history.push(
-                  value
-                    ? `/content/${modelZUID}/${itemZUID}/${value}`
-                    : `/content/${modelZUID}/${itemZUID}`
-                )
-              }
-              sx={{
-                position: "relative",
-                top: "2px",
-              }}
+          {type !== "block" && (
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mt={2}
             >
-              {tabs.map((tab) => {
-                if (tab.label === "Freestyle" && !layoutsAppInstalled) {
-                  return;
-                } else
-                  return (
-                    <Tab
-                      key={tab.value}
-                      disableRipple
-                      label={tab.label}
-                      value={tab.value}
-                      icon={<tab.icon fontSize="small" />}
-                      iconPosition="start"
-                    />
-                  );
-              })}
-            </Tabs>
-            <Box display="flex" gap={2} alignItems="center">
-              <DuoModeSwitch />
-              <LanguageSelector />
-              <VersionSelector />
+              <Tabs
+                variant="scrollable"
+                scrollButtons={false}
+                value={
+                  tabs.find(
+                    (tab) =>
+                      tab.label !== "Content" &&
+                      location.pathname.includes(tab.value)
+                  )?.value || ""
+                }
+                onChange={(event, value) =>
+                  history.push(
+                    value
+                      ? `/content/${modelZUID}/${itemZUID}/${value}`
+                      : `/content/${modelZUID}/${itemZUID}`
+                  )
+                }
+                sx={{
+                  position: "relative",
+                  top: "2px",
+                }}
+              >
+                {tabs.map((tab) => {
+                  if (tab.label === "Freestyle" && !layoutsAppInstalled) {
+                    return;
+                  } else
+                    return (
+                      <Tab
+                        key={tab.value}
+                        disableRipple
+                        label={tab.label}
+                        value={tab.value}
+                        icon={<tab.icon fontSize="small" />}
+                        iconPosition="start"
+                      />
+                    );
+                })}
+              </Tabs>
+              <Box display="flex" gap={2} alignItems="center">
+                <DuoModeSwitch />
+                <LanguageSelector />
+                <VersionSelector />
+              </Box>
             </Box>
-          </Box>
+          )}
         </Box>
         {showDuplicateItemDialog && (
           <DuplicateItemDialog

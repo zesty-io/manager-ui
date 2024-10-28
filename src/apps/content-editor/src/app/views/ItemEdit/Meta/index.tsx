@@ -117,7 +117,7 @@ export const Meta = forwardRef(
       modelZUID: string;
       itemZUID: string;
     }>();
-    const { data: model } = useGetContentModelQuery(modelZUID, {
+    const { data: model, isFetching } = useGetContentModelQuery(modelZUID, {
       skip: !modelZUID,
     });
     const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
@@ -159,7 +159,7 @@ export const Meta = forwardRef(
     const REQUIRED_FIELDS = useMemo(() => {
       const fields = ["metaTitle", "parentZUID", "pathPart"];
 
-      if (model?.type !== "dataset") {
+      if (model?.type !== "dataset" && model?.type !== "block") {
         fields.push("metaDescription");
       }
 
@@ -277,7 +277,11 @@ export const Meta = forwardRef(
             };
 
             // No need to validate pathPart for datasets
-            if (model?.type === "dataset" || web?.pathPart === "zesty_home") {
+            if (
+              model?.type === "dataset" ||
+              model?.type === "block" ||
+              web?.pathPart === "zesty_home"
+            ) {
               delete currentErrors.pathPart;
               delete currentErrors.parentZUID;
             }
@@ -336,7 +340,9 @@ export const Meta = forwardRef(
       }
     }, [flowType, isCreateItemPage, meta?.ZUID]);
 
-    if (isCreateItemPage && flowType === null) {
+    if (isFetching) return null;
+
+    if (isCreateItemPage && flowType === null && model?.type !== "block") {
       return (
         <ThemeProvider theme={theme}>
           <Box
@@ -414,6 +420,36 @@ export const Meta = forwardRef(
           <Box sx={{ display: "none" }}>
             <ItemParent onChange={handleOnChange} />
           </Box>
+        </ThemeProvider>
+      );
+    }
+
+    if (model?.type === "block" && isCreateItemPage) {
+      return (
+        <ThemeProvider theme={theme}>
+          <Stack gap={3} pb={2} mb={2}>
+            {!!errorComponent && errorComponent}
+            <MetaTitle
+              label="Variant Title"
+              aiButtonRef={metaTitleButtonRef}
+              value={web.metaTitle}
+              onChange={handleOnChange}
+              error={errors?.metaTitle}
+              onResetFlowType={() => {
+                if (flowType === FlowType.AIGenerated) {
+                  console.log("reset on meta title");
+                  setFlowType(FlowType.Manual);
+                }
+              }}
+              onAIMetaTitleInserted={() => {
+                // Scroll to and open the meta description ai generator to continue
+                // with the AI-assisted flow
+                if (flowType === FlowType.AIGenerated) {
+                  metaDescriptionButtonRef.current?.triggerAIButton?.();
+                }
+              }}
+            />
+          </Stack>
         </ThemeProvider>
       );
     }

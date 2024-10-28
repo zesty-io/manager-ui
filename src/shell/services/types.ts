@@ -64,7 +64,7 @@ export interface File {
   storage_name: string;
 }
 
-export type ModelType = "pageset" | "templateset" | "dataset";
+export type ModelType = "pageset" | "templateset" | "dataset" | "block";
 
 export interface ContentModel {
   ZUID: string;

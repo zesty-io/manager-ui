@@ -4,17 +4,20 @@ import { Validation } from "../components/AddFieldModal/FieldFormInput";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import { FileTable } from "@zesty-io/material";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import ViewInArRoundedIcon from "@mui/icons-material/ViewInArRounded";
 
 export const modelIconMap = {
   templateset: DescriptionRoundedIcon,
   dataset: FileTable,
   pageset: FormatListBulletedRoundedIcon,
+  block: ViewInArRoundedIcon,
 };
 
 export const modelNameMap = {
   templateset: "Single Page",
   dataset: "Dataset",
   pageset: "Multi Page",
+  block: "Block",
 };
 
 export const stringStartsWithVowel = (string: string): boolean => {
