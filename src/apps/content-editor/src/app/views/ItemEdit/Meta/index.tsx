@@ -427,7 +427,15 @@ export const Meta = forwardRef(
     if (model?.type === "block" && isCreateItemPage) {
       return (
         <ThemeProvider theme={theme}>
-          <Stack gap={3} pb={2} mb={2}>
+          <Stack
+            gap={3}
+            pb={2}
+            mb={2}
+            sx={{
+              borderBottom: "2px solid",
+              borderColor: "border",
+            }}
+          >
             {!!errorComponent && errorComponent}
             <MetaTitle
               label="Variant Title"
