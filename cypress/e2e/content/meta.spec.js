@@ -128,8 +128,7 @@ describe("Content Meta", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
-          // TODO: Update the zuids once nightly sync is done
-          cy.visit("/content/6-92f180cbfb-fqv3m7/7-96d9a18a8a-sm9k6m/meta");
+          cy.visit("/content/6-b6cde1aa9f-wftv50/7-92ab81c5a8-bhvb0l/meta");
         });
       });
     });
