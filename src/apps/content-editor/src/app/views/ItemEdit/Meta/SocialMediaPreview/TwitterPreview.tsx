@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
+import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
 
 type TwitterPreviewProps = {
   imageURL: string;
@@ -36,7 +37,23 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
         getFile(String(item.data.tc_image), true)
           .unwrap()
           .then((res) => {
-            setTcImageURL(res.url);
+            const isImage = [
+              "png",
+              "jpg",
+              "jpeg",
+              "svg",
+              "gif",
+              "tif",
+              "webp",
+            ].includes(fileExtension(res.url || ""));
+
+            // Only use the media item if it's actually an image, else use whatever is
+            // stored in the meta image or first image field
+            if (isImage) {
+              setTcImageURL(res.url);
+            } else {
+              setTcImageURL(imageURL);
+            }
           })
           .catch((err) => {
             console.error(`Failed to retrieve image ${tcImage}: `, err);
