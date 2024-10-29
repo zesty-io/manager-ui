@@ -148,7 +148,7 @@ describe("Content Meta", () => {
     cy.getBySelector("TwitterCardImage").should(
       "have.attr",
       "src",
-      "https://wave-trial.getbynder.com/m/45b0d3ba0b271504/original/kim-cruickshanks-176374.jpg?width=128&height=128&fit=cover"
+      "https://wave-trial.getbynder.com/m/45b0d3ba0b271504/original/kim-cruickshanks-176374.jpg"
     );
   });
 });
