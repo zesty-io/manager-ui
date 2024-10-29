@@ -6,8 +6,6 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
-import { useLazyGetFileQuery } from "../../../../../../../../shell/services/mediaManager";
-import { fileExtension } from "../../../../../../../media/src/app/utils/fileUtils";
 
 type TwitterPreviewProps = {
   imageURL: string;
@@ -19,7 +17,6 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
   }>();
   const domain = useDomain();
   const location = useLocation();
-  const [getFile] = useLazyGetFileQuery();
   const [tcImageURL, setTcImageURL] = useState<string>(null);
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
   const item = useSelector(
@@ -34,36 +31,21 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
         ?.filter((el: string) => el)?.[0];
 
       if (tcImage.startsWith("3-")) {
-        getFile(String(item.data.tc_image), true)
-          .unwrap()
-          .then((res) => {
-            const isImage = [
-              "png",
-              "jpg",
-              "jpeg",
-              "svg",
-              "gif",
-              "tif",
-              "webp",
-            ].includes(fileExtension(res.url || ""));
-
-            // Only use the media item if it's actually an image, else use whatever is
-            // stored in the meta image or first image field
-            if (isImage) {
-              setTcImageURL(res.url);
-            } else {
-              setTcImageURL(imageURL);
-            }
-          })
-          .catch((err) => {
-            console.error(`Failed to retrieve image ${tcImage}: `, err);
-            setTcImageURL(null);
-          });
+        setTcImageURL(
+          `${
+            // @ts-ignore
+            CONFIG.SERVICE_MEDIA_RESOLVER
+          }/resolve/${
+            item?.data?.tc_image
+          }/getimage/?w=${128}&h=${128}&type=fit`
+        );
       } else {
         setTcImageURL(tcImage);
       }
     } else {
-      setTcImageURL(imageURL);
+      setTcImageURL(
+        !!imageURL ? `${imageURL}?width=128&height=128&fit=cover` : null
+      );
     }
   }, [item?.data?.tc_image]);
 
@@ -85,9 +67,16 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
           }}
           width={128}
           height={128}
-          src={`${tcImageURL}?width=128&height=128&fit=cover`}
+          src={tcImageURL}
           flexShrink={0}
           borderRadius="8px 0 0 8px"
+          onError={(evt: any) => {
+            if (!!imageURL) {
+              evt.currentTarget.src = `${imageURL}?width=128&height=128&fit=cover`;
+            } else {
+              setTcImageURL(null);
+            }
+          }}
         />
       ) : (
         <Stack
