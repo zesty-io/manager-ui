@@ -5,10 +5,8 @@ import {
   TextField,
   InputAdornment,
   IconButton,
-  Typography,
-  Link,
+  Autocomplete,
   Tooltip,
-  Select,
 } from "@mui/material";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -65,7 +63,7 @@ export const FieldsListRight = ({ model }: Props) => {
       });
   };
 
-  const handleSave = (type: "description" | "parentZUID") => {
+  const handleSave = (type: "description" | "parentZUID" | "blockGroup") => {
     let body = { ...model };
 
     switch (type) {
@@ -81,6 +79,10 @@ export const FieldsListRight = ({ model }: Props) => {
           ...body,
           parentZUID: newParentZUID ?? "0",
         };
+        break;
+
+      case "blockGroup":
+        // TODO: Update data here
         break;
 
       default:
@@ -196,6 +198,37 @@ export const FieldsListRight = ({ model }: Props) => {
             Save
           </LoadingButton>
         )}
+      </Box>
+
+      <Box mt={3}>
+        <InputLabel>
+          Block Group
+          <Tooltip
+            placement="top"
+            title="Add your block model to an existing group"
+          >
+            <InfoRoundedIcon
+              sx={{ ml: 1, width: "12px", height: "12px" }}
+              color="action"
+            />
+          </Tooltip>
+        </InputLabel>
+        <Autocomplete
+          options={[]}
+          renderInput={(params) => (
+            <TextField {...params} placeholder="Select" />
+          )}
+        />
+        {/* TODO: Only show once value is changed */}
+        <LoadingButton
+          color="primary"
+          loading={isLoading}
+          variant="contained"
+          onClick={() => handleSave("blockGroup")}
+          sx={{ mt: 1.5 }}
+        >
+          Save
+        </LoadingButton>
       </Box>
 
       <InputLabel sx={{ mt: 3 }}>
