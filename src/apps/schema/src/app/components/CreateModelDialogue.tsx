@@ -29,6 +29,7 @@ import { theme } from "@zesty-io/material";
 import {
   useCreateContentModelMutation,
   useCreateContentItemMutation,
+  useCreateContentModelFieldMutation,
 } from "../../../../../shell/services/instance";
 import { ContentModel, User } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
@@ -123,6 +124,14 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       error: createContentItemError,
     },
   ] = useCreateContentItemMutation();
+  const [
+    createContentModelField,
+    {
+      isLoading: isCreatingOgImageField,
+      isSuccess: isOgImageFieldCreated,
+      error: ogImageFieldCreationError,
+    },
+  ] = useCreateContentModelFieldMutation();
   const user: User = useSelector((state: AppState) => state.user);
 
   const error = createModelError || createContentItemError;
@@ -130,10 +139,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   useEffect(() => {
     if (isModelCreated && !isEmpty(createModelData?.data)) {
       // Create initial content item
-      if (model.type !== "templateset") {
-        history.push(`/schema/${createModelData.data.ZUID}`);
-        onClose();
-      } else {
+      if (model.type === "templateset") {
         createContentItem({
           modelZUID: createModelData.data.ZUID,
           body: {
@@ -153,17 +159,41 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             },
           },
         });
+      } else if (model.type === "block") {
+        // Create an og_image field
+        createContentModelField({
+          modelZUID: createModelData.data?.ZUID,
+          body: {
+            contentModelZUID: createModelData.data?.ZUID,
+            datatype: "images",
+            description:
+              "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
+            label: "Meta Image",
+            name: "og_image",
+            required: false,
+            settings: {
+              defaultValue: null,
+              group_id: "",
+              limit: 1,
+              list: false,
+            },
+            sort: 0, // This is always the first field item
+          },
+        });
+      } else {
+        history.push(`/schema/${createModelData.data.ZUID}`);
+        onClose();
       }
     }
   }, [isModelCreated, createModelData]);
 
   useEffect(() => {
-    // Only navigate to schema page once model and initial content is created for templateset
-    if (isContentItemCreated && createModelData) {
+    // Only navigate to schema page once initial content is created for templateset & og_image field is created for block
+    if ((isContentItemCreated || isOgImageFieldCreated) && createModelData) {
       history.push(`/schema/${createModelData.data.ZUID}`);
       onClose();
     }
-  }, [isContentItemCreated, createModelData]);
+  }, [isContentItemCreated, createModelData, isOgImageFieldCreated]);
 
   useEffect(() => {
     if (error) {
@@ -450,7 +480,11 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               type="submit"
               variant="contained"
               disabled={!model.name || !model.label}
-              loading={!!isCreatingModel || !!isCreatingContentItem}
+              loading={
+                !!isCreatingModel ||
+                !!isCreatingContentItem ||
+                !!isCreatingOgImageField
+              }
               onClick={() =>
                 createModel({
                   ...model,
