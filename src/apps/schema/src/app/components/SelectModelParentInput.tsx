@@ -23,7 +23,7 @@ export const SelectModelParentInput = ({
   value,
   onChange,
   modelType,
-  label = "Select Model Parent",
+  label = "Model Parent",
   tooltip = "",
 }: SelectModelParentInputProps) => {
   const { id } = useParams<{ id: string }>();
@@ -72,7 +72,7 @@ export const SelectModelParentInput = ({
       <Autocomplete
         data-cy="ModelParentSelector"
         fullWidth
-        renderInput={(params) => <TextField {...params} placeholder="None" />}
+        renderInput={(params) => <TextField {...params} placeholder="Select" />}
         value={navItems?.find((m) => m.ZUID === value) || null}
         options={parents}
         onChange={(event, value: ContentNavItem) =>

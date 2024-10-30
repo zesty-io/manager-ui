@@ -40,6 +40,7 @@ import { withCursorPosition } from "../../../../../shell/components/withCursorPo
 import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
 import { SelectModelParentInput } from "./SelectModelParentInput";
+import { SelectBlockGroupInput } from "./SelectBlockGroupInput";
 
 interface Props {
   onClose: () => void;
@@ -51,22 +52,29 @@ const modelTypes = [
     name: "Single Page Model",
     description:
       "Creates individual pages with unique URLs and a code template",
-    examples: "e.g. Home Page, About Page, Contact Page, Landing Page, etc.",
+    examples: "e.g. Home Page, About Page, etc.",
     key: "templateset",
   },
   {
     name: "Multi Page Model",
     description:
       "Creates a collection of pages with unique URLs and a code template",
-    examples: "e.g. Articles, Authors, Products, Team Members, etc.",
+    examples: "e.g. Articles, Authors, Products, etc. ",
     key: "pageset",
   },
   {
     name: "Dataset Model",
     description:
       "Creates a collection of entries with no URLs and no code templates",
-    examples: "e.g. Categories, Logos, Slides, FAQS, Brands, etc.",
+    examples: "e.g. Slides, FAQS, Brands, etc.",
     key: "dataset",
+  },
+  {
+    name: "Block Model",
+    description:
+      "Creates a collection of entries with no URLs and a code template",
+    examples: "e.g. Heros, Features, Testimonials, etc.",
+    key: "block",
   },
 ];
 
@@ -213,7 +221,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             </Stack>
           </DialogTitle>
           <DialogContent sx={{ pt: 2.5, backgroundColor: "grey.50" }} dividers>
-            <Box display="flex" flexDirection="column" gap={2}>
+            <Box display="grid" gap={2} gridTemplateColumns="1fr 1fr">
               {modelTypes.map((modelType) => (
                 <ListItemButton
                   selected={type === modelType.key}
@@ -232,6 +240,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                         color: "primary.main",
                       },
                     },
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: 2,
                   }}
                 >
                   <ListItemIcon sx={{ minWidth: 48 }}>
@@ -380,6 +391,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 }
                 tooltip="Selecting a parent affects default routing and content navigation in the UI"
               />
+              {model.type === "block" && <SelectBlockGroupInput />}
               <Box>
                 <InputLabel>
                   Description
