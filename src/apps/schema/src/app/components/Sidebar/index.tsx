@@ -78,6 +78,13 @@ export const Sidebar = () => {
                 }
               />
             </Box>
+            <Box pt={1.5}>
+              <ModelList
+                title="blocks"
+                type="block"
+                models={models?.filter((model) => model.type === "block") || []}
+              />
+            </Box>
           </>
         )}
       </AppSideBar>
