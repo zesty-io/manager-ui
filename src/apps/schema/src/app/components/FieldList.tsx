@@ -229,6 +229,9 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
           {Boolean(filteredFields?.length) && (
             <>
               {filteredFields?.map((field, index) => {
+                if (field.name === "og_image" && model?.type === "block")
+                  return <></>;
+
                 return (
                   <Box key={field.ZUID}>
                     {index !== 0 && (

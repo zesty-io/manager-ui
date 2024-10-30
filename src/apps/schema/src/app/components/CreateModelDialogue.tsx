@@ -177,7 +177,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               limit: 1,
               list: false,
             },
-            sort: 0, // This is always the first field item
+            sort: 9999,
           },
         });
       } else {
