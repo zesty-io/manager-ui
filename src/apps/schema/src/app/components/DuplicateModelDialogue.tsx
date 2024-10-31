@@ -40,6 +40,7 @@ import { useHistory } from "react-router";
 import { modelIconMap, modelNameMap } from "../utils";
 import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
+import { SelectBlockGroupInput } from "./SelectBlockGroupInput";
 
 interface Props {
   onClose: () => void;
@@ -274,11 +275,11 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
             />
           </Box>
           <Box>
-            <InputLabel>Select Model Parent</InputLabel>
+            <InputLabel>Model Parent</InputLabel>
             <Autocomplete
               fullWidth
               renderInput={(params) => (
-                <TextField {...params} placeholder="None" />
+                <TextField {...params} placeholder="Select" />
               )}
               options={parents}
               onChange={(event, value: ContentNavItem) =>
@@ -291,6 +292,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
               }}
             />
           </Box>
+          {model?.type === "block" && <SelectBlockGroupInput />}
           <Box>
             <InputLabel>Description</InputLabel>
             <TextField
