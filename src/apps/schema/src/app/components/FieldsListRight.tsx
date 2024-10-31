@@ -200,36 +200,38 @@ export const FieldsListRight = ({ model }: Props) => {
         )}
       </Box>
 
-      <Box mt={3}>
-        <InputLabel>
-          Block Group
-          <Tooltip
-            placement="top"
-            title="Add your block model to an existing group"
+      {model?.type === "block" && (
+        <Box mt={3}>
+          <InputLabel>
+            Block Group
+            <Tooltip
+              placement="top"
+              title="Add your block model to an existing group"
+            >
+              <InfoRoundedIcon
+                sx={{ ml: 1, width: "12px", height: "12px" }}
+                color="action"
+              />
+            </Tooltip>
+          </InputLabel>
+          <Autocomplete
+            options={[]}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Select" />
+            )}
+          />
+          {/* TODO: Only show once value is changed */}
+          <LoadingButton
+            color="primary"
+            loading={isLoading}
+            variant="contained"
+            onClick={() => handleSave("blockGroup")}
+            sx={{ mt: 1.5 }}
           >
-            <InfoRoundedIcon
-              sx={{ ml: 1, width: "12px", height: "12px" }}
-              color="action"
-            />
-          </Tooltip>
-        </InputLabel>
-        <Autocomplete
-          options={[]}
-          renderInput={(params) => (
-            <TextField {...params} placeholder="Select" />
-          )}
-        />
-        {/* TODO: Only show once value is changed */}
-        <LoadingButton
-          color="primary"
-          loading={isLoading}
-          variant="contained"
-          onClick={() => handleSave("blockGroup")}
-          sx={{ mt: 1.5 }}
-        >
-          Save
-        </LoadingButton>
-      </Box>
+            Save
+          </LoadingButton>
+        </Box>
+      )}
 
       <InputLabel sx={{ mt: 3 }}>
         Description
