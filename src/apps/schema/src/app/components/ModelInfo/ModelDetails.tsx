@@ -103,7 +103,7 @@ export const ModelDetails = () => {
             </Box>
             <Box py={1.5}>
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                Edit
+                Update
               </Button>
             </Box>
           </Box>
@@ -145,7 +145,7 @@ export const ModelDetails = () => {
                 size="small"
                 onClick={() => setShowDialogue("updateDescription")}
               >
-                Edit
+                Update
               </Button>
             </Box>
           </Box>
@@ -192,7 +192,7 @@ export const ModelDetails = () => {
                 }}
               />
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                Edit
+                Update
               </Button>
             </Box>
           </Box>
@@ -230,27 +230,31 @@ export const ModelDetails = () => {
               )}
             </Box>
             <Box display="flex" py={1.5}>
-              <Button
-                size="small"
-                disabled={!parentModel}
-                onClick={() =>
-                  history.push(`/schema/${parentModel?.contentModelZUID}`)
-                }
-              >
-                View
-              </Button>
-              <Box
-                sx={{
-                  borderLeft: (theme) => `1px solid ${theme.palette.border}`,
-                  width: "1px",
-                  mx: 1.5,
-                }}
-              />
+              {!!parentModel && (
+                <>
+                  <Button
+                    size="small"
+                    onClick={() =>
+                      history.push(`/schema/${parentModel?.contentModelZUID}`)
+                    }
+                  >
+                    View
+                  </Button>
+                  <Box
+                    sx={{
+                      borderLeft: (theme) =>
+                        `1px solid ${theme.palette.border}`,
+                      width: "1px",
+                      mx: 1.5,
+                    }}
+                  />
+                </>
+              )}
               <Button
                 size="small"
                 onClick={() => setShowDialogue("updateParent")}
               >
-                Edit
+                Update
               </Button>
             </Box>
           </Box>
@@ -290,29 +294,33 @@ export const ModelDetails = () => {
                 )}
               </Box>
               <Box display="flex" py={1.5}>
-                <Button
-                  size="small"
-                  disabled={!parentModel}
-                  onClick={() =>
-                    // TODO: hot link to the All Models Page in the Blocks App and scroll to the appropriate model group
-                    // history.push(`/schema/${parentModel?.contentModelZUID}`)
-                    console.log("view block group")
-                  }
-                >
-                  View
-                </Button>
-                <Box
-                  sx={{
-                    borderLeft: (theme) => `1px solid ${theme.palette.border}`,
-                    width: "1px",
-                    mx: 1.5,
-                  }}
-                />
+                {!!parentModel && (
+                  <>
+                    <Button
+                      size="small"
+                      onClick={() =>
+                        // TODO: hot link to the All Models Page in the Blocks App and scroll to the appropriate model group
+                        // history.push(`/schema/${parentModel?.contentModelZUID}`)
+                        console.log("view block group")
+                      }
+                    >
+                      View
+                    </Button>
+                    <Box
+                      sx={{
+                        borderLeft: (theme) =>
+                          `1px solid ${theme.palette.border}`,
+                        width: "1px",
+                        mx: 1.5,
+                      }}
+                    />
+                  </>
+                )}
                 <Button
                   size="small"
                   onClick={() => setShowDialogue("updateBlockGroup")}
                 >
-                  Edit
+                  Update
                 </Button>
               </Box>
             </Box>
