@@ -578,3 +578,14 @@ export type CommentReply = {
   mentions?: Mention[];
   updatedAt: string;
 };
+
+export type GroupItem = {
+  zuid: string;
+  type?: string;
+  resourceZUIDs: string[];
+  name: string;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+};

@@ -7,43 +7,80 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutlineRounded";
-import { useUpdateContentModelMutation } from "../../../../../shell/services/instance";
+import { useCreateGroupMutation } from "../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import { SelectBlockGroupInput } from "./SelectBlockGroupInput";
+import { SelectBlockGroupInput, GroupType } from "./SelectBlockGroupInput";
+import { useParams } from "react-router";
 
-interface Props {
+type UpdateBlockGroupDialogueProps = {
   onClose: () => void;
-  model: ContentModel;
-}
-
-export const UpdateBlockGroupDialogue = ({ onClose, model }: Props) => {
+};
+export const UpdateBlockGroupDialogue = ({
+  onClose,
+}: UpdateBlockGroupDialogueProps) => {
+  const params = useParams<{ id: string }>();
+  const { id } = params;
   const dispatch = useDispatch();
 
-  const [updateModel, { isLoading, isSuccess, error }] =
-    useUpdateContentModelMutation();
+  const [
+    createGroup,
+    {
+      isLoading: isCreatingGroup,
+      isSuccess: isGroupCreated,
+      error: groupCreationError,
+    },
+  ] = useCreateGroupMutation();
+  const [groupType, setGroupType] = useState<GroupType>("available");
+  const [showGroupNameError, setShowGroupNameError] = useState(false);
+  const [groupData, updateGroupData] = useReducer(
+    (
+      state: { newGroupName: string; groupZUID: string },
+      action: Partial<{ newGroupName: string; groupZUID: string }>
+    ) => {
+      return {
+        ...state,
+        ...action,
+      };
+    },
+    { newGroupName: null, groupZUID: null }
+  );
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isGroupCreated) {
       onClose();
     }
-  }, [isSuccess]);
+  }, [isGroupCreated]);
 
   useEffect(() => {
-    if (error) {
+    if (groupCreationError) {
       dispatch(
         notify({
           // @ts-ignore
-          message: error?.data?.error || "Failed to update description",
-          kind: "warn",
+          message: "Failed to update block group",
+          kind: "error",
         })
       );
     }
-  }, [error]);
+  }, [groupCreationError]);
+
+  const handleSave = () => {
+    if (groupType === "available") {
+    } else if (groupType === "new") {
+      if (!groupData?.newGroupName?.trim()?.length) {
+        setShowGroupNameError(true);
+      } else {
+        createGroup({
+          name: groupData?.newGroupName?.trim(),
+          resourceZUIDs: [id],
+        });
+      }
+    }
+  };
 
   return (
     <Dialog open onClose={onClose} fullWidth maxWidth="xs">
@@ -70,22 +107,29 @@ export const UpdateBlockGroupDialogue = ({ onClose, model }: Props) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <SelectBlockGroupInput />
+        <SelectBlockGroupInput
+          groupType={groupType}
+          onGroupTypeChange={(groupType) => setGroupType(groupType)}
+          groupZUID={groupData?.groupZUID}
+          onGroupZUIDChange={(zuid) => updateGroupData({ groupZUID: zuid })}
+          newGroupName={groupData?.newGroupName}
+          onNewGroupNameChange={(name) => {
+            if (name?.length) {
+              setShowGroupNameError(false);
+            }
+
+            updateGroupData({ newGroupName: name });
+          }}
+          showGroupNameError={showGroupNameError}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
         <LoadingButton
-          onClick={() => {
-            // TODO: Add api call here to update block group
-            console.log("save block group");
-            // updateModel({
-            //   ZUID: model.ZUID,
-            //   body: { parentZUID: newParentZUID || "0" },
-            // })
-          }}
-          loading={isLoading}
+          onClick={handleSave}
+          loading={isCreatingGroup}
           variant="contained"
         >
           Save

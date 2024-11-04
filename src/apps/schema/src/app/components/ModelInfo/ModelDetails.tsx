@@ -406,10 +406,7 @@ export const ModelDetails = () => {
         />
       )}
       {showDialogue === "updateBlockGroup" && (
-        <UpdateBlockGroupDialogue
-          model={model}
-          onClose={() => setShowDialogue(null)}
-        />
+        <UpdateBlockGroupDialogue onClose={() => setShowDialogue(null)} />
       )}
     </>
   );

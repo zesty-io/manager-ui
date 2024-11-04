@@ -292,7 +292,16 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
               }}
             />
           </Box>
-          {model?.type === "block" && <SelectBlockGroupInput />}
+          {model?.type === "block" && (
+            <SelectBlockGroupInput
+              groupType="available"
+              groupZUID=""
+              newGroupName=""
+              onGroupTypeChange={() => {}}
+              onGroupZUIDChange={() => {}}
+              onNewGroupNameChange={() => {}}
+            />
+          )}
           <Box>
             <InputLabel>Description</InputLabel>
             <TextField

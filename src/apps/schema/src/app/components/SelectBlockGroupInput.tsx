@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   InputLabel,
@@ -11,12 +11,29 @@ import {
 } from "@mui/material";
 import { InfoRounded } from "@mui/icons-material";
 
-type GroupType = "available" | "new";
-type SelectBlockGroupInputProps = {};
-export const SelectBlockGroupInput = ({}: SelectBlockGroupInputProps) => {
-  const [type, setType] = useState<GroupType>("available");
+import { useGetGroupsQuery } from "../../../../../shell/services/instance";
 
-  // TODO: Wire the changes here once api is finalized
+export type GroupType = "available" | "new";
+type SelectBlockGroupInputProps = {
+  groupType: GroupType;
+  onGroupTypeChange: (groupType: GroupType) => void;
+  newGroupName: string;
+  onNewGroupNameChange: (name: string) => void;
+  groupZUID: string;
+  onGroupZUIDChange: (zuid: string) => void;
+  showGroupNameError?: boolean;
+};
+export const SelectBlockGroupInput = ({
+  groupType = "available",
+  onGroupTypeChange,
+  newGroupName,
+  onNewGroupNameChange,
+  groupZUID,
+  onGroupZUIDChange,
+  showGroupNameError,
+}: SelectBlockGroupInputProps) => {
+  const { data: groups } = useGetGroupsQuery();
+
   return (
     <Box>
       <InputLabel>
@@ -33,8 +50,8 @@ export const SelectBlockGroupInput = ({}: SelectBlockGroupInputProps) => {
       </InputLabel>
       <RadioGroup
         row
-        value={type}
-        onChange={(evt) => setType(evt.target.value as GroupType)}
+        value={groupType}
+        onChange={(evt) => onGroupTypeChange(evt.target.value as GroupType)}
         sx={{
           ml: 1,
           mb: 0.5,
@@ -61,7 +78,7 @@ export const SelectBlockGroupInput = ({}: SelectBlockGroupInputProps) => {
           }}
         />
       </RadioGroup>
-      {type === "available" && (
+      {groupType === "available" && (
         <Autocomplete
           options={[]}
           renderInput={(params) => (
@@ -69,7 +86,16 @@ export const SelectBlockGroupInput = ({}: SelectBlockGroupInputProps) => {
           )}
         />
       )}
-      {type === "new" && <TextField placeholder="e.g. Hero" fullWidth />}
+      {groupType === "new" && (
+        <TextField
+          placeholder="e.g. Hero"
+          fullWidth
+          value={newGroupName}
+          onChange={(evt) => onNewGroupNameChange(evt.target.value)}
+          error={showGroupNameError}
+          helperText={!!showGroupNameError && "Group name is required"}
+        />
+      )}
     </Box>
   );
 };
