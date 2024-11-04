@@ -258,7 +258,8 @@ export const ModelDetails = () => {
               </Button>
             </Box>
           </Box>
-          {model?.type === "block" && (
+          {/* Block grouping will be implemented at a different point  */}
+          {/* {model?.type === "block" && (
             <Box
               display="flex"
               alignItems="center"
@@ -286,7 +287,6 @@ export const ModelDetails = () => {
                 </Tooltip>
               </Box>
               <Box flex={1} py={2}>
-                {/* TODO: Show the block group label here if there's a value once api is available  */}
                 {false ? (
                   <Typography>{parentModel.label}</Typography>
                 ) : (
@@ -324,7 +324,7 @@ export const ModelDetails = () => {
                 </Button>
               </Box>
             </Box>
-          )}
+          )} */}
           <Box display="flex" alignItems="center" px={2}>
             <Box
               minWidth={280}

@@ -421,7 +421,8 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 }
                 tooltip="Selecting a parent affects default routing and content navigation in the UI"
               />
-              {model.type === "block" && (
+              {/* Block grouping will be implemented at a different point  */}
+              {/* {model.type === "block" && (
                 <SelectBlockGroupInput
                   groupType="available"
                   groupZUID=""
@@ -430,7 +431,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   onGroupZUIDChange={() => {}}
                   onNewGroupNameChange={() => {}}
                 />
-              )}
+              )} */}
               <Box>
                 <InputLabel>
                   Description

@@ -292,7 +292,8 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
               }}
             />
           </Box>
-          {model?.type === "block" && (
+          {/* Block grouping will be implemented at a different point  */}
+          {/* {model?.type === "block" && (
             <SelectBlockGroupInput
               groupType="available"
               groupZUID=""
@@ -301,7 +302,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
               onGroupZUIDChange={() => {}}
               onNewGroupNameChange={() => {}}
             />
-          )}
+          )} */}
           <Box>
             <InputLabel>Description</InputLabel>
             <TextField

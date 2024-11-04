@@ -200,7 +200,8 @@ export const FieldsListRight = ({ model }: Props) => {
         )}
       </Box>
 
-      {model?.type === "block" && (
+      {/* Block grouping will be implemented at a different point  */}
+      {/* {model?.type === "block" && (
         <Box mt={3}>
           <InputLabel>
             Block Group
@@ -220,7 +221,6 @@ export const FieldsListRight = ({ model }: Props) => {
               <TextField {...params} placeholder="Select" />
             )}
           />
-          {/* TODO: Only show once value is changed */}
           <LoadingButton
             color="primary"
             loading={isLoading}
@@ -231,7 +231,7 @@ export const FieldsListRight = ({ model }: Props) => {
             Save
           </LoadingButton>
         </Box>
-      )}
+      )} */}
 
       <InputLabel sx={{ mt: 3 }}>
         Description
