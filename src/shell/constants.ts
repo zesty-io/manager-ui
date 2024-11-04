@@ -1,13 +1,12 @@
 import ListRoundedIcon from "@mui/icons-material/ListRounded";
-import { FileTable } from "@zesty-io/material";
+import { FileTable, Block } from "@zesty-io/material";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-import ViewInArRoundedIcon from "@mui/icons-material/ViewInArRounded";
 
 export const MODEL_ICON = {
   templateset: DescriptionRoundedIcon,
   dataset: FileTable,
   pageset: ListRoundedIcon,
-  block: ViewInArRoundedIcon,
+  block: Block,
 } as const;
 
 export const MODEL_NAME = {

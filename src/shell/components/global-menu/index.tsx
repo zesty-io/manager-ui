@@ -13,8 +13,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExtensionIcon from "@mui/icons-material/Extension";
 import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
-import ViewInArRoundedIcon from "@mui/icons-material/ViewInArRounded";
-import { Database } from "@zesty-io/material";
+import { Database, Block } from "@zesty-io/material";
 
 import { AppState } from "../../store/types";
 import { Products } from "../../services/types";
@@ -28,7 +27,7 @@ export default memo(function GlobalMenu() {
   const icons = {
     launchpad: RocketLaunchIcon,
     content: EditIcon,
-    blocks: ViewInArRoundedIcon,
+    blocks: Block,
     media: ImageIcon,
     schema: Database,
     code: CodeIcon,
