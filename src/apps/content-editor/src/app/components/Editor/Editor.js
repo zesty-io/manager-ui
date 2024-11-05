@@ -76,6 +76,7 @@ export default memo(function Editor({
             "og_description",
             "tc_title",
             "tc_description",
+            "tc_image",
           ].includes(field.name)
       );
     }
