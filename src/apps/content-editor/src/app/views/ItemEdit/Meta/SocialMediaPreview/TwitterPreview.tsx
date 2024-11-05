@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Typography, Box, Stack } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
 import { useLocation, useParams } from "react-router";
@@ -17,11 +17,37 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
   }>();
   const domain = useDomain();
   const location = useLocation();
+  const [tcImageURL, setTcImageURL] = useState<string>(null);
   const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
   const item = useSelector(
     (state: AppState) =>
       state.content[isCreateItemPage ? `new:${modelZUID}` : itemZUID]
   );
+
+  useEffect(() => {
+    if (!!item?.data?.tc_image) {
+      const tcImage = String(item?.data?.tc_image)
+        ?.split(",")
+        ?.filter((el: string) => el)?.[0];
+
+      if (tcImage.startsWith("3-")) {
+        setTcImageURL(
+          `${
+            // @ts-ignore
+            CONFIG.SERVICE_MEDIA_RESOLVER
+          }/resolve/${
+            item?.data?.tc_image
+          }/getimage/?w=${128}&h=${128}&type=fit`
+        );
+      } else {
+        setTcImageURL(tcImage);
+      }
+    } else {
+      setTcImageURL(
+        !!imageURL ? `${imageURL}?width=128&height=128&fit=cover` : null
+      );
+    }
+  }, [item?.data?.tc_image]);
 
   return (
     <Stack
@@ -31,8 +57,9 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
       border={1}
       borderColor="border"
     >
-      {!!imageURL ? (
+      {!!tcImageURL ? (
         <Box
+          data-cy="TwitterCardImage"
           component="img"
           sx={{
             backgroundColor: (theme) => theme.palette.grey[100],
@@ -40,9 +67,16 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
           }}
           width={128}
           height={128}
-          src={`${imageURL}?width=128&height=128&fit=cover`}
+          src={tcImageURL}
           flexShrink={0}
           borderRadius="8px 0 0 8px"
+          onError={(evt: any) => {
+            if (!!imageURL) {
+              evt.currentTarget.src = `${imageURL}?width=128&height=128&fit=cover`;
+            } else {
+              setTcImageURL(null);
+            }
+          }}
         />
       ) : (
         <Stack
@@ -75,6 +109,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
           {domain.replace(/http:\/\/|https:\/\//gm, "")}
         </Typography>
         <Typography
+          data-cy="TwitterCardTitle"
           variant="body2"
           color={
             !!item?.data?.tc_title || !!item?.web?.metaTitle
@@ -95,6 +130,7 @@ export const TwitterPreview = ({ imageURL }: TwitterPreviewProps) => {
           {item?.data?.tc_title || item?.web?.metaTitle || "Meta Title"}
         </Typography>
         <Typography
+          data-cy="TwitterCardDescription"
           variant="body2"
           color={
             !!item?.data?.tc_title || !!item?.web?.metaDescription
