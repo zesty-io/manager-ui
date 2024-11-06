@@ -1,8 +1,8 @@
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { ItemEdit } from "../../content-editor/src/app/views/ItemEdit";
 import { fetchModels } from "../../../shell/store/models";
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { ItemCreate } from "../../content-editor/src/app/views/ItemCreate";
 import { customTheme } from "../../content-editor/src/app/ContentEditor";
@@ -14,10 +14,26 @@ export const BlockItem = ({ isCreate }: { isCreate?: boolean }) => {
     modelZUID: string;
     itemZUID: string;
   }>();
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchModels());
+    //@ts-ignore
+    dispatch(fetchModels()).then(() => setIsFetching(false));
   }, []);
+
+  if (isFetching) {
+    return (
+      <Box
+        display="flex"
+        justifyContent={"center"}
+        alignItems={"center"}
+        height="100%"
+        width="100%"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <ThemeProvider theme={customTheme}>

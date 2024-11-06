@@ -321,13 +321,19 @@ export const ItemCreate = () => {
 
           default:
             // Redirect to new item
-            history.push(`/content/${modelZUID}/${res.data.ZUID}`);
+            history.push(
+              `/${
+                model?.type === "block" ? "blocks" : "content"
+              }/${modelZUID}/${res.data.ZUID}`
+            );
             break;
         }
 
         dispatch(
           notify({
-            message: `Created Item: ${item.web.metaLinkText}`,
+            message: `Created Item: ${
+              item.web.metaLinkText || item.web.metaTitle
+            }`,
             kind: "success",
           })
         );
@@ -367,6 +373,7 @@ export const ItemCreate = () => {
     return <NotFound message={`Model "${modelZUID}" not found`} />;
   }
 
+  console.log("testing model", model);
   return (
     <WithLoader
       condition={
