@@ -10,6 +10,7 @@ import {
   searchItems,
 } from "../../../../../../../shell/store/content";
 import { EditorType, FieldShell, Error } from "./FieldShell";
+import { dummyBlockSelectorField } from "../Editor";
 
 import {
   ToggleButtonGroup,
@@ -53,6 +54,7 @@ import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDa
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
+import { FieldTypeBlockSelector } from "../../../../../../../shell/components/FieldTypeBlockSelector";
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
@@ -199,7 +201,10 @@ export const Field = ({
 
   const value = item?.data?.[name];
   const version = item?.meta?.version;
-  const fieldData = fields?.find((field) => field.ZUID === ZUID);
+  const fieldData = [
+    ...(fields ? fields : []),
+    dummyBlockSelectorField as ContentModelField,
+  ]?.find((field) => field.ZUID === ZUID);
 
   useEffect(() => {
     if (datatype !== "date" && datatype !== "datetime") {
@@ -954,6 +959,13 @@ export const Field = ({
             }}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />
+        </FieldShell>
+      );
+
+    case "block":
+      return (
+        <FieldShell settings={fieldData} errors={errors}>
+          <FieldTypeBlockSelector />
         </FieldShell>
       );
 
