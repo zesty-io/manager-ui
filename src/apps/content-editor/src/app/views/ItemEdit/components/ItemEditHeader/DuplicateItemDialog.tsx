@@ -6,7 +6,6 @@ import {
   Typography,
 } from "@mui/material";
 import { ContentCopyRounded } from "@mui/icons-material";
-import { useState } from "react";
 import { useHistory, useParams } from "react-router";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
@@ -14,6 +13,7 @@ import { ContentItem } from "../../../../../../../../shell/services/types";
 import {
   useCreateContentItemMutation,
   useGetContentModelFieldsQuery,
+  useGetContentModelsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { Box } from "@mui/system";
 import { LoadingButton } from "@mui/lab";
@@ -32,6 +32,7 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
   const item = useSelector(
     (state: AppState) => state.content[itemZUID] as ContentItem
   );
+  const { data: models } = useGetContentModelsQuery();
 
   const [createContentItem, { isLoading }] = useCreateContentItemMutation();
 
@@ -78,7 +79,13 @@ export const DuplicateItemDialog = ({ onClose }: DuplicateItemProps) => {
     })
       .unwrap()
       .then((res) => {
-        history.push(`/content/${modelZUID}/${res.data.ZUID}`);
+        history.push(
+          `/${
+            models?.find((model) => model?.type === "block")
+              ? "blocks"
+              : "content"
+          }/${modelZUID}/${res.data.ZUID}`
+        );
       });
   };
 
