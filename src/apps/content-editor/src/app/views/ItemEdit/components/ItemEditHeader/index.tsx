@@ -82,14 +82,8 @@ type HeaderProps = {
   saving: boolean;
   onSave: () => void;
   hasError: boolean;
-  headerTitle: string;
 };
-export const ItemEditHeader = ({
-  saving,
-  onSave,
-  hasError,
-  headerTitle,
-}: HeaderProps) => {
+export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -114,6 +108,8 @@ export const ItemEditHeader = ({
   const layoutsAppInstalled = installedApps?.find(
     (app) => app.appZUID === "80-d8abaff6ef-wxs830"
   );
+
+  const headerTitle = item?.web?.metaTitle || item?.web?.metaLinkText || "";
 
   return (
     <ThemeProvider theme={theme}>
