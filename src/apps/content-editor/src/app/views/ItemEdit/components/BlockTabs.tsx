@@ -140,10 +140,14 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
   const updatedByUser = users?.find(
     (user) => user.ZUID === block.web?.createdByUserZUID
   );
+
   return (
     <ListItemButton
       divider
-      selected={itemZUID === block.meta.ZUID}
+      selected={
+        itemZUID === block.meta.ZUID ||
+        Object?.values(block?.siblings || {})?.includes(itemZUID)
+      }
       disableGutters
       sx={{
         display: "flex",

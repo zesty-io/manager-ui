@@ -139,7 +139,7 @@ export type SearchQuery = UnorderedQuery | OrderedQuery;
 export interface ContentItem {
   web: Web;
   meta: Meta;
-  siblings: [{ [key: number]: { value: string; id: number } }] | [];
+  siblings: { [key: string]: string } | {};
   data: Data;
   publishAt?: any;
 }
