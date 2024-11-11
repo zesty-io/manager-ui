@@ -5,6 +5,7 @@ import {
   Typography,
   List,
   ListItemButton,
+  Button,
 } from "@mui/material";
 import { useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
@@ -17,6 +18,7 @@ import { useGetContentModelItemsQuery } from "../../../../../../../shell/service
 import { ContentItem } from "../../../../../../../shell/services/types";
 import moment from "moment-timezone";
 import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
+import { AddRounded } from "@mui/icons-material";
 
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
@@ -24,10 +26,14 @@ export const BlockTabs = (props: any) => {
   const { data, isFetching } = useGetContentModelItemsQuery({
     modelZUID: modelZUID,
   });
+  const history = useHistory();
 
   return (
     <ThemeProvider theme={theme}>
       <Box
+        display="flex"
+        justifyContent={"space-between"}
+        alignItems={"center"}
         sx={{
           borderBottom: (theme) => `2px solid ${theme.palette.border}`,
         }}
@@ -51,6 +57,31 @@ export const BlockTabs = (props: any) => {
             iconPosition="start"
           />
         </Tabs>
+        <Button
+          size="xsmall"
+          sx={{
+            color: "text.disabled",
+            lineHeight: "20px",
+            "& .MuiButton-startIcon": {
+              marginRight: "4px",
+            },
+          }}
+          onClick={() => {
+            history.push(`/blocks/${modelZUID}/new`);
+          }}
+          color="inherit"
+          startIcon={
+            <AddRounded
+              color="action"
+              sx={{
+                width: "20px",
+                height: "20px",
+              }}
+            />
+          }
+        >
+          Create Variant
+        </Button>
       </Box>
       {value === 0 && (
         <List
@@ -62,20 +93,25 @@ export const BlockTabs = (props: any) => {
             borderStyle: "solid",
             borderColor: "border",
             backgroundColor: "common.white",
-            height: "calc(100% - 62px)",
+            height: "calc(100% - 64px)",
             overflowY: "auto",
           }}
         >
-          {data?.map((block) => (
-            <BlockVariantCard block={block} />
-          ))}
+          {data
+            ?.slice()
+            ?.sort((a, b) => {
+              return a.web?.metaTitle.localeCompare(b.web?.metaTitle);
+            })
+            ?.map((block) => (
+              <BlockVariantCard block={block} />
+            ))}
         </List>
       )}
       {value === 1 && (
         <ThemeProvider theme={customTheme}>
           <Box
             // maxWidth={320}
-            height="calc(100% - 62px)"
+            height="calc(100% - 64px)"
             sx={{
               overflowY: "auto",
             }}
@@ -115,7 +151,12 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
         py: 1.75,
         gap: 1.5,
         "&.Mui-selected": {
-          borderBottomColor: "primary.main",
+          "&:first-of-type": {
+            borderBottomColor: "primary.main",
+          },
+          "&:not(:last-of-type)": {
+            borderBottomColor: "primary.main",
+          },
         },
       }}
       onClick={() => history.push(`/blocks/${modelZUID}/${block.meta.ZUID}`)}

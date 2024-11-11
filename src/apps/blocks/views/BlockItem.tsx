@@ -37,7 +37,16 @@ export const BlockItem = ({ isCreate }: { isCreate?: boolean }) => {
 
   return (
     <ThemeProvider theme={customTheme}>
-      <Box width="100%">{isCreate ? <ItemCreate /> : <ItemEdit />}</Box>
+      <Box
+        width="100%"
+        sx={{
+          "*": {
+            boxSizing: "unset",
+          },
+        }}
+      >
+        {isCreate ? <ItemCreate /> : <ItemEdit />}
+      </Box>
     </ThemeProvider>
   );
 };
