@@ -6,20 +6,29 @@ import {
   InputAdornment,
   Stack,
   CircularProgress,
+  Link,
 } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import StreetViewRoundedIcon from "@mui/icons-material/StreetViewRounded";
 import { useState, useRef } from "react";
 import { CreateModelDialogue } from "../../schema/src/app/components/CreateModelDialogue";
 import { BlockCard } from "../components/BlockCard";
 import { useGetContentModelsQuery } from "../../../shell/services/instance";
 import { NoResults } from "../../schema/src/app/components/NoResults";
+import allBlocksEmpty from "../../../../public/images/allBlocksEmpty.png";
+import { OnboardingDialog } from "../components/OnboardingDialog";
+import { useLocalStorage } from "react-use";
 
 export const AllBlocks = () => {
   const [search, setSearch] = useState("");
   const { data: models, isFetching } = useGetContentModelsQuery();
   const [showCreateModelDialogue, setShowCreateModelDialogue] = useState(false);
   const searchRef = useRef(null);
+  const [showOnboardingDialog, setShowOnboardingDialog] = useLocalStorage(
+    "zesty:blocks:onboarding",
+    true
+  );
 
   const filteredModels = models?.filter(
     (model) =>
@@ -114,6 +123,7 @@ export const AllBlocks = () => {
                 justifyContent="space-between"
                 alignItems="center"
                 gap={6}
+                pt={2}
               >
                 <Box>
                   <Typography variant="h4" fontWeight={700}>
@@ -128,16 +138,57 @@ export const AllBlocks = () => {
                     Block models define the structure of a block such as a hero,
                     feature, testimonial, etc.
                   </Typography>
-                  <Button
-                    variant="contained"
-                    startIcon={<AddRoundedIcon />}
-                    onClick={() => setShowCreateModelDialogue(true)}
+                  <Box display="flex" gap={1}>
+                    <Button
+                      variant="contained"
+                      startIcon={<AddRoundedIcon />}
+                      onClick={() => setShowCreateModelDialogue(true)}
+                    >
+                      Create Block
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      startIcon={<StreetViewRoundedIcon />}
+                      onClick={() => setShowOnboardingDialog(true)}
+                    >
+                      Take Product Tour
+                    </Button>
+                  </Box>
+                  <Typography
+                    variant="overline"
+                    mt={3}
+                    mb={2}
+                    sx={{
+                      display: "block",
+                      borderBottom: (theme) =>
+                        `1px solid ${theme.palette.grey[200]}`,
+                    }}
                   >
-                    Create Block
-                  </Button>
+                    Documentation
+                  </Typography>
+                  <Box
+                    component="ul"
+                    color="info.dark"
+                    sx={{
+                      fontSize: "14px",
+                      listStylePosition: "inside",
+                    }}
+                  >
+                    <li>
+                      <Link color="secondary">How to Create a Block</Link>
+                    </li>
+                    <li>
+                      <Link color="secondary">How to use Blocks</Link>
+                    </li>
+                    <li>
+                      <Link color="secondary">
+                        Introduction to Web Components
+                      </Link>
+                    </li>
+                  </Box>
                 </Box>
                 <Box>
-                  <Box component="img" width={522} height={326}></Box>
+                  <Box component="img" src={allBlocksEmpty}></Box>
                 </Box>
               </Box>
             )}
@@ -168,6 +219,9 @@ export const AllBlocks = () => {
         <CreateModelDialogue
           onClose={() => setShowCreateModelDialogue(false)}
         />
+      )}
+      {showOnboardingDialog && (
+        <OnboardingDialog onClose={() => setShowOnboardingDialog(false)} />
       )}
     </>
   );
