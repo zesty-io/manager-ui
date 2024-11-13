@@ -21,7 +21,10 @@ import { isEmpty } from "lodash";
 import { theme } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
-import { useSearchContentQuery } from "../../services/instance";
+import {
+  useGetContentModelsQuery,
+  useSearchContentQuery,
+} from "../../services/instance";
 import { notify } from "../../store/notifications";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import useRecentSearches from "../../hooks/useRecentSearches";
@@ -88,6 +91,7 @@ export const GlobalSearch = () => {
   const dispatch = useDispatch();
   const [params, setParams] = useParams();
   const textfieldRef = useRef<HTMLDivElement>();
+  const { data: allModels } = useGetContentModelsQuery();
 
   const apiQueryTerm = useMemo(() => {
     if (!!typedSearchAccelerator && !!searchKeyword) {
@@ -136,7 +140,13 @@ export const GlobalSearch = () => {
               updatedAt: content.meta?.updatedAt,
               url: isEmpty(content.meta)
                 ? ""
-                : `/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
+                : `/${
+                    allModels?.find(
+                      (model) => model.ZUID === content.meta.contentModelZUID
+                    )?.type === "block"
+                      ? "blocks"
+                      : "content"
+                  }/${content.meta.contentModelZUID}/${content.meta.ZUID}`,
               noUrlErrorMessage: "Selected item is missing meta data",
             };
           });

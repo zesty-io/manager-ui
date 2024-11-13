@@ -1,12 +1,15 @@
 import {
+  Button,
   Tabs,
   Tab,
   Box,
   Typography,
   List,
   ListItemButton,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import { VerticalSplitRounded, InfoRounded } from "@mui/icons-material";
@@ -17,6 +20,8 @@ import { useGetContentModelItemsQuery } from "../../../../../../../shell/service
 import { ContentItem } from "../../../../../../../shell/services/types";
 import moment from "moment-timezone";
 import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
+import { AddRounded, SearchRounded } from "@mui/icons-material";
+import noSearchResults from "../../../../../../../../public/images/noSearchResults.svg";
 
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
@@ -24,10 +29,16 @@ export const BlockTabs = (props: any) => {
   const { data, isFetching } = useGetContentModelItemsQuery({
     modelZUID: modelZUID,
   });
+  const history = useHistory();
+  const searchRef = useRef(null);
+  const [search, setSearch] = useState("");
 
   return (
     <ThemeProvider theme={theme}>
       <Box
+        display="flex"
+        justifyContent={"space-between"}
+        alignItems={"center"}
         sx={{
           borderBottom: (theme) => `2px solid ${theme.palette.border}`,
         }}
@@ -51,31 +62,123 @@ export const BlockTabs = (props: any) => {
             iconPosition="start"
           />
         </Tabs>
+        <Button
+          size="xsmall"
+          sx={{
+            color: "text.disabled",
+            lineHeight: "20px",
+            "& .MuiButton-startIcon": {
+              marginRight: "4px",
+            },
+          }}
+          onClick={() => {
+            history.push(`/blocks/${modelZUID}/new`);
+          }}
+          color="inherit"
+          startIcon={
+            <AddRounded
+              color="action"
+              sx={{
+                width: "20px",
+                height: "20px",
+              }}
+            />
+          }
+        >
+          Create Variant
+        </Button>
       </Box>
       {value === 0 && (
-        <List
-          disablePadding
-          sx={{
-            mt: 2,
-            borderRadius: "8px",
-            borderWidth: 1,
-            borderStyle: "solid",
-            borderColor: "border",
-            backgroundColor: "common.white",
-            height: "calc(100% - 62px)",
-            overflowY: "auto",
-          }}
-        >
-          {data?.map((block) => (
-            <BlockVariantCard block={block} />
-          ))}
-        </List>
+        <>
+          <TextField
+            placeholder="Search variants"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            variant="outlined"
+            sx={{
+              my: 2,
+              width: "100%",
+            }}
+            inputRef={searchRef}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchRounded color="action" />
+                </InputAdornment>
+              ),
+            }}
+          />
+          {!!data?.filter((block) =>
+            block.web?.metaTitle.toLowerCase().includes(search.toLowerCase())
+          )?.length && (
+            <List
+              disablePadding
+              sx={{
+                borderRadius: "8px",
+                borderWidth: 1,
+                borderStyle: "solid",
+                borderColor: "border",
+                backgroundColor: "common.white",
+                height: "calc(100% - 120px)",
+                overflowY: "auto",
+              }}
+            >
+              {data
+                ?.filter((block) =>
+                  block.web?.metaTitle
+                    .toLowerCase()
+                    .includes(search.toLowerCase())
+                )
+                ?.slice()
+                ?.sort((a, b) => {
+                  return a.web?.metaTitle.localeCompare(b.web?.metaTitle);
+                })
+                ?.map((block) => (
+                  <BlockVariantCard block={block} />
+                ))}
+            </List>
+          )}
+          {search &&
+            !data?.filter((block) =>
+              block.web?.metaTitle.toLowerCase().includes(search.toLowerCase())
+            )?.length && (
+              <Box display="flex" gap={2}>
+                <Box
+                  component="img"
+                  src={noSearchResults}
+                  width={120}
+                  height={110}
+                ></Box>
+                <Box>
+                  <Typography variant="h4">
+                    Your search <strong>"{search}"</strong> could not find any
+                    results
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    mt={1}
+                    mb={3}
+                  >
+                    Try adjusting your search. We suggest check all words are
+                    spelled correctly or try using different keywords.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<SearchRounded />}
+                    onClick={() => searchRef?.current?.focus()}
+                  >
+                    Search Again
+                  </Button>
+                </Box>
+              </Box>
+            )}
+        </>
       )}
       {value === 1 && (
         <ThemeProvider theme={customTheme}>
           <Box
-            // maxWidth={320}
-            height="calc(100% - 62px)"
+            height="calc(100% - 64px)"
             sx={{
               overflowY: "auto",
             }}
@@ -104,10 +207,14 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
   const updatedByUser = users?.find(
     (user) => user.ZUID === block.web?.createdByUserZUID
   );
+
   return (
     <ListItemButton
       divider
-      selected={itemZUID === block.meta.ZUID}
+      selected={
+        itemZUID === block.meta.ZUID ||
+        Object?.values(block?.siblings || {})?.includes(itemZUID)
+      }
       disableGutters
       sx={{
         display: "flex",
@@ -115,7 +222,12 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
         py: 1.75,
         gap: 1.5,
         "&.Mui-selected": {
-          borderBottomColor: "primary.main",
+          "&:first-of-type": {
+            borderBottomColor: "primary.main",
+          },
+          "&:not(:last-of-type)": {
+            borderBottomColor: "primary.main",
+          },
         },
       }}
       onClick={() => history.push(`/blocks/${modelZUID}/${block.meta.ZUID}`)}

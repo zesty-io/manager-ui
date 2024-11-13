@@ -560,6 +560,7 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "ContentItem", id: arg.itemZUID },
+        "ContentItems",
       ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Update-Item
