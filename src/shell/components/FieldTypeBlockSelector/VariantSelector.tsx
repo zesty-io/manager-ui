@@ -16,16 +16,21 @@ import { useDebounce } from "react-use";
 import { ContentItem } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
 import { NoSearchResults } from "../NoSearchResults";
+import { NoVariant } from "./NoVariant";
 
 type VariantSelectorProps = {
   anchorEl: Element;
   onClose: () => void;
   variants: ContentItem[];
+  blockModelZUID: string;
+  blockModelName: string;
 };
 export const VariantSelector = ({
   anchorEl,
   onClose,
   variants,
+  blockModelZUID,
+  blockModelName,
 }: VariantSelectorProps) => {
   const { data: users } = useGetUsersQuery();
   const [filterKeyword, setFilterKeyword] = useState("");
@@ -108,7 +113,10 @@ export const VariantSelector = ({
           />
         </ListSubheader>
         {!variants?.length ? (
-          <Typography>No variants</Typography>
+          <NoVariant
+            blockModelName={blockModelName}
+            blockModelZUID={blockModelZUID}
+          />
         ) : filteredVariants?.length ? (
           filteredVariants?.map((variant, index) => (
             <MenuItem

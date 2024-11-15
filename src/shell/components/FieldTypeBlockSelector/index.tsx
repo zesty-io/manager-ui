@@ -82,6 +82,8 @@ export const FieldTypeBlockSelector = ({}: FieldTypeBlockSelectorProps) => {
           anchorEl={variantSelectorRef?.current}
           onClose={() => setIsVariantSelectorOpen(false)}
           variants={selectedModel?.value ? variants : []}
+          blockModelName={selectedModel?.label}
+          blockModelZUID={selectedModel?.value}
         />
       )}
     </Stack>
