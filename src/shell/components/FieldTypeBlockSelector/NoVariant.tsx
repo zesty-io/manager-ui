@@ -3,8 +3,7 @@ import { Stack, Typography, Button, Box } from "@mui/material";
 import { Block } from "@zesty-io/material";
 import { AddRounded } from "@mui/icons-material";
 
-import { useParams, useHistory } from "react-router-dom";
-import { useGetContentModelsQuery } from "../../services/instance";
+import { useHistory } from "react-router-dom";
 
 type NoVariantProps = {
   blockModelZUID: string;
@@ -15,12 +14,6 @@ export const NoVariant = ({
   blockModelName,
 }: NoVariantProps) => {
   const history = useHistory();
-  const { modelZUID } = useParams<{ modelZUID: string }>();
-  const { data: models } = useGetContentModelsQuery();
-
-  const modelData = useMemo(() => {
-    return models?.find((model) => model.ZUID === modelZUID);
-  }, [modelZUID, models]);
 
   return (
     <Stack
