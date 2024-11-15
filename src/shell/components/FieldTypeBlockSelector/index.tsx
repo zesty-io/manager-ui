@@ -38,8 +38,6 @@ export const FieldTypeBlockSelector = ({}: FieldTypeBlockSelectorProps) => {
     getContentModelItems({ modelZUID: selectedModel.value });
   }, [selectedModel]);
 
-  console.log("variants", variants);
-
   return (
     <Stack direction="row" gap={0.5}>
       <Autocomplete
@@ -69,8 +67,9 @@ export const FieldTypeBlockSelector = ({}: FieldTypeBlockSelectorProps) => {
           cursor: "pointer",
         }}
         onClick={() => {
+          if (!selectedModel || !selectedModel?.value) return;
+
           setIsVariantSelectorOpen(true);
-          console.log(variantSelectorRef?.current);
         }}
       >
         <Typography variant="body2" color="text.disabled">
