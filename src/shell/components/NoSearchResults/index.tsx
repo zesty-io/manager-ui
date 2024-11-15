@@ -17,6 +17,7 @@ type Props = {
   ignoreFilters?: boolean;
   hideBackButton?: boolean;
   onSearchAgain?: () => void;
+  imageHeight?: number;
 };
 
 export const NoSearchResults: FC<Props> = ({
@@ -24,6 +25,7 @@ export const NoSearchResults: FC<Props> = ({
   onSearchAgain,
   ignoreFilters,
   hideBackButton,
+  imageHeight = 200,
 }) => {
   const history = useHistory();
   const [params, setParams] = useParams();
@@ -55,7 +57,7 @@ export const NoSearchResults: FC<Props> = ({
         className="NoResultsState"
       >
         <Box width="400px">
-          <img src={noResults} height="200px" />
+          <img src={noResults} height={`${imageHeight}px`} />
           <Typography
             sx={{ mt: 4, mb: 1 }}
             variant="h4"
