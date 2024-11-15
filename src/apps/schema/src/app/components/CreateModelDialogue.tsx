@@ -180,7 +180,6 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             sort: 9999,
           },
         });
-        onClose();
       } else {
         history.push(`/schema/${createModelData.data.ZUID}`);
         onClose();
