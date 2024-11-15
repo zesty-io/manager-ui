@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   MenuList,
   TextField,
@@ -15,6 +15,7 @@ import { useDebounce } from "react-use";
 
 import { ContentItem } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
+import { NoSearchResults } from "../NoSearchResults";
 
 type VariantSelectorProps = {
   anchorEl: Element;
@@ -29,6 +30,7 @@ export const VariantSelector = ({
   const { data: users } = useGetUsersQuery();
   const [filterKeyword, setFilterKeyword] = useState("");
   const [debouncedFilterKeyword, setDebouncedFilterKeyword] = useState("");
+  const filterTextField = useRef(null);
 
   useDebounce(() => setDebouncedFilterKeyword(filterKeyword), 200, [
     filterKeyword,
@@ -90,6 +92,7 @@ export const VariantSelector = ({
             autoFocus
             fullWidth
             placeholder="Search variants"
+            ref={filterTextField}
             value={filterKeyword}
             onChange={(evt) => setFilterKeyword(evt.currentTarget.value)}
             InputProps={{
@@ -145,7 +148,17 @@ export const VariantSelector = ({
             </MenuItem>
           ))
         ) : (
-          <Typography>No matched variants</Typography>
+          <Box my={4}>
+            <NoSearchResults
+              query={filterKeyword}
+              imageHeight={109}
+              hideBackButton
+              onSearchAgain={() => {
+                setFilterKeyword("");
+                filterTextField.current?.querySelector("input").focus();
+              }}
+            />
+          </Box>
         )}
       </MenuList>
     </Popover>
