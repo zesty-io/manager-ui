@@ -6,6 +6,7 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
+  CircularProgress,
 } from "@mui/material";
 import { Database, IconButton } from "@zesty-io/material";
 import {
@@ -19,6 +20,7 @@ import {
   BoltRounded,
   KeyboardArrowRightRounded,
   DataObjectRounded,
+  FileDownloadRounded,
 } from "@mui/icons-material";
 import { forwardRef, useState, useCallback } from "react";
 import { useHistory, useParams as useRouterParams } from "react-router";
@@ -28,6 +30,7 @@ import { debounce } from "lodash";
 import { useGetContentModelsQuery } from "../../../../../../shell/services/instance";
 import { CascadingMenuItem } from "../../../../../../shell/components/CascadingMenuItem";
 import { APIEndpoints } from "../../components/APIEndpoints";
+import { useLazyDownloadCsvQuery } from "../../../../../../shell/services/cloudFunctions";
 
 export const ItemListActions = forwardRef((props, ref) => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
@@ -41,6 +44,8 @@ export const ItemListActions = forwardRef((props, ref) => {
   const isDataset =
     contentModels?.find((model) => model.ZUID === modelZUID)?.type ===
     "dataset";
+  const [downloadCSV, { isLoading: isDownloadCsvLoading }] =
+    useLazyDownloadCsvQuery();
 
   const handleCopyClick = (data: string) => {
     navigator?.clipboard
@@ -69,7 +74,6 @@ export const ItemListActions = forwardRef((props, ref) => {
     setSearchTerm(value);
     debouncedSetParams(value);
   };
-  const handleExportCSV = (data: string) => {};
 
   return (
     <Box display="flex" gap={1}>
@@ -107,11 +111,15 @@ export const ItemListActions = forwardRef((props, ref) => {
           Import CSV
         </MenuItem>
         <MenuItem
-          data-cy="ImportCSVNavButton"
-          onClick={() => handleExportCSV(modelZUID)}
+          data-cy="DownloadCSVNavButton"
+          onClick={() => downloadCSV({ modelZUID })}
         >
           <ListItemIcon>
-            <TableViewRounded />
+            {isDownloadCsvLoading ? (
+              <CircularProgress size="24px" />
+            ) : (
+              <FileDownloadRounded />
+            )}
           </ListItemIcon>
           Export CSV
         </MenuItem>
