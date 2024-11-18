@@ -166,6 +166,8 @@ module.exports = {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
     SERVICE_INSTANCE_INSTALLER: "https://installer-m3rbwjxm5q-uc.a.run.app",
+    SERVICE_DOWNLOAD_CSV:
+      "https://us-central1-zesty-dev.cloudfunctions.net/downloadCSV",
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {

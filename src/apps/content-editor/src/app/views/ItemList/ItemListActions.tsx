@@ -69,6 +69,7 @@ export const ItemListActions = forwardRef((props, ref) => {
     setSearchTerm(value);
     debouncedSetParams(value);
   };
+  const handleExportCSV = (data: string) => {};
 
   return (
     <Box display="flex" gap={1}>
@@ -104,6 +105,15 @@ export const ItemListActions = forwardRef((props, ref) => {
             <TableViewRounded />
           </ListItemIcon>
           Import CSV
+        </MenuItem>
+        <MenuItem
+          data-cy="ImportCSVNavButton"
+          onClick={() => handleExportCSV(modelZUID)}
+        >
+          <ListItemIcon>
+            <TableViewRounded />
+          </ListItemIcon>
+          Export CSV
         </MenuItem>
         <MenuItem
           onClick={() => {
