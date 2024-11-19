@@ -139,7 +139,7 @@ export const getCategory = (type: string) => {
     case "one_to_many":
     case "link":
     case "internal_link":
-    case "block":
+    case "block_selector":
       category = "relationship";
       break;
 

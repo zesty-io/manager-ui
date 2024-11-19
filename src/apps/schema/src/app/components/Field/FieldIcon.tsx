@@ -67,7 +67,7 @@ const icons: Icons = {
     backgroundColor: "pink.50",
     borderColor: "pink.600",
   },
-  block: {
+  block_selector: {
     icon: Block as SvgIconComponent,
     backgroundColor: "pink.50",
     borderColor: "pink.600",

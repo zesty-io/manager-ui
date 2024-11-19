@@ -24,7 +24,7 @@ export type FieldType =
   | "fontawesome"
   | "wysiwyg_advanced"
   | "article_writer"
-  | "block"; // TODO: Will need to confirm if this type is already supported by the api
+  | "block_selector"; // TODO: Will need to confirm if this type is already supported by the api
 interface FieldListData {
   type: FieldType;
   name: string;
@@ -187,7 +187,7 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       subHeaderText: "Use this field to link to an internal content item",
     },
     {
-      type: "block",
+      type: "block_selector",
       name: "Block Selector",
       shortDescription: "Link to a variant of a block model",
       description:
@@ -363,7 +363,7 @@ const TYPE_TEXT: Record<FieldType, string> = {
   wysiwyg_advanced: "WYSIWYG (Advanced)",
   wysiwyg_basic: "WYSIWYG",
   yes_no: "Boolean",
-  block: "Block Selector",
+  block_selector: "Block Selector",
 };
 
 const COMMON_FIELDS: InputField[] = [
@@ -713,7 +713,7 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
     ],
     rules: [...COMMON_RULES],
   },
-  block: {
+  block_selector: {
     details: [...COMMON_FIELDS],
     rules: [],
   },
