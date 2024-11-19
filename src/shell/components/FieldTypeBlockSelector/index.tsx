@@ -172,63 +172,65 @@ export const FieldTypeBlockSelector = ({
           />
         )}
       </Stack>
-      <Box>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          px={1}
-          py={1.5}
-          bgcolor="grey.100"
-          border={1}
-          borderColor="border"
-          borderRadius="8px 8px 0px 0px"
-          mt={1}
-        >
-          <Typography variant="body2" fontWeight={600} color="text.primary">
-            {variants?.find(
-              (variant) => variant?.meta?.ZUID === blockValue.variant
-            )?.web?.metaTitle || ""}
-          </Typography>
-          <Stack direction="row" gap={0.5}>
-            <IconButton
-              size="small"
-              onClick={() =>
-                history.push(
-                  `/blocks/${blockValue?.model?.value}/${blockValue?.variant}`
-                )
-              }
-            >
-              <ModeEditRounded fontSize="small" />
-            </IconButton>
-            <IconButton
-              size="small"
-              onClick={() => console.log("copy variant link")}
-            >
-              <LinkRounded fontSize="small" />
-            </IconButton>
-            <IconButton
-              size="small"
-              onClick={() => console.log("open variant preview")}
-            >
-              <OpenInNewRounded fontSize="small" />
-            </IconButton>
+      {!!blockValue?.model && !!blockValue?.variant && (
+        <Box>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            px={1}
+            py={1.5}
+            bgcolor="grey.100"
+            border={1}
+            borderColor="border"
+            borderRadius="8px 8px 0px 0px"
+            mt={1}
+          >
+            <Typography variant="body2" fontWeight={600} color="text.primary">
+              {variants?.find(
+                (variant) => variant?.meta?.ZUID === blockValue.variant
+              )?.web?.metaTitle || ""}
+            </Typography>
+            <Stack direction="row" gap={0.5}>
+              <IconButton
+                size="small"
+                onClick={() =>
+                  history.push(
+                    `/blocks/${blockValue?.model?.value}/${blockValue?.variant}`
+                  )
+                }
+              >
+                <ModeEditRounded fontSize="small" />
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={() => console.log("copy variant link")}
+              >
+                <LinkRounded fontSize="small" />
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={() => console.log("open variant preview")}
+              >
+                <OpenInNewRounded fontSize="small" />
+              </IconButton>
+            </Stack>
           </Stack>
-        </Stack>
-        <Box
-          component="img"
-          width="100%"
-          height={384}
-          src="https://via.placeholder.com/640x384"
-          loading="lazy"
-          borderRadius="0px 0px 8px 8px"
-          borderRight={1}
-          borderLeft={1}
-          borderBottom={1}
-          borderColor="border"
-          boxSizing="border-box"
-        ></Box>
-      </Box>
+          <Box
+            component="img"
+            width="100%"
+            height={384}
+            src="https://via.placeholder.com/640x384"
+            loading="lazy"
+            borderRadius="0px 0px 8px 8px"
+            borderRight={1}
+            borderLeft={1}
+            borderBottom={1}
+            borderColor="border"
+            boxSizing="border-box"
+          ></Box>
+        </Box>
+      )}
     </>
   );
 };
