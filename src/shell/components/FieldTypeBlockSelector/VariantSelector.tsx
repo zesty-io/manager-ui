@@ -25,6 +25,7 @@ type VariantSelectorProps = {
   variants: ContentItem[];
   blockModelZUID: string;
   blockModelName: string;
+  onVariantSelected: (ZUID: string) => void;
 };
 export const VariantSelector = ({
   anchorEl,
@@ -32,6 +33,7 @@ export const VariantSelector = ({
   variants,
   blockModelZUID,
   blockModelName,
+  onVariantSelected,
 }: VariantSelectorProps) => {
   const { data: users } = useGetUsersQuery();
   const [filterKeyword, setFilterKeyword] = useState("");
@@ -123,6 +125,7 @@ export const VariantSelector = ({
             <MenuItem
               key={variant?.meta?.ZUID}
               divider={index + 1 < variants?.length}
+              onClick={() => onVariantSelected(variant?.meta?.ZUID)}
               sx={{
                 display: "flex",
                 px: 2,

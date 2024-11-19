@@ -961,7 +961,12 @@ export const Field = ({
     case "block_selector":
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <FieldTypeBlockSelector />
+          <FieldTypeBlockSelector
+            value={value ? value?.toString() : null}
+            onChange={(value) => onChange(value, name, datatype)}
+            requiredError={errors?.MISSING_REQUIRED}
+            missingVariantError={errors?.INVALID_BLOCK_VARIANT}
+          />
         </FieldShell>
       );
 

@@ -67,6 +67,10 @@ const getErrorMessage = (errors: Error) => {
     errorMessages.push(errors.CUSTOM_ERROR);
   }
 
+  if (errors?.INVALID_BLOCK_VARIANT) {
+    errorMessages.push("Please select a block variant.");
+  }
+
   return errorMessages;
 };
 

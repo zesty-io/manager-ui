@@ -373,6 +373,15 @@ export default function ItemEdit() {
           });
         }
 
+        if (res.invalidBlockVariantValue?.length) {
+          res.invalidBlockVariantValue?.forEach((field) => {
+            errors[field.name] = {
+              ...(errors[field.name] ?? {}),
+              INVALID_BLOCK_VARIANT: true,
+            };
+          });
+        }
+
         setFieldErrors(errors);
         throw new Error(errors);
       }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useReducer } from "react";
 import { Typography, Autocomplete, TextField, Stack } from "@mui/material";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
 
@@ -8,18 +8,41 @@ import {
 } from "../../services/instance";
 import { VariantSelector } from "./VariantSelector";
 
-type FieldTypeBlockSelectorProps = {};
-export const FieldTypeBlockSelector = ({}: FieldTypeBlockSelectorProps) => {
+type BlockValue = {
+  model: {
+    label: string;
+    value: string;
+  } | null;
+  variant: string;
+};
+type FieldTypeBlockSelectorProps = {
+  value: string;
+  onChange: (value: string) => void;
+  requiredError: boolean;
+  missingVariantError: boolean;
+};
+export const FieldTypeBlockSelector = ({
+  value,
+  onChange,
+  requiredError,
+  missingVariantError,
+}: FieldTypeBlockSelectorProps) => {
   const { data: models, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
   const [getContentModelItems, { data: variants }] =
     useLazyGetContentModelItemsQuery();
-  const [selectedModel, setSelectedModel] = useState<{
-    label: string;
-    value: string;
-  }>(null);
   const [isVariantSelectorOpen, setIsVariantSelectorOpen] = useState(false);
   const variantSelectorRef = useRef<HTMLDivElement>(null);
+
+  const [blockValue, updateBlockValue] = useReducer(
+    (state: BlockValue, action: Partial<BlockValue>) => {
+      return {
+        ...state,
+        ...action,
+      };
+    },
+    { model: null, variant: null }
+  );
 
   const blockModelOptions = useMemo(() => {
     if (!models?.length) return [];
@@ -33,21 +56,53 @@ export const FieldTypeBlockSelector = ({}: FieldTypeBlockSelectorProps) => {
   }, [models]);
 
   useEffect(() => {
-    if (!selectedModel?.value) return;
+    if (!blockValue.model?.value) return;
 
-    getContentModelItems({ modelZUID: selectedModel.value });
-  }, [selectedModel]);
+    getContentModelItems({ modelZUID: blockValue.model?.value });
+  }, [blockValue.model]);
+
+  useEffect(() => {
+    if (!value) {
+      updateBlockValue({
+        model: null,
+        variant: null,
+      });
+    } else {
+      const blockModelZUID = value.split("/")?.[3]?.split(".")?.[0];
+      const blockVariantZUID = value.split("variant=")?.[1];
+
+      updateBlockValue({
+        model: {
+          label:
+            models?.find((model) => model.ZUID === blockModelZUID)?.label || "",
+          value: blockModelZUID || "",
+        },
+        variant: blockVariantZUID,
+      });
+    }
+  }, [value, models]);
 
   return (
     <Stack direction="row" gap={0.5}>
       <Autocomplete
         loading={isLoadingModels}
         renderInput={(params) => (
-          <TextField {...params} placeholder="Model" sx={{ width: 200 }} />
+          <TextField
+            {...params}
+            error={requiredError}
+            placeholder="Model"
+            sx={{ width: 200 }}
+          />
         )}
         options={blockModelOptions}
-        value={selectedModel}
-        onChange={(_, value) => setSelectedModel(value)}
+        value={blockValue?.model}
+        onChange={(_, value) => {
+          if (!value) {
+            onChange(null);
+          } else {
+            onChange(`/-/block/${value?.value}.html?variant=`);
+          }
+        }}
       />
 
       <Stack
@@ -61,19 +116,28 @@ export const FieldTypeBlockSelector = ({}: FieldTypeBlockSelectorProps) => {
         px={1}
         borderRadius={2}
         border={1}
-        borderColor="border"
+        borderColor={
+          requiredError || missingVariantError ? "error.main" : "border"
+        }
         boxSizing="border-box"
         sx={{
           cursor: "pointer",
         }}
         onClick={() => {
-          if (!selectedModel || !selectedModel?.value) return;
+          if (!blockValue?.model || !blockValue?.model?.value) return;
 
           setIsVariantSelectorOpen(true);
         }}
       >
-        <Typography variant="body2" color="text.disabled">
-          Variant
+        <Typography
+          variant="body2"
+          color={!!blockValue?.variant ? "text.primary" : "text.disabled"}
+        >
+          {!!blockValue?.variant
+            ? variants?.find(
+                (variant) => variant?.meta?.ZUID === blockValue.variant
+              )?.web?.metaTitle
+            : "Variant"}
         </Typography>
         <KeyboardArrowDownRounded color="action" />
       </Stack>
@@ -81,9 +145,15 @@ export const FieldTypeBlockSelector = ({}: FieldTypeBlockSelectorProps) => {
         <VariantSelector
           anchorEl={variantSelectorRef?.current}
           onClose={() => setIsVariantSelectorOpen(false)}
-          variants={selectedModel?.value ? variants : []}
-          blockModelName={selectedModel?.label}
-          blockModelZUID={selectedModel?.value}
+          variants={blockValue?.model?.value ? variants : []}
+          blockModelName={blockValue?.model?.label}
+          blockModelZUID={blockValue?.model?.value}
+          onVariantSelected={(ZUID) => {
+            onChange(
+              `/-/block/${blockValue?.model?.value}.html?variant=${ZUID}`
+            );
+            setIsVariantSelectorOpen(false);
+          }}
         />
       )}
     </Stack>

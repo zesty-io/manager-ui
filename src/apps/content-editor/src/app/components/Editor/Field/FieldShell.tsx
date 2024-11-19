@@ -37,6 +37,7 @@ export type Error = {
   REGEX_PATTERN_MISMATCH?: string;
   REGEX_RESTRICT_PATTERN_MATCH?: string;
   INVALID_RANGE?: string;
+  INVALID_BLOCK_VARIANT?: boolean;
 };
 
 type FieldShellProps = {
@@ -110,6 +111,10 @@ export const FieldShell = ({
 
     if (errors?.CUSTOM_ERROR) {
       errorMessages.push(errors.CUSTOM_ERROR);
+    }
+
+    if (errors?.INVALID_BLOCK_VARIANT) {
+      errorMessages.push("Please select a block variant.");
     }
 
     if (errorMessages.length === 0) {
