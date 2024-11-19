@@ -10,7 +10,6 @@ import {
   searchItems,
 } from "../../../../../../../shell/store/content";
 import { EditorType, FieldShell, Error } from "./FieldShell";
-import { dummyBlockSelectorField } from "../Editor";
 
 import {
   ToggleButtonGroup,
@@ -201,10 +200,7 @@ export const Field = ({
 
   const value = item?.data?.[name];
   const version = item?.meta?.version;
-  const fieldData = [
-    ...(fields ? fields : []),
-    dummyBlockSelectorField as ContentModelField,
-  ]?.find((field) => field.ZUID === ZUID);
+  const fieldData = fields?.find((field) => field.ZUID === ZUID);
 
   useEffect(() => {
     if (datatype !== "date" && datatype !== "datetime") {
@@ -962,7 +958,7 @@ export const Field = ({
         </FieldShell>
       );
 
-    case "block":
+    case "block_selector":
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeBlockSelector />

@@ -21,29 +21,6 @@ import { cloneDeep } from "lodash";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 
-export const dummyBlockSelectorField = {
-  ZUID: "12-c69bb9a1d6-9m0nx2",
-  contentModelZUID: "6-eaaa8d82ed-zpfk0d",
-  name: "new_block_selector",
-  label: "new block selector",
-  description: "Select a block variant!",
-  datatype: "block",
-  sort: 9999,
-  required: false,
-  relationship: null,
-  options: null,
-  fieldOptions: null,
-  datatypeOptions: null,
-  settings: {
-    defaultValue: null,
-    list: true,
-  },
-  relatedModelZUID: null,
-  relatedFieldZUID: null,
-  createdAt: "2024-04-16T23:43:02Z",
-  updatedAt: "2024-07-16T04:54:16Z",
-};
-
 export const MaxLengths = {
   text: 150,
   link: 2000,
@@ -89,10 +66,8 @@ export default memo(function Editor({
   }, [fields]);
 
   const activeFields = useMemo(() => {
-    const _fields = [...fields, dummyBlockSelectorField];
-
-    if (_fields?.length) {
-      return _fields.filter(
+    if (fields?.length) {
+      return fields.filter(
         (field) =>
           !field.deletedAt &&
           ![
