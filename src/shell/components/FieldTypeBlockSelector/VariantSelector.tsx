@@ -8,6 +8,7 @@ import {
   Box,
   Stack,
   ListSubheader,
+  Tooltip,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import moment from "moment";
@@ -130,12 +131,43 @@ export const VariantSelector = ({
                 borderColor: "border",
               }}
             >
-              <Box
-                component="img"
-                width={125}
-                height={80}
-                src="https://via.placeholder.com/125x80"
-              ></Box>
+              <Tooltip
+                enterDelay={500}
+                enterNextDelay={500}
+                disableInteractive
+                placement="left"
+                title={
+                  <Box
+                    component="img"
+                    width={468}
+                    height={320}
+                    src="https://via.placeholder.com/468x320"
+                    loading="lazy"
+                    borderRadius={2}
+                  ></Box>
+                }
+                components={{ Tooltip: Box }}
+                slotProps={{
+                  popper: {
+                    sx: {
+                      maxWidth: "none",
+                    },
+                  },
+                  tooltip: {
+                    sx: {
+                      mr: 1,
+                    },
+                  },
+                }}
+              >
+                <Box
+                  component="img"
+                  width={125}
+                  height={80}
+                  src="https://via.placeholder.com/125x80"
+                  loading="lazy"
+                ></Box>
+              </Tooltip>
               <Stack width={267}>
                 <Typography noWrap variant="body1" fontWeight={700}>
                   {variant?.web?.metaTitle}
