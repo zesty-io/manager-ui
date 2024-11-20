@@ -23,10 +23,37 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+
+    downloadCsv: builder.query<
+      string[],
+      {
+        modelZUID: string;
+      }
+    >({
+      query: ({ modelZUID }) => {
+        return {
+          url: `downloadCSV`,
+          method: "GET",
+          params: {
+            instanceZUID,
+            modelZUID,
+          },
+          responseHandler: async (response) =>
+            window.location.assign(
+              window.URL.createObjectURL(await response.blob())
+            ),
+          cache: "no-cache",
+        };
+      },
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useRefreshCacheMutation, useAiGenerationMutation } =
-  cloudFunctionsApi;
+export const {
+  useRefreshCacheMutation,
+  useAiGenerationMutation,
+  useDownloadCsvQuery,
+  useLazyDownloadCsvQuery,
+} = cloudFunctionsApi;
