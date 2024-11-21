@@ -12,14 +12,17 @@ import {
   ModeEditRounded,
   LinkRounded,
   OpenInNewRounded,
+  CheckRounded,
 } from "@mui/icons-material";
 import { useHistory } from "react-router";
+import { useSelector } from "react-redux";
 
 import {
   useGetContentModelsQuery,
   useLazyGetContentModelItemsQuery,
 } from "../../services/instance";
 import { VariantSelector } from "./VariantSelector";
+import { AppState } from "../../store/types";
 
 type BlockValue = {
   model: {
@@ -41,11 +44,18 @@ export const FieldTypeBlockSelector = ({
   missingVariantError,
 }: FieldTypeBlockSelectorProps) => {
   const history = useHistory();
+  const instance = useSelector((state: AppState) => state.instance);
+  const previewLock = useSelector((state: AppState) =>
+    state.settings?.instance?.find(
+      (setting: any) => setting.key === "preview_lock_password" && setting.value
+    )
+  );
   const { data: models, isLoading: isLoadingModels } =
     useGetContentModelsQuery();
   const [getContentModelItems, { data: variants }] =
     useLazyGetContentModelItemsQuery();
   const [isVariantSelectorOpen, setIsVariantSelectorOpen] = useState(false);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
   const variantSelectorRef = useRef<HTMLDivElement>(null);
 
   const [blockValue, updateBlockValue] = useReducer(
@@ -68,6 +78,25 @@ export const FieldTypeBlockSelector = ({
         value: model.ZUID,
       }));
   }, [models]);
+
+  const url = useMemo(() => {
+    if (!blockValue?.variant || !variants?.length || !instance) return "";
+
+    // @ts-expect-error config not typed
+    const domain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
+    const selectedVariantData = variants.find(
+      (variant) => variant.meta?.ZUID === blockValue.variant
+    );
+    let path = selectedVariantData?.web?.path
+      ? `${selectedVariantData.web.path}?_bypassError=true&__version=${selectedVariantData?.meta?.version}`
+      : `/-/instant/${selectedVariantData?.meta?.ZUID}.json?_bypassError=true&__version=${selectedVariantData?.meta?.version}`;
+
+    if (previewLock) {
+      path = `${path}&zpw=${previewLock.value}`;
+    }
+
+    return `${domain}${path}`;
+  }, [blockValue?.variant, variants, instance]);
 
   useEffect(() => {
     if (!blockValue.model?.value) return;
@@ -95,6 +124,20 @@ export const FieldTypeBlockSelector = ({
       });
     }
   }, [value, models]);
+
+  const handleCopyLinkClick = (data: string) => {
+    navigator?.clipboard
+      ?.writeText(data)
+      .then(() => {
+        setIsLinkCopied(true);
+        setTimeout(() => {
+          setIsLinkCopied(false);
+        }, 3000);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   return (
     <>
@@ -202,15 +245,18 @@ export const FieldTypeBlockSelector = ({
               >
                 <ModeEditRounded fontSize="small" />
               </IconButton>
-              <IconButton
-                size="small"
-                onClick={() => console.log("copy variant link")}
-              >
-                <LinkRounded fontSize="small" />
+              <IconButton size="small" onClick={() => handleCopyLinkClick(url)}>
+                {isLinkCopied ? (
+                  <CheckRounded fontSize="small" />
+                ) : (
+                  <LinkRounded fontSize="small" />
+                )}
               </IconButton>
               <IconButton
                 size="small"
-                onClick={() => console.log("open variant preview")}
+                onClick={() =>
+                  window.open(url, "_blank", "noopener=true,noreferrer=true")
+                }
               >
                 <OpenInNewRounded fontSize="small" />
               </IconButton>
