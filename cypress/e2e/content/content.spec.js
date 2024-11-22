@@ -411,4 +411,29 @@ describe("Content Specs", () => {
         .should("have.value", "12:00 pm");
     });
   });
+
+  describe.only("Block Selector Field", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+      });
+    });
+
+    it("Sets a block variant", () => {
+      cy.get("#12-88adc8c7ac-dwbbxf", { timeout: 10000 })
+        .find("[data-cy='BlockSelectorModelField'] input")
+        .click();
+      cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option").first().click();
+
+      cy.intercept("/v1/content/models/**").as("getItems");
+
+      cy.wait("@getItems");
+
+      cy.get("#12-88adc8c7ac-dwbbxf")
+        .find("[data-cy='BlockSelectorVariantField']")
+        .click();
+      cy.getBySelector("Variant_0").click();
+      cy.getBySelector("BlockFieldVariantPreview").should("exist");
+    });
+  });
 });

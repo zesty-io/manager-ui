@@ -143,6 +143,7 @@ export const FieldTypeBlockSelector = ({
     <>
       <Stack direction="row" gap={0.5}>
         <Autocomplete
+          data-cy="BlockSelectorModelField"
           loading={isLoadingModels}
           renderInput={(params) => (
             <TextField
@@ -164,6 +165,7 @@ export const FieldTypeBlockSelector = ({
         />
 
         <Stack
+          data-cy="BlockSelectorVariantField"
           ref={variantSelectorRef}
           direction="row"
           height={40}
@@ -216,7 +218,7 @@ export const FieldTypeBlockSelector = ({
         )}
       </Stack>
       {!!blockValue?.model && !!blockValue?.variant && (
-        <Box>
+        <Box data-cy="BlockFieldVariantPreview">
           <Stack
             direction="row"
             justifyContent="space-between"

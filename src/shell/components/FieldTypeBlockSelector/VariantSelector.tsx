@@ -123,6 +123,7 @@ export const VariantSelector = ({
         ) : filteredVariants?.length ? (
           filteredVariants?.map((variant, index) => (
             <MenuItem
+              data-cy={`Variant_${index}`}
               key={variant?.meta?.ZUID}
               divider={index + 1 < variants?.length}
               onClick={() => onVariantSelected(variant?.meta?.ZUID)}
