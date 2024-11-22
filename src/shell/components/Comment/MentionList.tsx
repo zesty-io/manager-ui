@@ -40,7 +40,15 @@ export const MentionList = forwardRef(
       const _filterKeyword = filterKeyword?.toLowerCase();
 
       return [...users]
-        ?.sort((userA, userB) => userA.firstName.localeCompare(userB.firstName))
+        ?.sort((userA, userB) => {
+          const userAName = userA.firstName || userA.lastName || "";
+          const userBName = userB.firstName || userB.lastName || "";
+
+          if (!userAName) return 1;
+          if (!userBName) return -1;
+
+          return userAName.localeCompare(userBName);
+        })
         .filter(
           (user) =>
             user.email?.toLowerCase()?.includes(_filterKeyword) ||
@@ -178,7 +186,7 @@ export const MentionList = forwardRef(
                   />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={`${user.firstName} ${user.lastName}`}
+                  primary={`${user.firstName || ""} ${user.lastName || ""}`}
                   secondary={user.email}
                 />
               </ListItemButton>

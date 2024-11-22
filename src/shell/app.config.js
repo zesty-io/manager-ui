@@ -152,6 +152,8 @@ module.exports = {
     API_INSTANCE_PROTOCOL: "http://",
     API_ANALYTICS: "https://analytics-api-m3rbwjxm5q-uc.a.run.app",
 
+    CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-dev.cloudfunctions.net",
+
     SERVICE_AUTH: "http://auth.api.zesty.localdev:3011",
     SERVICE_EMAIL: "",
     SERVICE_MEDIA_MANAGER:

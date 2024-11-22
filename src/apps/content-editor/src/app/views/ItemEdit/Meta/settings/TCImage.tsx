@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { MemoryRouter } from "react-router";
-import { Dialog } from "@mui/material";
+import { Box, Dialog } from "@mui/material";
 import { IconButton } from "@zesty-io/material";
 import { Close } from "@mui/icons-material";
 
@@ -27,7 +27,7 @@ export const TCImage = ({ field, error, onChange, value }: TCImageProps) => {
   }, [value]);
 
   return (
-    <>
+    <Box id={field.ZUID}>
       <FieldShell
         settings={{
           label: field?.label,
@@ -114,6 +114,6 @@ export const TCImage = ({ field, error, onChange, value }: TCImageProps) => {
           </Dialog>
         </MemoryRouter>
       )}
-    </>
+    </Box>
   );
 };

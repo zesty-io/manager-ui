@@ -137,7 +137,7 @@ export const TopUsers = (props) => {
                 const user = usersRoles.find(
                   (userRole) => userRole.ZUID === topUser.ZUID
                 );
-                return `${user.firstName} ${user.lastName.charAt(0)}.`;
+                return `${user?.firstName} ${user?.lastName?.charAt(0)}.`;
               }),
               datasets: [
                 {
