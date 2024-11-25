@@ -100,8 +100,8 @@ export function request(url, opts = {}) {
         );
         throw err;
       } else {
+        // Network errors
         store.dispatch(notify({ message: err.message, kind: "warn" }));
-        Sentry.captureException(err, { fingerprint: ["network_error"] });
         return Promise.reject(err);
       }
     });
