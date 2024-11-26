@@ -1,6 +1,5 @@
 import Cookies from "js-cookie";
 import { rest } from "lodash";
-import { Sentry } from "./sentry";
 import { store } from "shell/store";
 import { notify } from "../shell/store/notifications";
 // import { endSession } from "shell/store/auth";
@@ -102,7 +101,6 @@ export function request(url, opts = {}) {
       } else {
         // Network errors
         store.dispatch(notify({ message: err.message, kind: "warn" }));
-        return Promise.reject(err);
       }
     });
 }
