@@ -24,14 +24,7 @@ export const VersionItem = ({
   withBottomBorder,
 }: VersionItemProps) => {
   return (
-    <MenuItem
-      sx={{
-        borderColor: "border",
-        bgcolor: isActive ? "background.paper" : "transparent",
-        p: 2,
-      }}
-      divider={withBottomBorder}
-    >
+    <>
       <Stack direction="row" justifyContent="space-between" width="100%">
         <Stack direction="row" gap={1}>
           <Typography variant="body1" color="text.primary" fontWeight={700}>
@@ -62,6 +55,6 @@ export const VersionItem = ({
           {data?.createdAt}
         </Typography>
       </Stack>
-    </MenuItem>
+    </>
   );
 };

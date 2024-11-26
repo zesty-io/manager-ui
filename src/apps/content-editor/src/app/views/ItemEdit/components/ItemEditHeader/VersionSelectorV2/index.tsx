@@ -141,12 +141,25 @@ export const VersionSelector = memo(
           }}
         >
           {mappedVersions?.map((version, index) => (
-            <VersionItem
+            <MenuItem
               key={version?.itemVersionZUID}
-              data={version}
-              isActive={activeVersion === version?.itemVersion}
-              withBottomBorder={index + 1 < versions?.length}
-            />
+              sx={{
+                borderColor: "border",
+                bgcolor:
+                  activeVersion === version?.itemVersion
+                    ? "background.paper"
+                    : "transparent",
+                p: 2,
+              }}
+              divider={index + 1 < versions?.length}
+            >
+              <VersionItem
+                key={version?.itemVersionZUID}
+                data={version}
+                isActive={activeVersion === version?.itemVersion}
+                withBottomBorder={index + 1 < versions?.length}
+              />
+            </MenuItem>
           ))}
         </Menu>
       </>
