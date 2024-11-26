@@ -111,8 +111,8 @@ export const FieldTypeBlockSelector = ({
         variant: null,
       });
     } else {
-      const blockModelZUID = value.split("/")?.[3]?.split(".")?.[0];
-      const blockVariantZUID = value.split("variant=")?.[1];
+      const [blockModelZUID, blockVariantZUID] =
+        value.split(".html?variant=") || [];
 
       updateBlockValue({
         model: {
@@ -159,7 +159,7 @@ export const FieldTypeBlockSelector = ({
             if (!value) {
               onChange(null);
             } else {
-              onChange(`/-/block/${value?.value}.html?variant=`);
+              onChange(`${value?.value}.html?variant=`);
             }
           }}
         />
@@ -209,9 +209,7 @@ export const FieldTypeBlockSelector = ({
             blockModelName={blockValue?.model?.label}
             blockModelZUID={blockValue?.model?.value}
             onVariantSelected={(ZUID) => {
-              onChange(
-                `/-/block/${blockValue?.model?.value}.html?variant=${ZUID}`
-              );
+              onChange(`${blockValue?.model?.value}.html?variant=${ZUID}`);
               setIsVariantSelectorOpen(false);
             }}
           />

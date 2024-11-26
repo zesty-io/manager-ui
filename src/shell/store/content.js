@@ -435,7 +435,7 @@ export function saveItem({
           item.data[field.name] > field.settings?.maxValue)
     );
 
-    // Validates that block_selector fields contain the correct format /-/block/6-xxxx-xxxx.html?variant=7-xxxx-xxxx
+    // Validates that block_selector fields contain the correct format 6-xxxx-xxxx.html?variant=7-xxxx-xxxx
     const invalidBlockVariantValue = fields?.filter((field) => {
       if (field.datatype === "block_selector" && !!item.data[field.name]) {
         if (!item.data[field.name]?.split("variant=")?.[1]) return true;
@@ -611,7 +611,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
           item.data[field.name] > field.settings?.maxValue)
     );
 
-    // Validates that block_selector fields contain the correct format /-/block/6-xxxx-xxxx.html?variant=7-xxxx-xxxx
+    // Validates that block_selector fields contain the correct format 6-xxxx-xxxx.html?variant=7-xxxx-xxxx
     const invalidBlockVariantValue = fields?.filter((field) => {
       if (field.datatype === "block_selector" && !!item.data[field.name]) {
         if (!item.data[field.name]?.split("variant=")?.[1]) return true;
