@@ -1,7 +1,25 @@
-import { Box, MenuItem, Stack, Typography } from "@mui/material";
-import { ScheduleRounded, LanguageRounded } from "@mui/icons-material";
+import { Box, MenuItem, Stack, Typography, Chip } from "@mui/material";
+import {
+  ScheduleRounded,
+  LanguageRounded,
+  AddRounded,
+} from "@mui/icons-material";
 
 import { ContentItem } from "../../../../../../../../../shell/services/types";
+import { MouseEventHandler } from "react";
+
+const chipColors = [
+  "default",
+  "error",
+  "success",
+  "info",
+  "primary",
+  "secondary",
+  "warning",
+];
+const generateRandomChipColor = () => {
+  return chipColors[Math.floor(Math.random() * chipColors.length)];
+};
 
 export type Version = {
   itemZUID: string;
@@ -16,13 +34,8 @@ export type Version = {
 type VersionItemProps = {
   data: Version;
   isActive: boolean;
-  withBottomBorder: boolean;
 };
-export const VersionItem = ({
-  data,
-  isActive,
-  withBottomBorder,
-}: VersionItemProps) => {
+export const VersionItem = ({ data, isActive }: VersionItemProps) => {
   return (
     <>
       <Stack direction="row" justifyContent="space-between" width="100%">
@@ -55,6 +68,38 @@ export const VersionItem = ({
           {data?.createdAt}
         </Typography>
       </Stack>
+      {!!data?.labels?.length && (
+        <Stack direction="row" gap={1} width="100%" mt={1.25} flexWrap="wrap">
+          {data.labels.map((label) => (
+            <Chip
+              clickable
+              onClick={(evt: any) => {
+                evt.stopPropagation();
+                console.log("open add label dropdown");
+              }}
+              label={label}
+              // @ts-expect-error
+              color={generateRandomChipColor()}
+              size="small"
+            />
+          ))}
+          {isActive && (
+            <Chip
+              clickable
+              label="Add Status"
+              color="default"
+              size="small"
+              onClick={(evt) => {
+                evt.stopPropagation();
+                console.log("open add label dropdown");
+              }}
+              // Note: onDelete needs to be here for the custom deleteIcon to be visible
+              onDelete={() => {}}
+              deleteIcon={<AddRounded />}
+            />
+          )}
+        </Stack>
+      )}
     </>
   );
 };

@@ -5,6 +5,27 @@ import { useParams } from "react-router";
 import moment from "moment";
 import { useDispatch } from "react-redux";
 
+const dummyLabels = [
+  "Approved",
+  "Draft",
+  "In Review",
+  "For Publish",
+  "Blocked",
+  "Published",
+  "Scheduled",
+];
+const generateDummyLabels = () => {
+  let count = Math.floor(Math.random() * dummyLabels.length) + 1;
+  const labels = [];
+
+  while (count) {
+    labels.push(dummyLabels[Math.floor(Math.random() * dummyLabels.length)]);
+    count--;
+  }
+
+  return labels;
+};
+
 const formatDateTime = (dateTimeString: string) => {
   if (!dateTimeString) return "";
 
@@ -72,7 +93,8 @@ export const VersionSelector = memo(
         modelZUID: v?.meta?.contentModelZUID,
         itemVersionZUID: v?.web?.versionZUID,
         itemVersion: v?.meta?.version,
-        labels: [],
+        // TODO: Change with actual values
+        labels: generateDummyLabels(),
         createdAt: formatDateTime(v?.web?.createdAt),
         isPublished: activeVersion?.version === v?.meta?.version,
         isScheduled: scheduledVersion?.version === v?.meta?.version,
@@ -150,9 +172,11 @@ export const VersionSelector = memo(
           {mappedVersions?.map((version, index) => (
             <MenuItem
               key={version?.itemVersionZUID}
+              disableRipple
               sx={{
                 borderColor: "border",
                 p: 2,
+                flexDirection: "column",
 
                 "&.Mui-selected": {
                   bgcolor: "background.paper",
@@ -174,7 +198,6 @@ export const VersionSelector = memo(
                 key={version?.itemVersionZUID}
                 data={version}
                 isActive={activeVersion === version?.itemVersion}
-                withBottomBorder={index + 1 < versions?.length}
               />
             </MenuItem>
           ))}
