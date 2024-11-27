@@ -1,16 +1,9 @@
 import { useState, memo, useMemo } from "react";
-import {
-  Button,
-  Menu,
-  MenuItem,
-  Box,
-  Tooltip,
-  Chip,
-  Divider,
-} from "@mui/material";
+import { Button, Menu, MenuItem, Tooltip, Chip } from "@mui/material";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
-import { useLocation, useParams } from "react-router";
+import { useParams } from "react-router";
 import moment from "moment";
+import { useDispatch } from "react-redux";
 
 const formatDateTime = (dateTimeString: string) => {
   if (!dateTimeString) return "";
@@ -40,6 +33,7 @@ type VersionSelectorProps = {
 };
 export const VersionSelector = memo(
   ({ activeVersion }: VersionSelectorProps) => {
+    const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState<HTMLElement>(null);
     const { modelZUID, itemZUID } = useParams<{
       modelZUID: string;
@@ -84,6 +78,19 @@ export const VersionSelector = memo(
         isScheduled: scheduledVersion?.version === v?.meta?.version,
       }));
     }, [versions, itemPublishings]);
+
+    const handleLoadVersion = (version: number) => {
+      const versionToLoad = versions?.find((v) => v?.meta?.version === version);
+
+      if (!!versionToLoad) {
+        dispatch({
+          type: "LOAD_ITEM_VERSION",
+          itemZUID,
+          data: versionToLoad,
+        });
+        setAnchorEl(null);
+      }
+    };
 
     return (
       <>
@@ -145,13 +152,23 @@ export const VersionSelector = memo(
               key={version?.itemVersionZUID}
               sx={{
                 borderColor: "border",
-                bgcolor:
-                  activeVersion === version?.itemVersion
-                    ? "background.paper"
-                    : "transparent",
                 p: 2,
+
+                "&.Mui-selected": {
+                  bgcolor: "background.paper",
+
+                  "&.Mui-focusVisible": {
+                    bgcolor: "background.paper",
+                  },
+
+                  "&:hover": {
+                    bgcolor: "background.paper",
+                  },
+                },
               }}
               divider={index + 1 < versions?.length}
+              selected={activeVersion === version?.itemVersion}
+              onClick={() => handleLoadVersion(version?.itemVersion)}
             >
               <VersionItem
                 key={version?.itemVersionZUID}
