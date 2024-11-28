@@ -27,7 +27,8 @@ import {
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
-import { VersionSelector } from "./VersionSelector";
+// import { VersionSelector } from "./VersionSelector";
+import { VersionSelector } from "./VersionSelectorV2";
 import { LanguageSelector } from "./LanguageSelector";
 import { ContentBreadcrumbs } from "../../../../components/ContentBreadcrumbs";
 import { MoreMenu } from "./MoreMenu";
@@ -229,7 +230,7 @@ export const ItemEditHeader = ({
             <Box display="flex" gap={2} alignItems="center">
               <DuoModeSwitch />
               <LanguageSelector />
-              <VersionSelector />
+              <VersionSelector activeVersion={item?.meta?.version} />
             </Box>
           </Box>
         </Box>
