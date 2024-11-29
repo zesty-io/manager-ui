@@ -75,7 +75,7 @@ export const FieldTypeBlockSelector = ({
       .filter((model) => model.type === "block")
       .map((model) => ({
         label: model.label,
-        value: model.ZUID,
+        value: model.name,
       }));
   }, [models]);
 
@@ -99,10 +99,16 @@ export const FieldTypeBlockSelector = ({
   }, [blockValue?.variant, variants, instance]);
 
   useEffect(() => {
-    if (!blockValue.model?.value) return;
+    if (!blockValue.model?.value || !models?.length) return;
 
-    getContentModelItems({ modelZUID: blockValue.model?.value });
-  }, [blockValue.model]);
+    const modelZUID = models.find(
+      (model) => model.name === blockValue.model?.value
+    )?.ZUID;
+
+    if (!!modelZUID) {
+      getContentModelItems({ modelZUID });
+    }
+  }, [blockValue.model, models]);
 
   useEffect(() => {
     if (!value) {
@@ -111,14 +117,17 @@ export const FieldTypeBlockSelector = ({
         variant: null,
       });
     } else {
-      const blockModelZUID = value.split("/")?.[3]?.split(".")?.[0];
+      const blockModelName = value.split("/")?.[3]?.split(".")?.[0];
       const blockVariantZUID = value.split("variant=")?.[1];
+
+      console.log(blockModelName, blockVariantZUID);
 
       updateBlockValue({
         model: {
           label:
-            models?.find((model) => model.ZUID === blockModelZUID)?.label || "",
-          value: blockModelZUID || "",
+            // FIXME: update since we now only store the model.name instead of zuid
+            models?.find((model) => model.name === blockModelName)?.label || "",
+          value: blockModelName || "",
         },
         variant: blockVariantZUID,
       });
