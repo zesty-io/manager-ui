@@ -67,6 +67,9 @@ export const FieldTypeBlockSelector = ({
     },
     { model: null, variant: null }
   );
+  const blockModelData = models.find(
+    (model) => model.name === blockValue.model?.value
+  );
 
   const blockModelOptions = useMemo(() => {
     if (!models?.length) return [];
@@ -80,35 +83,27 @@ export const FieldTypeBlockSelector = ({
   }, [models]);
 
   const url = useMemo(() => {
-    if (!blockValue?.variant || !variants?.length || !instance) return "";
+    if (!blockValue || !variants?.length || !instance) return "";
 
     // @ts-expect-error config not typed
     const domain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
     const selectedVariantData = variants.find(
       (variant) => variant.meta?.ZUID === blockValue.variant
     );
-    let path = selectedVariantData?.web?.path
-      ? `${selectedVariantData.web.path}?_bypassError=true&__version=${selectedVariantData?.meta?.version}`
-      : `/-/instant/${selectedVariantData?.meta?.ZUID}.json?_bypassError=true&__version=${selectedVariantData?.meta?.version}`;
+    let path = `/-/block/${blockValue.model?.value}.html?variant=${selectedVariantData?.meta?.ZUID}`;
 
     if (previewLock) {
       path = `${path}&zpw=${previewLock.value}`;
     }
 
     return `${domain}${path}`;
-  }, [blockValue?.variant, variants, instance]);
+  }, [blockValue, variants, instance]);
 
   useEffect(() => {
-    if (!blockValue.model?.value || !models?.length) return;
+    if (!blockModelData) return;
 
-    const modelZUID = models.find(
-      (model) => model.name === blockValue.model?.value
-    )?.ZUID;
-
-    if (!!modelZUID) {
-      getContentModelItems({ modelZUID });
-    }
-  }, [blockValue.model, models]);
+    getContentModelItems({ modelZUID: blockModelData.ZUID });
+  }, [blockValue.model, blockModelData]);
 
   useEffect(() => {
     if (!value) {
@@ -120,12 +115,9 @@ export const FieldTypeBlockSelector = ({
       const blockModelName = value.split("/")?.[3]?.split(".")?.[0];
       const blockVariantZUID = value.split("variant=")?.[1];
 
-      console.log(blockModelName, blockVariantZUID);
-
       updateBlockValue({
         model: {
           label:
-            // FIXME: update since we now only store the model.name instead of zuid
             models?.find((model) => model.name === blockModelName)?.label || "",
           value: blockModelName || "",
         },
@@ -216,7 +208,7 @@ export const FieldTypeBlockSelector = ({
             onClose={() => setIsVariantSelectorOpen(false)}
             variants={blockValue?.model?.value ? variants : []}
             blockModelName={blockValue?.model?.label}
-            blockModelZUID={blockValue?.model?.value}
+            blockModelZUID={blockModelData?.ZUID}
             onVariantSelected={(ZUID) => {
               onChange(
                 `/-/block/${blockValue?.model?.value}.html?variant=${ZUID}`
@@ -250,7 +242,7 @@ export const FieldTypeBlockSelector = ({
                 size="small"
                 onClick={() =>
                   history.push(
-                    `/blocks/${blockValue?.model?.value}/${blockValue?.variant}`
+                    `/blocks/${blockModelData?.ZUID}/${blockValue?.variant}`
                   )
                 }
               >

@@ -38,7 +38,7 @@ export const NoVariant = ({
           variant="contained"
           startIcon={<Block />}
           sx={{ mr: 1 }}
-          onClick={() => history.push(`/schema/${blockModelZUID}`)}
+          onClick={() => history.push(`/blocks/${blockModelZUID}`)}
         >
           View Block
         </Button>
