@@ -64,10 +64,14 @@ export const FieldTypeOneToOne = ({
 
   const handleOpen = () => {
     if (!loaded && onOpen) {
-      onOpen().then(() => {
-        setLoading(false);
-      });
       setLoading(true);
+      if (onOpen() instanceof Promise) {
+        onOpen().then(() => {
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
       setLoaded(true);
     }
   };
