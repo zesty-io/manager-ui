@@ -51,6 +51,8 @@ export const instanceApi = createApi({
     "HeadTags",
     "ContentItems",
     "ItemPublishings",
+    "ItemWorkflowStatus",
+    "WorkflowStatusLabels",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -604,6 +606,55 @@ export const instanceApi = createApi({
       query: () => `/web/stylesheets/variables/categories`,
       transformResponse: getResponseData,
     }),
+    getItemWorkflowStatus: builder.query<
+      any,
+      { modelZUID: string; itemZUID: string }
+    >({
+      query: ({ modelZUID, itemZUID }) =>
+        `/content/models/${modelZUID}/items/${itemZUID}/labels`,
+      transformResponse: getResponseData,
+      providesTags: (_, __, { itemZUID }) => [
+        { type: "ItemWorkflowStatus", id: itemZUID },
+      ],
+    }),
+    createItemWorkflowStatus: builder.mutation<
+      any,
+      {
+        modelZUID: string;
+        itemZUID: string;
+        itemVersionZUID: string;
+        itemVersion: number;
+        label_zuids: string[];
+      }
+    >({
+      query: (payload) => ({
+        url: `/content/models/${payload.modelZUID}/items/${payload.itemZUID}/labels`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["ItemWorkflowStatus"],
+    }),
+    updateItemWorkflowStatus: builder.mutation<
+      any,
+      {
+        modelZUID: string;
+        itemZUID: string;
+        itemWorkflowZUID: string;
+        labelZUIDs: string[];
+      }
+    >({
+      query: ({ modelZUID, itemZUID, itemWorkflowZUID, labelZUIDs }) => ({
+        url: `/content/models/${modelZUID}/items/${itemZUID}/labels/${itemWorkflowZUID}`,
+        method: "PUT",
+        body: labelZUIDs,
+      }),
+      invalidatesTags: ["ItemWorkflowStatus"],
+    }),
+    getWorkflowStatusLabels: builder.query<any, void>({
+      query: () => `/env/labels`,
+      transformResponse: getResponseData,
+      providesTags: ["WorkflowStatusLabels"],
+    }),
   }),
 });
 
@@ -653,4 +704,8 @@ export const {
   useUpdateContentItemsMutation,
   useCreateItemsPublishingMutation,
   useDeleteContentItemsMutation,
+  useGetItemWorkflowStatusQuery,
+  useCreateItemWorkflowStatusMutation,
+  useUpdateItemWorkflowStatusMutation,
+  useGetWorkflowStatusLabelsQuery,
 } = instanceApi;
