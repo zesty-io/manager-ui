@@ -184,6 +184,7 @@ export default function Content(props) {
               onClose={() => setShowDuoMode(false)}
               onSave={() => props.onSave()}
               hasErrors={props.hasErrors}
+              model={props.model}
             />
           </Box>
           {props?.model?.type === "block" && (
