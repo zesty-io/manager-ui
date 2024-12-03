@@ -1,12 +1,29 @@
-import { Box, MenuItem, Stack, Typography, Chip } from "@mui/material";
+import { useState } from "react";
+import {
+  Box,
+  MenuItem,
+  Stack,
+  Typography,
+  Chip,
+  TextField,
+  InputAdornment,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import {
   ScheduleRounded,
   LanguageRounded,
   AddRounded,
+  SearchRounded,
+  EditRounded,
 } from "@mui/icons-material";
 
 import { ContentItem } from "../../../../../../../../../shell/services/types";
-import { MouseEventHandler } from "react";
+import {
+  useGetItemWorkflowStatusQuery,
+  useGetWorkflowStatusLabelsQuery,
+} from "../../../../../../../../../shell/services/instance";
 
 const chipColors = [
   "default",
@@ -36,9 +53,20 @@ type VersionItemProps = {
   isActive: boolean;
 };
 export const VersionItem = ({ data, isActive }: VersionItemProps) => {
+  // const { data: statusLabels  } = useGetItemWorkflowStatusQuery()
+  const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
+  const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
+  const [filterKeyword, setFilterKeyword] = useState("");
+
   return (
     <>
-      <Stack direction="row" justifyContent="space-between" width="100%">
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        width="100%"
+        pt={2}
+        px={2}
+      >
         <Stack direction="row" gap={1}>
           <Typography variant="body1" color="text.primary" fontWeight={700}>
             v{data?.itemVersion}
@@ -69,13 +97,23 @@ export const VersionItem = ({ data, isActive }: VersionItemProps) => {
         </Typography>
       </Stack>
       {!!data?.labels?.length && (
-        <Stack direction="row" gap={1} width="100%" mt={1.25} flexWrap="wrap">
+        <Stack
+          direction="row"
+          gap={1}
+          width="100%"
+          flexWrap="wrap"
+          px={2}
+          pt={1.25}
+          pb={2}
+        >
           {data.labels.map((label) => (
             <Chip
               clickable
               onClick={(evt: any) => {
                 evt.stopPropagation();
-                console.log("open add label dropdown");
+                if (isActive) {
+                  setIsAddNewLabelOpen((prev) => !prev);
+                }
               }}
               label={label}
               // @ts-expect-error
@@ -91,7 +129,9 @@ export const VersionItem = ({ data, isActive }: VersionItemProps) => {
               size="small"
               onClick={(evt) => {
                 evt.stopPropagation();
-                console.log("open add label dropdown");
+                if (isActive) {
+                  setIsAddNewLabelOpen((prev) => !prev);
+                }
               }}
               // Note: onDelete needs to be here for the custom deleteIcon to be visible
               onDelete={() => {}}
@@ -99,6 +139,48 @@ export const VersionItem = ({ data, isActive }: VersionItemProps) => {
             />
           )}
         </Stack>
+      )}
+      {isAddNewLabelOpen && (
+        <Box
+          onClick={(evt) => evt.stopPropagation()}
+          borderTop={1}
+          borderColor="border"
+          width="100%"
+        >
+          <TextField
+            value={filterKeyword}
+            onChange={(evt) => setFilterKeyword(evt.currentTarget.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchRounded />
+                </InputAdornment>
+              ),
+            }}
+            placeholder="Search status"
+            size="small"
+            fullWidth
+            autoFocus
+            sx={{
+              my: 1.5,
+              px: 1,
+            }}
+          />
+          <MenuItem
+            sx={{
+              pr: 1,
+              pl: 4,
+              borderTop: 1,
+              borderColor: "border",
+              height: 44,
+            }}
+          >
+            <ListItemIcon>
+              <EditRounded />
+            </ListItemIcon>
+            <ListItemText>Edit Statuses</ListItemText>
+          </MenuItem>
+        </Box>
       )}
     </>
   );

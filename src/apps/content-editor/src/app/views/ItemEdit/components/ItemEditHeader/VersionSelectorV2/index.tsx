@@ -175,7 +175,7 @@ export const VersionSelector = memo(
               disableRipple
               sx={{
                 borderColor: "border",
-                p: 2,
+                p: 0,
                 flexDirection: "column",
 
                 "&.Mui-selected": {
@@ -192,7 +192,9 @@ export const VersionSelector = memo(
               }}
               divider={index + 1 < versions?.length}
               selected={activeVersion === version?.itemVersion}
-              onClick={() => handleLoadVersion(version?.itemVersion)}
+              onClick={(evt) => {
+                handleLoadVersion(version?.itemVersion);
+              }}
             >
               <VersionItem
                 key={version?.itemVersionZUID}
