@@ -36,7 +36,7 @@ export default function PreviewMode(props) {
         let url = "";
 
         if (props?.model?.type === "block") {
-          url = `/-/block/${props?.model?.name}.html?variant=${item?.meta?.ZUID}&_bypassError=true&version=${props.version}`;
+          url = `/-/block/${props?.model?.name}.html?variant=${item?.meta?.ZUID}&version=${props.version}`;
         } else {
           url = item?.web?.path
             ? `${item.web.path}`
