@@ -1,14 +1,20 @@
 import { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box } from "@mui/material";
-import { legacyTheme } from "@zesty-io/material";
-import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { Box, Typography } from "@mui/material";
+import { legacyTheme, theme } from "@zesty-io/material";
+import {
+  alpha,
+  createTheme,
+  ThemeProvider,
+  useTheme,
+} from "@mui/material/styles";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { SettingsNav } from "./components/Nav";
 
 import { Instance } from "./views/Instance";
+
 import { Styles } from "./views/Styles";
 import { Browse, Installed } from "./views/Fonts";
 import { Robots } from "./views/Robots";
@@ -24,7 +30,8 @@ import {
   fetchFontsInstalled,
 } from "shell/store/settings";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
-
+import styles from "./App.less";
+import Workflows from "./views/User/Workflows";
 // Makes sure that other apps using legacy theme does not get affected with the palette
 const customTheme = createTheme(legacyTheme, {
   palette: {
@@ -92,12 +99,20 @@ const customTheme = createTheme(legacyTheme, {
   },
 });
 
-import styles from "./App.less";
 export default connect((state) => ({
   instance: state.instance,
   settings: state.settings,
 }))(function SettingsApp(props) {
   const location = useLocation();
+  const uTheme = useTheme();
+
+  console.log("legacyTheme:", legacyTheme);
+  console.table({
+    customTheme: JSON.stringify({ ...customTheme.typography }),
+    legacyTheme: JSON.stringify({ ...legacyTheme.typography }),
+    theme: JSON.stringify({ ...theme.typography }),
+    uTheme: JSON.stringify({ ...uTheme.typography }),
+  });
 
   useEffect(() => {
     props.dispatch(fetchSettings());
@@ -138,7 +153,11 @@ export default connect((state) => ({
               <Box
                 component="main"
                 className={
-                  location.pathname === "/settings/instance/bynder"
+                  // location.pathname === "/settings/instance/bynder"
+                  [
+                    "/settings/instance/bynder",
+                    "/settings/user/workflows",
+                  ]?.includes(location.pathname)
                     ? ""
                     : styles.Content
                 }
@@ -181,6 +200,10 @@ export default connect((state) => ({
                         <Head resourceZUID={props.instance.ZUID} />
                       </div>
                     )}
+                  />
+                  <Route
+                    path="/settings/user/workflows"
+                    component={Workflows}
                   />
 
                   <Redirect from="/settings" to="/settings/instance/general" />
