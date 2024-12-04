@@ -1,9 +1,13 @@
-import { useState, memo, useMemo } from "react";
-import { Button, Menu, MenuItem, Tooltip, Chip } from "@mui/material";
+import { useState, memo, useMemo, useRef } from "react";
+import { Button, Tooltip, Chip, MenuList, Popover } from "@mui/material";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
 import moment from "moment";
 import { useDispatch } from "react-redux";
+import { VariableSizeList } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
+
+import { Row } from "./Row";
 
 const dummyLabels = [
   "Approved",
@@ -55,6 +59,8 @@ type VersionSelectorProps = {
 export const VersionSelector = memo(
   ({ activeVersion }: VersionSelectorProps) => {
     const dispatch = useDispatch();
+    const listRef = useRef(null);
+    const rowHeights = useRef(null);
     const [anchorEl, setAnchorEl] = useState<HTMLElement>(null);
     const { modelZUID, itemZUID } = useParams<{
       modelZUID: string;
@@ -114,6 +120,18 @@ export const VersionSelector = memo(
       }
     };
 
+    const setRowHeight = (index: number, size: number) => {
+      console.log("setrowheight", size);
+      listRef.current?.resetAfterIndex(0);
+      rowHeights.current = { ...rowHeights?.current, [index]: size };
+    };
+
+    const getRowHeight = (index: number) => {
+      console.log("getrowheight", rowHeights.current?.[index]);
+
+      return rowHeights.current?.[index] || 90;
+    };
+
     return (
       <>
         <Tooltip
@@ -141,7 +159,7 @@ export const VersionSelector = memo(
             <Chip label="Draft" color="info" size="small" sx={{ ml: 0.5 }} />
           </Button>
         </Tooltip>
-        <Menu
+        <Popover
           onClose={() => setAnchorEl(null)}
           anchorOrigin={{
             vertical: "bottom",
@@ -156,6 +174,7 @@ export const VersionSelector = memo(
           slotProps={{
             paper: {
               sx: {
+                height: "100%",
                 maxHeight: 540,
                 overflow: "auto",
                 width: 379,
@@ -165,45 +184,36 @@ export const VersionSelector = memo(
           }}
           sx={{
             "& .MuiMenu-list": {
+              height: "100%",
               py: 0,
             },
           }}
         >
-          {mappedVersions?.map((version, index) => (
-            <MenuItem
-              key={version?.itemVersionZUID}
-              disableRipple
-              sx={{
-                borderColor: "border",
-                p: 0,
-                flexDirection: "column",
-
-                "&.Mui-selected": {
-                  bgcolor: "background.paper",
-
-                  "&.Mui-focusVisible": {
-                    bgcolor: "background.paper",
-                  },
-
-                  "&:hover": {
-                    bgcolor: "background.paper",
-                  },
-                },
-              }}
-              divider={index + 1 < versions?.length}
-              selected={activeVersion === version?.itemVersion}
-              onClick={(evt) => {
-                handleLoadVersion(version?.itemVersion);
-              }}
-            >
-              <VersionItem
-                key={version?.itemVersionZUID}
-                data={version}
-                isActive={activeVersion === version?.itemVersion}
-              />
-            </MenuItem>
-          ))}
-        </Menu>
+          <AutoSizer>
+            {({ height, width }) => {
+              return (
+                <VariableSizeList
+                  ref={listRef}
+                  height={height}
+                  width={width}
+                  itemCount={mappedVersions?.length}
+                  itemData={
+                    {
+                      versions: mappedVersions,
+                      activeVersion,
+                      handleLoadVersion,
+                      setRowHeight,
+                    } as any
+                  }
+                  itemSize={getRowHeight}
+                  innerElementType={MenuList}
+                >
+                  {Row}
+                </VariableSizeList>
+              );
+            }}
+          </AutoSizer>
+        </Popover>
       </>
     );
   }
