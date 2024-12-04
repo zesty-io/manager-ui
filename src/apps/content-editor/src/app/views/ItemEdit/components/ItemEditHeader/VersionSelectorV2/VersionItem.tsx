@@ -1,4 +1,4 @@
-import { useState, forwardRef } from "react";
+import { useState, forwardRef, useEffect } from "react";
 import {
   Box,
   MenuItem,
@@ -52,9 +52,13 @@ export type Version = {
 type VersionItemProps = {
   data: Version;
   isActive: boolean;
+  onUpdateElementHeight: () => void;
 };
 export const VersionItem = forwardRef(
-  ({ data, isActive }: VersionItemProps, ref: ForwardedRef<HTMLDivElement>) => {
+  (
+    { data, isActive, onUpdateElementHeight }: VersionItemProps,
+    ref: ForwardedRef<HTMLDivElement>
+  ) => {
     // const { data: statusLabels  } = useGetItemWorkflowStatusQuery()
     const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
     const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
@@ -123,6 +127,7 @@ export const VersionItem = forwardRef(
                   evt.stopPropagation();
                   if (isActive) {
                     setIsAddNewLabelOpen((prev) => !prev);
+                    onUpdateElementHeight();
                   }
                 }}
                 label={label}
@@ -141,6 +146,7 @@ export const VersionItem = forwardRef(
                   evt.stopPropagation();
                   if (isActive) {
                     setIsAddNewLabelOpen((prev) => !prev);
+                    onUpdateElementHeight();
                   }
                 }}
                 // Note: onDelete needs to be here for the custom deleteIcon to be visible

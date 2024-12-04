@@ -51,7 +51,7 @@ import {
   useGetContentItemVersionsQuery,
   useGetItemPublishingsQuery,
 } from "../../../../../../../../../shell/services/instance";
-import { VersionItem, Version } from "./VersionItem";
+import { Version } from "./VersionItem";
 
 type VersionSelectorProps = {
   activeVersion: number;
@@ -121,14 +121,11 @@ export const VersionSelector = memo(
     };
 
     const setRowHeight = (index: number, size: number) => {
-      console.log("setrowheight", size);
-      listRef.current?.resetAfterIndex(0);
       rowHeights.current = { ...rowHeights?.current, [index]: size };
+      listRef.current?.resetAfterIndex(index);
     };
 
     const getRowHeight = (index: number) => {
-      console.log("getrowheight", rowHeights.current?.[index]);
-
       return rowHeights.current?.[index] || 90;
     };
 

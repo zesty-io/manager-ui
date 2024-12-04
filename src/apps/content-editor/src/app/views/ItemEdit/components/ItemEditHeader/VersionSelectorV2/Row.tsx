@@ -57,6 +57,11 @@ export const Row = memo(({ index, style, data }: RowProps) => {
         key={version?.itemVersionZUID}
         data={version}
         isActive={data?.activeVersion === version?.itemVersion}
+        onUpdateElementHeight={() => {
+          setTimeout(() => {
+            data?.setRowHeight(index, rowRef.current?.clientHeight);
+          });
+        }}
       />
     </MenuItem>
   );
