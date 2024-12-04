@@ -18,6 +18,7 @@ import { ContentItem } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
 import { NoSearchResults } from "../NoSearchResults";
 import { NoVariant } from "./NoVariant";
+import blockPlaceholder from "../../../../public/images/blockPlaceholder.png";
 
 type VariantSelectorProps = {
   anchorEl: Element;
@@ -168,7 +169,7 @@ export const VariantSelector = ({
                   component="img"
                   width={125}
                   height={80}
-                  src="https://via.placeholder.com/125x80"
+                  src={(variant?.data?.og_image as string) || blockPlaceholder}
                   loading="lazy"
                 ></Box>
               </Tooltip>

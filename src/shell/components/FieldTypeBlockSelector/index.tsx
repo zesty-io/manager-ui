@@ -23,6 +23,7 @@ import {
 } from "../../services/instance";
 import { VariantSelector } from "./VariantSelector";
 import { AppState } from "../../store/types";
+import blockPlaceholder from "../../../../public/images/blockPlaceholder.png";
 
 type BlockValue = {
   model: {
@@ -67,8 +68,11 @@ export const FieldTypeBlockSelector = ({
     },
     { model: null, variant: null }
   );
-  const blockModelData = models.find(
+  const blockModelData = models?.find(
     (model) => model.name === blockValue.model?.value
+  );
+  const selectedVariantData = variants?.find(
+    (variant) => variant.meta?.ZUID === blockValue.variant
   );
 
   const blockModelOptions = useMemo(() => {
@@ -83,13 +87,11 @@ export const FieldTypeBlockSelector = ({
   }, [models]);
 
   const url = useMemo(() => {
-    if (!blockValue || !variants?.length || !instance) return "";
+    if (!blockValue || !variants?.length || !instance || !selectedVariantData)
+      return "";
 
     // @ts-expect-error config not typed
     const domain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
-    const selectedVariantData = variants.find(
-      (variant) => variant.meta?.ZUID === blockValue.variant
-    );
     let path = `/-/block/${blockValue.model?.value}.html?variant=${selectedVariantData?.meta?.ZUID}`;
 
     if (previewLock) {
@@ -97,7 +99,7 @@ export const FieldTypeBlockSelector = ({
     }
 
     return `${domain}${path}`;
-  }, [blockValue, variants, instance]);
+  }, [blockValue, variants, instance, selectedVariantData]);
 
   useEffect(() => {
     if (!blockModelData) return;
@@ -269,7 +271,10 @@ export const FieldTypeBlockSelector = ({
             component="img"
             width="100%"
             height={384}
-            src="https://via.placeholder.com/640x384"
+            src={
+              (selectedVariantData?.data?.og_image as string) ||
+              blockPlaceholder
+            }
             loading="lazy"
             borderRadius="0px 0px 8px 8px"
             borderRight={1}
