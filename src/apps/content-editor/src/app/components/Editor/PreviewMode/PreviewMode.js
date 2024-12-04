@@ -36,7 +36,7 @@ export default function PreviewMode(props) {
         let url = "";
 
         if (props?.model?.type === "block") {
-          url = `/-/block/${props?.model?.name}.html?variant=${item?.meta?.ZUID}&_bypassError=true`;
+          url = `/-/block/${props?.model?.name}.html?variant=${item?.meta?.ZUID}&_bypassError=true&version=${props.version}`;
         } else {
           url = item?.web?.path
             ? `${item.web.path}`
@@ -44,8 +44,6 @@ export default function PreviewMode(props) {
 
           url = `${url}?_bypassError=true&__version=${props.version}`;
         }
-
-        console.log("testing url", url, props.model);
 
         if (previewLock) {
           url = `${url}&zpw=${previewLock.value}`;
