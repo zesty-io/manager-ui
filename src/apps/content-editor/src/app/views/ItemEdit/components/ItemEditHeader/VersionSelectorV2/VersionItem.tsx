@@ -1,4 +1,4 @@
-import { useState, forwardRef, useEffect } from "react";
+import { useState, forwardRef, useEffect, useRef } from "react";
 import {
   Box,
   MenuItem,
@@ -17,6 +17,7 @@ import {
   AddRounded,
   SearchRounded,
   EditRounded,
+  Check,
 } from "@mui/icons-material";
 
 import { ContentItem } from "../../../../../../../../../shell/services/types";
@@ -59,10 +60,25 @@ export const VersionItem = forwardRef(
     { data, isActive, onUpdateElementHeight }: VersionItemProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
+    const addNewLabelRef = useRef<HTMLDivElement>(null);
     // const { data: statusLabels  } = useGetItemWorkflowStatusQuery()
-    const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
+    // const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
     const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
     const [filterKeyword, setFilterKeyword] = useState("");
+
+    const handleOpenAddNewLabel = (evt: any) => {
+      evt.stopPropagation();
+
+      if (isActive) {
+        setIsAddNewLabelOpen((prev) => !prev);
+        onUpdateElementHeight();
+
+        // HACK: Prevents the dropdowm elements from flickering due to delayed height adjustment
+        setTimeout(() => {
+          addNewLabelRef.current.style.visibility = "visible";
+        });
+      }
+    };
 
     return (
       <Stack ref={ref} width="100%">
@@ -123,13 +139,7 @@ export const VersionItem = forwardRef(
             {data.labels.map((label) => (
               <Chip
                 clickable
-                onClick={(evt: any) => {
-                  evt.stopPropagation();
-                  if (isActive) {
-                    setIsAddNewLabelOpen((prev) => !prev);
-                    onUpdateElementHeight();
-                  }
-                }}
+                onClick={handleOpenAddNewLabel}
                 label={label}
                 // color={generateRandomChipColor()}
                 color="primary"
@@ -142,13 +152,7 @@ export const VersionItem = forwardRef(
                 label="Add Status"
                 color="default"
                 size="small"
-                onClick={(evt) => {
-                  evt.stopPropagation();
-                  if (isActive) {
-                    setIsAddNewLabelOpen((prev) => !prev);
-                    onUpdateElementHeight();
-                  }
-                }}
+                onClick={handleOpenAddNewLabel}
                 // Note: onDelete needs to be here for the custom deleteIcon to be visible
                 onDelete={() => {}}
                 deleteIcon={<AddRounded />}
@@ -158,10 +162,13 @@ export const VersionItem = forwardRef(
         )}
         {isAddNewLabelOpen && (
           <Box
+            ref={addNewLabelRef}
             onClick={(evt) => evt.stopPropagation()}
             borderTop={1}
             borderColor="border"
             width="100%"
+            // HACK: Prevents the dropdowm elements from flickering due to delayed height adjustment
+            visibility="hidden"
           >
             <TextField
               value={filterKeyword}
@@ -182,6 +189,25 @@ export const VersionItem = forwardRef(
                 px: 1,
               }}
             />
+            <MenuItem
+              sx={{
+                flexDirection: "column",
+              }}
+            >
+              <Stack direction="row">
+                <Check />{" "}
+                <Typography variant="body2" fontWeight={700}>
+                  Draft
+                </Typography>
+              </Stack>
+              <Typography
+                variant="body3"
+                fontWeight={600}
+                color="text.secondary"
+              >
+                Draft is ready for editor to check before sending to legal
+              </Typography>
+            </MenuItem>
             <MenuItem
               sx={{
                 pr: 1,
