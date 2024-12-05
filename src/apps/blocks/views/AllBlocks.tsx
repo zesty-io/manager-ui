@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import StreetViewRoundedIcon from "@mui/icons-material/StreetViewRounded";
+import StreetViewRoundedIcon from "@mui/icons-material/StreetviewRounded";
 import { useState, useRef } from "react";
 import { CreateModelDialogue } from "../../schema/src/app/components/CreateModelDialogue";
 import { BlockCard } from "../components/BlockCard";
