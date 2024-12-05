@@ -43,6 +43,28 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+    downloadCsv: builder.query<
+      string[],
+      {
+        modelZUID: string;
+      }
+    >({
+      query: ({ modelZUID }) => {
+        return {
+          url: `downloadCSV`,
+          method: "GET",
+          params: {
+            instanceZUID,
+            modelZUID,
+          },
+          responseHandler: async (response) =>
+            window.location.assign(
+              window.URL.createObjectURL(await response.blob())
+            ),
+          cache: "no-cache",
+        };
+      },
+    }),
   }),
 });
 
@@ -52,4 +74,6 @@ export const {
   useRefreshCacheMutation,
   useAiGenerationMutation,
   useCreateScreenshotMutation,
+  useDownloadCsvQuery,
+  useLazyDownloadCsvQuery,
 } = cloudFunctionsApi;

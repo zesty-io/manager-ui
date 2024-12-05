@@ -70,6 +70,7 @@ export const MetaImage = ({ onChange }: MetaImageProps) => {
         !field.deletedAt &&
         field.datatype === "images" &&
         field?.name !== "og_image" &&
+        field?.name !== "tc_image" &&
         !!item?.data?.[field.name]
       ) {
         if (

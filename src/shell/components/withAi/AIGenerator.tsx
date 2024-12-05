@@ -488,6 +488,7 @@ export const AIGenerator = ({
                   }
                   placeholder="e.g. Freelancers, Designers, ....."
                   fullWidth
+                  autoFocus
                 />
               </Box>
               <Box>
@@ -722,6 +723,7 @@ export const AIGenerator = ({
                 multiline
                 rows={3}
                 fullWidth
+                autoFocus
                 error={hasFieldError}
                 helperText={
                   hasFieldError &&
