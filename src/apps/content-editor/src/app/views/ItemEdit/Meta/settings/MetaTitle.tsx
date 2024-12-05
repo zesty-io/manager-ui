@@ -57,6 +57,7 @@ export const MetaTitle = memo(function MetaTitle({
         }}
       >
         <TextField
+          data-cy="metaTitle-input"
           name="metaTitle"
           value={value}
           placeholder={

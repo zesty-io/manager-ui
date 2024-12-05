@@ -79,6 +79,7 @@ export const BlockModel = () => {
               size="small"
               startIcon={<AddRoundedIcon />}
               onClick={() => history.push(`/blocks/${modelZUID}/new`)}
+              data-cy="create-variant-button"
             >
               Create Variant
             </Button>

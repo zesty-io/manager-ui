@@ -388,7 +388,6 @@ export const ItemCreate = () => {
     return <NotFound message={`Model "${modelZUID}" not found`} />;
   }
 
-  console.log("testing model", model);
   return (
     <WithLoader
       condition={

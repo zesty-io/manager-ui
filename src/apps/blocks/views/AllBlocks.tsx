@@ -74,6 +74,7 @@ export const AllBlocks = () => {
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
             <TextField
+              data-cy="search-blocks-input"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               size="small"
@@ -104,6 +105,7 @@ export const AllBlocks = () => {
               size="small"
               startIcon={<AddRoundedIcon />}
               onClick={() => setShowCreateModelDialogue(true)}
+              data-cy="create-block-button"
             >
               Create Block
             </Button>
