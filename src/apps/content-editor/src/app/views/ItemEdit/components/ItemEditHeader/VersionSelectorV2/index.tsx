@@ -62,6 +62,7 @@ export const VersionSelector = memo(
     const listRef = useRef(null);
     const rowHeights = useRef(null);
     const [anchorEl, setAnchorEl] = useState<HTMLElement>(null);
+    const [listHeight, setListHeight] = useState(0);
     const { modelZUID, itemZUID } = useParams<{
       modelZUID: string;
       itemZUID: string;
@@ -126,6 +127,14 @@ export const VersionSelector = memo(
     };
 
     const getRowHeight = (index: number) => {
+      const totalHeight = +Object.values(rowHeights.current || {}).reduce(
+        (acc: number, curr: number) => acc + curr,
+        0
+      );
+
+      // List height needs to at most be 540px
+      setListHeight(totalHeight <= 540 ? totalHeight : 540);
+
       return rowHeights.current?.[index] || 90;
     };
 
@@ -171,8 +180,7 @@ export const VersionSelector = memo(
           slotProps={{
             paper: {
               sx: {
-                height: "100%",
-                maxHeight: 540,
+                height: listHeight,
                 overflow: "auto",
                 width: 379,
                 bgcolor: "grey.50",
@@ -180,8 +188,7 @@ export const VersionSelector = memo(
             },
           }}
           sx={{
-            "& .MuiMenu-list": {
-              height: "100%",
+            "& .MuiList-root": {
               py: 0,
             },
           }}
