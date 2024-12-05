@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Box, Typography } from "@mui/material";
 import { ContentModel } from "../../../shell/services/types";
 import { useGetContentModelItemsQuery } from "../../../shell/services/instance";
@@ -17,6 +17,7 @@ export const BlockCard = ({ model }: BlockCardProps) => {
       limit: 1,
     },
   });
+  const imageRef = useRef<HTMLImageElement>(null);
 
   return (
     <Box
@@ -33,6 +34,7 @@ export const BlockCard = ({ model }: BlockCardProps) => {
     >
       <Box p={1}>
         <Box
+          ref={imageRef}
           component="img"
           src={(data?.[0]?.data?.og_image as string) || blockPlaceholder}
           height={144}
@@ -40,6 +42,9 @@ export const BlockCard = ({ model }: BlockCardProps) => {
           alt="Block Image"
           sx={{
             objectFit: "contain",
+          }}
+          onError={() => {
+            imageRef.current.src = blockPlaceholder;
           }}
         />
       </Box>

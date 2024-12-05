@@ -23,10 +23,33 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+    createScreenshot: builder.mutation<
+      {
+        url: string;
+      },
+      string
+    >({
+      query: (url) => {
+        return {
+          url: `createScreenshot`,
+          method: "GET",
+          params: {
+            // @ts-ignore
+            bucket: `${__CONFIG__.INSTANCE_SCREENSHOTS_BUCKET}`,
+            url: url,
+            w: 1280,
+            h: 720,
+          },
+        };
+      },
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useRefreshCacheMutation, useAiGenerationMutation } =
-  cloudFunctionsApi;
+export const {
+  useRefreshCacheMutation,
+  useAiGenerationMutation,
+  useCreateScreenshotMutation,
+} = cloudFunctionsApi;

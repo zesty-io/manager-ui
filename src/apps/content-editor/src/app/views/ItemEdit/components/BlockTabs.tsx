@@ -22,7 +22,7 @@ import moment from "moment-timezone";
 import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
 import { AddRounded, SearchRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../../public/images/noSearchResults.svg";
-
+import blockPlaceholder from "../../../../../../../../public/images/blockPlaceholder.png";
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
   const { modelZUID } = useParams<{ modelZUID: string }>();
@@ -207,6 +207,8 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
   const updatedByUser = users?.find(
     (user) => user.ZUID === block.web?.createdByUserZUID
   );
+  const imageRef = useRef(null);
+  const [isErrored, setIsErrored] = useState(false);
 
   return (
     <ListItemButton
@@ -233,10 +235,17 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
       onClick={() => history.push(`/blocks/${modelZUID}/${block.meta.ZUID}`)}
     >
       <Box
+        ref={imageRef}
+        // This make it so that if the image errored it would retry on next organic render
+        key={isErrored ? Date.now() : ""}
         component="img"
         width={187}
         height={120}
-        src="https://via.placeholder.com/187x120"
+        src={(block.data?.og_image as string) || blockPlaceholder}
+        onError={() => {
+          setIsErrored(true);
+          imageRef.current.src = blockPlaceholder;
+        }}
       ></Box>
       <Box
         sx={{

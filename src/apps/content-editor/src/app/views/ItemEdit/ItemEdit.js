@@ -389,7 +389,7 @@ export default function ItemEdit() {
       dispatch(
         notify({
           message: `Item Saved: ${
-            item && item.web.metaLinkText ? item.web.metaLinkText : ""
+            item?.web?.metaTitle || item?.web?.metaLinkText
           }`,
           kind: "save",
         })
