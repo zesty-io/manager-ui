@@ -1,4 +1,4 @@
-import { useState, forwardRef, useEffect, useRef, ForwardedRef } from "react";
+import { useState, forwardRef, useRef, ForwardedRef } from "react";
 import {
   Box,
   MenuItem,
@@ -7,7 +7,6 @@ import {
   Chip,
   TextField,
   InputAdornment,
-  Divider,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
@@ -70,19 +69,6 @@ const DUMMY_LABELS: any[] = [
     updatedAt: "2024-11-25T06:21:23Z",
   },
 ];
-
-const chipColors = [
-  "default",
-  "error",
-  "success",
-  "info",
-  "primary",
-  "secondary",
-  "warning",
-];
-const generateRandomChipColor = () => {
-  return chipColors[Math.floor(Math.random() * chipColors.length)];
-};
 
 export type Version = {
   itemZUID: string;
