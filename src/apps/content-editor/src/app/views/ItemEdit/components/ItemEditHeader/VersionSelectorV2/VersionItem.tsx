@@ -25,7 +25,6 @@ import {
   useGetItemWorkflowStatusQuery,
   useGetWorkflowStatusLabelsQuery,
 } from "../../../../../../../../../shell/services/instance";
-import { useResizeObserver } from "../../../../../../../../../shell/hooks/useResizeObserver";
 
 const DUMMY_LABELS: any[] = [
   {
@@ -107,7 +106,6 @@ export const VersionItem = forwardRef(
   ) => {
     const addNewLabelRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
-    const dimensions = useResizeObserver(ref);
     // const { data: statusLabels  } = useGetItemWorkflowStatusQuery()
     // const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
     const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
