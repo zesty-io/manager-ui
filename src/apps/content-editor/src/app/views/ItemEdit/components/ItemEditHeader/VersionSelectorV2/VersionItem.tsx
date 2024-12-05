@@ -1,4 +1,4 @@
-import { useState, forwardRef, useEffect, useRef } from "react";
+import { useState, forwardRef, useEffect, useRef, ForwardedRef } from "react";
 import {
   Box,
   MenuItem,
@@ -25,7 +25,52 @@ import {
   useGetItemWorkflowStatusQuery,
   useGetWorkflowStatusLabelsQuery,
 } from "../../../../../../../../../shell/services/instance";
-import { ForwardedRef } from "react-chartjs-2/dist/types";
+import { useResizeObserver } from "../../../../../../../../../shell/hooks/useResizeObserver";
+
+const DUMMY_LABELS: any[] = [
+  {
+    ZUID: "36-14b315-4pp20v3d",
+    name: "Approved",
+    description: "Approved",
+    color: "#12b76a",
+    allowPublish: false,
+    sort: 3,
+    addPermissionRoles: [],
+    removePermissionRoles: [],
+    createdByUserZUID: "55-8094cbd789-42sw0c",
+    updatedByUserZUID: "55-8094cbd789-42sw0c",
+    createdAt: "2024-11-19T17:18:15Z",
+    updatedAt: "2024-11-25T06:21:22Z",
+  },
+  {
+    ZUID: "36-14b315-d24ft",
+    name: "Draft",
+    description: "Content item is only available to preview in stage",
+    color: "#0BA5EC",
+    allowPublish: false,
+    sort: 1,
+    addPermissionRoles: [],
+    removePermissionRoles: [],
+    createdByUserZUID: "55-8094cbd789-42sw0c",
+    updatedByUserZUID: "55-8094cbd789-42sw0c",
+    createdAt: "2024-11-19T17:18:02Z",
+    updatedAt: "2024-11-25T06:21:22Z",
+  },
+  {
+    ZUID: "36-n33d5-23v13w",
+    name: "Needs Review",
+    description: "Ready for review",
+    color: "#ff5c08",
+    allowPublish: false,
+    sort: 2,
+    addPermissionRoles: [],
+    removePermissionRoles: [],
+    createdByUserZUID: "55-8094cbd789-42sw0c",
+    updatedByUserZUID: "55-8094cbd789-42sw0c",
+    createdAt: "2024-11-19T17:18:08Z",
+    updatedAt: "2024-11-25T06:21:23Z",
+  },
+];
 
 const chipColors = [
   "default",
@@ -61,6 +106,8 @@ export const VersionItem = forwardRef(
     ref: ForwardedRef<HTMLDivElement>
   ) => {
     const addNewLabelRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
+    const dimensions = useResizeObserver(ref);
     // const { data: statusLabels  } = useGetItemWorkflowStatusQuery()
     // const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
     const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
@@ -76,6 +123,7 @@ export const VersionItem = forwardRef(
         // HACK: Prevents the dropdowm elements from flickering due to delayed height adjustment
         setTimeout(() => {
           addNewLabelRef.current.style.visibility = "visible";
+          searchRef.current?.querySelector("input").focus();
         });
       }
     };
@@ -171,6 +219,7 @@ export const VersionItem = forwardRef(
             visibility="hidden"
           >
             <TextField
+              ref={searchRef}
               value={filterKeyword}
               onChange={(evt) => setFilterKeyword(evt.currentTarget.value)}
               InputProps={{
@@ -183,31 +232,60 @@ export const VersionItem = forwardRef(
               placeholder="Search status"
               size="small"
               fullWidth
-              autoFocus
               sx={{
                 my: 1.5,
                 px: 1,
               }}
             />
-            <MenuItem
-              sx={{
-                flexDirection: "column",
-              }}
-            >
-              <Stack direction="row">
-                <Check />{" "}
-                <Typography variant="body2" fontWeight={700}>
-                  Draft
-                </Typography>
-              </Stack>
-              <Typography
-                variant="body3"
-                fontWeight={600}
-                color="text.secondary"
+            {DUMMY_LABELS?.map((label: any, index) => (
+              <MenuItem
+                key={label.ZUID}
+                sx={{
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  px: 1,
+                  py: 1.5,
+                  borderBottom: index + 1 < DUMMY_LABELS?.length ? 1 : 0,
+                  borderColor: "border",
+                }}
               >
-                Draft is ready for editor to check before sending to legal
-              </Typography>
-            </MenuItem>
+                <Stack direction="row" gap={1}>
+                  <Check fontSize="small" color="action" />
+                  <Stack gap={0.5} direction="row" alignItems="baseline">
+                    <Box
+                      width={12}
+                      height={12}
+                      borderRadius="50%"
+                      bgcolor={label.color}
+                      flexShrink={0}
+                    ></Box>
+                    <Typography
+                      variant="body2"
+                      fontWeight={700}
+                      sx={{
+                        wordBreak: "break-word",
+                        whiteSpace: "wrap",
+                      }}
+                    >
+                      {label.name}
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Typography
+                  variant="body3"
+                  fontWeight={600}
+                  color="text.secondary"
+                  sx={{
+                    pt: 0.25,
+                    pl: 3.5,
+                    wordBreak: "break-word",
+                    whiteSpace: "wrap",
+                  }}
+                >
+                  {label.description}
+                </Typography>
+              </MenuItem>
+            ))}
             <MenuItem
               sx={{
                 pr: 1,
