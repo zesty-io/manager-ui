@@ -255,6 +255,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             <Box display="grid" gap={2} gridTemplateColumns="1fr 1fr">
               {modelTypes.map((modelType) => (
                 <ListItemButton
+                  data-cy={`model-type-${modelType.key}`}
                   selected={type === modelType.key}
                   key={modelType.key}
                   onClick={() => setType(modelType.key)}
@@ -319,6 +320,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               variant="contained"
               onClick={() => updateModel({ type })}
               disabled={!type}
+              data-cy="create-model-next-button"
             >
               Next
             </Button>
@@ -385,6 +387,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   }
                   fullWidth
                   autoFocus
+                  data-cy="create-model-display-name-input"
                 />
               </Box>
               <Box>
@@ -488,6 +491,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               Cancel
             </Button>
             <LoadingButton
+              data-cy="create-model-submit-button"
               type="submit"
               variant="contained"
               disabled={!model.name || !model.label}
@@ -513,6 +517,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   return (
     <ThemeProvider theme={theme}>
       <Dialog
+        data-cy="create-model-dialog"
         open
         onClose={onClose}
         sx={{

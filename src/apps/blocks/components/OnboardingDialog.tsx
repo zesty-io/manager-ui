@@ -38,6 +38,7 @@ export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
       open
       fullWidth
       maxWidth={false}
+      data-cy="onboarding-dialog"
       sx={{
         "& .MuiDialog-paper": {
           p: 6,
@@ -100,6 +101,7 @@ export const OnboardingDialog = ({ onClose }: { onClose: () => void }) => {
         <Button
           variant="contained"
           size="large"
+          data-cy="onboarding-next-button"
           onClick={() => {
             if (step === 3) {
               onClose();
