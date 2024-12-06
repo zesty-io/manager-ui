@@ -32,13 +32,6 @@ export const BlocksApp = () => {
         </ResizableContainer>
         <Switch>
           <Route exact path="/blocks" render={() => <AllBlocks />} />
-          {/* <Route path="/schema/search" render={() => <SearchModels />} />
-          <Route
-            exact
-            path="/schema/start"
-            render={() => <SchemaCreateWizard />}
-          /> */}
-          {/* <Redirect from="/schema/new" to="/schema" /> */}
           <Route
             path="/blocks/:modelZUID/new"
             render={({ match }) => (
