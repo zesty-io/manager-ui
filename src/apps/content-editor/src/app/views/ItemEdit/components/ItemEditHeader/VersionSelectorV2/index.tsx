@@ -50,8 +50,11 @@ const formatDateTime = (dateTimeString: string) => {
 import {
   useGetContentItemVersionsQuery,
   useGetItemPublishingsQuery,
+  useGetItemWorkflowStatusQuery,
+  useGetWorkflowStatusLabelsQuery,
 } from "../../../../../../../../../shell/services/instance";
 import { Version } from "./VersionItem";
+import { WorkflowStatusLabel } from "../../../../../../../../../shell/services/types";
 
 type VersionSelectorProps = {
   activeVersion: number;
@@ -67,20 +70,29 @@ export const VersionSelector = memo(
       modelZUID: string;
       itemZUID: string;
     }>();
-    const { data: itemPublishings } = useGetItemPublishingsQuery(
-      {
-        modelZUID,
-        itemZUID,
-      },
-      { skip: !modelZUID || !itemZUID }
-    );
-    const { data: versions } = useGetContentItemVersionsQuery(
-      {
-        modelZUID,
-        itemZUID,
-      },
-      { skip: !modelZUID || !itemZUID }
-    );
+    const { data: statusLabels, isLoading: isLoadingStatusLabels } =
+      useGetWorkflowStatusLabelsQuery();
+    const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
+      useGetItemWorkflowStatusQuery(
+        { itemZUID, modelZUID },
+        { skip: !itemZUID || !modelZUID }
+      );
+    const { data: itemPublishings, isLoading: isLoadingItemPublishings } =
+      useGetItemPublishingsQuery(
+        {
+          modelZUID,
+          itemZUID,
+        },
+        { skip: !modelZUID || !itemZUID }
+      );
+    const { data: versions, isLoading: isLoadingVersions } =
+      useGetContentItemVersionsQuery(
+        {
+          modelZUID,
+          itemZUID,
+        },
+        { skip: !modelZUID || !itemZUID }
+      );
 
     const mappedVersions: Version[] = useMemo(() => {
       if (!versions?.length) return [];
@@ -95,18 +107,31 @@ export const VersionSelector = memo(
           !item.unpublishAt
       );
 
-      return versions.map((v) => ({
-        itemZUID: v?.meta?.ZUID,
-        modelZUID: v?.meta?.contentModelZUID,
-        itemVersionZUID: v?.web?.versionZUID,
-        itemVersion: v?.meta?.version,
-        // TODO: Change with actual values
-        labels: generateDummyLabels(),
-        createdAt: formatDateTime(v?.web?.createdAt),
-        isPublished: activeVersion?.version === v?.meta?.version,
-        isScheduled: scheduledVersion?.version === v?.meta?.version,
-      }));
-    }, [versions, itemPublishings]);
+      return versions.map((v) => {
+        let labels: WorkflowStatusLabel[] = [];
+
+        if (statusLabels?.length && itemWorkflowStatus?.length) {
+          const labelZUIDs = itemWorkflowStatus.find(
+            (status) => status.itemVersion === v.meta?.version
+          )?.labelZUIDs;
+
+          labels = labelZUIDs?.map((labelZUID) =>
+            statusLabels.find((statusLabel) => statusLabel.ZUID === labelZUID)
+          );
+        }
+
+        return {
+          itemZUID: v.meta?.ZUID,
+          modelZUID: v.meta?.contentModelZUID,
+          itemVersionZUID: v.web?.versionZUID,
+          itemVersion: v.meta?.version,
+          labels,
+          createdAt: formatDateTime(v.web?.createdAt),
+          isPublished: activeVersion?.version === v.meta?.version,
+          isScheduled: scheduledVersion?.version === v.meta?.version,
+        };
+      });
+    }, [versions, itemPublishings, itemWorkflowStatus, statusLabels]);
 
     const handleLoadVersion = (version: number) => {
       const versionToLoad = versions?.find((v) => v?.meta?.version === version);
@@ -160,6 +185,12 @@ export const VersionSelector = memo(
             color="inherit"
             endIcon={<KeyboardArrowDownRounded color="action" />}
             onClick={(e) => setAnchorEl(e.currentTarget)}
+            disabled={
+              isLoadingVersions ||
+              isLoadingStatusLabels ||
+              isLoadingItemPublishings ||
+              isLoadingItemWorkflowStatus
+            }
           >
             v{activeVersion}
             <Chip label="Draft" color="info" size="small" sx={{ ml: 0.5 }} />

@@ -578,3 +578,31 @@ export type CommentReply = {
   mentions?: Mention[];
   updatedAt: string;
 };
+
+export type WorkflowStatusLabel = {
+  ZUID: string;
+  name: string;
+  description: string;
+  color: string;
+  allowPublish: boolean;
+  sort: number;
+  addPermissionRoles: string[];
+  removePermissionRoles: string[];
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ItemWorkflowStatus = {
+  ZUID: string;
+  itemZUID: string;
+  setZUID: string;
+  itemVersionZUID: string;
+  itemVersion: number;
+  labelZUIDs: string[];
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+};

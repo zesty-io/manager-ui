@@ -19,63 +19,15 @@ import {
   Check,
 } from "@mui/icons-material";
 
-import { ContentItem } from "../../../../../../../../../shell/services/types";
-import {
-  useGetItemWorkflowStatusQuery,
-  useGetWorkflowStatusLabelsQuery,
-} from "../../../../../../../../../shell/services/instance";
-
-const DUMMY_LABELS: any[] = [
-  {
-    ZUID: "36-14b315-4pp20v3d",
-    name: "Approved",
-    description: "Approved",
-    color: "#12b76a",
-    allowPublish: false,
-    sort: 3,
-    addPermissionRoles: [],
-    removePermissionRoles: [],
-    createdByUserZUID: "55-8094cbd789-42sw0c",
-    updatedByUserZUID: "55-8094cbd789-42sw0c",
-    createdAt: "2024-11-19T17:18:15Z",
-    updatedAt: "2024-11-25T06:21:22Z",
-  },
-  {
-    ZUID: "36-14b315-d24ft",
-    name: "Draft",
-    description: "Content item is only available to preview in stage",
-    color: "#0BA5EC",
-    allowPublish: false,
-    sort: 1,
-    addPermissionRoles: [],
-    removePermissionRoles: [],
-    createdByUserZUID: "55-8094cbd789-42sw0c",
-    updatedByUserZUID: "55-8094cbd789-42sw0c",
-    createdAt: "2024-11-19T17:18:02Z",
-    updatedAt: "2024-11-25T06:21:22Z",
-  },
-  {
-    ZUID: "36-n33d5-23v13w",
-    name: "Needs Review",
-    description: "Ready for review",
-    color: "#ff5c08",
-    allowPublish: false,
-    sort: 2,
-    addPermissionRoles: [],
-    removePermissionRoles: [],
-    createdByUserZUID: "55-8094cbd789-42sw0c",
-    updatedByUserZUID: "55-8094cbd789-42sw0c",
-    createdAt: "2024-11-19T17:18:08Z",
-    updatedAt: "2024-11-25T06:21:23Z",
-  },
-];
+import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../../shell/services/instance";
+import { WorkflowStatusLabel } from "../../../../../../../../../shell/services/types";
 
 export type Version = {
   itemZUID: string;
   modelZUID: string;
   itemVersionZUID: string;
   itemVersion: number;
-  labels: any[];
+  labels: WorkflowStatusLabel[];
   createdAt: string;
   isPublished: boolean;
   isScheduled: boolean;
@@ -92,8 +44,7 @@ export const VersionItem = forwardRef(
   ) => {
     const addNewLabelRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
-    // const { data: statusLabels  } = useGetItemWorkflowStatusQuery()
-    // const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
+    const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
     const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
     const [filterKeyword, setFilterKeyword] = useState("");
 
@@ -158,40 +109,41 @@ export const VersionItem = forwardRef(
             {data?.createdAt}
           </Typography>
         </Stack>
-        {!!data?.labels?.length && (
-          <Stack
-            direction="row"
-            gap={1}
-            width="100%"
-            flexWrap="wrap"
-            px={2}
-            pt={1.25}
-            pb={2}
-          >
-            {data.labels.map((label) => (
-              <Chip
-                clickable
-                onClick={handleOpenAddNewLabel}
-                label={label}
-                // color={generateRandomChipColor()}
-                color="primary"
-                size="small"
-              />
-            ))}
-            {isActive && (
-              <Chip
-                clickable
-                label="Add Status"
-                color="default"
-                size="small"
-                onClick={handleOpenAddNewLabel}
-                // Note: onDelete needs to be here for the custom deleteIcon to be visible
-                onDelete={() => {}}
-                deleteIcon={<AddRounded />}
-              />
-            )}
-          </Stack>
-        )}
+        {/* {!!data?.labels?.length && ( */}
+        <Stack
+          direction="row"
+          gap={1}
+          width="100%"
+          flexWrap="wrap"
+          px={2}
+          pt={1.25}
+          pb={2}
+        >
+          {data.labels?.map((label) => (
+            <Chip
+              key={label.ZUID}
+              clickable
+              onClick={handleOpenAddNewLabel}
+              label={label.name}
+              // color={generateRandomChipColor()}
+              color="primary"
+              size="small"
+            />
+          ))}
+          {isActive && (
+            <Chip
+              clickable
+              label="Add Status"
+              color="default"
+              size="small"
+              onClick={handleOpenAddNewLabel}
+              // Note: onDelete needs to be here for the custom deleteIcon to be visible
+              onDelete={() => {}}
+              deleteIcon={<AddRounded />}
+            />
+          )}
+        </Stack>
+        {/* )} */}
         {isAddNewLabelOpen && (
           <Box
             ref={addNewLabelRef}
@@ -221,7 +173,7 @@ export const VersionItem = forwardRef(
                 px: 1,
               }}
             />
-            {DUMMY_LABELS?.map((label: any, index) => (
+            {statusLabels?.map((label, index) => (
               <MenuItem
                 key={label.ZUID}
                 sx={{
@@ -229,7 +181,7 @@ export const VersionItem = forwardRef(
                   alignItems: "flex-start",
                   px: 1,
                   py: 1.5,
-                  borderBottom: index + 1 < DUMMY_LABELS?.length ? 1 : 0,
+                  borderBottom: index + 1 < statusLabels?.length ? 1 : 0,
                   borderColor: "border",
                 }}
               >

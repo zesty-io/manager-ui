@@ -22,6 +22,8 @@ import {
   Language,
   Data,
   StyleCategory,
+  WorkflowStatusLabel,
+  ItemWorkflowStatus,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -607,7 +609,7 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
     }),
     getItemWorkflowStatus: builder.query<
-      any,
+      ItemWorkflowStatus[],
       { modelZUID: string; itemZUID: string }
     >({
       query: ({ modelZUID, itemZUID }) =>
@@ -650,7 +652,7 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["ItemWorkflowStatus"],
     }),
-    getWorkflowStatusLabels: builder.query<any, void>({
+    getWorkflowStatusLabels: builder.query<WorkflowStatusLabel[], void>({
       query: () => `/env/labels`,
       transformResponse: getResponseData,
       providesTags: ["WorkflowStatusLabels"],
