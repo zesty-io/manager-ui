@@ -92,7 +92,7 @@ export const FieldTypeBlockSelector = ({
 
     // @ts-expect-error config not typed
     const domain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
-    let path = `/-/block/${blockValue.model?.value}.html?variant=${selectedVariantData?.meta?.ZUID}`;
+    let path = `/-/block/${blockValue.model?.value}.html?variant=${selectedVariantData?.meta?.ZUID}&_bypassError=true`;
 
     if (previewLock) {
       path = `${path}&zpw=${previewLock.value}`;
