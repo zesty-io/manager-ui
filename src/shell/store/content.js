@@ -398,7 +398,9 @@ export function saveItem({
       CONFIG.URL_PREVIEW
     }/-/block/${model?.name}.html?variant=${itemZUID}&version=${
       item?.web?.version + 1
-    }${previewLock?.value ? `&zpw=${previewLock.value}` : ""}`;
+    }${
+      previewLock?.value ? `&zpw=${previewLock.value}` : ""
+    }&_bypassError=true`;
     const fields = Object.keys(state.fields)
       .filter(
         (fieldZUID) =>
