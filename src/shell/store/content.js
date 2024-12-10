@@ -596,9 +596,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
 
     const hasMissingRequiredSEOFields = skipPathPartValidation
       ? !item?.web?.metaTitle
-      : !item?.web?.metaTitle ||
-        !item?.web?.metaDescription ||
-        !item?.web?.pathPart;
+      : !item?.web?.metaTitle || !item?.web?.pathPart;
 
     // Check minlength is satisfied
     const lackingCharLength = fields?.filter(
