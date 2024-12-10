@@ -18,6 +18,7 @@ type MetaTitleProps = {
   onResetFlowType: () => void;
   onAIMetaTitleInserted?: () => void;
   aiButtonRef?: MutableRefObject<any>;
+  label?: string;
 };
 export const MetaTitle = memo(function MetaTitle({
   value,
@@ -27,6 +28,7 @@ export const MetaTitle = memo(function MetaTitle({
   onResetFlowType,
   onAIMetaTitleInserted,
   aiButtonRef,
+  label = "Meta Title",
 }: MetaTitleProps) {
   return (
     <Box data-cy="metaTitle" id="metaTitle">
@@ -34,7 +36,7 @@ export const MetaTitle = memo(function MetaTitle({
         ZUID="metaTitle"
         ref={aiButtonRef}
         settings={{
-          label: "Meta Title",
+          label,
           required: true,
         }}
         customTooltip="This title appears in search engine results and social media previews. The maximum amount of characters search engines show is 65, but your title can be longer."
@@ -55,9 +57,14 @@ export const MetaTitle = memo(function MetaTitle({
         }}
       >
         <TextField
+          data-cy="metaTitle-input"
           name="metaTitle"
           value={value}
-          placeholder="This is the title search engines should use in their results"
+          placeholder={
+            label
+              ? ""
+              : "This is the title search engines should use in their results"
+          }
           onChange={(evt) => onChange(evt.target.value, "metaTitle")}
           error={hasErrors(error)}
         />

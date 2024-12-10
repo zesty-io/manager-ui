@@ -283,10 +283,16 @@ export const Field = ({
       return (
         <AIFieldShell
           ZUID={fieldData?.ZUID}
-          name={fieldData?.name}
-          label={fieldData?.label}
+          name={fieldData?.name || name}
+          label={fieldData?.label || label}
           valueLength={(value as string)?.length ?? 0}
-          settings={fieldData}
+          settings={
+            fieldData || {
+              name: name,
+              label: label,
+              required: required,
+            }
+          }
           onChange={(evt: ChangeEvent<HTMLInputElement>) =>
             onChange(evt.target.value, name)
           }
@@ -302,7 +308,7 @@ export const Field = ({
             onChange={(evt) => onChange(evt.target.value, name)}
             fullWidth
             inputProps={{
-              name: fieldData?.name,
+              name: fieldData?.name || name,
             }}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />

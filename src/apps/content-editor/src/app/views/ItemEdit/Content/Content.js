@@ -15,6 +15,7 @@ import { useLocalStorage } from "react-use";
 import { useContext } from "react";
 import { DuoModeContext } from "../../../../../../../shell/contexts/duoModeContext";
 import { FieldError } from "../../../components/Editor/FieldError";
+import { BlockTabs } from "../components/BlockTabs";
 
 export default function Content(props) {
   const [showSidebar, setShowSidebar] = useLocalStorage(
@@ -23,7 +24,7 @@ export default function Content(props) {
   );
 
   const {
-    value: showDuoMode,
+    value: showDuoModeContextValue,
     setValue: setShowDuoMode,
     isDisabled,
   } = useContext(DuoModeContext);
@@ -31,6 +32,8 @@ export default function Content(props) {
   const xLarge = useMediaQuery((theme) => theme.breakpoints.up("xl"));
 
   const isFocusMode = !showDuoMode && !showSidebar;
+
+  const showDuoMode = props?.model?.type === "block" || showDuoModeContextValue;
 
   return (
     <Box
@@ -147,8 +150,6 @@ export default function Content(props) {
           {showSidebar && (
             <Box
               maxWidth={320}
-              flex="0 1 auto"
-              height="100%"
               pl={4}
               sx={{
                 borderLeft: (theme) => `1px solid ${theme.palette.grey[200]}`,
@@ -168,14 +169,34 @@ export default function Content(props) {
           )}
         </Box>
       ) : (
-        <Box height="100%" flex="1 1 auto" minWidth={360}>
-          <PreviewMode
-            dirty={props.item.dirty}
-            version={props.item.meta.version}
-            onClose={() => setShowDuoMode(false)}
-            onSave={() => props.onSave()}
-            hasErrors={props.hasErrors}
-          />
+        <Box
+          height="100%"
+          flex="1 1 auto"
+          minWidth={360}
+          display="flex"
+          flexDirection="column"
+          gap={2}
+        >
+          <Box flex={1}>
+            <PreviewMode
+              dirty={props.item.dirty}
+              version={props.item.meta.version}
+              onClose={() => setShowDuoMode(false)}
+              onSave={() => props.onSave()}
+              hasErrors={props.hasErrors}
+              model={props.model}
+            />
+          </Box>
+          {props?.model?.type === "block" && (
+            <Box
+              flex="1"
+              sx={{
+                overflowY: "auto",
+              }}
+            >
+              <BlockTabs {...props} />
+            </Box>
+          )}
         </Box>
       )}
     </Box>

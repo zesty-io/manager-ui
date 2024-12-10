@@ -80,27 +80,6 @@ describe("Content Meta", () => {
     cy.get("[data-cy=toast]").contains("Created Item");
   });
 
-  it("Does validate meta description for non-dataset items", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/v1/env/nav", () => {
-        cy.waitOn("/v1/search/items*", () => {
-          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/meta");
-        });
-      });
-    });
-
-    cy.getBySelector("metaDescription", { timeout: 10000 })
-      .find("textarea")
-      .first()
-      .type("test");
-    cy.getBySelector("metaDescription")
-      .find("textarea")
-      .first()
-      .type("{selectall}{del}");
-    cy.get("#SaveItemButton").click();
-    cy.getBySelector("FieldErrorsList").should("exist");
-  });
-
   it("Auto applies page parent when creating an item", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {

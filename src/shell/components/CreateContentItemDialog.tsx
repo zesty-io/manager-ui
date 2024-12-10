@@ -54,6 +54,9 @@ export const CreateContentItemDialog = ({
         _models = _models.filter((model) => limitTo.includes(model.type));
       }
 
+      // Filter out block models
+      _models = _models.filter((model) => model.type !== "block");
+
       return _models?.sort((a, b) => a.label?.localeCompare(b.label));
     }
 

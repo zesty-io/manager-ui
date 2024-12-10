@@ -23,7 +23,7 @@ export const SelectModelParentInput = ({
   value,
   onChange,
   modelType,
-  label = "Select Model Parent",
+  label = "Model Parent",
   tooltip = "",
 }: SelectModelParentInputProps) => {
   const { id } = useParams<{ id: string }>();
@@ -44,14 +44,21 @@ export const SelectModelParentInput = ({
         (item) => item.contentModelZUID === id
       );
 
-      return _navItems
-        ?.filter(
-          (item) =>
-            item.contentModelZUID !== id &&
-            currentItem &&
-            currentItem.ZUID !== item.parentZUID
-        )
-        ?.sort((a, b) => a.label.localeCompare(b.label));
+      // Block doesn't have any nav entry hence we don't need to check it
+      if (modelType === "block") {
+        return _navItems
+          ?.filter((item) => item.contentModelZUID !== id)
+          ?.sort((a, b) => a.label.localeCompare(b.label));
+      } else {
+        return _navItems
+          ?.filter(
+            (item) =>
+              item.contentModelZUID !== id &&
+              currentItem &&
+              currentItem.ZUID !== item.parentZUID
+          )
+          ?.sort((a, b) => a.label.localeCompare(b.label));
+      }
     }
 
     return [];
@@ -72,7 +79,7 @@ export const SelectModelParentInput = ({
       <Autocomplete
         data-cy="ModelParentSelector"
         fullWidth
-        renderInput={(params) => <TextField {...params} placeholder="None" />}
+        renderInput={(params) => <TextField {...params} placeholder="Select" />}
         value={navItems?.find((m) => m.ZUID === value) || null}
         options={parents}
         onChange={(event, value: ContentNavItem) =>
