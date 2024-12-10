@@ -157,10 +157,6 @@ export const Meta = forwardRef(
     const REQUIRED_FIELDS = useMemo(() => {
       const fields = ["metaTitle", "parentZUID", "pathPart"];
 
-      if (model?.type !== "dataset" && model?.type !== "block") {
-        fields.push("metaDescription");
-      }
-
       return fields;
     }, [model]);
 
