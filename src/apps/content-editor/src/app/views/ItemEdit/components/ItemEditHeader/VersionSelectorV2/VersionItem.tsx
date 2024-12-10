@@ -109,7 +109,6 @@ export const VersionItem = forwardRef(
             {data?.createdAt}
           </Typography>
         </Stack>
-        {/* {!!data?.labels?.length && ( */}
         <Stack
           direction="row"
           gap={1}
@@ -143,7 +142,6 @@ export const VersionItem = forwardRef(
             />
           )}
         </Stack>
-        {/* )} */}
         {isAddNewLabelOpen && (
           <Box
             ref={addNewLabelRef}
