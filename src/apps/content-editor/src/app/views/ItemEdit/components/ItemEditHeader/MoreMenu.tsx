@@ -15,6 +15,7 @@ import {
   DeleteRounded,
   CheckRounded,
   KeyboardArrowRightRounded,
+  DriveFileRenameOutlineRounded,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { Database } from "@zesty-io/material";
@@ -26,6 +27,7 @@ import { useGetContentModelsQuery } from "../../../../../../../../shell/services
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import { CascadingMenuItem } from "../../../../../../../../shell/components/CascadingMenuItem";
 import { APIEndpoints } from "../../../../components/APIEndpoints";
+import { RenameItemDialog } from "./RenameItemDialog";
 
 export const MoreMenu = () => {
   const { modelZUID, itemZUID } = useParams<{
@@ -36,6 +38,7 @@ export const MoreMenu = () => {
   const [isCopied, setIsCopied] = useState(false);
   const [showDuplicateItemDialog, setShowDuplicateItemDialog] = useState(false);
   const [showDeleteItemDialog, setShowDeleteItemDialog] = useState(false);
+  const [showRenameDialog, setShowRenameDialog] = useState(false);
   const history = useHistory();
   const codePath = useFilePath(modelZUID);
   const { data: contentModels } = useGetContentModelsQuery();
@@ -95,6 +98,19 @@ export const MoreMenu = () => {
           },
         }}
       >
+        {type === "block" && (
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              setShowRenameDialog(true);
+            }}
+          >
+            <ListItemIcon>
+              <DriveFileRenameOutlineRounded />
+            </ListItemIcon>
+            Rename Variant
+          </MenuItem>
+        )}
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
@@ -104,7 +120,7 @@ export const MoreMenu = () => {
           <ListItemIcon>
             <ContentCopyRounded />
           </ListItemIcon>
-          Duplicate Item
+          Duplicate {type === "block" ? "Variant" : "Item"}
         </MenuItem>
         <MenuItem onClick={() => handleCopyClick(itemZUID)}>
           <ListItemIcon>
@@ -171,7 +187,7 @@ export const MoreMenu = () => {
             <ListItemIcon>
               <DeleteRounded />
             </ListItemIcon>
-            Delete Item
+            Delete {type === "block" ? "Variant" : "Item"}
           </MenuItem>
         )}
       </Menu>
@@ -182,6 +198,9 @@ export const MoreMenu = () => {
       )}
       {showDeleteItemDialog && (
         <DeleteItemDialog onClose={() => setShowDeleteItemDialog(false)} />
+      )}
+      {showRenameDialog && (
+        <RenameItemDialog onClose={() => setShowRenameDialog(false)} />
       )}
     </>
   );

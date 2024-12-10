@@ -64,7 +64,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
           alignItems="flext-start"
         >
           <Stack gap={0.25}>
-            <ContentBreadcrumbs />
+            {model?.type !== "block" && <ContentBreadcrumbs />}
             <Typography
               variant="h3"
               fontWeight={700}
@@ -79,7 +79,8 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
                 overflow: "hidden",
               }}
             >
-              Create {model.label} Item
+              Create{" "}
+              {model.type === "block" ? "Variant" : `${model.label} Item`}
             </Typography>
           </Stack>
           <Stack direction="row" gap={1} flexShrink={0} alignItems="flex-start">

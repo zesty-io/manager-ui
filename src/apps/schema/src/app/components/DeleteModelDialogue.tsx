@@ -110,6 +110,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
           below.
         </InputLabel>
         <TextField
+          data-cy="delete-model-confirmation-input"
           value={deleteConfirmation}
           onChange={(event) => setDeleteConfirmation(event.target.value)}
           fullWidth
@@ -125,6 +126,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
           loading={isLoading}
           variant="contained"
           color="error"
+          data-cy="delete-model-confirmation-button"
         >
           Delete Forever
         </LoadingButton>

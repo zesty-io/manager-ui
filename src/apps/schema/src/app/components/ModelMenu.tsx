@@ -85,6 +85,7 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
             setShowDialogue("delete");
             onClose();
           }}
+          data-cy="delete-model-menu-button"
         >
           <ListItemIcon>
             <DeleteRoundedIcon fontSize="small" />

@@ -101,7 +101,6 @@ export default function ItemEdit() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [SEOErrors, setSEOErrors] = useState({});
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
-  const [headerTitle, setHeaderTitle] = useState("");
   const { data: fields, isLoading: isLoadingFields } =
     useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
@@ -160,12 +159,6 @@ export default function ItemEdit() {
       releaseLock(itemZUID);
     };
   }, [modelZUID, itemZUID]);
-
-  useEffect(() => {
-    if (!loading) {
-      setHeaderTitle(item?.web?.metaTitle || item?.web?.metaLinkText || "");
-    }
-  }, [loading]);
 
   useEffect(() => {
     setSaveClicked(false);
@@ -393,11 +386,10 @@ export default function ItemEdit() {
         throw new Error(`Cannot Save: ${item.web.metaTitle}`);
       }
 
-      setHeaderTitle(item?.web?.metaTitle || item?.web?.metaLinkText || "");
       dispatch(
         notify({
           message: `Item Saved: ${
-            item && item.web.metaLinkText ? item.web.metaLinkText : ""
+            item?.web?.metaTitle || item?.web?.metaLinkText
           }`,
           kind: "save",
         })
@@ -489,7 +481,6 @@ export default function ItemEdit() {
                 onSave={() => save().catch((err) => console.error(err))}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
-                headerTitle={headerTitle}
               />
               <Switch>
                 <Route
@@ -589,6 +580,9 @@ export default function ItemEdit() {
                     "/content/:modelZUID/:itemZUID",
                     "/content/:modelZUID/:itemZUID/comment/:resourceZUID",
                     "/content/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
+                    "/blocks/:modelZUID/:itemZUID",
+                    "/blocks/:modelZUID/:itemZUID/comment/:resourceZUID",
+                    "/blocks/:modelZUID/:itemZUID/comment/:resourceZUID/:commentZUID",
                   ]}
                   render={() => (
                     <ItemLockContext.Provider value={isLocked}>
