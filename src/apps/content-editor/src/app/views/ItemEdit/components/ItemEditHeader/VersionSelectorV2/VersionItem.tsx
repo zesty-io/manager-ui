@@ -9,6 +9,7 @@ import {
   InputAdornment,
   ListItemIcon,
   ListItemText,
+  Tooltip,
 } from "@mui/material";
 import {
   ScheduleRounded,
@@ -18,10 +19,29 @@ import {
   EditRounded,
   Check,
 } from "@mui/icons-material";
+import { useSelector } from "react-redux";
 
 import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../../shell/services/instance";
-import { WorkflowStatusLabel } from "../../../../../../../../../shell/services/types";
+import {
+  User,
+  WorkflowStatusLabel,
+} from "../../../../../../../../../shell/services/types";
+import { WORKFLOW_LABELS as statusLabels } from "./mocks";
+import { AppState } from "../../../../../../../../../shell/store/types";
+import { useGetUsersRolesQuery } from "../../../../../../../../../shell/services/accounts";
 
+const BG_COLOR_MAPPING: Record<string, string> = {
+  "#0ba5ec": "blue.100",
+  "#12b76a": "green.100",
+  "#f79009": "yellow.100",
+  "#4e5ba6": "deepPurple.100",
+  "#7a5af8": "purple.100",
+  "#ee46bc": "pink.100",
+  "#ff5c08": "deepOrange.100",
+  "#f04438": "red.100",
+  "#f63d68": "#ffe4e8",
+  "#667085": "grey.100",
+} as const;
 export type Version = {
   itemZUID: string;
   modelZUID: string;
@@ -42,11 +62,17 @@ export const VersionItem = forwardRef(
     { data, isActive, onUpdateElementHeight }: VersionItemProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
+    const user: User = useSelector((state: AppState) => state.user);
     const addNewLabelRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
-    const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
+    const { data: statusLabelsxx } = useGetWorkflowStatusLabelsQuery();
+    const { data: usersRoles } = useGetUsersRolesQuery();
     const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
     const [filterKeyword, setFilterKeyword] = useState("");
+
+    const currentUserRoleZUID = usersRoles?.find(
+      (userWithRole) => userWithRole.ZUID === user.ZUID
+    )?.role?.ZUID;
 
     const handleOpenAddNewLabel = (evt: any) => {
       evt.stopPropagation();
@@ -124,9 +150,18 @@ export const VersionItem = forwardRef(
               clickable
               onClick={handleOpenAddNewLabel}
               label={label.name}
-              // color={generateRandomChipColor()}
-              color="primary"
               size="small"
+              sx={{
+                color: label.color,
+                bgcolor: BG_COLOR_MAPPING[label.color.toLowerCase()],
+
+                "&:hover": {
+                  bgcolor: BG_COLOR_MAPPING[label.color.toLowerCase()],
+                },
+                "&:focus": {
+                  bgcolor: BG_COLOR_MAPPING[label.color.toLowerCase()],
+                },
+              }}
             />
           ))}
           {isActive && (
@@ -171,55 +206,75 @@ export const VersionItem = forwardRef(
                 px: 1,
               }}
             />
-            {statusLabels?.map((label, index) => (
-              <MenuItem
-                key={label.ZUID}
-                sx={{
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  px: 1,
-                  py: 1.5,
-                  borderBottom: index + 1 < statusLabels?.length ? 1 : 0,
-                  borderColor: "border",
-                }}
-              >
-                <Stack direction="row" gap={1}>
-                  <Check fontSize="small" color="action" />
-                  <Stack gap={0.5} direction="row" alignItems="baseline">
-                    <Box
-                      width={12}
-                      height={12}
-                      borderRadius="50%"
-                      bgcolor={label.color}
-                      flexShrink={0}
-                    ></Box>
+            {statusLabels?.map((label, index) => {
+              let title = "";
+
+              if (
+                label.addPermissionRoles?.length &&
+                !label.addPermissionRoles.includes(currentUserRoleZUID)
+              ) {
+                title = "Do not have permission to add this status";
+              }
+
+              if (
+                label.removePermissionRoles?.length &&
+                !label.removePermissionRoles.includes(currentUserRoleZUID)
+              ) {
+                title = "Do not have permission to remove this status";
+              }
+
+              return (
+                <Tooltip followCursor title={title}>
+                  <MenuItem
+                    key={label.ZUID}
+                    sx={{
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      px: 1,
+                      py: 1.5,
+                      borderBottom: index + 1 < statusLabels?.length ? 1 : 0,
+                      borderColor: "border",
+                    }}
+                  >
+                    <Stack direction="row" gap={1}>
+                      <Check fontSize="small" color="action" />
+                      <Stack gap={0.5} direction="row" alignItems="baseline">
+                        <Box
+                          width={12}
+                          height={12}
+                          borderRadius="50%"
+                          bgcolor={label.color}
+                          flexShrink={0}
+                        ></Box>
+                        <Typography
+                          variant="body2"
+                          fontWeight={700}
+                          sx={{
+                            wordBreak: "break-word",
+                            whiteSpace: "wrap",
+                          }}
+                        >
+                          {label.name}
+                        </Typography>
+                      </Stack>
+                    </Stack>
                     <Typography
-                      variant="body2"
-                      fontWeight={700}
+                      variant="body3"
+                      fontWeight={600}
+                      color="text.secondary"
                       sx={{
+                        pt: 0.25,
+                        pl: 3.5,
                         wordBreak: "break-word",
                         whiteSpace: "wrap",
                       }}
                     >
-                      {label.name}
+                      {label.description}
                     </Typography>
-                  </Stack>
-                </Stack>
-                <Typography
-                  variant="body3"
-                  fontWeight={600}
-                  color="text.secondary"
-                  sx={{
-                    pt: 0.25,
-                    pl: 3.5,
-                    wordBreak: "break-word",
-                    whiteSpace: "wrap",
-                  }}
-                >
-                  {label.description}
-                </Typography>
-              </MenuItem>
-            ))}
+                  </MenuItem>
+                </Tooltip>
+              );
+            })}
             <MenuItem
               sx={{
                 pr: 1,
