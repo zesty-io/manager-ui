@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutline";
+import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import { useUpdateContentModelMutation } from "../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
@@ -65,7 +65,7 @@ export const UpdateDescriptionModelDialogue = ({ onClose, model }: Props) => {
         >
           <DriveFileRenameOutlineRounded color="info" />
         </Box>
-        <Typography variant="h5" sx={{ mt: 1.5 }}>
+        <Typography variant="h5" fontWeight={700} mt={1.5}>
           Update Description
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">

@@ -24,6 +24,7 @@ import {
   StyleCategory,
   WorkflowStatusLabel,
   ItemWorkflowStatus,
+  GroupItem,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
 
@@ -55,6 +56,7 @@ export const instanceApi = createApi({
     "ItemPublishings",
     "ItemWorkflowStatus",
     "WorkflowStatusLabels",
+    "Groups",
   ],
   endpoints: (builder) => ({
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/publishings/#Get-All-Item-Publishings
@@ -562,6 +564,7 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "ContentItem", id: arg.itemZUID },
+        "ContentItems",
       ],
     }),
     // https://www.zesty.io/docs/instances/api-reference/content/models/items/#Update-Item
@@ -657,6 +660,35 @@ export const instanceApi = createApi({
       transformResponse: getResponseData,
       providesTags: ["WorkflowStatusLabels"],
     }),
+    getGroups: builder.query<any, Record<string, string> | void>({
+      query: (params) => {
+        if (!!params && Object.keys(params)?.length) {
+          const queryParams = new URLSearchParams(params);
+
+          return `/env/groups?${queryParams.toString()}`;
+        }
+
+        return `/env/groups`;
+      },
+      transformResponse: getResponseData,
+      providesTags: ["Groups"],
+    }),
+    getGroupByZUID: builder.query<any, string>({
+      query: (ZUID) => `/env/groups/${ZUID}`,
+      transformResponse: getResponseData,
+      providesTags: (result, error, id) => [{ type: "Groups", id }],
+    }),
+    createGroup: builder.mutation<
+      any,
+      { name: string; resourceZUIDs?: string[]; type?: string }
+    >({
+      query: (body) => ({
+        url: "/env/groups",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Groups"],
+    }),
   }),
 });
 
@@ -710,4 +742,7 @@ export const {
   useCreateItemWorkflowStatusMutation,
   useUpdateItemWorkflowStatusMutation,
   useGetWorkflowStatusLabelsQuery,
+  useGetGroupsQuery,
+  useGetGroupByZUIDQuery,
+  useCreateGroupMutation,
 } = instanceApi;

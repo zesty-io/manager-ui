@@ -24,6 +24,7 @@ import SeoApp from "../../../apps/seo/src";
 import SettingsApp from "../../../apps/settings/src";
 import HomeApp from "../../../apps/home";
 import MarketplaceApp from "../../../apps/marketplace/src";
+import { BlocksApp } from "../../../apps/blocks";
 import { AppState } from "../../store/types";
 
 import styles from "./Shell.less";
@@ -90,6 +91,14 @@ export default memo(function Shell() {
                         key={product}
                         path="/content"
                         component={ContentApp}
+                      />
+                    );
+                  case "blocks":
+                    return (
+                      <Route
+                        key={product}
+                        path="/blocks"
+                        component={BlocksApp}
                       />
                     );
                   case "reports":

@@ -12,6 +12,8 @@ import {
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { CreateModelDialogue } from "../CreateModelDialogue";
 import { ModelList } from "./ModelList";
+import { useSelector } from "react-redux";
+import { AppState } from "../../../../../../shell/store/types";
 
 export const Sidebar = () => {
   const { data: models, isLoading } = useGetContentModelsQuery();
@@ -20,6 +22,7 @@ export const Sidebar = () => {
   const [search, setSearch] = useState(params.get("term") || "");
   const [isCreateModelDialogueOpen, setIsCreateModelDialogueOpen] =
     useState(false);
+  const user = useSelector((state: AppState) => state.user);
 
   useEffect(() => {
     setSearch(params.get("term") || "");
@@ -78,6 +81,17 @@ export const Sidebar = () => {
                 }
               />
             </Box>
+            {user?.staff && (
+              <Box pt={1.5}>
+                <ModelList
+                  title="blocks"
+                  type="block"
+                  models={
+                    models?.filter((model) => model.type === "block") || []
+                  }
+                />
+              </Box>
+            )}
           </>
         )}
       </AppSideBar>
