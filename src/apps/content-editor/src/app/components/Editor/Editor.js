@@ -213,8 +213,8 @@ export default memo(function Editor({
         value: value === "" ? null : value,
       });
 
-      // If we are working with a new item
-      if (isNewItem) {
+      // If we are working with a new item and model is not a block auto apply web data
+      if (isNewItem && model?.type !== "block") {
         if (firstTextField && firstTextField.name === name) {
           dispatch({
             type: "SET_ITEM_WEB",

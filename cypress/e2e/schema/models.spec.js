@@ -1,4 +1,6 @@
 const SEARCH_TERM = `cypress ${Date.now()}`;
+const TIMESTAMP = Date.now();
+
 describe("Schema: Models", () => {
   before(() => {
     cy.waitOn("/v1/content/models*", () => {
@@ -31,9 +33,9 @@ describe("Schema: Models", () => {
       .find("input")
       .should("have.value", "cypress_test_model");
 
-    cy.contains("Select Model Parent").next().click();
+    cy.contains("Model Parent").next().click();
 
-    cy.contains("Select Model Parent")
+    cy.contains("Model Parent")
       .next()
       .type("Cypress test (Group with visible fields in list)");
 
@@ -117,5 +119,29 @@ describe("Schema: Models", () => {
       .find(".MuiBreadcrumbs-li")
       .eq(1)
       .contains("Model parenting itself");
+  });
+
+  it("Can create a block model", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/schema");
+    });
+
+    cy.getBySelector(`create-model-button-all-models`).click();
+    cy.contains("Block Model").click();
+    cy.contains("Next").click();
+    cy.contains("Display Name").next().type(`Block Test Model ${TIMESTAMP}`);
+    cy.contains("Reference ID")
+      .next()
+      .find("input")
+      .should("have.value", `block_test_model_${TIMESTAMP}`);
+
+    cy.contains("Description").next().type("Block test model description");
+    cy.get(".MuiDialog-container").within(() => {
+      cy.contains("Create Model").click();
+    });
+    cy.intercept("POST", "/models");
+    cy.intercept("GET", "/models");
+
+    cy.contains(`Block Test Model ${TIMESTAMP}`).should("exist");
   });
 });

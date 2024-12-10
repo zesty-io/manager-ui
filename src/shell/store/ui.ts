@@ -19,7 +19,7 @@ import {
   ExtensionRounded,
   ShuffleRounded,
 } from "@mui/icons-material";
-import { Database } from "@zesty-io/material";
+import { Database, Block } from "@zesty-io/material";
 import { isEqual } from "lodash";
 
 export type Tab = {
@@ -142,6 +142,7 @@ const ICON_CONFIG: { [index: string]: SvgIconComponent } = Object.freeze({
   launchpad: RocketLaunchRounded,
   redirects: ShuffleRounded,
   content: EditRounded,
+  blocks: Block as SvgIconComponent,
   media: ImageRounded,
   schema: Database as SvgIconComponent,
   code: CodeRounded,
@@ -205,6 +206,7 @@ export function createTab(
     launchpad: "Launchpad",
     redirects: "Redirects",
     content: "Content",
+    blocks: "Blocks",
     media: "All Media",
     schema: "Schema",
     code: "Code",
@@ -408,6 +410,10 @@ export function loadTabs(instanceZUID: string) {
             tab.icon = ICON_CONFIG.content;
             break;
 
+          case "Blocks":
+            tab.icon = ICON_CONFIG.blocks;
+            break;
+
           case "All Media":
             tab.icon = ICON_CONFIG.media;
             break;
@@ -537,7 +543,7 @@ export function rebuildTabs(queryData: any) {
     const newTabs = state.ui.pinnedTabs.map((tab: Tab) =>
       createTab(state, parsePath(tab), queryData)
     );
-    /* 
+    /*
       This function is called on every slice update so
       we first determine if the tabs have changed before setting
       a new set of tabs to the store
