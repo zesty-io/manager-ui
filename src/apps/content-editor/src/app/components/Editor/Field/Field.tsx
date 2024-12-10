@@ -709,7 +709,7 @@ export const Field = ({
 
     case "one_to_one":
       const onOneToOneOpen = useCallback(() => {
-        if (!!relatedModelZUID) {
+        if (zuid.isValid(relatedModelZUID)) {
           return dispatch(
             fetchItems(relatedModelZUID, {
               lang: getSelectedLang(allLanguages, langID),
