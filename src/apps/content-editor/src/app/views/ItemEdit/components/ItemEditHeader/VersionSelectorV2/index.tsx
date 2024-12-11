@@ -110,11 +110,14 @@ export const VersionSelector = memo(
 
       return versions.map((v) => {
         let labels: WorkflowStatusLabel[] = [];
+        let itemWorkflowZUID = "";
 
         if (statusLabels?.length && itemWorkflowStatus?.length) {
-          const labelZUIDs = itemWorkflowStatus.find(
+          const workflowStatusData = itemWorkflowStatus.find(
             (status) => status.itemVersion === v.meta?.version
-          )?.labelZUIDs;
+          );
+          const labelZUIDs = workflowStatusData?.labelZUIDs;
+          itemWorkflowZUID = workflowStatusData?.ZUID;
 
           labels = labelZUIDs?.map((labelZUID) =>
             statusLabels.find((statusLabel) => statusLabel.ZUID === labelZUID)
@@ -128,6 +131,7 @@ export const VersionSelector = memo(
           modelZUID: v.meta?.contentModelZUID,
           itemVersionZUID: v.web?.versionZUID,
           itemVersion: v.meta?.version,
+          itemWorkflowZUID,
           labels,
           createdAt: formatDateTime(v.web?.createdAt),
           isPublished: activeVersion?.version === v.meta?.version,

@@ -635,7 +635,11 @@ export const instanceApi = createApi({
       query: (payload) => ({
         url: `/content/models/${payload.modelZUID}/items/${payload.itemZUID}/labels`,
         method: "POST",
-        body: payload,
+        body: {
+          itemVersionZUID: payload.itemVersionZUID,
+          itemVersion: payload.itemVersion,
+          label_zuids: payload.label_zuids,
+        },
       }),
       invalidatesTags: ["ItemWorkflowStatus"],
     }),
@@ -651,7 +655,9 @@ export const instanceApi = createApi({
       query: ({ modelZUID, itemZUID, itemWorkflowZUID, labelZUIDs }) => ({
         url: `/content/models/${modelZUID}/items/${itemZUID}/labels/${itemWorkflowZUID}`,
         method: "PUT",
-        body: labelZUIDs,
+        body: {
+          labelZUIDs,
+        },
       }),
       invalidatesTags: ["ItemWorkflowStatus"],
     }),

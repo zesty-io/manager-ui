@@ -20,10 +20,13 @@ import {
   Check,
 } from "@mui/icons-material";
 import { useSelector } from "react-redux";
-import { useDebounce } from "react-use";
-import { useHistory } from "react-router";
+import { useDebounce, useUnmount } from "react-use";
+import { useHistory, useParams } from "react-router";
 
-import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../../shell/services/instance";
+import {
+  useGetWorkflowStatusLabelsQuery,
+  useUpdateItemWorkflowStatusMutation,
+} from "../../../../../../../../../shell/services/instance";
 import {
   User,
   WorkflowStatusLabel,
@@ -50,6 +53,7 @@ export type Version = {
   modelZUID: string;
   itemVersionZUID: string;
   itemVersion: number;
+  itemWorkflowZUID: string;
   labels: WorkflowStatusLabel[];
   createdAt: string;
   isPublished: boolean;
@@ -66,11 +70,16 @@ export const VersionItem = forwardRef(
     ref: ForwardedRef<HTMLDivElement>
   ) => {
     const history = useHistory();
+    const { modelZUID, itemZUID } = useParams<{
+      modelZUID: string;
+      itemZUID: string;
+    }>();
     const user: User = useSelector((state: AppState) => state.user);
     const addNewLabelRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
     const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
     const { data: usersRoles } = useGetUsersRolesQuery();
+    const [updateItemWorkflowStatus] = useUpdateItemWorkflowStatusMutation();
     const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
     const [filterKeyword, setFilterKeyword] = useState("");
     const [debouncedFilterKeyword, setDebouncedFilterKeyword] = useState("");
@@ -85,6 +94,8 @@ export const VersionItem = forwardRef(
     useDebounce(() => setDebouncedFilterKeyword(filterKeyword), 200, [
       filterKeyword,
     ]);
+
+    useUnmount(() => saveLabelChanges());
 
     const filteredStatusLabels = useMemo(() => {
       onUpdateElementHeight();
@@ -107,7 +118,9 @@ export const VersionItem = forwardRef(
 
         // HACK: Prevents the dropdowm elements from flickering due to delayed height adjustment
         setTimeout(() => {
-          addNewLabelRef.current.style.visibility = "visible";
+          if (addNewLabelRef.current) {
+            addNewLabelRef.current.style.visibility = "visible";
+          }
           searchRef.current?.querySelector("input").focus();
         });
       }
@@ -118,6 +131,17 @@ export const VersionItem = forwardRef(
         setActiveLabels(activeLabels.filter((label) => label !== ZUID));
       } else {
         setActiveLabels([...activeLabels, ZUID]);
+      }
+    };
+
+    const saveLabelChanges = () => {
+      if (activeLabels.length !== data?.labels?.length) {
+        updateItemWorkflowStatus({
+          modelZUID,
+          itemZUID,
+          itemWorkflowZUID: data?.itemWorkflowZUID,
+          labelZUIDs: activeLabels,
+        });
       }
     };
 
@@ -255,18 +279,16 @@ export const VersionItem = forwardRef(
             )}
             {filteredStatusLabels?.map((label, index) => {
               let title = "";
-              const canRemove = label.removePermissionRoles?.length
-                ? label.removePermissionRoles.includes(currentUserRoleZUID)
-                : true;
-              const canAdd = label.addPermissionRoles?.length
-                ? label.addPermissionRoles.includes(currentUserRoleZUID)
-                : true;
+              const canRemove =
+                label.removePermissionRoles?.includes(currentUserRoleZUID);
+              const canAdd =
+                label.addPermissionRoles?.includes(currentUserRoleZUID);
 
-              if (!canAdd) {
+              if (!canAdd && !activeLabels.includes(label.ZUID)) {
                 title = "Do not have permission to add this status";
               }
 
-              if (!canRemove) {
+              if (!canRemove && activeLabels.includes(label.ZUID)) {
                 title = "Do not have permission to remove this status";
               }
 
