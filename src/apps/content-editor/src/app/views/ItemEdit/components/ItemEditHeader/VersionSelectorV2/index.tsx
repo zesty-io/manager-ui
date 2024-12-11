@@ -8,7 +8,7 @@ import { VariableSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
 import { Row } from "./Row";
-import { WORKFLOW_LABELS as statusLabels, WORKFLOW_LABELS } from "./mocks";
+// import { WORKFLOW_LABELS as statusLabels, WORKFLOW_LABELS } from "./mocks";
 
 const dummyLabels = [
   "Approved",
@@ -71,7 +71,7 @@ export const VersionSelector = memo(
       modelZUID: string;
       itemZUID: string;
     }>();
-    const { data: statusLabelsxx, isLoading: isLoadingStatusLabels } =
+    const { data: statusLabels, isLoading: isLoadingStatusLabels } =
       useGetWorkflowStatusLabelsQuery();
     const { data: itemWorkflowStatus, isLoading: isLoadingItemWorkflowStatus } =
       useGetItemWorkflowStatusQuery(
@@ -109,19 +109,19 @@ export const VersionSelector = memo(
       );
 
       return versions.map((v) => {
-        // let labels: WorkflowStatusLabel[] = [];
+        let labels: WorkflowStatusLabel[] = [];
 
-        // if (statusLabels?.length && itemWorkflowStatus?.length) {
-        //   const labelZUIDs = itemWorkflowStatus.find(
-        //     (status) => status.itemVersion === v.meta?.version
-        //   )?.labelZUIDs;
+        if (statusLabels?.length && itemWorkflowStatus?.length) {
+          const labelZUIDs = itemWorkflowStatus.find(
+            (status) => status.itemVersion === v.meta?.version
+          )?.labelZUIDs;
 
-        //   labels = labelZUIDs?.map((labelZUID) =>
-        //     statusLabels.find((statusLabel) => statusLabel.ZUID === labelZUID)
-        //   );
-        // }
+          labels = labelZUIDs?.map((labelZUID) =>
+            statusLabels.find((statusLabel) => statusLabel.ZUID === labelZUID)
+          );
+        }
 
-        const labels = WORKFLOW_LABELS;
+        // const labels = WORKFLOW_LABELS;
 
         return {
           itemZUID: v.meta?.ZUID,

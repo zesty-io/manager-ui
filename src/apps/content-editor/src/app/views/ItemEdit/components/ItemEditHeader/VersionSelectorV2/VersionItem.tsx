@@ -1,4 +1,4 @@
-import { useState, forwardRef, useRef, ForwardedRef } from "react";
+import { useState, forwardRef, useRef, ForwardedRef, useMemo } from "react";
 import {
   Box,
   MenuItem,
@@ -20,15 +20,17 @@ import {
   Check,
 } from "@mui/icons-material";
 import { useSelector } from "react-redux";
+import { useDebounce } from "react-use";
 
 import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../../shell/services/instance";
 import {
   User,
   WorkflowStatusLabel,
 } from "../../../../../../../../../shell/services/types";
-import { WORKFLOW_LABELS as statusLabels } from "./mocks";
+// import { WORKFLOW_LABELS as statusLabels } from "./mocks";
 import { AppState } from "../../../../../../../../../shell/store/types";
 import { useGetUsersRolesQuery } from "../../../../../../../../../shell/services/accounts";
+import { NoResults } from "./NoResults";
 
 const BG_COLOR_MAPPING: Record<string, string> = {
   "#0ba5ec": "blue.100",
@@ -65,14 +67,34 @@ export const VersionItem = forwardRef(
     const user: User = useSelector((state: AppState) => state.user);
     const addNewLabelRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
-    const { data: statusLabelsxx } = useGetWorkflowStatusLabelsQuery();
+    const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
     const { data: usersRoles } = useGetUsersRolesQuery();
     const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
     const [filterKeyword, setFilterKeyword] = useState("");
+    const [debouncedFilterKeyword, setDebouncedFilterKeyword] = useState("");
+    const [activeLabels, setActiveLabels] = useState(
+      data?.labels?.map((label) => label.ZUID)
+    );
 
     const currentUserRoleZUID = usersRoles?.find(
       (userWithRole) => userWithRole.ZUID === user.ZUID
     )?.role?.ZUID;
+
+    useDebounce(() => setDebouncedFilterKeyword(filterKeyword), 200, [
+      filterKeyword,
+    ]);
+
+    const filteredStatusLabels = useMemo(() => {
+      onUpdateElementHeight();
+
+      if (!debouncedFilterKeyword) return statusLabels;
+
+      return statusLabels?.filter((label) =>
+        label.name
+          ?.toLowerCase()
+          .includes(debouncedFilterKeyword?.toLowerCase()?.trim())
+      );
+    }, [statusLabels, debouncedFilterKeyword]);
 
     const handleOpenAddNewLabel = (evt: any) => {
       evt.stopPropagation();
@@ -86,6 +108,14 @@ export const VersionItem = forwardRef(
           addNewLabelRef.current.style.visibility = "visible";
           searchRef.current?.querySelector("input").focus();
         });
+      }
+    };
+
+    const handleToggleLabel = (ZUID: string) => {
+      if (activeLabels?.includes(ZUID)) {
+        setActiveLabels(activeLabels.filter((label) => label !== ZUID));
+      } else {
+        setActiveLabels([...activeLabels, ZUID]);
       }
     };
 
@@ -144,26 +174,32 @@ export const VersionItem = forwardRef(
           pt={1.25}
           pb={2}
         >
-          {data.labels?.map((label) => (
-            <Chip
-              key={label.ZUID}
-              clickable
-              onClick={handleOpenAddNewLabel}
-              label={label.name}
-              size="small"
-              sx={{
-                color: label.color,
-                bgcolor: BG_COLOR_MAPPING[label.color.toLowerCase()],
+          {activeLabels?.map((labelZUID) => {
+            const labelData = statusLabels?.find(
+              (status) => status.ZUID === labelZUID
+            );
 
-                "&:hover": {
-                  bgcolor: BG_COLOR_MAPPING[label.color.toLowerCase()],
-                },
-                "&:focus": {
-                  bgcolor: BG_COLOR_MAPPING[label.color.toLowerCase()],
-                },
-              }}
-            />
-          ))}
+            return (
+              <Chip
+                key={labelData.ZUID}
+                clickable
+                onClick={handleOpenAddNewLabel}
+                label={labelData.name}
+                size="small"
+                sx={{
+                  color: labelData.color,
+                  bgcolor: BG_COLOR_MAPPING[labelData.color.toLowerCase()],
+
+                  "&:hover": {
+                    bgcolor: BG_COLOR_MAPPING[labelData.color.toLowerCase()],
+                  },
+                  "&:focus": {
+                    bgcolor: BG_COLOR_MAPPING[labelData.color.toLowerCase()],
+                  },
+                }}
+              />
+            );
+          })}
           {isActive && (
             <Chip
               clickable
@@ -206,20 +242,29 @@ export const VersionItem = forwardRef(
                 px: 1,
               }}
             />
-            {statusLabels?.map((label, index) => {
+            {!filteredStatusLabels?.length && filterKeyword && (
+              <NoResults
+                query={filterKeyword}
+                onSearchAgain={() => {
+                  setFilterKeyword("");
+                  searchRef.current?.querySelector("input").focus();
+                }}
+              />
+            )}
+            {filteredStatusLabels?.map((label, index) => {
               let title = "";
+              const canRemove = label.removePermissionRoles?.length
+                ? label.removePermissionRoles.includes(currentUserRoleZUID)
+                : true;
+              const canAdd = label.addPermissionRoles?.length
+                ? label.addPermissionRoles.includes(currentUserRoleZUID)
+                : true;
 
-              if (
-                label.addPermissionRoles?.length &&
-                !label.addPermissionRoles.includes(currentUserRoleZUID)
-              ) {
+              if (!canAdd) {
                 title = "Do not have permission to add this status";
               }
 
-              if (
-                label.removePermissionRoles?.length &&
-                !label.removePermissionRoles.includes(currentUserRoleZUID)
-              ) {
+              if (!canRemove) {
                 title = "Do not have permission to remove this status";
               }
 
@@ -235,9 +280,25 @@ export const VersionItem = forwardRef(
                       borderBottom: index + 1 < statusLabels?.length ? 1 : 0,
                       borderColor: "border",
                     }}
+                    onClick={() => {
+                      if (
+                        (activeLabels.includes(label.ZUID) && canRemove) ||
+                        (!activeLabels.includes(label.ZUID) && canAdd)
+                      ) {
+                        handleToggleLabel(label.ZUID);
+                      }
+                    }}
                   >
                     <Stack direction="row" gap={1}>
-                      <Check fontSize="small" color="action" />
+                      <Check
+                        fontSize="small"
+                        color="action"
+                        sx={{
+                          visibility: activeLabels?.includes(label.ZUID)
+                            ? "visible"
+                            : "hidden",
+                        }}
+                      />
                       <Stack gap={0.5} direction="row" alignItems="baseline">
                         <Box
                           width={12}
