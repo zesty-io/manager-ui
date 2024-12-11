@@ -709,11 +709,15 @@ export const Field = ({
 
     case "one_to_one":
       const onOneToOneOpen = useCallback(() => {
-        return dispatch(
-          fetchItems(relatedModelZUID, {
-            lang: getSelectedLang(allLanguages, langID),
-          })
-        );
+        if (zuid.isValid(relatedModelZUID)) {
+          return dispatch(
+            fetchItems(relatedModelZUID, {
+              lang: getSelectedLang(allLanguages, langID),
+            })
+          );
+        } else {
+          return Promise.reject("Missing modelZUID");
+        }
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions: OneToManyOptions[] = useMemo(() => {
