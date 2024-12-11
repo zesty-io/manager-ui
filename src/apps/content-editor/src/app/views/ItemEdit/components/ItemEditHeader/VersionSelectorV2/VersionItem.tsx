@@ -21,6 +21,7 @@ import {
 } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { useDebounce } from "react-use";
+import { useHistory } from "react-router";
 
 import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../../shell/services/instance";
 import {
@@ -64,6 +65,7 @@ export const VersionItem = forwardRef(
     { data, isActive, onUpdateElementHeight }: VersionItemProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
+    const history = useHistory();
     const user: User = useSelector((state: AppState) => state.user);
     const addNewLabelRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
@@ -344,6 +346,7 @@ export const VersionItem = forwardRef(
                 borderColor: "border",
                 height: 44,
               }}
+              onClick={() => history.push("/settings/user/workflows")}
             >
               <ListItemIcon>
                 <EditRounded />
