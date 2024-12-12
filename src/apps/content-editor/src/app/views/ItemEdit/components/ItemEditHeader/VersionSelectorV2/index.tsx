@@ -8,6 +8,7 @@ import { VariableSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
 import { Row } from "./Row";
+import { BG_COLOR_MAPPING } from "./VersionItem";
 // import { WORKFLOW_LABELS as statusLabels, WORKFLOW_LABELS } from "./mocks";
 
 const dummyLabels = [
@@ -140,6 +141,15 @@ export const VersionSelector = memo(
       });
     }, [versions, itemPublishings, itemWorkflowStatus, statusLabels]);
 
+    const latestItemWorkflowLabel = useMemo(() => {
+      if (!mappedVersions?.length || !activeVersion) return null;
+
+      return (
+        mappedVersions?.find((version) => version.itemVersion === activeVersion)
+          ?.labels?.[0] || null
+      );
+    }, [mappedVersions, activeVersion]);
+
     const handleLoadVersion = (version: number) => {
       const versionToLoad = versions?.find((v) => v?.meta?.version === version);
 
@@ -200,7 +210,33 @@ export const VersionSelector = memo(
             }
           >
             v{activeVersion}
-            <Chip label="Draft" color="info" size="small" sx={{ ml: 0.5 }} />
+            {!!latestItemWorkflowLabel && (
+              <Chip
+                label={latestItemWorkflowLabel.name}
+                size="small"
+                sx={{
+                  ml: 0.5,
+                  color: latestItemWorkflowLabel.color,
+                  bgcolor:
+                    BG_COLOR_MAPPING[
+                      latestItemWorkflowLabel.color?.toLowerCase()
+                    ],
+
+                  "&:hover": {
+                    bgcolor:
+                      BG_COLOR_MAPPING[
+                        latestItemWorkflowLabel.color?.toLowerCase()
+                      ],
+                  },
+                  "&:focus": {
+                    bgcolor:
+                      BG_COLOR_MAPPING[
+                        latestItemWorkflowLabel.color?.toLowerCase()
+                      ],
+                  },
+                }}
+              />
+            )}
           </Button>
         </Tooltip>
         <Popover

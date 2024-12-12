@@ -36,7 +36,7 @@ import { AppState } from "../../../../../../../../../shell/store/types";
 import { useGetUsersRolesQuery } from "../../../../../../../../../shell/services/accounts";
 import { NoResults } from "./NoResults";
 
-const BG_COLOR_MAPPING: Record<string, string> = {
+export const BG_COLOR_MAPPING: Record<string, string> = {
   "#0ba5ec": "blue.100",
   "#12b76a": "green.100",
   "#f79009": "yellow.100",
