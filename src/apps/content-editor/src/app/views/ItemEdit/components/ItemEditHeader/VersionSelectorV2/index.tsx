@@ -11,16 +11,6 @@ import { Row } from "./Row";
 import { BG_COLOR_MAPPING } from "./VersionItem";
 // import { WORKFLOW_LABELS as statusLabels, WORKFLOW_LABELS } from "./mocks";
 
-const dummyLabels = [
-  "Approved",
-  "Draft",
-  "In Review",
-  "For Publish",
-  "Blocked",
-  "Published",
-  "Scheduled",
-];
-
 const formatDateTime = (dateTimeString: string) => {
   if (!dateTimeString) return "";
 
