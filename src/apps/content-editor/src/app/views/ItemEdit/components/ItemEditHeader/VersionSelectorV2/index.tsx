@@ -20,17 +20,6 @@ const dummyLabels = [
   "Published",
   "Scheduled",
 ];
-const generateDummyLabels = () => {
-  let count = Math.floor(Math.random() * dummyLabels.length) + 1;
-  const labels = [];
-
-  while (count) {
-    labels.push(dummyLabels[Math.floor(Math.random() * dummyLabels.length)]);
-    count--;
-  }
-
-  return labels;
-};
 
 const formatDateTime = (dateTimeString: string) => {
   if (!dateTimeString) return "";
@@ -124,8 +113,6 @@ export const VersionSelector = memo(
             statusLabels.find((statusLabel) => statusLabel.ZUID === labelZUID)
           );
         }
-
-        // const labels = WORKFLOW_LABELS;
 
         return {
           itemZUID: v.meta?.ZUID,
@@ -246,7 +233,7 @@ export const VersionSelector = memo(
             horizontal: "right",
           }}
           transformOrigin={{
-            vertical: -26,
+            vertical: -8,
             horizontal: "right",
           }}
           anchorEl={anchorEl}
