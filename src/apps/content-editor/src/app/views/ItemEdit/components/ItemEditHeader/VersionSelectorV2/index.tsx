@@ -132,8 +132,9 @@ export const VersionSelector = memo(
       if (!mappedVersions?.length || !activeVersion) return null;
 
       return (
-        mappedVersions?.find((version) => version.itemVersion === activeVersion)
-          ?.labels?.[0] || null
+        mappedVersions
+          ?.find((version) => version.itemVersion === activeVersion)
+          ?.labels?.slice(-1)?.[0] || null
       );
     }, [mappedVersions, activeVersion]);
 
@@ -204,6 +205,7 @@ export const VersionSelector = memo(
                 sx={{
                   ml: 0.5,
                   color: latestItemWorkflowLabel.color,
+                  maxWidth: 144,
                   bgcolor:
                     BG_COLOR_MAPPING[
                       latestItemWorkflowLabel.color?.toLowerCase()
