@@ -128,14 +128,10 @@ export const VersionSelector = memo(
       });
     }, [versions, itemPublishings, itemWorkflowStatus, statusLabels]);
 
-    const latestItemWorkflowLabel = useMemo(() => {
-      if (!mappedVersions?.length || !activeVersion) return null;
-
-      return (
-        mappedVersions
-          ?.find((version) => version.itemVersion === activeVersion)
-          ?.labels?.slice(-1)?.[0] || null
-      );
+    const activeVersionLabels = useMemo(() => {
+      return mappedVersions?.find(
+        (version) => version.itemVersion === activeVersion
+      )?.labels;
     }, [mappedVersions, activeVersion]);
 
     const handleLoadVersion = (version: number) => {
@@ -198,33 +194,46 @@ export const VersionSelector = memo(
             }
           >
             v{activeVersion}
-            {!!latestItemWorkflowLabel && (
-              <Chip
-                label={latestItemWorkflowLabel.name}
-                size="small"
-                sx={{
-                  ml: 0.5,
-                  color: latestItemWorkflowLabel.color,
-                  maxWidth: 144,
-                  bgcolor:
-                    BG_COLOR_MAPPING[
-                      latestItemWorkflowLabel.color?.toLowerCase()
-                    ],
+            {!!activeVersionLabels?.length && (
+              <>
+                <Chip
+                  label={activeVersionLabels.slice(-1)?.[0].name}
+                  size="small"
+                  sx={{
+                    ml: 0.5,
+                    color: activeVersionLabels.slice(-1)?.[0].color,
+                    maxWidth: 144,
+                    bgcolor:
+                      BG_COLOR_MAPPING[
+                        activeVersionLabels.slice(-1)?.[0].color?.toLowerCase()
+                      ],
 
-                  "&:hover": {
-                    bgcolor:
-                      BG_COLOR_MAPPING[
-                        latestItemWorkflowLabel.color?.toLowerCase()
-                      ],
-                  },
-                  "&:focus": {
-                    bgcolor:
-                      BG_COLOR_MAPPING[
-                        latestItemWorkflowLabel.color?.toLowerCase()
-                      ],
-                  },
-                }}
-              />
+                    "&:hover": {
+                      bgcolor:
+                        BG_COLOR_MAPPING[
+                          activeVersionLabels
+                            .slice(-1)?.[0]
+                            .color?.toLowerCase()
+                        ],
+                    },
+                    "&:focus": {
+                      bgcolor:
+                        BG_COLOR_MAPPING[
+                          activeVersionLabels
+                            .slice(-1)?.[0]
+                            .color?.toLowerCase()
+                        ],
+                    },
+                  }}
+                />
+                {activeVersionLabels?.length > 1 && (
+                  <Chip
+                    size="small"
+                    label={`+${activeVersionLabels.length - 1}`}
+                    sx={{ ml: 0.5 }}
+                  />
+                )}
+              </>
             )}
           </Button>
         </Tooltip>
