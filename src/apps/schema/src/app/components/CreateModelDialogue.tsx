@@ -180,6 +180,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             sort: 9999,
           },
         });
+        onClose();
       } else {
         history.push(`/schema/${createModelData.data.ZUID}`);
         onClose();
@@ -252,63 +253,72 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
           </DialogTitle>
           <DialogContent sx={{ pt: 2.5, backgroundColor: "grey.50" }} dividers>
             <Box display="grid" gap={2} gridTemplateColumns="1fr 1fr">
-              {modelTypes.map((modelType) => (
-                <ListItemButton
-                  data-cy={`model-type-${modelType.key}`}
-                  selected={type === modelType.key}
-                  key={modelType.key}
-                  onClick={() => setType(modelType.key)}
-                  sx={{
-                    borderRadius: "8px",
-                    borderStyle: "solid",
-                    borderWidth: "1px",
-                    borderColor: "border",
-                    backgroundColor: "common.white",
-                    py: 2,
-                    "&.Mui-selected": {
-                      borderColor: "primary.main",
-                      svg: {
-                        color: "primary.main",
+              {modelTypes
+                ?.filter((modelType) => {
+                  if (modelType.key === "block") {
+                    return user?.staff;
+                  }
+                  return true;
+                })
+                .map((modelType) => (
+                  <ListItemButton
+                    data-cy={`model-type-${modelType.key}`}
+                    selected={type === modelType.key}
+                    key={modelType.key}
+                    onClick={() => setType(modelType.key)}
+                    sx={{
+                      borderRadius: "8px",
+                      borderStyle: "solid",
+                      borderWidth: "1px",
+                      borderColor: "border",
+                      backgroundColor: "common.white",
+                      py: 2,
+                      "&.Mui-selected": {
+                        borderColor: "primary.main",
+                        svg: {
+                          color: "primary.main",
+                        },
                       },
-                    },
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    gap: 2,
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 48 }}>
-                    <SvgIcon
-                      sx={{ fontSize: "32px" }}
-                      component={
-                        modelIconMap[modelType.key as keyof typeof modelIconMap]
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      gap: 2,
+                    }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 48 }}>
+                      <SvgIcon
+                        sx={{ fontSize: "32px" }}
+                        component={
+                          modelIconMap[
+                            modelType.key as keyof typeof modelIconMap
+                          ]
+                        }
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Typography variant="h6" fontWeight={600}>
+                          {modelType.name}
+                        </Typography>
+                      }
+                      disableTypography
+                      sx={{ my: 0 }}
+                      secondary={
+                        <>
+                          <Typography variant="body2" sx={{ mt: 0.5 }}>
+                            {modelType.description}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 1 }}
+                          >
+                            {modelType.examples}
+                          </Typography>
+                        </>
                       }
                     />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={
-                      <Typography variant="h6" fontWeight={600}>
-                        {modelType.name}
-                      </Typography>
-                    }
-                    disableTypography
-                    sx={{ my: 0 }}
-                    secondary={
-                      <>
-                        <Typography variant="body2" sx={{ mt: 0.5 }}>
-                          {modelType.description}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ mt: 1 }}
-                        >
-                          {modelType.examples}
-                        </Typography>
-                      </>
-                    }
-                  />
-                </ListItemButton>
-              ))}
+                  </ListItemButton>
+                ))}
             </Box>
           </DialogContent>
           <DialogActions sx={{ pt: 2.5 }}>

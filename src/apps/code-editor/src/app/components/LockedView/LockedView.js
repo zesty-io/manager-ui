@@ -74,9 +74,11 @@ export function LockedView(props) {
     setName(props.name);
 
     dispatch(checkLock(props.ZUID)).then((data) => {
-      setLockData(data);
-      if (!data.path) {
-        assumeLock();
+      if (!!data) {
+        setLockData(data);
+        if (!data?.path) {
+          assumeLock();
+        }
       }
     });
 
@@ -89,7 +91,7 @@ export function LockedView(props) {
         // meaning the user transitioned away from the prior view
         // meaning the results will be stale and no longer be the correct lock
         // data for the view being rendered. As this function gets run after a render process.
-        if (data.userZUID === currentUser.ZUID) {
+        if (data?.userZUID === currentUser.ZUID) {
           dispatch(unlock(props.ZUID));
         }
       });

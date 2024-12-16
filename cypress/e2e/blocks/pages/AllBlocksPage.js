@@ -29,8 +29,6 @@ class AllBlocksPage {
 
   createBlock(name) {
     this.createBlockButton.click();
-    cy.getBySelector("model-type-block").click();
-    cy.getBySelector("create-model-next-button").click();
     cy.getBySelector("create-model-display-name-input").type(name);
     cy.getBySelector("create-model-submit-button").click();
   }

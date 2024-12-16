@@ -219,6 +219,7 @@ export const AllBlocks = () => {
       </Box>
       {showCreateModelDialogue && (
         <CreateModelDialogue
+          modelType="block"
           onClose={() => setShowCreateModelDialogue(false)}
         />
       )}
