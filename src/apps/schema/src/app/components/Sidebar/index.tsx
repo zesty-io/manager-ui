@@ -14,6 +14,7 @@ import { CreateModelDialogue } from "../CreateModelDialogue";
 import { ModelList } from "./ModelList";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
+import { isZestyEmail } from "../../../../../../utility/isZestyEmail";
 
 export const Sidebar = () => {
   const { data: models, isLoading } = useGetContentModelsQuery();
@@ -81,7 +82,7 @@ export const Sidebar = () => {
                 }
               />
             </Box>
-            {user?.staff && (
+            {isZestyEmail(user?.email) && (
               <Box pt={1.5}>
                 <ModelList
                   title="blocks"

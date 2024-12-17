@@ -42,6 +42,7 @@ import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
 import { SelectModelParentInput } from "./SelectModelParentInput";
 import { SelectBlockGroupInput } from "./SelectBlockGroupInput";
+import { isZestyEmail } from "../../../../../utility/isZestyEmail";
 
 interface Props {
   onClose: () => void;
@@ -256,7 +257,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               {modelTypes
                 ?.filter((modelType) => {
                   if (modelType.key === "block") {
-                    return user?.staff;
+                    return isZestyEmail(user.email);
                   }
                   return true;
                 })
