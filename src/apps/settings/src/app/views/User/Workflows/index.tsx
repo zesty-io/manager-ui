@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
 import { ThemeProvider, Box } from "@mui/material";
 import { theme } from "@zesty-io/material";
-import * as WorkflowStatus from "./types";
 import RestrictedPage from "./RestrictedPage";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../shell/store/types";
 import { AuthorizedUserPage } from "./authorized";
 import FormDialogContextProvider from "./authorized/forms-dialogs";
+import { AUTHORIZED_ROLES } from "../../../../../../../shell/services/types";
 
 type UserType = {
   role: string;
@@ -19,11 +18,7 @@ const Workflows = () => {
     staff: state.user?.staff,
   }));
 
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
-
-  useEffect(() => {
-    setIsAuthorized(WorkflowStatus.AUTHORIZED_ROLES.includes(role) || staff);
-  }, [role, staff]);
+  const isAuthorized = AUTHORIZED_ROLES.includes(role) || staff;
 
   return (
     <ThemeProvider theme={theme}>

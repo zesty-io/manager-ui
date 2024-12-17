@@ -1,13 +1,16 @@
 import { createContext, useContext, useState, useCallback } from "react";
+import {
+  StatusLabel,
+  StatusLabelQuery,
+} from "../../../../../../../../../shell/services/types";
 
-import * as WorkflowStatus from "../../types";
 import DeactivationDialog from "./DeactivationDialog";
 import StatusLabelForm from "./StatusLabelForm";
 
 // Types for StatusLabelForm and DeactivationDialog
 export type OpenStatusLabelFormTypes = {
-  labels?: WorkflowStatus.StatusLabelQuery[] | [];
-  values?: WorkflowStatus.StatusLabel;
+  labels?: StatusLabelQuery[] | [];
+  values?: StatusLabel;
   isDeactivated?: boolean;
 };
 

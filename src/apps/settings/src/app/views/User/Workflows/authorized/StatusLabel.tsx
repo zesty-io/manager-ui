@@ -14,7 +14,6 @@ import {
   CardContent,
   ListItemIcon,
   Skeleton,
-  useTheme,
   alpha,
 } from "@mui/material";
 import Brightness1Icon from "@mui/icons-material/Brightness1";
@@ -24,7 +23,7 @@ import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlin
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
 import { ClickAwayListener } from "@mui/base/ClickAwayListener";
 import { useFormDialogContext } from "./forms-dialogs";
-import * as WorkflowStatus from "../types";
+import { StatusLabel as StatusLabelTypes } from "../../../../../../../../shell/services/types";
 
 export type StatusLabelProps = {
   id: string;
@@ -34,7 +33,7 @@ export type StatusLabelProps = {
   isDeactivated?: boolean;
   onReorder?: () => void;
   isFocused?: boolean;
-  data: WorkflowStatus.StatusLabel;
+  data: StatusLabelTypes;
 };
 
 export const StatusLabel: FC<StatusLabelProps> = ({
@@ -47,7 +46,6 @@ export const StatusLabel: FC<StatusLabelProps> = ({
   isFocused,
   data,
 }: StatusLabelProps) => {
-  const theme = useTheme();
   const { setFocusedLabel, openStatusLabelForm } = useFormDialogContext();
 
   const originalIndex = isDeactivated ? 0 : findCard?.(id)?.index;
@@ -89,11 +87,6 @@ export const StatusLabel: FC<StatusLabelProps> = ({
     [findCard, moveCard, onReorder]
   );
 
-  const clickAwayProps = {
-    component: ClickAwayListener,
-    onClickAway: () => setFocusedLabel(""),
-  };
-
   const withClickAwayListener = useCallback(
     (component: ReactElement) => {
       if (isFocused) {
@@ -131,9 +124,9 @@ export const StatusLabel: FC<StatusLabelProps> = ({
             borderRadius: 2,
             opacity: isDragging ? 0 : isDeactivated ? 0.7 : 1,
             border: "1px solid",
-            borderColor: theme.palette.border,
+            borderColor: (theme) => theme.palette.border,
             backgroundColor: isFocused
-              ? alpha(theme.palette.primary.light, 0.1)
+              ? (theme) => alpha(theme.palette.primary.light, 0.1)
               : "background.paper",
           }}
         >
@@ -150,13 +143,14 @@ export const StatusLabel: FC<StatusLabelProps> = ({
               flexGrow: 0,
             }}
           >
-            <DragIndicatorRoundedIcon
-              sx={{ width: "22px", height: "22px", color: "grey.400" }}
-            />
+            <DragIndicatorRoundedIcon color="action" fontSize="small" />
           </Box>
 
           <Brightness1Icon
-            sx={{ color: data?.color, width: "1.5rem", height: "1.5rem" }}
+            // sx={{ color: data?.color, width: "1.5rem", height: "1.5rem" }}
+            // color="action"
+            sx={{ color: data?.color }}
+            fontSize="medium"
           />
 
           <CardContent
@@ -201,7 +195,7 @@ const MoreActionsMenu = ({
   data,
   isDeactivated,
 }: {
-  data: WorkflowStatus.StatusLabel;
+  data: StatusLabelTypes;
   isDeactivated?: boolean;
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -235,9 +229,7 @@ const MoreActionsMenu = ({
         onClick={handleOpen}
         sx={{ borderRadius: "50%" }}
       >
-        <MoreHorizIcon
-          sx={{ width: "26px", height: "26px", color: "grey.400" }}
-        />
+        <MoreHorizIcon fontSize="small" color="action" />
       </IconButton>
       <Menu
         anchorEl={anchorEl}

@@ -20,7 +20,6 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import SaveIcon from "@mui/icons-material/Save";
 import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
-import * as WorkflowStatus from "../../types";
 import { LoadingButton } from "@mui/lab";
 import {
   useCreateWorkflowStatusLabelMutation,
@@ -30,6 +29,13 @@ import { useFormDialogContext } from ".";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../../../../shell/store/notifications";
 import { useGetUsersRolesQuery } from "../../../../../../../../../shell/services/accounts";
+import {
+  colorMenu,
+  CreateStatusLabel,
+  StatusLabel,
+  StatusLabelsColorMenu,
+  StatusLabelsRoleMenu,
+} from "../../../../../../../../../shell/services/types";
 
 interface FormInputFieldWrapperProps {
   label: string;
@@ -42,8 +48,8 @@ interface FormInputFieldWrapperProps {
 export type StatusLabelFormProps = {
   open: boolean;
   onClose: () => void;
-  labels?: WorkflowStatus.StatusLabel[];
-  values?: WorkflowStatus.StatusLabel | undefined;
+  labels?: StatusLabel[];
+  values?: StatusLabel | undefined;
   isDeactivated?: boolean;
 };
 
@@ -100,24 +106,24 @@ const ColorSelectInput = ({
   usedColors = [],
 }: {
   name: string;
-  defaultValue?: WorkflowStatus.ColorHexTypes | "";
-  usedColors: WorkflowStatus.ColorHexTypes[];
+  defaultValue?: string | "";
+  usedColors: string[];
 }) => {
-  const availableColors = WorkflowStatus.colorMenu
+  const availableColors = colorMenu
     .sort((a, b) => a.label.localeCompare(b.label))
     .filter((item) => !usedColors.includes(item.value));
 
   const defaultColor =
-    WorkflowStatus.colorMenu?.find(
+    colorMenu?.find(
       (item) =>
         item?.value?.trim()?.toUpperCase() ===
         defaultValue?.trim()?.toUpperCase()
     ) ||
     availableColors?.[0] ||
-    WorkflowStatus.colorMenu?.[0];
+    colorMenu?.[0];
 
   const [selectedColor, setSelectedColor] =
-    useState<WorkflowStatus.StatusLabelsColorMenu>(defaultColor);
+    useState<StatusLabelsColorMenu>(defaultColor);
 
   return (
     <>
@@ -125,7 +131,7 @@ const ColorSelectInput = ({
         disableClearable
         autoHighlight
         fullWidth
-        options={WorkflowStatus.colorMenu}
+        options={colorMenu}
         size="small"
         onChange={(event, newValue) => setSelectedColor(newValue)}
         value={selectedColor}
@@ -179,7 +185,7 @@ const RolesSelectInput = ({
   defaultValue = "",
 }: {
   name: string;
-  listData: WorkflowStatus.StatusLabelsRoleMenu[];
+  listData: StatusLabelsRoleMenu[];
   defaultValue?: string;
 }) => {
   const [value, setSelectedColor] = useState(defaultValue || "");
@@ -192,10 +198,8 @@ const RolesSelectInput = ({
           zuids.split(",").includes(item.value.trim())
         )
       : [];
-  const handleChange = (
-    _: unknown,
-    newValue: WorkflowStatus.StatusLabelsRoleMenu[]
-  ) => setSelectedColor(newValue.map((item) => item.value).join(","));
+  const handleChange = (_: unknown, newValue: StatusLabelsRoleMenu[]) =>
+    setSelectedColor(newValue.map((item) => item.value).join(","));
 
   return (
     <>
@@ -248,7 +252,7 @@ const RolesSelectInput = ({
   );
 };
 
-const validateFormData = (formData: WorkflowStatus.CreateStatusLabel) => {
+const validateFormData = (formData: CreateStatusLabel) => {
   const errors: Record<string, string> = {};
   if (!formData.name) errors.name = "Name is required";
   // if (!formData.description) errors.description = "Description is required";
@@ -265,9 +269,9 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
 }) => {
   const ZUID = values?.ZUID || undefined;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [rolesMenuItems, setRolesMenuItems] = useState<
-    WorkflowStatus.StatusLabelsRoleMenu[]
-  >([]);
+  const [rolesMenuItems, setRolesMenuItems] = useState<StatusLabelsRoleMenu[]>(
+    []
+  );
   const {
     isLoading: rolesLoading,
     isFetching,
@@ -290,10 +294,10 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
     setIsLoading(true);
     const formData = Object.fromEntries(new FormData(e.currentTarget));
 
-    const newStatusLabel: WorkflowStatus.CreateStatusLabel = {
+    const newStatusLabel: CreateStatusLabel = {
       name: formData.name as string,
       description: (formData.description as string) || "",
-      color: formData.color as WorkflowStatus.ColorHexTypes,
+      color: formData.color as string,
       allowPublish: formData.allowPublish === "true",
       addPermissionRoles: transformRoleValues(
         formData.addPermissionRoles as string

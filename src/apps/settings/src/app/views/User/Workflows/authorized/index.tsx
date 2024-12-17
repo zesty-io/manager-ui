@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -8,26 +8,23 @@ import {
   FormGroup,
   FormControlLabel,
   Switch,
-  useTheme,
   Collapse,
-  CircularProgress,
 } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import AddIcon from "@mui/icons-material/Add";
 import { Search } from "@mui/icons-material";
-
-import * as WorkflowStatus from "../types";
-import { NoResults } from "./NoResults";
 import ActiveStatus from "./ActiveStatus";
 import DeactivatedStatus from "./DeactivatedStatus";
-import { useGetInstanceWorkflowStatusLabelsQuery } from "../../../../../../../../shell/services/instance";
+import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../shell/services/instance";
 import { useFormDialogContext } from "./forms-dialogs";
+import { NoResults } from "../../../../../../../schema/src/app/components/NoResults";
+import { StatusLabelQuery } from "../../../../../../../../shell/services/types";
 
 export type StatusLabelSorting = {
   id: string;
   index?: number;
-  data: WorkflowStatus.StatusLabelQuery;
+  data: StatusLabelQuery;
   isFiltered: boolean;
   isDeactivated: boolean;
 };
@@ -57,25 +54,23 @@ const LabelHeader = ({
 );
 
 export const AuthorizedUserPage = () => {
-  const theme = useTheme();
-
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [showDeactivated, setShowDeactivated] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
   const { openStatusLabelForm } = useFormDialogContext();
-  const [activeLabels, setActiveLabels] = useState<StatusLabelSorting[]>([]);
-  const [deactivatedLabels, setDeactivatedLabels] = useState<
-    StatusLabelSorting[]
-  >([]);
-  const [emptySearchResult, setEmptySearchResult] = useState<boolean>(false);
   const {
     isLoading,
     isFetching,
     data: labels,
-  } = useGetInstanceWorkflowStatusLabelsQuery({ showDeleted: true });
+  } = useGetWorkflowStatusLabelsQuery({ showDeleted: true });
 
-  const processLabels = useCallback(() => {
-    if (isLoading || isFetching || !labels) return;
+  const { activeLabels, deactivatedLabels, emptySearchResult } = useMemo(() => {
+    if (isLoading || !labels)
+      return {
+        activeLabels: [],
+        deactivatedLabels: [],
+        emptySearchResult: false,
+      };
 
     const parsedLabels = labels
       .map((label) => {
@@ -112,14 +107,12 @@ export const AuthorizedUserPage = () => {
       ? activeCount + deactivatedCount
       : activeCount;
 
-    setEmptySearchResult(searchResultsCount < 1);
-    setActiveLabels(activeDeactivated.active);
-    setDeactivatedLabels(activeDeactivated.deactivated);
-  }, [labels, isLoading, isFetching, searchValue, showDeactivated]);
-
-  useEffect(() => {
-    processLabels();
-  }, [labels, searchValue, processLabels]);
+    return {
+      activeLabels: activeDeactivated.active,
+      deactivatedLabels: activeDeactivated.deactivated,
+      emptySearchResult: searchResultsCount < 1,
+    };
+  }, [labels, isLoading, searchValue, showDeactivated]);
 
   const handleSearchRetry = () => {
     setSearchValue("");
@@ -225,6 +218,7 @@ export const AuthorizedUserPage = () => {
             sx={{ display: "grid", placeContent: "center" }}
           >
             <NoResults
+              type="search"
               onButtonClick={handleSearchRetry}
               searchTerm={searchValue}
             />

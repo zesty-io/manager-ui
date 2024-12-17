@@ -1,12 +1,11 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { useDrop } from "react-dnd";
 import { Box } from "@mui/material";
-
-import * as WorkflowStatus from "../types";
 import { useUpdateWorkflowStatusLabelOrderMutation } from "../../../../../../../../shell/services/instance";
 import { useFormDialogContext } from "./forms-dialogs";
 import { StatusLabelSorting } from ".";
 import { StatusLabel, StatusLabelLoader } from "./StatusLabel";
+import { UpdateSortingOrder } from "../../../../../../../../shell/services/types";
 
 type ActiveStatusProps = {
   labels: StatusLabelSorting[];
@@ -19,8 +18,6 @@ const ActiveStatus: FC<ActiveStatusProps> = ({ labels, isLoading = false }) => {
     useState<StatusLabelSorting[]>(labels);
   const [updateWorkflowStatusLabelOrder] =
     useUpdateWorkflowStatusLabelOrderMutation();
-
-  const labelData = [];
 
   const findCard = useCallback(
     (id: string) => {
@@ -46,11 +43,12 @@ const ActiveStatus: FC<ActiveStatusProps> = ({ labels, isLoading = false }) => {
   );
 
   const onReorder = useCallback(async () => {
-    const requestPayload: WorkflowStatus.UpdateSortingOrder[] =
-      statusLabels.map((item, index) => ({
+    const requestPayload: UpdateSortingOrder[] = statusLabels.map(
+      (item, index) => ({
         ZUID: item.id,
         sort: index + 1,
-      }));
+      })
+    );
 
     try {
       await updateWorkflowStatusLabelOrder(requestPayload);

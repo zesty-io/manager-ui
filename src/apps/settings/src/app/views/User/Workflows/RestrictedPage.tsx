@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Box, Typography, Avatar } from "@mui/material";
 import { useGetUsersRolesQuery } from "../../../../../../../shell/services/accounts";
 import restrictedImage from "../../../../../../../../public/images/restricted-image.svg";
@@ -40,29 +40,24 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
 );
 
 const RestrictedPage = () => {
-  const [profileList, setProfileList] = useState<any[]>([]);
   const { isLoading, isError, data } = useGetUsersRolesQuery();
 
-  useEffect(() => {
-    if (isLoading || isError) return;
-    const list = data
-      .filter((profile) => AUTHORIZED_ROLES.includes(profile?.role?.name))
-      .map((item, index) => ({
-        id: item?.ZUID,
-        name: `${item?.firstName} ${item?.lastName}`,
-        role: item?.role?.name,
-        email: item?.email,
-        imageUrl: "",
-        sort:
-          (item?.role?.name &&
-            ROLE_ORDER_MAPPING[
-              item?.role?.name as keyof typeof ROLE_ORDER_MAPPING
-            ]) ||
-          index + 2,
-      }));
-
-    setProfileList(list.sort((a, b) => a.sort - b.sort));
-  }, [isLoading, isError, data]);
+  const profileList = data
+    ?.filter((profile) => AUTHORIZED_ROLES.includes(profile?.role?.name))
+    .map((item, index) => ({
+      id: item?.ZUID,
+      name: `${item?.firstName} ${item?.lastName}`,
+      role: item?.role?.name,
+      email: item?.email,
+      imageUrl: "",
+      sort:
+        (item?.role?.name &&
+          ROLE_ORDER_MAPPING[
+            item?.role?.name as keyof typeof ROLE_ORDER_MAPPING
+          ]) ||
+        index + 2,
+    }))
+    .sort((a, b) => a.sort - b.sort);
 
   return (
     <Box

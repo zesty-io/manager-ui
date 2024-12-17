@@ -1,4 +1,4 @@
-import { FC, useState, useCallback } from "react";
+import { FC, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -31,7 +31,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
   const [deactivateWorkflowStatusLabel] =
     useDeactivateWorkflowStatusLabelMutation();
 
-  const handleConfirm = useCallback(async () => {
+  const handleConfirm = async () => {
     try {
       setIsLoading(true);
       await deactivateWorkflowStatusLabel({ ZUID });
@@ -56,7 +56,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [ZUID, name, dispatch, deactivateWorkflowStatusLabel, onClose, callBack]);
+  };
 
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
