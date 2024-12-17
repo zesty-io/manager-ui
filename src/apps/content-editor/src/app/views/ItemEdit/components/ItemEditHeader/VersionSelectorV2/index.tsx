@@ -9,7 +9,6 @@ import AutoSizer from "react-virtualized-auto-sizer";
 
 import { Row } from "./Row";
 import { BG_COLOR_MAPPING } from "./VersionItem";
-// import { WORKFLOW_LABELS as statusLabels, WORKFLOW_LABELS } from "./mocks";
 
 const formatDateTime = (dateTimeString: string) => {
   if (!dateTimeString) return "";
@@ -148,7 +147,6 @@ export const VersionSelector = memo(
         0
       );
 
-      // List height needs to at most be 540px
       setListHeight(totalHeight <= 540 ? totalHeight : 540);
 
       return rowHeights.current?.[index] || 90;

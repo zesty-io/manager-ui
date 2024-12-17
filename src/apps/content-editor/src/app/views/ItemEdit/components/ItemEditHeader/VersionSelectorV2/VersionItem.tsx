@@ -1,4 +1,11 @@
-import { useState, forwardRef, useRef, ForwardedRef, useMemo } from "react";
+import {
+  memo,
+  useState,
+  forwardRef,
+  useRef,
+  ForwardedRef,
+  useMemo,
+} from "react";
 import {
   Box,
   MenuItem,
@@ -22,6 +29,7 @@ import {
 import { useSelector } from "react-redux";
 import { useDebounce, useUnmount } from "react-use";
 import { useHistory, useParams } from "react-router";
+import { areEqual } from "react-window";
 
 import {
   useGetWorkflowStatusLabelsQuery,
@@ -62,324 +70,318 @@ export type Version = {
 type VersionItemProps = {
   data: Version;
   isActive: boolean;
-  onUpdateElementHeight: () => void;
 };
-export const VersionItem = forwardRef(
-  (
-    { data, isActive, onUpdateElementHeight }: VersionItemProps,
-    ref: ForwardedRef<HTMLDivElement>
-  ) => {
-    const history = useHistory();
-    const { modelZUID, itemZUID } = useParams<{
-      modelZUID: string;
-      itemZUID: string;
-    }>();
-    const user: User = useSelector((state: AppState) => state.user);
-    const addNewLabelRef = useRef<HTMLDivElement>(null);
-    const searchRef = useRef<HTMLDivElement>(null);
-    const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
-    const { data: usersRoles } = useGetUsersRolesQuery();
-    const [updateItemWorkflowStatus] = useUpdateItemWorkflowStatusMutation();
-    const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
-    const [filterKeyword, setFilterKeyword] = useState("");
-    const [debouncedFilterKeyword, setDebouncedFilterKeyword] = useState("");
-    const [activeLabels, setActiveLabels] = useState(
-      data?.labels?.map((label) => label.ZUID)
-    );
-
-    const currentUserRoleZUID = usersRoles?.find(
-      (userWithRole) => userWithRole.ZUID === user.ZUID
-    )?.role?.ZUID;
-
-    useDebounce(() => setDebouncedFilterKeyword(filterKeyword), 200, [
-      filterKeyword,
-    ]);
-
-    useUnmount(() => saveLabelChanges());
-
-    const filteredStatusLabels = useMemo(() => {
-      onUpdateElementHeight();
-
-      if (!debouncedFilterKeyword) return statusLabels;
-
-      return statusLabels?.filter((label) =>
-        label.name
-          ?.toLowerCase()
-          .includes(debouncedFilterKeyword?.toLowerCase()?.trim())
+export const VersionItem = memo(
+  forwardRef(
+    (
+      { data, isActive }: VersionItemProps,
+      ref: ForwardedRef<HTMLDivElement>
+    ) => {
+      const history = useHistory();
+      const { modelZUID, itemZUID } = useParams<{
+        modelZUID: string;
+        itemZUID: string;
+      }>();
+      const user: User = useSelector((state: AppState) => state.user);
+      const addNewLabelRef = useRef<HTMLDivElement>(null);
+      const searchRef = useRef<HTMLDivElement>(null);
+      const { data: statusLabels } = useGetWorkflowStatusLabelsQuery();
+      const { data: usersRoles } = useGetUsersRolesQuery();
+      const [updateItemWorkflowStatus] = useUpdateItemWorkflowStatusMutation();
+      const [isAddNewLabelOpen, setIsAddNewLabelOpen] = useState(false);
+      const [filterKeyword, setFilterKeyword] = useState("");
+      const [debouncedFilterKeyword, setDebouncedFilterKeyword] = useState("");
+      const [activeLabels, setActiveLabels] = useState(
+        data?.labels?.map((label) => label.ZUID)
       );
-    }, [statusLabels, debouncedFilterKeyword]);
 
-    const handleOpenAddNewLabel = (evt: any) => {
-      evt.stopPropagation();
+      const currentUserRoleZUID = usersRoles?.find(
+        (userWithRole) => userWithRole.ZUID === user.ZUID
+      )?.role?.ZUID;
 
-      if (isActive) {
-        setIsAddNewLabelOpen((prev) => !prev);
-        onUpdateElementHeight();
+      useDebounce(() => setDebouncedFilterKeyword(filterKeyword), 200, [
+        filterKeyword,
+      ]);
 
-        // HACK: Prevents the dropdowm elements from flickering due to delayed height adjustment
-        setTimeout(() => {
-          if (addNewLabelRef.current) {
-            addNewLabelRef.current.style.visibility = "visible";
-          }
-          searchRef.current?.querySelector("input").focus();
-        });
-      }
-    };
+      useUnmount(() => saveLabelChanges());
 
-    const handleToggleLabel = (ZUID: string) => {
-      if (activeLabels?.includes(ZUID)) {
-        setActiveLabels(activeLabels.filter((label) => label !== ZUID));
-      } else {
-        setActiveLabels([...activeLabels, ZUID]);
-      }
-    };
+      const filteredStatusLabels = useMemo(() => {
+        if (!debouncedFilterKeyword) return statusLabels;
 
-    const saveLabelChanges = () => {
-      if (activeLabels.length !== data?.labels?.length) {
-        updateItemWorkflowStatus({
-          modelZUID,
-          itemZUID,
-          itemWorkflowZUID: data?.itemWorkflowZUID,
-          labelZUIDs: activeLabels,
-        });
-      }
-    };
+        return statusLabels?.filter((label) =>
+          label.name
+            ?.toLowerCase()
+            .includes(debouncedFilterKeyword?.toLowerCase()?.trim())
+        );
+      }, [statusLabels, debouncedFilterKeyword]);
 
-    return (
-      <Stack ref={ref} width="100%">
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          width="100%"
-          pt={2}
-          px={2}
-        >
-          <Stack direction="row" gap={1}>
-            <Typography variant="body1" color="text.primary" fontWeight={700}>
-              v{data?.itemVersion}
-            </Typography>
-            {data?.isPublished && (
-              <Stack direction="row" gap={0.25} alignItems="center">
-                <LanguageRounded color="success" fontSize="small" />
-                <Typography
-                  variant="body2"
-                  color="success.dark"
-                  fontWeight={600}
-                >
-                  Published
-                </Typography>
-              </Stack>
-            )}
-            {data?.isScheduled && (
-              <Stack direction="row" gap={0.25} alignItems="center">
-                <ScheduleRounded
-                  color="warning"
-                  fontSize="small"
-                  sx={{ mr: 0.25 }}
-                />
-                <Typography
-                  variant="body2"
-                  color="warning.main"
-                  fontWeight={600}
-                >
-                  Scheduled
-                </Typography>
-              </Stack>
-            )}
-          </Stack>
-          <Typography variant="body1" color="text.secondary">
-            {data?.createdAt}
-          </Typography>
-        </Stack>
-        <Stack
-          direction="row"
-          gap={1}
-          width="100%"
-          flexWrap="wrap"
-          px={2}
-          pt={1.25}
-          pb={2}
-        >
-          {activeLabels?.map((labelZUID) => {
-            const labelData = statusLabels?.find(
-              (status) => status.ZUID === labelZUID
-            );
+      const handleOpenAddNewLabel = (evt: any) => {
+        evt.stopPropagation();
 
-            return (
-              <Chip
-                key={labelData.ZUID}
-                clickable
-                onClick={handleOpenAddNewLabel}
-                label={labelData.name}
-                size="small"
-                sx={{
-                  color: labelData.color,
-                  bgcolor: BG_COLOR_MAPPING[labelData.color.toLowerCase()],
+        if (isActive) {
+          setIsAddNewLabelOpen((prev) => !prev);
 
-                  "&:hover": {
-                    bgcolor: BG_COLOR_MAPPING[labelData.color.toLowerCase()],
-                  },
-                  "&:focus": {
-                    bgcolor: BG_COLOR_MAPPING[labelData.color.toLowerCase()],
-                  },
-                }}
-              />
-            );
-          })}
-          {isActive && (
-            <Chip
-              clickable
-              label="Add Status"
-              color="default"
-              size="small"
-              onClick={handleOpenAddNewLabel}
-              // Note: onDelete needs to be here for the custom deleteIcon to be visible
-              onDelete={() => {}}
-              deleteIcon={<AddRounded />}
-            />
-          )}
-        </Stack>
-        {isAddNewLabelOpen && (
-          <Box
-            ref={addNewLabelRef}
-            onClick={(evt) => evt.stopPropagation()}
-            borderTop={1}
-            borderColor="border"
+          setTimeout(() => {
+            searchRef.current?.querySelector("input").focus();
+          });
+        }
+      };
+
+      const handleToggleLabel = (ZUID: string) => {
+        if (activeLabels?.includes(ZUID)) {
+          setActiveLabels(activeLabels.filter((label) => label !== ZUID));
+        } else {
+          setActiveLabels([...activeLabels, ZUID]);
+        }
+      };
+
+      const saveLabelChanges = () => {
+        if (activeLabels.length !== data?.labels?.length) {
+          updateItemWorkflowStatus({
+            modelZUID,
+            itemZUID,
+            itemWorkflowZUID: data?.itemWorkflowZUID,
+            labelZUIDs: activeLabels,
+          });
+        }
+      };
+
+      return (
+        <Stack ref={ref} width="100%">
+          <Stack
+            direction="row"
+            justifyContent="space-between"
             width="100%"
-            // HACK: Prevents the dropdowm elements from flickering due to delayed height adjustment
-            visibility="hidden"
+            pt={2}
+            px={2}
           >
-            <TextField
-              ref={searchRef}
-              value={filterKeyword}
-              onChange={(evt) => setFilterKeyword(evt.currentTarget.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchRounded />
-                  </InputAdornment>
-                ),
-              }}
-              placeholder="Search status"
-              size="small"
-              fullWidth
-              sx={{
-                my: 1.5,
-                px: 1,
-              }}
-            />
-            {!filteredStatusLabels?.length && filterKeyword && (
-              <NoResults
-                query={filterKeyword}
-                onSearchAgain={() => {
-                  setFilterKeyword("");
-                  searchRef.current?.querySelector("input").focus();
-                }}
-              />
-            )}
-            {filteredStatusLabels?.map((label, index) => {
-              let title = "";
-              const canRemove =
-                label.removePermissionRoles?.includes(currentUserRoleZUID);
-              const canAdd =
-                label.addPermissionRoles?.includes(currentUserRoleZUID);
-
-              if (!canAdd && !activeLabels.includes(label.ZUID)) {
-                title = "Do not have permission to add this status";
-              }
-
-              if (!canRemove && activeLabels.includes(label.ZUID)) {
-                title = "Do not have permission to remove this status";
-              }
+            <Stack direction="row" gap={1}>
+              <Typography variant="body1" color="text.primary" fontWeight={700}>
+                v{data?.itemVersion}
+              </Typography>
+              {data?.isPublished && (
+                <Stack direction="row" gap={0.25} alignItems="center">
+                  <LanguageRounded color="success" fontSize="small" />
+                  <Typography
+                    variant="body2"
+                    color="success.dark"
+                    fontWeight={600}
+                  >
+                    Published
+                  </Typography>
+                </Stack>
+              )}
+              {data?.isScheduled && (
+                <Stack direction="row" gap={0.25} alignItems="center">
+                  <ScheduleRounded
+                    color="warning"
+                    fontSize="small"
+                    sx={{ mr: 0.25 }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="warning.main"
+                    fontWeight={600}
+                  >
+                    Scheduled
+                  </Typography>
+                </Stack>
+              )}
+            </Stack>
+            <Typography variant="body1" color="text.secondary">
+              {data?.createdAt}
+            </Typography>
+          </Stack>
+          <Stack
+            direction="row"
+            gap={1}
+            width="100%"
+            flexWrap="wrap"
+            px={2}
+            pt={1.25}
+            pb={2}
+          >
+            {activeLabels?.map((labelZUID) => {
+              const labelData = statusLabels?.find(
+                (status) => status.ZUID === labelZUID
+              );
 
               return (
-                <Tooltip followCursor title={title}>
-                  <MenuItem
-                    key={label.ZUID}
-                    sx={{
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      px: 1,
-                      py: 1.5,
-                      borderBottom: index + 1 < statusLabels?.length ? 1 : 0,
-                      borderColor: "border",
-                    }}
-                    onClick={() => {
-                      if (
-                        (activeLabels.includes(label.ZUID) && canRemove) ||
-                        (!activeLabels.includes(label.ZUID) && canAdd)
-                      ) {
-                        handleToggleLabel(label.ZUID);
-                      }
-                    }}
-                  >
-                    <Stack direction="row" gap={1}>
-                      <Check
-                        fontSize="small"
-                        color="action"
-                        sx={{
-                          visibility: activeLabels?.includes(label.ZUID)
-                            ? "visible"
-                            : "hidden",
-                        }}
-                      />
-                      <Stack gap={0.5} direction="row" alignItems="baseline">
-                        <Box
-                          width={12}
-                          height={12}
-                          borderRadius="50%"
-                          bgcolor={label.color}
-                          flexShrink={0}
-                        ></Box>
-                        <Typography
-                          variant="body2"
-                          fontWeight={700}
-                          sx={{
-                            wordBreak: "break-word",
-                            whiteSpace: "wrap",
-                          }}
-                        >
-                          {label.name}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                    <Typography
-                      variant="body3"
-                      fontWeight={600}
-                      color="text.secondary"
-                      sx={{
-                        pt: 0.25,
-                        pl: 3.5,
-                        wordBreak: "break-word",
-                        whiteSpace: "wrap",
-                      }}
-                    >
-                      {label.description}
-                    </Typography>
-                  </MenuItem>
-                </Tooltip>
+                <Chip
+                  key={labelData.ZUID}
+                  clickable
+                  onClick={handleOpenAddNewLabel}
+                  label={labelData.name}
+                  size="small"
+                  sx={{
+                    color: labelData.color,
+                    bgcolor: BG_COLOR_MAPPING[labelData.color.toLowerCase()],
+
+                    "&:hover": {
+                      bgcolor: BG_COLOR_MAPPING[labelData.color.toLowerCase()],
+                    },
+                    "&:focus": {
+                      bgcolor: BG_COLOR_MAPPING[labelData.color.toLowerCase()],
+                    },
+                  }}
+                />
               );
             })}
-            <MenuItem
-              sx={{
-                pr: 1,
-                pl: 4,
-                borderTop: 1,
-                borderColor: "border",
-                height: 44,
-              }}
-              onClick={() => history.push("/settings/user/workflows")}
+            {isActive && (
+              <Chip
+                clickable
+                label="Add Status"
+                color="default"
+                size="small"
+                onClick={handleOpenAddNewLabel}
+                // Note: onDelete needs to be here for the custom deleteIcon to be visible
+                onDelete={() => {}}
+                deleteIcon={<AddRounded />}
+              />
+            )}
+          </Stack>
+          {isAddNewLabelOpen && (
+            <Box
+              ref={addNewLabelRef}
+              onClick={(evt) => evt.stopPropagation()}
+              borderTop={1}
+              borderColor="border"
+              width="100%"
+              overflow="hidden"
             >
-              <ListItemIcon>
-                <EditRounded />
-              </ListItemIcon>
-              <ListItemText>Edit Statuses</ListItemText>
-            </MenuItem>
-          </Box>
-        )}
-      </Stack>
-    );
-  }
+              <TextField
+                ref={searchRef}
+                value={filterKeyword}
+                onChange={(evt) => setFilterKeyword(evt.currentTarget.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchRounded />
+                    </InputAdornment>
+                  ),
+                }}
+                placeholder="Search status"
+                size="small"
+                fullWidth
+                sx={{
+                  my: 1.5,
+                  px: 1,
+                }}
+              />
+              {!filteredStatusLabels?.length && filterKeyword && (
+                <NoResults
+                  query={filterKeyword}
+                  onSearchAgain={() => {
+                    setFilterKeyword("");
+                    searchRef.current?.querySelector("input").focus();
+                  }}
+                />
+              )}
+              {filteredStatusLabels?.map((label, index) => {
+                let title = "";
+                const canRemove =
+                  label.removePermissionRoles?.includes(currentUserRoleZUID);
+                const canAdd =
+                  label.addPermissionRoles?.includes(currentUserRoleZUID);
+
+                if (!canAdd && !activeLabels.includes(label.ZUID)) {
+                  title = "Do not have permission to add this status";
+                }
+
+                if (!canRemove && activeLabels.includes(label.ZUID)) {
+                  title = "Do not have permission to remove this status";
+                }
+
+                return (
+                  <Tooltip followCursor title={title}>
+                    <MenuItem
+                      key={label.ZUID}
+                      sx={{
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        px: 1,
+                        py: 1.5,
+                        borderBottom: index + 1 < statusLabels?.length ? 1 : 0,
+                        borderColor: "border",
+                      }}
+                      onClick={() => {
+                        if (
+                          (activeLabels.includes(label.ZUID) && canRemove) ||
+                          (!activeLabels.includes(label.ZUID) && canAdd)
+                        ) {
+                          handleToggleLabel(label.ZUID);
+                        }
+                      }}
+                    >
+                      <Stack direction="row" gap={1}>
+                        <Check
+                          fontSize="small"
+                          color="action"
+                          sx={{
+                            visibility: activeLabels?.includes(label.ZUID)
+                              ? "visible"
+                              : "hidden",
+                          }}
+                        />
+                        <Stack gap={0.5} direction="row" alignItems="baseline">
+                          <Box
+                            width={12}
+                            height={12}
+                            borderRadius="50%"
+                            bgcolor={label.color}
+                            flexShrink={0}
+                          ></Box>
+                          <Typography
+                            variant="body2"
+                            fontWeight={700}
+                            sx={{
+                              wordBreak: "break-word",
+                              whiteSpace: "wrap",
+                            }}
+                          >
+                            {label.name}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                      <Typography
+                        variant="body3"
+                        fontWeight={600}
+                        color="text.secondary"
+                        sx={{
+                          pt: 0.25,
+                          pl: 3.5,
+                          wordBreak: "break-word",
+                          whiteSpace: "wrap",
+                        }}
+                      >
+                        {label.description}
+                      </Typography>
+                    </MenuItem>
+                  </Tooltip>
+                );
+              })}
+              <MenuItem
+                sx={{
+                  pr: 1,
+                  pl: 4,
+                  borderTop: 1,
+                  borderColor: "border",
+                  height: 44,
+                }}
+                onClick={() => history.push("/settings/user/workflows")}
+              >
+                <ListItemIcon>
+                  <EditRounded />
+                </ListItemIcon>
+                <ListItemText>Edit Statuses</ListItemText>
+              </MenuItem>
+            </Box>
+          )}
+        </Stack>
+      );
+    }
+  ),
+  areEqual
 );
 
 VersionItem.displayName = "VersionItem";

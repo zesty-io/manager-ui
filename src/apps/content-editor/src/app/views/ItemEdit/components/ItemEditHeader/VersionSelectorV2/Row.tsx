@@ -3,6 +3,7 @@ import { MenuItem } from "@mui/material";
 import { areEqual } from "react-window";
 
 import { Version, VersionItem } from "./VersionItem";
+import { useResizeObserver } from "../../../../../../../../../shell/hooks/useResizeObserver";
 
 type RowProps = {
   index: number;
@@ -17,12 +18,15 @@ type RowProps = {
 export const Row = memo(({ index, style, data }: RowProps) => {
   const rowRef = useRef(null);
   const version = data?.versions[index];
+  const dimensions = useResizeObserver(rowRef);
+
+  console.log("row rerendered", index);
 
   useEffect(() => {
-    if (rowRef.current) {
-      data?.setRowHeight(index, rowRef.current?.clientHeight);
+    if (!!dimensions) {
+      data?.setRowHeight(index, dimensions?.height);
     }
-  }, [rowRef]);
+  }, [dimensions]);
 
   return (
     <MenuItem
@@ -57,12 +61,9 @@ export const Row = memo(({ index, style, data }: RowProps) => {
         key={version?.itemVersionZUID}
         data={version}
         isActive={data?.activeVersion === version?.itemVersion}
-        onUpdateElementHeight={() => {
-          setTimeout(() => {
-            data?.setRowHeight(index, rowRef.current?.clientHeight);
-          });
-        }}
       />
     </MenuItem>
   );
 }, areEqual);
+
+Row.displayName = "VersionRow";
