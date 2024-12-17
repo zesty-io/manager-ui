@@ -20,8 +20,6 @@ export const Row = memo(({ index, style, data }: RowProps) => {
   const version = data?.versions[index];
   const dimensions = useResizeObserver(rowRef);
 
-  console.log("row rerendered", index);
-
   useEffect(() => {
     if (!!dimensions) {
       data?.setRowHeight(index, dimensions?.height);

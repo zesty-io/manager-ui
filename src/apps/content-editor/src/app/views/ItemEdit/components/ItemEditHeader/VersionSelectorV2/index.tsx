@@ -1,4 +1,4 @@
-import { useState, memo, useMemo, useRef } from "react";
+import { useState, memo, useMemo, useRef, useEffect } from "react";
 import { Button, Tooltip, Chip, MenuList, Popover } from "@mui/material";
 import { KeyboardArrowDownRounded } from "@mui/icons-material";
 import { useParams } from "react-router";
@@ -36,6 +36,10 @@ import {
 import { Version } from "./VersionItem";
 import { WorkflowStatusLabel } from "../../../../../../../../../shell/services/types";
 
+export let ROW_HEIGHTS: Record<number, number> = {};
+export const DEFAULT_ROW_HEIGHT = 66;
+const DEFAULT_LIST_HEIGHT = 540;
+
 type VersionSelectorProps = {
   activeVersion: number;
 };
@@ -45,7 +49,7 @@ export const VersionSelector = memo(
     const listRef = useRef(null);
     const rowHeights = useRef(null);
     const [anchorEl, setAnchorEl] = useState<HTMLElement>(null);
-    const [listHeight, setListHeight] = useState(0);
+    const [listHeight, setListHeight] = useState(DEFAULT_LIST_HEIGHT);
     const { modelZUID, itemZUID } = useParams<{
       modelZUID: string;
       itemZUID: string;
@@ -123,6 +127,10 @@ export const VersionSelector = memo(
       )?.labels;
     }, [mappedVersions, activeVersion]);
 
+    useEffect(() => {
+      ROW_HEIGHTS = {};
+    }, []);
+
     const handleLoadVersion = (version: number) => {
       const versionToLoad = versions?.find((v) => v?.meta?.version === version);
 
@@ -137,19 +145,23 @@ export const VersionSelector = memo(
     };
 
     const setRowHeight = (index: number, size: number) => {
-      rowHeights.current = { ...rowHeights?.current, [index]: size };
-      listRef.current?.resetAfterIndex(index);
+      if (ROW_HEIGHTS[index] !== size) {
+        ROW_HEIGHTS = { ...ROW_HEIGHTS, [index]: size };
+        listRef.current?.resetAfterIndex(index);
+      }
     };
 
     const getRowHeight = (index: number) => {
-      const totalHeight = +Object.values(rowHeights.current || {}).reduce(
-        (acc: number, curr: number) => acc + curr,
-        0
-      );
+      setTimeout(() => {
+        const totalHeight = +Object.values(ROW_HEIGHTS).reduce(
+          (acc: number, curr: number) => acc + curr,
+          0
+        );
 
-      setListHeight(totalHeight <= 540 ? totalHeight : 540);
+        setListHeight(totalHeight < 540 ? totalHeight : 540);
+      });
 
-      return rowHeights.current?.[index] || 90;
+      return ROW_HEIGHTS[index] || DEFAULT_ROW_HEIGHT;
     };
 
     return (
