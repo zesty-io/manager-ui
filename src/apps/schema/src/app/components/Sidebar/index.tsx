@@ -82,7 +82,7 @@ export const Sidebar = () => {
                 }
               />
             </Box>
-            {isZestyEmail(user?.email) && (
+            {isZestyEmail(user.email) && (
               <Box pt={1.5}>
                 <ModelList
                   title="blocks"
