@@ -268,7 +268,6 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
   isDeactivated = false,
 }) => {
   const ZUID = values?.ZUID || undefined;
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rolesMenuItems, setRolesMenuItems] = useState<StatusLabelsRoleMenu[]>(
     []
   );
@@ -280,7 +279,8 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const dispatch = useDispatch();
-  const [createWorkflowStatusLabel] = useCreateWorkflowStatusLabelMutation();
+  const [createWorkflowStatusLabel, { isLoading }] =
+    useCreateWorkflowStatusLabelMutation();
   const [updateWorkflowStatusLabel] = useUpdateWorkflowStatusLabelMutation();
   const { openDeactivationDialog, setFocusedLabel } = useFormDialogContext();
 
@@ -291,7 +291,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
+    // setIsLoading(true);
     const formData = Object.fromEntries(new FormData(e.currentTarget));
 
     const newStatusLabel: CreateStatusLabel = {
@@ -310,7 +310,6 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
     const errors = validateFormData(newStatusLabel);
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
-      setIsLoading(false);
       return;
     } else {
       setFormErrors({});
@@ -338,7 +337,6 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
         })
       );
     } finally {
-      setIsLoading(false);
       onClose();
     }
   };

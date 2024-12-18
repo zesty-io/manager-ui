@@ -27,13 +27,11 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
   callBack,
 }) => {
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
-  const [deactivateWorkflowStatusLabel] =
+  const [deactivateWorkflowStatusLabel, { isLoading }] =
     useDeactivateWorkflowStatusLabelMutation();
 
   const handleConfirm = async () => {
     try {
-      setIsLoading(true);
       await deactivateWorkflowStatusLabel({ ZUID });
 
       onClose();
@@ -53,8 +51,6 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
           message: `Failed to deactivate status: ${name}. Please try again.`,
         })
       );
-    } finally {
-      setIsLoading(false);
     }
   };
 
