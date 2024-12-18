@@ -46,6 +46,9 @@ export default memo(function Editor({
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+  const { metaUserInput } = useSelector(
+    (state) => state.content[isNewItem ? `new:${modelZUID}` : itemZUID]
+  );
   const [isLoaded, setIsLoaded] = useState(false);
 
   const metaFields = useMemo(() => {
@@ -290,12 +293,15 @@ export default memo(function Editor({
               ?.slice(0, 160) || ""
           );
 
-          dispatch({
-            type: "SET_ITEM_WEB",
-            itemZUID,
-            key: "metaDescription",
-            value: cleanedValue,
-          });
+          //prevent from overiding the meta description if the user has manualy inputted something
+          if (!metaUserInput?.metaDescription) {
+            dispatch({
+              type: "SET_ITEM_WEB",
+              itemZUID,
+              key: "metaDescription",
+              value: cleanedValue,
+            });
+          }
 
           if ("og_description" in metaFields) {
             dispatch({
@@ -317,7 +323,7 @@ export default memo(function Editor({
         }
       }
     },
-    [fieldErrors, metaFields]
+    [fieldErrors, metaFields, metaUserInput]
   );
 
   const applyDefaultValuesToItemData = useCallback(() => {

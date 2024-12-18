@@ -180,6 +180,20 @@ export function content(state = {}, action) {
       }
       return state;
 
+    case "SET_META_USER_INPUT":
+      if (item) {
+        return {
+          ...state,
+          [action.itemZUID]: {
+            ...item,
+            metaUserInput: {
+              ...item.metaUserInput,
+              [action.key]: action.value,
+            },
+          },
+        };
+      }
+      return state;
     case "MARK_ITEM_DIRTY":
       if (item) {
         return {

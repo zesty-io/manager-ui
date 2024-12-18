@@ -214,6 +214,13 @@ export const Meta = forwardRef(
           key: name,
           value: value,
         });
+        // Save metaDescription value when user manually edits the field
+        dispatch({
+          type: "SET_META_USER_INPUT",
+          itemZUID: meta?.ZUID,
+          key: name,
+          value: value || "",
+        });
       },
       [meta?.ZUID, errors]
     );
@@ -324,6 +331,12 @@ export const Meta = forwardRef(
         });
         dispatch({
           type: "SET_ITEM_WEB",
+          itemZUID: meta?.ZUID,
+          key: "metaDescription",
+          value: "",
+        });
+        dispatch({
+          type: "SET_META_USER_INPUT",
           itemZUID: meta?.ZUID,
           key: "metaDescription",
           value: "",
