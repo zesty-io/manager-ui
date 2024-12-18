@@ -49,6 +49,8 @@ describe("All Blocks Tests", () => {
   it("creates a variant", () => {
     cy.contains(CypressTestBlock).click();
     BlockPage.createVariant(CypressTestVariant);
-    cy.contains(`${CypressTestBlock}: ${CypressTestVariant}`).should("exist");
+    cy.contains(
+      new RegExp(`${CypressTestBlock}:\\s*${CypressTestVariant}`)
+    ).should("exist");
   });
 });
