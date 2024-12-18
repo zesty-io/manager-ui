@@ -24,9 +24,13 @@ import {
   StyleCategory,
   WorkflowStatusLabel,
   ItemWorkflowStatus,
-  GroupItem,
+  WorkflowStatusLabelQueryParams,
+  CreateStatusLabel,
+  UpdateSortingOrder,
 } from "./types";
 import { batchApiRequests } from "../../utility/batchApiRequests";
+
+// import {UpdateSortingOrderProps} from "../../apps/settings/src/app/views/User/Workflows/types";
 
 // Define a service using a base URL and expected endpoints
 export const instanceApi = createApi({
@@ -661,8 +665,12 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["ItemWorkflowStatus"],
     }),
-    getWorkflowStatusLabels: builder.query<WorkflowStatusLabel[], void>({
-      query: () => `/env/labels`,
+    getWorkflowStatusLabels: builder.query<
+      WorkflowStatusLabel[],
+      WorkflowStatusLabelQueryParams | void
+    >({
+      query: ({ showDeleted = false }: WorkflowStatusLabelQueryParams = {}) =>
+        `/env/labels?showDeleted=${showDeleted}`,
       transformResponse: getResponseData,
       providesTags: ["WorkflowStatusLabels"],
     }),
@@ -694,6 +702,52 @@ export const instanceApi = createApi({
         body,
       }),
       invalidatesTags: ["Groups"],
+    }),
+
+    createWorkflowStatusLabel: builder.mutation<any, CreateStatusLabel>({
+      query: (payload) => {
+        return {
+          url: `/env/labels`,
+          method: "POST",
+          body: payload,
+        };
+      },
+      transformResponse: getResponseData,
+      invalidatesTags: ["WorkflowStatusLabels"],
+    }),
+
+    //Update workflow status label
+    updateWorkflowStatusLabel: builder.mutation<
+      any,
+      { ZUID: string; payload: CreateStatusLabel }
+    >({
+      query: ({ ZUID, payload }) => ({
+        url: `/env/labels/${ZUID}`,
+        method: "PUT",
+        body: payload,
+      }),
+      transformResponse: getResponseData,
+      invalidatesTags: ["WorkflowStatusLabels"],
+    }),
+    //Update workflow status order
+    updateWorkflowStatusLabelOrder: builder.mutation<
+      any[],
+      UpdateSortingOrder[]
+    >({
+      query: (payload) => ({
+        url: `/env/labels`,
+        method: "PUT",
+        body: { data: payload },
+      }),
+      invalidatesTags: ["WorkflowStatusLabels"],
+    }),
+    //Deactivate workflow status label
+    deactivateWorkflowStatusLabel: builder.mutation<any, { ZUID: string }>({
+      query: ({ ZUID }) => ({
+        url: `/env/labels/${ZUID}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["WorkflowStatusLabels"],
     }),
   }),
 });
@@ -751,4 +805,8 @@ export const {
   useGetGroupsQuery,
   useGetGroupByZUIDQuery,
   useCreateGroupMutation,
+  useCreateWorkflowStatusLabelMutation,
+  useUpdateWorkflowStatusLabelMutation,
+  useUpdateWorkflowStatusLabelOrderMutation,
+  useDeactivateWorkflowStatusLabelMutation,
 } = instanceApi;

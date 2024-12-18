@@ -24,7 +24,7 @@ import {
   fetchFontsInstalled,
 } from "shell/store/settings";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
-
+import Workflows from "./views/User/Workflows";
 // Makes sure that other apps using legacy theme does not get affected with the palette
 const customTheme = createTheme(legacyTheme, {
   palette: {
@@ -138,7 +138,10 @@ export default connect((state) => ({
               <Box
                 component="main"
                 className={
-                  location.pathname === "/settings/instance/bynder"
+                  [
+                    "/settings/instance/bynder",
+                    "/settings/user/workflows",
+                  ]?.includes(location.pathname)
                     ? ""
                     : styles.Content
                 }
@@ -181,6 +184,10 @@ export default connect((state) => ({
                         <Head resourceZUID={props.instance.ZUID} />
                       </div>
                     )}
+                  />
+                  <Route
+                    path="/settings/user/workflows"
+                    component={Workflows}
                   />
 
                   <Redirect from="/settings" to="/settings/instance/general" />

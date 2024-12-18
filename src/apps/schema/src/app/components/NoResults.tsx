@@ -38,7 +38,13 @@ export const NoResults = ({ type, searchTerm, onButtonClick, sx }: Props) => {
       }}
     >
       <img src={noSearchResults} alt="No search results" />
-      <Typography pt={1.5} pb={1} variant="h4" fontWeight={600}>
+      <Typography
+        pt={1.5}
+        pb={1}
+        variant="h4"
+        fontWeight={600}
+        color="text.primary"
+      >
         {TEXT_CONFIG[type].header.replace("{searchTerm}", searchTerm)}
       </Typography>
       <Typography variant="body2" pb={3} color="text.secondary">
