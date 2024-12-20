@@ -153,7 +153,7 @@ export const VersionItem = memo(
       };
 
       return (
-        <Stack ref={ref} width="100%">
+        <Stack ref={ref} width="100%" data-cy="VersionItem">
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -214,6 +214,7 @@ export const VersionItem = memo(
 
               return (
                 <Chip
+                  data-cy="ActiveWorkflowStatusLabel"
                   key={labelData.ZUID}
                   clickable
                   onClick={handleOpenAddNewLabel}
@@ -235,6 +236,7 @@ export const VersionItem = memo(
             })}
             {isActive && (
               <Chip
+                data-cy="AddWorkflowStatusLabel"
                 clickable
                 label="Add Status"
                 color="default"
@@ -301,6 +303,7 @@ export const VersionItem = memo(
                 return (
                   <Tooltip followCursor title={title}>
                     <MenuItem
+                      data-cy="WorkflowStatusLabelOption"
                       key={label.ZUID}
                       sx={{
                         flexDirection: "column",

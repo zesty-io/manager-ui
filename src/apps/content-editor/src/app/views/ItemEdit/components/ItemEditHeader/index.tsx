@@ -27,8 +27,7 @@ import {
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { ItemEditHeaderActions } from "./ItemEditHeaderActions";
-// import { VersionSelector } from "./VersionSelector";
-import { VersionSelector } from "./VersionSelectorV2";
+import { VersionSelector } from "./VersionSelector";
 import { LanguageSelector } from "./LanguageSelector";
 import { ContentBreadcrumbs } from "../../../../components/ContentBreadcrumbs";
 import { MoreMenu } from "./MoreMenu";

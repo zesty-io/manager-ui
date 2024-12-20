@@ -173,6 +173,7 @@ export const VersionSelector = memo(
           placement="top-start"
         >
           <Button
+            data-cy="VersionSelector"
             sx={{
               color: "text.disabled",
               fontWeight: 600,
