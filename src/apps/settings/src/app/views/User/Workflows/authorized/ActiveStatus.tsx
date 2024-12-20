@@ -1,5 +1,4 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { useDrop } from "react-dnd";
 import { Box } from "@mui/material";
 import { useUpdateWorkflowStatusLabelOrderMutation } from "../../../../../../../../shell/services/instance";
 import { useFormDialogContext } from "./forms-dialogs";
@@ -57,10 +56,6 @@ const ActiveStatus: FC<ActiveStatusProps> = ({ labels, isLoading = false }) => {
     }
   }, [statusLabels, updateWorkflowStatusLabelOrder]);
 
-  const [, drop] = useDrop(() => ({
-    accept: "draggable",
-  }));
-
   useEffect(() => {
     if (!isLoading) {
       setStatusLabels(labels);
@@ -72,7 +67,7 @@ const ActiveStatus: FC<ActiveStatusProps> = ({ labels, isLoading = false }) => {
       {isLoading ? (
         <StatusLabelLoader />
       ) : (
-        <Box ref={drop} minHeight="80px">
+        <Box minHeight="80px">
           {statusLabels.map((label, index) => (
             <StatusLabel
               key={label.id}
