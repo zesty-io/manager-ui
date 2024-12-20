@@ -150,7 +150,7 @@ const EDIT_STATUS_LABEL_DATA = {
 };
 
 describe("Workflow Status Labels", () => {
-  describe("Restricted User", () => {
+  context("Restricted User", () => {
     before(() => {
       //RESTRICTED USER
       cy.intercept("GET", ENDPOINTS?.userRole, {
@@ -167,22 +167,19 @@ describe("Workflow Status Labels", () => {
         },
       }).as("getInstanceUsers");
     });
-    it("Should have a header: You need permission to view and edit workflows", () => {
+    it("displays restricted access message and admin profiles", () => {
       cy.visit("/settings/user/workflows");
       cy.wait("@getRestrictedUser");
       cy.wait("@getInstanceUsers");
       cy.contains("You need permission to view and edit workflows").should(
         "exist"
       );
-    });
-    it("Should have a subheader: Contact the instance owner or administrators listed below to upgrade your role to Admin or Owner", () => {
       cy.contains(
         "Contact the instance owner or administrators listed below to upgrade your role to Admin or Owner"
       ).should("exist");
-    });
-    it("Should display restricted image", () => {
       cy.get('[data-cy="restricted-image"]').should("exist");
     });
+
     it("Should display 3 admin profiles", () => {
       cy.get(
         '[data-cy="user-profile-container"] [data-cy="user-profile"]'
@@ -190,7 +187,7 @@ describe("Workflow Status Labels", () => {
     });
   });
 
-  describe("Authorized User", () => {
+  context("Authorized User", () => {
     before(() => {
       cy.intercept("GET", ENDPOINTS?.userRole, {
         statusCode: 200,
@@ -198,14 +195,14 @@ describe("Workflow Status Labels", () => {
           ...USERS_ROLE_AUTORIZED,
         },
       }).as("getAuthorizedUser");
-      cy.intercept("GET", "/v1/env/labels?showDeleted=true", {
+      cy.intercept("GET", ENDPOINTS.workflowStatusLabels, {
         statusCode: 200,
         body: {
           ...WORKFLOW_STATUS_LABELS,
         },
       }).as("getWorkflowLabels");
     });
-    it("Workflows Page should have a heading, Create Status Label button, Search box and show deactivated switch", () => {
+    it("displays workflow page elements", () => {
       cy.visit("/settings/user/workflows");
       cy.wait(["@getAuthorizedUser", "@getWorkflowLabels"]);
       cy.contains("Workflows").should("exist");
@@ -220,8 +217,8 @@ describe("Workflow Status Labels", () => {
       ).should("have.length", 2);
     });
 
-    describe("Show Deactivated Labels", () => {
-      it("Should have the correct headings and sub-headings", () => {
+    context("Show Deactivated Labels", () => {
+      it("displays correct headings and labels", () => {
         cy.get('input[value="deactivated"]').click();
         cy.get('input[value="deactivated"]').should("be.checked");
         cy.contains("Active Statuses").should("exist");
@@ -245,8 +242,8 @@ describe("Workflow Status Labels", () => {
         ).should("have.length", 1);
       });
     });
-    describe("Search for Status Label", () => {
-      it("Keyword: 'Approved' - Should show 1 active and 0 deactivated labels", () => {
+    context("Search Functionality", () => {
+      it("filters active and deactivated labels", () => {
         cy.get('[data-cy="status-label-search-box"] input').type("approved");
         cy.get(
           '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
@@ -254,9 +251,7 @@ describe("Workflow Status Labels", () => {
         cy.get(
           '[data-cy="deactivated-labels-container"] [data-cy="status-label"]:visible'
         ).should("have.length", 0);
-      });
 
-      it("Keyword: 'archived' - Should show 0 active and 1 deactivated labels", () => {
         cy.get('[data-cy="status-label-search-box"] input').clear();
         cy.get('[data-cy="status-label-search-box"] input').type("archived");
         cy.get(
@@ -267,15 +262,10 @@ describe("Workflow Status Labels", () => {
         ).should("have.length", 1);
       });
 
-      it("Keyword: 'xxxxxx' - Should show the no results page", () => {
+      it("handles no results and reset", () => {
         cy.get('[data-cy="status-label-search-box"] input').clear();
         cy.get('[data-cy="status-label-search-box"] input').type("xxxxxx");
         cy.get('[data-cy="no-results-page"]').should("exist");
-      });
-      it(`
-        Click search again: should clear out the search input and focuses it.
-        No results page should be replaced with 2 active and 1 deactivated labels
-        `, () => {
         cy.get("button").contains("Search Again").click();
 
         cy.get('[data-cy="no-results-page"]').should("not.exist");
@@ -292,11 +282,11 @@ describe("Workflow Status Labels", () => {
     });
   });
 
-  describe("Create Status Label", () => {
+  context("Create Status Label", () => {
     before(() => {
       cy.get("button").contains("Create Status").click();
     });
-    it("Status Label Form: should contain all the fields", () => {
+    it("displays form with all fields", () => {
       cy.get('form[role="dialog"]').should("exist");
       cy.get('input[name="name"]').should("exist");
       cy.get('textarea[name="description"]').should("exist");
@@ -308,7 +298,7 @@ describe("Workflow Status Labels", () => {
       cy.get("button").contains("Create Status").should("exist");
     });
 
-    it("Fillout and submit form", () => {
+    it("fills out and submits form", () => {
       cy.get('input[name="name"]').type("Test Label");
       cy.get('textarea[name="description"]').type("Test Label Description");
       cy.get('input[name="color"]').parent().find("button").click();
@@ -328,7 +318,7 @@ describe("Workflow Status Labels", () => {
       cy.get('input[name="allowPublish"]').click();
     });
 
-    it("Submit Form: Request Data should match the form data", () => {
+    it("submits form and verifies request data", () => {
       cy.intercept("POST", ENDPOINTS?.createStatusLabel, {
         statusCode: 200,
         body: {
@@ -358,7 +348,7 @@ describe("Workflow Status Labels", () => {
       cy.wait("@getWorkflowLabels");
     });
 
-    it("Once submitted, should show the new status label and highlight it", () => {
+    it("Shows the newly created label and focuses it", () => {
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
       ).should("have.length", 3);
@@ -368,7 +358,7 @@ describe("Workflow Status Labels", () => {
         .should("have.css", "background-color", FOCUSED_LABEL_COLOR);
     });
 
-    it("Click outside of the new status label, set its state to default", () => {
+    it("Clicking outside the focused label restores it to its default state.", () => {
       cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
         .eq(1)
         .click();
@@ -378,9 +368,8 @@ describe("Workflow Status Labels", () => {
     });
   });
 
-  describe("Edit Status Label", () => {
-    it(`Open more options menu and click edit:
-      should open the edit form and fill out the form with the label data`, () => {
+  context("Edit Status Label", () => {
+    it(`opens edit form and verifies pre-filled data`, () => {
       // const label = WORKFLOW_STATUS_LABELS.data[0];
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
@@ -422,7 +411,7 @@ describe("Workflow Status Labels", () => {
         .and("be.enabled");
     });
 
-    it("Save Edit: Request Data should match the form data", () => {
+    it("verifies edited request data and apply changes to form", () => {
       cy.intercept(
         "PUT",
         `${ENDPOINTS?.createStatusLabel}/${EDIT_STATUS_LABEL_DATA?.ZUID}`,
@@ -470,8 +459,8 @@ describe("Workflow Status Labels", () => {
     });
   });
 
-  describe("Deactivate Status Label", () => {
-    it("Deactivate Label from more options menu", () => {
+  context("Deactivate Status Label", () => {
+    it("opens deactivation dialog and verifies elements", () => {
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
       )
@@ -487,7 +476,7 @@ describe("Workflow Status Labels", () => {
       cy.get("button").contains("Cancel").should("exist");
       cy.get("button").contains("Deactivate Status").should("exist");
     });
-    it("Deactivation Dialog should contain the label name, cancel button and deactivate button", () => {
+    it("deactivates status label and verifies request", () => {
       cy.intercept(
         "DELETE",
         `${ENDPOINTS?.createStatusLabel}/${EDIT_STATUS_LABEL_DATA?.ZUID}`,
