@@ -106,13 +106,19 @@ export const VersionItem = memo(
       useUnmount(() => saveLabelChanges());
 
       const filteredStatusLabels = useMemo(() => {
-        if (!debouncedFilterKeyword) return statusLabels;
-
-        return statusLabels?.filter((label) =>
-          label.name
-            ?.toLowerCase()
-            .includes(debouncedFilterKeyword?.toLowerCase()?.trim())
+        const sortedStatusLabels = [...statusLabels]?.sort(
+          (a, b) => a.sort - b.sort
         );
+
+        if (!debouncedFilterKeyword) return sortedStatusLabels;
+
+        return sortedStatusLabels
+          ?.filter((label) =>
+            label.name
+              ?.toLowerCase()
+              .includes(debouncedFilterKeyword?.toLowerCase()?.trim())
+          )
+          .sort((a, b) => a.sort - b.sort);
       }, [statusLabels, debouncedFilterKeyword]);
 
       const handleOpenAddNewLabel = (evt: any) => {
