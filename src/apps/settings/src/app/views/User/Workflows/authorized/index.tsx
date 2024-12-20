@@ -167,6 +167,7 @@ export const AuthorizedUserPage = () => {
         flexGrow={0}
       >
         <TextField
+          data-cy="status-label-search-box"
           placeholder="Search Statuses"
           variant="outlined"
           size="small"
@@ -213,6 +214,7 @@ export const AuthorizedUserPage = () => {
       >
         {emptySearchResult ? (
           <Box
+            data-cy="no-results-page"
             width="100%"
             height="100%"
             sx={{ display: "grid", placeContent: "center" }}

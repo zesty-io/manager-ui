@@ -55,7 +55,13 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
   };
 
   return (
-    <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
+    <Dialog
+      data-cy="deactivation-dialog"
+      fullWidth
+      maxWidth="xs"
+      open={open}
+      onClose={onClose}
+    >
       <DialogContent sx={{ paddingTop: 2 }}>
         <Box
           component="span"

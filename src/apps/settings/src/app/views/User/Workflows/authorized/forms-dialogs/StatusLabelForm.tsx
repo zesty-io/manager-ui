@@ -505,6 +505,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           Cancel
         </Button>
         <LoadingButton
+          data-cy="create-status-label-submit-button"
           type="submit"
           variant="contained"
           color="primary"

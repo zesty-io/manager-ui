@@ -13,7 +13,7 @@ const DeactivatedStatus: FC<DeactivatedStatusProps> = ({
   isLoading,
 }) => {
   return (
-    <Box minHeight="80px">
+    <Box minHeight="80px" data-cy="deactivated-labels-container">
       {isLoading ? (
         <StatusLabelLoader />
       ) : (

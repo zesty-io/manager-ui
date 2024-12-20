@@ -20,6 +20,7 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
   imageUrl = "",
 }) => (
   <Box
+    data-cy="user-profile"
     display="flex"
     alignItems="center"
     py={1}
@@ -121,6 +122,7 @@ const RestrictedPage = () => {
             </Typography>
 
             <Box
+              data-cy="user-profile-container"
               display="flex"
               flexDirection="column"
               justifyContent="flex-start"
@@ -154,6 +156,7 @@ const RestrictedPage = () => {
             justifyContent="flex-end"
           >
             <img
+              data-cy="restricted-image"
               src={restrictedImage}
               loading="lazy"
               style={{ width: "100%" }}

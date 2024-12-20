@@ -67,7 +67,7 @@ const ActiveStatus: FC<ActiveStatusProps> = ({ labels, isLoading = false }) => {
       {isLoading ? (
         <StatusLabelLoader />
       ) : (
-        <Box minHeight="80px">
+        <Box minHeight="80px" data-cy="active-labels-container">
           {statusLabels.map((label, index) => (
             <StatusLabel
               key={label.id}

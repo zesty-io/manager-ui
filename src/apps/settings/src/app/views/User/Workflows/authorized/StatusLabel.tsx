@@ -105,6 +105,7 @@ export const StatusLabel: FC<StatusLabelProps> = ({
     <Collapse in={!isFiltered}>
       {withClickAwayListener(
         <Card
+          data-cy="status-label"
           elevation={0}
           variant="outlined"
           ref={isDeactivated ? null : preview}
