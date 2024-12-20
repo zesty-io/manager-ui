@@ -132,6 +132,7 @@ export const StatusLabel: FC<StatusLabelProps> = ({
           }}
         >
           <Box
+            data-cy="status-label-drag-handle"
             component="div"
             ref={
               isDeactivated ? null : (node) => drag(drop(node as HTMLElement))
