@@ -472,7 +472,6 @@ describe("Workflow Status Labels", () => {
           dataTransfer,
         });
 
-      cy.get(".MuiTreeView-root");
       cy.get(`[data-cy="status-label"]`)
         .find('[data-cy="status-label-drag-handle"]')
         .eq(1)
