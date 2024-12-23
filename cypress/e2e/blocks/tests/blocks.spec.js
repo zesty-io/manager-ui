@@ -6,7 +6,7 @@ const CypressTestBlock = "Cypress Test Block";
 const CypressTestVariant = "Cypress Test Variant";
 
 describe("All Blocks Tests", () => {
-  beforeEach(() => {
+  before(() => {
     AllBlocksPage.visit();
   });
 
@@ -35,6 +35,7 @@ describe("All Blocks Tests", () => {
   });
 
   it("shows no results when no blocks are found", () => {
+    AllBlocksPage.searchBlocksInput.find("input").clear();
     AllBlocksPage.searchBlocksInput.type("Non Existent Block");
     cy.contains(
       "Your search “Non Existent Block” could not find any results"
@@ -49,6 +50,8 @@ describe("All Blocks Tests", () => {
   it("creates a variant", () => {
     cy.contains(CypressTestBlock).click();
     BlockPage.createVariant(CypressTestVariant);
-    cy.contains(`${CypressTestBlock}: ${CypressTestVariant}`).should("exist");
+    cy.contains(
+      new RegExp(`${CypressTestBlock}:\\s*${CypressTestVariant}`)
+    ).should("exist");
   });
 });
