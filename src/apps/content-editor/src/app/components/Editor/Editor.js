@@ -46,7 +46,12 @@ export default memo(function Editor({
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+  const { data, web } = useSelector(
+    (state) => state.content[isNewItem ? `new:${modelZUID}` : itemZUID]
+  );
   const [isLoaded, setIsLoaded] = useState(false);
+  const [metaDescription] = useState(web?.metaDescription);
+  const [userInputMetaData, setUserInputMetaData] = useState([]);
 
   const metaFields = useMemo(() => {
     if (fields?.length) {
@@ -289,13 +294,14 @@ export default memo(function Editor({
               ?.replaceAll("&nbsp;", " ")
               ?.slice(0, 160) || ""
           );
-
-          dispatch({
-            type: "SET_ITEM_WEB",
-            itemZUID,
-            key: "metaDescription",
-            value: cleanedValue,
-          });
+          if (!userInputMetaData?.includes("metaDescription")) {
+            dispatch({
+              type: "SET_ITEM_WEB",
+              itemZUID,
+              key: "metaDescription",
+              value: cleanedValue,
+            });
+          }
 
           if ("og_description" in metaFields) {
             dispatch({
@@ -317,7 +323,7 @@ export default memo(function Editor({
         }
       }
     },
-    [fieldErrors, metaFields]
+    [fieldErrors, metaFields, userInputMetaData]
   );
 
   const applyDefaultValuesToItemData = useCallback(() => {
@@ -354,6 +360,32 @@ export default memo(function Editor({
       setIsLoaded(true);
     }
   }, [isNewItem, setIsLoaded, applyDefaultValuesToItemData]);
+
+  useEffect(() => {
+    if (!isNewItem) return;
+    const isMetaDescriptionInitState = metaDescription === web?.metaDescription;
+    const isDescriptionChanged = data?.description !== web?.metaDescription;
+
+    if (
+      !isMetaDescriptionInitState &&
+      !!web?.metaDescription &&
+      isDescriptionChanged
+    ) {
+      setUserInputMetaData((prev) =>
+        prev.includes("metaDescription") ? prev : [...prev, "metaDescription"]
+      );
+    } else if (!web?.metaDescription) {
+      setUserInputMetaData((prev) =>
+        prev.filter((item) => item !== "metaDescription")
+      );
+    }
+  }, [
+    isNewItem,
+    web?.metaDescription,
+    data?.description,
+    metaDescription,
+    setUserInputMetaData,
+  ]);
 
   if (!isLoaded) return null;
 
