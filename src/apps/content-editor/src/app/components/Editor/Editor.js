@@ -289,13 +289,17 @@ export default memo(function Editor({
               ?.replaceAll("&nbsp;", " ")
               ?.slice(0, 160) || ""
           );
-
-          dispatch({
-            type: "SET_ITEM_WEB",
-            itemZUID,
-            key: "metaDescription",
-            value: cleanedValue,
-          });
+          const userInputMetaData = JSON.parse(
+            sessionStorage.getItem("userInputMetaData") || "[]"
+          );
+          if (!userInputMetaData.includes("metaDescription")) {
+            dispatch({
+              type: "SET_ITEM_WEB",
+              itemZUID,
+              key: "metaDescription",
+              value: cleanedValue,
+            });
+          }
 
           if ("og_description" in metaFields) {
             dispatch({

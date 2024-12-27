@@ -214,6 +214,26 @@ export const Meta = forwardRef(
           key: name,
           value: value,
         });
+
+        if (name === "metaDescription") {
+          let userInputMetaData = JSON.parse(
+            sessionStorage.getItem("userInputMetaData") || "[]"
+          );
+
+          if (!!value && name === "metaDescription") {
+            if (!userInputMetaData.includes(name)) {
+              userInputMetaData.push(name);
+            }
+          } else {
+            userInputMetaData = userInputMetaData.filter(
+              (field: string) => field !== name
+            );
+          }
+          sessionStorage.setItem(
+            "userInputMetaData",
+            JSON.stringify(userInputMetaData)
+          );
+        }
       },
       [meta?.ZUID, errors]
     );
@@ -332,6 +352,9 @@ export const Meta = forwardRef(
         // Then trigger the AI assistant popup
         metaTitleButtonRef.current?.triggerAIButton?.();
       }
+      return () => {
+        sessionStorage.removeItem("userInputMetaData");
+      };
     }, [flowType, isCreateItemPage, meta?.ZUID]);
 
     if (isFetching) return null;
