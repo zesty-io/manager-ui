@@ -105,9 +105,19 @@ type MetaProps = {
   onUpdateSEOErrors: (errors: Errors) => void;
   errors: Errors;
   errorComponent?: React.ReactNode;
+  onChange?: (value: string, name: string) => void;
 };
 export const Meta = forwardRef(
-  ({ isSaving, onUpdateSEOErrors, errors, errorComponent }: MetaProps, ref) => {
+  (
+    {
+      isSaving,
+      onUpdateSEOErrors,
+      errors,
+      errorComponent,
+      onChange,
+    }: MetaProps,
+    ref
+  ) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
@@ -204,7 +214,7 @@ export const Meta = forwardRef(
         }
 
         onUpdateSEOErrors(currentErrors);
-
+        onChange(value, name);
         dispatch({
           // The og_image is stored as an ordinary field item and not a SEO field item
           type: [...DYNAMIC_META_FIELD_NAMES, "og_image"].includes(name)

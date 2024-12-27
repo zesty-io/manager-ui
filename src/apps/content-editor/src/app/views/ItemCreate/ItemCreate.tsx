@@ -86,6 +86,10 @@ export const ItemCreate = () => {
   const [SEOErrors, setSEOErrors] = useState<FieldErrors>({});
   const metaRef = useRef(null);
   const fieldErrorRef = useRef(null);
+  const [metaData, setMetaData] = useState({
+    metaDescription: item?.web?.metaDescription,
+    // metaTitle: item?.web?.metaTitle,
+  });
 
   const [
     createPublishing,
@@ -415,6 +419,12 @@ export const ItemCreate = () => {
                   isSaving={saving}
                   ref={metaRef}
                   errors={SEOErrors}
+                  onChange={(value: string, name: string) =>
+                    setMetaData((prev: any) => ({
+                      ...prev,
+                      [name]: value,
+                    }))
+                  }
                 />
               )}
               <Editor
@@ -436,6 +446,7 @@ export const ItemCreate = () => {
                 onUpdateFieldErrors={(errors: FieldErrors) => {
                   setFieldErrors(errors);
                 }}
+                metaData={metaData}
               />
               {model.type !== "block" && (
                 <Meta
@@ -445,6 +456,12 @@ export const ItemCreate = () => {
                   isSaving={saving}
                   ref={metaRef}
                   errors={SEOErrors}
+                  onChange={(value: string, name: string) =>
+                    setMetaData((prev: any) => ({
+                      ...prev,
+                      [name]: value,
+                    }))
+                  }
                 />
               )}
             </AIGeneratorProvider>

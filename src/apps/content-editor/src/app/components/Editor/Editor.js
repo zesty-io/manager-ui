@@ -42,6 +42,7 @@ export default memo(function Editor({
   modelZUID,
   onUpdateFieldErrors,
   fieldErrors,
+  metaData = undefined,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
@@ -290,12 +291,14 @@ export default memo(function Editor({
               ?.slice(0, 160) || ""
           );
 
-          dispatch({
-            type: "SET_ITEM_WEB",
-            itemZUID,
-            key: "metaDescription",
-            value: cleanedValue,
-          });
+          if (!metaData?.metaDescription) {
+            dispatch({
+              type: "SET_ITEM_WEB",
+              itemZUID,
+              key: "metaDescription",
+              value: cleanedValue,
+            });
+          }
 
           if ("og_description" in metaFields) {
             dispatch({
@@ -317,7 +320,7 @@ export default memo(function Editor({
         }
       }
     },
-    [fieldErrors, metaFields]
+    [fieldErrors, metaFields, metaData]
   );
 
   const applyDefaultValuesToItemData = useCallback(() => {
