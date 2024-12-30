@@ -23,6 +23,7 @@ import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
 import { AddRounded, SearchRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../../public/images/noSearchResults.svg";
 import blockPlaceholder from "../../../../../../../../public/images/blockPlaceholder.png";
+import { CreateVariantDialog } from "../../../../../../blocks/components/CreateVariantDialog";
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
   const { modelZUID } = useParams<{ modelZUID: string }>();
@@ -32,6 +33,7 @@ export const BlockTabs = (props: any) => {
   const history = useHistory();
   const searchRef = useRef(null);
   const [search, setSearch] = useState("");
+  const [createVariantDialogOpen, setCreateVariantDialogOpen] = useState(false);
 
   return (
     <ThemeProvider theme={theme}>
@@ -72,7 +74,7 @@ export const BlockTabs = (props: any) => {
             },
           }}
           onClick={() => {
-            history.push(`/blocks/${modelZUID}/new`);
+            setCreateVariantDialogOpen(true);
           }}
           color="inherit"
           startIcon={
@@ -173,6 +175,12 @@ export const BlockTabs = (props: any) => {
                 </Box>
               </Box>
             )}
+          {createVariantDialogOpen && (
+            <CreateVariantDialog
+              onClose={() => setCreateVariantDialogOpen(false)}
+              model={props?.model}
+            />
+          )}
         </>
       )}
       {value === 1 && (
