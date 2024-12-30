@@ -161,6 +161,7 @@ export const BlockTabs = (props: any) => {
                     color="text.secondary"
                     mt={1}
                     mb={3}
+                    maxWidth={458}
                   >
                     Try adjusting your search. We suggest check all words are
                     spelled correctly or try using different keywords.

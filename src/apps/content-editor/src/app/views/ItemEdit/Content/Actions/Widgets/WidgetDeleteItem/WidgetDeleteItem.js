@@ -64,6 +64,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
             sx={{
               fontSize: "14px",
               lineHeight: "20px",
+              maxWidth: "595px",
             }}
           >
             Delete this content? Removing it from all locations throughout your
