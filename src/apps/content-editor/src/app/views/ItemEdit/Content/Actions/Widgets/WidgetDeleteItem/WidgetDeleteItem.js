@@ -45,9 +45,10 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
               fontSize: "12px",
               lineHeight: "32px",
               color: "#101828",
+              textTransform: "uppercase",
             },
           }}
-          title="DELETE ITEM"
+          title={`Delete ${props?.altText || "Item"}`}
         ></CardHeader>
         <CardContent
           sx={{
@@ -85,7 +86,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
               mt: 1.5,
             }}
           >
-            Delete Item
+            Delete {props?.altText || "Item"}
           </Button>
         </CardContent>
       </Card>
