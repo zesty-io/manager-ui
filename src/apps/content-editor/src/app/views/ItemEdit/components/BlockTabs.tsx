@@ -250,6 +250,9 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
         component="img"
         width={187}
         height={120}
+        sx={{
+          objectFit: "contain",
+        }}
         src={(block.data?.og_image as string) || blockPlaceholder}
         onError={() => {
           setIsErrored(true);
