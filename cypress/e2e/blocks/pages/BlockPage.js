@@ -5,8 +5,8 @@ class BlockPage {
 
   createVariant(name) {
     this.createVariantButton.click();
-    cy.getBySelector("metaTitle-input").type(name);
-    cy.getBySelector("CreateItemSaveButton").click();
+    cy.getBySelector("variant-name-input").type(name);
+    cy.getBySelector("create-variant-confirm-button").click();
   }
 }
 

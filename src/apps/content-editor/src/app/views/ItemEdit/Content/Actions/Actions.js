@@ -49,7 +49,7 @@ export function Actions(props) {
         itemZUID={props.itemZUID}
       />
 
-      {canUpdate && (
+      {canUpdate && props.set.type !== "block" && (
         <WidgetListed
           dispatch={props.dispatch}
           itemZUID={props.itemZUID}
@@ -60,7 +60,7 @@ export function Actions(props) {
 
       <WorkflowRequest itemTitle={metaTitle} fields={props.fields} />
 
-      {props.set.type !== "dataset" && domain && (
+      {props.set.type !== "dataset" && props.set.type !== "block" && domain && (
         <WidgetQuickShare url={liveURL} metaLinkText={metaLinkText} />
       )}
 
@@ -72,7 +72,7 @@ export function Actions(props) {
           instanceZUID={props.instance.ZUID}
         />
       )}
-      {canPublish && (
+      {canPublish && props.set.type !== "block" && (
         <Unpublish
           dispatch={props.dispatch}
           publishing={publishing}
@@ -87,6 +87,7 @@ export function Actions(props) {
           itemZUID={props.itemZUID}
           modelZUID={props.modelZUID}
           metaTitle={metaTitle}
+          altText={props.set.type === "block" && "Variant"}
         />
       )}
     </Fragment>
