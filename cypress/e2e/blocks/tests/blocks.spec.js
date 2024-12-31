@@ -24,9 +24,16 @@ describe("All Blocks Tests", () => {
     AllBlocksPage.onboardingDialog.should("not.exist");
   });
 
-  it("creates new block", () => {
+  it("creates new block with default values", () => {
     AllBlocksPage.createBlock(CypressTestBlock);
     cy.contains(CypressTestBlock).should("exist");
+    SchemaPage.visit();
+    SchemaPage.addSingleLineTextFieldWithDefaultValue(
+      CypressTestBlock,
+      "Foo",
+      "Default Foo"
+    );
+    AllBlocksPage.visit();
   });
 
   it("searches for a block", () => {
@@ -47,11 +54,12 @@ describe("All Blocks Tests", () => {
     cy.contains("Start Creating Variants Now").should("exist");
   });
 
-  it("creates a variant", () => {
+  it("creates a variant with default values", () => {
     cy.contains(CypressTestBlock).click();
     BlockPage.createVariant(CypressTestVariant);
     cy.contains(
       new RegExp(`${CypressTestBlock}:\\s*${CypressTestVariant}`)
     ).should("exist");
+    cy.get('input[name="foo"]').should("have.value", "Default Foo");
   });
 });

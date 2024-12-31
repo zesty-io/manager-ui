@@ -17,6 +17,7 @@ import { createItem, generateItem } from "../../../shell/store/content";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSortedModelFields } from "../../content-editor/src/app/views/ItemCreate/ItemCreate";
 import { useHistory } from "react-router";
+import { useGetContentModelFieldsQuery } from "../../../shell/services/instance";
 
 export const CreateVariantDialog = ({
   onClose,
@@ -29,25 +30,26 @@ export const CreateVariantDialog = ({
   const history = useHistory();
   const [variantName, setVariantName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const fields = useSelector((state) =>
-    selectSortedModelFields(state, model.ZUID)
-  );
+  const { data: fields, isFetching: isFieldsLoading } =
+    useGetContentModelFieldsQuery(model?.ZUID);
 
   const handleVariantCreate = async () => {
     setIsLoading(true);
-    const initialData = fields?.reduce((accu, curr) => {
+    const initialData: { [key: string]: any } = fields?.reduce((accu, curr) => {
       if (!curr.deletedAt) {
-        accu[curr.name] = null;
+        accu[curr.name] =
+          curr?.settings?.defaultValue !== null &&
+          curr?.settings?.defaultValue !== undefined
+            ? curr?.settings?.defaultValue
+            : null;
       }
       return accu;
-    }, {});
-    await dispatch(generateItem(model.ZUID, initialData));
-    await dispatch({
-      type: "SET_ITEM_WEB",
-      itemZUID: `new:${model.ZUID}`,
-      key: "metaTitle",
-      value: variantName,
-    });
+    }, {} as { [key: string]: any });
+    await dispatch(
+      generateItem(model?.ZUID, initialData, {
+        metaTitle: variantName,
+      })
+    );
     const res = await dispatch(
       createItem({
         modelZUID: model.ZUID,
@@ -95,7 +97,7 @@ export const CreateVariantDialog = ({
           Cancel
         </Button>
         <LoadingButton
-          disabled={!variantName}
+          disabled={!variantName || isFieldsLoading}
           onClick={handleVariantCreate}
           loading={isLoading}
           variant="contained"

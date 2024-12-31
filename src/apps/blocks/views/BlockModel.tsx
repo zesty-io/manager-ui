@@ -10,6 +10,7 @@ import emptyItemsList from "../../../../public/images/emptyItemsList.png";
 import { CreateVariantDialog } from "../components/CreateVariantDialog";
 import { fetchModels } from "../../../shell/store/models";
 import { useDispatch } from "react-redux";
+import { fetchFields } from "../../../shell/store/fields";
 
 export const BlockModel = () => {
   const dispatch = useDispatch();
@@ -29,9 +30,10 @@ export const BlockModel = () => {
 
   const { data: models } = useGetContentModelsQuery();
 
-  // Used to ensure that the models are fetched into legacy redux store in order for create variant to function correctly
+  // Used to ensure that the models and fields are fetched into legacy redux store in order for create variant to function correctly
   useEffect(() => {
     dispatch(fetchModels());
+    dispatch(fetchFields(modelZUID));
   }, []);
 
   useEffect(() => {
