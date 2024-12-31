@@ -209,7 +209,7 @@ export function content(state = {}, action) {
 }
 
 // create the new item in the store
-export function generateItem(modelZUID, data = {}) {
+export function generateItem(modelZUID, data = {}, web = {}) {
   return (dispatch, getState) => {
     const state = getState();
     const itemZUID = `new:${modelZUID}`;
@@ -217,6 +217,7 @@ export function generateItem(modelZUID, data = {}) {
       dirty: false,
       data,
       web: {
+        ...web,
         canonicalTagMode: 1,
       },
       meta: {
