@@ -135,16 +135,12 @@ describe("Workflow Status Labels: Authorized User", () => {
 
   context("Create New Status Label", () => {
     before(() => {
-      cy.intercept("GET", API_ENDPOINTS.userRoles, {
-        statusCode: 200,
-        body: USER_ROLES.authorized,
-      }).as("getAuthorizedUser");
       cy.intercept("GET", API_ENDPOINTS.allStatusLabels).as(
         "getAllStatusLabels"
       );
 
       cy.visit("/settings/user/workflows");
-      cy.wait(["@getAuthorizedUser", "@getAllStatusLabels"]);
+      cy.wait(["@getAllStatusLabels"]);
 
       cy.get("button").contains("Create Status").click();
     });

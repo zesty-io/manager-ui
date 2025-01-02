@@ -148,12 +148,7 @@ export const StatusLabel: FC<StatusLabelProps> = ({
             <DragIndicatorRoundedIcon color="action" fontSize="small" />
           </Box>
 
-          <Brightness1Icon
-            // sx={{ color: data?.color, width: "1.5rem", height: "1.5rem" }}
-            // color="action"
-            sx={{ color: data?.color }}
-            fontSize="medium"
-          />
+          <Brightness1Icon sx={{ color: data?.color }} fontSize="medium" />
 
           <CardContent
             sx={{

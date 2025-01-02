@@ -92,7 +92,7 @@ export const VersionItem = memo(
       const [filterKeyword, setFilterKeyword] = useState("");
       const [debouncedFilterKeyword, setDebouncedFilterKeyword] = useState("");
       const [activeLabels, setActiveLabels] = useState(
-        data?.labels?.map((label) => label.ZUID)
+        data?.labels?.map((label) => label?.ZUID)?.filter((label) => !!label)
       );
 
       const currentUserRoleZUID = usersRoles?.find(
