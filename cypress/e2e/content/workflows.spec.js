@@ -1,28 +1,75 @@
 import ContentItemPage from "./pages/ContentItemPage";
+import SettingsPage from "../settings/pages/SettingsPage";
 
-const TITLE = "Content item workflow test";
+const TITLES = {
+  contentItem: "Content item workflow test",
+  publishLabel: "Publish Approval",
+  testLabel: "Random Test Label",
+};
 
 describe("Content Item Workflows", () => {
   before(() => {
-    //TODO: Find a way to seed the labels prior to starting tests
+    cy.intercept("POST", "**/labels").as("createLabel");
+    cy.intercept("GET", "**/labels*").as("getLabels");
 
+    // Create allow publish workflow label
+    SettingsPage.createWorkflowLabel({ name: TITLES.testLabel });
+    cy.wait(["@createLabel", "@getLabels"]);
+    cy.get(
+      '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
+    )
+      .contains(TITLES.testLabel)
+      .should("exist");
+
+    SettingsPage.createWorkflowLabel({
+      name: TITLES.publishLabel,
+      allowPublish: true,
+    });
+    cy.wait(["@createLabel", "@getLabels"]);
+    cy.get(
+      '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
+    )
+      .contains(TITLES.publishLabel)
+      .should("exist");
+
+    // Visit test page
     cy.visit("/content/6-b6cde1aa9f-wftv50/new");
-
-    cy.get("#12-a6d48ca2b7-zxqns2").should("exist").find("input").type(TITLE);
+    cy.get("#12-a6d48ca2b7-zxqns2")
+      .should("exist")
+      .find("input")
+      .type(TITLES.contentItem);
     cy.get("#12-d29ab9bbe0-9k6j70")
       .should("exist")
       .find("textarea")
       .first()
-      .type(TITLE);
+      .type(TITLES.contentItem);
     ContentItemPage.elements.createItemButton().should("exist").click();
     ContentItemPage.elements.duoModeToggle().should("exist").click();
   });
 
   after(() => {
-    // TODO: Delete seeded labels after test
+    // Delete test content item
     ContentItemPage.elements.moreMenu().should("exist").click();
     ContentItemPage.elements.deleteItemButton().should("exist").click();
     ContentItemPage.elements.confirmDeleteItemButton().should("exist").click();
+    cy.intercept("DELETE", "**/content/models/6-b6cde1aa9f-wftv50/items/*").as(
+      "deleteContentItem"
+    );
+    cy.wait("@deleteContentItem");
+
+    // Delete allow publish label after test
+    SettingsPage.deactivateWorkflowLabel(TITLES.testLabel);
+    cy.get(
+      '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
+    )
+      .contains("Random Test Label")
+      .should("not.exist");
+    SettingsPage.deactivateWorkflowLabel(TITLES.publishLabel);
+    cy.get(
+      '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
+    )
+      .contains("Publish Approval")
+      .should("not.exist");
   });
 
   it("Can add a workflow label", () => {
@@ -30,9 +77,9 @@ describe("Content Item Workflows", () => {
     ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
     ContentItemPage.elements
       .workflowStatusLabelOption()
-      .last()
+      .contains(TITLES.testLabel)
       .should("exist")
-      .click();
+      .click({ force: true });
 
     cy.get("body").type("{esc}");
 
@@ -61,7 +108,7 @@ describe("Content Item Workflows", () => {
       .workflowStatusLabelOption()
       .first()
       .should("exist")
-      .click();
+      .click({ force: true });
 
     cy.get("body").type("{esc}");
 
@@ -80,13 +127,45 @@ describe("Content Item Workflows", () => {
     cy.get("body").type("{esc}");
   });
 
-  it("Cannot publish a content item if needed workflow label is missing", () => {
-    ContentItemPage.elements.publishItemButton().should("exist").click();
-    ContentItemPage.elements.confirmPublishItemButton().should("exist").click();
+  it("Cannot publish a content item if label with allowPublish is missing", () => {
+    ContentItemPage.elements
+      .publishItemButton()
+      .should("exist")
+      .click({ force: true });
+    ContentItemPage.elements
+      .confirmPublishItemButton()
+      .should("exist")
+      .click({ force: true });
     ContentItemPage.elements
       .toast()
       .contains(
-        `Cannot Publish: "${TITLE}". Does not have a status that allows publishing`
+        `Cannot Publish: "${TITLES.contentItem}". Does not have a status that allows publishing`
       );
+  });
+
+  it("Can publish a content item if label with allowPublish is applied", () => {
+    cy.reload();
+    ContentItemPage.elements.versionSelector().should("exist").click();
+    ContentItemPage.elements.addWorkflowStatusLabel().should("exist").click();
+    ContentItemPage.elements
+      .workflowStatusLabelOption()
+      .contains(TITLES.publishLabel)
+      .should("exist")
+      .click({ force: true });
+
+    cy.get("body").type("{esc}");
+
+    cy.intercept("PUT", "**/labels/*").as("updateLabel");
+    cy.wait("@updateLabel");
+
+    cy.reload();
+
+    ContentItemPage.elements.publishItemButton().should("exist").click();
+    ContentItemPage.elements.confirmPublishItemButton().should("exist").click();
+
+    cy.intercept("GET", "**/publishings").as("publish");
+    cy.wait("@publish");
+
+    ContentItemPage.elements.contentPublishedIndicator().should("exist");
   });
 });

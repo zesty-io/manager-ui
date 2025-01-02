@@ -39,7 +39,10 @@ import { useGetUsersQuery } from "../../../../../../../../shell/services/account
 import { formatDate } from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
-import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
+import {
+  ContentItemWithDirtyAndPublishing,
+  ContentModel,
+} from "../../../../../../../../shell/services/types";
 import { ConfirmPublishModal } from "./ConfirmPublishModal";
 import { SchedulePublish } from "../../../../../../../../shell/components/SchedulePublish";
 import { notify } from "../../../../../../../../shell/store/notifications";
@@ -83,6 +86,9 @@ export const ItemEditHeaderActions = ({
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
   );
+  const model = useSelector(
+    (state: AppState) => state.models[modelZUID]
+  ) as ContentModel;
   const { data: users } = useGetUsersQuery();
   const { data: itemAudit } = useGetAuditsQuery({
     affectedZUID: itemZUID,
@@ -574,6 +580,7 @@ export const ItemEditHeaderActions = ({
             setPublishAfterUnschedule(false);
             handlePublish();
           }}
+          altText={model?.type === "block" && "Variant"}
         />
       )}
     </>
