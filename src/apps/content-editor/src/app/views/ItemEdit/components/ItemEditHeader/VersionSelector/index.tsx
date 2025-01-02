@@ -122,9 +122,9 @@ export const VersionSelector = memo(
     }, [versions, itemPublishings, itemWorkflowStatus, statusLabels]);
 
     const activeVersionLabels = useMemo(() => {
-      return mappedVersions?.find(
-        (version) => version.itemVersion === activeVersion
-      )?.labels;
+      return mappedVersions
+        ?.find((version) => version.itemVersion === activeVersion)
+        ?.labels?.filter((label) => !!label);
     }, [mappedVersions, activeVersion]);
 
     useEffect(() => {
@@ -198,15 +198,15 @@ export const VersionSelector = memo(
             {!!activeVersionLabels?.length && (
               <>
                 <Chip
-                  label={activeVersionLabels.slice(-1)?.[0].name}
+                  label={activeVersionLabels.slice(-1)?.[0]?.name}
                   size="small"
                   sx={{
                     ml: 0.5,
-                    color: activeVersionLabels.slice(-1)?.[0].color,
+                    color: activeVersionLabels.slice(-1)?.[0]?.color,
                     maxWidth: 144,
                     bgcolor:
                       BG_COLOR_MAPPING[
-                        activeVersionLabels.slice(-1)?.[0].color?.toLowerCase()
+                        activeVersionLabels.slice(-1)?.[0]?.color?.toLowerCase()
                       ],
 
                     "&:hover": {
@@ -214,7 +214,7 @@ export const VersionSelector = memo(
                         BG_COLOR_MAPPING[
                           activeVersionLabels
                             .slice(-1)?.[0]
-                            .color?.toLowerCase()
+                            ?.color?.toLowerCase()
                         ],
                     },
                     "&:focus": {
@@ -222,7 +222,7 @@ export const VersionSelector = memo(
                         BG_COLOR_MAPPING[
                           activeVersionLabels
                             .slice(-1)?.[0]
-                            .color?.toLowerCase()
+                            ?.color?.toLowerCase()
                         ],
                     },
                   }}
