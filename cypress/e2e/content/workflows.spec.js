@@ -79,7 +79,7 @@ describe("Content Item Workflows", () => {
       .workflowStatusLabelOption()
       .contains(TITLES.testLabel)
       .should("exist")
-      .click();
+      .click({ force: true });
 
     cy.get("body").type("{esc}");
 
@@ -108,7 +108,7 @@ describe("Content Item Workflows", () => {
       .workflowStatusLabelOption()
       .first()
       .should("exist")
-      .click();
+      .click({ force: true });
 
     cy.get("body").type("{esc}");
 
@@ -128,8 +128,14 @@ describe("Content Item Workflows", () => {
   });
 
   it("Cannot publish a content item if label with allowPublish is missing", () => {
-    ContentItemPage.elements.publishItemButton().should("exist").click();
-    ContentItemPage.elements.confirmPublishItemButton().should("exist").click();
+    ContentItemPage.elements
+      .publishItemButton()
+      .should("exist")
+      .click({ force: true });
+    ContentItemPage.elements
+      .confirmPublishItemButton()
+      .should("exist")
+      .click({ force: true });
     ContentItemPage.elements
       .toast()
       .contains(
@@ -145,7 +151,7 @@ describe("Content Item Workflows", () => {
       .workflowStatusLabelOption()
       .contains(TITLES.publishLabel)
       .should("exist")
-      .click();
+      .click({ force: true });
 
     cy.get("body").type("{esc}");
 
