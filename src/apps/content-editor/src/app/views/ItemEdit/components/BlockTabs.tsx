@@ -23,6 +23,7 @@ import { useGetUsersQuery } from "../../../../../../../shell/services/accounts";
 import { AddRounded, SearchRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../../public/images/noSearchResults.svg";
 import blockPlaceholder from "../../../../../../../../public/images/blockPlaceholder.png";
+import { CreateVariantDialog } from "../../../../../../blocks/components/CreateVariantDialog";
 export const BlockTabs = (props: any) => {
   const [value, setValue] = useState(0);
   const { modelZUID } = useParams<{ modelZUID: string }>();
@@ -32,6 +33,7 @@ export const BlockTabs = (props: any) => {
   const history = useHistory();
   const searchRef = useRef(null);
   const [search, setSearch] = useState("");
+  const [createVariantDialogOpen, setCreateVariantDialogOpen] = useState(false);
 
   return (
     <ThemeProvider theme={theme}>
@@ -72,7 +74,7 @@ export const BlockTabs = (props: any) => {
             },
           }}
           onClick={() => {
-            history.push(`/blocks/${modelZUID}/new`);
+            setCreateVariantDialogOpen(true);
           }}
           color="inherit"
           startIcon={
@@ -159,6 +161,7 @@ export const BlockTabs = (props: any) => {
                     color="text.secondary"
                     mt={1}
                     mb={3}
+                    maxWidth={458}
                   >
                     Try adjusting your search. We suggest check all words are
                     spelled correctly or try using different keywords.
@@ -173,6 +176,12 @@ export const BlockTabs = (props: any) => {
                 </Box>
               </Box>
             )}
+          {createVariantDialogOpen && (
+            <CreateVariantDialog
+              onClose={() => setCreateVariantDialogOpen(false)}
+              model={props?.model}
+            />
+          )}
         </>
       )}
       {value === 1 && (
@@ -241,6 +250,11 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
         component="img"
         width={187}
         height={120}
+        sx={{
+          objectFit: "contain",
+          borderRadius: "8px",
+          backgroundColor: "grey.200",
+        }}
         src={(block.data?.og_image as string) || blockPlaceholder}
         onError={() => {
           setIsErrored(true);
