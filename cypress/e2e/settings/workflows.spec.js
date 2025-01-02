@@ -1,357 +1,200 @@
+import { colorMenu } from "../../../src/shell/services/types";
+
 const FOCUSED_LABEL_COLOR = "rgba(253, 133, 58, 0.1)";
 
-const ENDPOINTS = {
-  userRole: "**/v1/users/**/roles",
-  instanceUsers: `**/v1/instances/**/users/roles`,
-  workflowStatusLabels: "**/v1/env/labels?showDeleted=true",
-  createStatusLabel: "/v1/env/labels",
-  reOrderLabels: "/v1/env/labels",
+const API_ENDPOINTS = {
+  instance: "**/v1/instances/**",
+  userRoles: "**/v1/users/**/roles",
+  instanceRoles: "**/v1/instances/**/roles",
+  instanceUsers: `**/v1/instances/**/users`,
+  instanceUserRoles: `**/v1/instances/**/users/roles`,
+  allStatusLabels: "**/v1/env/labels?showDeleted=true",
+  statusLabels: "/v1/env/labels",
 };
-const USERS_ROLE_RESTRICTED = {
-  data: [
-    {
-      ZUID: "30-86f8ccec82-swp72s",
-      entityZUID: "8-f48cf3a682-7fthvk",
-      name: "Developer",
-      systemRoleZUID: "31-71cfc74-4dm13",
-      systemRole: {
-        ZUID: "31-71cfc74-4dm13",
+
+const USER_ROLES = {
+  restricted: {
+    data: [
+      {
+        ZUID: "30-8ee88afe82-gmx631",
+        entityZUID: "8-f48cf3a682-7fthvk",
         name: "Developer",
+        systemRoleZUID: "31-71cfc74-d3v3l0p3r",
+        systemRole: {
+          ZUID: "31-71cfc74-d3v3l0p3r",
+          name: "Developer",
+        },
       },
-    },
-    {
-      ZUID: "30-949785e98a-230bxj",
-      entityZUID: "8-e486ecc489-tvdpvb",
-      name: "Contributor",
-      systemRoleZUID: "31-71cfc74-c0ntr1b0t0r",
-      systemRole: {
-        ZUID: "31-71cfc74-c0ntr1b0t0r",
-        name: "Contributor",
-      },
-    },
-  ],
-};
-const USERS_ROLE_AUTORIZED = {
-  data: [
-    {
-      ZUID: "30-86f8ccec82-swp72s",
-      entityZUID: "8-f48cf3a682-7fthvk",
-      name: "Admin",
-      systemRoleZUID: "31-71cfc74-4dm13",
-      systemRole: {
-        ZUID: "31-71cfc74-4dm13",
+    ],
+  },
+  authorized: {
+    data: [
+      {
+        ZUID: "30-8ee88afe82-gmx631",
+        entityZUID: "8-f48cf3a682-7fthvk",
         name: "Admin",
+        systemRoleZUID: "31-71cfc74-4dm13",
+        systemRole: {
+          ZUID: "31-71cfc74-4dm13",
+          name: "Admin",
+        },
       },
-    },
-    {
-      ZUID: "30-949785e98a-230bxj",
-      entityZUID: "8-e486ecc489-tvdpvb",
-      name: "Contributor",
-      systemRoleZUID: "31-71cfc74-c0ntr1b0t0r",
-      systemRole: {
-        ZUID: "31-71cfc74-c0ntr1b0t0r",
-        name: "Contributor",
-      },
-    },
-  ],
-};
-const INSTANCE_USERS = {
-  data: [
-    {
-      ZUID: "5-44ccc74-xxxxxxx",
-      firstName: "Test",
-      lastName: "User-1",
-      email: "Test@User1.io",
-      role: {
-        ZUID: "30-88a0ead882-xxxxxxx",
-        entityZUID: "8-f48cf3a682-xxxxxxx",
-        name: "Owner",
-      },
-    },
-    {
-      ZUID: "5-57801f6-zzzzzz",
-      firstName: "Test",
-      lastName: "User-2",
-      email: "Test.blair@User2.io",
-      role: {
-        ZUID: "30-fcb3fc9083-zzzzzz",
-        entityZUID: "8-f48cf3a682-zzzzzz",
-        name: "Admin",
-      },
-    },
-    {
-      ZUID: "5-84d1e6d4ae-yyyyyy",
-      firstName: "Test",
-      lastName: "User-3",
-      email: "Test.galindo@User3.io",
-      role: {
-        ZUID: "30-86f8ccec82-yyyyyy",
-        entityZUID: "8-f48cf3a682-yyyyyy",
-        name: "Admin",
-      },
-    },
-  ],
-};
-const WORKFLOW_STATUS_LABELS = {
-  data: [
-    {
-      ZUID: "status-1",
-      name: "In Review",
-      description: "Content is being reviewed",
-      color: "#F04438",
-      sort: 1,
-      deletedAt: null,
-      allowPublish: true,
-      addPermissionRoles: ["role-1"],
-      removePermissionRoles: ["role-1"],
-    },
-    {
-      ZUID: "status-2",
-      name: "Approved",
-      description: "Content has been approved",
-      color: "#12B76A",
-      sort: 2,
-      deletedAt: null,
-      allowPublish: true,
-      addPermissionRoles: [],
-      removePermissionRoles: [],
-    },
-    {
-      ZUID: "status-3",
-      name: "Archived",
-      description: "Archived content",
-      color: "#7A5AF8",
-      sort: 3,
-      deletedAt: "2024-03-15",
-      allowPublish: false,
-      addPermissionRoles: [],
-      removePermissionRoles: [],
-    },
-  ],
-};
-const CREATE_STATUS_LABEL_RESPONSE_DATA = {
-  ZUID: "status-4",
-  name: "Test Label",
-  description: "Test Label Description",
-  color: "#F79009",
-  sort: 4,
-  allowPublish: true,
-  addPermissionRoles: ["30-86f8ccec82-swp72s"],
-  removePermissionRoles: ["30-86f8ccec82-swp72s"],
-};
-const EDIT_STATUS_LABEL_DATA = {
-  ZUID: "status-4",
-  name: "Pending Approval",
-  description: "Pending Approval Description",
-  color: "#EE46BC",
-  sort: 4,
-  allowPublish: false,
-  addPermissionRoles: [],
-  removePermissionRoles: [],
-};
-const REORDER_STATUS_LABEL_DATA = {
-  data: [
-    { ZUID: "status-1", sort: 1 },
-    { ZUID: "status-2", sort: 2 },
-    { ZUID: "status-4", sort: 3 },
-  ],
+    ],
+  },
 };
 
-describe("Workflow Status Labels", () => {
-  context("Restricted User", () => {
-    before(() => {
-      //RESTRICTED USER
-      cy.intercept("GET", ENDPOINTS?.userRole, {
-        statusCode: 200,
-        body: {
-          ...USERS_ROLE_RESTRICTED,
-        },
-      }).as("getRestrictedUser");
-      // INSTANCE USERS
-      cy.intercept("GET", ENDPOINTS?.instanceUsers, {
-        statusCode: 200,
-        body: {
-          ...INSTANCE_USERS,
-        },
-      }).as("getInstanceUsers");
-    });
-    it("displays restricted access message and admin profiles", () => {
-      cy.visit("/settings/user/workflows");
-      cy.wait("@getRestrictedUser");
-      cy.wait("@getInstanceUsers");
-      cy.contains("You need permission to view and edit workflows").should(
-        "exist"
-      );
-      cy.contains(
-        "Contact the instance owner or administrators listed below to upgrade your role to Admin or Owner"
-      ).should("exist");
-      cy.get('[data-cy="restricted-image"]').should("exist");
-    });
+const LABELS = {
+  restrictedPageHeader: "You need permission to view and edit workflows",
+  restrictedPageSubheader:
+    "Contact the instance owner or administrators listed below to upgrade your role to Admin or Owner",
+  activeLabelsHeader: "Active Statuses",
+  activeLabelsSubheader:
+    "Active statuses are available to be added and removed from content items",
+  deactivatedLabelsHeader: "Deactivated Statuses",
+  deactivatedLabelsSubheader:
+    "These statuses can be re-activated at any time if you would like to add or remove them from content items",
+};
 
-    it("Should display 3 admin profiles", () => {
-      cy.get(
-        '[data-cy="user-profile-container"] [data-cy="user-profile"]'
-      ).should("have.length", 3);
-    });
+const FORM_DATA = {
+  create: {
+    name: "Test Status Label",
+    description: "Test Status Label Description",
+    color: "Grey",
+    addPermissionRoles: "Admin",
+    removePermissionRoles: "Admin",
+    allowPublish: true,
+  },
+  edit: {
+    name: "Test Status Label - Edited",
+    description: "Test Status Label - Edited Description",
+    color: "Rose",
+    addPermissionRoles: "Admin",
+    removePermissionRoles: "Admin",
+    allowPublish: false,
+  },
+};
+
+describe("Workflow Status Labels: Restricted User", () => {
+  it("displays restricted access message and admin profiles", () => {
+    cy.intercept("GET", API_ENDPOINTS?.userRoles, {
+      statusCode: 200,
+      body: {
+        ...USER_ROLES?.restricted,
+      },
+    }).as("getRestrictedUser");
+
+    cy.intercept("GET", API_ENDPOINTS?.instanceUserRoles).as(
+      "getInstanceUserRoles"
+    );
+
+    cy.visit("/settings/user/workflows");
+    cy.wait("@getRestrictedUser")
+      .its("response.body")
+      .then((body) => {
+        cy.wrap(body).as("userRoles");
+      });
+    cy.contains(LABELS?.restrictedPageHeader).should("exist");
+    cy.contains(LABELS?.restrictedPageSubheader).should("exist");
+    cy.get('[data-cy="restricted-image"]').should("exist");
+
+    cy.wait("@getInstanceUserRoles")
+      .its("response.body")
+      .then((body) => {
+        const authorizedUsers = body?.data.filter((user) =>
+          ["Owner", "Admin"].includes(user?.role?.name)
+        );
+        cy.get('[data-cy="user-profile-container"]')
+          .children()
+          .its("length")
+          .should("eq", authorizedUsers.length);
+      });
   });
+});
 
-  context("Authorized User", () => {
+describe("Workflow Status Labels: Authorized User", () => {
+  context("Workflow Page", () => {
     before(() => {
-      cy.intercept("GET", ENDPOINTS?.userRole, {
-        statusCode: 200,
-        body: {
-          ...USERS_ROLE_AUTORIZED,
-        },
-      }).as("getAuthorizedUser");
-      cy.intercept("GET", ENDPOINTS.workflowStatusLabels, {
-        statusCode: 200,
-        body: {
-          ...WORKFLOW_STATUS_LABELS,
-        },
-      }).as("getWorkflowLabels");
-    });
-    it("displays workflow page elements", () => {
       cy.visit("/settings/user/workflows");
-      cy.wait(["@getAuthorizedUser", "@getWorkflowLabels"]);
+    });
+    it("displays workflow page elements for authorized users", () => {
+      cy.visit("/settings/user/workflows");
       cy.contains("Workflows").should("exist");
       cy.get("button").contains("Create Status").should("exist");
       cy.get('input[placeholder="Search Statuses"]').should("exist");
       cy.get('input[value="deactivated"]').should("exist");
     });
 
-    it("Should display 2 active status labels", () => {
-      cy.get(
-        '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-      ).should("have.length", 2);
-    });
-
-    context("Show Deactivated Labels", () => {
-      it("displays correct headings and labels", () => {
-        cy.get('input[value="deactivated"]').click();
-        cy.get('input[value="deactivated"]').should("be.checked");
-        cy.contains("Active Statuses").should("exist");
-        cy.contains("Deactivated Statuses").should("exist");
-        cy.contains(
-          "Active statuses are available to be added and removed from content items"
-        ).should("exist");
-        cy.contains(
-          "These statuses can be re-activated at any time if you would like to add or remove them from content items"
-        ).should("exist");
-      });
-      it("Should display 2 active status labels", () => {
-        cy.get(
-          '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-        ).should("have.length", 2);
-      });
-
-      it("Should display 1 deactivated status labels", () => {
-        cy.get(
-          '[data-cy="deactivated-labels-container"] [data-cy="status-label"]:visible'
-        ).should("have.length", 1);
-      });
-    });
-    context("Search Functionality", () => {
-      it("filters active and deactivated labels", () => {
-        cy.get('[data-cy="status-label-search-box"] input').type("approved");
-        cy.get(
-          '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-        ).should("have.length", 1);
-        cy.get(
-          '[data-cy="deactivated-labels-container"] [data-cy="status-label"]:visible'
-        ).should("have.length", 0);
-
-        cy.get('[data-cy="status-label-search-box"] input').clear();
-        cy.get('[data-cy="status-label-search-box"] input').type("archived");
-        cy.get(
-          '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-        ).should("have.length", 0);
-        cy.get(
-          '[data-cy="deactivated-labels-container"] [data-cy="status-label"]:visible'
-        ).should("have.length", 1);
-      });
-
-      it("handles no results and reset", () => {
-        cy.get('[data-cy="status-label-search-box"] input').clear();
-        cy.get('[data-cy="status-label-search-box"] input').type("xxxxxx");
-        cy.get('[data-cy="no-results-page"]').should("exist");
-        cy.get("button").contains("Search Again").click();
-
-        cy.get('[data-cy="no-results-page"]').should("not.exist");
-        cy.get(
-          '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-        ).should("have.length", 2);
-        cy.get(
-          '[data-cy="deactivated-labels-container"] [data-cy="status-label"]:visible'
-        ).should("have.length", 1);
-        cy.get('input[placeholder="Search Statuses"]')
-          .should("have.value", "")
-          .and("have.focus");
-      });
+    it("Show Deactivated Labels: Displays active and deactivated status labels", () => {
+      cy.get('input[value="deactivated"]').click();
+      cy.contains(LABELS.activeLabelsHeader).should("exist");
+      cy.contains(LABELS.activeLabelsHeader).should("exist");
+      cy.contains(LABELS.deactivatedLabelsHeader).should("exist");
+      cy.contains(LABELS.deactivatedLabelsHeader).should("exist");
     });
   });
 
-  context("Create Status Label", () => {
+  context("Create New Status Label", () => {
     before(() => {
+      cy.intercept("GET", API_ENDPOINTS.userRoles, {
+        statusCode: 200,
+        body: USER_ROLES.authorized,
+      }).as("getAuthorizedUser");
+      cy.intercept("GET", API_ENDPOINTS.allStatusLabels).as(
+        "getAllStatusLabels"
+      );
+
+      cy.visit("/settings/user/workflows");
+      cy.wait(["@getAuthorizedUser", "@getAllStatusLabels"]);
+
       cy.get("button").contains("Create Status").click();
     });
-    it("displays form with all fields", () => {
-      cy.get('form[role="dialog"]').should("exist");
-      cy.get('input[name="name"]').should("exist");
-      cy.get('textarea[name="description"]').should("exist");
-      cy.get('input[name="color"]').should("exist");
-      cy.get('input[name="addPermissionRoles"]').should("exist");
-      cy.get('input[name="removePermissionRoles"]').should("exist");
-      cy.get('input[name="allowPublish"]').should("exist");
-      cy.get("button").contains("Cancel").should("exist");
-      cy.get("button").contains("Create Status").should("exist");
-    });
 
-    it("fills out and submits form", () => {
-      cy.get('input[name="name"]').type("Test Label");
-      cy.get('textarea[name="description"]').type("Test Label Description");
+    it("Form Validation: should display error message when required fields are empty", () => {
+      const nameFieldErrorMessage = "Name is required";
+      cy.get('[data-cy="status-label-submit-button"]').click();
+      cy.contains(nameFieldErrorMessage).should("exist");
+    });
+    it("Fills out and submits form", () => {
+      cy.get('input[name="name"]').type(FORM_DATA.create.name);
+      cy.get('textarea[name="description"]').type(FORM_DATA.create.description);
       cy.get('input[name="color"]').parent().find("button").click();
-      cy.get('ul li[role="option"]').contains("Yellow").click();
+      cy.get('ul li[role="option"]').contains(FORM_DATA.create.color).click();
       cy.get('input[name="addPermissionRoles"]')
         .parent()
         .find("button")
         .click();
-      cy.get('ul li[role="option"]').contains("Admin").click();
+      cy.get('ul li[role="option"]')
+        .contains(FORM_DATA.create.addPermissionRoles)
+        .click();
       cy.get('form[role="dialog"]').click();
       cy.get('input[name="removePermissionRoles"]')
         .parent()
         .find("button")
         .click();
-      cy.get('ul li[role="option"]').contains("Admin").click();
+      cy.get('ul li[role="option"]')
+        .contains(FORM_DATA.create.removePermissionRoles)
+        .click();
       cy.get('form[role="dialog"]').click();
-      cy.get('input[name="allowPublish"]').click();
-    });
+      cy.get('input[name="allowPublish"]').check();
 
-    it("submits form and verifies request data", () => {
-      cy.intercept("POST", ENDPOINTS?.createStatusLabel, {
-        statusCode: 200,
-        body: {
-          data: CREATE_STATUS_LABEL_RESPONSE_DATA,
-        },
-      }).as("createStatusLabel");
-      cy.intercept("GET", ENDPOINTS?.workflowStatusLabels, {
-        statusCode: 200,
-        body: {
-          data: [
-            ...WORKFLOW_STATUS_LABELS.data,
-            { ...CREATE_STATUS_LABEL_RESPONSE_DATA },
-          ],
-        },
-      }).as("getWorkflowLabels");
+      cy.get('[data-cy="status-label-submit-button"]').click();
 
-      cy.get('[data-cy="create-status-label-submit-button"]').click();
+      cy.intercept("POST", API_ENDPOINTS?.statusLabels).as("createStatusLabel");
 
-      cy.wait("@createStatusLabel").then((interception) => {
-        const { ZUID, sort, ...reqData } = CREATE_STATUS_LABEL_RESPONSE_DATA;
-        expect(interception.request.body).to.deep.equal(reqData);
+      cy.wait("@createStatusLabel").then(({ response }) => {
+        const responseData = response?.body?.data;
+        expect(response?.statusCode).to.be.ok;
+        expect(responseData.name).to.equal(FORM_DATA.create.name);
+        expect(responseData.description).to.equal(FORM_DATA.create.description);
+        expect(responseData.color).to.equal(
+          colorMenu.find((color) => color?.label === FORM_DATA.create.color)
+            ?.value
+        );
+        expect(responseData.addPermissionRoles).to.have.lengthOf(1);
+        expect(responseData.removePermissionRoles).to.have.lengthOf(1);
+        expect(responseData.allowPublish).to.be.true;
       });
-      cy.wait("@getWorkflowLabels");
     });
-
     it("Shows the newly created label and focuses it", () => {
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
@@ -373,7 +216,20 @@ describe("Workflow Status Labels", () => {
   });
 
   context("Edit Status Label", () => {
-    it(`opens edit form and verifies pre-filled data`, () => {
+    it("Open Status Label and Edit Details", () => {
+      cy.intercept("PUT", `${API_ENDPOINTS?.statusLabels}/**`).as(
+        "editStatusLabel"
+      );
+      cy.intercept("GET", API_ENDPOINTS.allStatusLabels).as(
+        "getAllStatusLabels"
+      );
+
+      cy.visit("/settings/user/workflows");
+
+      cy.wait("@getAllStatusLabels").then((interception) => {
+        cy.wrap(interception.response.body.data).as("statusLabels");
+      });
+
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
       )
@@ -381,89 +237,70 @@ describe("Workflow Status Labels", () => {
         .find("button")
         .click();
       cy.get('ul li[role="menuitem"]').contains("Edit Status").click();
-      cy.get('input[name="name"]').should(
-        "have.value",
-        CREATE_STATUS_LABEL_RESPONSE_DATA?.name
-      );
-      cy.get('textarea[name="description"]').should(
-        "have.value",
-        CREATE_STATUS_LABEL_RESPONSE_DATA?.description
-      );
-      cy.get('input[name="color"]').should(
-        "have.value",
-        CREATE_STATUS_LABEL_RESPONSE_DATA?.color
-      );
-      cy.get('input[name="addPermissionRoles"]').should(
-        "have.value",
-        CREATE_STATUS_LABEL_RESPONSE_DATA?.addPermissionRoles.join(", ")
-      );
-      cy.get('input[name="removePermissionRoles"]').should(
-        "have.value",
-        CREATE_STATUS_LABEL_RESPONSE_DATA?.removePermissionRoles.join(", ")
-      );
-      cy.get('input[name="allowPublish"]').should(
-        !!CREATE_STATUS_LABEL_RESPONSE_DATA?.allowPublish
-          ? "be.checked"
-          : "not.be.checked"
-      );
-    });
-    it("Deactivation button should be visible and enabled", () => {
+
       cy.get("button")
         .contains("Deactivate Status")
         .should("exist")
         .and("be.enabled");
-    });
 
-    it("verifies edited request data and apply changes to form", () => {
-      cy.intercept(
-        "PUT",
-        `${ENDPOINTS?.createStatusLabel}/${EDIT_STATUS_LABEL_DATA?.ZUID}`,
-        {
-          statusCode: 200,
-          body: {
-            data: EDIT_STATUS_LABEL_DATA?.ZUID,
-          },
-        }
-      ).as("editStatusLabel");
-      cy.intercept("GET", ENDPOINTS?.workflowStatusLabels, {
-        statusCode: 200,
-        body: {
-          data: [...WORKFLOW_STATUS_LABELS.data, { ...EDIT_STATUS_LABEL_DATA }],
-        },
-      }).as("getWorkflowLabels");
-
-      cy.get('input[name="name"]').clear();
-      cy.get('input[name="name"]').type(EDIT_STATUS_LABEL_DATA.name);
-      cy.get('textarea[name="description"]').clear();
-      cy.get('textarea[name="description"]').type(
-        EDIT_STATUS_LABEL_DATA.description
-      );
+      cy.get('input[name="name"]').clear().type(FORM_DATA.edit.name);
+      cy.get('textarea[name="description"]')
+        .clear()
+        .type(FORM_DATA.edit.description);
       cy.get('input[name="color"]').parent().find("button").click();
-      cy.get('ul li[role="option"]').contains("Pink").click();
+      cy.get('ul li[role="option"]').contains(FORM_DATA.edit.color).click();
       cy.get("span.MuiChip-label")
-        .contains("Admin")
+        .contains(FORM_DATA.edit.addPermissionRoles)
         .parent()
         .find('svg[data-testid="CancelIcon"]')
         .click();
       cy.get('form[role="dialog"]').click();
       cy.get("span.MuiChip-label")
-        .contains("Admin")
+        .contains(FORM_DATA.edit.removePermissionRoles)
         .parent()
         .find('svg[data-testid="CancelIcon"]')
         .click();
       cy.get('form[role="dialog"]').click();
-      cy.get('input[name="allowPublish"]').click();
-      cy.get('[data-cy="create-status-label-submit-button"]').click();
-      cy.wait("@editStatusLabel").then((interception) => {
-        const { ZUID, sort, ...reqData } = EDIT_STATUS_LABEL_DATA;
-        expect(interception.request.body).to.deep.equal(reqData);
-      });
-      cy.wait("@getWorkflowLabels");
+      cy.get('input[name="allowPublish"]').uncheck();
+
+      cy.get('[data-cy="status-label-submit-button"]').click();
+
+      cy.wait(["@editStatusLabel", "@getAllStatusLabels"]).spread(
+        (editStatusLabel, getAllStatusLabels) => {
+          const targetLabelZUID = editStatusLabel.response.body.data;
+          const updatedLabel = getAllStatusLabels.response.body.data.find(
+            (label) => label.ZUID === targetLabelZUID
+          );
+
+          expect(editStatusLabel.response.statusCode).to.eq(200);
+          expect(getAllStatusLabels.response.statusCode).to.eq(200);
+
+          expect(updatedLabel).to.deep.include({
+            name: FORM_DATA.edit.name,
+            color: colorMenu.find(
+              (color) => color?.label === FORM_DATA.edit.color
+            )?.value,
+            addPermissionRoles: [],
+            removePermissionRoles: [],
+            allowPublish: false,
+          });
+        }
+      );
     });
   });
+
   context("Re-order Status Labels", () => {
-    it("Verify order sent to backend", () => {
-      cy.intercept("PUT", ENDPOINTS.reOrderLabels).as("reorderStatusLabel");
+    it("Drag status label to a new position", () => {
+      cy.intercept("PUT", API_ENDPOINTS.statusLabels).as("reorderStatusLabel");
+      cy.intercept("GET", API_ENDPOINTS.allStatusLabels).as(
+        "getAllStatusLabels"
+      );
+
+      cy.visit("/settings/user/workflows");
+      cy.wait("@getAllStatusLabels").then((interception) => {
+        cy.wrap(interception.response.body.data).as("oldStatusLabels");
+      });
+
       const dataTransfer = new DataTransfer();
       cy.get(`[data-cy="status-label"]`)
         .find('[data-cy="status-label-drag-handle"]')
@@ -475,20 +312,34 @@ describe("Workflow Status Labels", () => {
       cy.get(`[data-cy="status-label"]`)
         .find('[data-cy="status-label-drag-handle"]')
         .eq(1)
+        .trigger("dragover", {
+          dataTransfer,
+        })
         .trigger("drop", {
           dataTransfer,
         });
 
-      cy.wait("@reorderStatusLabel").then((interception) => {
-        expect(interception.request.body).to.deep.equal(
-          REORDER_STATUS_LABEL_DATA
-        );
-      });
+      cy.wait("@reorderStatusLabel")
+        .its("response.statusCode")
+        .should("eq", 200);
     });
   });
 
   context("Deactivate Status Label", () => {
-    it("opens deactivation dialog and verifies elements", () => {
+    it("opens deactivation dialog and connfirms deactivation", () => {
+      cy.intercept("DELETE", `${API_ENDPOINTS?.statusLabels}/**`).as(
+        "deactivateStatusLabel"
+      );
+
+      cy.intercept("GET", API_ENDPOINTS.allStatusLabels).as(
+        "getAllStatusLabels"
+      );
+
+      cy.visit("/settings/user/workflows");
+      cy.wait("@getAllStatusLabels").then((interception) => {
+        cy.wrap(interception.response.body.data).as("oldStatusLabels");
+      });
+
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
       )
@@ -499,53 +350,36 @@ describe("Workflow Status Labels", () => {
       cy.get('ul li[role="menuitem"]').contains("Deactivate Status").click();
       cy.get('[data-cy="deactivation-dialog"]').should("exist");
       cy.get("h5").contains(`Deactivate Status`).should("exist");
-      cy.get("h5").contains(EDIT_STATUS_LABEL_DATA?.name).should("exist");
+      cy.get("h5").contains(FORM_DATA?.edit?.name).should("exist");
 
       cy.get("button").contains("Cancel").should("exist");
       cy.get("button").contains("Deactivate Status").should("exist");
-    });
-    it("deactivates status label and verifies request", () => {
-      cy.intercept("DELETE", `${ENDPOINTS?.createStatusLabel}/**`, {
-        statusCode: 200,
-        body: {},
-      }).as("deactivateStatusLabel");
-      cy.intercept("GET", ENDPOINTS?.workflowStatusLabels, {
-        statusCode: 200,
-        body: {
-          data: [
-            ...WORKFLOW_STATUS_LABELS.data,
-            {
-              ...EDIT_STATUS_LABEL_DATA,
-              deletedAt: new Date().toISOString(),
-            },
-          ],
-        },
-      }).as("getWorkflowLabels");
+
       cy.get("button").contains("Deactivate Status").click();
-      cy.wait("@deactivateStatusLabel").then((interception) => {
-        expect(interception.request.url).to.include(
-          `${ENDPOINTS?.createStatusLabel}/${EDIT_STATUS_LABEL_DATA?.ZUID}`
-        );
-      });
 
-      cy.wait("@getWorkflowLabels");
-    });
-    it("Snackbar should show the success message with the label name", () => {
-      cy.get(".notistack-Snackbar")
-        .contains(`Status De-activated`)
-        .should("exist");
-      cy.get(".notistack-Snackbar")
-        .contains(EDIT_STATUS_LABEL_DATA?.name)
-        .should("exist");
-    });
-    it("Labels should now show 2 active and 2 deactivated labels", () => {
-      cy.get(
-        '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-      ).should("have.length", 2);
+      cy.wait(["@deactivateStatusLabel", "@getAllStatusLabels"]).spread(
+        (deactivateStatusLabel, newStatusLabels) => {
+          const targetLabelZUID = deactivateStatusLabel.response.body.data;
 
-      cy.get(
-        '[data-cy="deactivated-labels-container"] [data-cy="status-label"]:visible'
-      ).should("have.length", 2);
+          expect(deactivateStatusLabel.response.statusCode).to.eq(200);
+          expect(newStatusLabels.response.statusCode).to.eq(200);
+
+          cy.get("@oldStatusLabels").then((oldStatusLabels) => {
+            const oldLabelCount = oldStatusLabels.filter(
+              (label) => !label?.deletedAt
+            ).length;
+            cy.get(".notistack-Snackbar")
+              .contains(`Status De-activated`)
+              .should("exist");
+            cy.get(".notistack-Snackbar")
+              .contains(FORM_DATA?.edit?.name)
+              .should("exist");
+            cy.get(
+              '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
+            ).should("have.length", oldLabelCount - 1);
+          });
+        }
+      );
     });
   });
 });

@@ -108,7 +108,9 @@ export const StatusLabel: FC<StatusLabelProps> = ({
           data-cy="status-label"
           elevation={0}
           variant="outlined"
-          ref={isDeactivated ? null : preview}
+          ref={
+            isDeactivated ? null : (node) => drop(preview(node as HTMLElement))
+          }
           sx={{
             mx: 4,
             my: 1,
@@ -134,9 +136,7 @@ export const StatusLabel: FC<StatusLabelProps> = ({
           <Box
             data-cy="status-label-drag-handle"
             component="div"
-            ref={
-              isDeactivated ? null : (node) => drag(drop(node as HTMLElement))
-            }
+            ref={isDeactivated ? null : (node) => drag(node as HTMLElement)}
             sx={{
               cursor: isDeactivated ? "default" : "grab",
               display: "flex",

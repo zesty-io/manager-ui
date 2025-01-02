@@ -60,7 +60,13 @@ const FormInputFieldWrapper: FC<FormInputFieldWrapperProps> = ({
   error,
   children,
 }) => (
-  <Box display="flex" flexDirection="column" pb={0.25} position="relative">
+  <Box
+    display="flex"
+    flexDirection="column"
+    pb={0.25}
+    position="relative"
+    data-cy="status-label-field-wrapper"
+  >
     <Typography variant="body2" fontWeight={600}>
       {label}
       {required && (
@@ -86,6 +92,7 @@ const FormInputFieldWrapper: FC<FormInputFieldWrapperProps> = ({
     </Box>
     {!!error && (
       <Typography
+        data-cy="status-label-field-error"
         variant="caption"
         color="error"
         sx={{
@@ -220,6 +227,7 @@ const RolesSelectInput = ({
               icon={<CheckIcon fontSize="medium" sx={{ opacity: 0 }} />}
               checkedIcon={<CheckIcon fontSize="medium" />}
               checked={selected}
+              value={option.value}
               sx={{
                 marginRight: 5,
                 position: "absolute",
@@ -505,7 +513,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           Cancel
         </Button>
         <LoadingButton
-          data-cy="create-status-label-submit-button"
+          data-cy="status-label-submit-button"
           type="submit"
           variant="contained"
           color="primary"
