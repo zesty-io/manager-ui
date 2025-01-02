@@ -16,6 +16,8 @@ class ContentItemPage {
     publishItemButton: () => cy.getBySelector("PublishButton"),
     confirmPublishItemButton: () => cy.getBySelector("ConfirmPublishButton"),
     toast: () => cy.getBySelector("toast"),
+    contentPublishedIndicator: () =>
+      cy.getBySelector("ContentPublishedIndicator"),
   };
 }
 
