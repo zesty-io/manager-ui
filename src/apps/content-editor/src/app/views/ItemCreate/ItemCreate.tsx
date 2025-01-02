@@ -47,7 +47,7 @@ export type ActionAfterSave =
   | "publishAddNew"
   | "schedulePublishAddNew";
 
-const selectSortedModelFields = createSelector(
+export const selectSortedModelFields = createSelector(
   (state: any) => state.fields,
   (_: any, modelZUID: string) => modelZUID,
   (fields, modelZUID) =>
