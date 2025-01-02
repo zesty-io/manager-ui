@@ -65,6 +65,7 @@ export const Unpublish = memo(function Unpublish(props) {
           sx={{
             fontSize: "14px",
             lineHeight: "20px",
+            maxWidth: "595px",
           }}
         >
           By unpublishing this content it will no longer be served if the URL is

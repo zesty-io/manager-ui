@@ -214,7 +214,7 @@ export const Meta = forwardRef(
         }
 
         onUpdateSEOErrors(currentErrors);
-        onChange(value, name);
+        onChange && onChange(value, name);
         dispatch({
           // The og_image is stored as an ordinary field item and not a SEO field item
           type: [...DYNAMIC_META_FIELD_NAMES, "og_image"].includes(name)
