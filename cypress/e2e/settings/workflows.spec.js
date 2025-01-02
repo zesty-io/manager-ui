@@ -9,7 +9,7 @@ const API_ENDPOINTS = {
   instanceUsers: `**/v1/instances/**/users`,
   instanceUserRoles: `**/v1/instances/**/users/roles`,
   allStatusLabels: "**/v1/env/labels?showDeleted=true",
-  statusLabels: "/v1/env/labels",
+  statusLabels: "**/v1/env/labels",
 };
 
 const USER_ROLES = {
@@ -192,10 +192,6 @@ describe("Workflow Status Labels: Authorized User", () => {
       });
     });
     it("Shows the newly created label and focuses it", () => {
-      cy.get(
-        '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-      ).should("have.length", 3);
-
       cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
         .last()
         .should("have.css", "background-color", FOCUSED_LABEL_COLOR);

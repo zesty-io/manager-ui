@@ -21,7 +21,7 @@ class SettingsPage {
     if (allowPublish) {
       cy.get('input[name="allowPublish"]').click();
     }
-    cy.get('[data-cy="create-status-label-submit-button"]').click();
+    cy.get('[data-cy="status-label-submit-button"]').click();
   }
 
   deactivateWorkflowLabel(name) {
