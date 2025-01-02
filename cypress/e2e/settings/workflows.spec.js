@@ -2,7 +2,7 @@ import { colorMenu } from "../../../src/shell/services/types";
 
 const FOCUSED_LABEL_COLOR = "rgba(253, 133, 58, 0.1)";
 
-const API_ENDPOINTS = {
+const ENDPOINTS = {
   instance: "**/v1/instances/**",
   userRoles: "**/v1/users/**/roles",
   instanceRoles: "**/v1/instances/**/roles",
@@ -76,14 +76,14 @@ const FORM_DATA = {
 
 describe("Workflow Status Labels: Restricted User", () => {
   it("displays restricted access message and admin profiles", () => {
-    cy.intercept("GET", API_ENDPOINTS?.userRoles, {
+    cy.intercept("GET", ENDPOINTS?.userRoles, {
       statusCode: 200,
       body: {
         ...USER_ROLES?.restricted,
       },
     }).as("getRestrictedUser");
 
-    cy.intercept("GET", API_ENDPOINTS?.instanceUserRoles).as(
+    cy.intercept("GET", ENDPOINTS?.instanceUserRoles).as(
       "getInstanceUserRoles"
     );
 
@@ -117,7 +117,7 @@ describe("Workflow Status Labels: Authorized User", () => {
       cy.visit("/settings/user/workflows");
     });
     it("displays workflow page elements for authorized users", () => {
-      cy.visit("/settings/user/workflows");
+      // cy.visit("/settings/user/workflows");
       cy.contains("Workflows").should("exist");
       cy.get("button").contains("Create Status").should("exist");
       cy.get('input[placeholder="Search Statuses"]').should("exist");
@@ -135,12 +135,7 @@ describe("Workflow Status Labels: Authorized User", () => {
 
   context("Create New Status Label", () => {
     before(() => {
-      cy.intercept("GET", API_ENDPOINTS.allStatusLabels).as(
-        "getAllStatusLabels"
-      );
-
       cy.visit("/settings/user/workflows");
-      cy.wait(["@getAllStatusLabels"]);
 
       cy.get("button").contains("Create Status").click();
     });
@@ -150,7 +145,9 @@ describe("Workflow Status Labels: Authorized User", () => {
       cy.get('[data-cy="status-label-submit-button"]').click();
       cy.contains(nameFieldErrorMessage).should("exist");
     });
-    it("Fills out and submits form", () => {
+    it("Fills out and submits form", function () {
+      cy.intercept("POST", ENDPOINTS?.statusLabels).as("createStatusLabel");
+      cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
       cy.get('input[name="name"]').type(FORM_DATA.create.name);
       cy.get('textarea[name="description"]').type(FORM_DATA.create.description);
       cy.get('input[name="color"]').parent().find("button").click();
@@ -175,21 +172,25 @@ describe("Workflow Status Labels: Authorized User", () => {
 
       cy.get('[data-cy="status-label-submit-button"]').click();
 
-      cy.intercept("POST", API_ENDPOINTS?.statusLabels).as("createStatusLabel");
-
-      cy.wait("@createStatusLabel").then(({ response }) => {
-        const responseData = response?.body?.data;
-        expect(response?.statusCode).to.be.ok;
-        expect(responseData.name).to.equal(FORM_DATA.create.name);
-        expect(responseData.description).to.equal(FORM_DATA.create.description);
-        expect(responseData.color).to.equal(
-          colorMenu.find((color) => color?.label === FORM_DATA.create.color)
-            ?.value
-        );
-        expect(responseData.addPermissionRoles).to.have.lengthOf(1);
-        expect(responseData.removePermissionRoles).to.have.lengthOf(1);
-        expect(responseData.allowPublish).to.be.true;
-      });
+      cy.wait(["@createStatusLabel", "@getAllStatusLabels"]).spread(
+        (createStatusLabel, getAllStatusLabels) => {
+          // cy.wait("@createStatusLabel").then(({ response }) => {
+          const responseData = createStatusLabel?.response?.body?.data;
+          expect(createStatusLabel?.response?.statusCode).to.be.ok;
+          expect(getAllStatusLabels?.response?.statusCode).to.be.ok;
+          expect(responseData.name).to.equal(FORM_DATA.create.name);
+          expect(responseData.description).to.equal(
+            FORM_DATA.create.description
+          );
+          expect(responseData.color).to.equal(
+            colorMenu.find((color) => color?.label === FORM_DATA.create.color)
+              ?.value
+          );
+          expect(responseData.addPermissionRoles).to.have.lengthOf(1);
+          expect(responseData.removePermissionRoles).to.have.lengthOf(1);
+          expect(responseData.allowPublish).to.be.true;
+        }
+      );
     });
     it("Shows the newly created label and focuses it", () => {
       cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
@@ -208,20 +209,11 @@ describe("Workflow Status Labels: Authorized User", () => {
   });
 
   context("Edit Status Label", () => {
-    it("Open Status Label and Edit Details", () => {
-      cy.intercept("PUT", `${API_ENDPOINTS?.statusLabels}/**`).as(
-        "editStatusLabel"
-      );
-      cy.intercept("GET", API_ENDPOINTS.allStatusLabels).as(
-        "getAllStatusLabels"
-      );
-
+    before(() => {
       cy.visit("/settings/user/workflows");
+    });
 
-      cy.wait("@getAllStatusLabels").then((interception) => {
-        cy.wrap(interception.response.body.data).as("statusLabels");
-      });
-
+    it("Open Status Label and Edit Details", () => {
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
       )
@@ -257,6 +249,11 @@ describe("Workflow Status Labels: Authorized User", () => {
 
       cy.get('[data-cy="status-label-submit-button"]').click();
 
+      cy.intercept("PUT", `${ENDPOINTS?.statusLabels}/**`).as(
+        "editStatusLabel"
+      );
+      cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
+
       cy.wait(["@editStatusLabel", "@getAllStatusLabels"]).spread(
         (editStatusLabel, getAllStatusLabels) => {
           const targetLabelZUID = editStatusLabel.response.body.data;
@@ -282,17 +279,11 @@ describe("Workflow Status Labels: Authorized User", () => {
   });
 
   context("Re-order Status Labels", () => {
-    it("Drag status label to a new position", () => {
-      cy.intercept("PUT", API_ENDPOINTS.statusLabels).as("reorderStatusLabel");
-      cy.intercept("GET", API_ENDPOINTS.allStatusLabels).as(
-        "getAllStatusLabels"
-      );
-
+    before(() => {
       cy.visit("/settings/user/workflows");
-      cy.wait("@getAllStatusLabels").then((interception) => {
-        cy.wrap(interception.response.body.data).as("oldStatusLabels");
-      });
+    });
 
+    it("Drag status label to a new position", () => {
       const dataTransfer = new DataTransfer();
       cy.get(`[data-cy="status-label"]`)
         .find('[data-cy="status-label-drag-handle"]')
@@ -311,21 +302,37 @@ describe("Workflow Status Labels: Authorized User", () => {
           dataTransfer,
         });
 
-      cy.wait("@reorderStatusLabel")
-        .its("response.statusCode")
-        .should("eq", 200);
+      cy.intercept("PUT", ENDPOINTS.statusLabels).as("reorderStatusLabel");
+      cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
+      cy.wait(["@reorderStatusLabel", "@getAllStatusLabels"]).spread(
+        (reorderStatusLabel, getAllStatusLabels) => {
+          expect(reorderStatusLabel.response.statusCode).to.eq(200);
+          expect(getAllStatusLabels.response.statusCode).to.eq(200);
+
+          const reorderedLabels = reorderStatusLabel?.request?.body?.data;
+          const updatedLabel = getAllStatusLabels.response.body.data;
+          reorderedLabels.forEach((label, index) => {
+            expect(
+              updatedLabel.find((item) => item?.ZUID === label?.ZUID).sort
+            ).to.eq(label.sort);
+          });
+
+          console.log("reorderStatusLabel | getAllStatusLabels:", {
+            reorderStatusLabel,
+            getAllStatusLabels,
+          });
+        }
+      );
     });
   });
 
   context("Deactivate Status Label", () => {
     it("opens deactivation dialog and connfirms deactivation", () => {
-      cy.intercept("DELETE", `${API_ENDPOINTS?.statusLabels}/**`).as(
+      cy.intercept("DELETE", `${ENDPOINTS?.statusLabels}/**`).as(
         "deactivateStatusLabel"
       );
 
-      cy.intercept("GET", API_ENDPOINTS.allStatusLabels).as(
-        "getAllStatusLabels"
-      );
+      cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
 
       cy.visit("/settings/user/workflows");
       cy.wait("@getAllStatusLabels").then((interception) => {
