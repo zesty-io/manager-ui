@@ -17,12 +17,14 @@ type ConfirmPublishModal = {
   onCancel: () => void;
   onConfirm: () => void;
   contentVersion: number;
+  altText?: string;
 };
 export const ConfirmPublishModal = ({
   contentTitle,
   onCancel,
   onConfirm,
   contentVersion,
+  altText,
 }: ConfirmPublishModal) => {
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
@@ -46,7 +48,7 @@ export const ConfirmPublishModal = ({
           <CloudUploadRoundedIcon color="success" />
         </Stack>
         <Box>
-          Publish Content Item:
+          Publish {altText || "Content Item"}:
           <Typography fontWeight={400} variant="h5" display="inline">
             {" "}
             {contentTitle}?
@@ -55,9 +57,9 @@ export const ConfirmPublishModal = ({
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary">
-          This will immediately make v{contentVersion} of the item available on
-          all of your platforms. You can always unpublish this item later if
-          needed.
+          This will immediately make v{contentVersion} of the{" "}
+          {altText ? altText?.toLowerCase() : "item"} available on all of your
+          platforms. You can always unpublish this item later if needed.
         </Typography>
       </DialogContent>
       <DialogActions>
@@ -72,7 +74,7 @@ export const ConfirmPublishModal = ({
           onClick={onConfirm}
           data-cy="ConfirmPublishButton"
         >
-          Publish Item
+          Publish {altText || "Item"}
         </Button>
       </DialogActions>
     </Dialog>
