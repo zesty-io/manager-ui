@@ -30,12 +30,10 @@ import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../../../../shell/store/notifications";
 import { useGetUsersRolesQuery } from "../../../../../../../../../shell/services/accounts";
 import {
-  colorMenu,
   CreateStatusLabel,
   StatusLabel,
-  StatusLabelsColorMenu,
-  StatusLabelsRoleMenu,
 } from "../../../../../../../../../shell/services/types";
+import { ColorMenu, colorMenu, RoleMenu } from "../../constants";
 
 interface FormInputFieldWrapperProps {
   label: string;
@@ -129,8 +127,7 @@ const ColorSelectInput = ({
     availableColors?.[0] ||
     colorMenu?.[0];
 
-  const [selectedColor, setSelectedColor] =
-    useState<StatusLabelsColorMenu>(defaultColor);
+  const [selectedColor, setSelectedColor] = useState<ColorMenu>(defaultColor);
 
   return (
     <>
@@ -192,7 +189,7 @@ const RolesSelectInput = ({
   defaultValue = "",
 }: {
   name: string;
-  listData: StatusLabelsRoleMenu[];
+  listData: RoleMenu[];
   defaultValue?: string;
 }) => {
   const [value, setSelectedColor] = useState(defaultValue || "");
@@ -205,7 +202,7 @@ const RolesSelectInput = ({
           zuids.split(",").includes(item.value.trim())
         )
       : [];
-  const handleChange = (_: unknown, newValue: StatusLabelsRoleMenu[]) =>
+  const handleChange = (_: unknown, newValue: RoleMenu[]) =>
     setSelectedColor(newValue.map((item) => item.value).join(","));
 
   return (
@@ -276,9 +273,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
   isDeactivated = false,
 }) => {
   const ZUID = values?.ZUID || undefined;
-  const [rolesMenuItems, setRolesMenuItems] = useState<StatusLabelsRoleMenu[]>(
-    []
-  );
+  const [rolesMenuItems, setRolesMenuItems] = useState<RoleMenu[]>([]);
   const {
     isLoading: rolesLoading,
     isFetching,
@@ -287,9 +282,10 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const dispatch = useDispatch();
-  const [createWorkflowStatusLabel, { isLoading }] =
+  const [createWorkflowStatusLabel, { isLoading: createLabelIsLoading }] =
     useCreateWorkflowStatusLabelMutation();
-  const [updateWorkflowStatusLabel] = useUpdateWorkflowStatusLabelMutation();
+  const [updateWorkflowStatusLabel, { isLoading: editLabelIsLoading }] =
+    useUpdateWorkflowStatusLabelMutation();
   const { openDeactivationDialog, setFocusedLabel } = useFormDialogContext();
 
   const usedColors = labels.map((label) => label.color);
@@ -299,7 +295,6 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // setIsLoading(true);
     const formData = Object.fromEntries(new FormData(e.currentTarget));
 
     const newStatusLabel: CreateStatusLabel = {
@@ -517,7 +512,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           type="submit"
           variant="contained"
           color="primary"
-          loading={isLoading}
+          loading={createLabelIsLoading || editLabelIsLoading}
           startIcon={<SaveIcon />}
         >
           {ZUID ? "Save" : "Create Status"}

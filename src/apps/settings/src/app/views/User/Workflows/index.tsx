@@ -5,20 +5,22 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../../shell/store/types";
 import { AuthorizedUserPage } from "./authorized";
 import FormDialogContextProvider from "./authorized/forms-dialogs";
-import { AUTHORIZED_ROLES } from "../../../../../../../shell/services/types";
+import { AUTHORIZED_ROLES } from "./constants";
 
 type UserType = {
-  role: string;
+  systemRoleZUID: string;
   staff: boolean;
 };
 
 const Workflows = () => {
-  const { role, staff }: UserType = useSelector((state: AppState) => ({
-    role: state.userRole?.name,
-    staff: state.user?.staff,
-  }));
+  const { systemRoleZUID, staff }: UserType = useSelector(
+    (state: AppState) => ({
+      systemRoleZUID: state?.userRole?.systemRoleZUID,
+      staff: state.user?.staff,
+    })
+  );
 
-  const isAuthorized = AUTHORIZED_ROLES.includes(role) || staff;
+  const isAuthorized = AUTHORIZED_ROLES.includes(systemRoleZUID) || staff;
 
   return (
     <ThemeProvider theme={theme}>

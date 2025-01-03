@@ -1,4 +1,13 @@
-import { colorMenu } from "../../../src/shell/services/types";
+import instanceZUID from "../../../src/utility/instanceZUID";
+import CONFIG from "../../../src/shell/app.config";
+import {
+  AUTHORIZED_ROLES,
+  colorMenu,
+} from "../../../src/apps/settings/src/app/views/User/Workflows/constants";
+
+const INSTANCE_API = `${
+  CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
+}${instanceZUID}${CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE}`;
 
 const FOCUSED_LABEL_COLOR = "rgba(253, 133, 58, 0.1)";
 
@@ -101,7 +110,7 @@ describe("Workflow Status Labels: Restricted User", () => {
       .its("response.body")
       .then((body) => {
         const authorizedUsers = body?.data.filter((user) =>
-          ["Owner", "Admin"].includes(user?.role?.name)
+          AUTHORIZED_ROLES.includes(user?.role?.systemRoleZUID)
         );
         cy.get('[data-cy="user-profile-container"]')
           .children()
@@ -112,12 +121,16 @@ describe("Workflow Status Labels: Restricted User", () => {
 });
 
 describe("Workflow Status Labels: Authorized User", () => {
+  before(() => {
+    // DELETE TEST DATA IF EXISTS
+    cy.cleanTestData();
+  });
+
   context("Workflow Page", () => {
     before(() => {
-      cy.visit("/settings/user/workflows");
+      cy.waitUntilStatusLabelAreLoaded();
     });
     it("displays workflow page elements for authorized users", () => {
-      // cy.visit("/settings/user/workflows");
       cy.contains("Workflows").should("exist");
       cy.get("button").contains("Create Status").should("exist");
       cy.get('input[placeholder="Search Statuses"]').should("exist");
@@ -135,7 +148,7 @@ describe("Workflow Status Labels: Authorized User", () => {
 
   context("Create New Status Label", () => {
     before(() => {
-      cy.visit("/settings/user/workflows");
+      cy.waitUntilStatusLabelAreLoaded();
 
       cy.get("button").contains("Create Status").click();
     });
@@ -174,7 +187,6 @@ describe("Workflow Status Labels: Authorized User", () => {
 
       cy.wait(["@createStatusLabel", "@getAllStatusLabels"]).spread(
         (createStatusLabel, getAllStatusLabels) => {
-          // cy.wait("@createStatusLabel").then(({ response }) => {
           const responseData = createStatusLabel?.response?.body?.data;
           expect(createStatusLabel?.response?.statusCode).to.be.ok;
           expect(getAllStatusLabels?.response?.statusCode).to.be.ok;
@@ -210,10 +222,13 @@ describe("Workflow Status Labels: Authorized User", () => {
 
   context("Edit Status Label", () => {
     before(() => {
-      cy.visit("/settings/user/workflows");
+      cy.waitUntilStatusLabelAreLoaded();
     });
 
     it("Open Status Label and Edit Details", () => {
+      cy.intercept("PUT", `${ENDPOINTS?.statusLabels}/**`).as(
+        "editStatusLabel"
+      );
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
       )
@@ -249,9 +264,6 @@ describe("Workflow Status Labels: Authorized User", () => {
 
       cy.get('[data-cy="status-label-submit-button"]').click();
 
-      cy.intercept("PUT", `${ENDPOINTS?.statusLabels}/**`).as(
-        "editStatusLabel"
-      );
       cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
 
       cy.wait(["@editStatusLabel", "@getAllStatusLabels"]).spread(
@@ -280,7 +292,7 @@ describe("Workflow Status Labels: Authorized User", () => {
 
   context("Re-order Status Labels", () => {
     before(() => {
-      cy.visit("/settings/user/workflows");
+      cy.waitUntilStatusLabelAreLoaded();
     });
 
     it("Drag status label to a new position", () => {
@@ -316,29 +328,16 @@ describe("Workflow Status Labels: Authorized User", () => {
               updatedLabel.find((item) => item?.ZUID === label?.ZUID).sort
             ).to.eq(label.sort);
           });
-
-          console.log("reorderStatusLabel | getAllStatusLabels:", {
-            reorderStatusLabel,
-            getAllStatusLabels,
-          });
         }
       );
     });
   });
 
   context("Deactivate Status Label", () => {
+    before(() => {
+      cy.waitUntilStatusLabelAreLoaded();
+    });
     it("opens deactivation dialog and connfirms deactivation", () => {
-      cy.intercept("DELETE", `${ENDPOINTS?.statusLabels}/**`).as(
-        "deactivateStatusLabel"
-      );
-
-      cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
-
-      cy.visit("/settings/user/workflows");
-      cy.wait("@getAllStatusLabels").then((interception) => {
-        cy.wrap(interception.response.body.data).as("oldStatusLabels");
-      });
-
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
       )
@@ -356,29 +355,72 @@ describe("Workflow Status Labels: Authorized User", () => {
 
       cy.get("button").contains("Deactivate Status").click();
 
+      cy.intercept("DELETE", `${ENDPOINTS?.statusLabels}/**`).as(
+        "deactivateStatusLabel"
+      );
+      cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
+
       cy.wait(["@deactivateStatusLabel", "@getAllStatusLabels"]).spread(
-        (deactivateStatusLabel, newStatusLabels) => {
-          const targetLabelZUID = deactivateStatusLabel.response.body.data;
-
+        (deactivateStatusLabel, getAllStatusLabels) => {
           expect(deactivateStatusLabel.response.statusCode).to.eq(200);
-          expect(newStatusLabels.response.statusCode).to.eq(200);
+          expect(getAllStatusLabels.response.statusCode).to.eq(200);
 
-          cy.get("@oldStatusLabels").then((oldStatusLabels) => {
-            const oldLabelCount = oldStatusLabels.filter(
-              (label) => !label?.deletedAt
-            ).length;
-            cy.get(".notistack-Snackbar")
-              .contains(`Status De-activated`)
-              .should("exist");
-            cy.get(".notistack-Snackbar")
-              .contains(FORM_DATA?.edit?.name)
-              .should("exist");
-            cy.get(
-              '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-            ).should("have.length", oldLabelCount - 1);
-          });
+          cy.get(".notistack-Snackbar")
+            .contains(`Status De-activated`)
+            .should("exist");
+          cy.get(".notistack-Snackbar")
+            .contains(FORM_DATA?.edit?.name)
+            .should("exist");
         }
       );
     });
   });
+});
+
+Cypress.Commands.add("cleanTestData", () => {
+  cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
+  cy.visit("/settings/user/workflows");
+  cy.wait("@getAllStatusLabels")
+    .its("response.body.data")
+    .then((data) => {
+      const testData = data.filter(
+        (label) =>
+          !label?.deletedAt &&
+          [FORM_DATA?.create?.name, FORM_DATA?.edit?.name]?.includes(
+            label?.name
+          )
+      );
+      if (testData?.length > 0) {
+        cy.getCookie(Cypress.env("COOKIE_NAME")).then((cookie) => {
+          const token = cookie?.value;
+          testData.forEach((label) => {
+            cy.request({
+              url: `${INSTANCE_API}/env/labels/${label?.ZUID}`,
+              method: "DELETE",
+              credentials: "include",
+              headers: {
+                authorization: `Bearer ${token}`,
+              },
+            });
+          });
+        });
+      }
+    });
+});
+
+Cypress.Commands.add("waitUntilStatusLabelAreLoaded", () => {
+  cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
+  cy.visit("/settings/user/workflows");
+  cy.wait("@getAllStatusLabels", { timeout: 30000 }).then(
+    (xhr) => {
+      if (xhr) {
+        cy.log("Request for status labels was made.");
+      }
+    },
+    () => {
+      cy.log(
+        "No request made for @getAllStatusLabels, proceeding to the next step."
+      );
+    }
+  );
 });

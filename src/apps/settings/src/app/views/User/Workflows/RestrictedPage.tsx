@@ -2,8 +2,8 @@ import { FC } from "react";
 import { Box, Typography, Avatar } from "@mui/material";
 import { useGetUsersRolesQuery } from "../../../../../../../shell/services/accounts";
 import restrictedImage from "../../../../../../../../public/images/restricted-image.svg";
+import { AUTHORIZED_ROLES } from "./constants";
 
-const AUTHORIZED_ROLES: string[] = ["Admin", "Owner"];
 const ROLE_ORDER_MAPPING = { Owner: 1, Admin: 2 };
 
 type ProfileInfoProps = {
@@ -44,7 +44,9 @@ const RestrictedPage = () => {
   const { isLoading, isError, data } = useGetUsersRolesQuery();
 
   const profileList = data
-    ?.filter((profile) => AUTHORIZED_ROLES.includes(profile?.role?.name))
+    ?.filter((profile) =>
+      AUTHORIZED_ROLES.includes(profile?.role?.systemRoleZUID)
+    )
     .map((item, index) => ({
       id: item?.ZUID,
       name: `${item?.firstName} ${item?.lastName}`,
