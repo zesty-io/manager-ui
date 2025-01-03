@@ -645,7 +645,9 @@ export const instanceApi = createApi({
           label_zuids: payload.label_zuids,
         },
       }),
-      invalidatesTags: ["ItemWorkflowStatus"],
+      invalidatesTags: (_, __, { itemZUID }) => [
+        { type: "ItemWorkflowStatus", id: itemZUID },
+      ],
     }),
     updateItemWorkflowStatus: builder.mutation<
       any,
@@ -663,7 +665,9 @@ export const instanceApi = createApi({
           labelZUIDs,
         },
       }),
-      invalidatesTags: ["ItemWorkflowStatus"],
+      invalidatesTags: (_, __, { itemZUID }) => [
+        { type: "ItemWorkflowStatus", id: itemZUID },
+      ],
     }),
     getWorkflowStatusLabels: builder.query<
       WorkflowStatusLabel[],
