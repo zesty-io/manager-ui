@@ -374,9 +374,6 @@ describe("Workflow Status Labels: Authorized User", () => {
         .contains("Deactivate Status")
         .click();
 
-      // cy.intercept("DELETE", `${ENDPOINTS?.statusLabels}/**`).as(
-      //   "deactivateStatusLabel"
-      // );
       cy.intercept(ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
 
       cy.wait("@getAllStatusLabels");
@@ -567,17 +564,12 @@ Cypress.Commands.add("deactivateStatusLabel", (labelName) => {
     .find("button")
     .click()
     .then(() => {
-      // Click the "Deactivate Status" option in the menu
       cy.get('ul li[role="menuitem"]').contains("Deactivate Status").click();
 
-      // Confirm the deactivation action by clicking the "Deactivate Status" button
       cy.get("button").contains("Deactivate Status").click();
-
-      // Wait for both the DELETE request (deactivating the status) and the GET request (reloading the status labels)
       return cy
         .wait(["@deactivateStatusLabel", "@getAllStatusLabels"])
         .spread((deactivateStatusLabel, getAllStatusLabels) => {
-          // Return both responses as an object
           return {
             deactivatedStatusLabel: deactivateStatusLabel?.response?.body?.data,
             statusLabels: parseStatusLabels(
