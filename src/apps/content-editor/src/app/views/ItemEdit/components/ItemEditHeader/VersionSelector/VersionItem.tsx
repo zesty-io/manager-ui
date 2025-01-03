@@ -39,7 +39,6 @@ import {
   User,
   WorkflowStatusLabel,
 } from "../../../../../../../../../shell/services/types";
-// import { WORKFLOW_LABELS as statusLabels } from "./mocks";
 import { AppState } from "../../../../../../../../../shell/store/types";
 import { useGetUsersRolesQuery } from "../../../../../../../../../shell/services/accounts";
 import { NoResults } from "./NoResults";
