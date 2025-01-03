@@ -5,7 +5,6 @@ module.exports = defineConfig({
   viewportWidth: 1920,
   viewportHeight: 1080,
   video: false,
-  defaultCommandTimeout: 30000,
   env: {
     API_AUTH: "https://auth.api.dev.zesty.io",
     COOKIE_NAME: "DEV_APP_SID",
