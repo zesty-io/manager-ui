@@ -45,6 +45,7 @@ export const NavTree: FC<Readonly<Props>> = ({
   dragAndDrop = false,
 }) => {
   const history = useHistory();
+  const [hoveredItemId, setHoveredItemId] = React.useState<string>("");
 
   return (
     <>
@@ -88,6 +89,8 @@ export const NavTree: FC<Readonly<Props>> = ({
                 nodeData={item.nodeData}
                 onItemDrop={onItemDrop}
                 dragAndDrop={dragAndDrop}
+                hoveredItemId={hoveredItemId}
+                setHoveredItemId={setHoveredItemId}
               />
             );
           })}
