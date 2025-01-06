@@ -109,6 +109,7 @@ const DeactivationDialog: FC<DeactivationDialogProps> = ({
           color="error"
           loading={isLoading}
           loadingPosition="center"
+          data-cy="deactivation-dialog-confirm-button"
         >
           Deactivate Status
         </LoadingButton>

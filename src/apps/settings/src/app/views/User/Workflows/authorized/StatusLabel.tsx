@@ -164,6 +164,7 @@ export const StatusLabel: FC<StatusLabelProps> = ({
               color="text.primary"
               fontWeight={700}
               lineHeight="22px"
+              data-cy="status-label-name"
             >
               {data?.name}
             </Typography>
@@ -225,6 +226,7 @@ const MoreActionsMenu = ({
         size="small"
         onClick={handleOpen}
         sx={{ borderRadius: "50%" }}
+        data-cy="status-label-more-actions"
       >
         <MoreHorizIcon fontSize="small" color="action" />
       </IconButton>
@@ -236,7 +238,7 @@ const MoreActionsMenu = ({
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem onClick={openEditForm}>
+        <MenuItem onClick={openEditForm} data-cy="menu-item-edit">
           <ListItemIcon color="action.active">
             <DriveFileRenameOutlineIcon />
           </ListItemIcon>
@@ -246,7 +248,7 @@ const MoreActionsMenu = ({
         </MenuItem>
 
         {!isDeactivated && (
-          <MenuItem onClick={openDeleteDialog}>
+          <MenuItem onClick={openDeleteDialog} data-cy="menu-item-deactivate">
             <ListItemIcon color="action.active">
               <PauseCircleOutlineRoundedIcon />
             </ListItemIcon>

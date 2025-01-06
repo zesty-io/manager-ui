@@ -496,6 +496,7 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
                 color="inherit"
                 onClick={handleDeactivation}
                 startIcon={<PauseCircleOutlineRoundedIcon />}
+                data-cy="form-deactivate-status-button"
               >
                 Deactivate Status
               </Button>
