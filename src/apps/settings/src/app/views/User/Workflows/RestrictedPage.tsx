@@ -69,6 +69,7 @@ const RestrictedPage = () => {
       bgcolor="grey.50"
       display="flex"
       flexDirection="column"
+      data-cy="workflows-restricted-page"
     >
       <Box
         px={4}

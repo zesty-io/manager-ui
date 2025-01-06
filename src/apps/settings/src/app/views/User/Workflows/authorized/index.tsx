@@ -141,6 +141,7 @@ export const AuthorizedUserPage = () => {
         justifyContent="space-between"
         alignItems="baseline"
         flexGrow={0}
+        data-cy="workflows-authorized-page"
       >
         <Typography variant="h3" fontWeight={700} color="text.primary">
           Workflows
