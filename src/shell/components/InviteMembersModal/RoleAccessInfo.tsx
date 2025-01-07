@@ -3,11 +3,10 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { Database } from "@zesty-io/material";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
-import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import RecentActorsRoundedIcon from "@mui/icons-material/RecentActorsRounded";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
-import MonitorHeartRoundedIcon from "@mui/icons-material/MonitorHeartRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
 
 const roleAccess = [
   [
@@ -17,7 +16,7 @@ const roleAccess = [
     "media",
     "leads",
     "activity log",
-    "health",
+    "redirects",
     "settings",
   ],
   [
@@ -27,11 +26,11 @@ const roleAccess = [
     "media",
     "leads",
     "activity log",
-    "health",
+    "redirects",
     "settings",
   ],
-  ["content", "schema", "code", "media", "leads", "health", "settings"],
-  ["content", "media", "leads", "health"],
+  ["content", "schema", "code", "media", "leads", "redirects", "settings"],
+  ["content", "media", "leads", "redirects"],
   ["content", "media", "leads"],
   ["content"],
 ];
@@ -48,7 +47,7 @@ const accessIcon = {
   media: <ImageRoundedIcon color="action" sx={iconStyles} />,
   leads: <RecentActorsRoundedIcon color="action" sx={iconStyles} />,
   "activity log": <HistoryRoundedIcon color="action" sx={iconStyles} />,
-  health: <MonitorHeartRoundedIcon color="action" sx={iconStyles} />,
+  redirects: <ShuffleRoundedIcon color="action" sx={iconStyles} />,
   settings: <SettingsRoundedIcon color="action" sx={iconStyles} />,
 };
 
