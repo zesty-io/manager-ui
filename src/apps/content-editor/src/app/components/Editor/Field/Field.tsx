@@ -45,10 +45,11 @@ import {
   FieldTypeOneToMany,
   OneToManyOptions,
 } from "../../../../../../../shell/components/FieldTypeOneToMany";
-import {
-  FieldTypeOneToOne,
-  OneToOneOptions,
-} from "../../../../../../../shell/components/FieldTypeOneToOne";
+// import {
+//   FieldTypeOneToOne,
+//   OneToOneOptions,
+// } from "../../../../../../../shell/components/FieldTypeOneToOne";
+import { RelationalFieldBase } from "../../../../../../../shell/components/RelationalFieldBase";
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
@@ -91,7 +92,7 @@ export const resolveRelatedOptions = (
   modelZUID: string,
   langID: number,
   value: any
-): OneToManyOptions[] | OneToOneOptions[] => {
+): OneToManyOptions[] => {
   // guard against absent data in state
   const field = fields && fields[fieldZUID];
   if (!field || !items) {
@@ -770,7 +771,11 @@ export const Field = ({
 
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <FieldTypeOneToOne
+          <RelationalFieldBase
+            value={String(value)}
+            relatedModelZUID={relatedModelZUID}
+          />
+          {/* <FieldTypeOneToOne
             name={name}
             value={
               oneToOneOptions?.find((options) => options.value === value) ||
@@ -790,7 +795,7 @@ export const Field = ({
               value && <em>{getSelectedLang(allLanguages, langID)}</em>
             }
             error={errors && Object.values(errors)?.some((error) => !!error)}
-          />
+          /> */}
         </FieldShell>
       );
 
@@ -829,7 +834,12 @@ export const Field = ({
 
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <FieldTypeOneToMany
+          <RelationalFieldBase
+            multiselect
+            value={String(value)}
+            relatedModelZUID={relatedModelZUID}
+          />
+          {/* <FieldTypeOneToMany
             name={name}
             value={
               (value &&
@@ -861,7 +871,7 @@ export const Field = ({
               ))
             }
             error={errors && Object.values(errors)?.some((error) => !!error)}
-          />
+          /> */}
         </FieldShell>
       );
 
