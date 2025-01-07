@@ -35,7 +35,7 @@ export const RelationalFieldBase = ({
             mt: 1,
           }}
         >
-          Add Existing Authors
+          Add Existing {modelData?.label}
         </Button>
       )}
     </Box>
