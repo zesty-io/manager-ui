@@ -84,3 +84,72 @@ export const splitTextAndAccelerator = (
 
   return { text, resourceType };
 };
+
+export interface SearchResult {
+  text: string;
+  value: string;
+}
+
+export const sortMostRelevantSearch = (
+  searchResults: SearchResult[],
+  searchString: string
+): SearchResult[] => {
+  function customSort(
+    searchResult: SearchResult
+  ): [number, number, number, number, string] {
+    const isExactMatch = searchResult?.text === searchString ? 1 : 0;
+
+    const isPrefixMatch = searchResult?.text?.startsWith(searchString) ? 1 : 0;
+
+    const depth = (searchResult?.text?.match(/\//g) || [])?.length;
+
+    const matchingChars = getMatchingCharacterCount(
+      searchResult?.text,
+      searchString
+    );
+
+    return [
+      -isExactMatch,
+      -isPrefixMatch,
+      -matchingChars,
+      depth,
+      searchResult.text,
+    ];
+  }
+  function getMatchingCharacterCount(
+    text: string,
+    searchString: string
+  ): number {
+    let matchCount = 0;
+    for (let i = 0; i < searchString?.length; i++) {
+      if (text?.[i] === searchString?.[i]) {
+        matchCount++;
+      } else {
+        break;
+      }
+    }
+    return matchCount;
+  }
+
+  return searchResults.sort((a, b) => {
+    const [matchA, prefixA, matchingCharsA, depthA, textA] = customSort(a);
+    const [matchB, prefixB, matchingCharsB, depthB, textB] = customSort(b);
+
+    if (matchA !== matchB) {
+      return matchA - matchB;
+    }
+
+    if (prefixA !== prefixB) {
+      return prefixA - prefixB;
+    }
+
+    if (matchingCharsA !== matchingCharsB) {
+      return matchingCharsB - matchingCharsA;
+    }
+    if (depthA !== depthB) {
+      return depthA - depthB;
+    }
+
+    return textB.localeCompare(textA);
+  });
+};
