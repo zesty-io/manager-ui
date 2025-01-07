@@ -277,24 +277,23 @@ export function Preview(props) {
             </Typography>
           </Box>
         )}
-        {isBlockItem ? (
+        <IconButton
+          size="small"
+          onClick={() => setRefresh(Date.now())}
+          sx={{
+            ml: 1,
+            mr: 0.5,
+          }}
+        >
+          <RefreshRounded />
+        </IconButton>
+        {isBlockItem && (
           <IconButton
             size="small"
             onClick={() => handleCopyClick(`${domain}${route}`)}
             mr={0.25}
           >
             {isCopied ? <CheckRounded /> : <LinkRounded />}
-          </IconButton>
-        ) : (
-          <IconButton
-            size="small"
-            onClick={() => setRefresh(Date.now())}
-            sx={{
-              ml: 1,
-              mr: 0.5,
-            }}
-          >
-            <RefreshRounded />
           </IconButton>
         )}
         <IconButton

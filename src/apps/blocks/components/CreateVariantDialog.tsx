@@ -28,7 +28,7 @@ export const CreateVariantDialog = ({
 }) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [variantName, setVariantName] = useState("");
+  const [variantName, setVariantName] = useState("Untitled");
   const [isLoading, setIsLoading] = useState(false);
   const { data: fields, isFetching: isFieldsLoading } =
     useGetContentModelFieldsQuery(model?.ZUID);
@@ -86,10 +86,12 @@ export const CreateVariantDialog = ({
       <DialogContent>
         <InputLabel sx={{ mb: 0.5 }}>Variant Name</InputLabel>
         <TextField
+          autoFocus
           value={variantName}
           onChange={(event) => setVariantName(event.target.value)}
           fullWidth
           data-cy="variant-name-input"
+          onFocus={(evt) => evt.target.select()}
         />
       </DialogContent>
       <DialogActions>
