@@ -152,9 +152,16 @@ export const BlockTabs = (props: any) => {
                   height={110}
                 ></Box>
                 <Box>
-                  <Typography variant="h4">
-                    Your search <strong>"{search}"</strong> could not find any
-                    results
+                  <Typography variant="h4" maxWidth={458}>
+                    Your search{" "}
+                    <strong
+                      style={{
+                        wordBreak: "break-all",
+                      }}
+                    >
+                      "{search}"
+                    </strong>{" "}
+                    could not find any results
                   </Typography>
                   <Typography
                     variant="body2"
@@ -264,6 +271,7 @@ const BlockVariantCard = ({ block }: { block: ContentItem }) => {
       <Box
         sx={{
           minWidth: 0,
+          maxWidth: 458,
         }}
       >
         <Typography noWrap variant="body1" fontWeight={700}>

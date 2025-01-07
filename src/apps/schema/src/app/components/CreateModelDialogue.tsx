@@ -35,7 +35,7 @@ import { ContentModel, User } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { modelIconMap } from "../utils";
 import { withCursorPosition } from "../../../../../shell/components/withCursorPosition";
 import { formatPathPart } from "../../../../../utility/formatPathPart";
@@ -86,6 +86,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   const [type, setType] = useState(modelType);
   const dispatch = useDispatch();
   const history = useHistory();
+  const { pathname } = useLocation();
   const [model, updateModel] = useReducer(
     (prev: Partial<ContentModel>, next: any) => {
       const newModel = { ...prev, ...next };
@@ -181,7 +182,6 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             sort: 9999,
           },
         });
-        onClose();
       } else {
         history.push(`/schema/${createModelData.data.ZUID}`);
         onClose();
@@ -192,7 +192,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   useEffect(() => {
     // Only navigate to schema page once initial content is created for templateset & og_image field is created for block
     if ((isContentItemCreated || isOgImageFieldCreated) && createModelData) {
-      history.push(`/schema/${createModelData.data.ZUID}`);
+      history.push(
+        `/${pathname?.split("/")?.[1] || "schema"}/${createModelData.data.ZUID}`
+      );
       onClose();
     }
   }, [isContentItemCreated, createModelData, isOgImageFieldCreated]);
