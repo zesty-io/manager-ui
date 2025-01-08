@@ -774,6 +774,7 @@ export const Field = ({
           <RelationalFieldBase
             value={String(value)}
             relatedModelZUID={relatedModelZUID}
+            relatedFieldZUID={relatedFieldZUID}
           />
           {/* <FieldTypeOneToOne
             name={name}
@@ -838,6 +839,7 @@ export const Field = ({
             multiselect
             value={String(value)}
             relatedModelZUID={relatedModelZUID}
+            relatedFieldZUID={relatedFieldZUID}
           />
           {/* <FieldTypeOneToMany
             name={name}
