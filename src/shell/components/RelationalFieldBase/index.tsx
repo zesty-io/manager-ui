@@ -64,7 +64,7 @@ export const RelationalFieldBase = ({
           />
         ))}
       </Stack>
-      {(multiselect || (!multiselect && !value?.split(",")?.length)) && (
+      {(multiselect || (!multiselect && !value)) && (
         <Button
           variant="outlined"
           size="large"

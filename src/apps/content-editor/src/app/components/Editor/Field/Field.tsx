@@ -45,10 +45,10 @@ import {
   FieldTypeOneToMany,
   OneToManyOptions,
 } from "../../../../../../../shell/components/FieldTypeOneToMany";
-// import {
-//   FieldTypeOneToOne,
-//   OneToOneOptions,
-// } from "../../../../../../../shell/components/FieldTypeOneToOne";
+import {
+  FieldTypeOneToOne,
+  OneToOneOptions,
+} from "../../../../../../../shell/components/FieldTypeOneToOne";
 import { RelationalFieldBase } from "../../../../../../../shell/components/RelationalFieldBase";
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
@@ -772,7 +772,7 @@ export const Field = ({
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <RelationalFieldBase
-            value={String(value)}
+            value={!!value ? String(value) : null}
             relatedModelZUID={relatedModelZUID}
             relatedFieldZUID={relatedFieldZUID}
           />
@@ -837,7 +837,7 @@ export const Field = ({
         <FieldShell settings={fieldData} errors={errors}>
           <RelationalFieldBase
             multiselect
-            value={String(value)}
+            value={!!value ? String(value) : null}
             relatedModelZUID={relatedModelZUID}
             relatedFieldZUID={relatedFieldZUID}
           />
