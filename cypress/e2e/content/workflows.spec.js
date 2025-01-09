@@ -1,10 +1,32 @@
 import ContentItemPage from "./pages/ContentItemPage";
-import SettingsPage from "../settings/pages/SettingsPage";
+import CONFIG from "../../../src/shell/app.config";
+import instanceZUID from "../../../src/utility/instanceZUID";
 
+const INSTANCE_API = `${
+  CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
+}${instanceZUID}${CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE}`;
 const TITLES = {
   contentItem: "Content item workflow test",
   publishLabel: "Publish Approval",
   testLabel: "Random Test Label",
+};
+const LABEL_DATA = {
+  publishLabel: {
+    name: TITLES.publishLabel,
+    description: "",
+    color: "#4E5BA6",
+    allowPublish: true,
+    addPermissionRoles: ["30-86f8ccec82-swp72s", "30-8ee88afe82-gmx631"],
+    removePermissionRoles: ["30-86f8ccec82-swp72s", "30-8ee88afe82-gmx631"],
+  },
+  testLabel: {
+    name: TITLES.testLabel,
+    description: "",
+    color: "#4E5BA6",
+    allowPublish: false,
+    addPermissionRoles: ["30-86f8ccec82-swp72s", "30-8ee88afe82-gmx631"],
+    removePermissionRoles: ["30-86f8ccec82-swp72s", "30-8ee88afe82-gmx631"],
+  },
 };
 
 describe("Content Item Workflows", () => {
@@ -13,63 +35,68 @@ describe("Content Item Workflows", () => {
     cy.intercept("GET", "**/labels*").as("getLabels");
 
     // Create allow publish workflow label
-    SettingsPage.createWorkflowLabel({ name: TITLES.testLabel });
-    cy.wait(["@createLabel", "@getLabels"]);
-    cy.get(
-      '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-    )
-      .contains(TITLES.testLabel)
-      .should("exist");
-
-    SettingsPage.createWorkflowLabel({
-      name: TITLES.publishLabel,
-      allowPublish: true,
+    Object.values(LABEL_DATA).forEach((data) => {
+      cy.apiRequest({
+        method: "POST",
+        url: `${INSTANCE_API}/env/labels`,
+        body: data,
+      });
     });
-    cy.wait(["@createLabel", "@getLabels"]);
-    cy.get(
-      '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-    )
-      .contains(TITLES.publishLabel)
-      .should("exist");
 
     // Visit test page
-    cy.visit("/content/6-b6cde1aa9f-wftv50/new");
-    cy.get("#12-a6d48ca2b7-zxqns2")
-      .should("exist")
-      .find("input")
-      .type(TITLES.contentItem);
-    cy.get("#12-d29ab9bbe0-9k6j70")
-      .should("exist")
-      .find("textarea")
-      .first()
-      .type(TITLES.contentItem);
-    ContentItemPage.elements.createItemButton().should("exist").click();
-    ContentItemPage.elements.duoModeToggle().should("exist").click();
+    cy.apiRequest({
+      method: "POST",
+      url: `${INSTANCE_API}/content/models/6-b6cde1aa9f-wftv50/items`,
+      body: {
+        data: {
+          title: TITLES.contentItem,
+          description: TITLES.contentItem,
+          tc_title: TITLES.contentItem,
+          tc_description: TITLES.contentItem,
+          tc_image: null,
+        },
+        web: {
+          canonicalTagMode: 1,
+          parentZUID: "0",
+          metaLinkText: TITLES.contentItem,
+          metaTitle: TITLES.contentItem,
+          pathPart: TITLES.contentItem?.replaceAll(" ", "-")?.toLowerCase(),
+          metaDescription: TITLES.contentItem,
+        },
+        meta: { langID: 1, contentModelZUID: "6-b6cde1aa9f-wftv50" },
+      },
+    }).then((response) => {
+      cy.visit(`/content/6-b6cde1aa9f-wftv50/${response.data?.ZUID}`);
+    });
   });
 
   after(() => {
     // Delete test content item
-    ContentItemPage.elements.moreMenu().should("exist").click();
-    ContentItemPage.elements.deleteItemButton().should("exist").click();
-    ContentItemPage.elements.confirmDeleteItemButton().should("exist").click();
-    cy.intercept("DELETE", "**/content/models/6-b6cde1aa9f-wftv50/items/*").as(
-      "deleteContentItem"
-    );
-    cy.wait("@deleteContentItem");
+    cy.location("pathname").then((loc) => {
+      const [_, __, modelZUID, itemZUID] = loc?.split("/");
+      cy.apiRequest({
+        method: "DELETE",
+        url: `${INSTANCE_API}/content/models/${modelZUID}/items/${itemZUID}`,
+      });
+    });
 
-    // Delete allow publish label after test
-    SettingsPage.deactivateWorkflowLabel(TITLES.testLabel);
-    cy.get(
-      '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-    )
-      .contains("Random Test Label")
-      .should("not.exist");
-    SettingsPage.deactivateWorkflowLabel(TITLES.publishLabel);
-    cy.get(
-      '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-    )
-      .contains("Publish Approval")
-      .should("not.exist");
+    // Delete test labels
+    cy.apiRequest({ url: `${INSTANCE_API}/env/labels?showDeleted=true` }).then(
+      (response) => {
+        response?.data
+          ?.filter(
+            (label) =>
+              !label?.deletedAt &&
+              [TITLES.publishLabel, TITLES.testLabel].includes(label?.name)
+          )
+          .forEach((label) => {
+            cy.apiRequest({
+              url: `${INSTANCE_API}/env/labels/${label.ZUID}`,
+              method: "DELETE",
+            });
+          });
+      }
+    );
   });
 
   it("Can add a workflow label", () => {
