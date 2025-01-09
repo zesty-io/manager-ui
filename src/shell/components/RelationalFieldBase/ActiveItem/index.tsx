@@ -1,6 +1,11 @@
-import { memo, useState, useMemo } from "react";
+import { memo, useState, useMemo, useEffect } from "react";
 import { Typography, Stack, Box, Skeleton, IconButton } from "@mui/material";
-import { DragIndicatorRounded, Edit, MoreHoriz } from "@mui/icons-material";
+import {
+  DragIndicatorRounded,
+  Edit,
+  MoreHoriz,
+  ImageRounded,
+} from "@mui/icons-material";
 
 import {
   useGetContentItemQuery,
@@ -24,6 +29,7 @@ export const ActiveItem = memo(
     relatedModelData,
     draggable,
   }: ActiveItemProps) => {
+    const [imageURL, setImageURL] = useState(null);
     const { data: contentItem, isLoading: isLoadingContentItem } =
       useGetContentItemQuery(itemZUID, {
         skip: !itemZUID,
@@ -50,34 +56,34 @@ export const ActiveItem = memo(
       );
     }, [relatedModelFields]);
 
-    const imageURL = useMemo(() => {
-      if (!imageFields?.length || !contentItem) return null;
+    useEffect(() => {
+      if (!imageFields?.length || !contentItem) return;
 
-      let images: string[] = [];
-
-      imageFields.forEach((field) => {
+      const images = imageFields.map(async (field) => {
         if (!!contentItem?.data?.[field.name]) {
-          const value = String(contentItem?.data?.[field.name]);
+          const value = String(contentItem?.data?.[field.name])?.split(
+            ","
+          )?.[0];
+
+          console.log(value);
 
           if (value.startsWith("3-")) {
-            getFile(value)
-              .unwrap()
-              .then((res) => {
-                if (
-                  ["png", "jpg", "jpeg", "svg", "gif", "tif", "webp"].includes(
-                    fileExtension(res.url)
-                  )
-                ) {
-                  images = [...images, res.url];
-                }
-              });
+            const res = await getFile(value).unwrap();
+            console.log(res);
+            if (
+              ["png", "jpg", "jpeg", "svg", "gif", "tif", "webp"].includes(
+                fileExtension(res.url)
+              )
+            ) {
+              return res.url;
+            }
           } else {
-            images = [...images, value];
+            return value;
           }
         }
       });
 
-      return images?.[0];
+      Promise.all(images).then((_images) => setImageURL(_images?.[0]));
     }, [imageFields, contentItem]);
 
     if (isLoading) {
@@ -95,14 +101,52 @@ export const ActiveItem = memo(
           borderColor: "border",
           borderRadius: 2,
           alignItems: "center",
+          overflow: "hidden",
         }}
       >
         {draggable && (
-          <IconButton size="xsmall" sx={{ cursor: "grab", mx: 0.5 }}>
+          <IconButton
+            disableRipple
+            disableFocusRipple
+            disableTouchRipple
+            size="xsmall"
+            sx={{ cursor: "grab", mx: 0.5 }}
+          >
             <DragIndicatorRounded fontSize="small" />
           </IconButton>
         )}
-        {/* <Box component="img" loading="lazy" /> */}
+        {!!imageFields?.length &&
+          (!!imageURL ? (
+            <Box
+              component="img"
+              loading="lazy"
+              width={64}
+              height={64}
+              src={`${imageURL}?width=64&fit=contain`}
+              sx={{
+                flexShrink: 0,
+                mr: 2,
+                bgcolor: "grey.100",
+                objectFit: "contain",
+                overflow: "hidden",
+              }}
+            />
+          ) : (
+            <Stack
+              sx={{
+                mr: 2,
+                flexShrink: 0,
+                bgcolor: "grey.100",
+                width: 64,
+                height: 64,
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+              }}
+            >
+              <ImageRounded color="action" />
+            </Stack>
+          ))}
         <Stack gap={0.5} justifyContent="center" flexGrow={1}>
           <Typography
             color="text.primary"
