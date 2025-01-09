@@ -28,9 +28,7 @@ module.exports = defineConfig({
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
     testIsolation: false,
   },
-  defaultCommandTimeout: 30_000,
+  requestTimeout: 60_000,
   responseTimeout: 60_000,
   retries: 1,
-  experimentalMemoryManagement: true,
-  chromeWebSecurity: false,
 });

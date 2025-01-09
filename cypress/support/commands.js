@@ -1,3 +1,18 @@
+import instanceZUID from "../../src/utility/instanceZUID";
+import CONFIG from "../../src/shell/app.config";
+
+const INSTANCE_API_ENDPOINT = `${
+  CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
+}${instanceZUID}${CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE}`;
+
+const DEFAULT_STATUS_LABELS_ZUIDS = [
+  "36-14b315-4pp20v3d",
+  "36-14b315-d24ft",
+  "36-n33d5-23v13w",
+];
+
+const DEFAULT_STATUS_LABELS_NAMES = ["Approved", "Needs Review", "Draft"];
+
 Cypress.Commands.add("login", () => {
   const formBody = new FormData();
 
@@ -8,7 +23,6 @@ Cypress.Commands.add("login", () => {
     .request({
       url: `${Cypress.env("API_AUTH")}/login`,
       method: "POST",
-      credentials: "include",
       body: formBody,
     })
     .then(async (res) => {
@@ -16,6 +30,9 @@ Cypress.Commands.add("login", () => {
       // We need the cookie value returned reset so it is unsecure and
       // accessible by javascript
       cy.setCookie(Cypress.env("COOKIE_NAME"), response.meta.token);
+    })
+    .then(() => {
+      return cy.get("body");
     });
 });
 
@@ -43,7 +60,7 @@ Cypress.Commands.add("assertClipboardValue", (value) => {
 });
 
 Cypress.Commands.add("getBySelector", (selector, ...args) => {
-  return cy.get(`[data-cy=${selector}]`, { timeout: 50_000, ...args });
+  return cy.get(`[data-cy=${selector}]`, { timeout: 40_000, ...args });
 });
 
 Cypress.Commands.add("blockAnnouncements", () => {
@@ -71,3 +88,25 @@ Cypress.Commands.add(
     });
   }
 );
+
+Cypress.Commands.add("workflowStatusLabelCleanUp", function () {
+  cy.apiRequest({
+    url: `${INSTANCE_API_ENDPOINT}/env/labels?showDeleted=true`,
+  }).then((response) => {
+    console.debug("workflowStatusLabelCleanUp | response LABELS: ", response);
+
+    response?.data
+      ?.filter(
+        (label) =>
+          !label?.deletedAt &&
+          !DEFAULT_STATUS_LABELS_NAMES.includes(label?.name) &&
+          !DEFAULT_STATUS_LABELS_ZUIDS.includes(label?.ZUID)
+      )
+      .forEach((label) => {
+        cy.apiRequest({
+          url: `${INSTANCE_API_ENDPOINT}/env/labels/${label.ZUID}`,
+          method: "DELETE",
+        });
+      });
+  });
+});

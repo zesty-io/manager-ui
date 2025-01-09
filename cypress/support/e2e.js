@@ -17,10 +17,19 @@
 import "./commands";
 import "cypress-iframe";
 
+let preCleanupHasExeciuted = false;
+
 // @see https://docs.cypress.io/api/cypress-api/cookies.html#Set-global-default-cookies
 // Cypress.Cookies.defaults({
 //   preserve: Cypress.env("COOKIE_NAME"),
 // });
+
+function preCleanUp() {
+  console.log("preCleanUp Executed");
+  cy.workflowStatusLabelCleanUp().then(() => {
+    preCleanupHasExeciuted = true;
+  });
+}
 
 // Turn off fail on console errors
 Cypress.on("uncaught:exception", (err, runnable) => {
@@ -45,6 +54,10 @@ before(() => {
 
   // Blocks the api call to render the announcement popup
   cy.blockAnnouncements();
+
+  if (!preCleanupHasExeciuted) {
+    preCleanUp();
+  }
 });
 
 // Before each test in spec

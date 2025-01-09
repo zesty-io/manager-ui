@@ -7,7 +7,7 @@ import {
 
 const TIMEOUT = { timeout: 40_000 };
 
-const INSTANCE_API = `${
+const INSTANCE_API_ENDPOINT = `${
   CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
 }${instanceZUID}${CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE}`;
 
@@ -474,27 +474,25 @@ Cypress.Commands.add("cleanTestData", function () {
     TEST_DATA?.temp3?.name,
   ];
 
-  cy.apiRequest({ url: `${INSTANCE_API}/env/labels?showDeleted=true` }).then(
-    (response) => {
-      response?.data
-        ?.filter(
-          (label) => !label?.deletedAt && testLabels.includes(label?.name)
-        )
-        .forEach((label) => {
-          cy.apiRequest({
-            url: `${INSTANCE_API}/env/labels/${label.ZUID}`,
-            method: "DELETE",
-          });
+  cy.apiRequest({
+    url: `${INSTANCE_API_ENDPOINT}/env/labels?showDeleted=true`,
+  }).then((response) => {
+    response?.data
+      ?.filter((label) => !label?.deletedAt && testLabels.includes(label?.name))
+      .forEach((label) => {
+        cy.apiRequest({
+          url: `${INSTANCE_API_ENDPOINT}/env/labels/${label.ZUID}`,
+          method: "DELETE",
         });
-    }
-  );
+      });
+  });
 });
 
 Cypress.Commands.add("createTestData", () => {
   const testLabels = [TEST_DATA?.temp1, TEST_DATA?.temp2, TEST_DATA?.temp3];
   testLabels.forEach((label) => {
     cy.apiRequest({
-      url: `${INSTANCE_API}/env/labels`,
+      url: `${INSTANCE_API_ENDPOINT}/env/labels`,
       method: "POST",
       body: {
         ...label,
@@ -507,7 +505,7 @@ Cypress.Commands.add("createTestData", () => {
 Cypress.Commands.add("getStatusLabels", () => {
   return cy
     .apiRequest({
-      url: `${INSTANCE_API}/env/labels?showDeleted=true`,
+      url: `${INSTANCE_API_ENDPOINT}/env/labels?showDeleted=true`,
     })
     .then((response) => {
       return parseStatusLabels(response?.data);
