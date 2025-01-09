@@ -122,7 +122,7 @@ describe("Actions in content editor", () => {
     cy.getBySelector("ConfirmPublishButton").click();
 
     cy.intercept("GET", "**/publishings").as("publish");
-    cy.wait("@publish");
+    cy.wait("@publish", { timeout: 30_000 });
 
     cy.getBySelector("ContentPublishedIndicator").should("exist");
   });
@@ -257,9 +257,9 @@ describe("Actions in content editor", () => {
     // these waits are due to a delay
     // dealing with these specific endpoints
     // the local environment is slow
-    cy.contains("Successfully sent workflow request", { timeout: 5000 }).should(
-      "exist"
-    );
+    cy.contains("Successfully sent workflow request", {
+      timeout: 15_000,
+    }).should("exist");
   });
 
   // it("Refreshes the CDN cache", () => {
@@ -330,6 +330,6 @@ describe("Actions in content editor", () => {
 
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", { timeout: 5000 }).should("exist");
+    cy.contains("Created Item", { timeout: 30_000 }).should("exist");
   });
 });

@@ -1,0 +1,97 @@
+{
+  "default": {
+    "_meta": {
+      "timestamp": "2025-01-10T13:03:18.129380816Z",
+      "totalResults": 3,
+      "start": 0,
+      "offset": 0,
+      "limit": 3
+    },
+    "data": [
+      {
+        "ZUID": "36-14b315-4pp20v3d",
+        "name": "Approved",
+        "description": "Approved",
+        "color": "#12b76a",
+        "allowPublish": false,
+        "sort": 3,
+        "addPermissionRoles": null,
+        "removePermissionRoles": null,
+        "createdByUserZUID": "55-8094cbd789-42sw0c",
+        "updatedByUserZUID": "55-8094cbd789-42sw0c",
+        "createdAt": "2024-12-04T06:34:37Z",
+        "updatedAt": "2024-12-04T06:34:37Z"
+      },
+      {
+        "ZUID": "36-14b315-d24ft",
+        "name": "Draft",
+        "description": "Content item is only available to preview in stage",
+        "color": "#0BA5EC",
+        "allowPublish": false,
+        "sort": 1,
+        "addPermissionRoles": null,
+        "removePermissionRoles": null,
+        "createdByUserZUID": "55-8094cbd789-42sw0c",
+        "updatedByUserZUID": "55-8094cbd789-42sw0c",
+        "createdAt": "2024-12-04T06:34:27Z",
+        "updatedAt": "2025-01-10T12:17:32Z"
+      },
+      {
+        "ZUID": "36-n33d5-23v13w",
+        "name": "Needs Review",
+        "description": "Ready for review",
+        "color": "#ff5c08",
+        "allowPublish": false,
+        "sort": 2,
+        "addPermissionRoles": null,
+        "removePermissionRoles": null,
+        "createdByUserZUID": "55-8094cbd789-42sw0c",
+        "updatedByUserZUID": "55-8094cbd789-42sw0c",
+        "createdAt": "2024-12-04T06:34:32Z",
+        "updatedAt": "2025-01-10T12:17:32Z"
+      }
+    ]
+  },
+  "test": {
+    "new": {
+      "name": "Test__new",
+      "description": "Test__new Description",
+      "color": "Grey",
+      "addPermissionRoles": "Admin",
+      "removePermissionRoles": "Admin",
+      "allowPublish": true
+    },
+    "edited": {
+      "name": "Test__edited",
+      "description": "Test__edited Description",
+      "color": "Pink",
+      "addPermissionRoles": [],
+      "removePermissionRoles": [],
+      "allowPublish": true
+    },
+    "temp1": {
+      "name": "Test__temp1",
+      "description": "Test__temp1 Description",
+      "color": "Red",
+      "addPermissionRoles": [],
+      "removePermissionRoles": [],
+      "allowPublish": false
+    },
+    "temp2": {
+      "name": "Test__temp2",
+      "description": "Test__temp2 Description",
+      "color": "Yellow",
+      "addPermissionRoles": [],
+      "removePermissionRoles": [],
+      "allowPublish": false
+    },
+    "temp3": {
+      "name": "Test__temp3",
+      "description": "Test__temp3 Description",
+      "color": "Purple",
+      "addPermissionRoles": [],
+      "removePermissionRoles": [],
+      "allowPublish": false
+    }
+  }
+}

@@ -1,15 +1,6 @@
 import ContentItemPage from "./pages/ContentItemPage";
-import SettingsPage from "../settings/pages/SettingsPage";
-import instanceZUID from "../../../src/utility/instanceZUID";
 import CONFIG from "../../../src/shell/app.config";
-import {
-  AUTHORIZED_ROLES,
-  colorMenu,
-} from "../../../src/apps/settings/src/app/views/User/Workflows/constants";
-
-const INSTANCE_API = `${
-  CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
-}${instanceZUID}${CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE}`;
+import instanceZUID from "../../../src/utility/instanceZUID";
 
 const INSTANCE_API = `${
   CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
@@ -81,28 +72,31 @@ describe("Content Item Workflows", () => {
 
   after(() => {
     // Delete test content item
-    // ContentItemPage.elements.moreMenu().should("exist").click();
-    // ContentItemPage.elements.deleteItemButton().should("exist").click();
-    // ContentItemPage.elements.confirmDeleteItemButton().should("exist").click();
-    // cy.intercept("DELETE", "**/content/models/6-b6cde1aa9f-wftv50/items/*").as(
-    //   "deleteContentItem"
-    // );
-    // cy.wait("@deleteContentItem");
+    cy.location("pathname").then((loc) => {
+      const [_, __, modelZUID, itemZUID] = loc?.split("/");
+      cy.apiRequest({
+        method: "DELETE",
+        url: `${INSTANCE_API}/content/models/${modelZUID}/items/${itemZUID}`,
+      });
+    });
 
-    // // Delete allow publish label after test
-    // SettingsPage.deactivateWorkflowLabel(TITLES.testLabel);
-    // cy.get(
-    //   '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-    // )
-    //   .contains("Random Test Label")
-    //   .should("not.exist");
-    // SettingsPage.deactivateWorkflowLabel(TITLES.publishLabel);
-    // cy.get(
-    //   '[data-cy="active-labels-container"] [data-cy="status-label"]:visible'
-    // )
-    //   .contains("Publish Approval")
-    //   .should("not.exist");
-    cy.cleanTestData();
+    // Delete test labels
+    cy.apiRequest({ url: `${INSTANCE_API}/env/labels?showDeleted=true` }).then(
+      (response) => {
+        response?.data
+          ?.filter(
+            (label) =>
+              !label?.deletedAt &&
+              [TITLES.publishLabel, TITLES.testLabel].includes(label?.name)
+          )
+          .forEach((label) => {
+            cy.apiRequest({
+              url: `${INSTANCE_API}/env/labels/${label.ZUID}`,
+              method: "DELETE",
+            });
+          });
+      }
+    );
   });
 
   it("Can add a workflow label", () => {
@@ -201,23 +195,4 @@ describe("Content Item Workflows", () => {
 
     ContentItemPage.elements.contentPublishedIndicator().should("exist");
   });
-});
-
-Cypress.Commands.add("cleanTestData", () => {
-  const labelsToDelete = ["Random Test Label", "Publish Approval"];
-
-  cy.apiRequest({ url: `${INSTANCE_API}/env/labels?showDeleted=true` }).then(
-    (response) => {
-      response?.data
-        ?.filter(
-          (label) => !label?.deletedAt && labelsToDelete.includes(label?.name)
-        )
-        .forEach((label) => {
-          cy.apiRequest({
-            url: `${INSTANCE_API}/env/labels/${label.ZUID}`,
-            method: "DELETE",
-          });
-        });
-    }
-  );
 });

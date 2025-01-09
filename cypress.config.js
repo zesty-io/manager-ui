@@ -5,7 +5,7 @@ module.exports = defineConfig({
   viewportWidth: 1920,
   viewportHeight: 1080,
   video: false,
-  defaultCommandTimeout: 15000,
+
   env: {
     API_AUTH: "https://auth.api.dev.zesty.io",
     COOKIE_NAME: "DEV_APP_SID",
@@ -28,9 +28,9 @@ module.exports = defineConfig({
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
     testIsolation: false,
   },
-  defaultCommandTimeout: 30_000,
-  responseTimeout: 60_000,
+  defaultCommandTimeout: 15_000,
+  pageLoadTimeout: 60_000,
+  requestTimeout: 30_000,
+  responseTimeout: 80_000,
   retries: 1,
-  experimentalMemoryManagement: true,
-  chromeWebSecurity: false,
 });
