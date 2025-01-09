@@ -1,5 +1,5 @@
 {
-  "include": ["src", "index.d.ts"],
+  "include": ["src", "index.d.ts", "cypress"],
   "compilerOptions": {
     "noImplicitAny": true,
     "allowJs": true,
