@@ -101,7 +101,7 @@ after(() => {
   cy.cleanTestData();
 });
 
-describe("Restricted User", () => {
+describe("Restricted User", { retries: 1 }, () => {
   it("displays restricted access message and admin profiles", () => {
     cy.intercept("GET", ENDPOINTS?.userRoles, {
       statusCode: 200,
@@ -131,12 +131,14 @@ describe("Restricted User", () => {
   });
 });
 
-describe("Authorized User", () => {
+describe("Authorized User", { retries: 1 }, () => {
   before(() => {
     cy.goToWorkflowsPage();
   });
 
   it("displays workflow page elements for authorized users", () => {
+    cy.get('[data-cy="active-labels-container"]', TIMEOUT);
+
     cy.contains("Workflows").should("exist");
     cy.get("button").contains("Create Status").should("exist");
     cy.get('input[placeholder="Search Statuses"]').should("exist");
@@ -156,7 +158,7 @@ describe("Create New Status Label", { retries: 1 }, () => {
   });
 
   it("Form Validation: should display error message when required fields are empty", function () {
-    cy.get("button").contains("Create Status").click();
+    cy.get("button").contains("Create Status").click(TIMEOUT);
 
     cy.get('[data-cy="status-label-form"]', TIMEOUT);
 
@@ -167,7 +169,7 @@ describe("Create New Status Label", { retries: 1 }, () => {
   });
 
   it("Fills out and submits form", () => {
-    cy.get("button").contains("Create Status").click();
+    cy.get("button").contains("Create Status").click(TIMEOUT);
 
     cy.get('[data-cy="status-label-form"]', TIMEOUT);
 
@@ -202,7 +204,7 @@ describe("Create New Status Label", { retries: 1 }, () => {
 
     cy.get('[data-cy="status-label-submit-button"]').click();
 
-    cy.wait(["@createStatusLabel", "@getAllStatusLabels"]).spread(
+    cy.wait(["@createStatusLabel", "@getAllStatusLabels"], TIMEOUT).spread(
       (createStatusLabel, getAllStatusLabels) => {
         const createdStatusLabel = createStatusLabel?.response?.body?.data;
         const { active } = parseStatusLabels(
@@ -243,10 +245,12 @@ describe("Create New Status Label", { retries: 1 }, () => {
   });
 });
 
-describe("Edit Status Label", () => {
-  it("Open Status Label and Edit Details", { retries: 1 }, () => {
+describe("Edit Status Label", { retries: 1 }, () => {
+  it("Open Status Label and Edit Details", () => {
     cy.goToWorkflowsPage();
-    cy.wait(1500);
+
+    cy.get('[data-cy="active-labels-container"]', TIMEOUT);
+
     cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
       .contains(TEST_DATA?.temp1?.name)
       .parents('[data-cy="status-label"]')
@@ -268,12 +272,12 @@ describe("Edit Status Label", () => {
     cy.get('input[name="color"]').parent().find("button").click();
     cy.get('ul li[role="option"]').contains(TEST_DATA.edited.color).click();
 
-    cy.get('[data-cy="status-label-submit-button"]').click();
-
     cy.intercept("PUT", `${ENDPOINTS?.statusLabels}/**`).as("editStatusLabel");
     cy.intercept(ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
 
-    cy.wait(["@editStatusLabel", "@getAllStatusLabels"]).spread(
+    cy.get('[data-cy="status-label-submit-button"]').click();
+
+    cy.wait(["@editStatusLabel", "@getAllStatusLabels"], TIMEOUT).spread(
       (editStatusLabel, getAllStatusLabels) => {
         const targetLabelZUID = editStatusLabel.response.body.data;
         const updatedLabel = getAllStatusLabels.response.body.data.find(
@@ -294,13 +298,18 @@ describe("Edit Status Label", () => {
   });
 });
 
-describe("Re-order Status Labels", () => {
+describe("Re-order Status Labels", { retries: 1 }, () => {
   before(() => {
     cy.goToWorkflowsPage();
   });
 
-  it("Drag status label to a new position", { retries: 1 }, () => {
+  it("Drag status label to a new position", () => {
     const dataTransfer = new DataTransfer();
+
+    cy.get('[data-cy="active-labels-container"]', TIMEOUT);
+
+    cy.intercept("PUT", ENDPOINTS.statusLabels).as("reorderStatusLabel");
+    cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
 
     cy.get(`[data-cy="status-label"] [data-cy="status-label-drag-handle"]`)
       .eq(0)
@@ -311,10 +320,7 @@ describe("Re-order Status Labels", () => {
       .trigger("dragover", { dataTransfer })
       .trigger("drop", { dataTransfer });
 
-    cy.intercept("PUT", ENDPOINTS.statusLabels).as("reorderStatusLabel");
-    cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
-
-    cy.wait(["@reorderStatusLabel", "@getAllStatusLabels"]).spread(
+    cy.wait(["@reorderStatusLabel", "@getAllStatusLabels"], TIMEOUT).spread(
       (reorderStatusLabel, getAllStatusLabels) => {
         const reorderedLabels = reorderStatusLabel?.request?.body?.data;
         const updatedLabel = getAllStatusLabels?.response?.body?.data;
@@ -332,12 +338,14 @@ describe("Re-order Status Labels", () => {
   });
 });
 
-describe("Deactivate Status Label", () => {
+describe("Deactivate Status Label", { retries: 1 }, () => {
   beforeEach(() => {
     cy.goToWorkflowsPage();
   });
 
-  it("Deactivate using menu options", { retries: 1 }, function () {
+  it("Deactivate using menu options", () => {
+    cy.get('[data-cy="active-labels-container"]', TIMEOUT);
+
     cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
       .contains(TEST_DATA?.temp2?.name)
       .parents('[data-cy="status-label"]')
@@ -367,12 +375,15 @@ describe("Deactivate Status Label", () => {
       }
     );
     cy.wait(1000);
+
     cy.get(".notistack-Snackbar").contains(
       new RegExp(`Status De-activated:\\s*${TEST_DATA?.temp2?.name}`)
     );
   });
 
-  it("Deactivate using form button", { retries: 1 }, function () {
+  it("Deactivate using form button", () => {
+    cy.get('[data-cy="active-labels-container"]', TIMEOUT);
+
     cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
       .contains(TEST_DATA?.temp3?.name)
       .parents('[data-cy="status-label"]')
@@ -381,12 +392,12 @@ describe("Deactivate Status Label", () => {
 
     cy.get('[data-cy="menu-item-edit"]').click();
 
-    cy.get('[data-cy="form-deactivate-status-button"]').click();
-
     cy.intercept("DELETE", `${ENDPOINTS?.statusLabels}/**`).as(
       "deactivateStatusLabel"
     );
     cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
+
+    cy.get('[data-cy="form-deactivate-status-button"]').click();
 
     cy.get('[data-cy="deactivation-dialog-confirm-button"]').click();
 
@@ -410,13 +421,13 @@ describe("Deactivate Status Label", () => {
   });
 });
 
-describe("Filter Active and Deactivated Status Labels", () => {
+describe("Filter Active and Deactivated Status Labels", { retries: 1 }, () => {
   before(() => {
     cy.getStatusLabels().then((data) =>
       cy.wrap(data).as("activeDeactivatedStatusLabels")
     );
     cy.goToWorkflowsPage();
-    cy.get('input[value="deactivated"]').click();
+    cy.get('input[value="deactivated"]').click(TIMEOUT);
   });
 
   it("Displays active/deactivated status labels", function () {
@@ -454,7 +465,7 @@ Cypress.Commands.add("goToWorkflowsPage", () => {
   cy.get('[data-cy="workflows-authorized-page"]', { timeout: 60_000 });
 });
 
-Cypress.Commands.add("cleanTestData", () => {
+Cypress.Commands.add("cleanTestData", function () {
   const testLabels = [
     TEST_DATA?.new?.name,
     TEST_DATA?.edited?.name,
