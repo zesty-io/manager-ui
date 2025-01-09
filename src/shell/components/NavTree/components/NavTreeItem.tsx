@@ -145,7 +145,7 @@ export const NavTreeItem: FC<Props> = React.memo(
         }}
         ContentProps={{
           className: itemId === hoveredItemId ? "is-hovered" : "",
-          onMouseOver: (event: any) => {
+          onMouseEnter: (event: any) => {
             setHoveredItemId(itemId);
           },
           onDragOver: (event: any) => {
