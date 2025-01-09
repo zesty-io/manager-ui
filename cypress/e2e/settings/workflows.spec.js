@@ -49,33 +49,6 @@ const LABELS = {
 
 const EMPTY_SEARCH_TEXT = "xx_yy_zz_00";
 
-const FORMx_DATA = {
-  test1: {
-    name: "Test__1",
-    description: "Test__1 Description",
-    color: "Grey",
-    addPermissionRoles: "Admin",
-    removePermissionRoles: "Admin",
-    allowPublish: true,
-  },
-  test2: {
-    name: "Test__2",
-    description: "Test__2 Description",
-    color: "Rose",
-    addPermissionRoles: "Admin",
-    removePermissionRoles: "Admin",
-    allowPublish: false,
-  },
-  test3: {
-    name: "Test__3",
-    description: "Test__Delete Description",
-    color: "Red",
-    addPermissionRoles: [],
-    removePermissionRoles: [],
-    allowPublish: false,
-  },
-};
-
 const TEST_DATA = {
   new: {
     name: "Test__new",
@@ -214,9 +187,8 @@ describe("Workflow Status Labels: Authorized User", () => {
 
       cy.get('[data-cy="status-label-submit-button"]').click();
 
-      cy
-        .wait(["@createStatusLabel", "@getAllStatusLabels"])
-        .spread((createStatusLabel, getAllStatusLabels) => {
+      cy.wait(["@createStatusLabel", "@getAllStatusLabels"]).spread(
+        (createStatusLabel, getAllStatusLabels) => {
           const createdStatusLabel = createStatusLabel?.response?.body?.data;
           const { active } = parseStatusLabels(
             getAllStatusLabels?.response?.body?.data
@@ -236,7 +208,8 @@ describe("Workflow Status Labels: Authorized User", () => {
           cy.get(
             '[data-cy="active-labels-container"] [data-cy="status-label"]'
           ).should("have.length", active.length);
-        }).sh;
+        }
+      );
       cy.wait(1500);
     });
 
@@ -268,7 +241,7 @@ describe("Workflow Status Labels: Authorized User", () => {
         .contains(TEST_DATA?.new?.name)
         .parents('[data-cy="status-label"]')
         .find('[data-cy="status-label-more-actions"]')
-        .trigger("click", { force: true });
+        .click({ force: true });
 
       cy.get('[data-cy="menu-item-edit"]').click({ force: true });
 
@@ -289,13 +262,13 @@ describe("Workflow Status Labels: Authorized User", () => {
         .contains(TEST_DATA.edited.addPermissionRoles)
         .parent()
         .find(".MuiChip-deleteIcon")
-        .trigger("click", { force: true });
+        .click({ force: true });
 
       cy.get(".MuiChip-root")
         .contains(TEST_DATA.edited.removePermissionRoles)
         .parent()
         .find(".MuiChip-deleteIcon")
-        .trigger("click", { force: true });
+        .click({ force: true });
 
       cy.get('input[name="allowPublish"]').uncheck();
 
@@ -338,13 +311,13 @@ describe("Workflow Status Labels: Authorized User", () => {
     it("Drag status label to a new position", { retries: 1 }, () => {
       const dataTransfer = new DataTransfer();
 
-      cy.get(`[data-cy="status-label"]`)
-        .find('[data-cy="status-label-drag-handle"]')
+      cy.get(`[data-cy="status-label"] [data-cy="status-label-drag-handle"]`)
+        // .find('[data-cy="status-label-drag-handle"]')
         .eq(0)
         .trigger("dragstart", { dataTransfer });
 
-      cy.get(`[data-cy="status-label"]`)
-        .find('[data-cy="status-label-drag-handle"]')
+      cy.get(`[data-cy="status-label"] [data-cy="status-label-drag-handle"]`)
+        // .find('[data-cy="status-label-drag-handle"]')
         .eq(1)
         .trigger("dragover", { dataTransfer })
         .trigger("drop", { dataTransfer });
@@ -377,18 +350,19 @@ describe("Workflow Status Labels: Authorized User", () => {
         '[data-cy="active-labels-container"] [data-cy="status-label"]',
         TIMEOUT
       )
-        // .last()
         .contains(TEST_DATA?.edited?.name)
         .parents('[data-cy="status-label"]')
         .find('[data-cy="status-label-more-actions"]')
         .click();
+
       cy.get('[data-cy="menu-item-deactivate"]').click();
-      cy.get('[data-cy="deactivation-dialog-confirm-button"]').click();
 
       cy.intercept("DELETE", `${ENDPOINTS?.statusLabels}/**`).as(
         "deactivateStatusLabel"
       );
       cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
+
+      cy.get('[data-cy="deactivation-dialog-confirm-button"]').click();
 
       cy.wait(["@deactivateStatusLabel", "@getAllStatusLabels"]).spread(
         (deactivateStatusLabel, getAllStatusLabels) => {
@@ -411,6 +385,7 @@ describe("Workflow Status Labels: Authorized User", () => {
 
     it("Deactivate using form button", { retries: 1 }, function () {
       cy.goToWorkflowsPage();
+
       cy.get(
         '[data-cy="active-labels-container"] [data-cy="status-label"]',
         TIMEOUT
@@ -421,12 +396,13 @@ describe("Workflow Status Labels: Authorized User", () => {
         .click();
       cy.get('[data-cy="menu-item-edit"]').click();
       cy.get('[data-cy="form-deactivate-status-button"]').click();
-      cy.get('[data-cy="deactivation-dialog-confirm-button"]').click();
 
       cy.intercept("DELETE", `${ENDPOINTS?.statusLabels}/**`).as(
         "deactivateStatusLabel"
       );
       cy.intercept("GET", ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
+
+      cy.get('[data-cy="deactivation-dialog-confirm-button"]').click();
 
       cy.wait(["@deactivateStatusLabel", "@getAllStatusLabels"]).spread(
         (deactivateStatusLabel, getAllStatusLabels) => {
