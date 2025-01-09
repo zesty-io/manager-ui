@@ -6,15 +6,19 @@ import {
   MoreHoriz,
   ImageRounded,
 } from "@mui/icons-material";
+import moment from "moment-timezone";
 
 import {
   useGetContentItemQuery,
   useGetContentModelFieldsQuery,
+  useGetItemPublishingsQuery,
 } from "../../../services/instance";
+import { useGetUsersQuery } from "../../../services/accounts";
 import { ContentModel, ContentModelField } from "../../../services/types";
 import { useLazyGetFileQuery } from "../../../services/mediaManager";
 import { fileExtension } from "../../../../apps/media/src/app/utils/fileUtils";
 import { ActiveItemLoading } from "./ActiveItemLoading";
+import { VersionChip } from "../VersionChip";
 
 type ActiveItemProps = {
   itemZUID: string;
@@ -34,11 +38,24 @@ export const ActiveItem = memo(
       useGetContentItemQuery(itemZUID, {
         skip: !itemZUID,
       });
+    const {
+      data: contentItemPublishings,
+      isLoading: isLoadingContentItemPublishings,
+    } = useGetItemPublishingsQuery(
+      {
+        modelZUID: relatedModelData?.ZUID,
+        itemZUID,
+      },
+      {
+        skip: !relatedModelData || !itemZUID,
+      }
+    );
     const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
       useGetContentModelFieldsQuery(relatedModelData?.ZUID, {
         skip: !relatedModelData?.ZUID,
       });
     const [getFile, { isLoading: isLoadingImage }] = useLazyGetFileQuery();
+    const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
     const itemTitle =
       contentItem?.data[relatedFieldData?.name] ||
@@ -46,7 +63,21 @@ export const ActiveItem = memo(
       contentItem?.web?.metaLinkText;
 
     const isLoading =
-      isLoadingContentItem || isLoadingRelatedModel || isLoadingImage;
+      isLoadingContentItem ||
+      isLoadingRelatedModel ||
+      isLoadingImage ||
+      isLoadingContentItemPublishings ||
+      isLoadingUsers;
+
+    const resolveUserZUID = (userZUID: string) => {
+      const user = users?.find((user) => user.ZUID === userZUID);
+
+      if (!!user) {
+        return `${user?.firstName} ${user.lastName}`;
+      }
+
+      return userZUID;
+    };
 
     const imageFields = useMemo(() => {
       if (!relatedModelFields?.length) return [];
@@ -55,6 +86,43 @@ export const ActiveItem = memo(
         (field) => !field.deletedAt && field.datatype === "images"
       );
     }, [relatedModelFields]);
+
+    const publishStatus = useMemo(() => {
+      const publishedVersion = contentItemPublishings?.find(
+        (publishing) => publishing._active
+      );
+      const scheduledVersion = contentItemPublishings?.find(
+        (publishing) =>
+          !publishing._active && moment.utc().isBefore(publishing.publishAt)
+      );
+
+      return {
+        draft:
+          contentItem?.meta?.version > (publishedVersion?.version || 0)
+            ? {
+                version: contentItem?.meta?.version,
+                publisher: resolveUserZUID(
+                  contentItem?.meta?.createdByUserZUID
+                ),
+                dateTime: contentItem?.meta?.updatedAt,
+              }
+            : null,
+        published: !!publishedVersion
+          ? {
+              version: publishedVersion.version,
+              publisher: resolveUserZUID(publishedVersion.publishedByUserZUID),
+              dateTime: publishedVersion.publishAt,
+            }
+          : null,
+        scheduled: !!scheduledVersion
+          ? {
+              version: scheduledVersion.version,
+              publisher: resolveUserZUID(scheduledVersion.publishedByUserZUID),
+              dateTime: scheduledVersion.publishAt,
+            }
+          : null,
+      };
+    }, [contentItem, contentItemPublishings, users]);
 
     useEffect(() => {
       if (!imageFields?.length || !contentItem) return;
@@ -192,26 +260,31 @@ export const ActiveItem = memo(
         </Stack>
         <Stack direction="row" gap={2} mx={2} alignItems="center">
           <Stack gap={0.25}>
-            <Stack
-              height={20}
-              width={28}
-              bgcolor="grey.100"
-              alignItems="center"
-              justifyContent="center"
-              borderRadius={1}
-            >
-              <Skeleton variant="rounded" height={10} width={20} />
-            </Stack>
-            <Stack
-              height={20}
-              width={28}
-              bgcolor="grey.100"
-              alignItems="center"
-              justifyContent="center"
-              borderRadius={1}
-            >
-              <Skeleton variant="rounded" height={10} width={20} />
-            </Stack>
+            {!!publishStatus?.draft && (
+              <VersionChip
+                type="draft"
+                version={publishStatus.draft.version}
+                publisher={publishStatus.draft.publisher}
+                dateTime={publishStatus.draft.dateTime}
+              />
+            )}
+            {!!publishStatus?.scheduled ? (
+              <VersionChip
+                type="scheduled"
+                version={publishStatus.scheduled.version}
+                publisher={publishStatus.scheduled.publisher}
+                dateTime={publishStatus.scheduled.dateTime}
+              />
+            ) : publishStatus?.published ? (
+              <VersionChip
+                type="published"
+                version={publishStatus.published.version}
+                publisher={publishStatus.published.publisher}
+                dateTime={publishStatus.published.dateTime}
+              />
+            ) : (
+              <></>
+            )}
           </Stack>
           <Stack direction="row" gap={1}>
             <IconButton size="xsmall">
