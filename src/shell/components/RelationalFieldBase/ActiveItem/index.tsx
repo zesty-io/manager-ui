@@ -65,11 +65,8 @@ export const ActiveItem = memo(
             ","
           )?.[0];
 
-          console.log(value);
-
           if (value.startsWith("3-")) {
             const res = await getFile(value).unwrap();
-            console.log(res);
             if (
               ["png", "jpg", "jpeg", "svg", "gif", "tif", "webp"].includes(
                 fileExtension(res.url)
@@ -104,70 +101,61 @@ export const ActiveItem = memo(
           overflow: "hidden",
         }}
       >
-        {draggable && (
-          <IconButton
-            disableRipple
-            disableFocusRipple
-            disableTouchRipple
-            size="xsmall"
-            sx={{ cursor: "grab", mx: 0.5 }}
-          >
-            <DragIndicatorRounded fontSize="small" />
-          </IconButton>
-        )}
-        {!!imageFields?.length &&
-          (!!imageURL ? (
-            <Box
-              component="img"
-              loading="lazy"
-              width={64}
-              height={64}
-              src={`${imageURL}?width=64&fit=contain`}
-              sx={{
-                flexShrink: 0,
-                mr: 2,
-                bgcolor: "grey.100",
-                objectFit: "contain",
-                overflow: "hidden",
-              }}
-            />
-          ) : (
-            <Stack
-              sx={{
-                mr: 2,
-                flexShrink: 0,
-                bgcolor: "grey.100",
-                width: 64,
-                height: 64,
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
+        <Stack direction="row" alignItems="center" flexGrow={1}>
+          {draggable && (
+            <IconButton
+              disableRipple
+              disableFocusRipple
+              disableTouchRipple
+              size="xsmall"
+              sx={{ cursor: "grab", mx: 0.5 }}
             >
-              <ImageRounded color="action" />
-            </Stack>
-          ))}
-        <Stack gap={0.5} justifyContent="center" flexGrow={1}>
-          <Typography
-            color="text.primary"
-            fontWeight={600}
-            variant="body2"
-            sx={{
-              display: "-webkit-box",
-              "-webkit-line-clamp": "1",
-              "-webkit-box-orient": "vertical",
-              wordBreak: "break-word",
-              wordWrap: "break-word",
-              hyphens: "auto",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
+              <DragIndicatorRounded fontSize="small" />
+            </IconButton>
+          )}
+          {!!imageFields?.length &&
+            (!!imageURL ? (
+              <Box
+                component="img"
+                loading="lazy"
+                width={64}
+                height={64}
+                src={`${imageURL}?width=64&fit=contain`}
+                sx={{
+                  flexShrink: 0,
+                  bgcolor: "grey.100",
+                  objectFit: "contain",
+                  overflow: "hidden",
+                }}
+              />
+            ) : (
+              <Stack
+                sx={{
+                  flexShrink: 0,
+                  bgcolor: "grey.100",
+                  width: 64,
+                  height: 64,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                }}
+              >
+                <ImageRounded color="action" />
+              </Stack>
+            ))}
+          <Stack
+            gap={0.5}
+            justifyContent="center"
+            flexGrow={1}
+            ml={
+              !!imageFields?.length || (!imageFields?.length && !draggable)
+                ? 2
+                : 0
+            }
           >
-            {itemTitle}
-          </Typography>
-          {contentItem?.web?.metaDescription && (
             <Typography
-              color="text.secondary"
+              color="text.primary"
+              fontWeight={600}
               variant="body2"
               sx={{
                 display: "-webkit-box",
@@ -180,9 +168,59 @@ export const ActiveItem = memo(
                 textOverflow: "ellipsis",
               }}
             >
-              {contentItem?.web?.metaDescription}
+              {itemTitle}
             </Typography>
-          )}
+            {contentItem?.web?.metaDescription && (
+              <Typography
+                color="text.secondary"
+                variant="body2"
+                sx={{
+                  display: "-webkit-box",
+                  "-webkit-line-clamp": "1",
+                  "-webkit-box-orient": "vertical",
+                  wordBreak: "break-word",
+                  wordWrap: "break-word",
+                  hyphens: "auto",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {contentItem?.web?.metaDescription}
+              </Typography>
+            )}
+          </Stack>
+        </Stack>
+        <Stack direction="row" gap={2} mx={2} alignItems="center">
+          <Stack gap={0.25}>
+            <Stack
+              height={20}
+              width={28}
+              bgcolor="grey.100"
+              alignItems="center"
+              justifyContent="center"
+              borderRadius={1}
+            >
+              <Skeleton variant="rounded" height={10} width={20} />
+            </Stack>
+            <Stack
+              height={20}
+              width={28}
+              bgcolor="grey.100"
+              alignItems="center"
+              justifyContent="center"
+              borderRadius={1}
+            >
+              <Skeleton variant="rounded" height={10} width={20} />
+            </Stack>
+          </Stack>
+          <Stack direction="row" gap={1}>
+            <IconButton size="xsmall">
+              <Edit fontSize="small" />
+            </IconButton>
+            <IconButton size="xsmall">
+              <MoreHoriz fontSize="small" />
+            </IconButton>
+          </Stack>
         </Stack>
       </Stack>
     );
