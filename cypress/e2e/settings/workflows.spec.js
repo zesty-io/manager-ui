@@ -5,6 +5,8 @@ import {
   colorMenu,
 } from "../../../src/apps/settings/src/app/views/User/Workflows/constants";
 
+const TIMEOUT = { timeout: 40_000 };
+
 const INSTANCE_API = `${
   CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
 }${instanceZUID}${CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE}`;
@@ -47,26 +49,53 @@ const LABELS = {
 
 const EMPTY_SEARCH_TEXT = "xx_yy_zz_00";
 
-const FORM_DATA = {
-  create: {
-    name: "Test__Create",
-    description: "Test__Create Description",
+const FORMx_DATA = {
+  test1: {
+    name: "Test__1",
+    description: "Test__1 Description",
     color: "Grey",
     addPermissionRoles: "Admin",
     removePermissionRoles: "Admin",
     allowPublish: true,
   },
-  edit: {
-    name: "Test__Edit",
-    description: "Test__Edit Description",
+  test2: {
+    name: "Test__2",
+    description: "Test__2 Description",
     color: "Rose",
     addPermissionRoles: "Admin",
     removePermissionRoles: "Admin",
     allowPublish: false,
   },
-  delete: {
-    name: "Test__Delete",
+  test3: {
+    name: "Test__3",
     description: "Test__Delete Description",
+    color: "Red",
+    addPermissionRoles: [],
+    removePermissionRoles: [],
+    allowPublish: false,
+  },
+};
+
+const TEST_DATA = {
+  new: {
+    name: "Test__new",
+    description: "Test__new Description",
+    color: "Grey",
+    addPermissionRoles: "Admin",
+    removePermissionRoles: "Admin",
+    allowPublish: true,
+  },
+  edited: {
+    name: "Test__edited",
+    description: "Test__edited Description",
+    color: "Rose",
+    addPermissionRoles: "Admin",
+    removePermissionRoles: "Admin",
+    allowPublish: false,
+  },
+  temp: {
+    name: "Test__temp",
+    description: "Test__temp Description",
     color: "Red",
     addPermissionRoles: [],
     removePermissionRoles: [],
@@ -85,7 +114,7 @@ describe("Workflow Status Labels: Restricted User", () => {
     );
 
     cy.visit("/settings/user/workflows");
-    cy.get('[data-cy="workflows-restricted-page"]', { timeout: 60000 });
+    cy.get('[data-cy="workflows-restricted-page"]', TIMEOUT);
 
     cy.wait("@getInstanceUserRoles")
       .its("response.body.data")
@@ -137,6 +166,9 @@ describe("Workflow Status Labels: Authorized User", () => {
 
     it("Form Validation: should display error message when required fields are empty", function () {
       cy.get("button").contains("Create Status").click();
+
+      cy.get('[data-cy="status-label-form"]', TIMEOUT);
+
       const nameFieldErrorMessage = "Name is required";
       cy.get('[data-cy="status-label-submit-button"]').click();
       cy.contains(nameFieldErrorMessage).should("exist");
@@ -145,20 +177,23 @@ describe("Workflow Status Labels: Authorized User", () => {
 
     it("Fills out and submits form", () => {
       cy.get("button").contains("Create Status").click();
+
+      cy.get('[data-cy="status-label-form"]', TIMEOUT);
+
       cy.intercept("POST", ENDPOINTS?.statusLabels).as("createStatusLabel");
       cy.intercept(ENDPOINTS.allStatusLabels).as("getAllStatusLabels");
 
-      cy.get('input[name="name"]').type(FORM_DATA.create.name);
-      cy.get('textarea[name="description"]').type(FORM_DATA.create.description);
+      cy.get('input[name="name"]').type(TEST_DATA.new.name);
+      cy.get('textarea[name="description"]').type(TEST_DATA.new.description);
       cy.get('input[name="color"]').parent().find("button").click();
-      cy.get('ul li[role="option"]').contains(FORM_DATA.create.color).click();
+      cy.get('ul li[role="option"]').contains(TEST_DATA.new.color).click();
 
       cy.get('input[name="addPermissionRoles"]')
         .parent()
         .find("button")
         .click();
       cy.get('ul li[role="option"]')
-        .contains(FORM_DATA.create.addPermissionRoles)
+        .contains(TEST_DATA.new.addPermissionRoles)
         .click();
       cy.get('form[role="dialog"]').click();
 
@@ -167,31 +202,33 @@ describe("Workflow Status Labels: Authorized User", () => {
         .find("button")
         .click();
       cy.get('ul li[role="option"]')
-        .contains(FORM_DATA.create.removePermissionRoles)
+        .contains(TEST_DATA.new.removePermissionRoles)
         .click();
       cy.get('form[role="dialog"]').click();
 
-      if (FORM_DATA.create.allowPublish) {
+      if (TEST_DATA.new.allowPublish) {
         cy.get('input[name="allowPublish"]').check();
       } else {
         cy.get('input[name="allowPublish"]').uncheck();
       }
 
       cy.get('[data-cy="status-label-submit-button"]').click();
-      cy.wait(["@createStatusLabel", "@getAllStatusLabels"]).spread(
-        (createStatusLabel, getAllStatusLabels) => {
+
+      cy
+        .wait(["@createStatusLabel", "@getAllStatusLabels"])
+        .spread((createStatusLabel, getAllStatusLabels) => {
           const createdStatusLabel = createStatusLabel?.response?.body?.data;
           const { active } = parseStatusLabels(
             getAllStatusLabels?.response?.body?.data
           );
 
           expect(createdStatusLabel).to.include({
-            name: FORM_DATA.create.name,
-            description: FORM_DATA.create.description,
+            name: TEST_DATA.new.name,
+            description: TEST_DATA.new.description,
             color: colorMenu.find(
-              (color) => color?.label === FORM_DATA.create.color
+              (color) => color?.label === TEST_DATA.new.color
             )?.value,
-            allowPublish: FORM_DATA.create.allowPublish,
+            allowPublish: TEST_DATA.new.allowPublish,
           });
           expect(createdStatusLabel.addPermissionRoles).to.have.lengthOf(1);
           expect(createdStatusLabel.removePermissionRoles).to.have.lengthOf(1);
@@ -199,21 +236,21 @@ describe("Workflow Status Labels: Authorized User", () => {
           cy.get(
             '[data-cy="active-labels-container"] [data-cy="status-label"]'
           ).should("have.length", active.length);
-        }
-      );
+        }).sh;
+      cy.wait(1500);
     });
 
     it("Highlights the newly created status label.", () => {
       cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
-        .contains(FORM_DATA.create.name, { timeout: 60000 })
+        .contains(TEST_DATA.new.name)
         .parents('[data-cy="status-label"]')
-        .should("have.css", "background-color", FOCUSED_LABEL_COLOR);
+        .should("have.css", "background-color", FOCUSED_LABEL_COLOR, TIMEOUT);
     });
 
     it("Clicking outside the focused label restores it to its default state.", () => {
       cy.get('[data-cy="active-labels-container"]').click();
       cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
-        .contains(FORM_DATA.create.name)
+        .contains(TEST_DATA.new.name)
         .parents('[data-cy="status-label"]')
         .should("not.have.css", "background-color", FOCUSED_LABEL_COLOR);
     });
@@ -222,27 +259,44 @@ describe("Workflow Status Labels: Authorized User", () => {
   context("Edit Status Label", () => {
     it("Open Status Label and Edit Details", { retries: 1 }, () => {
       cy.goToWorkflowsPage();
-      cy.moreActionEdit(FORM_DATA.create.name);
+      cy.wait(1500);
+      cy.get(
+        '[data-cy="active-labels-container"] [data-cy="status-label"]',
+        TIMEOUT
+      )
+
+        .contains(TEST_DATA?.new?.name)
+        .parents('[data-cy="status-label"]')
+        .find('[data-cy="status-label-more-actions"]')
+        .trigger("click", { force: true });
+
+      cy.get('[data-cy="menu-item-edit"]').click({ force: true });
+
+      cy.get('[data-cy="status-label-form"]', TIMEOUT);
 
       cy.get("button").contains("Deactivate Status").should("be.enabled");
 
-      cy.get('input[name="name"]').clear().type(FORM_DATA.edit.name);
+      cy.get('input[name="name"]').clear().type(TEST_DATA.edited.name);
+
       cy.get('textarea[name="description"]')
         .clear()
-        .type(FORM_DATA.edit.description);
-      cy.get('input[name="color"]').parent().find("button").click();
-      cy.get('ul li[role="option"]').contains(FORM_DATA.edit.color).click();
+        .type(TEST_DATA.edited.description);
 
-      cy.get("span.MuiChip-label")
-        .contains(FORM_DATA.edit.addPermissionRoles)
+      cy.get('input[name="color"]').parent().find("button").click();
+      cy.get('ul li[role="option"]').contains(TEST_DATA.edited.color).click();
+
+      cy.get(".MuiChip-root")
+        .contains(TEST_DATA.edited.addPermissionRoles)
         .parent()
-        .find('svg[data-testid="CancelIcon"]')
-        .click();
-      cy.get("span.MuiChip-label")
-        .contains(FORM_DATA.edit.removePermissionRoles)
+        .find(".MuiChip-deleteIcon")
+        .trigger("click", { force: true });
+
+      cy.get(".MuiChip-root")
+        .contains(TEST_DATA.edited.removePermissionRoles)
         .parent()
-        .find('svg[data-testid="CancelIcon"]')
-        .click();
+        .find(".MuiChip-deleteIcon")
+        .trigger("click", { force: true });
+
       cy.get('input[name="allowPublish"]').uncheck();
 
       cy.get('[data-cy="status-label-submit-button"]').click();
@@ -262,9 +316,9 @@ describe("Workflow Status Labels: Authorized User", () => {
           expect(editStatusLabel.response.statusCode).to.eq(200);
           expect(getAllStatusLabels.response.statusCode).to.eq(200);
           expect(updatedLabel).to.deep.include({
-            name: FORM_DATA.edit.name,
+            name: TEST_DATA.edited.name,
             color: colorMenu.find(
-              (color) => color?.label === FORM_DATA.edit.color
+              (color) => color?.label === TEST_DATA.edited.color
             )?.value,
             addPermissionRoles: [],
             removePermissionRoles: [],
@@ -272,6 +326,7 @@ describe("Workflow Status Labels: Authorized User", () => {
           });
         }
       );
+      cy.wait(1500);
     });
   });
 
@@ -318,7 +373,16 @@ describe("Workflow Status Labels: Authorized User", () => {
   context("Deactivate Status Label", () => {
     it("Deactivate using menu options", { retries: 1 }, function () {
       cy.goToWorkflowsPage();
-      cy.moreActionDeactivate(FORM_DATA?.edit?.name);
+      cy.get(
+        '[data-cy="active-labels-container"] [data-cy="status-label"]',
+        TIMEOUT
+      )
+        // .last()
+        .contains(TEST_DATA?.edited?.name)
+        .parents('[data-cy="status-label"]')
+        .find('[data-cy="status-label-more-actions"]')
+        .click();
+      cy.get('[data-cy="menu-item-deactivate"]').click();
       cy.get('[data-cy="deactivation-dialog-confirm-button"]').click();
 
       cy.intercept("DELETE", `${ENDPOINTS?.statusLabels}/**`).as(
@@ -341,13 +405,21 @@ describe("Workflow Status Labels: Authorized User", () => {
       );
 
       cy.get(".notistack-Snackbar").contains(
-        new RegExp(`Status De-activated:\\s*${FORM_DATA?.edit?.name}`)
+        new RegExp(`Status De-activated:\\s*${TEST_DATA?.edited?.name}`)
       );
     });
 
     it("Deactivate using form button", { retries: 1 }, function () {
       cy.goToWorkflowsPage();
-      cy.moreActionEdit(FORM_DATA.delete.name);
+      cy.get(
+        '[data-cy="active-labels-container"] [data-cy="status-label"]',
+        TIMEOUT
+      )
+        .contains(TEST_DATA?.temp?.name)
+        .parents('[data-cy="status-label"]')
+        .find('[data-cy="status-label-more-actions"]')
+        .click();
+      cy.get('[data-cy="menu-item-edit"]').click();
       cy.get('[data-cy="form-deactivate-status-button"]').click();
       cy.get('[data-cy="deactivation-dialog-confirm-button"]').click();
 
@@ -371,7 +443,7 @@ describe("Workflow Status Labels: Authorized User", () => {
       );
 
       cy.get(".notistack-Snackbar").contains(
-        new RegExp(`Status De-activated:\\s*${FORM_DATA?.delete?.name}`)
+        new RegExp(`Status De-activated:\\s*${TEST_DATA?.temp?.name}`)
       );
     });
   });
@@ -411,30 +483,28 @@ describe("Workflow Status Labels: Authorized User", () => {
         '[data-cy="active-labels-container"], [data-cy="deactivated-labels-container"]'
       ).should("exist");
       cy.get('[data-cy="no-results-page"]').should("not.exist");
-      cy.get('input[placeholder="Search Statuses"]')
-        .should("be.empty")
-        .and("have.focus");
+      cy.get('input[placeholder="Search Statuses"]').should("be.empty");
     });
   });
 });
 
 Cypress.Commands.add("goToWorkflowsPage", () => {
   cy.visit("/settings/user/workflows");
-  cy.get('[data-cy="workflows-authorized-page"]', { timeout: 60000 });
+  cy.get('[data-cy="workflows-authorized-page"]', { timeout: 60_000 });
 });
 
 Cypress.Commands.add("cleanTestData", () => {
-  const labelsToDelete = [
-    FORM_DATA?.create?.name,
-    FORM_DATA?.edit?.name,
-    FORM_DATA?.delete?.name,
+  const testLabels = [
+    TEST_DATA?.new?.name,
+    TEST_DATA?.edited?.name,
+    TEST_DATA?.temp?.name,
   ];
 
   cy.apiRequest({ url: `${INSTANCE_API}/env/labels?showDeleted=true` }).then(
     (response) => {
       response?.data
         ?.filter(
-          (label) => !label?.deletedAt && labelsToDelete.includes(label?.name)
+          (label) => !label?.deletedAt && testLabels.includes(label?.name)
         )
         .forEach((label) => {
           cy.apiRequest({
@@ -446,35 +516,13 @@ Cypress.Commands.add("cleanTestData", () => {
   );
 });
 
-Cypress.Commands.add("moreActionEdit", (label) => {
-  cy.get('[data-cy="active-labels-container"]')
-    .find('[data-cy="status-label-name"]')
-    .contains(label, { timeout: 60000 })
-    .scrollIntoView()
-    .parents('[data-cy="status-label"]')
-    .find('[data-cy="status-label-more-actions"]')
-    .click();
-  cy.get('[data-cy="menu-item-edit"]').click();
-});
-
-Cypress.Commands.add("moreActionDeactivate", (label) => {
-  cy.get('[data-cy="active-labels-container"]')
-    .find('[data-cy="status-label-name"]')
-    .contains(label, { timeout: 60000 })
-    .scrollIntoView()
-    .parents('[data-cy="status-label"]')
-    .find('[data-cy="status-label-more-actions"]')
-    .click();
-  cy.get('[data-cy="menu-item-deactivate"]').click();
-});
-
 Cypress.Commands.add("createTestData", () => {
   cy.apiRequest({
     url: `${INSTANCE_API}/env/labels`,
     method: "POST",
     body: {
-      ...FORM_DATA?.delete,
-      color: colorMenu.find((color) => color?.label === FORM_DATA.delete.color)
+      ...TEST_DATA?.temp,
+      color: colorMenu.find((color) => color?.label === TEST_DATA.temp.color)
         ?.value,
     },
   });

@@ -226,7 +226,7 @@ const RolesSelectInput = ({
               checked={selected}
               value={option.value}
               sx={{
-                marginRight: 5,
+                marginRight: "5px",
                 position: "absolute",
                 left: 0,
               }}
@@ -394,7 +394,10 @@ const StatusLabelForm: FC<StatusLabelFormProps> = ({
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent sx={{ p: 0, backgroundColor: "grey.50" }}>
+      <DialogContent
+        sx={{ p: 0, backgroundColor: "grey.50" }}
+        data-cy="status-label-form"
+      >
         <Box display="flex" flexDirection="column" gap={3} p={2.5}>
           <FormInputFieldWrapper label="Name" error={formErrors?.name} required>
             <OutlinedInput
