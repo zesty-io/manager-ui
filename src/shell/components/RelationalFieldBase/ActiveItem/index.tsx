@@ -7,6 +7,7 @@ import {
   ImageRounded,
 } from "@mui/icons-material";
 import moment from "moment-timezone";
+import { useHistory } from "react-router";
 
 import {
   useGetContentItemQuery,
@@ -34,6 +35,7 @@ export const ActiveItem = memo(
     draggable,
   }: ActiveItemProps) => {
     const [imageURL, setImageURL] = useState(null);
+    const history = useHistory();
     const { data: contentItem, isLoading: isLoadingContentItem } =
       useGetContentItemQuery(itemZUID, {
         skip: !itemZUID,
@@ -287,7 +289,12 @@ export const ActiveItem = memo(
             )}
           </Stack>
           <Stack direction="row" gap={1}>
-            <IconButton size="xsmall">
+            <IconButton
+              size="xsmall"
+              onClick={() =>
+                history.push(`/content/${relatedModelData?.ZUID}/${itemZUID}`)
+              }
+            >
               <Edit fontSize="small" />
             </IconButton>
             <IconButton size="xsmall">
