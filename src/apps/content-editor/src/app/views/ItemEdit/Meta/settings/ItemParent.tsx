@@ -13,6 +13,7 @@ import { notify } from "../../../../../../../../shell/store/notifications";
 import { searchItems } from "../../../../../../../../shell/store/content";
 import { useGetContentNavItemsQuery } from "../../../../../../../../shell/services/instance";
 import { sortMostRelevantSearch } from "../../../../../../../../shell/components/GlobalSearch/utils";
+import zuid from "zuid";
 
 type ParentOption = {
   value: string;
@@ -219,11 +220,13 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
 
   useEffect(() => {
     const normalizedSearch = searchText.toLowerCase();
-    const isZuid = /^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$/i.test(normalizedSearch);
-    const filteredOptions = options.filter((option) => {
-      const text_value = `${option?.text.toLowerCase()}__${option?.value.toLowerCase()}`;
-      return text_value.includes(searchText.toLowerCase());
-    });
+    const isZuid = zuid.isValid(normalizedSearch);
+    const filteredOptions = isZuid
+      ? options.filter(
+          (option) => option?.value.toLowerCase() === searchText.toLowerCase()
+        )
+      : options;
+
     setSortedOptions(sortMostRelevantSearch(filteredOptions, searchText));
     if (isZuid && filteredOptions?.length === 1) {
       setSelectedParent(filteredOptions[0]);

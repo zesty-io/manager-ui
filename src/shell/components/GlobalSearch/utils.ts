@@ -94,62 +94,41 @@ export const sortMostRelevantSearch = (
   searchResults: SearchResult[],
   searchString: string
 ): SearchResult[] => {
-  function customSort(
-    searchResult: SearchResult
-  ): [number, number, number, number, string] {
-    const isExactMatch = searchResult?.text === searchString ? 1 : 0;
-
-    const isPrefixMatch = searchResult?.text?.startsWith(searchString) ? 1 : 0;
-
-    const depth = (searchResult?.text?.match(/\//g) || [])?.length;
-
-    const matchingChars = getMatchingCharacterCount(
-      searchResult?.text,
-      searchString
-    );
-
-    return [
-      -isExactMatch,
-      -isPrefixMatch,
-      -matchingChars,
-      depth,
-      searchResult.text,
-    ];
-  }
-  function getMatchingCharacterCount(
-    text: string,
-    searchString: string
-  ): number {
-    let matchCount = 0;
-    for (let i = 0; i < searchString?.length; i++) {
-      if (text?.[i] === searchString?.[i]) {
-        matchCount++;
-      } else {
-        break;
-      }
-    }
-    return matchCount;
-  }
+  const normalize = (stringVal: string) => stringVal.replace(/^\/|\/$/g, "");
 
   return searchResults.sort((a, b) => {
-    const [matchA, prefixA, matchingCharsA, depthA, textA] = customSort(a);
-    const [matchB, prefixB, matchingCharsB, depthB, textB] = customSort(b);
+    const normalizedSearch = normalize(searchString);
+    const normalizedA = normalize(a.text);
+    const normalizedB = normalize(b.text);
 
-    if (matchA !== matchB) {
-      return matchA - matchB;
-    }
+    // 1. Exact match (normalized)
+    const isExactMatchA = normalizedA === normalizedSearch;
+    const isExactMatchB = normalizedB === normalizedSearch;
 
-    if (prefixA !== prefixB) {
-      return prefixA - prefixB;
-    }
+    if (isExactMatchA && !isExactMatchB) return -1;
+    if (!isExactMatchA && isExactMatchB) return 1;
 
-    if (matchingCharsA !== matchingCharsB) {
-      return matchingCharsB - matchingCharsA;
-    }
-    if (depthA !== depthB) {
-      return depthA - depthB;
-    }
+    // 2. URLs starting with the search string
+    const startsWithSearchA = normalizedA.startsWith(normalizedSearch);
+    const startsWithSearchB = normalizedB.startsWith(normalizedSearch);
 
-    return textB.localeCompare(textA);
+    if (startsWithSearchA && !startsWithSearchB) return -1;
+    if (!startsWithSearchA && startsWithSearchB) return 1;
+
+    // 3. URLs containing the search string
+    const containsSearchA = normalizedA.includes(normalizedSearch);
+    const containsSearchB = normalizedB.includes(normalizedSearch);
+
+    if (containsSearchA && !containsSearchB) return -1;
+    if (!containsSearchA && containsSearchB) return 1;
+
+    // 4. Compare by nested levels (fewer segments come first)
+    const nestedLevelA = a.text.split("/").filter(Boolean).length;
+    const nestedLevelB = b.text.split("/").filter(Boolean).length;
+
+    if (nestedLevelA !== nestedLevelB) return nestedLevelA - nestedLevelB;
+
+    // 5. Alphabetical order
+    return normalizedA.localeCompare(normalizedB);
   });
 };
