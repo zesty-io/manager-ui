@@ -23,6 +23,7 @@ import {
 } from "@mui/icons-material";
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
+import { useDrag, useDrop } from "react-dnd";
 
 import {
   useGetContentItemQuery,
@@ -38,15 +39,21 @@ import { VersionChip } from "../VersionChip";
 
 type ActiveItemProps = {
   itemZUID: string;
+  index: number;
   relatedFieldData: ContentModelField;
   relatedModelData: ContentModel;
+  onMoveCard: (draggedItemZUID: string, dropIndex: number) => void;
+  onDropCard: () => void;
   draggable?: boolean;
 };
 export const ActiveItem = memo(
   ({
     itemZUID,
+    index,
     relatedFieldData,
     relatedModelData,
+    onMoveCard,
+    onDropCard,
     draggable,
   }: ActiveItemProps) => {
     const [imageURL, setImageURL] = useState(null);
@@ -74,6 +81,28 @@ export const ActiveItem = memo(
       });
     const [getFile, { isLoading: isLoadingImage }] = useLazyGetFileQuery();
     const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
+
+    const [{ isDragging }, drag, preview] = useDrag({
+      type: "relationalItem",
+      item: {
+        id: itemZUID,
+        index,
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    });
+    const [_, drop] = useDrop({
+      accept: "relationalItem",
+      hover: ({ id: draggedID, index: draggedIndex }) => {
+        if (draggedIndex !== index) {
+          onMoveCard(draggedID, index);
+        }
+      },
+      drop: () => {
+        onDropCard();
+      },
+    });
 
     const itemTitle =
       contentItem?.data[relatedFieldData?.name] ||
@@ -176,6 +205,7 @@ export const ActiveItem = memo(
     return (
       <>
         <Stack
+          ref={(node) => drop(preview(node))}
           direction="row"
           sx={{
             bgcolor: "background.paper",
@@ -186,11 +216,13 @@ export const ActiveItem = memo(
             borderRadius: 2,
             alignItems: "center",
             overflow: "hidden",
+            opacity: isDragging ? 0 : 1,
           }}
         >
           <Stack direction="row" alignItems="center" flexGrow={1}>
             {draggable && (
               <IconButton
+                ref={drag}
                 disableRipple
                 disableFocusRipple
                 disableTouchRipple

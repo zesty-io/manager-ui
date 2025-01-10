@@ -771,32 +771,36 @@ export const Field = ({
 
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <RelationalFieldBase
-            value={!!value ? String(value) : null}
-            relatedModelZUID={relatedModelZUID}
-            relatedFieldZUID={relatedFieldZUID}
-          />
-          {/* <FieldTypeOneToOne
-            name={name}
-            value={
-              oneToOneOptions?.find((options) => options.value === value) ||
-              null
-            }
-            onChange={(_, option) => onChange(option.value, name)}
-            options={oneToOneOptions}
-            onOpen={onOneToOneOpen}
-            startAdornment={
-              value && (
-                <AppLink to={`/content/${relatedModelZUID}/${value}`}>
-                  <FontAwesomeIcon icon={faEdit} />
-                </AppLink>
-              )
-            }
-            endAdornment={
-              value && <em>{getSelectedLang(allLanguages, langID)}</em>
-            }
-            error={errors && Object.values(errors)?.some((error) => !!error)}
-          /> */}
+          <>
+            <RelationalFieldBase
+              name={name}
+              value={!!value ? String(value) : null}
+              relatedModelZUID={relatedModelZUID}
+              relatedFieldZUID={relatedFieldZUID}
+              onChange={onChange}
+            />
+            <FieldTypeOneToOne
+              name={name}
+              value={
+                oneToOneOptions?.find((options) => options.value === value) ||
+                null
+              }
+              onChange={(_, option) => onChange(option.value, name)}
+              options={oneToOneOptions}
+              onOpen={onOneToOneOpen}
+              startAdornment={
+                value && (
+                  <AppLink to={`/content/${relatedModelZUID}/${value}`}>
+                    <FontAwesomeIcon icon={faEdit} />
+                  </AppLink>
+                )
+              }
+              endAdornment={
+                value && <em>{getSelectedLang(allLanguages, langID)}</em>
+              }
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
+          </>
         </FieldShell>
       );
 
@@ -835,45 +839,49 @@ export const Field = ({
 
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <RelationalFieldBase
-            multiselect
-            value={!!value ? String(value) : null}
-            relatedModelZUID={relatedModelZUID}
-            relatedFieldZUID={relatedFieldZUID}
-          />
-          {/* <FieldTypeOneToMany
-            name={name}
-            value={
-              (value &&
-                (value as string)
-                  ?.split(",")
-                  ?.map(
-                    (value: any) =>
-                      oneToManyOptions?.find(
-                        (options) => options.value === value
-                      ) || { value, inputLabel: value, component: value }
-                  )) ||
-              []
-            }
-            onChange={(_, options: OneToManyOptions[]) => {
-              const selectedOptions = options?.length
-                ? options.map((option) => option.value).join(",")
-                : null;
-              onChange(selectedOptions, name);
-            }}
-            options={oneToManyOptions}
-            onOpen={onOneToManyOpen}
-            renderTags={(tags, getTagProps) =>
-              tags.map((tag, index) => (
-                <Chip
-                  size="small"
-                  label={tag.component}
-                  {...getTagProps({ index })}
-                />
-              ))
-            }
-            error={errors && Object.values(errors)?.some((error) => !!error)}
-          /> */}
+          <>
+            <RelationalFieldBase
+              name={name}
+              multiselect
+              value={!!value ? String(value) : null}
+              relatedModelZUID={relatedModelZUID}
+              relatedFieldZUID={relatedFieldZUID}
+              onChange={onChange}
+            />
+            <FieldTypeOneToMany
+              name={name}
+              value={
+                (value &&
+                  (value as string)
+                    ?.split(",")
+                    ?.map(
+                      (value: any) =>
+                        oneToManyOptions?.find(
+                          (options) => options.value === value
+                        ) || { value, inputLabel: value, component: value }
+                    )) ||
+                []
+              }
+              onChange={(_, options: OneToManyOptions[]) => {
+                const selectedOptions = options?.length
+                  ? options.map((option) => option.value).join(",")
+                  : null;
+                onChange(selectedOptions, name);
+              }}
+              options={oneToManyOptions}
+              onOpen={onOneToManyOpen}
+              renderTags={(tags, getTagProps) =>
+                tags.map((tag, index) => (
+                  <Chip
+                    size="small"
+                    label={tag.component}
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
+              error={errors && Object.values(errors)?.some((error) => !!error)}
+            />
+          </>
         </FieldShell>
       );
 
