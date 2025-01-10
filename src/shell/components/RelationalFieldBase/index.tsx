@@ -1,6 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import { LinkRounded } from "@mui/icons-material";
+import {
+  LinkRounded,
+  KeyboardArrowUpRounded,
+  KeyboardArrowDownRounded,
+} from "@mui/icons-material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
@@ -31,6 +35,7 @@ export const RelationalFieldBase = ({
 }: RelationalFieldBaseProps) => {
   const [langCode, setLangCode] = useState("");
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(","));
+  const [showAll, setShowAll] = useState(false);
 
   const { data: langs } = useGetLangsQuery({});
   const { data: modelData } = useGetContentModelQuery(relatedModelZUID, {
@@ -77,7 +82,7 @@ export const RelationalFieldBase = ({
     <Box component="section">
       <Stack gap={1}>
         <DndProvider backend={HTML5Backend}>
-          {itemZUIDs?.map((val, index) => (
+          {itemZUIDs?.slice(0, showAll ? undefined : 5)?.map((val, index) => (
             <ActiveItem
               key={val}
               index={index}
@@ -93,6 +98,24 @@ export const RelationalFieldBase = ({
           ))}
         </DndProvider>
       </Stack>
+      {itemZUIDs?.length > 5 && (
+        <Button
+          fullWidth
+          size="large"
+          color="inherit"
+          variant="text"
+          onClick={() => setShowAll((prev) => !prev)}
+          sx={{
+            mt: 1,
+          }}
+          startIcon={
+            showAll ? <KeyboardArrowUpRounded /> : <KeyboardArrowDownRounded />
+          }
+        >
+          Viewing {showAll ? itemZUIDs?.length : "5"} of {itemZUIDs?.length}{" "}
+          items. See {showAll ? "Less" : "All"}.
+        </Button>
+      )}
       {(multiselect || (!multiselect && !value)) && (
         <Button
           variant="outlined"
