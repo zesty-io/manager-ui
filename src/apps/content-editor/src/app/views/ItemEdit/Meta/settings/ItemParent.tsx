@@ -1,3 +1,4 @@
+import { FocusEvent, useEffect, useState } from "react";
 import { Box, Autocomplete, TextField, ListItem } from "@mui/material";
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,11 +8,12 @@ import {
   ContentNavItem,
 } from "../../../../../../../../shell/services/types";
 import { debounce, uniqBy } from "lodash";
-import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
 import { notify } from "../../../../../../../../shell/store/notifications";
 import { searchItems } from "../../../../../../../../shell/store/content";
 import { useGetContentNavItemsQuery } from "../../../../../../../../shell/services/instance";
+import { sortMostRelevantSearch } from "../../../../../../../../shell/components/GlobalSearch/utils";
+import zuid from "zuid";
 
 type ParentOption = {
   value: string;
@@ -103,8 +105,11 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
     getParentOptions(item?.meta?.langID, item?.web?.path, items)
   );
   const [isLoadingOptions, setIsLoadingOptions] = useState(false);
+  const [sortedOptions, setSortedOptions] = useState(options);
+  const [searchText, setSearchText] = useState("");
 
   const handleSearchOptions = debounce((filterTerm) => {
+    setSearchText(filterTerm);
     if (filterTerm) {
       dispatch(searchItems(filterTerm))
         // @ts-expect-error untyped
@@ -213,6 +218,27 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
     }
   }, [rawNavData]);
 
+  useEffect(() => {
+    const normalizedSearch = searchText.toLowerCase();
+    const isZuid = zuid.isValid(normalizedSearch);
+    const filteredOptions = isZuid
+      ? options.filter(
+          (option) => option?.value.toLowerCase() === searchText.toLowerCase()
+        )
+      : options;
+
+    setSortedOptions(sortMostRelevantSearch(filteredOptions, searchText));
+    if (isZuid && filteredOptions?.length === 1) {
+      setSelectedParent(filteredOptions[0]);
+    }
+  }, [
+    options,
+    searchText,
+    setSortedOptions,
+    sortMostRelevantSearch,
+    setSelectedParent,
+  ]);
+
   return (
     <Box id="parentZUID">
       <FieldShell
@@ -226,12 +252,12 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
       >
         <Autocomplete
           data-cy="itemRoute"
-          options={options}
+          options={sortedOptions}
           value={selectedParent}
           fullWidth
           renderInput={(params) => <TextField {...params} />}
           renderOption={(props, value) => (
-            <ListItem {...props} key={value.value}>
+            <ListItem {...props} key={value?.value}>
               {value.text}
             </ListItem>
           )}
@@ -244,10 +270,15 @@ export const ItemParent = ({ onChange }: ItemParentProps) => {
           }}
           onChange={(_, value) => {
             // Always default to homepage when no parent is selected
-            setSelectedParent(
-              value !== null ? value : { text: "/", value: "0" }
-            );
-            onChange(value !== null ? value.value : "0", "parentZUID");
+            setSelectedParent(value);
+            onChange(value?.value, "parentZUID");
+          }}
+          onBlur={(event: FocusEvent<HTMLInputElement>) => {
+            // Always default to homepage when no parent is selected
+            if (!event?.target?.value) {
+              setSelectedParent({ text: "/", value: "0" });
+              onChange("0", "parentZUID");
+            }
           }}
           loading={isLoadingOptions}
           sx={{
