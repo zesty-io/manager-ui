@@ -283,10 +283,16 @@ export const Field = ({
       return (
         <AIFieldShell
           ZUID={fieldData?.ZUID}
-          name={fieldData?.name}
-          label={fieldData?.label}
+          name={fieldData?.name || name}
+          label={fieldData?.label || label}
           valueLength={(value as string)?.length ?? 0}
-          settings={fieldData}
+          settings={
+            fieldData || {
+              name: name,
+              label: label,
+              required: required,
+            }
+          }
           onChange={(evt: ChangeEvent<HTMLInputElement>) =>
             onChange(evt.target.value, name)
           }
@@ -302,7 +308,7 @@ export const Field = ({
             onChange={(evt) => onChange(evt.target.value, name)}
             fullWidth
             inputProps={{
-              name: fieldData?.name,
+              name: fieldData?.name || name,
             }}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />
@@ -703,11 +709,15 @@ export const Field = ({
 
     case "one_to_one":
       const onOneToOneOpen = useCallback(() => {
-        return dispatch(
-          fetchItems(relatedModelZUID, {
-            lang: getSelectedLang(allLanguages, langID),
-          })
-        );
+        if (zuid.isValid(relatedModelZUID)) {
+          return dispatch(
+            fetchItems(relatedModelZUID, {
+              lang: getSelectedLang(allLanguages, langID),
+            })
+          );
+        } else {
+          return Promise.reject("Missing modelZUID");
+        }
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions: OneToManyOptions[] = useMemo(() => {

@@ -34,7 +34,7 @@ import { SelectedItemsProvider } from "./views/ItemList/SelectedItemsContext";
 import { TableSortProvider } from "./views/ItemList/TableSortProvider";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
-let customTheme = createTheme(legacyTheme, {
+export let customTheme = createTheme(legacyTheme, {
   palette: {
     secondary: {
       main: "#FF5D0A",

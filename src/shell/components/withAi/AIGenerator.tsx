@@ -515,6 +515,7 @@ export const AIGenerator = ({
                   </Tooltip>
                 </Stack>
                 <Autocomplete
+                  autoHighlight
                   disableClearable
                   isOptionEqualToValue={(option: any, value: any) =>
                     option.value === value.value
@@ -542,6 +543,7 @@ export const AIGenerator = ({
                   </Tooltip>
                 </Stack>
                 <Autocomplete
+                  autoHighlight
                   disableClearable
                   isOptionEqualToValue={(option: any, value: any) =>
                     option.value === value.value
@@ -565,13 +567,6 @@ export const AIGenerator = ({
                       }}
                     />
                   )}
-                  slotProps={{
-                    paper: {
-                      sx: {
-                        maxHeight: 300,
-                      },
-                    },
-                  }}
                 />
               </Box>
             </Stack>
@@ -754,6 +749,7 @@ export const AIGenerator = ({
                 </Tooltip>
               </Stack>
               <Autocomplete
+                autoHighlight
                 disableClearable
                 isOptionEqualToValue={(option: any, value: any) =>
                   option.value === value.value
@@ -803,6 +799,7 @@ export const AIGenerator = ({
                   </Tooltip>
                 </Stack>
                 <Autocomplete
+                  autoHighlight
                   disableClearable
                   isOptionEqualToValue={(option: any, value: any) =>
                     option.value === value.value
@@ -826,13 +823,6 @@ export const AIGenerator = ({
                       }}
                     />
                   )}
-                  slotProps={{
-                    paper: {
-                      sx: {
-                        maxHeight: 300,
-                      },
-                    },
-                  }}
                 />
               </Box>
             </Stack>

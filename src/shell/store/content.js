@@ -5,6 +5,7 @@ import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import { fetchNav, navContent } from "apps/content-editor/src/store/navContent";
 import { instanceApi } from "../../shell/services/instance";
+import { cloudFunctionsApi } from "../services/cloudFunctions";
 
 export function content(state = {}, action) {
   const item = state[action.itemZUID];
@@ -208,7 +209,7 @@ export function content(state = {}, action) {
 }
 
 // create the new item in the store
-export function generateItem(modelZUID, data = {}) {
+export function generateItem(modelZUID, data = {}, web = {}) {
   return (dispatch, getState) => {
     const state = getState();
     const itemZUID = `new:${modelZUID}`;
@@ -216,6 +217,7 @@ export function generateItem(modelZUID, data = {}) {
       dirty: false,
       data,
       web: {
+        ...web,
         canonicalTagMode: 1,
       },
       meta: {
@@ -383,10 +385,23 @@ export function saveItem({
   itemZUID,
   action = "",
   skipContentItemValidation = false,
+  itemOverride = null,
 }) {
   return (dispatch, getState) => {
     const state = getState();
-    const item = cloneDeep(state.content[itemZUID]);
+    const item = itemOverride || cloneDeep(state.content[itemZUID]);
+    const model = state.models[item.meta.contentModelZUID];
+    const instance = state.instance;
+    const previewLock = state.settings.instance.find(
+      (setting) => setting.key === "preview_lock_password" && setting.value
+    );
+    const itemBlockPreviewUrl = `${instance.randomHashID}${
+      CONFIG.URL_PREVIEW
+    }/-/block/${model?.name}.html?variant=${itemZUID}&version=${
+      item?.web?.version + 1
+    }${
+      previewLock?.value ? `&zpw=${previewLock.value}` : ""
+    }&_bypassError=true`;
     const fields = Object.keys(state.fields)
       .filter(
         (fieldZUID) =>
@@ -469,6 +484,14 @@ export function saveItem({
     if (item.web.metaKeywords) {
       item.web.metaKeywords = item.web.metaKeywords.slice(0, 255);
     }
+
+    if (model?.type === "block") {
+      item.data.og_image = `https://storage.googleapis.com/${
+        CONFIG.INSTANCE_SCREENSHOTS_BUCKET
+      }/${itemBlockPreviewUrl
+        ?.replaceAll("/", "!")
+        ?.replaceAll("?", "!")}_1280_720.png`;
+    }
     /*
       Nav item will not be found if item does exist in the nav such is the case
       when the item is in a dataset
@@ -505,6 +528,19 @@ export function saveItem({
 
       if (res.status === 200) {
         await dispatch(fetchItem(item.meta.contentModelZUID, itemZUID));
+        if (model?.type === "block") {
+          /*
+            Not awaiting this because capturing the screenshot is not critical to the save operation
+            and we don't want to hold up the user
+          */
+          dispatch(
+            cloudFunctionsApi.endpoints.createScreenshot.initiate(
+              `${CONFIG.URL_PREVIEW_PROTOCOL}${itemBlockPreviewUrl}`
+            )
+          ).then(() =>
+            dispatch(instanceApi.util.invalidateTags(["ContentItems"]))
+          );
+        }
       }
 
       zesty.trigger("PREVIEW_REFRESH");
@@ -517,9 +553,8 @@ export function saveItem({
 export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
   return (dispatch, getState) => {
     const state = getState();
-
     let item = cloneDeep(state.content[itemZUID]);
-
+    const model = state.models[item.meta.contentModelZUID];
     const fields = Object.keys(state.fields)
       .filter(
         (fieldZUID) => state.fields[fieldZUID].contentModelZUID === modelZUID
@@ -545,26 +580,30 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
 
     // Check required fields are not empty, except the og and tc fields since these
     // are handled by the meta component
-    const missingRequired = fields.filter((field) => {
-      if (
-        !field.deletedAt &&
-        !["og_title", "og_description", "tc_title", "tc_description"].includes(
-          field.name
-        ) &&
-        field.required
-      ) {
-        if (!item.data[field.name] && item.data[field.name] != 0) {
-          return true;
-        }
-      }
-      return false;
-    });
+    const missingRequired =
+      model?.type === "block"
+        ? false
+        : fields.filter((field) => {
+            if (
+              !field.deletedAt &&
+              ![
+                "og_title",
+                "og_description",
+                "tc_title",
+                "tc_description",
+              ].includes(field.name) &&
+              field.required
+            ) {
+              if (!item.data[field.name] && item.data[field.name] != 0) {
+                return true;
+              }
+            }
+            return false;
+          });
 
     const hasMissingRequiredSEOFields = skipPathPartValidation
       ? !item?.web?.metaTitle
-      : !item?.web?.metaTitle ||
-        !item?.web?.metaDescription ||
-        !item?.web?.pathPart;
+      : !item?.web?.metaTitle || !item?.web?.pathPart;
 
     // Check minlength is satisfied
     const lackingCharLength = fields?.filter(
@@ -630,13 +669,25 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
         web: item.web,
         meta: item.meta,
       },
-    }).then((res) => {
+    }).then(async (res) => {
       if (!res.error) {
         dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
         dispatch({
           type: "REMOVE_ITEM",
           itemZUID,
         });
+
+        if (model?.type === "block") {
+          const newItem = await dispatch(
+            fetchItem(item.meta.contentModelZUID, res?.data?.ZUID)
+          );
+          await dispatch(
+            saveItem({
+              itemZUID: res?.data?.ZUID,
+              itemOverride: newItem?.data,
+            })
+          );
+        }
       }
       return res;
     });

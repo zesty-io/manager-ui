@@ -68,7 +68,13 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
 
   useEffect(() => {
     if (fields?.length && !isEqual(localFields, fields)) {
-      setLocalFields([...fields.filter((field) => !field?.deletedAt)]);
+      setLocalFields([
+        ...fields.filter(
+          (field) =>
+            !field?.deletedAt &&
+            !(model?.type === "block" && field.name === "og_image")
+        ),
+      ]);
       setDeactivatedFields([...fields.filter((field) => field?.deletedAt)]);
     }
   }, [fields]);

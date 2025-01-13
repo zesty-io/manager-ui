@@ -11,6 +11,7 @@ module.exports = {
     API_ANALYTICS: "https://analytics.api.zesty.io",
 
     CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-prod.cloudfunctions.net",
+    INSTANCE_SCREENSHOTS_BUCKET: "zesty-prod-instance-screenshots",
 
     SERVICE_AUTH: "https://auth.api.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
@@ -61,6 +62,7 @@ module.exports = {
 
     CLOUD_FUNCTIONS_DOMAIN:
       "https://us-central1-zesty-stage.cloudfunctions.net",
+    INSTANCE_SCREENSHOTS_BUCKET: "zesty-stage-instance-screenshots",
 
     SERVICE_AUTH: "https://auth.api.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
@@ -106,6 +108,7 @@ module.exports = {
     API_ANALYTICS: "https://analytics-api-m3rbwjxm5q-uc.a.run.app",
 
     CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-dev.cloudfunctions.net",
+    INSTANCE_SCREENSHOTS_BUCKET: "zesty-dev-instance-screenshots",
 
     SERVICE_AUTH: "https://auth.api.dev.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",

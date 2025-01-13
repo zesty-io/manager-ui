@@ -58,6 +58,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
           sx={{
             fontSize: "14px",
             lineHeight: "20px",
+            maxWidth: "595px",
           }}
         >
           Force the CDN to refresh the cache for this item. CDN caching can take

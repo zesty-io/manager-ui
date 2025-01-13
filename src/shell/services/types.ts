@@ -64,7 +64,7 @@ export interface File {
   storage_name: string;
 }
 
-export type ModelType = "pageset" | "templateset" | "dataset";
+export type ModelType = "pageset" | "templateset" | "dataset" | "block";
 
 export interface ContentModel {
   ZUID: string;
@@ -139,7 +139,7 @@ export type SearchQuery = UnorderedQuery | OrderedQuery;
 export interface ContentItem {
   web: Web;
   meta: Meta;
-  siblings: [{ [key: number]: { value: string; id: number } }] | [];
+  siblings: { [key: string]: string } | {};
   data: Data;
   publishAt?: any;
 }
@@ -576,5 +576,16 @@ export type CommentReply = {
   createdByUserName: string;
   createdByUserZUID: string;
   mentions?: Mention[];
+  updatedAt: string;
+};
+
+export type GroupItem = {
+  zuid: string;
+  type?: string;
+  resourceZUIDs: string[];
+  name: string;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
   updatedAt: string;
 };

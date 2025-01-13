@@ -4,7 +4,7 @@ import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
-import { cloneDeep } from "lodash";
+import { cloneDeep, has } from "lodash";
 
 import { Box, Stack, ThemeProvider, Button } from "@mui/material";
 import { theme, Brain } from "@zesty-io/material";
@@ -47,7 +47,7 @@ export type ActionAfterSave =
   | "publishAddNew"
   | "schedulePublishAddNew";
 
-const selectSortedModelFields = createSelector(
+export const selectSortedModelFields = createSelector(
   (state: any) => state.fields,
   (_: any, modelZUID: string) => modelZUID,
   (fields, modelZUID) =>
@@ -196,7 +196,8 @@ export const ItemCreate = () => {
         createItem({
           modelZUID,
           itemZUID,
-          skipPathPartValidation: model?.type === "dataset",
+          skipPathPartValidation:
+            model?.type === "dataset" || model?.type === "block",
         })
       );
       if (res.err || res.error) {
@@ -320,13 +321,19 @@ export const ItemCreate = () => {
 
           default:
             // Redirect to new item
-            history.push(`/content/${modelZUID}/${res.data.ZUID}`);
+            history.push(
+              `/${
+                model?.type === "block" ? "blocks" : "content"
+              }/${modelZUID}/${res.data.ZUID}`
+            );
             break;
         }
 
         dispatch(
           notify({
-            message: `Created Item: ${item.web.metaLinkText}`,
+            message: `Created Item: ${
+              item.web.metaLinkText || item.web.metaTitle
+            }`,
             kind: "success",
           })
         );
@@ -400,6 +407,16 @@ export const ItemCreate = () => {
               </Box>
             )}
             <AIGeneratorProvider>
+              {model.type === "block" && (
+                <Meta
+                  onUpdateSEOErrors={(errors: FieldErrors) => {
+                    setSEOErrors(errors);
+                  }}
+                  isSaving={saving}
+                  ref={metaRef}
+                  errors={SEOErrors}
+                />
+              )}
               <Editor
                 // @ts-ignore no types
                 itemZUID={itemZUID}
@@ -420,14 +437,16 @@ export const ItemCreate = () => {
                   setFieldErrors(errors);
                 }}
               />
-              <Meta
-                onUpdateSEOErrors={(errors: FieldErrors) => {
-                  setSEOErrors(errors);
-                }}
-                isSaving={saving}
-                ref={metaRef}
-                errors={SEOErrors}
-              />
+              {model.type !== "block" && (
+                <Meta
+                  onUpdateSEOErrors={(errors: FieldErrors) => {
+                    setSEOErrors(errors);
+                  }}
+                  isSaving={saving}
+                  ref={metaRef}
+                  errors={SEOErrors}
+                />
+              )}
             </AIGeneratorProvider>
           </Box>
           <ThemeProvider theme={theme}>
@@ -437,7 +456,7 @@ export const ItemCreate = () => {
               alignSelf="flex-start"
               maxWidth={620}
             >
-              {model?.type !== "dataset" && (
+              {model?.type !== "dataset" && model?.type !== "block" && (
                 <>
                   <SocialMediaPreview />
                   <Button

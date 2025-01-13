@@ -45,12 +45,14 @@ export function ViewRelease({ isContentSubpage }) {
               if (searchRes?.status === 200) {
                 // fetch content item versions
                 // possibly can lazy load these when you open select
-                return dispatch(
-                  fetchVersions(
-                    searchRes.data[0].meta.contentModelZUID,
-                    searchRes.data[0].meta.ZUID
-                  )
-                );
+                if (!!searchRes.data?.length) {
+                  return dispatch(
+                    fetchVersions(
+                      searchRes.data[0].meta.contentModelZUID,
+                      searchRes.data[0].meta.ZUID
+                    )
+                  );
+                }
               }
             }
           );

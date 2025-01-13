@@ -29,17 +29,20 @@ import { theme } from "@zesty-io/material";
 import {
   useCreateContentModelMutation,
   useCreateContentItemMutation,
+  useCreateContentModelFieldMutation,
 } from "../../../../../shell/services/instance";
 import { ContentModel, User } from "../../../../../shell/services/types";
 import { notify } from "../../../../../shell/store/notifications";
 import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { modelIconMap } from "../utils";
 import { withCursorPosition } from "../../../../../shell/components/withCursorPosition";
 import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
 import { SelectModelParentInput } from "./SelectModelParentInput";
+import { SelectBlockGroupInput } from "./SelectBlockGroupInput";
+import { isZestyEmail } from "../../../../../utility/isZestyEmail";
 
 interface Props {
   onClose: () => void;
@@ -51,22 +54,29 @@ const modelTypes = [
     name: "Single Page Model",
     description:
       "Creates individual pages with unique URLs and a code template",
-    examples: "e.g. Home Page, About Page, Contact Page, Landing Page, etc.",
+    examples: "e.g. Home Page, About Page, etc.",
     key: "templateset",
   },
   {
     name: "Multi Page Model",
     description:
       "Creates a collection of pages with unique URLs and a code template",
-    examples: "e.g. Articles, Authors, Products, Team Members, etc.",
+    examples: "e.g. Articles, Authors, Products, etc. ",
     key: "pageset",
   },
   {
     name: "Dataset Model",
     description:
       "Creates a collection of entries with no URLs and no code templates",
-    examples: "e.g. Categories, Logos, Slides, FAQS, Brands, etc.",
+    examples: "e.g. Slides, FAQS, Brands, etc.",
     key: "dataset",
+  },
+  {
+    name: "Block Model",
+    description:
+      "Creates a collection of entries with no URLs and a code template",
+    examples: "e.g. Heros, Features, Testimonials, etc.",
+    key: "block",
   },
 ];
 
@@ -76,6 +86,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   const [type, setType] = useState(modelType);
   const dispatch = useDispatch();
   const history = useHistory();
+  const { pathname } = useLocation();
   const [model, updateModel] = useReducer(
     (prev: Partial<ContentModel>, next: any) => {
       const newModel = { ...prev, ...next };
@@ -115,6 +126,14 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       error: createContentItemError,
     },
   ] = useCreateContentItemMutation();
+  const [
+    createContentModelField,
+    {
+      isLoading: isCreatingOgImageField,
+      isSuccess: isOgImageFieldCreated,
+      error: ogImageFieldCreationError,
+    },
+  ] = useCreateContentModelFieldMutation();
   const user: User = useSelector((state: AppState) => state.user);
 
   const error = createModelError || createContentItemError;
@@ -122,10 +141,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   useEffect(() => {
     if (isModelCreated && !isEmpty(createModelData?.data)) {
       // Create initial content item
-      if (model.type !== "templateset") {
-        history.push(`/schema/${createModelData.data.ZUID}`);
-        onClose();
-      } else {
+      if (model.type === "templateset") {
         createContentItem({
           modelZUID: createModelData.data.ZUID,
           body: {
@@ -145,17 +161,43 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             },
           },
         });
+      } else if (model.type === "block") {
+        // Create an og_image field
+        createContentModelField({
+          modelZUID: createModelData.data?.ZUID,
+          body: {
+            contentModelZUID: createModelData.data?.ZUID,
+            datatype: "images",
+            description:
+              "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
+            label: "Meta Image",
+            name: "og_image",
+            required: false,
+            settings: {
+              defaultValue: null,
+              group_id: "",
+              limit: 1,
+              list: false,
+            },
+            sort: 9999,
+          },
+        });
+      } else {
+        history.push(`/schema/${createModelData.data.ZUID}`);
+        onClose();
       }
     }
   }, [isModelCreated, createModelData]);
 
   useEffect(() => {
-    // Only navigate to schema page once model and initial content is created for templateset
-    if (isContentItemCreated && createModelData) {
-      history.push(`/schema/${createModelData.data.ZUID}`);
+    // Only navigate to schema page once initial content is created for templateset & og_image field is created for block
+    if ((isContentItemCreated || isOgImageFieldCreated) && createModelData) {
+      history.push(
+        `/${pathname?.split("/")?.[1] || "schema"}/${createModelData.data.ZUID}`
+      );
       onClose();
     }
-  }, [isContentItemCreated, createModelData]);
+  }, [isContentItemCreated, createModelData, isOgImageFieldCreated]);
 
   useEffect(() => {
     if (error) {
@@ -213,60 +255,73 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             </Stack>
           </DialogTitle>
           <DialogContent sx={{ pt: 2.5, backgroundColor: "grey.50" }} dividers>
-            <Box display="flex" flexDirection="column" gap={2}>
-              {modelTypes.map((modelType) => (
-                <ListItemButton
-                  selected={type === modelType.key}
-                  key={modelType.key}
-                  onClick={() => setType(modelType.key)}
-                  sx={{
-                    borderRadius: "8px",
-                    borderStyle: "solid",
-                    borderWidth: "1px",
-                    borderColor: "border",
-                    backgroundColor: "common.white",
-                    py: 2,
-                    "&.Mui-selected": {
-                      borderColor: "primary.main",
-                      svg: {
-                        color: "primary.main",
+            <Box display="grid" gap={2} gridTemplateColumns="1fr 1fr">
+              {modelTypes
+                ?.filter((modelType) => {
+                  if (modelType.key === "block") {
+                    return isZestyEmail(user.email);
+                  }
+                  return true;
+                })
+                .map((modelType) => (
+                  <ListItemButton
+                    data-cy={`model-type-${modelType.key}`}
+                    selected={type === modelType.key}
+                    key={modelType.key}
+                    onClick={() => setType(modelType.key)}
+                    sx={{
+                      borderRadius: "8px",
+                      borderStyle: "solid",
+                      borderWidth: "1px",
+                      borderColor: "border",
+                      backgroundColor: "common.white",
+                      py: 2,
+                      "&.Mui-selected": {
+                        borderColor: "primary.main",
+                        svg: {
+                          color: "primary.main",
+                        },
                       },
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 48 }}>
-                    <SvgIcon
-                      sx={{ fontSize: "32px" }}
-                      component={
-                        modelIconMap[modelType.key as keyof typeof modelIconMap]
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      gap: 2,
+                    }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 48 }}>
+                      <SvgIcon
+                        sx={{ fontSize: "32px" }}
+                        component={
+                          modelIconMap[
+                            modelType.key as keyof typeof modelIconMap
+                          ]
+                        }
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Typography variant="h6" fontWeight={600}>
+                          {modelType.name}
+                        </Typography>
+                      }
+                      disableTypography
+                      sx={{ my: 0 }}
+                      secondary={
+                        <>
+                          <Typography variant="body2" sx={{ mt: 0.5 }}>
+                            {modelType.description}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 1 }}
+                          >
+                            {modelType.examples}
+                          </Typography>
+                        </>
                       }
                     />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={
-                      <Typography variant="h6" fontWeight={600}>
-                        {modelType.name}
-                      </Typography>
-                    }
-                    disableTypography
-                    sx={{ my: 0 }}
-                    secondary={
-                      <>
-                        <Typography variant="body2" sx={{ mt: 0.5 }}>
-                          {modelType.description}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ mt: 1 }}
-                        >
-                          {modelType.examples}
-                        </Typography>
-                      </>
-                    }
-                  />
-                </ListItemButton>
-              ))}
+                  </ListItemButton>
+                ))}
             </Box>
           </DialogContent>
           <DialogActions sx={{ pt: 2.5 }}>
@@ -277,6 +332,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               variant="contained"
               onClick={() => updateModel({ type })}
               disabled={!type}
+              data-cy="create-model-next-button"
             >
               Next
             </Button>
@@ -343,6 +399,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   }
                   fullWidth
                   autoFocus
+                  data-cy="create-model-display-name-input"
                 />
               </Box>
               <Box>
@@ -380,6 +437,17 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                 }
                 tooltip="Selecting a parent affects default routing and content navigation in the UI"
               />
+              {/* Block grouping will be implemented at a different point  */}
+              {/* {model.type === "block" && (
+                <SelectBlockGroupInput
+                  groupType="available"
+                  groupZUID=""
+                  newGroupName=""
+                  onGroupTypeChange={() => {}}
+                  onGroupZUIDChange={() => {}}
+                  onNewGroupNameChange={() => {}}
+                />
+              )} */}
               <Box>
                 <InputLabel>
                   Description
@@ -435,10 +503,15 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               Cancel
             </Button>
             <LoadingButton
+              data-cy="create-model-submit-button"
               type="submit"
               variant="contained"
               disabled={!model.name || !model.label}
-              loading={!!isCreatingModel || !!isCreatingContentItem}
+              loading={
+                !!isCreatingModel ||
+                !!isCreatingContentItem ||
+                !!isCreatingOgImageField
+              }
               onClick={() =>
                 createModel({
                   ...model,
@@ -456,6 +529,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   return (
     <ThemeProvider theme={theme}>
       <Dialog
+        data-cy="create-model-dialog"
         open
         onClose={onClose}
         sx={{
