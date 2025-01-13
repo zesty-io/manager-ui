@@ -14,6 +14,7 @@ import { UpdateDescriptionModelDialogue } from "../UpdateDescriptionModelDialogu
 import { UpdateParentModelDialogue } from "../UpdateParentModelDialogue";
 import { DeleteModelDialogue } from "../DeleteModelDialogue";
 import { DuplicateModelDialogue } from "../DuplicateModelDialogue";
+import { UpdateBlockGroupDialogue } from "../UpdateBlockGroupDialogue";
 
 type Params = {
   id: string;
@@ -37,6 +38,7 @@ export const ModelDetails = () => {
     | "updateParent"
     | "duplicate"
     | "delete"
+    | "updateBlockGroup"
     | null
   >(null);
   const [isCopied, setIsCopied] = useState("");
@@ -101,7 +103,7 @@ export const ModelDetails = () => {
             </Box>
             <Box py={1.5}>
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                Edit
+                Update
               </Button>
             </Box>
           </Box>
@@ -143,7 +145,7 @@ export const ModelDetails = () => {
                 size="small"
                 onClick={() => setShowDialogue("updateDescription")}
               >
-                Edit
+                Update
               </Button>
             </Box>
           </Box>
@@ -190,7 +192,7 @@ export const ModelDetails = () => {
                 }}
               />
               <Button size="small" onClick={() => setShowDialogue("rename")}>
-                Edit
+                Update
               </Button>
             </Box>
           </Box>
@@ -228,30 +230,101 @@ export const ModelDetails = () => {
               )}
             </Box>
             <Box display="flex" py={1.5}>
-              <Button
-                size="small"
-                disabled={!parentModel}
-                onClick={() =>
-                  history.push(`/schema/${parentModel?.contentModelZUID}`)
-                }
-              >
-                View
-              </Button>
-              <Box
-                sx={{
-                  borderLeft: (theme) => `1px solid ${theme.palette.border}`,
-                  width: "1px",
-                  mx: 1.5,
-                }}
-              />
+              {!!parentModel && (
+                <>
+                  <Button
+                    size="small"
+                    onClick={() =>
+                      history.push(`/schema/${parentModel?.contentModelZUID}`)
+                    }
+                  >
+                    View
+                  </Button>
+                  <Box
+                    sx={{
+                      borderLeft: (theme) =>
+                        `1px solid ${theme.palette.border}`,
+                      width: "1px",
+                      mx: 1.5,
+                    }}
+                  />
+                </>
+              )}
               <Button
                 size="small"
                 onClick={() => setShowDialogue("updateParent")}
               >
-                Edit
+                Update
               </Button>
             </Box>
           </Box>
+          {/* Block grouping will be implemented at a different point  */}
+          {/* {model?.type === "block" && (
+            <Box
+              display="flex"
+              alignItems="center"
+              px={2}
+              sx={{
+                borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+              }}
+            >
+              <Box
+                minWidth={280}
+                display="flex"
+                gap={1.5}
+                alignItems="center"
+                py={2}
+              >
+                <Typography color="text.primary">Block Group</Typography>
+                <Tooltip
+                  title="Add your block model to an existing group"
+                  placement="right"
+                >
+                  <InfoRoundedIcon
+                    color="action"
+                    sx={{ height: "12px", width: "12px" }}
+                  />
+                </Tooltip>
+              </Box>
+              <Box flex={1} py={2}>
+                {false ? (
+                  <Typography>{parentModel.label}</Typography>
+                ) : (
+                  <Typography color="text.disabled">None</Typography>
+                )}
+              </Box>
+              <Box display="flex" py={1.5}>
+                {!!parentModel && (
+                  <>
+                    <Button
+                      size="small"
+                      onClick={() =>
+                        // TODO: hot link to the All Models Page in the Blocks App and scroll to the appropriate model group
+                        // history.push(`/schema/${parentModel?.contentModelZUID}`)
+                        console.log("view block group")
+                      }
+                    >
+                      View
+                    </Button>
+                    <Box
+                      sx={{
+                        borderLeft: (theme) =>
+                          `1px solid ${theme.palette.border}`,
+                        width: "1px",
+                        mx: 1.5,
+                      }}
+                    />
+                  </>
+                )}
+                <Button
+                  size="small"
+                  onClick={() => setShowDialogue("updateBlockGroup")}
+                >
+                  Update
+                </Button>
+              </Box>
+            </Box>
+          )} */}
           <Box display="flex" alignItems="center" px={2}>
             <Box
               minWidth={280}
@@ -331,6 +404,9 @@ export const ModelDetails = () => {
           model={model}
           onClose={() => setShowDialogue(null)}
         />
+      )}
+      {showDialogue === "updateBlockGroup" && (
+        <UpdateBlockGroupDialogue onClose={() => setShowDialogue(null)} />
       )}
     </>
   );

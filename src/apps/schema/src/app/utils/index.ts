@@ -2,19 +2,21 @@ import { replace, isEmpty, toPairs } from "lodash";
 import { FieldSettingsOptions } from "../../../../../shell/services/types";
 import { Validation } from "../components/AddFieldModal/FieldFormInput";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
-import { FileTable } from "@zesty-io/material";
+import { FileTable, Block } from "@zesty-io/material";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 
 export const modelIconMap = {
   templateset: DescriptionRoundedIcon,
   dataset: FileTable,
   pageset: FormatListBulletedRoundedIcon,
+  block: Block,
 };
 
 export const modelNameMap = {
   templateset: "Single Page",
   dataset: "Dataset",
   pageset: "Multi Page",
+  block: "Block",
 };
 
 export const stringStartsWithVowel = (string: string): boolean => {

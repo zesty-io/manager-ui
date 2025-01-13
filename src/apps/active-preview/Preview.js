@@ -92,6 +92,8 @@ export function Preview(props) {
   });
   const [hasErrors, setHasErrors] = useState(false);
 
+  const isBlockItem = route?.startsWith("/-/block/");
+
   // Track initial version sent. We use this to make a determination
   // on whether current content has changed or the different version was
   // picked for previewing
@@ -245,28 +247,36 @@ export function Preview(props) {
   return (
     <>
       <Box bgcolor="grey.100" display="flex" alignItems="center" p={1}>
-        <IconButton
-          size="small"
-          onClick={() => handleCopyClick(`${domain}${route}`)}
-          mr={0.25}
-        >
-          {isCopied ? <CheckRounded /> : <LinkRounded />}
-        </IconButton>
-
-        <Link
-          href={`${domain}${route}`}
-          target="_blank"
-          noWrap
-          sx={{
-            direction: "rtl",
-            display: "block",
-            flex: "1",
-            textAlign: "left",
-          }}
-        >
-          {`${domain}${route}`}
-        </Link>
-
+        {!isBlockItem ? (
+          <>
+            <IconButton
+              size="small"
+              onClick={() => handleCopyClick(`${domain}${route}`)}
+              mr={0.25}
+            >
+              {isCopied ? <CheckRounded /> : <LinkRounded />}
+            </IconButton>
+            <Link
+              href={`${domain}${route}`}
+              target="_blank"
+              noWrap
+              sx={{
+                direction: "rtl",
+                display: "block",
+                flex: "1",
+                textAlign: "left",
+              }}
+            >
+              {`${domain}${route}`}
+            </Link>
+          </>
+        ) : (
+          <Box flex={1}>
+            <Typography variant="body2" fontWeight={600}>
+              Preview
+            </Typography>
+          </Box>
+        )}
         <IconButton
           size="small"
           onClick={() => setRefresh(Date.now())}
@@ -277,6 +287,15 @@ export function Preview(props) {
         >
           <RefreshRounded />
         </IconButton>
+        {isBlockItem && (
+          <IconButton
+            size="small"
+            onClick={() => handleCopyClick(`${domain}${route}`)}
+            mr={0.25}
+          >
+            {isCopied ? <CheckRounded /> : <LinkRounded />}
+          </IconButton>
+        )}
         <IconButton
           size="small"
           onClick={(event) => setScaleAnchorEl(event.currentTarget)}
@@ -373,9 +392,11 @@ export function Preview(props) {
         >
           <OpenInNewRounded />
         </IconButton>
-        <IconButton size="small" onClick={() => sendMessage("close")}>
-          <CloseRounded />
-        </IconButton>
+        {!isBlockItem && (
+          <IconButton size="small" onClick={() => sendMessage("close")}>
+            <CloseRounded />
+          </IconButton>
+        )}
       </Box>
       <Box
         sx={{

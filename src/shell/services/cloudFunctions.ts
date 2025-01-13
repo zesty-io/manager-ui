@@ -23,7 +23,26 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
-
+    createScreenshot: builder.mutation<
+      {
+        url: string;
+      },
+      string
+    >({
+      query: (url) => {
+        return {
+          url: `createScreenshot`,
+          method: "GET",
+          params: {
+            // @ts-ignore
+            bucket: `${__CONFIG__.INSTANCE_SCREENSHOTS_BUCKET}`,
+            url: url,
+            w: 1280,
+            h: 720,
+          },
+        };
+      },
+    }),
     downloadCsv: builder.query<
       string[],
       {
@@ -54,6 +73,7 @@ export const cloudFunctionsApi = createApi({
 export const {
   useRefreshCacheMutation,
   useAiGenerationMutation,
+  useCreateScreenshotMutation,
   useDownloadCsvQuery,
   useLazyDownloadCsvQuery,
 } = cloudFunctionsApi;

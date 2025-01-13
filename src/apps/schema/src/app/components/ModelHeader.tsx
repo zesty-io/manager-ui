@@ -179,9 +179,15 @@ export const ModelHeader = ({ onNewFieldModalClick }: Props) => {
               variant="outlined"
               color="inherit"
               startIcon={<VerticalSplitRoundedIcon color="action" />}
-              onClick={() => history.push(`/content/${model?.ZUID}`)}
+              onClick={() => {
+                if (model?.type === "block") {
+                  history.push(`/blocks/${model?.ZUID}`);
+                } else {
+                  history.push(`/content/${model?.ZUID}`);
+                }
+              }}
             >
-              View Content
+              View {model?.type === "block" ? "Variants" : "Content"}
             </Button>
             <Button
               size="small"

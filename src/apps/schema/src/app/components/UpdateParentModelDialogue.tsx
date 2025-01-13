@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutline";
+import DriveFileRenameOutlineRounded from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import {
   useGetContentModelsQuery,
   useUpdateContentModelMutation,
@@ -68,7 +68,7 @@ export const UpdateParentModelDialogue = ({ onClose, model }: Props) => {
         >
           <DriveFileRenameOutlineRounded color="info" />
         </Box>
-        <Typography variant="h5" sx={{ mt: 1.5 }}>
+        <Typography variant="h5" fontWeight={700} mt={1.5}>
           Update Model Parent
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">

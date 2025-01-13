@@ -64,9 +64,14 @@ export const FieldTypeOneToOne = ({
 
   const handleOpen = () => {
     if (!loaded && onOpen) {
-      onOpen().then(() => {
-        setLoading(false);
-      });
+      onOpen()
+        .then(() => {
+          setLoading(false);
+        })
+        .catch((error: string) => {
+          console.error(error);
+          setLoading(false);
+        });
       setLoading(true);
       setLoaded(true);
     }

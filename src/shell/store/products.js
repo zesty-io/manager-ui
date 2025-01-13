@@ -1,3 +1,5 @@
+import { isZestyEmail } from "../../utility/isZestyEmail";
+
 export function products(state = ["content", "media"], action) {
   switch (action.type) {
     case "FETCH_PRODUCTS_SUCCESS":
@@ -97,6 +99,11 @@ export function fetchProducts() {
         // "release",
         "settings",
       ];
+    }
+
+    if (isZestyEmail(getState().user.email)) {
+      const contentIndex = data.indexOf("content");
+      data.splice(contentIndex + 1, 0, "blocks");
     }
 
     dispatch({

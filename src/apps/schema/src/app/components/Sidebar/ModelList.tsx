@@ -20,18 +20,20 @@ import { CreateModelDialogue } from "../CreateModelDialogue";
 import { modelIconMap } from "../../utils";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
 import { ModelMenu } from "../ModelMenu";
+import { capitalize } from "lodash";
 
 interface Props {
   title: string;
   type: string;
   models: ContentModel[];
+  app?: string;
 }
 
-export const ModelList = ({ title, models, type }: Props) => {
+export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
   const location = useLocation();
 
   const [sort, setSort] = useLocalStorage(
-    `zesty:navSchema-${title}:sort`,
+    `zesty:nav${capitalize(app)}-${title}:sort`,
     "asc"
   );
   const [modelZUID, setModelZUID] = useState("");
@@ -54,7 +56,7 @@ export const ModelList = ({ title, models, type }: Props) => {
           icon: modelIconMap[model.type],
           children: [],
           label: model.label,
-          path: `/schema/${model.ZUID}`,
+          path: `/${app}/${model.ZUID}`,
           actions: [
             <IconButton
               data-cy="tree-item-hide"
@@ -98,7 +100,7 @@ export const ModelList = ({ title, models, type }: Props) => {
   return (
     <>
       <NavTree
-        id={`schema-nav-${type}`}
+        id={`${app}-nav-${type}`}
         tree={sortedModels}
         selected={location.pathname.split("/").slice(0, 3).join("/")}
         HeaderComponent={

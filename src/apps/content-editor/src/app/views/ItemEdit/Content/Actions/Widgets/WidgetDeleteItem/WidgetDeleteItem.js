@@ -45,9 +45,10 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
               fontSize: "12px",
               lineHeight: "32px",
               color: "#101828",
+              textTransform: "uppercase",
             },
           }}
-          title="DELETE ITEM"
+          title={`Delete ${props?.altText || "Item"}`}
         ></CardHeader>
         <CardContent
           sx={{
@@ -64,6 +65,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
             sx={{
               fontSize: "14px",
               lineHeight: "20px",
+              maxWidth: "595px",
             }}
           >
             Delete this content? Removing it from all locations throughout your
@@ -84,7 +86,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
               mt: 1.5,
             }}
           >
-            Delete Item
+            Delete {props?.altText || "Item"}
           </Button>
         </CardContent>
       </Card>

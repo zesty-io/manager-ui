@@ -6,29 +6,37 @@ import {
   InputAdornment,
   IconButton,
   Typography,
-  Link,
   Tooltip,
-  Select,
+  Alert,
+  Button,
 } from "@mui/material";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import { ContentModel } from "../../../../../shell/services/types";
-import { useUpdateContentModelMutation } from "../../../../../shell/services/instance";
+import {
+  useGetWebViewsQuery,
+  useUpdateContentModelMutation,
+} from "../../../../../shell/services/instance";
 import { SelectModelParentInput } from "./SelectModelParentInput";
+import { useHistory } from "react-router";
 
 interface Props {
   model: ContentModel;
 }
 
 export const FieldsListRight = ({ model }: Props) => {
+  const history = useHistory();
   const [description, setDescription] = useState("");
   const [isCopied, setIsCopied] = useState(null);
   const [newParentZUID, setNewParentZUID] = useState(null);
   const [showSaveParentModelButton, setshowSaveParentModelButton] =
     useState(false);
+  const { data: views } = useGetWebViewsQuery();
+  const view = views?.find((view) => view?.contentModelZUID === model?.ZUID);
 
   useEffect(() => {
     if (model?.parentZUID) {
@@ -65,7 +73,7 @@ export const FieldsListRight = ({ model }: Props) => {
       });
   };
 
-  const handleSave = (type: "description" | "parentZUID") => {
+  const handleSave = (type: "description" | "parentZUID" | "blockGroup") => {
     let body = { ...model };
 
     switch (type) {
@@ -83,6 +91,10 @@ export const FieldsListRight = ({ model }: Props) => {
         };
         break;
 
+      case "blockGroup":
+        // TODO: Update data here
+        break;
+
       default:
         break;
     }
@@ -95,6 +107,35 @@ export const FieldsListRight = ({ model }: Props) => {
 
   return (
     <Box height="100%" width="280px" bgcolor="grey.50" py={2} pl={2} pr={4}>
+      {model?.type === "block" && view?.version === 1 && (
+        <Alert
+          severity="warning"
+          sx={{
+            display: "block",
+            mb: 3,
+          }}
+        >
+          <Box>
+            <Typography fontWeight={700} color="warning.dark">
+              Template File is empty
+            </Typography>
+            <Typography variant="body2">
+              Please add in the code for the block via the Code App.
+            </Typography>
+          </Box>
+          <Button
+            color="warning"
+            variant="contained"
+            startIcon={<CodeRoundedIcon />}
+            sx={{
+              mt: 1.5,
+            }}
+            onClick={() => history.push(`/code/file/views/${view?.ZUID}`)}
+          >
+            Edit Template File
+          </Button>
+        </Alert>
+      )}
       <InputLabel>
         Reference ID
         <Tooltip
@@ -197,6 +238,39 @@ export const FieldsListRight = ({ model }: Props) => {
           </LoadingButton>
         )}
       </Box>
+
+      {/* Block grouping will be implemented at a different point  */}
+      {/* {model?.type === "block" && (
+        <Box mt={3}>
+          <InputLabel>
+            Block Group
+            <Tooltip
+              placement="top"
+              title="Add your block model to an existing group"
+            >
+              <InfoRoundedIcon
+                sx={{ ml: 1, width: "12px", height: "12px" }}
+                color="action"
+              />
+            </Tooltip>
+          </InputLabel>
+          <Autocomplete
+            options={[]}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Select" />
+            )}
+          />
+          <LoadingButton
+            color="primary"
+            loading={isLoading}
+            variant="contained"
+            onClick={() => handleSave("blockGroup")}
+            sx={{ mt: 1.5 }}
+          >
+            Save
+          </LoadingButton>
+        </Box>
+      )} */}
 
       <InputLabel sx={{ mt: 3 }}>
         Description
