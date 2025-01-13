@@ -84,3 +84,51 @@ export const splitTextAndAccelerator = (
 
   return { text, resourceType };
 };
+
+export interface SearchResult {
+  text: string;
+  value: string;
+}
+
+export const sortMostRelevantSearch = (
+  searchResults: SearchResult[],
+  searchString: string
+): SearchResult[] => {
+  const normalize = (stringVal: string) => stringVal.replace(/^\/|\/$/g, "");
+
+  return searchResults.sort((a, b) => {
+    const normalizedSearch = normalize(searchString);
+    const normalizedA = normalize(a.text);
+    const normalizedB = normalize(b.text);
+
+    // 1. Exact match (normalized)
+    const isExactMatchA = normalizedA === normalizedSearch;
+    const isExactMatchB = normalizedB === normalizedSearch;
+
+    if (isExactMatchA && !isExactMatchB) return -1;
+    if (!isExactMatchA && isExactMatchB) return 1;
+
+    // 2. URLs starting with the search string
+    const startsWithSearchA = normalizedA.startsWith(normalizedSearch);
+    const startsWithSearchB = normalizedB.startsWith(normalizedSearch);
+
+    if (startsWithSearchA && !startsWithSearchB) return -1;
+    if (!startsWithSearchA && startsWithSearchB) return 1;
+
+    // 3. URLs containing the search string
+    const containsSearchA = normalizedA.includes(normalizedSearch);
+    const containsSearchB = normalizedB.includes(normalizedSearch);
+
+    if (containsSearchA && !containsSearchB) return -1;
+    if (!containsSearchA && containsSearchB) return 1;
+
+    // 4. Compare by nested levels (fewer segments come first)
+    const nestedLevelA = a.text.split("/").filter(Boolean).length;
+    const nestedLevelB = b.text.split("/").filter(Boolean).length;
+
+    if (nestedLevelA !== nestedLevelB) return nestedLevelA - nestedLevelB;
+
+    // 5. Alphabetical order
+    return normalizedA.localeCompare(normalizedB);
+  });
+};
