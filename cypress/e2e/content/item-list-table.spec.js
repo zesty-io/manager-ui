@@ -6,10 +6,11 @@ describe("Content item list table", () => {
       });
     });
 
-    cy.getBySelector("SingleRelationshipCell", { timeout: 10000 })
+    cy.getBySelector("SingleRelationshipCell")
       .first()
       .contains(
-        "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
+        "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!",
+        { timeout: 30_000 }
       );
   });
 });

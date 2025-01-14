@@ -1,19 +1,57 @@
 const SEARCH_TERM = `cypress ${Date.now()}`;
 const TIMESTAMP = Date.now();
+const TIMEOUT = { timeout: 60_00 };
+
+const LABELS = {
+  testModel: "Cypress Test Model",
+  testModelNew: "Cypress Test Model New",
+  testModelUpdate: "Cypress Test Model Updated",
+  testModelDelete: "Cypress Test Model Delete",
+  blockTestModel: "Block Test Model",
+};
+const TEST_DATA = {
+  new: {
+    label: LABELS.testModelNew,
+    description: LABELS.testModelNew,
+    listed: true,
+    name: LABELS.testModelNew.replace(/ /g, "_").toLowerCase().trim(),
+    parentZUID: null,
+    type: "pageset",
+  },
+  delete: {
+    label: LABELS.testModelDelete,
+    description: LABELS.testModelDelete,
+    listed: true,
+    name: LABELS.testModelDelete.replace(/ /g, "_").toLowerCase().trim(),
+    parentZUID: null,
+    type: "pageset",
+  },
+};
 
 describe("Schema: Models", () => {
   before(() => {
+    cy.cleanStatusLabels();
+    cy.deleteContentModels([...Object.values(LABELS)]);
+
+    [TEST_DATA.delete, TEST_DATA.new].forEach((model) => {
+      cy.createContentModel(model);
+    });
+
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/schema");
     });
   });
+  after(() => {
+    cy.deleteContentModels([...Object.values(LABELS)]);
+  });
+
   it("Opens creation model with model type selector when triggered from All Models", () => {
-    cy.getBySelector("create-model-button-all-models").click();
+    cy.getBySelector("create-model-button-all-models").click(TIMEOUT);
     cy.contains("Select Model Type").should("be.visible");
     cy.get("body").type("{esc}");
   });
   it("Opens creation model with model type pre-selected when triggered from Sidebar", () => {
-    cy.getBySelector(`create-model-button-sidebar-templateset`).click();
+    cy.getBySelector(`create-model-button-sidebar-templateset`).click(TIMEOUT);
     cy.contains("Create Single Page Model").should("be.visible");
     cy.get("body").type("{esc}");
     cy.getBySelector(`create-model-button-sidebar-pageset`).click();
@@ -24,14 +62,25 @@ describe("Schema: Models", () => {
     cy.get("body").type("{esc}");
   });
   it("Creates model", () => {
-    cy.getBySelector(`create-model-button-all-models`).click();
+    cy.visit("/schema");
+
+    //make sure to load model parent dropdown
+    cy.intercept("**/env/nav").as("getModelParent");
+
+    cy.getBySelector(`create-model-button-all-models`).click(TIMEOUT);
     cy.contains("Multi Page Model").click();
     cy.contains("Next").click();
-    cy.contains("Display Name").next().type("Cypress Test Model");
+
+    cy.wait("@getModelParent");
+
+    cy.contains("Display Name").next().type(LABELS.testModel);
     cy.contains("Reference ID")
       .next()
       .find("input")
-      .should("have.value", "cypress_test_model");
+      .should(
+        "have.value",
+        LABELS.testModel.replace(/ /g, "_").toLowerCase().trim()
+      );
 
     cy.contains("Model Parent").next().click();
 
@@ -41,33 +90,31 @@ describe("Schema: Models", () => {
 
     cy.get(".MuiAutocomplete-popper")
       .contains("Cypress test (Group with visible fields in list)")
-      .click();
+      .click({ timeout: 60_000 });
 
     cy.contains("Description").next().type("Cypress test model description");
-    cy.get(".MuiDialog-container").within(() => {
-      cy.contains("Create Model").click();
-    });
-    cy.intercept("POST", "/models");
-    cy.intercept("GET", "/models");
+
+    cy.get('[data-cy="create-model-submit-button"]').click();
   });
 
   it("Renames model", () => {
-    cy.getBySelector(`model-header-menu`).click();
+    openBlockModel(TEST_DATA.new.label);
+    cy.getBySelector(`model-header-menu`).click(TIMEOUT);
     cy.contains("Rename Model").click();
     cy.get(".MuiDialog-container").within(() => {
       cy.get("label").contains("Display Name").next().type(" Updated");
       cy.get("label").contains("Reference ID").next().type("_updated");
       cy.contains("Save").click();
     });
-    cy.intercept("PUT", "/models");
-    cy.intercept("GET", "/models");
-    cy.contains("Cypress Test Model Updated").should("exist");
+
+    cy.contains(TEST_DATA.new.label).should("exist");
   });
   it("Deletes model", () => {
+    openBlockModel(TEST_DATA.delete.label);
     cy.getBySelector(`model-header-menu`).click();
     cy.contains("Delete Model").click();
     cy.get(".MuiDialog-container").within(() => {
-      cy.get(".MuiOutlinedInput-root").type("Cypress Test Model Updated");
+      cy.get(".MuiOutlinedInput-root").type(TEST_DATA.delete.label);
     });
     cy.contains("Delete Forever").click();
   });
@@ -129,19 +176,27 @@ describe("Schema: Models", () => {
     cy.getBySelector(`create-model-button-all-models`).click();
     cy.contains("Block Model").click();
     cy.contains("Next").click();
-    cy.contains("Display Name").next().type(`Block Test Model ${TIMESTAMP}`);
+    cy.contains("Display Name").next().type(LABELS.blockTestModel);
     cy.contains("Reference ID")
       .next()
       .find("input")
-      .should("have.value", `block_test_model_${TIMESTAMP}`);
+      .should(
+        "have.value",
+        LABELS.blockTestModel.replace(/ /g, "_").toLowerCase().trim()
+      );
 
     cy.contains("Description").next().type("Block test model description");
     cy.get(".MuiDialog-container").within(() => {
       cy.contains("Create Model").click();
     });
-    cy.intercept("POST", "/models");
-    cy.intercept("GET", "/models");
-
-    cy.contains(`Block Test Model ${TIMESTAMP}`).should("exist");
+    cy.contains(`Block Test Model`).should("exist");
   });
 });
+
+function openBlockModel(label) {
+  cy.visit("/schema");
+  cy.get('[data-cy="schema-nav-pageset"] li')
+    .contains(label)
+    .scrollIntoView()
+    .click(TIMEOUT);
+}

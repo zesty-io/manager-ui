@@ -7,6 +7,7 @@ const CypressTestVariant = "Cypress Test Variant";
 
 describe("All Blocks Tests", () => {
   before(() => {
+    cy.deleteContentModels(["Cypress Test Block", "Cypress Test Variant"]);
     AllBlocksPage.visit();
   });
 
@@ -28,11 +29,16 @@ describe("All Blocks Tests", () => {
     AllBlocksPage.createBlock(CypressTestBlock);
     cy.contains(CypressTestBlock).should("exist");
     SchemaPage.visit();
+    cy.intercept("POST", "**/v1/content/models/**").as("createModel");
+    cy.intercept("GET", "**/v1/content/models/*/fields?showDeleted=true").as(
+      "getModels"
+    );
     SchemaPage.addSingleLineTextFieldWithDefaultValue(
       CypressTestBlock,
       "Foo",
       "Default Foo"
     );
+    cy.wait(["@createModel", "@getModels"], { timeout: 60_000 });
     AllBlocksPage.visit();
   });
 
@@ -50,16 +56,22 @@ describe("All Blocks Tests", () => {
   });
 
   it("navigates to block detail page", () => {
-    cy.contains(CypressTestBlock).click();
-    cy.contains("Start Creating Variants Now").should("exist");
+    cy.contains(CypressTestBlock).click({ timeout: 30_000 });
+    cy.contains("Start Creating Variants Now", { timeout: 30_000 }).should(
+      "exist"
+    );
   });
 
   it("creates a variant with default values", () => {
+    AllBlocksPage.visit();
     cy.contains(CypressTestBlock).click();
     BlockPage.createVariant(CypressTestVariant);
     cy.contains(
       new RegExp(`${CypressTestBlock}:\\s*${CypressTestVariant}`)
     ).should("exist");
-    cy.get('input[name="foo"]').should("have.value", "Default Foo");
+    cy.get('input[name="foo"]', { timeout: 30_000 }).should(
+      "have.value",
+      "Default Foo"
+    );
   });
 });

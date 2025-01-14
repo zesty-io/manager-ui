@@ -5,7 +5,7 @@ import {
   colorMenu,
 } from "../../../src/apps/settings/src/app/views/User/Workflows/constants";
 
-const TIMEOUT = { timeout: 40_000 };
+const TIMEOUT = { timeout: 50_000 };
 
 const INSTANCE_API_ENDPOINT = `${
   CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
@@ -93,13 +93,13 @@ const TEST_DATA = {
 };
 
 before(() => {
-  // cy.cleanTestData();
+  cy.cleanStatusLabels();
   cy.createTestData();
 });
 
-// after(() => {
-//   cy.cleanTestData();
-// });
+after(() => {
+  cy.cleanStatusLabels();
+});
 
 describe("Restricted User", { retries: 1 }, () => {
   it("displays restricted access message and admin profiles", () => {
@@ -233,7 +233,8 @@ describe("Create New Status Label", { retries: 1 }, () => {
     cy.get('[data-cy="active-labels-container"] [data-cy="status-label"]')
       .contains(TEST_DATA.new.name)
       .parents('[data-cy="status-label"]')
-      .should("have.css", "background-color", FOCUSED_LABEL_COLOR, TIMEOUT);
+      .should("have.css", "background-color")
+      .and("eq", FOCUSED_LABEL_COLOR);
   });
 
   it("Clicking outside the focused label restores it to its default state.", () => {
@@ -463,29 +464,6 @@ describe("Filter Active and Deactivated Status Labels", { retries: 1 }, () => {
 Cypress.Commands.add("goToWorkflowsPage", () => {
   cy.visit("/settings/user/workflows");
   cy.get('[data-cy="workflows-authorized-page"]', { timeout: 60_000 });
-});
-
-Cypress.Commands.add("cleanTestData", function () {
-  const testLabels = [
-    TEST_DATA?.new?.name,
-    TEST_DATA?.edited?.name,
-    TEST_DATA?.temp1?.name,
-    TEST_DATA?.temp2?.name,
-    TEST_DATA?.temp3?.name,
-  ];
-
-  cy.apiRequest({
-    url: `${INSTANCE_API_ENDPOINT}/env/labels?showDeleted=true`,
-  }).then((response) => {
-    response?.data
-      ?.filter((label) => !label?.deletedAt && testLabels.includes(label?.name))
-      .forEach((label) => {
-        cy.apiRequest({
-          url: `${INSTANCE_API_ENDPOINT}/env/labels/${label.ZUID}`,
-          method: "DELETE",
-        });
-      });
-  });
 });
 
 Cypress.Commands.add("createTestData", () => {

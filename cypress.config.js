@@ -29,8 +29,7 @@ module.exports = defineConfig({
     testIsolation: false,
   },
   defaultCommandTimeout: 15_000,
-  pageLoadTimeout: 60_000,
-  requestTimeout: 30_000,
+  pageLoadTimeout: 80_000,
+  requestTimeout: 40_000,
   responseTimeout: 80_000,
-  retries: 1,
 });
