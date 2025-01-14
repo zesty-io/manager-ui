@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,7 +11,9 @@ import {
 } from "@mui/material";
 import { CloseRounded, Search } from "@mui/icons-material";
 
-import { FieldSelectorFilters } from "./FieldSelectorFilters";
+import { FieldSelectorFilters, STATUS_FILTER } from "./FieldSelectorFilters";
+import { DateFilterValue } from "../../Filters/DateFilter";
+import { useGetLangsQuery } from "../../../services/instance";
 
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -24,7 +26,23 @@ export const FieldSelectorDialog = ({
   modelName,
 }: FieldSelectorDialogProps) => {
   const [filterKeyword, setFilterKeyword] = useState<string>(null);
-  const [activeSortOrder, setActiveSortOrder] = useState<string>("lastSaved");
+  const [sortOrder, setSortOrder] = useState<string>("lastSaved");
+  const [statusFilter, setStatusFilter] =
+    useState<keyof typeof STATUS_FILTER>(null);
+  const [userFilter, setUserFilter] = useState<string>(null);
+  const [dateFilter, setDateFilter] = useState<DateFilterValue>({
+    type: "",
+    value: "",
+  });
+  const [langFilter, setLangFilter] = useState<number>(null);
+
+  const { data: langs } = useGetLangsQuery({});
+
+  useEffect(() => {
+    if (!!langs.length) {
+      setLangFilter(langs.find((lang) => lang.default)?.ID);
+    }
+  }, [langs]);
 
   return (
     <Dialog
@@ -88,8 +106,18 @@ export const FieldSelectorDialog = ({
         />
         <FieldSelectorFilters
           modelZUID={modelZUID}
-          activeSortOrder={activeSortOrder}
-          onUpdateActiveSortOrder={(sortOrder) => setActiveSortOrder(sortOrder)}
+          sortOrder={sortOrder}
+          onUpdateSortOrder={(newSortOrder) => setSortOrder(newSortOrder)}
+          statusFilter={statusFilter}
+          onUpdateStatusFilter={(newStatusFilter) =>
+            setStatusFilter(newStatusFilter)
+          }
+          userFilter={userFilter}
+          onUpdateUserFilter={(userZUID) => setUserFilter(userZUID)}
+          dateFilter={dateFilter}
+          onUpdateDateFilter={(newDateFilter) => setDateFilter(newDateFilter)}
+          langFilter={langFilter}
+          onUpdateLangFilter={(langID) => setLangFilter(langID)}
         />
       </DialogContent>
     </Dialog>
