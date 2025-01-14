@@ -69,7 +69,6 @@ describe("Content Item Workflows", () => {
       cy.visit(`/content/6-b6cde1aa9f-wftv50/${response.data?.ZUID}`);
     });
   });
-
   after(() => {
     // Delete test content item
     cy.location("pathname").then((loc) => {

@@ -1,17 +1,11 @@
 import instanceZUID from "../../src/utility/instanceZUID";
 import CONFIG from "../../src/shell/app.config";
 
-const INSTANCE_API_ENDPOINT = `${
-  CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
-}${instanceZUID}${CONFIG?.[process.env.NODE_ENV]?.API_INSTANCE}`;
-
-const DEFAULT_STATUS_LABELS_ZUIDS = [
-  "36-14b315-4pp20v3d",
-  "36-14b315-d24ft",
-  "36-n33d5-23v13w",
-];
-
-const DEFAULT_STATUS_LABELS_NAMES = ["Approved", "Needs Review", "Draft"];
+const API_ENDPOINTS = {
+  devInstance: `${
+    CONFIG[process.env.NODE_ENV]?.API_INSTANCE_PROTOCOL
+  }${instanceZUID}${CONFIG[process.env.NODE_ENV]?.API_INSTANCE}`,
+};
 
 Cypress.Commands.add("login", () => {
   const formBody = new FormData();
@@ -80,33 +74,84 @@ Cypress.Commands.add(
           method,
           headers: { authorization: `Bearer ${token}` },
           ...(body ? { body: body } : {}),
+          failOnStatusCode: false,
         })
-        .then((response) => ({
-          status: response?.isOkStatusCode ? "success" : "error",
-          data: response?.body?.data,
-        }));
+        .then((response) => {
+          return {
+            status: response?.isOkStatusCode ? "success" : "error",
+            data: response?.body?.data,
+          };
+        });
     });
   }
 );
 
-Cypress.Commands.add("workflowStatusLabelCleanUp", function () {
+Cypress.Commands.add("deleteStatusLabels", (labels = []) => {
+  cy.log(`[CLEAN UP] Status Labels`);
   cy.apiRequest({
-    url: `${INSTANCE_API_ENDPOINT}/env/labels?showDeleted=true`,
+    url: `${API_ENDPOINTS}/env/labels?showDeleted=true`,
   }).then((response) => {
-    console.debug("workflowStatusLabelCleanUp | response LABELS: ", response);
-
     response?.data
       ?.filter(
-        (label) =>
-          !label?.deletedAt &&
-          !DEFAULT_STATUS_LABELS_NAMES.includes(label?.name) &&
-          !DEFAULT_STATUS_LABELS_ZUIDS.includes(label?.ZUID)
+        (resData) => !resData?.deletedAt && [...labels].includes(resData?.name)
       )
-      .forEach((label) => {
+      .forEach((labelForDelete) => {
         cy.apiRequest({
-          url: `${INSTANCE_API_ENDPOINT}/env/labels/${label.ZUID}`,
+          url: `${API_ENDPOINTS.devInstance}/env/labels/${labelForDelete.ZUID}`,
           method: "DELETE",
         });
       });
+  });
+});
+
+Cypress.Commands.add("cleanStatusLabels", () => {
+  const DEFAULT_STATUS_LABELS_ZUIDS = [
+    "36-14b315-4pp20v3d",
+    "36-14b315-d24ft",
+    "36-n33d5-23v13w",
+  ];
+  const DEFAULT_STATUS_LABELS_NAMES = ["Approved", "Needs Review", "Draft"];
+  cy.log(`[CLEAN UP] Status Labels`);
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/env/labels?showDeleted=true`,
+  }).then((response) => {
+    response?.data
+      ?.filter(
+        (resData) =>
+          !resData?.deletedAt &&
+          !DEFAULT_STATUS_LABELS_NAMES.includes(resData?.name) &&
+          !DEFAULT_STATUS_LABELS_ZUIDS.includes(resData?.ZUID)
+      )
+      .forEach((labelForDelete) => {
+        console.debug("labelForDelete | labelForDelete: ", labelForDelete);
+        cy.apiRequest({
+          url: `${API_ENDPOINTS.devInstance}/env/labels/${labelForDelete.ZUID}`,
+          method: "DELETE",
+        });
+      });
+  });
+});
+
+Cypress.Commands.add("deleteContentModels", (models = []) => {
+  cy.log(`[CLEAN UP] Content Models`);
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/content/models`,
+  }).then((response) => {
+    response?.data
+      ?.filter((resData) => [...models].includes(resData?.label))
+      .forEach((forDelete) => {
+        cy.apiRequest({
+          url: `${API_ENDPOINTS.devInstance}/content/models/${forDelete.ZUID}`,
+          method: "DELETE",
+        });
+      });
+  });
+});
+
+Cypress.Commands.add("createContentModel", (payload) => {
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/content/models`,
+    method: "POST",
+    body: payload,
   });
 });

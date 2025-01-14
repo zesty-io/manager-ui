@@ -16,9 +16,6 @@
 // Import commands.js using ES2015 syntax:
 import "./commands";
 import "cypress-iframe";
-import { preCleanUp } from "./cleanup";
-
-let preCleanupHasExeciuted = false;
 
 // @see https://docs.cypress.io/api/cypress-api/cookies.html#Set-global-default-cookies
 // Cypress.Cookies.defaults({
@@ -48,17 +45,6 @@ before(() => {
 
   // Blocks the api call to render the announcement popup
   cy.blockAnnouncements();
-
-  if (!preCleanupHasExeciuted) {
-    cy.getCookie(Cypress.env("COOKIE_NAME"))
-      .then((cookie) => {
-        preCleanUp(cookie?.value);
-      })
-      .then(() => {
-        // SET TO FALSE TO EXECUTE CLEANUP BEFORE EACH TEST
-        preCleanupHasExeciuted = false;
-      });
-  }
 });
 
 // Before each test in spec

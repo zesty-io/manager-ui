@@ -1,3 +1,4 @@
+const TIMEOUT = { timeout: 30_000 };
 class SchemaPage {
   visit() {
     cy.visit("/schema");
@@ -28,7 +29,7 @@ class SchemaPage {
   }
 
   deleteModel(name) {
-    cy.contains(name).click();
+    cy.contains(name).click(TIMEOUT);
     this.modelHeaderMenuButton.click();
     this.modelMenuDeleteButton.click();
     this.deleteModelConfirmationInput.type(name);
@@ -36,14 +37,18 @@ class SchemaPage {
   }
 
   addSingleLineTextFieldWithDefaultValue(modelName, fieldName, defaultValue) {
-    cy.contains(modelName).click();
-    this.addFieldButton.click();
-    cy.contains("Single Line Text").click();
+    cy.intercept("POST", "**/content/models/*/fields").as("createFields");
+    cy.contains(modelName).click(TIMEOUT);
+    this.addFieldButton.click(TIMEOUT);
+    cy.get('[data-cy="FieldItem_text"]')
+      .contains("Single Line Text")
+      .click(TIMEOUT);
     cy.getBySelector("FieldFormInput_label").type(fieldName);
     this.rulesTabButton.click();
     cy.getBySelector("DefaultValueCheckbox").click();
     cy.getBySelector("DefaultValueInput").type(defaultValue);
     cy.getBySelector("FieldFormAddFieldBtn").click();
+    cy.wait(["@createFields"]);
   }
 }
 

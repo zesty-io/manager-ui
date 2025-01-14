@@ -1,3 +1,7 @@
+const LABELS = {
+  cypressTest: "Cypress test (Group with visible fields in list)",
+};
+
 describe("Navigation through content editor", () => {
   before(() => {
     cy.waitOn("/v1/env/nav", () => {
@@ -24,7 +28,7 @@ describe("Navigation through content editor", () => {
     cy.getBySelector("create_new_content_item_dialog").should("exist");
     cy.getBySelector("create_new_content_item_input")
       .find("input")
-      .type("cypress");
+      .type(LABELS.cypressTest);
     cy.get(".MuiAutocomplete-listbox .MuiAutocomplete-option")
       .first()
       .should("exist")

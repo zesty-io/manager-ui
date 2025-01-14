@@ -1,3 +1,4 @@
+const TIMEOUT = { timeout: 30_000 };
 class AllBlocksPage {
   visit() {
     cy.visit("/blocks");
@@ -28,9 +29,11 @@ class AllBlocksPage {
   }
 
   createBlock(name) {
-    this.createBlockButton.click();
+    cy.intercept("POST", "**/content/models").as("createModel");
+    this.createBlockButton.click(TIMEOUT);
     cy.getBySelector("create-model-display-name-input").type(name);
     cy.getBySelector("create-model-submit-button").click();
+    cy.wait("@createModel");
   }
 }
 

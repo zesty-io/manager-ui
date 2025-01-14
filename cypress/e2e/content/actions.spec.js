@@ -11,6 +11,10 @@ const yesterdayTimestamp = moment()
 describe("Actions in content editor", () => {
   const timestamp = Date.now();
 
+  before(() => {
+    cy.cleanStatusLabels();
+  });
+
   it("Must not save when missing required Field", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
@@ -83,7 +87,7 @@ describe("Actions in content editor", () => {
     cy.get("#12-f8efe4e0f5-xj7pj6 input").should("not.exist");
 
     // Make an edit to enable save button
-    cy.get("#12-849844-t8v5l6 input").clear().type(timestamp);
+    cy.get("#12-849844-t8v5l6 input").clear().type(timestamp.toString());
 
     // save to api
     cy.waitOn(
@@ -95,7 +99,6 @@ describe("Actions in content editor", () => {
 
     cy.get("[data-cy=toast]").contains("Item Saved");
   });
-
   it("Saves homepage item metadata", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
@@ -119,9 +122,8 @@ describe("Actions in content editor", () => {
   it("Publishes an item", () => {
     cy.getBySelector("PublishButton").click();
     cy.getBySelector("ConfirmPublishModal").should("exist");
-    cy.getBySelector("ConfirmPublishButton").click();
-
     cy.intercept("GET", "**/publishings").as("publish");
+    cy.getBySelector("ConfirmPublishButton").click();
     cy.wait("@publish", { timeout: 30_000 });
 
     cy.getBySelector("ContentPublishedIndicator").should("exist");
@@ -212,17 +214,18 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
     });
 
-    cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
+    cy.get("input[name=title]")
+      .click({ timeout: 30_000 })
+      .type(timestamp.toString());
     cy.getBySelector("ManualMetaFlow").click();
     cy.getBySelector("metaDescription")
       .find("textarea")
       .first()
-      .type(timestamp);
+      .type(timestamp.toString());
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", { timeout: 5000 }).should("exist");
+    cy.contains("Created Item", { timeout: 30_000 }).should("exist");
   });
-
   it("Saved item becomes publishable", () => {
     cy.get("#PublishButton").should("exist");
   });
@@ -232,7 +235,7 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0");
     });
 
-    cy.contains(timestamp, { timeout: 5000 }).should("exist");
+    cy.contains(timestamp, { timeout: 30_000 }).should("exist");
   });
 
   it("Deletes an item", () => {
@@ -258,7 +261,7 @@ describe("Actions in content editor", () => {
     // dealing with these specific endpoints
     // the local environment is slow
     cy.contains("Successfully sent workflow request", {
-      timeout: 15_000,
+      timeout: 30_000,
     }).should("exist");
   });
 
