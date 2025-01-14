@@ -9,6 +9,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 import { ActiveItem } from "./ActiveItem";
+import { FieldSelectorDialog } from "./FieldSelectorDialog";
 import {
   useGetContentModelQuery,
   useGetContentModelItemsQuery,
@@ -36,6 +37,7 @@ export const RelationalFieldBase = ({
   const [langCode, setLangCode] = useState("");
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(","));
   const [showAll, setShowAll] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
   const { data: langs } = useGetLangsQuery({});
   const { data: modelData } = useGetContentModelQuery(relatedModelZUID, {
@@ -122,12 +124,20 @@ export const RelationalFieldBase = ({
           size="large"
           startIcon={<LinkRounded />}
           fullWidth
+          onClick={(evt) => setAnchorEl(evt.currentTarget)}
           sx={{
             mt: 1,
           }}
         >
           Add Existing {modelData?.label}
         </Button>
+      )}
+      {!!anchorEl && (
+        <FieldSelectorDialog
+          onClose={() => setAnchorEl(null)}
+          modelZUID={relatedModelZUID}
+          modelName={modelData?.label}
+        />
       )}
     </Box>
   );
