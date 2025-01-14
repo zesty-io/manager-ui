@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import moment from "moment";
-import { useDebounce } from "react-use";
 
 import { ContentItem } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
@@ -38,22 +37,17 @@ export const VariantSelector = ({
 }: VariantSelectorProps) => {
   const { data: users } = useGetUsersQuery();
   const [filterKeyword, setFilterKeyword] = useState("");
-  const [debouncedFilterKeyword, setDebouncedFilterKeyword] = useState("");
   const filterTextField = useRef(null);
 
-  useDebounce(() => setDebouncedFilterKeyword(filterKeyword), 200, [
-    filterKeyword,
-  ]);
-
   const filteredVariants = useMemo(() => {
-    if (!debouncedFilterKeyword) return variants;
+    if (!filterKeyword) return variants;
 
     return variants?.filter((variant) =>
       variant?.web?.metaTitle
         ?.toLowerCase()
-        ?.includes(debouncedFilterKeyword?.toLowerCase()?.trim())
+        ?.includes(filterKeyword?.toLowerCase()?.trim())
     );
-  }, [variants, debouncedFilterKeyword]);
+  }, [variants, filterKeyword]);
 
   const getUserName = (ZUID: string) => {
     const user = users?.find((user) => user.ZUID === ZUID);
