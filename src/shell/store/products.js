@@ -26,7 +26,6 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
-          "blocks",
           "schema",
           "media",
           "code",
@@ -43,7 +42,6 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
-          "blocks",
           "schema",
           "media",
           "code",
@@ -59,7 +57,6 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
-          "blocks",
           "media",
           "leads",
           "reports",
@@ -71,7 +68,6 @@ export function fetchProducts() {
         data = [
           "launchpad",
           "content",
-          "blocks",
           "media",
           "leads",
           "redirects",
@@ -80,7 +76,7 @@ export function fetchProducts() {
         ];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
-        data = ["launchpad", "content", "blocks", "media", "apps"];
+        data = ["launchpad", "content", "media", "apps"];
         break;
       case "31-71cfc74-m3d14":
         data = ["media"];
