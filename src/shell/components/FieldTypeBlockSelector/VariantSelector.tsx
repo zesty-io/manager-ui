@@ -140,7 +140,9 @@ export const VariantSelector = ({
                     component="img"
                     width={468}
                     height={320}
-                    src="https://via.placeholder.com/468x320"
+                    src={
+                      (variant?.data?.og_image as string) || blockPlaceholder
+                    }
                     loading="lazy"
                     borderRadius={2}
                   ></Box>
