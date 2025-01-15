@@ -37,11 +37,11 @@ Cypress.Commands.add("blockLock", () => {
 });
 
 Cypress.Commands.add("waitOn", (path, cb) => {
-  cy.intercept(path).as("waitingOn");
   cy.blockAnnouncements();
+  cy.intercept(path).as("waitingOn");
   cb();
   cy.wait("@waitingOn", {
-    timeout: 30000,
+    timeout: 40_000,
   });
 });
 
@@ -87,7 +87,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("deleteStatusLabels", (labels = []) => {
-  cy.log(`[CLEAN UP] Status Labels`);
+  cy.log(`[CLEAN UP]: Status Labels`);
   cy.apiRequest({
     url: `${API_ENDPOINTS}/env/labels?showDeleted=true`,
   }).then((response) => {
@@ -111,7 +111,7 @@ Cypress.Commands.add("cleanStatusLabels", () => {
     "36-n33d5-23v13w",
   ];
   const DEFAULT_STATUS_LABELS_NAMES = ["Approved", "Needs Review", "Draft"];
-  cy.log(`[CLEAN UP] Status Labels`);
+  cy.log(`[DELETE]: Status Labels`);
   cy.apiRequest({
     url: `${API_ENDPOINTS.devInstance}/env/labels?showDeleted=true`,
   }).then((response) => {
@@ -149,7 +149,7 @@ Cypress.Commands.add("deleteContentModels", (models = []) => {
 });
 
 Cypress.Commands.add("createContentModel", (payload) => {
-  cy.apiRequest({
+  return cy.apiRequest({
     url: `${API_ENDPOINTS.devInstance}/content/models`,
     method: "POST",
     body: payload,

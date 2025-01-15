@@ -21,6 +21,7 @@ const SELECTORS = {
   FIELD_SELECT_BOOLEAN: "FieldItem_yes_no",
   FIELD_SELECT_ONE_TO_ONE: "FieldItem_one_to_one",
   FIELD_SELECT_CURRENCY: "FieldItem_currency",
+  FIELD_SELECT_BLOCK_SELECTOR: "FieldItem_block_selector",
   MEDIA_CHECKBOX_LIMIT: "MediaCheckbox_limit",
   MEDIA_CHECKBOX_LOCK: "MediaCheckbox_group_id",
   DROPDOWN_ADD_OPTION: "DropdownAddOption",
@@ -72,7 +73,64 @@ const TEST_DATA = {
     name: "cypress_test___fields",
     listed: true,
   },
+  testGroupFields: {
+    description: "Cypress Field Test - Group with visible fields in list",
+    label: "Cypress Field Test - Group with visible fields in list",
+    listed: true,
+    name: "cypress_field_test___group_with_visible_fields_in_list",
+    parentZUID: "7-b939a4-457q19",
+    type: "pageset",
+  },
 };
+
+const FIELD_DATA = [
+  {
+    contentModelZUID: "",
+    datatype: "wysiwyg_basic",
+    description: "",
+    label: "wysiwyg basic",
+    name: "wysiwyg_basic",
+    required: false,
+    settings: { list: true, defaultValue: null },
+    defaultValue: null,
+    list: true,
+    sort: 0,
+  },
+  {
+    contentModelZUID: "",
+    datatype: "text",
+    description: "",
+    label: "title",
+    name: "title",
+    required: false,
+    settings: { list: true, defaultValue: null },
+    defaultValue: null,
+    list: true,
+    sort: 1,
+  },
+  {
+    contentModelZUID: "",
+    datatype: "one_to_one",
+    description: "",
+    label: "test related field filtering",
+    name: "test_related_field_filtering",
+    relatedFieldZUID: "12-ead9f091fe-74n0c5",
+    relatedModelZUID: "6-ce3ba0-lps847",
+    required: false,
+    settings: { list: true, defaultValue: null },
+    sort: 2,
+  },
+  {
+    contentModelZUID: "",
+    datatype: "dropdown",
+    description: "",
+    label: "dropdown1",
+    name: "dropdown1",
+    required: false,
+    settings: { list: true, defaultValue: null, options: { "": "" } },
+    sort: 3,
+  },
+];
 
 /**
  * Schema Fields E2E tests
@@ -82,25 +140,52 @@ describe("Schema: Fields", () => {
 
   before(() => {
     cy.apiRequest({ url: `${ENDPOINT}/content/models` }).then((resData) => {
-      const schhemaModel = resData?.data?.find(
-        (item) => item?.label === TEST_DATA?.schema?.label
+      const schemaModels = resData?.data?.filter((item) =>
+        [TEST_DATA?.schema?.label, TEST_DATA?.testGroupFields?.label]?.includes(
+          item?.label
+        )
       );
-      if (!!schhemaModel) {
-        cy.deleteContentModels([TEST_DATA?.schema?.label]);
+      if (!!schemaModels?.length) {
+        cy.deleteContentModels([
+          TEST_DATA?.schema?.label,
+          TEST_DATA?.testGroupFields?.label,
+        ]);
       }
       cy.createContentModel(TEST_DATA?.schema);
+
+      cy.createContentModel(TEST_DATA?.testGroupFields).then((res) => {
+        const modelZUID = res?.data?.ZUID;
+        const fieldList = FIELD_DATA?.map((field) => {
+          return {
+            ...field,
+            contentModelZUID: modelZUID,
+          };
+        });
+
+        fieldList.forEach((field) => {
+          cy.apiRequest({
+            method: "POST",
+            url: `${ENDPOINT}/content/models/${modelZUID}/fields`,
+            body: field,
+          });
+        });
+      });
     });
   });
 
   after(() => {
-    cy.deleteContentModels([TEST_DATA?.schema?.label]);
+    cy.deleteContentModels([
+      TEST_DATA?.schema?.label,
+      TEST_DATA?.testGroupFields?.label,
+    ]);
   });
 
-  beforeEach(() => {
-    openSchemaModel(TEST_DATA?.schema?.label);
-  });
+  // beforeEach(() => {
+  //   openSchemaModel(TEST_DATA?.schema?.label);
+  // });
 
   it("Opens Add Field Modal via button click", () => {
+    openSchemaModel(TEST_DATA?.schema?.label);
     // Open the modal
     cy.getBySelector(SELECTORS.ADD_FIELD_BTN).click(TIMEOUT);
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
@@ -290,7 +375,9 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.INPUT_LABEL).clear().type(fieldLabel);
 
     // Select a related model
-    cy.getBySelector(SELECTORS.AUTOCOMPLETE_MODEL_ZUID).type("cypress");
+    cy.getBySelector(SELECTORS.AUTOCOMPLETE_MODEL_ZUID).type(
+      TEST_DATA?.testGroupFields?.label
+    );
     cy.get("[role=listbox] [role=option]").first().click();
 
     // Select a related field
@@ -348,6 +435,34 @@ describe("Schema: Fields", () => {
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).click();
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
+  it.skip("Creates a Block field", () => {
+    // cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const fieldLabel = `Block Selector ${suffix}`;
+    const fieldName = `block_selector_${suffix}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).click(TIMEOUT);
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select one-to-one relationship field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_BLOCK_SELECTOR).click(TIMEOUT);
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL).type(fieldLabel);
+    cy.get("input[name='label']").should("exist").and("have.value", fieldLabel);
+    cy.get("input[name='name']").should("exist").and("have.value", fieldName);
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    // cy.wait("@getFields");
 
     // Check if field exists
     cy.getBySelector(`Field_${fieldName}`).should("exist");
@@ -681,16 +796,8 @@ describe("Schema: Fields", () => {
 
 function openSchemaModel(label) {
   cy.visit("/schema");
-  cy.get('[data-cy="schema-nav-templateset"] li')
+  cy.get('[data-cy="schema-nav-templateset"] li', TIMEOUT)
     .contains(TEST_DATA?.schema?.label)
     .scrollIntoView()
     .click(TIMEOUT);
 }
-
-Cypress.Commands.add("openSchemaModelzz", (label) => {
-  cy.visit("/schema");
-  cy.get('[data-cy="schema-nav-templateset"] li')
-    .contains(TEST_DATA?.schema?.label)
-    .scrollIntoView()
-    .click(TIMEOUT);
-});

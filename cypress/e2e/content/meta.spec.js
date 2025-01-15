@@ -67,9 +67,9 @@ describe("Content Meta", () => {
   });
 
   it("Does not validate meta description for dataset items", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/v1/env/nav", () => {
-        cy.waitOn("/v1/search/items*", () => {
+    cy.waitOn("**/v1/content/models*", () => {
+      cy.waitOn("**/v1/env/nav", () => {
+        cy.waitOn("**/v1/search/items*", () => {
           cy.visit("/content/6-675028-84dq4s/new");
         });
       });
@@ -81,9 +81,9 @@ describe("Content Meta", () => {
   });
 
   it("Auto applies page parent when creating an item", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/v1/env/nav", () => {
-        cy.waitOn("/v1/search/items*", () => {
+    cy.waitOn("**/v1/content/models*", () => {
+      cy.waitOn("**/v1/env/nav", () => {
+        cy.waitOn("**/v1/search/items*", () => {
           cy.visit("/content/6-0c960c-d1n0kx/new");
         });
       });
@@ -104,9 +104,9 @@ describe("Content Meta", () => {
   });
 
   it("Supports a dedicated Twitter title, description and image", () => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/v1/env/nav", () => {
-        cy.waitOn("/v1/search/items*", () => {
+    cy.waitOn("**/v1/content/models*", () => {
+      cy.waitOn("**/v1/env/nav", () => {
+        cy.waitOn("**/v1/search/items*", () => {
           cy.visit("/content/6-b6cde1aa9f-wftv50/7-92ab81c5a8-bhvb0l/meta");
         });
       });

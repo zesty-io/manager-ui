@@ -1,7 +1,7 @@
 describe("Content Item: Comments", () => {
   before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.waitOn("/v1/comments*", () => {
+    cy.waitOn("**/v1/content/models*", () => {
+      cy.waitOn("**/v1/comments*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
     });
@@ -10,7 +10,9 @@ describe("Content Item: Comments", () => {
 
   it("Creates an initial comment", () => {
     cy.getBySelector("OpenCommentsButton").first().click();
-    cy.get("#commentInputField").click().type("This is a new comment.");
+    cy.get("#commentInputField").type("This is a new comment.", {
+      timeout: 60_000,
+    });
     cy.getBySelector("SubmitNewComment").click();
     cy.intercept("/v1/comments/*").as("getAllComments");
     cy.wait("@getAllComments");

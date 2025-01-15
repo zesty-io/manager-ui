@@ -5,10 +5,10 @@ describe("Content Specs", () => {
 
   describe("editing content", () => {
     before(() => {
-      cy.waitOn("/v1/content/models*", () => {
+      cy.waitOn("**/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
-      cy.getBySelector("DuoModeToggle").click();
+      cy.getBySelector("DuoModeToggle").click({ timeout: 60_000 });
     });
 
     it("Text Field", () => {

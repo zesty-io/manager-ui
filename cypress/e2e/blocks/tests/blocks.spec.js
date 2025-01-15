@@ -10,7 +10,6 @@ const TIMEOUT = { timeout: 30_000 };
 describe("All Blocks Tests", () => {
   before(() => {
     cy.deleteContentModels(["Cypress Test Block", "Cypress Test Variant"]);
-    AllBlocksPage.visit();
   });
 
   after(() => {
@@ -18,7 +17,7 @@ describe("All Blocks Tests", () => {
   });
 
   it("should show and traverse onboarding flow", () => {
-    cy.visit("/blocks");
+    AllBlocksPage.visit();
     cy.get('[data-cy="onboarding-dialog"]', TIMEOUT).should("be.visible");
     const totalSteps = 4;
     for (let i = 0; i < totalSteps; i++) {
@@ -31,13 +30,11 @@ describe("All Blocks Tests", () => {
     AllBlocksPage.createBlock(CypressTestBlock);
     cy.contains(CypressTestBlock, TIMEOUT).should("exist");
     SchemaPage.visit();
-
     SchemaPage.addSingleLineTextFieldWithDefaultValue(
       CypressTestBlock,
       "Foo",
       "Default Foo"
     );
-
     AllBlocksPage.visit();
   });
 

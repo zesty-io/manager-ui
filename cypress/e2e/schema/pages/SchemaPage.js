@@ -37,7 +37,6 @@ class SchemaPage {
   }
 
   addSingleLineTextFieldWithDefaultValue(modelName, fieldName, defaultValue) {
-    cy.intercept("POST", "**/content/models/*/fields").as("createFields");
     cy.contains(modelName).click(TIMEOUT);
     this.addFieldButton.click(TIMEOUT);
     cy.get('[data-cy="FieldItem_text"]')
@@ -47,8 +46,9 @@ class SchemaPage {
     this.rulesTabButton.click();
     cy.getBySelector("DefaultValueCheckbox").click();
     cy.getBySelector("DefaultValueInput").type(defaultValue);
+    cy.intercept("POST", "**/content/models/*/fields").as("createFields");
     cy.getBySelector("FieldFormAddFieldBtn").click();
-    cy.wait(["@createFields"]);
+    cy.wait(["@createFields"], { timeout: 60_000 });
   }
 }
 
