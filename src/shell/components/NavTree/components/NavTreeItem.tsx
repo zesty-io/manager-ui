@@ -1,6 +1,6 @@
 import React, { FC, HTMLAttributes } from "react";
 import { TreeItem } from "@mui/x-tree-view";
-import { Stack, Box, Typography, Tooltip } from "@mui/material";
+import { Stack, Box, Typography, Tooltip, alpha } from "@mui/material";
 
 import { TreeItem as TreeItemType } from "../index";
 
@@ -15,6 +15,8 @@ interface Props {
   nodeData?: any;
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
+  hoveredItemId?: string;
+  setHoveredItemId?: (id: string) => void;
 }
 export const NavTreeItem: FC<Props> = React.memo(
   ({
@@ -28,9 +30,12 @@ export const NavTreeItem: FC<Props> = React.memo(
     nodeData,
     onItemDrop,
     dragAndDrop = false,
+    hoveredItemId = "",
+    setHoveredItemId = () => {},
   }) => {
     const currentDepth = depth + 1;
     const depthPadding = currentDepth * 1;
+    const itemId = `${nodeId}-${currentDepth}`;
 
     return (
       <TreeItem
@@ -93,7 +98,10 @@ export const NavTreeItem: FC<Props> = React.memo(
             py: 0.5,
             pl: 1,
             borderRadius: 0,
-
+            "&.is-hovered": {
+              backgroundColor: (theme) =>
+                alpha(theme.palette.primary.main, 0.07),
+            },
             ".MuiTreeItem-iconContainer": {
               width: 20,
               height: 20,
@@ -136,6 +144,10 @@ export const NavTreeItem: FC<Props> = React.memo(
           },
         }}
         ContentProps={{
+          className: itemId === hoveredItemId ? "is-hovered" : "",
+          onMouseEnter: (event: any) => {
+            setHoveredItemId(itemId);
+          },
           onDragOver: (event: any) => {
             if (dragAndDrop) {
               event.preventDefault();
@@ -177,6 +189,8 @@ export const NavTreeItem: FC<Props> = React.memo(
                 actions={item.actions ?? []}
                 onItemDrop={onItemDrop}
                 dragAndDrop={dragAndDrop}
+                hoveredItemId={hoveredItemId}
+                setHoveredItemId={setHoveredItemId}
               />
             );
           })}
