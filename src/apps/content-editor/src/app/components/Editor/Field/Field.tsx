@@ -53,6 +53,7 @@ import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDa
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
+import { FieldTypeBlockSelector } from "../../../../../../../shell/components/FieldTypeBlockSelector";
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
@@ -957,6 +958,18 @@ export const Field = ({
               onChange(parseInt(evt.target.value) || 0, name);
             }}
             error={errors && Object.values(errors)?.some((error) => !!error)}
+          />
+        </FieldShell>
+      );
+
+    case "block_selector":
+      return (
+        <FieldShell settings={fieldData} errors={errors}>
+          <FieldTypeBlockSelector
+            value={value ? value?.toString() : null}
+            onChange={(value) => onChange(value, name, datatype)}
+            requiredError={errors?.MISSING_REQUIRED}
+            missingVariantError={errors?.INVALID_BLOCK_VARIANT}
           />
         </FieldShell>
       );
