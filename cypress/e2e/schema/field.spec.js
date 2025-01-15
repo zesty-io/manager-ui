@@ -18,6 +18,7 @@ const SELECTORS = {
   FIELD_SELECT_BOOLEAN: "FieldItem_yes_no",
   FIELD_SELECT_ONE_TO_ONE: "FieldItem_one_to_one",
   FIELD_SELECT_CURRENCY: "FieldItem_currency",
+  FIELD_SELECT_BLOCK_SELECTOR: "FieldItem_block_selector",
   MEDIA_CHECKBOX_LIMIT: "MediaCheckbox_limit",
   MEDIA_CHECKBOX_LOCK: "MediaCheckbox_group_id",
   DROPDOWN_ADD_OPTION: "DropdownAddOption",
@@ -322,7 +323,7 @@ describe("Schema: Fields", () => {
     // Select a related model
     cy.getBySelector(SELECTORS.AUTOCOMPLETE_MODEL_ZUID)
       .should("exist")
-      .type("cypress");
+      .type("group with visible");
     cy.get("[role=listbox] [role=option]").first().click();
 
     cy.wait("@getFields");
@@ -387,6 +388,40 @@ describe("Schema: Fields", () => {
     cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT).type("1000.50");
     // Verify default currency
     cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT).contains("PHP");
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
+  it("Creates a Block field", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const fieldLabel = `Block Selector ${timestamp}`;
+    const fieldName = `block_selector_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select one-to-one relationship field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_BLOCK_SELECTOR)
+      .should("exist")
+      .click();
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
+    cy.get("input[name='label']")
+      .should("exist")
+      .should("have.value", fieldLabel);
+    cy.get("input[name='name']")
+      .should("exist")
+      .should("have.value", fieldName);
+
     // Click done
     cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
     cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");

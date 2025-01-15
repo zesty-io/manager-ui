@@ -769,6 +769,7 @@ export const {
   useGetContentModelQuery,
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
+  useLazyGetContentModelItemsQuery,
   useSearchContentQuery,
   useGetContentModelFieldsQuery,
   useBulkUpdateContentModelFieldMutation,

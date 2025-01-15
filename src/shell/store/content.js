@@ -450,6 +450,17 @@ export function saveItem({
           item.data[field.name] > field.settings?.maxValue)
     );
 
+    // Validates that block_selector fields contain the correct format 6-xxxx-xxxx.html?variant=7-xxxx-xxxx
+    const invalidBlockVariantValue = fields?.filter((field) => {
+      if (field.datatype === "block_selector" && !!item.data[field.name]) {
+        if (!item.data[field.name]?.split("variant=")?.[1]) return true;
+
+        return false;
+      }
+
+      return false;
+    });
+
     // When skipContentItemValidation is true, this means that only the
     // SEO meta tags were changed, so we skip validating the content item
     if (
@@ -458,7 +469,8 @@ export function saveItem({
         lackingCharLength?.length ||
         regexPatternMismatch?.length ||
         regexRestrictPatternMatch?.length ||
-        invalidRange?.length)
+        invalidRange?.length ||
+        invalidBlockVariantValue?.length)
     ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",
@@ -469,6 +481,7 @@ export function saveItem({
           regexRestrictPatternMatch,
         }),
         ...(!!invalidRange?.length && { invalidRange }),
+        ...(!!invalidBlockVariantValue && { invalidBlockVariantValue }),
       });
     }
 
@@ -644,13 +657,25 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
           item.data[field.name] > field.settings?.maxValue)
     );
 
+    // Validates that block_selector fields contain the correct format 6-xxxx-xxxx.html?variant=7-xxxx-xxxx
+    const invalidBlockVariantValue = fields?.filter((field) => {
+      if (field.datatype === "block_selector" && !!item.data[field.name]) {
+        if (!item.data[field.name]?.split("variant=")?.[1]) return true;
+
+        return false;
+      }
+
+      return false;
+    });
+
     if (
       missingRequired?.length ||
       lackingCharLength?.length ||
       regexPatternMismatch?.length ||
       regexRestrictPatternMatch?.length ||
       invalidRange?.length ||
-      hasMissingRequiredSEOFields
+      hasMissingRequiredSEOFields ||
+      invalidBlockVariantValue?.length
     ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",
@@ -661,6 +686,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
           regexRestrictPatternMatch,
         }),
         ...(!!invalidRange?.length && { invalidRange }),
+        ...(!!invalidBlockVariantValue && { invalidBlockVariantValue }),
       });
     }
 
