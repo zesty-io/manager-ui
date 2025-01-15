@@ -323,7 +323,7 @@ describe("Schema: Fields", () => {
     // Select a related model
     cy.getBySelector(SELECTORS.AUTOCOMPLETE_MODEL_ZUID)
       .should("exist")
-      .type("cypress");
+      .type("group with visible");
     cy.get("[role=listbox] [role=option]").first().click();
 
     cy.wait("@getFields");
