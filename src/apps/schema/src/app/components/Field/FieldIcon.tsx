@@ -15,7 +15,7 @@ import ToggleOnRounded from "@mui/icons-material/ToggleOnRounded";
 import KeyboardArrowDownRounded from "@mui/icons-material/KeyboardArrowDownRounded";
 import ColorLensRounded from "@mui/icons-material/ColorLensRounded";
 import FormatListNumberedRounded from "@mui/icons-material/FormatListNumberedRounded";
-import { Markdown, OneToOne } from "@zesty-io/material";
+import { Markdown, OneToOne, Block } from "@zesty-io/material";
 import { Box } from "@mui/system";
 import { SvgIcon } from "@mui/material";
 
@@ -64,6 +64,11 @@ const icons: Icons = {
   },
   link: {
     icon: LinkRounded,
+    backgroundColor: "pink.50",
+    borderColor: "pink.600",
+  },
+  block_selector: {
+    icon: Block as SvgIconComponent,
     backgroundColor: "pink.50",
     borderColor: "pink.600",
   },
