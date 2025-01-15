@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -8,12 +8,17 @@ import {
   IconButton,
   InputAdornment,
   Stack,
+  Box,
 } from "@mui/material";
 import { CloseRounded, Search } from "@mui/icons-material";
+import { DataGridPro } from "@mui/x-data-grid-pro";
 
 import { FieldSelectorFilters, STATUS_FILTER } from "./FieldSelectorFilters";
 import { DateFilterValue } from "../../Filters/DateFilter";
-import { useGetLangsQuery } from "../../../services/instance";
+import {
+  useGetLangsQuery,
+  useGetContentModelItemsQuery,
+} from "../../../services/instance";
 
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -37,12 +42,48 @@ export const FieldSelectorDialog = ({
   const [langFilter, setLangFilter] = useState<number>(null);
 
   const { data: langs } = useGetLangsQuery({});
+  const langCode = langs?.find((lang) => lang.ID === langFilter)?.code;
+  const { data: contentItems, isFetching: isFetchingContentItems } =
+    useGetContentModelItemsQuery(
+      {
+        modelZUID,
+        params: {
+          lang: langCode,
+        },
+      },
+      { skip: !modelZUID || !langCode }
+    );
 
   useEffect(() => {
     if (!!langs.length) {
       setLangFilter(langs.find((lang) => lang.default)?.ID);
     }
   }, [langs]);
+
+  const columns = useMemo(() => {
+    return [
+      {
+        field: "image",
+      },
+      {
+        field: "name",
+      },
+      {
+        field: "version",
+      },
+    ];
+  }, []);
+
+  const rows = useMemo(() => {
+    if (!contentItems?.length) return [];
+
+    return contentItems.map((item) => ({
+      id: item.meta.ZUID,
+      image: "",
+      name: item?.web?.metaTitle,
+      version: item?.web?.version,
+    }));
+  }, [contentItems]);
 
   return (
     <Dialog
@@ -52,6 +93,7 @@ export const FieldSelectorDialog = ({
         sx: {
           width: 800,
           maxWidth: 800,
+          maxHeight: "min(1240px, calc(100% - 64px))",
         },
       }}
     >
@@ -84,6 +126,7 @@ export const FieldSelectorDialog = ({
           display: "flex",
           flexDirection: "column",
           gap: 2,
+          height: "100%",
 
           "&#fieldSelectorDialogBody": {
             pt: 2,
@@ -119,6 +162,28 @@ export const FieldSelectorDialog = ({
           langFilter={langFilter}
           onUpdateLangFilter={(langID) => setLangFilter(langID)}
         />
+        <Box height={rows?.length * 64 + 2} maxHeight={1024}>
+          <DataGridPro
+            checkboxSelection
+            columns={columns}
+            rows={rows}
+            headerHeight={0}
+            rowHeight={64}
+            hideFooter
+            // autoHeight
+            sx={{
+              bgcolor: "background.paper",
+
+              "& .MuiDataGrid-columnHeaders": {
+                borderBottom: 0,
+              },
+
+              "& .MuiDataGrid-cellCheckbox": {
+                mx: "3px",
+              },
+            }}
+          />
+        </Box>
       </DialogContent>
     </Dialog>
   );
