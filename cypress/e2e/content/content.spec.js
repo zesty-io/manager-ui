@@ -412,7 +412,7 @@ describe("Content Specs", () => {
     });
   });
 
-  describe.only("Block Selector Field", () => {
+  describe("Block Selector Field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
@@ -420,18 +420,14 @@ describe("Content Specs", () => {
     });
 
     it("Sets a block variant", () => {
-      cy.get("#12-88adc8c7ac-dwbbxf", { timeout: 10000 })
-        .find("[data-cy='BlockSelectorModelField'] input")
+      cy.getBySelector("BlockSelectorModelField", { timeout: 10000 })
+        .find("input")
         .click();
-      cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option").first().click();
-
-      cy.intercept("/v1/content/models/**").as("getItems");
-
-      cy.wait("@getItems");
-
-      cy.get("#12-88adc8c7ac-dwbbxf")
-        .find("[data-cy='BlockSelectorVariantField']")
+      cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option")
+        .contains("Test Block Do Not Delete")
         .click();
+
+      cy.getBySelector("BlockSelectorVariantField", { timeout: 10000 }).click();
       cy.getBySelector("Variant_0").click();
       cy.getBySelector("BlockFieldVariantPreview").should("exist");
     });
