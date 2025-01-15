@@ -137,6 +137,9 @@ export const RelationalFieldBase = ({
           onClose={() => setAnchorEl(null)}
           modelZUID={relatedModelZUID}
           modelName={modelData?.label}
+          relatedFieldName={
+            modelFields?.find((field) => field.ZUID === relatedFieldZUID)?.name
+          }
         />
       )}
     </Box>

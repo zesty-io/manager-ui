@@ -11,7 +11,7 @@ import {
   Box,
 } from "@mui/material";
 import { CloseRounded, Search } from "@mui/icons-material";
-import { DataGridPro } from "@mui/x-data-grid-pro";
+import { DataGridPro, GridRenderCellParams } from "@mui/x-data-grid-pro";
 
 import { FieldSelectorFilters, STATUS_FILTER } from "./FieldSelectorFilters";
 import { DateFilterValue } from "../../Filters/DateFilter";
@@ -24,11 +24,13 @@ type FieldSelectorDialogProps = {
   onClose: () => void;
   modelZUID: string;
   modelName: string;
+  relatedFieldName: string;
 };
 export const FieldSelectorDialog = ({
   onClose,
   modelZUID,
   modelName,
+  relatedFieldName,
 }: FieldSelectorDialogProps) => {
   const [filterKeyword, setFilterKeyword] = useState<string>(null);
   const [sortOrder, setSortOrder] = useState<string>("lastSaved");
@@ -64,12 +66,46 @@ export const FieldSelectorDialog = ({
     return [
       {
         field: "image",
+        width: 40,
+        minWidth: 40,
+        renderCell: (params: GridRenderCellParams) => (
+          <Box width={40} height={40} borderRadius={1} bgcolor="grey.200" />
+        ),
       },
       {
-        field: "name",
+        field: "title",
+        flex: 1,
+        renderCell: (params: GridRenderCellParams) => (
+          <Box width="100%">
+            <Typography
+              color="text.primary"
+              fontWeight={600}
+              variant="body2"
+              noWrap
+              sx={{
+                width: "100%",
+              }}
+            >
+              {params.formattedValue?.primary}
+            </Typography>
+            {params.formattedValue?.secondary && (
+              <Typography
+                color="text.secondary"
+                variant="body2"
+                noWrap
+                sx={{
+                  width: "100%",
+                }}
+              >
+                {params.formattedValue.secondary}
+              </Typography>
+            )}
+          </Box>
+        ),
       },
       {
         field: "version",
+        width: 60,
       },
     ];
   }, []);
@@ -80,10 +116,16 @@ export const FieldSelectorDialog = ({
     return contentItems.map((item) => ({
       id: item.meta.ZUID,
       image: "",
-      name: item?.web?.metaTitle,
+      title: {
+        primary:
+          item?.data[relatedFieldName] ||
+          item?.web?.metaTitle ||
+          item?.web?.metaLinkText,
+        secondary: item?.web?.metaDescription,
+      },
       version: item?.web?.version,
     }));
-  }, [contentItems]);
+  }, [contentItems, relatedFieldName]);
 
   return (
     <Dialog
@@ -170,7 +212,6 @@ export const FieldSelectorDialog = ({
             headerHeight={0}
             rowHeight={64}
             hideFooter
-            // autoHeight
             sx={{
               bgcolor: "background.paper",
 
@@ -180,6 +221,10 @@ export const FieldSelectorDialog = ({
 
               "& .MuiDataGrid-cellCheckbox": {
                 mx: "3px",
+              },
+
+              "& [data-field='image']": {
+                p: 0,
               },
             }}
           />
