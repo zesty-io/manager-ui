@@ -727,7 +727,7 @@ export const Field = ({
             })
           );
         } else {
-          return Promise.reject("Missing modelZUID");
+          return Promise.reject(new Error("Missing modelZUID"));
         }
       }, [allLanguages.length, relatedModelZUID, langID]);
 
