@@ -201,7 +201,11 @@ export const ItemCreate = () => {
         })
       );
       if (res.err || res.error) {
-        if (res.missingRequired || res.lackingCharLength) {
+        if (
+          res.missingRequired ||
+          res.lackingCharLength ||
+          res.invalidBlockVariantValue
+        ) {
           const missingRequiredFieldNames: string[] =
             res.missingRequired?.reduce(
               (acc: string[], curr: ContentModelField) => {
@@ -267,6 +271,17 @@ export const ItemCreate = () => {
                 INVALID_RANGE: `Value must be between ${field.settings?.minValue} and ${field.settings?.maxValue}`,
               };
             });
+          }
+
+          if (res.invalidBlockVariantValue?.length) {
+            res.invalidBlockVariantValue?.forEach(
+              (field: ContentModelField) => {
+                errors[field.name] = {
+                  ...(errors[field.name] ?? {}),
+                  INVALID_BLOCK_VARIANT: true,
+                };
+              }
+            );
           }
 
           setFieldErrors(errors);
