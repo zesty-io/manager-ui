@@ -1,7 +1,9 @@
 import { request } from "utility/request";
 
 export function contentVersions(state = {}, action) {
-  const existingVersions = state[action.itemZUID] || [];
+  const existingVersions = Array.isArray(state[action.itemZUID])
+    ? state[action.itemZUID]
+    : [];
 
   switch (action.type) {
     case "FETCH_ITEM_SUCCESS":
