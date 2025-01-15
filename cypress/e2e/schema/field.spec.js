@@ -468,6 +468,40 @@ describe("Schema: Fields", () => {
     cy.getBySelector(`Field_${fieldName}`).should("exist");
   });
 
+  it("Creates a Block field", () => {
+    cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const fieldLabel = `Block Selector ${timestamp}`;
+    const fieldName = `block_selector_${timestamp}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select one-to-one relationship field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_BLOCK_SELECTOR)
+      .should("exist")
+      .click();
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
+    cy.get("input[name='label']")
+      .should("exist")
+      .should("have.value", fieldLabel);
+    cy.get("input[name='name']")
+      .should("exist")
+      .should("have.value", fieldName);
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).should("exist").click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
   it("Creates a field via add another field button", () => {
     const values = {
       number: {
