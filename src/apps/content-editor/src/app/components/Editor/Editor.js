@@ -202,6 +202,13 @@ export default memo(function Editor({
         }
       }
 
+      if (field.datatype === "block_selector") {
+        errors[name] = {
+          ...(errors[name] ?? []),
+          INVALID_BLOCK_VARIANT: false,
+        };
+      }
+
       onUpdateFieldErrors(errors);
 
       // Always dispatch the data update

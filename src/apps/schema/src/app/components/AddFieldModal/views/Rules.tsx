@@ -42,7 +42,7 @@ export const Rules = ({
     formData?.minCharLimit !== null && formData?.maxCharLimit !== null
   );
 
-  if (type === "uuid") {
+  if (type === "uuid" || type === "block_selector") {
     return <ComingSoon />;
   }
 

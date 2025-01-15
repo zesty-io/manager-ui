@@ -440,6 +440,34 @@ describe("Schema: Fields", () => {
     cy.getBySelector(`Field_${fieldName}`).should("exist");
   });
 
+  it("Creates a Block field", () => {
+    // cy.intercept("**/fields?showDeleted=true").as("getFields");
+
+    const fieldLabel = `Block Selector ${suffix}`;
+    const fieldName = `block_selector_${suffix}`;
+
+    // Open the add field modal
+    cy.getBySelector(SELECTORS.ADD_FIELD_BTN).click(TIMEOUT);
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("exist");
+
+    // Select one-to-one relationship field
+    cy.getBySelector(SELECTORS.FIELD_SELECT_BLOCK_SELECTOR).click(TIMEOUT);
+
+    // Fill up fields
+    cy.getBySelector(SELECTORS.INPUT_LABEL).type(fieldLabel);
+    cy.get("input[name='label']").should("exist").and("have.value", fieldLabel);
+    cy.get("input[name='name']").should("exist").and("have.value", fieldName);
+
+    // Click done
+    cy.getBySelector(SELECTORS.SAVE_FIELD_BUTTON).click();
+    cy.getBySelector(SELECTORS.ADD_FIELD_MODAL).should("not.exist");
+
+    // cy.wait("@getFields");
+
+    // Check if field exists
+    cy.getBySelector(`Field_${fieldName}`).should("exist");
+  });
+
   it("Creates a field via add another field button", () => {
     const values = {
       number: {

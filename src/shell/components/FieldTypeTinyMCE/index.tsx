@@ -284,7 +284,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               quickbars_insert_toolbar: false,
               quickbars_image_toolbar: false,
               quickbars_selection_toolbar:
-                "blocks | bold italic underline backcolor superscript subscript strikethrough removeformat | align bullist numlist outdent indent",
+                "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
               help_accessibility: false,
 
               // powerpaste_word_import: "prompt",
@@ -312,21 +312,21 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               ],
 
               content_style: `
-            html { justify-content: center }\ 
-            body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 16px; }\ 
-            img { max-width: 100%; height: auto}\ 
-            h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }\ 
-            h1, h2, h3, h4, h5, h6 { margin-top: 0px; margin-bottom: 16px; }\ 
-            p, pre, blockquote, ol, ul { color: #475467; margin-top: 0px; margin-bottom: 16px; }\ 
-            h1 { font-size: 36px; line-height: 44px }\ 
-            h2 { font-size: 32px; line-height: 40px }\ 
-            h3 { font-size: 28px; line-height: 36px }\ 
-            h4 { font-size: 24px; line-height: 32px }\ 
-            h5 { font-size: 20px; line-height: 28px }\ 
-            h6 { font-size: 16px; line-height: 22px }\ 
-            p { font-size: 16px; line-height: 24px; }\ 
-            span.mce-preview-object.mce-object-video { width: 100%; height: 100% }\ 
-            video { width: 100%; height: 100%; object-fill: fill; aspect-ratio: auto;}\ 
+            html { justify-content: center }\
+            body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 16px; }\
+            img { max-width: 100%; height: auto}\
+            h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }\
+            h1, h2, h3, h4, h5, h6 { margin-top: 0px; margin-bottom: 16px; }\
+            p, pre, blockquote, ol, ul { color: #475467; margin-top: 0px; margin-bottom: 16px; }\
+            h1 { font-size: 36px; line-height: 44px }\
+            h2 { font-size: 32px; line-height: 40px }\
+            h3 { font-size: 28px; line-height: 36px }\
+            h4 { font-size: 24px; line-height: 32px }\
+            h5 { font-size: 20px; line-height: 28px }\
+            h6 { font-size: 16px; line-height: 22px }\
+            p { font-size: 16px; line-height: 24px; }\
+            span.mce-preview-object.mce-object-video { width: 100%; height: 100% }\
+            video { width: 100%; height: 100%; object-fill: fill; aspect-ratio: auto;}\
             #tinymce { margin: 16px; }\
             ul, ol { line-height: 24px; }`,
 

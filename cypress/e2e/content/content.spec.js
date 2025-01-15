@@ -411,4 +411,25 @@ describe("Content Specs", () => {
         .should("have.value", "12:00 pm");
     });
   });
+
+  // describe("Block Selector Field", () => {
+  //   before(() => {
+  //     cy.waitOn("**/v1/content/models*", () => {
+  //       cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+  //     });
+  //   });
+
+  //   it("Sets a block variant", () => {
+  //     cy.getBySelector("BlockSelectorModelField", { timeout: 10000 })
+  //       .find("input")
+  //       .click();
+  //     cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option")
+  //       .contains("Test Block Do Not Delete")
+  //       .click();
+
+  //     cy.getBySelector("BlockSelectorVariantField", { timeout: 10000 }).click();
+  //     cy.getBySelector("Variant_0").click();
+  //     cy.getBySelector("BlockFieldVariantPreview").should("exist");
+  //   });
+  // });
 });
