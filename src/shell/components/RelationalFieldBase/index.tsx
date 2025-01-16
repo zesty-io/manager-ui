@@ -134,6 +134,7 @@ export const RelationalFieldBase = ({
       )}
       {!!anchorEl && (
         <FieldSelectorDialog
+          multiselect={multiselect}
           onClose={() => setAnchorEl(null)}
           modelZUID={relatedModelZUID}
           modelName={modelData?.label}

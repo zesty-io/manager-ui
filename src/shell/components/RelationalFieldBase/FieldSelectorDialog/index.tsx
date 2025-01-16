@@ -11,26 +11,34 @@ import {
   Box,
 } from "@mui/material";
 import { CloseRounded, Search } from "@mui/icons-material";
-import { DataGridPro, GridRenderCellParams } from "@mui/x-data-grid-pro";
+import {
+  DataGridPro,
+  GridColumns,
+  GridRenderCellParams,
+} from "@mui/x-data-grid-pro";
 
 import { FieldSelectorFilters, STATUS_FILTER } from "./FieldSelectorFilters";
 import { DateFilterValue } from "../../Filters/DateFilter";
 import {
   useGetLangsQuery,
   useGetContentModelItemsQuery,
+  useGetContentModelFieldsQuery,
 } from "../../../services/instance";
+import { ImageCell } from "./ImageCell";
 
 type FieldSelectorDialogProps = {
   onClose: () => void;
   modelZUID: string;
   modelName: string;
   relatedFieldName: string;
+  multiselect?: boolean;
 };
 export const FieldSelectorDialog = ({
   onClose,
   modelZUID,
   modelName,
   relatedFieldName,
+  multiselect,
 }: FieldSelectorDialogProps) => {
   const [filterKeyword, setFilterKeyword] = useState<string>(null);
   const [sortOrder, setSortOrder] = useState<string>("lastSaved");
@@ -55,6 +63,10 @@ export const FieldSelectorDialog = ({
       },
       { skip: !modelZUID || !langCode }
     );
+  const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
+    useGetContentModelFieldsQuery(modelZUID, {
+      skip: !modelZUID,
+    });
 
   useEffect(() => {
     if (!!langs.length) {
@@ -62,16 +74,18 @@ export const FieldSelectorDialog = ({
     }
   }, [langs]);
 
+  const imageFieldName = useMemo(() => {
+    if (!relatedModelFields?.length) return null;
+
+    const imageFields = relatedModelFields.filter(
+      (field) => !field.deletedAt && field.datatype === "images"
+    );
+
+    return imageFields?.[0]?.name || null;
+  }, [relatedModelFields]);
+
   const columns = useMemo(() => {
-    return [
-      {
-        field: "image",
-        width: 40,
-        minWidth: 40,
-        renderCell: (params: GridRenderCellParams) => (
-          <Box width={40} height={40} borderRadius={1} bgcolor="grey.200" />
-        ),
-      },
+    let defaultCols: GridColumns<any> = [
       {
         field: "title",
         flex: 1,
@@ -108,14 +122,36 @@ export const FieldSelectorDialog = ({
         width: 60,
       },
     ];
-  }, []);
+
+    if (imageFieldName) {
+      defaultCols = [
+        {
+          field: "image",
+          width: 40,
+          minWidth: 40,
+          renderCell: (params: GridRenderCellParams) => (
+            <ImageCell
+              imageFieldName={params.formattedValue?.imageFieldName}
+              itemZUID={params.formattedValue?.itemZUID}
+            />
+          ),
+        },
+        ...defaultCols,
+      ];
+    }
+
+    return defaultCols;
+  }, [imageFieldName]);
 
   const rows = useMemo(() => {
     if (!contentItems?.length) return [];
 
     return contentItems.map((item) => ({
       id: item.meta.ZUID,
-      image: "",
+      image: {
+        imageFieldName,
+        itemZUID: item.meta.ZUID,
+      },
       title: {
         primary:
           item?.data[relatedFieldName] ||
@@ -125,7 +161,7 @@ export const FieldSelectorDialog = ({
       },
       version: item?.web?.version,
     }));
-  }, [contentItems, relatedFieldName]);
+  }, [contentItems, relatedFieldName, imageFieldName]);
 
   return (
     <Dialog
@@ -225,6 +261,11 @@ export const FieldSelectorDialog = ({
 
               "& [data-field='image']": {
                 p: 0,
+              },
+
+              "& [data-field='title']": {
+                pl: !!imageFieldName ? 2 : 0,
+                pr: 2,
               },
             }}
           />
