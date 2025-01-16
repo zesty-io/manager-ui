@@ -104,7 +104,9 @@ export const VariantSelector = ({
               if (!!evt.currentTarget.value) {
                 variantsRef.current?.[0]?.classList.add("hover");
               } else {
-                variantsRef.current?.[0]?.classList.remove("hover");
+                variantsRef.current?.forEach((element) =>
+                  element.classList.remove("hover")
+                );
               }
             }}
             InputProps={{
