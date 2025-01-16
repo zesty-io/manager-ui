@@ -24,7 +24,7 @@ describe("Navigation through content editor", () => {
     cy.getBySelector("create_new_content_item_dialog").should("exist");
     cy.getBySelector("create_new_content_item_input")
       .find("input")
-      .type("cypress");
+      .type("group with visible");
     cy.get(".MuiAutocomplete-listbox .MuiAutocomplete-option")
       .first()
       .should("exist")
