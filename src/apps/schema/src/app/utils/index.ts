@@ -27,11 +27,8 @@ export const stringStartsWithVowel = (string: string): boolean => {
   return ["a", "e", "i", "o", "u"].includes(firstLetter.toLowerCase());
 };
 
-export const convertLabelValue = (string: string): string => {
-  if (!string) return;
-
-  return replace(string, /\W/g, "_").toLowerCase();
-};
+export const convertLabelValue = (string: string): string =>
+  replace(string, /\W/g, "_").toLowerCase();
 
 export const convertDropdownValue = (string: string): string => {
   if (!string) return;

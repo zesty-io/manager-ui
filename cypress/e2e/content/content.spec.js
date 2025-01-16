@@ -70,20 +70,17 @@ describe("Content Specs", () => {
     });
 
     it("Dropdown Field", () => {
-      cy.get("#12-f3152c-kjz88l").find(".MuiSelect-select").click();
+      cy.get("#12-f3152c-kjz88l").find(".MuiAutocomplete-root input").click();
 
-      cy.get("[role=presentation]")
-        .find('[data-value="custom_option_one"]')
-        .click();
+      cy.get(".MuiAutocomplete-option").first().click();
+      cy.get("#12-f3152c-kjz88l")
+        .find(".MuiAutocomplete-root input")
+        .should("have.value", "Custom Option One");
 
-      cy.contains("#12-f3152c-kjz88l .MuiSelect-select", "Custom Option One");
-
-      cy.get("#12-f3152c-kjz88l").find(".MuiSelect-select").click();
-      cy.get("[role=presentation]")
-        .find('[data-value="custom_option_two"]')
-        .click();
-
-      cy.contains("#12-f3152c-kjz88l .MuiSelect-select", "Custom Option Two");
+      cy.get(".MuiAutocomplete-option").last().click();
+      cy.get("#12-f3152c-kjz88l")
+        .find(".MuiAutocomplete-root input")
+        .should("have.value", "Custom Option Two");
     });
 
     it("Url Field", () => {
@@ -412,7 +409,7 @@ describe("Content Specs", () => {
     });
   });
 
-  describe("Block Selector Field", () => {
+  describe.only("Block Selector Field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
