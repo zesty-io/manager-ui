@@ -1,5 +1,6 @@
-import { Box } from "@mui/material";
-import { useMemo } from "react";
+import { Box, Stack } from "@mui/material";
+import { useMemo, useState } from "react";
+import { ImageRounded } from "@mui/icons-material";
 
 import { useGetContentItemQuery } from "../../../services/instance";
 
@@ -8,6 +9,7 @@ type ImageCellProps = {
   itemZUID: string;
 };
 export const ImageCell = ({ imageFieldName, itemZUID }: ImageCellProps) => {
+  const [imageError, setImageError] = useState(false);
   const { data: contentItem, isLoading: isLoadingContentItem } =
     useGetContentItemQuery(itemZUID, {
       skip: !itemZUID,
@@ -23,7 +25,7 @@ export const ImageCell = ({ imageFieldName, itemZUID }: ImageCellProps) => {
         return `${
           // @ts-ignore
           CONFIG.SERVICE_MEDIA_RESOLVER
-        }/resolve/${value}/getimage/?w=${40}&h=${40}&type=crop`;
+        }/resolve/${value}/getimage/?w=40&h=40&type=crop`;
       } else {
         return value;
       }
@@ -32,8 +34,19 @@ export const ImageCell = ({ imageFieldName, itemZUID }: ImageCellProps) => {
     return null;
   }, [contentItem, imageFieldName]);
 
-  if (!imageURL) {
-    return <Box width={40} height={40} borderRadius={1} bgcolor="grey.200" />;
+  if (!imageURL || imageError) {
+    return (
+      <Stack
+        width={40}
+        height={40}
+        borderRadius={1}
+        bgcolor="grey.200"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <ImageRounded color="action" fontSize="small" />
+      </Stack>
+    );
   }
 
   return (
@@ -49,6 +62,7 @@ export const ImageCell = ({ imageFieldName, itemZUID }: ImageCellProps) => {
       sx={{
         objectFit: "contain",
       }}
+      onError={() => setImageError(true)}
     />
   );
 };

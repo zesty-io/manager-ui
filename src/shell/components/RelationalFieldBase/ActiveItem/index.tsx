@@ -32,8 +32,6 @@ import {
 } from "../../../services/instance";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { ContentModel, ContentModelField } from "../../../services/types";
-import { useLazyGetFileQuery } from "../../../services/mediaManager";
-import { fileExtension } from "../../../../apps/media/src/app/utils/fileUtils";
 import { ActiveItemLoading } from "./ActiveItemLoading";
 import { VersionChip } from "../VersionChip";
 
@@ -56,7 +54,7 @@ export const ActiveItem = memo(
     onDropCard,
     draggable,
   }: ActiveItemProps) => {
-    const [imageURL, setImageURL] = useState(null);
+    const [imageError, setImageError] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const history = useHistory();
     const { data: contentItem, isLoading: isLoadingContentItem } =
@@ -79,7 +77,6 @@ export const ActiveItem = memo(
       useGetContentModelFieldsQuery(relatedModelData?.ZUID, {
         skip: !relatedModelData?.ZUID,
       });
-    const [getFile, { isLoading: isLoadingImage }] = useLazyGetFileQuery();
     const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
     const [{ isDragging }, drag, preview] = useDrag({
@@ -112,7 +109,6 @@ export const ActiveItem = memo(
     const isLoading =
       isLoadingContentItem ||
       isLoadingRelatedModel ||
-      isLoadingImage ||
       isLoadingContentItemPublishings ||
       isLoadingUsers;
 
@@ -126,13 +122,34 @@ export const ActiveItem = memo(
       return userZUID;
     };
 
-    const imageFields = useMemo(() => {
-      if (!relatedModelFields?.length) return [];
+    const imageFieldName = useMemo(() => {
+      if (!relatedModelFields?.length) return null;
 
-      return relatedModelFields.filter(
+      const imageFields = relatedModelFields.filter(
         (field) => !field.deletedAt && field.datatype === "images"
       );
+
+      return imageFields?.[0]?.name || null;
     }, [relatedModelFields]);
+
+    const imageURL = useMemo(() => {
+      if (!contentItem?.data || !imageFieldName) return null;
+
+      if (!!contentItem.data[imageFieldName]) {
+        const value = String(contentItem.data[imageFieldName]).split(",")?.[0];
+
+        if (value.startsWith("3-")) {
+          return `${
+            // @ts-ignore
+            CONFIG.SERVICE_MEDIA_RESOLVER
+          }/resolve/${value}/getimage/?w=64&h=64&type=crop`;
+        } else {
+          return value;
+        }
+      }
+
+      return null;
+    }, [contentItem, imageFieldName]);
 
     const publishStatus = useMemo(() => {
       const publishedVersion = contentItemPublishings?.find(
@@ -171,33 +188,6 @@ export const ActiveItem = memo(
       };
     }, [contentItem, contentItemPublishings, users]);
 
-    useEffect(() => {
-      if (!imageFields?.length || !contentItem) return;
-
-      const images = imageFields.map(async (field) => {
-        if (!!contentItem?.data?.[field.name]) {
-          const value = String(contentItem?.data?.[field.name])?.split(
-            ","
-          )?.[0];
-
-          if (value.startsWith("3-")) {
-            const res = await getFile(value).unwrap();
-            if (
-              ["png", "jpg", "jpeg", "svg", "gif", "tif", "webp"].includes(
-                fileExtension(res.url)
-              )
-            ) {
-              return res.url;
-            }
-          } else {
-            return value;
-          }
-        }
-      });
-
-      Promise.all(images).then((_images) => setImageURL(_images?.[0]));
-    }, [imageFields, contentItem]);
-
     if (isLoading) {
       return <ActiveItemLoading draggable={draggable} />;
     }
@@ -232,20 +222,21 @@ export const ActiveItem = memo(
                 <DragIndicatorRounded fontSize="small" />
               </IconButton>
             )}
-            {!!imageFields?.length &&
-              (!!imageURL ? (
+            {!!imageFieldName &&
+              (!!imageURL && !imageError ? (
                 <Box
                   component="img"
                   loading="lazy"
                   width={64}
                   height={64}
-                  src={`${imageURL}?width=64&fit=contain`}
+                  src={imageURL}
                   sx={{
                     flexShrink: 0,
                     bgcolor: "grey.100",
                     objectFit: "contain",
                     overflow: "hidden",
                   }}
+                  onError={() => setImageError(true)}
                 />
               ) : (
                 <Stack
@@ -266,11 +257,7 @@ export const ActiveItem = memo(
               gap={0.5}
               justifyContent="center"
               flexGrow={1}
-              ml={
-                !!imageFields?.length || (!imageFields?.length && !draggable)
-                  ? 2
-                  : 0
-              }
+              ml={!!imageFieldName || (!imageFieldName && !draggable) ? 2 : 0}
             >
               <Typography
                 color="text.primary"
