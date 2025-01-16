@@ -57,6 +57,7 @@ export const FieldTypeBlockSelector = ({
     useLazyGetContentModelItemsQuery();
   const [isVariantSelectorOpen, setIsVariantSelectorOpen] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
+  const [enableAutohighlight, setEnableAutohighlight] = useState(false);
   const variantSelectorRef = useRef<HTMLDivElement>(null);
 
   const [blockValue, updateBlockValue] = useReducer(
@@ -146,6 +147,10 @@ export const FieldTypeBlockSelector = ({
     <>
       <Stack direction="row" gap={0.5}>
         <Autocomplete
+          autoHighlight={enableAutohighlight}
+          onInputChange={(_, value, reason) =>
+            setEnableAutohighlight(!!value && reason === "input")
+          }
           data-cy="BlockSelectorModelField"
           loading={isLoadingModels}
           renderInput={(params) => (
