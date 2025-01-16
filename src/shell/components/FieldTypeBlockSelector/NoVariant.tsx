@@ -45,7 +45,9 @@ export const NoVariant = ({
         <Button
           variant="outlined"
           startIcon={<AddRounded />}
-          onClick={() => history.push(`/blocks/${blockModelZUID}/new`)}
+          onClick={() =>
+            history.push(`/blocks/${blockModelZUID}?createVariant=true`)
+          }
         >
           Create Variant
         </Button>
