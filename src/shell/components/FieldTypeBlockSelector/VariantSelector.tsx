@@ -38,6 +38,7 @@ export const VariantSelector = ({
   const { data: users } = useGetUsersQuery();
   const [filterKeyword, setFilterKeyword] = useState("");
   const filterTextField = useRef(null);
+  const variantsRef = useRef<HTMLLIElement[]>([]);
 
   const filteredVariants = useMemo(() => {
     if (!filterKeyword) return variants;
@@ -97,15 +98,25 @@ export const VariantSelector = ({
             placeholder="Search variants"
             ref={filterTextField}
             value={filterKeyword}
-            onChange={(evt) => setFilterKeyword(evt.currentTarget.value)}
+            onChange={(evt) => {
+              setFilterKeyword(evt.currentTarget.value);
+
+              if (!!evt.currentTarget.value) {
+                variantsRef.current?.[0]?.classList.add("hover");
+              } else {
+                variantsRef.current?.[0]?.classList.remove("hover");
+              }
+            }}
             InputProps={{
               startAdornment: <Search color="action" />,
             }}
             onKeyDown={(e: React.KeyboardEvent) => {
-              const allowedKeys = ["ArrowUp", "ArrowDown", "Escape"];
+              const allowedKeys = ["ArrowUp", "ArrowDown", "Escape", "Enter"];
 
               if (!allowedKeys.includes(e.key)) {
                 e.stopPropagation();
+              } else if (e.key === "Enter" && !!filterKeyword) {
+                variantsRef.current?.[0]?.click();
               }
             }}
           />
@@ -118,6 +129,7 @@ export const VariantSelector = ({
         ) : filteredVariants?.length ? (
           filteredVariants?.map((variant, index) => (
             <MenuItem
+              ref={(node) => (variantsRef.current[index] = node)}
               data-cy={`Variant_${index}`}
               key={variant?.meta?.ZUID}
               divider={index + 1 < variants?.length}
@@ -128,6 +140,12 @@ export const VariantSelector = ({
                 py: 1.75,
                 gap: 1.5,
                 borderColor: "border",
+
+                "&.hover": {
+                  "-webkit-text-decoration": "none",
+                  textDecoration: "none",
+                  bgcolor: "rgba(16, 24, 40, 0.04)",
+                },
               }}
             >
               <Tooltip
