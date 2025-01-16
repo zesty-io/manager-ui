@@ -11,6 +11,7 @@ import { CreateVariantDialog } from "../components/CreateVariantDialog";
 import { fetchModels } from "../../../shell/store/models";
 import { useDispatch } from "react-redux";
 import { fetchFields } from "../../../shell/store/fields";
+import { useParams as useSearchParams } from "../../../shell/hooks/useParams";
 
 export const BlockModel = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ export const BlockModel = () => {
     modelZUID: string;
   }>();
   const history = useHistory();
+  const [params] = useSearchParams();
   const [renderFlag, setRenderFlag] = useState(false);
   const [showCreateVariantDialog, setShowCreateVariantDialog] = useState(false);
   const { data, isFetching, error, isUninitialized } =
@@ -45,6 +47,10 @@ export const BlockModel = () => {
       setRenderFlag(true);
     }
   }, [data, isFetching, error, history]);
+
+  useEffect(() => {
+    setShowCreateVariantDialog(!!params?.get("createVariant"));
+  }, [params]);
 
   const model = models?.find((model) => model.ZUID === modelZUID);
 
