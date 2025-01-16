@@ -6,6 +6,7 @@ import {
   Stack,
   Box,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import {
   KeyboardArrowDownRounded,
@@ -172,43 +173,59 @@ export const FieldTypeBlockSelector = ({
           }}
         />
 
-        <Stack
-          data-cy="BlockSelectorVariantField"
-          ref={variantSelectorRef}
-          direction="row"
-          height={40}
-          bgcolor="background.paper"
-          width="100%"
-          justifyContent="space-between"
-          alignItems="center"
-          px={1}
-          borderRadius={2}
-          border={1}
-          borderColor={
-            requiredError || missingVariantError ? "error.main" : "border"
+        <Tooltip
+          enterDelay={500}
+          enterNextDelay={500}
+          disableInteractive
+          followCursor
+          title={
+            (!blockValue?.model || !blockValue?.model?.value) &&
+            "Please select a model first before selecting a variant"
           }
-          boxSizing="border-box"
-          sx={{
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            if (!blockValue?.model || !blockValue?.model?.value) return;
-
-            setIsVariantSelectorOpen(true);
+          PopperProps={{
+            sx: {
+              maxWidth: "none",
+            },
           }}
         >
-          <Typography
-            variant="body2"
-            color={!!blockValue?.variant ? "text.primary" : "text.disabled"}
+          <Stack
+            data-cy="BlockSelectorVariantField"
+            ref={variantSelectorRef}
+            direction="row"
+            height={40}
+            bgcolor="background.paper"
+            width="100%"
+            justifyContent="space-between"
+            alignItems="center"
+            px={1}
+            borderRadius={2}
+            border={1}
+            borderColor={
+              requiredError || missingVariantError ? "error.main" : "border"
+            }
+            boxSizing="border-box"
+            sx={{
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              if (!blockValue?.model || !blockValue?.model?.value) return;
+
+              setIsVariantSelectorOpen(true);
+            }}
           >
-            {!!blockValue?.variant
-              ? variants?.find(
-                  (variant) => variant?.meta?.ZUID === blockValue.variant
-                )?.web?.metaTitle
-              : "Variant"}
-          </Typography>
-          <KeyboardArrowDownRounded color="action" />
-        </Stack>
+            <Typography
+              variant="body2"
+              color={!!blockValue?.variant ? "text.primary" : "text.disabled"}
+            >
+              {!!blockValue?.variant
+                ? variants?.find(
+                    (variant) => variant?.meta?.ZUID === blockValue.variant
+                  )?.web?.metaTitle
+                : "Variant"}
+            </Typography>
+            <KeyboardArrowDownRounded color="action" />
+          </Stack>
+        </Tooltip>
         {!!isVariantSelectorOpen && (
           <VariantSelector
             anchorEl={variantSelectorRef?.current}
