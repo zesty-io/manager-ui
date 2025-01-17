@@ -409,7 +409,7 @@ describe("Content Specs", () => {
     });
   });
 
-  describe.only("Block Selector Field", () => {
+  describe("Block Selector Field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
