@@ -77,6 +77,7 @@ describe("Content Specs", () => {
         .find(".MuiAutocomplete-root input")
         .should("have.value", "Custom Option One");
 
+      cy.get("#12-f3152c-kjz88l").find(".MuiAutocomplete-root input").click();
       cy.get(".MuiAutocomplete-option").last().click();
       cy.get("#12-f3152c-kjz88l")
         .find(".MuiAutocomplete-root input")
