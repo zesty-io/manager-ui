@@ -1,4 +1,4 @@
-import { memo, useState, useMemo, useEffect } from "react";
+import { memo, useState, useMemo } from "react";
 import {
   Typography,
   Stack,
@@ -21,7 +21,6 @@ import {
   WidgetsRounded,
   CloseRounded,
 } from "@mui/icons-material";
-import moment from "moment-timezone";
 import { useHistory } from "react-router";
 import { useDrag, useDrop } from "react-dnd";
 
@@ -30,10 +29,9 @@ import {
   useGetContentModelFieldsQuery,
   useGetItemPublishingsQuery,
 } from "../../../services/instance";
-import { useGetUsersQuery } from "../../../services/accounts";
 import { ContentModel, ContentModelField } from "../../../services/types";
 import { ActiveItemLoading } from "./ActiveItemLoading";
-import { VersionChip } from "../VersionChip";
+import { VersionCell } from "../FieldSelectorDialog/VersionCell";
 
 type ActiveItemProps = {
   itemZUID: string;
@@ -77,7 +75,6 @@ export const ActiveItem = memo(
       useGetContentModelFieldsQuery(relatedModelData?.ZUID, {
         skip: !relatedModelData?.ZUID,
       });
-    const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
     const [{ isDragging }, drag, preview] = useDrag({
       type: "relationalItem",
@@ -109,18 +106,7 @@ export const ActiveItem = memo(
     const isLoading =
       isLoadingContentItem ||
       isLoadingRelatedModel ||
-      isLoadingContentItemPublishings ||
-      isLoadingUsers;
-
-    const resolveUserZUID = (userZUID: string) => {
-      const user = users?.find((user) => user.ZUID === userZUID);
-
-      if (!!user) {
-        return `${user?.firstName} ${user.lastName}`;
-      }
-
-      return userZUID;
-    };
+      isLoadingContentItemPublishings;
 
     const imageFieldName = useMemo(() => {
       if (!relatedModelFields?.length) return null;
@@ -150,43 +136,6 @@ export const ActiveItem = memo(
 
       return null;
     }, [contentItem, imageFieldName]);
-
-    const publishStatus = useMemo(() => {
-      const publishedVersion = contentItemPublishings?.find(
-        (publishing) => publishing._active
-      );
-      const scheduledVersion = contentItemPublishings?.find(
-        (publishing) =>
-          !publishing._active && moment.utc().isBefore(publishing.publishAt)
-      );
-
-      return {
-        draft:
-          contentItem?.meta?.version > (publishedVersion?.version || 0)
-            ? {
-                version: contentItem?.meta?.version,
-                publisher: resolveUserZUID(
-                  contentItem?.meta?.createdByUserZUID
-                ),
-                dateTime: contentItem?.meta?.updatedAt,
-              }
-            : null,
-        published: !!publishedVersion
-          ? {
-              version: publishedVersion.version,
-              publisher: resolveUserZUID(publishedVersion.publishedByUserZUID),
-              dateTime: publishedVersion.publishAt,
-            }
-          : null,
-        scheduled: !!scheduledVersion
-          ? {
-              version: scheduledVersion.version,
-              publisher: resolveUserZUID(scheduledVersion.publishedByUserZUID),
-              dateTime: scheduledVersion.publishAt,
-            }
-          : null,
-      };
-    }, [contentItem, contentItemPublishings, users]);
 
     if (isLoading) {
       return <ActiveItemLoading draggable={draggable} />;
@@ -297,33 +246,11 @@ export const ActiveItem = memo(
             </Stack>
           </Stack>
           <Stack direction="row" gap={2} mx={2} alignItems="center">
-            <Stack gap={0.25}>
-              {!!publishStatus?.draft && (
-                <VersionChip
-                  type="draft"
-                  version={publishStatus.draft.version}
-                  publisher={publishStatus.draft.publisher}
-                  dateTime={publishStatus.draft.dateTime}
-                />
-              )}
-              {!!publishStatus?.scheduled ? (
-                <VersionChip
-                  type="scheduled"
-                  version={publishStatus.scheduled.version}
-                  publisher={publishStatus.scheduled.publisher}
-                  dateTime={publishStatus.scheduled.dateTime}
-                />
-              ) : publishStatus?.published ? (
-                <VersionChip
-                  type="published"
-                  version={publishStatus.published.version}
-                  publisher={publishStatus.published.publisher}
-                  dateTime={publishStatus.published.dateTime}
-                />
-              ) : (
-                <></>
-              )}
-            </Stack>
+            <VersionCell
+              modelZUID={relatedModelData?.ZUID}
+              itemZUID={itemZUID}
+              itemData={contentItem}
+            />
             <Stack direction="row" gap={1}>
               <IconButton
                 size="xsmall"

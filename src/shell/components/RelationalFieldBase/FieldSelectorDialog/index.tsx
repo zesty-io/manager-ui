@@ -26,6 +26,7 @@ import {
 } from "../../../services/instance";
 import { ImageCell } from "./ImageCell";
 import { TitleCell } from "./TitleCell";
+import { VersionCell } from "./VersionCell";
 
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -100,6 +101,13 @@ export const FieldSelectorDialog = ({
       {
         field: "version",
         width: 60,
+        renderCell: (params: GridRenderCellParams) => (
+          <VersionCell
+            modelZUID={params.value?.modelZUID}
+            itemZUID={params.value?.itemZUID}
+            itemData={params.value?.itemData}
+          />
+        ),
       },
     ];
 
@@ -127,19 +135,23 @@ export const FieldSelectorDialog = ({
     if (!contentItems?.length) return [];
 
     return contentItems.map((item) => ({
-      id: item.meta.ZUID,
+      id: item.meta?.ZUID,
       image: {
         imageFieldName,
-        itemZUID: item.meta.ZUID,
+        itemZUID: item.meta?.ZUID,
       },
       title: {
         primary:
-          item?.data[relatedFieldName] ||
-          item?.web?.metaTitle ||
-          item?.web?.metaLinkText,
-        secondary: item?.web?.metaDescription,
+          item.data?.[relatedFieldName] ||
+          item.web?.metaTitle ||
+          item.web?.metaLinkText,
+        secondary: item.web?.metaDescription,
       },
-      version: item?.web?.version,
+      version: {
+        modelZUID,
+        itemZUID: item?.meta?.ZUID,
+        itemData: item,
+      },
     }));
   }, [contentItems, relatedFieldName, imageFieldName]);
 
@@ -246,6 +258,12 @@ export const FieldSelectorDialog = ({
               "& [data-field='title']": {
                 pl: !!imageFieldName ? 2 : 0,
                 pr: 2,
+              },
+
+              "& [data-field='version']": {
+                pl: 0,
+                pr: 2,
+                justifyContent: "center",
               },
             }}
           />
