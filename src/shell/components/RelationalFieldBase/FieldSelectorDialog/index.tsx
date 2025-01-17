@@ -7,7 +7,6 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  Stack,
   Box,
 } from "@mui/material";
 import { CloseRounded, Search } from "@mui/icons-material";
@@ -27,6 +26,7 @@ import {
 import { ImageCell } from "./ImageCell";
 import { TitleCell } from "./TitleCell";
 import { VersionCell } from "./VersionCell";
+import { ItemsLoading } from "./ItemsLoading";
 
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -71,7 +71,7 @@ export const FieldSelectorDialog = ({
     });
 
   useEffect(() => {
-    if (!!langs.length) {
+    if (!!langs?.length) {
       setLangFilter(langs.find((lang) => lang.default)?.ID);
     }
   }, [langs]);
@@ -232,42 +232,46 @@ export const FieldSelectorDialog = ({
           langFilter={langFilter}
           onUpdateLangFilter={(langID) => setLangFilter(langID)}
         />
-        <Box height={rows?.length * 64 + 2} maxHeight={1024}>
-          <DataGridPro
-            checkboxSelection
-            columns={columns}
-            rows={rows}
-            headerHeight={0}
-            rowHeight={64}
-            hideFooter
-            sx={{
-              bgcolor: "background.paper",
+        {isFetchingContentItems || isLoadingRelatedModel ? (
+          <ItemsLoading />
+        ) : (
+          <Box height={rows?.length * 64 + 2} maxHeight={1024}>
+            <DataGridPro
+              checkboxSelection
+              columns={columns}
+              rows={rows}
+              headerHeight={0}
+              rowHeight={64}
+              hideFooter
+              sx={{
+                bgcolor: "background.paper",
 
-              "& .MuiDataGrid-columnHeaders": {
-                borderBottom: 0,
-              },
+                "& .MuiDataGrid-columnHeaders": {
+                  borderBottom: 0,
+                },
 
-              "& .MuiDataGrid-cellCheckbox": {
-                mx: "3px",
-              },
+                "& .MuiDataGrid-cellCheckbox": {
+                  mx: "3px",
+                },
 
-              "& [data-field='image']": {
-                p: 0,
-              },
+                "& [data-field='image']": {
+                  p: 0,
+                },
 
-              "& [data-field='title']": {
-                pl: !!imageFieldName ? 2 : 0,
-                pr: 2,
-              },
+                "& [data-field='title']": {
+                  pl: !!imageFieldName ? 2 : 0,
+                  pr: 2,
+                },
 
-              "& [data-field='version']": {
-                pl: 0,
-                pr: 2,
-                justifyContent: "center",
-              },
-            }}
-          />
-        </Box>
+                "& [data-field='version']": {
+                  pl: 0,
+                  pr: 2,
+                  justifyContent: "center",
+                },
+              }}
+            />
+          </Box>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { useState, useCallback } from "react";
+import { Box, Button, Stack } from "@mui/material";
 import {
   LinkRounded,
   KeyboardArrowUpRounded,
@@ -12,9 +12,6 @@ import { ActiveItem } from "./ActiveItem";
 import { FieldSelectorDialog } from "./FieldSelectorDialog";
 import {
   useGetContentModelQuery,
-  useGetContentModelItemsQuery,
-  useSearchContentQuery,
-  useGetLangsQuery,
   useGetContentModelFieldsQuery,
 } from "../../services/instance";
 
@@ -34,34 +31,17 @@ export const RelationalFieldBase = ({
   onChange,
   multiselect,
 }: RelationalFieldBaseProps) => {
-  const [langCode, setLangCode] = useState("");
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(","));
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
-  const { data: langs } = useGetLangsQuery({});
   const { data: modelData } = useGetContentModelQuery(relatedModelZUID, {
     skip: !relatedModelZUID,
   });
-  const { data: contentItems } = useGetContentModelItemsQuery(
-    {
-      modelZUID: relatedModelZUID,
-      params: {
-        lang: langCode,
-      },
-    },
-    { skip: !relatedModelZUID || !langCode }
-  );
   const { data: modelFields } = useGetContentModelFieldsQuery(
     relatedModelZUID,
     { skip: !relatedModelZUID }
   );
-
-  useEffect(() => {
-    if (langs?.length) {
-      setLangCode(langs?.find((lang) => lang.default)?.code);
-    }
-  }, [langs]);
 
   const handleMoveCard = useCallback(
     (draggedItemZUID: string, dropIndex: number) => {
