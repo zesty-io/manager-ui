@@ -138,6 +138,20 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
 
   const error = createModelError || createContentItemError;
 
+  const handleEnterPressed = (evt: KeyboardEvent) => {
+    if (evt.key === "Enter" && type !== model.type) {
+      updateModel({ type });
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleEnterPressed);
+
+    return () => {
+      window.removeEventListener("keydown", handleEnterPressed);
+    };
+  }, [type, model.type]);
+
   useEffect(() => {
     if (isModelCreated && !isEmpty(createModelData?.data)) {
       // Create initial content item
