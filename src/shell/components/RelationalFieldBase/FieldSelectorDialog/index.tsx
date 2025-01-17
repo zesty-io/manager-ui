@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -15,6 +15,7 @@ import {
   GridColumns,
   GridRenderCellParams,
 } from "@mui/x-data-grid-pro";
+import { debounce } from "lodash";
 
 import { FieldSelectorFilters, STATUS_FILTER } from "./FieldSelectorFilters";
 import { DateFilterValue } from "../../Filters/DateFilter";
@@ -27,6 +28,7 @@ import { ImageCell } from "./ImageCell";
 import { TitleCell } from "./TitleCell";
 import { VersionCell } from "./VersionCell";
 import { ItemsLoading } from "./ItemsLoading";
+import { useGetUsersQuery } from "../../../services/accounts";
 
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -69,6 +71,7 @@ export const FieldSelectorDialog = ({
     useGetContentModelFieldsQuery(modelZUID, {
       skip: !modelZUID,
     });
+  const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
   useEffect(() => {
     if (!!langs?.length) {
@@ -132,9 +135,43 @@ export const FieldSelectorDialog = ({
   }, [imageFieldName]);
 
   const rows = useMemo(() => {
-    if (!contentItems?.length) return [];
+    if (!contentItems?.length || !users?.length) return [];
 
-    return contentItems.map((item) => ({
+    let mappedContentItems = [...contentItems];
+
+    if (!!filterKeyword) {
+      const search = filterKeyword.toLowerCase();
+
+      mappedContentItems = mappedContentItems?.filter((item) => {
+        const matchedUser = users.find(
+          (user) => user.ZUID === item?.meta?.createdByUserZUID
+        );
+        const creator = matchedUser
+          ? `${matchedUser.firstName} ${matchedUser.lastName}`
+          : null;
+
+        return (
+          Object.values(item.data).some((value: any) => {
+            if (!value) return false;
+
+            if (value?.filename || value?.title) {
+              return (
+                value?.filename?.toLowerCase()?.includes(search) ||
+                value?.title?.toLowerCase()?.includes(search)
+              );
+            }
+
+            return value.toString().toLowerCase().includes(search);
+          }) ||
+          item?.meta?.createdAt?.toLowerCase().includes(search) ||
+          item?.web?.updatedAt?.toLowerCase().includes(search) ||
+          item?.meta?.ZUID?.toLowerCase().includes(search) ||
+          creator?.toLowerCase()?.includes(search)
+        );
+      });
+    }
+
+    return mappedContentItems?.map((item) => ({
       id: item.meta?.ZUID,
       image: {
         imageFieldName,
@@ -153,7 +190,14 @@ export const FieldSelectorDialog = ({
         itemData: item,
       },
     }));
-  }, [contentItems, relatedFieldName, imageFieldName]);
+  }, [contentItems, relatedFieldName, imageFieldName, filterKeyword, users]);
+
+  const debouncedSetFilterKeyword = useCallback(
+    debounce((value) => {
+      setFilterKeyword(value);
+    }, 300),
+    [setFilterKeyword]
+  );
 
   return (
     <Dialog
@@ -205,8 +249,7 @@ export const FieldSelectorDialog = ({
       >
         <TextField
           fullWidth
-          value={filterKeyword}
-          onChange={(evt) => setFilterKeyword(evt.currentTarget.value)}
+          onChange={(evt) => debouncedSetFilterKeyword(evt.currentTarget.value)}
           size="small"
           placeholder="Filter Items"
           InputProps={{
@@ -232,7 +275,7 @@ export const FieldSelectorDialog = ({
           langFilter={langFilter}
           onUpdateLangFilter={(langID) => setLangFilter(langID)}
         />
-        {isFetchingContentItems || isLoadingRelatedModel ? (
+        {isFetchingContentItems || isLoadingRelatedModel || isLoadingUsers ? (
           <ItemsLoading />
         ) : (
           <Box height={rows?.length * 64 + 2} maxHeight={1024}>

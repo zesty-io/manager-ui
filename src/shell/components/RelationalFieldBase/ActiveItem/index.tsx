@@ -27,7 +27,6 @@ import { useDrag, useDrop } from "react-dnd";
 import {
   useGetContentItemQuery,
   useGetContentModelFieldsQuery,
-  useGetItemPublishingsQuery,
 } from "../../../services/instance";
 import { ContentModel, ContentModelField } from "../../../services/types";
 import { ActiveItemLoading } from "./ActiveItemLoading";
@@ -59,18 +58,6 @@ export const ActiveItem = memo(
       useGetContentItemQuery(itemZUID, {
         skip: !itemZUID,
       });
-    const {
-      data: contentItemPublishings,
-      isLoading: isLoadingContentItemPublishings,
-    } = useGetItemPublishingsQuery(
-      {
-        modelZUID: relatedModelData?.ZUID,
-        itemZUID,
-      },
-      {
-        skip: !relatedModelData || !itemZUID,
-      }
-    );
     const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
       useGetContentModelFieldsQuery(relatedModelData?.ZUID, {
         skip: !relatedModelData?.ZUID,
@@ -103,10 +90,7 @@ export const ActiveItem = memo(
       contentItem?.web?.metaTitle ||
       contentItem?.web?.metaLinkText;
 
-    const isLoading =
-      isLoadingContentItem ||
-      isLoadingRelatedModel ||
-      isLoadingContentItemPublishings;
+    const isLoading = isLoadingContentItem || isLoadingRelatedModel;
 
     const imageFieldName = useMemo(() => {
       if (!relatedModelFields?.length) return null;
