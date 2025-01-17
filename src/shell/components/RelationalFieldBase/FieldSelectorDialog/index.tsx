@@ -25,6 +25,7 @@ import {
   useGetContentModelFieldsQuery,
 } from "../../../services/instance";
 import { ImageCell } from "./ImageCell";
+import { TitleCell } from "./TitleCell";
 
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -90,31 +91,10 @@ export const FieldSelectorDialog = ({
         field: "title",
         flex: 1,
         renderCell: (params: GridRenderCellParams) => (
-          <Box width="100%">
-            <Typography
-              color="text.primary"
-              fontWeight={600}
-              variant="body2"
-              noWrap
-              sx={{
-                width: "100%",
-              }}
-            >
-              {params.formattedValue?.primary}
-            </Typography>
-            {params.formattedValue?.secondary && (
-              <Typography
-                color="text.secondary"
-                variant="body2"
-                noWrap
-                sx={{
-                  width: "100%",
-                }}
-              >
-                {params.formattedValue.secondary}
-              </Typography>
-            )}
-          </Box>
+          <TitleCell
+            primaryText={params.formattedValue?.primary}
+            secondaryText={params.formattedValue?.secondary}
+          />
         ),
       },
       {
