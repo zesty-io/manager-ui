@@ -292,7 +292,6 @@ export const FieldTypeBlockSelector = ({
           <Box
             component="img"
             width="100%"
-            height={384}
             src={
               (selectedVariantData?.data?.og_image as string) ||
               blockPlaceholder
@@ -304,6 +303,9 @@ export const FieldTypeBlockSelector = ({
             borderBottom={1}
             borderColor="border"
             boxSizing="border-box"
+            sx={{
+              objectFit: "contain",
+            }}
           ></Box>
         </Box>
       )}
