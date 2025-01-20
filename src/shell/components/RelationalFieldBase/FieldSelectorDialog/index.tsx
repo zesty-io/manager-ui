@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useRef,
+  useReducer,
+} from "react";
 import {
   Dialog,
   DialogTitle,
@@ -33,6 +40,13 @@ import { useGetUsersQuery } from "../../../services/accounts";
 import { NoSearchResults } from "../../NoSearchResults";
 import { DialogHeader } from "./DialogHeader";
 
+export type FieldFilters = {
+  sortOrder: string;
+  user: string;
+  date: DateFilterValue;
+  lang: number;
+  status: keyof typeof STATUS_FILTER;
+};
 type FieldSelectorDialogProps = {
   onClose: () => void;
   modelZUID: string;
@@ -61,12 +75,30 @@ export const FieldSelectorDialog = ({
     type: "",
     value: "",
   });
-  const [langFilter, setLangFilter] = useState<number>(null);
+  // const [langFilter, setLangFilter] = useState<number>(null);
+  const [filters, updateFilters] = useReducer(
+    (state: FieldFilters, newValue: Partial<FieldFilters>) => {
+      return {
+        ...state,
+        ...newValue,
+      };
+    },
+    {
+      sortOrder: "lastSaved",
+      user: "",
+      date: {
+        type: "",
+        value: "",
+      },
+      lang: null,
+      status: null,
+    }
+  );
   const [selectionModel, setSelectionModel] =
     useState<GridInputSelectionModel>(selectedZUIDs);
 
   const { data: langs } = useGetLangsQuery({});
-  const langCode = langs?.find((lang) => lang.ID === langFilter)?.code;
+  const langCode = langs?.find((lang) => lang.ID === filters.lang)?.code;
   const { data: contentItems, isFetching: isFetchingContentItems } =
     useGetContentModelItemsQuery(
       {
@@ -85,7 +117,7 @@ export const FieldSelectorDialog = ({
 
   useEffect(() => {
     if (!!langs?.length) {
-      setLangFilter(langs.find((lang) => lang.default)?.ID);
+      updateFilters({ lang: langs.find((lang) => lang.default)?.ID });
     }
   }, [langs]);
 
@@ -267,18 +299,8 @@ export const FieldSelectorDialog = ({
         />
         <FieldSelectorFilters
           modelZUID={modelZUID}
-          sortOrder={sortOrder}
-          onUpdateSortOrder={(newSortOrder) => setSortOrder(newSortOrder)}
-          statusFilter={statusFilter}
-          onUpdateStatusFilter={(newStatusFilter) =>
-            setStatusFilter(newStatusFilter)
-          }
-          userFilter={userFilter}
-          onUpdateUserFilter={(userZUID) => setUserFilter(userZUID)}
-          dateFilter={dateFilter}
-          onUpdateDateFilter={(newDateFilter) => setDateFilter(newDateFilter)}
-          langFilter={langFilter}
-          onUpdateLangFilter={(langID) => setLangFilter(langID)}
+          filters={filters}
+          onUpdateFilter={updateFilters}
         />
         {isLoading ? (
           <ItemsLoading />

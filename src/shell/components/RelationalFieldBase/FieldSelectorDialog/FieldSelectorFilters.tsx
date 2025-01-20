@@ -18,6 +18,7 @@ import {
 } from "../../../services/instance";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { DateFilterValue, DateFilter } from "../../Filters/DateFilter";
+import { FieldFilters } from "./index";
 
 const SORT_ORDER = {
   lastSaved: "Last Saved",
@@ -65,30 +66,14 @@ const getCountryCode = (langCode: string) => {
 };
 
 type FieldSelectorFiltersProps = {
-  sortOrder: string;
-  onUpdateSortOrder: (sortOrder: string) => void;
-  statusFilter: keyof typeof STATUS_FILTER;
-  onUpdateStatusFilter: (statusFilter: keyof typeof STATUS_FILTER) => void;
   modelZUID: string;
-  userFilter: string;
-  onUpdateUserFilter: (userZUID: string) => void;
-  dateFilter: DateFilterValue;
-  onUpdateDateFilter: (dateFilter: DateFilterValue) => void;
-  langFilter: number;
-  onUpdateLangFilter: (langID: number) => void;
+  filters: FieldFilters;
+  onUpdateFilter: (filter: Partial<FieldFilters>) => void;
 };
 export const FieldSelectorFilters = ({
   modelZUID,
-  sortOrder,
-  onUpdateSortOrder,
-  statusFilter,
-  onUpdateStatusFilter,
-  userFilter,
-  onUpdateUserFilter,
-  dateFilter,
-  onUpdateDateFilter,
-  langFilter,
-  onUpdateLangFilter,
+  filters,
+  onUpdateFilter,
 }: FieldSelectorFiltersProps) => {
   const [anchorEl, setAnchorEl] = useState({
     currentTarget: null,
@@ -109,8 +94,8 @@ export const FieldSelectorFilters = ({
   }, [users]);
 
   const selectedLang = useMemo(() => {
-    return langs?.find((lang) => lang.ID === langFilter);
-  }, [langs, langFilter]);
+    return langs?.find((lang) => lang.ID === filters.lang);
+  }, [langs, filters.lang]);
 
   const handleUpdateSortOrder = (sortOrder: string) => {
     setAnchorEl({
@@ -118,7 +103,8 @@ export const FieldSelectorFilters = ({
       id: "",
     });
 
-    onUpdateSortOrder(sortOrder);
+    // onUpdateSortOrder(sortOrder);
+    onUpdateFilter({ sortOrder });
   };
 
   const getButtonText = (sortOrder: string) => {
@@ -147,7 +133,7 @@ export const FieldSelectorFilters = ({
       <FilterButton
         filterId="sortByFilter"
         isFilterActive={false}
-        buttonText={`Sort: ${getButtonText(sortOrder)}`}
+        buttonText={`Sort: ${getButtonText(filters.sortOrder)}`}
         onOpenMenu={(event: React.MouseEvent<HTMLButtonElement>) => {
           setAnchorEl({
             currentTarget: event.currentTarget,
@@ -179,8 +165,8 @@ export const FieldSelectorFilters = ({
             onClick={() => handleUpdateSortOrder(key)}
             selected={
               key === "lastSaved"
-                ? !sortOrder || sortOrder === "lastSaved"
-                : sortOrder === key
+                ? !filters.sortOrder || filters.sortOrder === "lastSaved"
+                : filters.sortOrder === key
             }
           >
             {value}
@@ -201,13 +187,13 @@ export const FieldSelectorFilters = ({
         >
           <MenuList>
             <MenuItem
-              selected={sortOrder === "createdBy"}
+              selected={filters.sortOrder === "createdBy"}
               onClick={() => handleUpdateSortOrder("createdBy")}
             >
               Created By
             </MenuItem>
             <MenuItem
-              selected={sortOrder === "zuid"}
+              selected={filters.sortOrder === "zuid"}
               onClick={() => handleUpdateSortOrder("zuid")}
             >
               ZUID
@@ -235,7 +221,7 @@ export const FieldSelectorFilters = ({
             <MenuItem
               key={field.ZUID}
               onClick={() => handleUpdateSortOrder(field.name)}
-              selected={sortOrder === field.name}
+              selected={filters.sortOrder === field.name}
             >
               <Typography variant="inherit" noWrap>
                 {field.label}
@@ -245,8 +231,8 @@ export const FieldSelectorFilters = ({
       </Menu>
       <FilterButton
         filterId="statusFilter"
-        isFilterActive={!!statusFilter}
-        buttonText={STATUS_FILTER[statusFilter] || "Status"}
+        isFilterActive={!!filters.status}
+        buttonText={STATUS_FILTER[filters.status] || "Status"}
         onOpenMenu={(event: React.MouseEvent<HTMLButtonElement>) => {
           setAnchorEl({
             currentTarget: event.currentTarget,
@@ -254,7 +240,8 @@ export const FieldSelectorFilters = ({
           });
         }}
         onRemoveFilter={() => {
-          onUpdateStatusFilter(null);
+          onUpdateFilter({ status: null });
+          // onUpdateStatusFilter(null);
         }}
       />
       <Menu
@@ -271,29 +258,30 @@ export const FieldSelectorFilters = ({
             key={key}
             data-cy={`${key}FilterOption`}
             onClick={() => {
-              onUpdateStatusFilter(key as keyof typeof STATUS_FILTER);
+              // onUpdateStatusFilter(key as keyof typeof STATUS_FILTER);
+              onUpdateFilter({ status: key as keyof typeof STATUS_FILTER });
               setAnchorEl({
                 currentTarget: null,
                 id: "",
               });
             }}
-            selected={statusFilter === key}
+            selected={filters.status === key}
           >
             {value}
           </MenuItem>
         ))}
       </Menu>
       <UserFilter
-        value={userFilter || ""}
-        onChange={onUpdateUserFilter}
+        value={filters.user || ""}
+        onChange={(user) => onUpdateFilter({ user })}
         defaultButtonText="Created By"
         options={userOptions}
       />
       <DateFilter
         withDateRange
         defaultButtonText="Date Saved"
-        onChange={onUpdateDateFilter}
-        value={dateFilter}
+        onChange={(date) => onUpdateFilter({ date })}
+        value={filters.date}
       />
       <FilterButton
         filterId="langFilter"
@@ -343,7 +331,8 @@ export const FieldSelectorFilters = ({
                 currentTarget: null,
                 id: "",
               });
-              onUpdateLangFilter(lang.ID);
+              // onUpdateLangFilter(lang.ID);
+              onUpdateFilter({ lang: lang.ID });
             }}
           >
             <Box
