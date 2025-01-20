@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -29,6 +29,7 @@ import { TitleCell } from "./TitleCell";
 import { VersionCell } from "./VersionCell";
 import { ItemsLoading } from "./ItemsLoading";
 import { useGetUsersQuery } from "../../../services/accounts";
+import { NoSearchResults } from "../../NoSearchResults";
 
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -44,6 +45,7 @@ export const FieldSelectorDialog = ({
   relatedFieldName,
   multiselect,
 }: FieldSelectorDialogProps) => {
+  const searchField = useRef(null);
   const [filterKeyword, setFilterKeyword] = useState<string>(null);
   const [sortOrder, setSortOrder] = useState<string>("lastSaved");
   const [statusFilter, setStatusFilter] =
@@ -248,6 +250,7 @@ export const FieldSelectorDialog = ({
         }}
       >
         <TextField
+          ref={searchField}
           fullWidth
           onChange={(evt) => debouncedSetFilterKeyword(evt.currentTarget.value)}
           size="small"
@@ -278,41 +281,69 @@ export const FieldSelectorDialog = ({
         {isFetchingContentItems || isLoadingRelatedModel || isLoadingUsers ? (
           <ItemsLoading />
         ) : (
-          <Box height={rows?.length * 64 + 2} maxHeight={1024}>
-            <DataGridPro
-              checkboxSelection
-              columns={columns}
-              rows={rows}
-              headerHeight={0}
-              rowHeight={64}
-              hideFooter
-              sx={{
+          <Box
+            height={
+              !rows?.length && !!filterKeyword ? 610 : rows?.length * 64 + 2
+            }
+            maxHeight={1024}
+            sx={{
+              "& [data-cy='NoSearchResults']": {
+                border: 1,
+                borderColor: "border",
                 bgcolor: "background.paper",
+                borderRadius: 2,
+              },
+            }}
+          >
+            {!rows?.length && !!filterKeyword ? (
+              <NoSearchResults
+                query={filterKeyword}
+                onSearchAgain={() => {
+                  setFilterKeyword("");
+                  if (!!searchField.current) {
+                    searchField.current.querySelector("input").value = "";
+                    searchField.current.querySelector("input").focus();
+                  }
+                }}
+                ignoreFilters
+                hideBackButton
+              />
+            ) : (
+              <DataGridPro
+                checkboxSelection
+                columns={columns}
+                rows={rows}
+                headerHeight={0}
+                rowHeight={64}
+                hideFooter
+                sx={{
+                  bgcolor: "background.paper",
 
-                "& .MuiDataGrid-columnHeaders": {
-                  borderBottom: 0,
-                },
+                  "& .MuiDataGrid-columnHeaders": {
+                    borderBottom: 0,
+                  },
 
-                "& .MuiDataGrid-cellCheckbox": {
-                  mx: "3px",
-                },
+                  "& .MuiDataGrid-cellCheckbox": {
+                    mx: "3px",
+                  },
 
-                "& [data-field='image']": {
-                  p: 0,
-                },
+                  "& [data-field='image']": {
+                    p: 0,
+                  },
 
-                "& [data-field='title']": {
-                  pl: !!imageFieldName ? 2 : 0,
-                  pr: 2,
-                },
+                  "& [data-field='title']": {
+                    pl: !!imageFieldName ? 2 : 0,
+                    pr: 2,
+                  },
 
-                "& [data-field='version']": {
-                  pl: 0,
-                  pr: 2,
-                  justifyContent: "center",
-                },
-              }}
-            />
+                  "& [data-field='version']": {
+                    pl: 0,
+                    pr: 2,
+                    justifyContent: "center",
+                  },
+                }}
+              />
+            )}
           </Box>
         )}
       </DialogContent>
