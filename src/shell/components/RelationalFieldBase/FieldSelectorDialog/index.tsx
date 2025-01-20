@@ -31,6 +31,7 @@ import { VersionCell } from "./VersionCell";
 import { ItemsLoading } from "./ItemsLoading";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { NoSearchResults } from "../../NoSearchResults";
+import { DialogHeader } from "./DialogHeader";
 
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -208,6 +209,9 @@ export const FieldSelectorDialog = ({
     [setFilterKeyword]
   );
 
+  const isLoading =
+    isFetchingContentItems || isLoadingRelatedModel || isLoadingUsers;
+
   return (
     <Dialog
       open
@@ -220,24 +224,15 @@ export const FieldSelectorDialog = ({
         },
       }}
     >
-      <DialogTitle
-        component="div"
-        sx={{
-          pt: 4,
-          pb: 2,
-          px: 4,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h3" fontWeight={700}>
-          Select {modelName}
-        </Typography>
-        <IconButton size="small" onClick={onClose}>
-          <CloseRounded fontSize="small" />
-        </IconButton>
-      </DialogTitle>
+      <DialogHeader
+        modelName={modelName}
+        multiselect={multiselect}
+        selectedCount={(selectionModel as string[])?.length || 0}
+        onClose={onClose}
+        onDeselectAll={() => setSelectionModel([])}
+        onDone={() => onUpdateSelectedZUIDs(selectionModel as string[])}
+        loading={isLoading}
+      />
       <DialogContent
         id="fieldSelectorDialogBody"
         sx={{
@@ -285,7 +280,7 @@ export const FieldSelectorDialog = ({
           langFilter={langFilter}
           onUpdateLangFilter={(langID) => setLangFilter(langID)}
         />
-        {isFetchingContentItems || isLoadingRelatedModel || isLoadingUsers ? (
+        {isLoading ? (
           <ItemsLoading />
         ) : (
           <Box
