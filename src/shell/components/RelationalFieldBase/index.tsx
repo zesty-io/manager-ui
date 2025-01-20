@@ -121,6 +121,13 @@ export const RelationalFieldBase = ({
           relatedFieldName={
             modelFields?.find((field) => field.ZUID === relatedFieldZUID)?.name
           }
+          selectedZUIDs={itemZUIDs}
+          onUpdateSelectedZUIDs={(selectedZUIDs) =>
+            onChange(
+              !!selectedZUIDs?.length ? selectedZUIDs.join(",") : null,
+              name
+            )
+          }
         />
       )}
     </Box>

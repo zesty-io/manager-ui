@@ -13,6 +13,7 @@ import { CloseRounded, Search } from "@mui/icons-material";
 import {
   DataGridPro,
   GridColumns,
+  GridInputSelectionModel,
   GridRenderCellParams,
 } from "@mui/x-data-grid-pro";
 import { debounce } from "lodash";
@@ -36,6 +37,8 @@ type FieldSelectorDialogProps = {
   modelZUID: string;
   modelName: string;
   relatedFieldName: string;
+  selectedZUIDs: string[];
+  onUpdateSelectedZUIDs: (selectedZUIDs: string[]) => void;
   multiselect?: boolean;
 };
 export const FieldSelectorDialog = ({
@@ -43,6 +46,8 @@ export const FieldSelectorDialog = ({
   modelZUID,
   modelName,
   relatedFieldName,
+  selectedZUIDs,
+  onUpdateSelectedZUIDs,
   multiselect,
 }: FieldSelectorDialogProps) => {
   const searchField = useRef(null);
@@ -56,6 +61,8 @@ export const FieldSelectorDialog = ({
     value: "",
   });
   const [langFilter, setLangFilter] = useState<number>(null);
+  const [selectionModel, setSelectionModel] =
+    useState<GridInputSelectionModel>(selectedZUIDs);
 
   const { data: langs } = useGetLangsQuery({});
   const langCode = langs?.find((lang) => lang.ID === langFilter)?.code;
@@ -316,6 +323,14 @@ export const FieldSelectorDialog = ({
                 headerHeight={0}
                 rowHeight={64}
                 hideFooter
+                selectionModel={selectionModel}
+                onSelectionModelChange={(newSelectionModel) => {
+                  if (!multiselect && newSelectionModel?.length > 1) {
+                    return;
+                  }
+
+                  setSelectionModel(newSelectionModel);
+                }}
                 sx={{
                   bgcolor: "background.paper",
 
