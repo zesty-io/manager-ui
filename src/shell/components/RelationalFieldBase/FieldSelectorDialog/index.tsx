@@ -8,15 +8,12 @@ import {
 } from "react";
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
-  Typography,
   TextField,
-  IconButton,
   InputAdornment,
   Box,
 } from "@mui/material";
-import { CloseRounded, Search } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import {
   DataGridPro,
   GridColumns,
@@ -67,15 +64,6 @@ export const FieldSelectorDialog = ({
 }: FieldSelectorDialogProps) => {
   const searchField = useRef(null);
   const [filterKeyword, setFilterKeyword] = useState<string>(null);
-  const [sortOrder, setSortOrder] = useState<string>("lastSaved");
-  const [statusFilter, setStatusFilter] =
-    useState<keyof typeof STATUS_FILTER>(null);
-  const [userFilter, setUserFilter] = useState<string>(null);
-  const [dateFilter, setDateFilter] = useState<DateFilterValue>({
-    type: "",
-    value: "",
-  });
-  // const [langFilter, setLangFilter] = useState<number>(null);
   const [filters, updateFilters] = useReducer(
     (state: FieldFilters, newValue: Partial<FieldFilters>) => {
       return {
