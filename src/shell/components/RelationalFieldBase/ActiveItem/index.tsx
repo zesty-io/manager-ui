@@ -25,8 +25,8 @@ import { useHistory } from "react-router";
 import { useDrag, useDrop } from "react-dnd";
 
 import {
-  useGetContentItemQuery,
   useGetContentModelFieldsQuery,
+  useGetContentModelItemsQuery,
 } from "../../../services/instance";
 import { ContentModel, ContentModelField } from "../../../services/types";
 import { ActiveItemLoading } from "./ActiveItemLoading";
@@ -54,10 +54,11 @@ export const ActiveItem = memo(
     const [imageError, setImageError] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const history = useHistory();
-    const { data: contentItem, isLoading: isLoadingContentItem } =
-      useGetContentItemQuery(itemZUID, {
-        skip: !itemZUID,
-      });
+    const { data: contentItems, isLoading: isLoadingContentItems } =
+      useGetContentModelItemsQuery(
+        { modelZUID: relatedModelData?.ZUID },
+        { skip: !relatedModelData?.ZUID }
+      );
     const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
       useGetContentModelFieldsQuery(relatedModelData?.ZUID, {
         skip: !relatedModelData?.ZUID,
@@ -85,12 +86,9 @@ export const ActiveItem = memo(
       },
     });
 
-    const itemTitle =
-      contentItem?.data[relatedFieldData?.name] ||
-      contentItem?.web?.metaTitle ||
-      contentItem?.web?.metaLinkText;
-
-    const isLoading = isLoadingContentItem || isLoadingRelatedModel;
+    const contentItem = useMemo(() => {
+      return contentItems?.find((item) => item.meta?.ZUID === itemZUID);
+    }, [contentItems]);
 
     const imageFieldName = useMemo(() => {
       if (!relatedModelFields?.length) return null;
@@ -120,6 +118,14 @@ export const ActiveItem = memo(
 
       return null;
     }, [contentItem, imageFieldName]);
+
+    const itemTitle =
+      contentItem?.data[relatedFieldData?.name] ||
+      contentItem?.web?.metaTitle ||
+      contentItem?.web?.metaLinkText ||
+      itemZUID;
+
+    const isLoading = isLoadingContentItems || isLoadingRelatedModel;
 
     if (isLoading) {
       return <ActiveItemLoading draggable={draggable} />;
