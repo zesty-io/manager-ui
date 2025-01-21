@@ -252,6 +252,35 @@ export const FieldSelectorDialog = ({
 
     let _rows = [...mappedRows];
 
+    // Sorting
+    _rows?.sort((a: any, b: any) => {
+      if (!filters.sortOrder || filters.sortOrder === "lastSaved") {
+        const dateA = new Date(a.item?.web?.createdAt).getTime();
+        const dateB = new Date(b.item?.web?.createdAt).getTime();
+
+        if (!a.item?.web?.createdAt) {
+          return -1;
+        } else if (!b.item?.web?.createdAt) {
+          return 1;
+        } else {
+          return dateB - dateA;
+        }
+      } else if (filters.sortOrder === "lastPublished") {
+        // Handle undefined publishAt by setting a default far-future date for sorting purposes
+
+        let dateA =
+          a?.item?.scheduling?.publishAt || a?.item?.publishing?.publishAt;
+        dateA = dateA ? new Date(dateA).getTime() : Number.NEGATIVE_INFINITY;
+
+        let dateB =
+          b?.item?.scheduling?.publishAt || b?.item?.publishing?.publishAt;
+        dateB = dateB ? new Date(dateB).getTime() : Number.NEGATIVE_INFINITY;
+
+        return dateB - dateA;
+      }
+    });
+
+    // Keyword search
     if (!!filterKeyword) {
       const search = filterKeyword.toLowerCase();
 
