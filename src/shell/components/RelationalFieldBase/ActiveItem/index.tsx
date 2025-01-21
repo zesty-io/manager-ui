@@ -236,11 +236,13 @@ export const ActiveItem = memo(
             </Stack>
           </Stack>
           <Stack direction="row" gap={2} mx={2} alignItems="center">
-            <VersionCell
-              modelZUID={relatedModelData?.ZUID}
-              itemZUID={itemZUID}
-              itemData={contentItem}
-            />
+            {!!contentItem && (
+              <VersionCell
+                modelZUID={relatedModelData?.ZUID}
+                itemZUID={itemZUID}
+                itemData={contentItem}
+              />
+            )}
             <Stack direction="row" gap={1}>
               <IconButton
                 size="xsmall"
