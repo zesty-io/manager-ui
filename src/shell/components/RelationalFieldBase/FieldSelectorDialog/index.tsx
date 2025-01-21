@@ -21,12 +21,12 @@ import {
   GridRenderCellParams,
 } from "@mui/x-data-grid-pro";
 import { debounce } from "lodash";
+import { useDispatch, useSelector } from "react-redux";
 
 import { FieldSelectorFilters, STATUS_FILTER } from "./FieldSelectorFilters";
 import { DateFilterValue } from "../../Filters/DateFilter";
 import {
   useGetLangsQuery,
-  useGetContentModelItemsQuery,
   useGetContentModelFieldsQuery,
 } from "../../../services/instance";
 import { ImageCell } from "./ImageCell";
@@ -36,6 +36,25 @@ import { ItemsLoading } from "./ItemsLoading";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { NoSearchResults } from "../../NoSearchResults";
 import { DialogHeader } from "./DialogHeader";
+import { fetchItems } from "../../../store/content";
+import { AppState } from "../../../store/types";
+import { ContentItem } from "../../../services/types";
+
+const selectFilteredItems = (
+  state: AppState,
+  modelZUID: string,
+  activeLangId: number,
+  skip = false
+) => {
+  if (skip) {
+    return [];
+  }
+  return Object.values(state.content).filter(
+    (item: ContentItem) =>
+      item.meta.contentModelZUID === modelZUID &&
+      item.meta.langID === activeLangId
+  );
+};
 
 export type FieldFilters = {
   sortOrder: string;
@@ -62,6 +81,7 @@ export const FieldSelectorDialog = ({
   onUpdateSelectedZUIDs,
   multiselect,
 }: FieldSelectorDialogProps) => {
+  const dispatch = useDispatch();
   const searchField = useRef(null);
   const [filterKeyword, setFilterKeyword] = useState<string>(null);
   const [filters, updateFilters] = useReducer(
@@ -84,19 +104,13 @@ export const FieldSelectorDialog = ({
   );
   const [selectionModel, setSelectionModel] =
     useState<GridInputSelectionModel>(selectedZUIDs);
+  const [isFetchingContentItems, setIsFetchingContentItems] = useState(false);
 
   const { data: langs } = useGetLangsQuery({});
   const langCode = langs?.find((lang) => lang.ID === filters.lang)?.code;
-  const { data: contentItems, isFetching: isFetchingContentItems } =
-    useGetContentModelItemsQuery(
-      {
-        modelZUID,
-        params: {
-          lang: langCode,
-        },
-      },
-      { skip: !modelZUID || !langCode }
-    );
+  const contentItems = useSelector((state: AppState) =>
+    selectFilteredItems(state, modelZUID, filters.lang, isFetchingContentItems)
+  );
   const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
     useGetContentModelFieldsQuery(modelZUID, {
       skip: !modelZUID,
@@ -108,6 +122,21 @@ export const FieldSelectorDialog = ({
       updateFilters({ lang: langs.find((lang) => lang.default)?.ID });
     }
   }, [langs]);
+
+  useEffect(() => {
+    if (!!modelZUID) {
+      setIsFetchingContentItems(true);
+      dispatch(
+        fetchItems(modelZUID, {
+          lang: langCode,
+          limit: 5000,
+        })
+        // @ts-ignore
+      ).then(() => {
+        setIsFetchingContentItems(false);
+      });
+    }
+  }, [modelZUID, langCode]);
 
   const imageFieldName = useMemo(() => {
     if (!relatedModelFields?.length) return null;
@@ -136,9 +165,9 @@ export const FieldSelectorDialog = ({
         width: 60,
         renderCell: (params: GridRenderCellParams) => (
           <VersionCell
-            modelZUID={params.value?.modelZUID}
-            itemZUID={params.value?.itemZUID}
             itemData={params.value?.itemData}
+            publishData={params.value?.publishData}
+            scheduleData={params.value?.scheduleData}
           />
         ),
       },
@@ -164,44 +193,22 @@ export const FieldSelectorDialog = ({
     return defaultCols;
   }, [imageFieldName]);
 
-  const rows = useMemo(() => {
-    if (!contentItems?.length || !users?.length) return [];
+  const resolveUserZUID = (userZUID: string) => {
+    const user = users?.find((user) => user.ZUID === userZUID);
 
-    let mappedContentItems = [...contentItems];
-
-    if (!!filterKeyword) {
-      const search = filterKeyword.toLowerCase();
-
-      mappedContentItems = mappedContentItems?.filter((item) => {
-        const matchedUser = users.find(
-          (user) => user.ZUID === item?.meta?.createdByUserZUID
-        );
-        const creator = matchedUser
-          ? `${matchedUser.firstName} ${matchedUser.lastName}`
-          : null;
-
-        return (
-          Object.values(item.data).some((value: any) => {
-            if (!value) return false;
-
-            if (value?.filename || value?.title) {
-              return (
-                value?.filename?.toLowerCase()?.includes(search) ||
-                value?.title?.toLowerCase()?.includes(search)
-              );
-            }
-
-            return value.toString().toLowerCase().includes(search);
-          }) ||
-          item?.meta?.createdAt?.toLowerCase().includes(search) ||
-          item?.web?.updatedAt?.toLowerCase().includes(search) ||
-          item?.meta?.ZUID?.toLowerCase().includes(search) ||
-          creator?.toLowerCase()?.includes(search)
-        );
-      });
+    if (!!user) {
+      return `${user?.firstName} ${user.lastName}`;
     }
 
-    return mappedContentItems?.map((item) => ({
+    return userZUID;
+  };
+
+  const mappedRows = useMemo(() => {
+    if (!contentItems?.length || !users?.length) return [];
+
+    let _rows = [...contentItems];
+
+    return _rows?.map((item) => ({
       id: item.meta?.ZUID,
       image: {
         imageFieldName,
@@ -215,12 +222,70 @@ export const FieldSelectorDialog = ({
         secondary: item.web?.metaDescription,
       },
       version: {
-        modelZUID,
-        itemZUID: item?.meta?.ZUID,
-        itemData: item,
+        itemData: {
+          ...item,
+          createdByName: resolveUserZUID(item.meta?.createdByUserZUID),
+        },
+        publishData: item?.publishing?.version
+          ? {
+              ...item.publishing,
+              publishedByName: resolveUserZUID(
+                item.publishing?.publishedByUserZUID
+              ),
+            }
+          : null,
+        scheduleData: item?.scheduling?.version
+          ? {
+              ...item.scheduling,
+              scheduledByName: resolveUserZUID(
+                item.scheduling?.publishedByUserZUID
+              ),
+            }
+          : null,
       },
+      item,
     }));
-  }, [contentItems, relatedFieldName, imageFieldName, filterKeyword, users]);
+  }, [contentItems, users, relatedFieldName, imageFieldName]);
+
+  const rows = useMemo(() => {
+    if (!mappedRows?.length) return [];
+
+    let _rows = [...mappedRows];
+
+    if (!!filterKeyword) {
+      const search = filterKeyword.toLowerCase();
+
+      _rows = _rows?.filter((row) => {
+        const matchedUser = users.find(
+          (user) => user.ZUID === row?.item?.meta?.createdByUserZUID
+        );
+        const creator = matchedUser
+          ? `${matchedUser.firstName} ${matchedUser.lastName}`
+          : null;
+
+        return (
+          Object.values(row?.item.data).some((value: any) => {
+            if (!value) return false;
+
+            if (value?.filename || value?.title) {
+              return (
+                value?.filename?.toLowerCase()?.includes(search) ||
+                value?.title?.toLowerCase()?.includes(search)
+              );
+            }
+
+            return value.toString().toLowerCase().includes(search);
+          }) ||
+          row?.item?.meta?.createdAt?.toLowerCase().includes(search) ||
+          row?.item?.web?.updatedAt?.toLowerCase().includes(search) ||
+          row?.item?.meta?.ZUID?.toLowerCase().includes(search) ||
+          creator?.toLowerCase()?.includes(search)
+        );
+      });
+    }
+
+    return _rows;
+  }, [mappedRows, filterKeyword]);
 
   const deletedItemZUIDs = useMemo(() => {
     if (!contentItems?.length || !selectedZUIDs) return [];
@@ -240,7 +305,6 @@ export const FieldSelectorDialog = ({
   );
 
   const handleRowClick = (itemZUID: string) => {
-    console.log(itemZUID);
     if ((selectionModel as string[]).includes(itemZUID)) {
       setSelectionModel(
         (selectionModel as string[]).filter((id) => id !== itemZUID)

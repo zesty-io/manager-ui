@@ -103,7 +103,6 @@ export const FieldSelectorFilters = ({
       id: "",
     });
 
-    // onUpdateSortOrder(sortOrder);
     onUpdateFilter({ sortOrder });
   };
 
@@ -241,7 +240,6 @@ export const FieldSelectorFilters = ({
         }}
         onRemoveFilter={() => {
           onUpdateFilter({ status: null });
-          // onUpdateStatusFilter(null);
         }}
       />
       <Menu
@@ -258,7 +256,6 @@ export const FieldSelectorFilters = ({
             key={key}
             data-cy={`${key}FilterOption`}
             onClick={() => {
-              // onUpdateStatusFilter(key as keyof typeof STATUS_FILTER);
               onUpdateFilter({ status: key as keyof typeof STATUS_FILTER });
               setAnchorEl({
                 currentTarget: null,
@@ -331,7 +328,6 @@ export const FieldSelectorFilters = ({
                 currentTarget: null,
                 id: "",
               });
-              // onUpdateLangFilter(lang.ID);
               onUpdateFilter({ lang: lang.ID });
             }}
           >

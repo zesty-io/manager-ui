@@ -23,14 +23,14 @@ import {
 } from "@mui/icons-material";
 import { useHistory } from "react-router";
 import { useDrag, useDrop } from "react-dnd";
+import { useSelector } from "react-redux";
 
-import {
-  useGetContentModelFieldsQuery,
-  useGetContentModelItemsQuery,
-} from "../../../services/instance";
+import { useGetContentModelFieldsQuery } from "../../../services/instance";
 import { ContentModel, ContentModelField } from "../../../services/types";
 import { ActiveItemLoading } from "./ActiveItemLoading";
 import { VersionCell } from "../FieldSelectorDialog/VersionCell";
+import { AppState } from "../../../store/types";
+import { useGetUsersQuery } from "../../../services/accounts";
 
 type ActiveItemProps = {
   itemZUID: string;
@@ -54,15 +54,12 @@ export const ActiveItem = memo(
     const [imageError, setImageError] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const history = useHistory();
-    const { data: contentItems, isLoading: isLoadingContentItems } =
-      useGetContentModelItemsQuery(
-        { modelZUID: relatedModelData?.ZUID },
-        { skip: !relatedModelData?.ZUID }
-      );
+    const contentItems = useSelector((state: AppState) => state.content);
     const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
       useGetContentModelFieldsQuery(relatedModelData?.ZUID, {
         skip: !relatedModelData?.ZUID,
       });
+    const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
 
     const [{ isDragging }, drag, preview] = useDrag({
       type: "relationalItem",
@@ -86,9 +83,48 @@ export const ActiveItem = memo(
       },
     });
 
+    const resolveUserZUID = (userZUID: string) => {
+      const user = users?.find((user) => user.ZUID === userZUID);
+
+      if (!!user) {
+        return `${user?.firstName} ${user.lastName}`;
+      }
+
+      return userZUID;
+    };
+
     const contentItem = useMemo(() => {
-      return contentItems?.find((item) => item.meta?.ZUID === itemZUID);
-    }, [contentItems]);
+      const item = Object.values(contentItems)?.find(
+        (item) =>
+          item.meta?.ZUID === itemZUID &&
+          item.meta?.contentModelZUID === relatedModelData?.ZUID
+      );
+
+      if (!item) {
+        return null;
+      }
+
+      return {
+        ...item,
+        createdByName: resolveUserZUID(item.meta?.createdByUserZUID),
+        publishing: item?.publishing?.version
+          ? {
+              ...item.publishing,
+              publishedByName: resolveUserZUID(
+                item.publishing?.publishedByUserZUID
+              ),
+            }
+          : null,
+        scheduling: item?.scheduling?.version
+          ? {
+              ...item.scheduling,
+              scheduledByName: resolveUserZUID(
+                item.scheduling?.publishedByUserZUID
+              ),
+            }
+          : null,
+      };
+    }, [contentItems, itemZUID, relatedModelData, users]);
 
     const imageFieldName = useMemo(() => {
       if (!relatedModelFields?.length) return null;
@@ -125,9 +161,7 @@ export const ActiveItem = memo(
       contentItem?.web?.metaLinkText ||
       itemZUID;
 
-    const isLoading = isLoadingContentItems || isLoadingRelatedModel;
-
-    if (isLoading) {
+    if (isLoadingRelatedModel || isLoadingUsers) {
       return <ActiveItemLoading draggable={draggable} />;
     }
 
@@ -238,9 +272,9 @@ export const ActiveItem = memo(
           <Stack direction="row" gap={2} mx={2} alignItems="center">
             {!!contentItem && (
               <VersionCell
-                modelZUID={relatedModelData?.ZUID}
-                itemZUID={itemZUID}
                 itemData={contentItem}
+                publishData={contentItem.publishing}
+                scheduleData={contentItem.scheduling}
               />
             )}
             <Stack direction="row" gap={1}>

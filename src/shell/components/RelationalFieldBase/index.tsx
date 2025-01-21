@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Box, Button, Stack } from "@mui/material";
 import {
   LinkRounded,
@@ -7,6 +7,7 @@ import {
 } from "@mui/icons-material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useDispatch } from "react-redux";
 
 import { ActiveItem } from "./ActiveItem";
 import { FieldSelectorDialog } from "./FieldSelectorDialog";
@@ -14,6 +15,7 @@ import {
   useGetContentModelQuery,
   useGetContentModelFieldsQuery,
 } from "../../services/instance";
+import { fetchItems } from "../../store/content";
 
 type RelationalFieldBaseProps = {
   name: string;
@@ -31,6 +33,7 @@ export const RelationalFieldBase = ({
   onChange,
   multiselect,
 }: RelationalFieldBaseProps) => {
+  const dispatch = useDispatch();
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
@@ -42,6 +45,12 @@ export const RelationalFieldBase = ({
     relatedModelZUID,
     { skip: !relatedModelZUID }
   );
+
+  useEffect(() => {
+    if (!!relatedModelZUID) {
+      dispatch(fetchItems(relatedModelZUID));
+    }
+  }, [relatedModelZUID]);
 
   const handleMoveCard = useCallback(
     (draggedItemZUID: string, dropIndex: number) => {
