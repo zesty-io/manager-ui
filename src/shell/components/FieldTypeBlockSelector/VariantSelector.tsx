@@ -159,12 +159,14 @@ export const VariantSelector = ({
                   <Box
                     component="img"
                     width={468}
-                    height={320}
                     src={
                       (variant?.data?.og_image as string) || blockPlaceholder
                     }
                     loading="lazy"
                     borderRadius={2}
+                    sx={{
+                      objectFit: "contain",
+                    }}
                   ></Box>
                 }
                 components={{ Tooltip: Box }}
@@ -184,9 +186,11 @@ export const VariantSelector = ({
                 <Box
                   component="img"
                   width={125}
-                  height={80}
                   src={(variant?.data?.og_image as string) || blockPlaceholder}
                   loading="lazy"
+                  sx={{
+                    objectFit: "contain",
+                  }}
                 ></Box>
               </Tooltip>
               <Stack width={267}>
