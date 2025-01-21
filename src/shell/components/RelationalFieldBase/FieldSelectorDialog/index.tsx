@@ -222,12 +222,33 @@ export const FieldSelectorDialog = ({
     }));
   }, [contentItems, relatedFieldName, imageFieldName, filterKeyword, users]);
 
+  const deletedItemZUIDs = useMemo(() => {
+    if (!contentItems?.length || !selectedZUIDs) return [];
+
+    return (
+      selectedZUIDs.filter(
+        (ZUID) => !contentItems?.find((item) => item.meta?.ZUID === ZUID)
+      ) || []
+    );
+  }, [contentItems, selectedZUIDs]);
+
   const debouncedSetFilterKeyword = useCallback(
     debounce((value) => {
       setFilterKeyword(value);
     }, 300),
     [setFilterKeyword]
   );
+
+  const handleRowClick = (itemZUID: string) => {
+    console.log(itemZUID);
+    if ((selectionModel as string[]).includes(itemZUID)) {
+      setSelectionModel(
+        (selectionModel as string[]).filter((id) => id !== itemZUID)
+      );
+    } else {
+      setSelectionModel([...(selectionModel as string[]), itemZUID]);
+    }
+  };
 
   const isLoading =
     isFetchingContentItems || isLoadingRelatedModel || isLoadingUsers;
@@ -247,7 +268,11 @@ export const FieldSelectorDialog = ({
       <DialogHeader
         modelName={modelName}
         multiselect={multiselect}
-        selectedCount={(selectionModel as string[])?.length || 0}
+        selectedCount={
+          (selectionModel as string[])?.filter(
+            (ZUID) => !deletedItemZUIDs?.includes(ZUID)
+          )?.length || 0
+        }
         onClose={onClose}
         onDeselectAll={() => setSelectionModel([])}
         onDone={() => onUpdateSelectedZUIDs(selectionModel as string[])}
@@ -329,13 +354,7 @@ export const FieldSelectorDialog = ({
                 rowHeight={64}
                 hideFooter
                 selectionModel={selectionModel}
-                onSelectionModelChange={(newSelectionModel) => {
-                  if (!multiselect && newSelectionModel?.length > 1) {
-                    return;
-                  }
-
-                  setSelectionModel(newSelectionModel);
-                }}
+                onRowClick={(params) => handleRowClick(params.id as string)}
                 sx={{
                   bgcolor: "background.paper",
 

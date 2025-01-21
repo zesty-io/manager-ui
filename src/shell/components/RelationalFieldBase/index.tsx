@@ -31,7 +31,7 @@ export const RelationalFieldBase = ({
   onChange,
   multiselect,
 }: RelationalFieldBaseProps) => {
-  const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(","));
+  const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
@@ -127,6 +127,7 @@ export const RelationalFieldBase = ({
               !!selectedZUIDs?.length ? selectedZUIDs.join(",") : null,
               name
             );
+            setItemZUIDs(!!selectedZUIDs?.length ? selectedZUIDs : null);
             setAnchorEl(null);
           }}
         />
