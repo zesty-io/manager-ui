@@ -11,7 +11,6 @@ import {
   Stack,
   Typography,
   Tooltip,
-  styled,
   FormControl,
   OutlinedInput,
   FormHelperText,
@@ -28,30 +27,11 @@ import {
 import { ContentModel } from "../../../../../shell/services/types";
 
 import { Field } from "./Field";
-import { BlockTypeProps } from "./StarterBlocksDialogue";
-
-const LinkStyle = styled(Link)(({ theme }) => ({
-  ...theme.typography.body2,
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  color: theme.palette.primary.main,
-  textDecorationColor: theme.palette.primary.main,
-  "& > svg": {
-    width: "18px",
-    height: "18px",
-    marginLeft: theme.spacing(1),
-  },
-  "&:hover": {
-    color: theme.palette.primary.main,
-    textDecorationColor: theme.palette.primary.main,
-  },
-}));
+import { StarterBlockProps } from "./configs";
 
 type TextInputFieldProps = {
-  label?: string;
-  name?: string;
+  label: string;
+  name: string;
   placeholder?: string;
   required?: boolean;
   error?: string;
@@ -61,7 +41,7 @@ type TextInputFieldProps = {
 };
 
 type StarterBlockFormProps = {
-  block: BlockTypeProps;
+  block: StarterBlockProps;
   onClose: () => void;
   setActiveStep: (step: "selection" | "form") => void;
 };
@@ -111,6 +91,7 @@ const TextInputField: React.FC<TextInputFieldProps> = ({
             name: name,
             value: value,
             onInput: handleChage,
+            "data-cy": `form-input-${name}`,
           }}
         />
         <FormHelperText error={!!error} variant="standard">
@@ -137,7 +118,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
   });
 
   function cleanString(str: string) {
-    return str.toLowerCase().replace(/\W/g, "-");
+    return str.toLowerCase().replace(/\W/g, "_");
   }
   function parseErrorMessage(str: string) {
     return str.split(":")[2] || str;
@@ -200,6 +181,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
           });
           return;
         }
+
         const ZUID = response?.data?.data?.ZUID;
 
         if (!!blockModelData?.fields?.length) {
@@ -224,7 +206,6 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
             fields: blockModelFields,
           });
         }
-
         onClose();
         history.push(`/schema/${ZUID}`);
       } catch (err) {
@@ -323,7 +304,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 <TextInputField
                   label="Display Name"
                   name="label"
-                  placeholder="Place holder..."
+                  placeholder="e.g. Home Page, About Page, Contact Page, etc."
                   required
                   value={blockModelData?.label}
                   onChange={handleBlockLabelChange}
@@ -333,7 +314,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 <TextInputField
                   label="Reference ID"
                   name="name"
-                  placeholder="Place holder..."
+                  placeholder="Auto-Generated from Display Name"
                   required
                   value={blockModelData?.name}
                   toolTip="ID used for accessing this model through our API or Parsley"
@@ -341,31 +322,35 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                   error={error["name"] || ""}
                 />
               </Box>
-              <Typography variant="h6" fontWeight={700}>
-                Fields
-              </Typography>
-              <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="flex-start"
-                alignItems="stretch"
-                rowGap={1.5}
-                pt={1.5}
-                pb={2.5}
-                width="100%"
-              >
-                {block?.fields?.map((field: any, index: number) => (
-                  <Field
-                    key={field?.name}
-                    withMenu={false}
-                    withHover={false}
-                    withDragIcon={false}
-                    index={index}
-                    disableDrag
-                    field={field}
-                  />
-                ))}
-              </Box>
+              {!!blockModelData?.fields?.length && (
+                <>
+                  <Typography variant="h6" fontWeight={700}>
+                    Fields
+                  </Typography>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="flex-start"
+                    alignItems="stretch"
+                    rowGap={1.5}
+                    pt={1.5}
+                    pb={2.5}
+                    width="100%"
+                  >
+                    {block?.fields?.map((field: any, index: number) => (
+                      <Field
+                        key={field?.name}
+                        withMenu={false}
+                        withHover={false}
+                        withDragIcon={false}
+                        index={index}
+                        disableDrag
+                        field={field}
+                      />
+                    ))}
+                  </Box>
+                </>
+              )}
             </Box>
             <Box width="36%" flexGrow={0}>
               <Typography variant="h6" fontWeight={700}>
@@ -380,14 +365,46 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 pt={1.5}
                 pb={2.5}
               >
-                <LinkStyle href="#" target="_blank">
+                <Link
+                  href="#"
+                  target="_blank"
+                  color="primary.main"
+                  variant="body2"
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  columnGap={1}
+                  sx={{
+                    textDecorationColor: (theme) => theme.palette.primary.main,
+                    "&:hover": {
+                      textDecorationColor: (theme) =>
+                        theme.palette.primary.main,
+                    },
+                  }}
+                >
                   Preview
-                  <OpenInNewRoundedIcon />
-                </LinkStyle>
-                <LinkStyle href="#" target="_blank">
+                  <OpenInNewRoundedIcon fontSize="small" />
+                </Link>
+                <Link
+                  href="#"
+                  target="_blank"
+                  color="primary.main"
+                  variant="body2"
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  columnGap={1}
+                  sx={{
+                    textDecorationColor: (theme) => theme.palette.primary.main,
+                    "&:hover": {
+                      textDecorationColor: (theme) =>
+                        theme.palette.primary.main,
+                    },
+                  }}
+                >
                   Code Template
-                  <OpenInNewRoundedIcon />
-                </LinkStyle>
+                  <OpenInNewRoundedIcon fontSize="small" />
+                </Link>
               </Box>
               <Typography variant="h6" fontWeight={700}>
                 Description
@@ -429,7 +446,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
         </Button>
         <Button
           variant="contained"
-          data-cy="select-block-type-next-button"
+          data-cy="starter-block-form-submit"
           type="submit"
           disabled={
             !blockModelData?.label || !blockModelData?.name || !!isLoading
