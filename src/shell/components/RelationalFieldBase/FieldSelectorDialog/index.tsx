@@ -99,11 +99,11 @@ export const FieldSelectorDialog = ({
     },
     {
       sortOrder: "lastSaved",
-      user: "",
+      user: null,
       date: {
-        preset: "",
-        from: "",
-        to: "",
+        preset: null,
+        from: null,
+        to: null,
       },
       lang: null,
       status: null,
@@ -524,6 +524,13 @@ export const FieldSelectorDialog = ({
 
   const isLoading =
     isFetchingContentItems || isLoadingRelatedModel || isLoadingUsers;
+  const isFilteringResults =
+    !!filterKeyword ||
+    !!filters.status ||
+    !!filters.user ||
+    !!filters.date.preset ||
+    !!filters.date.from ||
+    !!filters.date.to;
 
   return (
     <Dialog
@@ -592,7 +599,7 @@ export const FieldSelectorDialog = ({
         ) : (
           <Box
             height={
-              !rows?.length && !!filterKeyword ? 610 : rows?.length * 64 + 2
+              !rows?.length && isFilteringResults ? 610 : rows?.length * 64 + 2
             }
             maxHeight={1024}
             sx={{
@@ -604,15 +611,29 @@ export const FieldSelectorDialog = ({
               },
             }}
           >
-            {!rows?.length && !!filterKeyword ? (
+            {!rows?.length && isFilteringResults ? (
               <NoSearchResults
                 query={filterKeyword}
                 onSearchAgain={() => {
-                  setFilterKeyword("");
-                  if (!!searchField.current) {
-                    searchField.current.querySelector("input").value = "";
-                    searchField.current.querySelector("input").focus();
+                  if (!!filterKeyword) {
+                    setFilterKeyword("");
+                    if (!!searchField.current) {
+                      searchField.current.querySelector("input").value = "";
+                      searchField.current.querySelector("input").focus();
+                    }
                   }
+
+                  updateFilters({
+                    sortOrder: "lastSaved",
+                    user: null,
+                    date: {
+                      preset: null,
+                      from: null,
+                      to: null,
+                    },
+                    lang: langs.find((lang) => lang.default)?.ID,
+                    status: null,
+                  });
                 }}
                 ignoreFilters
                 hideBackButton
