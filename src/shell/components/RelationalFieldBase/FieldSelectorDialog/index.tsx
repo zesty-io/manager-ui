@@ -40,6 +40,7 @@ import { fetchItems } from "../../../store/content";
 import { AppState } from "../../../store/types";
 import { ContentItem } from "../../../services/types";
 import moment from "moment";
+import { getDateFilterFnByValues } from "../../Filters/DateFilter/getDateFilter";
 
 const selectFilteredItems = (
   state: AppState,
@@ -60,7 +61,11 @@ const selectFilteredItems = (
 export type FieldFilters = {
   sortOrder: string;
   user: string;
-  date: DateFilterValue;
+  date: {
+    preset: string;
+    from: string;
+    to: string;
+  };
   lang: number;
   status: keyof typeof STATUS_FILTER;
 };
@@ -96,8 +101,9 @@ export const FieldSelectorDialog = ({
       sortOrder: "lastSaved",
       user: "",
       date: {
-        type: "",
-        value: "",
+        preset: "",
+        from: "",
+        to: "",
       },
       lang: null,
       status: null,
@@ -451,6 +457,41 @@ export const FieldSelectorDialog = ({
       });
     }
 
+    // Filtering
+    if (filters.status) {
+      _rows = _rows?.filter((item) => {
+        if (filters.status === "published") {
+          return (
+            item.item?.publishing?.publishAt &&
+            !item.item?.scheduling?.publishAt
+          );
+        } else if (filters.status === "scheduled") {
+          return item.item?.scheduling?.publishAt;
+        } else if (filters.status === "notPublished") {
+          return (
+            !item.item?.publishing?.publishAt &&
+            !item.item?.scheduling?.publishAt
+          );
+        }
+      });
+    }
+
+    if (filters.user) {
+      _rows = _rows.filter(
+        (item) => item.item?.meta?.createdByUserZUID === filters.user
+      );
+    }
+
+    const dateFilterFn = getDateFilterFnByValues(filters.date);
+    if (dateFilterFn) {
+      _rows = _rows.filter((item) => {
+        if (!!item.item?.meta?.updatedAt) {
+          return dateFilterFn(item.item?.meta?.updatedAt);
+        }
+
+        return false;
+      });
+    }
     return _rows;
   }, [mappedRows, filterKeyword, relatedModelFields]);
 

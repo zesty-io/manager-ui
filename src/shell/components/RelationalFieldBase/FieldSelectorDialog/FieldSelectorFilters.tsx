@@ -19,6 +19,7 @@ import {
 import { useGetUsersQuery } from "../../../services/accounts";
 import { DateFilterValue, DateFilter } from "../../Filters/DateFilter";
 import { FieldFilters } from "./index";
+import { DateRangeFilterValue } from "../../Filters/DateFilter/types";
 
 const SORT_ORDER = {
   lastSaved: "Last Saved",
@@ -126,6 +127,140 @@ export const FieldSelectorFilters = ({
     const fieldLabel = fields?.find((field) => field.name === sortOrder)?.label;
     return fieldLabel;
   };
+
+  const handleUpdateDateFilter = (dateFilter: DateFilterValue) => {
+    switch (dateFilter.type) {
+      case "daterange": {
+        const value = dateFilter.value as DateRangeFilterValue;
+
+        onUpdateFilter({
+          date: {
+            preset: null,
+            to: value.to,
+            from: value.from,
+          },
+        });
+        return;
+      }
+
+      case "on": {
+        const value = dateFilter.value as string;
+
+        onUpdateFilter({
+          date: {
+            preset: null,
+            to: value,
+            from: value,
+          },
+        });
+        return;
+      }
+      case "before": {
+        const value = dateFilter.value as string;
+
+        onUpdateFilter({
+          date: {
+            preset: null,
+            to: value,
+            from: null,
+          },
+        });
+        return;
+      }
+      case "after": {
+        const value = dateFilter.value as string;
+
+        onUpdateFilter({
+          date: {
+            preset: null,
+            to: null,
+            from: value,
+          },
+        });
+        return;
+      }
+      case "preset": {
+        const value = dateFilter.value as string;
+
+        onUpdateFilter({
+          date: {
+            preset: value,
+            to: null,
+            from: null,
+          },
+        });
+        return;
+      }
+
+      default: {
+        onUpdateFilter({
+          date: {
+            preset: null,
+            to: null,
+            from: null,
+          },
+        });
+        return;
+      }
+    }
+  };
+
+  const activeDateFilter: DateFilterValue = useMemo(() => {
+    const isPreset = !!filters.date.preset;
+    const isBefore = !!filters.date.to && !!!filters.date.from;
+    const isAfter = !!filters.date.from && !!!filters.date.to;
+    const isOn =
+      !!filters.date.to &&
+      !!filters.date.from &&
+      filters.date.to === filters.date.from;
+    const isDateRange =
+      !!filters.date.to &&
+      !!filters.date.from &&
+      filters.date.to !== filters.date.from;
+
+    if (isPreset) {
+      return {
+        type: "preset",
+        value: filters.date.preset,
+      };
+    }
+
+    if (isBefore) {
+      return {
+        type: "before",
+        value: filters.date.to,
+      };
+    }
+
+    if (isAfter) {
+      return {
+        type: "after",
+        value: filters.date.from,
+      };
+    }
+
+    if (isOn) {
+      return {
+        type: "on",
+        value: filters.date.from,
+      };
+    }
+
+    if (isDateRange) {
+      return {
+        type: "daterange",
+        value: {
+          from: filters.date.from,
+          to: filters.date.to,
+        },
+      };
+    }
+
+    return {
+      type: "",
+      value: "",
+    };
+  }, [filters.date]);
 
   return (
     <Stack direction="row" gap={1.5}>
@@ -277,8 +412,8 @@ export const FieldSelectorFilters = ({
       <DateFilter
         withDateRange
         defaultButtonText="Date Saved"
-        onChange={(date) => onUpdateFilter({ date })}
-        value={filters.date}
+        onChange={(date) => handleUpdateDateFilter(date)}
+        value={activeDateFilter}
       />
       <FilterButton
         filterId="langFilter"
