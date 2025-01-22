@@ -255,7 +255,7 @@ export const FieldSelectorDialog = ({
 
     // Sorting
     _rows?.sort((a: any, b: any) => {
-      if (!filters.sortOrder || filters.sortOrder === "lastSaved") {
+      if (filters.sortOrder === "lastSaved") {
         const dateA = new Date(a.item?.web?.createdAt).getTime();
         const dateB = new Date(b.item?.web?.createdAt).getTime();
 
@@ -353,6 +353,68 @@ export const FieldSelectorDialog = ({
         }
       } else if (filters.sortOrder === "zuid") {
         return a?.item?.meta?.ZUID?.localeCompare(b?.item?.meta?.ZUID);
+      } else if (
+        relatedModelFields?.find((field) => field.name === filters.sortOrder)
+      ) {
+        const fieldName = filters.sortOrder;
+        const dataType = relatedModelFields?.find(
+          (field) => field.name === filters.sortOrder
+        )?.datatype;
+
+        if (typeof a?.item?.data[fieldName] === "number") {
+          if (a?.item?.data[fieldName] == null) return 1;
+          if (b?.item?.data[fieldName] == null) return -1;
+
+          if (dataType === "sort") {
+            return b?.item?.data[fieldName] - a?.item?.data[fieldName];
+          }
+
+          return b?.item?.data[fieldName] - a?.item?.data[fieldName];
+        }
+        if (dataType === "date" || dataType === "datetime") {
+          if (!a?.item?.data[fieldName]) {
+            return 1;
+          } else if (!b?.item?.data[fieldName]) {
+            return -1;
+          } else {
+            return (
+              new Date(b?.item?.data[fieldName]).getTime() -
+              new Date(a?.item?.data[fieldName]).getTime()
+            );
+          }
+        }
+
+        if (dataType === "yes_no") {
+          if (!a?.item?.data[fieldName]) {
+            return 1;
+          } else if (!b?.item?.data[fieldName]) {
+            return -1;
+          } else {
+            return b - a;
+          }
+        }
+
+        const aValue =
+          dataType === "images"
+            ? a?.item?.data[fieldName]?.filename
+            : a?.item?.data[fieldName];
+        const bValue =
+          dataType === "images"
+            ? b?.item?.data[fieldName]?.filename
+            : b?.item?.data[fieldName];
+
+        return aValue?.trim()?.localeCompare(bValue?.trim());
+      } else {
+        const dateA = new Date(a.item?.web?.createdAt).getTime();
+        const dateB = new Date(b.item?.web?.createdAt).getTime();
+
+        if (!a.item?.web?.createdAt) {
+          return -1;
+        } else if (!b.item?.web?.createdAt) {
+          return 1;
+        } else {
+          return dateB - dateA;
+        }
       }
     });
 
@@ -390,7 +452,7 @@ export const FieldSelectorDialog = ({
     }
 
     return _rows;
-  }, [mappedRows, filterKeyword]);
+  }, [mappedRows, filterKeyword, relatedModelFields]);
 
   const deletedItemZUIDs = useMemo(() => {
     if (!contentItems?.length || !selectedZUIDs) return [];
