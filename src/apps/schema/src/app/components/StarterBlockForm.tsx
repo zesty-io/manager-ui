@@ -1,3 +1,5 @@
+import React, { useCallback, useState } from "react";
+import { useHistory } from "react-router";
 import {
   Box,
   Button,
@@ -16,17 +18,15 @@ import {
   CircularProgress,
   Backdrop,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import {
   useCreateContentModelMutation,
-  useCreateContentModelFieldMutation,
-  useGetContentModelFieldsQuery,
+  useBulkCreateContentModelFieldMutation,
 } from "../../../../../shell/services/instance";
 import { ContentModel } from "../../../../../shell/services/types";
-import { useHistory } from "react-router";
+
 import { Field } from "./Field";
 import { BlockTypeProps } from "./StarterBlocksDialogue";
 
@@ -127,9 +127,8 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
   setActiveStep,
 }) => {
   const history = useHistory();
-
-  const [createModel] = useCreateContentModelMutation();
-  const [createContentModelField] = useCreateContentModelFieldMutation();
+  const [createBlockModel] = useCreateContentModelMutation();
+  const [createBlockModelFields] = useBulkCreateContentModelFieldMutation();
   const [isLoading, setIsLoading] = useState(false);
   const [blockModelData, setBlockModelData] = useState({ ...block });
   const [error, setError] = useState<Record<string, string>>({
@@ -159,86 +158,82 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
     }));
   };
 
-  const handleFormSunmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+
       if (!blockModelData?.label || !blockModelData?.name) return;
+
       setError({ label: "", name: "" });
       setIsLoading(true);
 
-      const formData = new FormData(e.currentTarget);
+      try {
+        const formData = new FormData(e.currentTarget);
+        const { label, name } = Object.fromEntries(formData) as {
+          label: string;
+          name: string;
+        };
 
-      const { label, name } = Object.fromEntries(formData);
+        const createBlockModelPayload: Partial<ContentModel> = {
+          label,
+          name,
+          type: "block",
+          description: block?.description,
+          parentZUID: "",
+          listed: true,
+        };
 
-      let ZUID = "";
+        // Create block model
+        const response: any = await createBlockModel(createBlockModelPayload);
 
-      const createBlockModelPayload: Partial<ContentModel> = {
-        label: label as string,
-        name: name as string,
-        type: "block",
-        description: block?.description,
-        parentZUID: "",
-        listed: true,
-      };
-      let createBlockModelError = false;
-      createModel(createBlockModelPayload)
-        .then(async (response: any) => {
-          if (!!response?.error) {
-            const errorMessage = parseErrorMessage(
-              response?.error?.data?.error
-            );
-
-            const nameError = errorMessage.includes("name")
+        if (response?.error) {
+          const errorMessage = parseErrorMessage(response.error?.data?.error);
+          setError({
+            name: errorMessage.includes("name")
               ? "Reference ID is already in use. Please use another Reference ID."
-              : "";
-            const labelError =
+              : "",
+            label:
               errorMessage.includes("label") ||
-              (!!nameError && cleanString(label as string) === name)
+              (errorMessage.includes("name") && cleanString(label) === name)
                 ? "Display name is already in use. Please use another display name."
-                : "";
+                : "",
+          });
+          return;
+        }
+        const ZUID = response?.data?.data?.ZUID;
 
-            setError({
-              name: nameError,
-              label: labelError,
-            });
-            createBlockModelError = true;
-          }
+        if (!!blockModelData?.fields?.length) {
+          const blockModelFields =
+            blockModelData?.fields?.map((field, index) => ({
+              contentModelZUID: ZUID,
+              name: field?.name,
+              label: field?.label,
+              description: field?.description,
+              datatype: field?.datatype,
+              sort: index + 1,
+              settings: { ...field?.settings },
+              datatypeOptions: null,
+              createdAt: null,
+              updatedAt: null,
+              deletedAt: null,
+            })) || [];
 
-          ZUID = response?.data?.data?.ZUID;
+          // Create block model fields
+          await createBlockModelFields({
+            modelZUID: ZUID,
+            fields: blockModelFields,
+          });
+        }
 
-          const promiseResponse = await Promise.all(
-            blockModelData?.fields?.map((field: any, index: number) => {
-              const createFieldPayload = {
-                modelZUID: ZUID,
-                body: {
-                  contentModelZUID: ZUID,
-                  datatype: field?.datatype,
-                  description: field?.description,
-                  label: field?.label,
-                  name: field?.name,
-                  settings: {
-                    defaultValue: field?.settings?.defaultValue,
-                    list: field?.settings?.list,
-                  },
-                  sort: index + 1,
-                },
-              };
-              return createContentModelField(createFieldPayload).then((res) => {
-                return res;
-              });
-            }) || []
-          );
-          return promiseResponse;
-        })
-        .finally(() => {
-          setIsLoading(false);
-          if (!createBlockModelError) {
-            onClose();
-            history.push(`/schema/${ZUID}/fields`);
-          }
-        });
+        onClose();
+        history.push(`/schema/${ZUID}`);
+      } catch (err) {
+        console.error("Error during form submission:", err);
+      } finally {
+        setIsLoading(false);
+      }
     },
-    [blockModelData, createModel, createContentModelField]
+    [blockModelData, createBlockModel, createBlockModelFields, onClose, history]
   );
 
   return (
@@ -251,7 +246,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
       justifyContent="space-between"
       alignItems="stretch"
       overflow="hidden"
-      onSubmit={handleFormSunmit}
+      onSubmit={handleFormSubmit}
     >
       <DialogTitle component="div">
         <Stack
@@ -448,22 +443,19 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
         open={isLoading}
         sx={{
           position: "absolute",
+          backgroundColor: "background.paper",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <Box
           display="flex"
           flexDirection="column"
-          rowGap={1}
           justifyContent="center"
           alignItems="center"
-          position="absolute"
-          top={0}
-          left={0}
-          width="100%"
-          height="100%"
-          bgcolor="background.paper"
+          rowGap={1}
         >
-          <CircularProgress color="primary" />
+          <CircularProgress color="primary" size={60} sx={{ p: 1 }} />
           <Typography variant="h5" color="text.primary" fontWeight={700}>
             Creating Model
           </Typography>
