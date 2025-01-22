@@ -39,6 +39,7 @@ import { DialogHeader } from "./DialogHeader";
 import { fetchItems } from "../../../store/content";
 import { AppState } from "../../../store/types";
 import { ContentItem } from "../../../services/types";
+import moment from "moment";
 
 const selectFilteredItems = (
   state: AppState,
@@ -85,7 +86,7 @@ export const FieldSelectorDialog = ({
   const searchField = useRef(null);
   const [filterKeyword, setFilterKeyword] = useState<string>(null);
   const [filters, updateFilters] = useReducer(
-    (state: FieldFilters, newValue: Partial<FieldFilters>) => {
+    (state: FieldFilters, newValue: Partial<FieldFilters>): FieldFilters => {
       return {
         ...state,
         ...newValue,
@@ -277,6 +278,81 @@ export const FieldSelectorDialog = ({
         dateB = dateB ? new Date(dateB).getTime() : Number.NEGATIVE_INFINITY;
 
         return dateB - dateA;
+        // return moment(dateB).diff(moment(dateA));
+      } else if (filters.sortOrder === "createdOn") {
+        return moment(b?.item?.meta.createdAt).diff(a?.item?.meta.createdAt);
+        // new Date(b?.item?.meta.createdAt).getTime() -
+        // new Date(a?.item?.meta.createdAt).getTime()
+      } else if (filters.sortOrder === "version") {
+        const aIsPublished = a?.item?.publishing?.publishAt;
+        const bIsPublished = b?.item?.publishing?.publishAt;
+
+        const aIsScheduled = a?.item?.scheduling?.publishAt;
+        const bIsScheduled = b?.item?.scheduling?.publishAt;
+
+        // Check if meta.version exists
+        const aHasVersion = a?.item?.meta?.version !== null;
+        const bHasVersion = b?.item?.meta?.version !== null;
+
+        // Place items without meta.version at the bottom
+        if (!aHasVersion && bHasVersion) {
+          return 1;
+        } else if (aHasVersion && !bHasVersion) {
+          return -1;
+        }
+
+        // Items with only publish date
+        if (aIsPublished && !aIsScheduled && bIsPublished && !bIsScheduled) {
+          return (
+            new Date(bIsPublished).getTime() - new Date(aIsPublished).getTime()
+          ); // Both have only published date, sort by publish date descending
+        } else if (aIsPublished && !aIsScheduled) {
+          return -1; // A has only published date, B does not
+        } else if (bIsPublished && !bIsScheduled) {
+          return 1; // B has only published date, A does not
+        }
+
+        // Items with scheduled date (and also publish date)
+        if (aIsScheduled && bIsScheduled) {
+          return (
+            new Date(aIsScheduled).getTime() - new Date(bIsScheduled).getTime()
+          ); // Both are scheduled, sort by scheduled date ascending
+        } else if (aIsScheduled) {
+          return -1; // A is scheduled, B is not
+        } else if (bIsScheduled) {
+          return 1; // B is scheduled, A is not
+        }
+
+        // Items with neither publish nor schedule dates
+        if (aIsPublished && bIsPublished) {
+          return (
+            new Date(bIsPublished).getTime() - new Date(aIsPublished).getTime()
+          ); // Both are published, sort by publish date descending
+        } else if (aIsPublished) {
+          return -1; // A is published, B is not
+        } else if (bIsPublished) {
+          return 1; // B is published, A is not
+        }
+
+        return 0; // Neither are published or scheduled
+      } else if (filters.sortOrder === "createdBy") {
+        const userA = a?.version?.itemData?.createdByName;
+        const userB = b?.version?.itemData?.createdByName;
+
+        const startsWithNumber = (str: string) => /^\d/.test(str);
+
+        if (!userA || (startsWithNumber(userA) && !startsWithNumber(userB))) {
+          return 1;
+        } else if (
+          !userB ||
+          (!startsWithNumber(userA) && startsWithNumber(userB))
+        ) {
+          return -1;
+        } else {
+          return userA.localeCompare(userB);
+        }
+      } else if (filters.sortOrder === "zuid") {
+        return a?.item?.meta?.ZUID?.localeCompare(b?.item?.meta?.ZUID);
       }
     });
 
@@ -440,6 +516,7 @@ export const FieldSelectorDialog = ({
               />
             ) : (
               <DataGridPro
+                sortingMode="server"
                 checkboxSelection
                 columns={columns}
                 rows={rows}
