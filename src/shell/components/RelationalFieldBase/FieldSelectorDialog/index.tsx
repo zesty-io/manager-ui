@@ -24,7 +24,6 @@ import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 
 import { FieldSelectorFilters, STATUS_FILTER } from "./FieldSelectorFilters";
-import { DateFilterValue } from "../../Filters/DateFilter";
 import {
   useGetLangsQuery,
   useGetContentModelFieldsQuery,
@@ -512,16 +511,6 @@ export const FieldSelectorDialog = ({
     [setFilterKeyword]
   );
 
-  const handleRowClick = (itemZUID: string) => {
-    if ((selectionModel as string[]).includes(itemZUID)) {
-      setSelectionModel(
-        (selectionModel as string[]).filter((id) => id !== itemZUID)
-      );
-    } else {
-      setSelectionModel([...(selectionModel as string[]), itemZUID]);
-    }
-  };
-
   const isLoading =
     isFetchingContentItems || isLoadingRelatedModel || isLoadingUsers;
   const isFilteringResults =
@@ -531,6 +520,9 @@ export const FieldSelectorDialog = ({
     !!filters.date.preset ||
     !!filters.date.from ||
     !!filters.date.to;
+  const filteredSelectionModels = (selectionModel as string[])?.filter(
+    (ZUID) => !deletedItemZUIDs?.includes(ZUID)
+  );
 
   return (
     <Dialog
@@ -547,11 +539,7 @@ export const FieldSelectorDialog = ({
       <DialogHeader
         modelName={modelName}
         multiselect={multiselect}
-        selectedCount={
-          (selectionModel as string[])?.filter(
-            (ZUID) => !deletedItemZUIDs?.includes(ZUID)
-          )?.length || 0
-        }
+        selectedCount={filteredSelectionModels?.length || 0}
         onClose={onClose}
         onDeselectAll={() => setSelectionModel([])}
         onDone={() => onUpdateSelectedZUIDs(selectionModel as string[])}
@@ -647,8 +635,10 @@ export const FieldSelectorDialog = ({
                 headerHeight={0}
                 rowHeight={64}
                 hideFooter
-                selectionModel={selectionModel}
-                onRowClick={(params) => handleRowClick(params.id as string)}
+                selectionModel={filteredSelectionModels}
+                onSelectionModelChange={(selectionModel) =>
+                  setSelectionModel([...deletedItemZUIDs, ...selectionModel])
+                }
                 sx={{
                   bgcolor: "background.paper",
 
