@@ -67,7 +67,7 @@ const BlockItem = ({
       <CardActionArea
         onClick={onClick}
         sx={{ height: "100%", width: "100%" }}
-        data-cy={`${block.name}`}
+        data-cy="starter-block-card"
       >
         <CardContent
           sx={{
@@ -84,9 +84,13 @@ const BlockItem = ({
             display="flex"
             alignItems="center"
             justifyContent="center"
-            px={0.85}
-            py={1.5}
             className="card-content"
+            sx={{
+              borderWidth: (theme) => theme.spacing(1),
+              borderColor: "transparent",
+              borderStyle: "solid",
+              overflow: "hidden",
+            }}
           >
             <CardMedia component="img" image={block?.image} />
           </Box>
@@ -178,75 +182,94 @@ export const StarterBlocksDialogue: React.FC<StarterBlocksDialogueProps> = ({
             </Stack>
           </DialogTitle>
           <DialogContent
-            sx={{ pt: 2.5, backgroundColor: "grey.50", minHeight: "650px" }}
+            data-cy="starter-blocks-selection-dialog"
+            sx={{
+              py: 2.5,
+              backgroundColor: "grey.50",
+              minHeight: "610px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              alignItems: "stretch",
+              rowGap: 2,
+            }}
             dividers
           >
-            <Box display="flex" flexDirection="column" rowGap={2}>
-              <Box sx={{ flexGrow: 0 }}>
-                <TextField
-                  data-cy="FieldListFilter"
-                  size="small"
-                  placeholder="Search variants"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  sx={{ width: "60%" }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                  inputRef={searchRef}
-                />
-              </Box>
-              <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ flexGrow: 0 }}>
+              <TextField
+                data-cy="starter-blocks-search"
+                size="small"
+                placeholder="Search variants"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                sx={{ width: { xs: "100%", sm: "100%", md: "60%", lg: "60%" } }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                inputRef={searchRef}
+              />
+            </Box>
+            <Box
+              sx={{
+                flexGrow: 1,
+                position: "relative",
+              }}
+            >
+              {!filteredBlockTypes?.length ? (
+                <Box
+                  data-cy="no-results-page"
+                  width="100%"
+                  height="100%"
+                  display="grid"
+                  position="absolute"
+                  sx={{ placeContent: "center", minHeight: "100%" }}
+                >
+                  <NoResults
+                    type="search"
+                    onButtonClick={handleSearchRetry}
+                    searchTerm={search}
+                    sx={{
+                      "& img": { height: "109px", width: "109px" },
+                    }}
+                  />
+                </Box>
+              ) : (
                 <Grid
                   container
                   spacing={{ xs: 2, md: 2, lg: 2 }}
                   columns={{ xs: 4, sm: 8, md: 12 }}
+                  sx={{
+                    height: "100%",
+                    width: "100%",
+                  }}
+                  data-cy="starter-blocks-container"
                 >
-                  {!filteredBlockTypes?.length ? (
-                    <Box
-                      data-cy="no-results-page"
-                      width="100%"
-                      p={10}
-                      display="grid"
-                      sx={{ placeContent: "center", minHeight: "500px" }}
+                  {filteredBlockTypes?.map((block, index) => (
+                    <Grid
+                      key={block?.name}
+                      item
+                      xs={2}
+                      sm={4}
+                      md={4}
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        position: "relative",
+                      }}
                     >
-                      <NoResults
-                        type="search"
-                        onButtonClick={handleSearchRetry}
-                        searchTerm={search}
-                        sx={{
-                          "& img": { height: "109px", width: "109px" },
-                        }}
+                      <BlockItem
+                        block={block}
+                        isActive={selectedBlockType?.name === block?.name}
+                        onClick={() => handleBlockSelect(block)}
                       />
-                    </Box>
-                  ) : (
-                    filteredBlockTypes?.map((block, index) => (
-                      <Grid
-                        key={block?.name}
-                        item
-                        xs={2}
-                        sm={4}
-                        md={4}
-                        sx={{
-                          width: "100%",
-                          height: "100%",
-                          position: "relative",
-                        }}
-                      >
-                        <BlockItem
-                          block={block}
-                          isActive={selectedBlockType?.name === block?.name}
-                          onClick={() => handleBlockSelect(block)}
-                        />
-                      </Grid>
-                    ))
-                  )}
+                    </Grid>
+                  ))}
                 </Grid>
-              </Box>
+              )}
             </Box>
           </DialogContent>
           <DialogActions sx={{ pt: 2.5 }}>

@@ -55,6 +55,7 @@ const TextInputField: React.FC<TextInputFieldProps> = ({
   value,
   toolTip,
   onChange,
+  ...other
 }) => {
   function handleChage(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
@@ -77,12 +78,13 @@ const TextInputField: React.FC<TextInputFieldProps> = ({
           {required && (
             <Tooltip placement="top" title={toolTip}>
               <InfoRoundedIcon
-                sx={{ width: 13, height: 13, color: "action.active", ml: 0.75 }}
+                sx={{ width: 14, height: 14, color: "action.active", ml: 0.75 }}
               />
             </Tooltip>
           )}
         </Typography>
         <OutlinedInput
+          {...other}
           fullWidth
           placeholder={placeholder}
           required={required}
@@ -91,10 +93,14 @@ const TextInputField: React.FC<TextInputFieldProps> = ({
             name: name,
             value: value,
             onInput: handleChage,
-            "data-cy": `form-input-${name}`,
+            // "data-cy": `form-input-${name}`,
           }}
         />
-        <FormHelperText error={!!error} variant="standard">
+        <FormHelperText
+          error={!!error}
+          variant="standard"
+          data-cy={`starter-block-form-${name}-error`}
+        >
           {error}
         </FormHelperText>
       </FormControl>
@@ -228,6 +234,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
       alignItems="stretch"
       overflow="hidden"
       onSubmit={handleFormSubmit}
+      data-cy="starter-block-form"
     >
       <DialogTitle component="div">
         <Stack
@@ -236,7 +243,11 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
           alignItems="flex-start"
         >
           <Box width="90%">
-            <Typography variant="h5" fontWeight={700}>
+            <Typography
+              variant="h5"
+              fontWeight={700}
+              data-cy="starter-block-form-title"
+            >
               {block?.label}
             </Typography>
           </Box>
@@ -259,20 +270,25 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
         <Box display="flex" flexDirection="column" rowGap={2}>
           <Box
             bgcolor="grey.100"
-            py={1}
             sx={{
               width: "100%",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               position: "relative",
-              maxHeight: "304px",
+              overflow: "hidden",
+              boxSizing: "border-box",
+              borderBottom: ".75rem solid",
+              borderTop: ".75rem solid",
+              borderColor: "grey.100",
             }}
           >
             <img
+              data-cy="starter-block-form-image"
+              loading="lazy"
               src={block?.image}
-              alt=""
-              style={{ maxWidth: "60%", maxHeight: "100%" }}
+              alt={block?.label}
+              style={{ maxWidth: "65%" }}
             />
           </Box>
           <Box
@@ -310,6 +326,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                   onChange={handleBlockLabelChange}
                   toolTip="Name that is shown to content editors"
                   error={error["label"] || ""}
+                  data-cy="starter-block-form-label"
                 />
                 <TextInputField
                   label="Reference ID"
@@ -320,6 +337,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                   toolTip="ID used for accessing this model through our API or Parsley"
                   onChange={handleBlockNameChange}
                   error={error["name"] || ""}
+                  data-cy="starter-block-form-name"
                 />
               </Box>
               {!!blockModelData?.fields?.length && (
@@ -336,6 +354,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                     pt={1.5}
                     pb={2.5}
                     width="100%"
+                    data-cy="starter-block-form-fields-container"
                   >
                     {block?.fields?.map((field: any, index: number) => (
                       <Field
@@ -457,6 +476,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
       </DialogActions>
 
       <Backdrop
+        data-cy="starter-block-form-loading-backdrop"
         open={isLoading}
         sx={{
           position: "absolute",
