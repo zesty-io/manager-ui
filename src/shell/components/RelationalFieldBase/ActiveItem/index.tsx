@@ -37,6 +37,7 @@ import { AppState } from "../../../store/types";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { ConfirmPublishModal } from "../../ConfirmPublishModal";
 import { fetchItemPublishing } from "../../../store/content";
+import { SchedulePublish } from "../../SchedulePublish";
 
 type ActiveItemProps = {
   itemZUID: string;
@@ -60,6 +61,7 @@ export const ActiveItem = memo(
     const [imageError, setImageError] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const history = useHistory();
     const dispatch = useDispatch();
     const contentItems = useSelector((state: AppState) => state.content);
@@ -187,6 +189,7 @@ export const ActiveItem = memo(
         // Retain non rtk-query fetch of item publishing for legacy code
         dispatch(fetchItemPublishing(relatedModelData?.ZUID, itemZUID));
         setIsPublishModalOpen(false);
+        setIsScheduleModalOpen(false);
       });
     };
 
@@ -360,7 +363,12 @@ export const ActiveItem = memo(
               </MenuItem>
             )}
             {isPublishable && (
-              <MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setAnchorEl(null);
+                  setIsScheduleModalOpen(true);
+                }}
+              >
                 <ListItemIcon>
                   <ScheduleRounded />
                 </ListItemIcon>
@@ -400,6 +408,15 @@ export const ActiveItem = memo(
             onCancel={() => setIsPublishModalOpen(false)}
             onConfirm={() => handlePublish()}
             isPublishing={isPublishing || isUnpublishing}
+          />
+        )}
+        {isScheduleModalOpen && (
+          <SchedulePublish
+            item={contentItem}
+            onPublishNow={() => handlePublish()}
+            onClose={() => setIsScheduleModalOpen(false)}
+            onScheduleSuccess={() => setIsScheduleModalOpen(false)}
+            onUnscheduleSuccess={() => setIsScheduleModalOpen(true)}
           />
         )}
       </>
