@@ -193,11 +193,11 @@ export const ActiveItem = memo(
       });
     };
 
-    const itemTitle =
-      contentItem?.data[relatedFieldData?.name] ||
-      contentItem?.web?.metaTitle ||
-      contentItem?.web?.metaLinkText ||
-      itemZUID;
+    const itemTitle = !!contentItem
+      ? contentItem?.data[relatedFieldData?.name] ||
+        contentItem?.web?.metaTitle ||
+        contentItem?.web?.metaLinkText
+      : `${itemZUID} (Deleted)`;
     const isPublishable =
       contentItem?.meta?.version > (contentItem?.publishing?.version || 0);
 
@@ -309,31 +309,33 @@ export const ActiveItem = memo(
               )}
             </Stack>
           </Stack>
-          <Stack direction="row" gap={2} mx={2} alignItems="center">
-            {!!contentItem && (
+          {!!contentItem && (
+            <Stack direction="row" gap={2} mx={2} alignItems="center">
               <VersionCell
                 itemData={contentItem}
                 publishData={contentItem.publishing}
                 scheduleData={contentItem.scheduling}
               />
-            )}
-            <Stack direction="row" gap={1}>
-              <IconButton
-                size="xsmall"
-                onClick={() =>
-                  history.push(`/content/${relatedModelData?.ZUID}/${itemZUID}`)
-                }
-              >
-                <Edit fontSize="small" />
-              </IconButton>
-              <IconButton
-                size="xsmall"
-                onClick={(evt) => setAnchorEl(evt.currentTarget)}
-              >
-                <MoreHoriz fontSize="small" />
-              </IconButton>
+              <Stack direction="row" gap={1}>
+                <IconButton
+                  size="xsmall"
+                  onClick={() =>
+                    history.push(
+                      `/content/${relatedModelData?.ZUID}/${itemZUID}`
+                    )
+                  }
+                >
+                  <Edit fontSize="small" />
+                </IconButton>
+                <IconButton
+                  size="xsmall"
+                  onClick={(evt) => setAnchorEl(evt.currentTarget)}
+                >
+                  <MoreHoriz fontSize="small" />
+                </IconButton>
+              </Stack>
             </Stack>
-          </Stack>
+          )}
         </Stack>
         {!!anchorEl && (
           <Menu
