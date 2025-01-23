@@ -790,6 +790,7 @@ export const Field = ({
               relatedFieldZUID={relatedFieldZUID}
               onChange={onChange}
             />
+            {/**
             <FieldTypeOneToOne
               name={name}
               value={
@@ -811,6 +812,7 @@ export const Field = ({
               }
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
+              */}
           </>
         </FieldShell>
       );
@@ -859,6 +861,7 @@ export const Field = ({
               relatedFieldZUID={relatedFieldZUID}
               onChange={onChange}
             />
+            {/**
             <FieldTypeOneToMany
               name={name}
               value={
@@ -892,6 +895,7 @@ export const Field = ({
               }
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
+              */}
           </>
         </FieldShell>
       );

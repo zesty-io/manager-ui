@@ -20,6 +20,7 @@ import {
   LanguageRounded,
   WidgetsRounded,
   CloseRounded,
+  CheckRounded,
 } from "@mui/icons-material";
 import { useHistory } from "react-router";
 import { useDrag, useDrop } from "react-dnd";
@@ -62,6 +63,7 @@ export const ActiveItem = memo(
     const [anchorEl, setAnchorEl] = useState(null);
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
     const history = useHistory();
     const dispatch = useDispatch();
     const contentItems = useSelector((state: AppState) => state.content);
@@ -191,6 +193,22 @@ export const ActiveItem = memo(
         setIsPublishModalOpen(false);
         setIsScheduleModalOpen(false);
       });
+    };
+
+    const handleCopyZUID = () => {
+      if (isCopied) return;
+
+      navigator?.clipboard
+        ?.writeText(itemZUID)
+        .then(() => {
+          setIsCopied(true);
+          setTimeout(() => {
+            setIsCopied(false);
+          }, 1500);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     };
 
     const itemTitle = !!contentItem
@@ -389,9 +407,9 @@ export const ActiveItem = memo(
               </ListItemIcon>
               <ListItemText primary="Production Preview - vXXX" />
             </MenuItem>
-            <MenuItem>
+            <MenuItem onClick={handleCopyZUID}>
               <ListItemIcon>
-                <WidgetsRounded />
+                {isCopied ? <CheckRounded /> : <WidgetsRounded />}
               </ListItemIcon>
               <ListItemText primary="Copy ZUID" />
             </MenuItem>
