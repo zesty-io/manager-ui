@@ -23,14 +23,20 @@ import {
 } from "@mui/icons-material";
 import { useHistory } from "react-router";
 import { useDrag, useDrop } from "react-dnd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import { useGetContentModelFieldsQuery } from "../../../services/instance";
+import {
+  useCreateItemPublishingMutation,
+  useDeleteItemPublishingMutation,
+  useGetContentModelFieldsQuery,
+} from "../../../services/instance";
 import { ContentModel, ContentModelField } from "../../../services/types";
 import { ActiveItemLoading } from "./ActiveItemLoading";
 import { VersionCell } from "../FieldSelectorDialog/VersionCell";
 import { AppState } from "../../../store/types";
 import { useGetUsersQuery } from "../../../services/accounts";
+import { ConfirmPublishModal } from "../../ConfirmPublishModal";
+import { fetchItemPublishing } from "../../../store/content";
 
 type ActiveItemProps = {
   itemZUID: string;
@@ -53,13 +59,19 @@ export const ActiveItem = memo(
   }: ActiveItemProps) => {
     const [imageError, setImageError] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
     const history = useHistory();
+    const dispatch = useDispatch();
     const contentItems = useSelector((state: AppState) => state.content);
     const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
       useGetContentModelFieldsQuery(relatedModelData?.ZUID, {
         skip: !relatedModelData?.ZUID,
       });
     const { data: users, isLoading: isLoadingUsers } = useGetUsersQuery();
+    const [createPublishing, { isLoading: isPublishing }] =
+      useCreateItemPublishingMutation();
+    const [deleteItemPublishing, { isLoading: isUnpublishing }] =
+      useDeleteItemPublishingMutation();
 
     const [{ isDragging }, drag, preview] = useDrag({
       type: "relationalItem",
@@ -155,11 +167,36 @@ export const ActiveItem = memo(
       return null;
     }, [contentItem, imageFieldName]);
 
+    const handlePublish = async () => {
+      if (contentItem?.scheduling?.isScheduled) {
+        await deleteItemPublishing({
+          modelZUID: relatedModelData?.ZUID,
+          itemZUID,
+          publishingZUID: contentItem?.scheduling?.ZUID,
+        });
+      }
+      createPublishing({
+        modelZUID: relatedModelData?.ZUID,
+        itemZUID,
+        body: {
+          version: contentItem?.meta.version,
+          publishAt: "now",
+          unpublishAt: "never",
+        },
+      }).then(() => {
+        // Retain non rtk-query fetch of item publishing for legacy code
+        dispatch(fetchItemPublishing(relatedModelData?.ZUID, itemZUID));
+        setIsPublishModalOpen(false);
+      });
+    };
+
     const itemTitle =
       contentItem?.data[relatedFieldData?.name] ||
       contentItem?.web?.metaTitle ||
       contentItem?.web?.metaLinkText ||
       itemZUID;
+    const isPublishable =
+      contentItem?.meta?.version > (contentItem?.publishing?.version || 0);
 
     if (isLoadingRelatedModel || isLoadingUsers) {
       return <ActiveItemLoading draggable={draggable} />;
@@ -309,18 +346,27 @@ export const ActiveItem = memo(
               horizontal: "left",
             }}
           >
-            <MenuItem>
-              <ListItemIcon>
-                <CloudUploadRounded />
-              </ListItemIcon>
-              <ListItemText primary="Publish Now" />
-            </MenuItem>
-            <MenuItem>
-              <ListItemIcon>
-                <ScheduleRounded />
-              </ListItemIcon>
-              <ListItemText primary="Schedule Publish" />
-            </MenuItem>
+            {isPublishable && (
+              <MenuItem
+                onClick={() => {
+                  setAnchorEl(null);
+                  setIsPublishModalOpen(true);
+                }}
+              >
+                <ListItemIcon>
+                  <CloudUploadRounded />
+                </ListItemIcon>
+                <ListItemText primary="Publish Now" />
+              </MenuItem>
+            )}
+            {isPublishable && (
+              <MenuItem>
+                <ListItemIcon>
+                  <ScheduleRounded />
+                </ListItemIcon>
+                <ListItemText primary="Schedule Publish" />
+              </MenuItem>
+            )}
             <MenuItem>
               <ListItemIcon>
                 <DesignServicesRounded />
@@ -346,6 +392,15 @@ export const ActiveItem = memo(
               <ListItemText primary="Remove" />
             </MenuItem>
           </Menu>
+        )}
+        {isPublishModalOpen && (
+          <ConfirmPublishModal
+            contentTitle={String(itemTitle)}
+            contentVersion={contentItem?.web?.version}
+            onCancel={() => setIsPublishModalOpen(false)}
+            onConfirm={() => handlePublish()}
+            isPublishing={isPublishing || isUnpublishing}
+          />
         )}
       </>
     );

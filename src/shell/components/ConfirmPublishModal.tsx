@@ -1,23 +1,25 @@
+import { useRef } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
   Box,
-  Stack,
+  Button,
   ButtonBaseActions,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Typography,
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
-import { useRef } from "react";
+import { LoadingButton } from "@mui/lab";
 
-type ConfirmPublishModal = {
+export type ConfirmPublishModal = {
   contentTitle: string;
   onCancel: () => void;
   onConfirm: () => void;
   contentVersion: number;
   altText?: string;
+  isPublishing?: boolean;
 };
 export const ConfirmPublishModal = ({
   contentTitle,
@@ -25,6 +27,7 @@ export const ConfirmPublishModal = ({
   onConfirm,
   contentVersion,
   altText,
+  isPublishing,
 }: ConfirmPublishModal) => {
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
@@ -63,10 +66,16 @@ export const ConfirmPublishModal = ({
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button variant="text" color="inherit" onClick={onCancel}>
+        <Button
+          variant="text"
+          color="inherit"
+          onClick={onCancel}
+          disabled={isPublishing}
+        >
           Cancel
         </Button>
-        <Button
+        <LoadingButton
+          loading={isPublishing}
           action={(actions) => (actionRef.current = actions)}
           variant="contained"
           color="success"
@@ -75,7 +84,7 @@ export const ConfirmPublishModal = ({
           data-cy="ConfirmPublishButton"
         >
           Publish {altText || "Item"}
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

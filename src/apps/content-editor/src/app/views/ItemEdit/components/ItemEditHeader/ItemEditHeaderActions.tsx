@@ -41,8 +41,8 @@ import {
   ContentItemWithDirtyAndPublishing,
   ContentModel,
 } from "../../../../../../../../shell/services/types";
-import { ConfirmPublishModal } from "./ConfirmPublishModal";
 import { SchedulePublish } from "../../../../../../../../shell/components/SchedulePublish";
+import { ConfirmPublishModal } from "../../../../../../../../shell/components/ConfirmPublishModal";
 
 const ITEM_STATES = {
   dirty: "dirty",
