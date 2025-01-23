@@ -39,6 +39,7 @@ import { useGetUsersQuery } from "../../../services/accounts";
 import { ConfirmPublishModal } from "../../ConfirmPublishModal";
 import { fetchItemPublishing } from "../../../store/content";
 import { SchedulePublish } from "../../SchedulePublish";
+import { useDomain } from "../../../hooks/use-domain";
 
 type ActiveItemProps = {
   itemZUID: string;
@@ -66,7 +67,15 @@ export const ActiveItem = memo(
     const [isCopied, setIsCopied] = useState(false);
     const history = useHistory();
     const dispatch = useDispatch();
+    const domain = useDomain();
     const contentItems = useSelector((state: AppState) => state.content);
+    const instance = useSelector((state: AppState) => state.instance);
+    const previewLock = useSelector((state: AppState) =>
+      state.settings.instance.find(
+        (setting: any) =>
+          setting.key === "preview_lock_password" && setting.value
+      )
+    );
     const { data: relatedModelFields, isLoading: isLoadingRelatedModel } =
       useGetContentModelFieldsQuery(relatedModelData?.ZUID, {
         skip: !relatedModelData?.ZUID,
@@ -395,18 +404,49 @@ export const ActiveItem = memo(
                 <ListItemText primary="Schedule Publish" />
               </MenuItem>
             )}
-            <MenuItem>
-              <ListItemIcon>
-                <DesignServicesRounded />
-              </ListItemIcon>
-              <ListItemText primary="Draft Preview - vXXX" />
-            </MenuItem>
-            <MenuItem>
-              <ListItemIcon>
-                <LanguageRounded />
-              </ListItemIcon>
-              <ListItemText primary="Production Preview - vXXX" />
-            </MenuItem>
+            {!!contentItem?.meta?.version && (
+              <MenuItem
+                onClick={() => {
+                  // @ts-expect-error Config not typed
+                  let devUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${contentItem?.web?.path}`;
+
+                  if (previewLock) {
+                    devUrl = `${devUrl}?zpw=${previewLock.value}`;
+                  }
+
+                  setAnchorEl(null);
+                  window.open(devUrl, "_blank");
+                }}
+              >
+                <ListItemIcon>
+                  <DesignServicesRounded />
+                </ListItemIcon>
+                <ListItemText
+                  primary={`Draft Preview - v${contentItem?.meta?.version}`}
+                />
+              </MenuItem>
+            )}
+            {!!contentItem?.publishing?.version && (
+              <MenuItem
+                onClick={() => {
+                  const prodUrl =
+                    domain + contentItem?.web?.pathPart !== "zesty_home"
+                      ? contentItem?.web?.path
+                      : "";
+
+                  setAnchorEl(null);
+                  window.open(prodUrl, "_blank");
+                }}
+              >
+                <ListItemIcon>
+                  <LanguageRounded />
+                </ListItemIcon>
+                <ListItemText
+                  primary={`Production Preview - v${contentItem?.publishing?.version}`}
+                />
+              </MenuItem>
+            )}
+
             <MenuItem onClick={handleCopyZUID}>
               <ListItemIcon>
                 {isCopied ? <CheckRounded /> : <WidgetsRounded />}
