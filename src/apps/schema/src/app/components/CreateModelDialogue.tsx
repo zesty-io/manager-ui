@@ -86,7 +86,6 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   const [type, setType] = useState(modelType);
   const dispatch = useDispatch();
   const history = useHistory();
-  const { pathname } = useLocation();
   const [model, updateModel] = useReducer(
     (prev: Partial<ContentModel>, next: any) => {
       const newModel = { ...prev, ...next };
@@ -105,7 +104,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       type: modelType,
       description: "",
       parentZUID: null,
-      listed: true,
+      listed: modelType === "block" ? false : true,
     }
   );
 
@@ -206,9 +205,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   useEffect(() => {
     // Only navigate to schema page once initial content is created for templateset & og_image field is created for block
     if ((isContentItemCreated || isOgImageFieldCreated) && createModelData) {
-      history.push(
-        `/${pathname?.split("/")?.[1] || "schema"}/${createModelData.data.ZUID}`
-      );
+      history.push(`/schema/${createModelData.data.ZUID}`);
       onClose();
     }
   }, [isContentItemCreated, createModelData, isOgImageFieldCreated]);
@@ -282,7 +279,18 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     data-cy={`model-type-${modelType.key}`}
                     selected={type === modelType.key}
                     key={modelType.key}
-                    onClick={() => setType(modelType.key)}
+                    onClick={() => {
+                      setType(modelType.key);
+                      if (modelType.key === "block") {
+                        updateModel({
+                          listed: false,
+                        });
+                      } else {
+                        updateModel({
+                          listed: true,
+                        });
+                      }
+                    }}
                     sx={{
                       borderRadius: "8px",
                       borderStyle: "solid",
@@ -492,7 +500,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               <Box display="flex" gap={1}>
                 <Checkbox
                   sx={{ width: "24px", height: "24px" }}
-                  defaultChecked
+                  checked={!!model?.listed}
                   onChange={(event) =>
                     updateModel({ listed: event.target.checked })
                   }
