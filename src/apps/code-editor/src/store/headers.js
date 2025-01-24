@@ -33,6 +33,8 @@ export function fetchHeaders() {
         }
         return res;
       },
+    }).catch((err) => {
+      console.error("fetchHeaders failed:", err);
     });
   };
 }

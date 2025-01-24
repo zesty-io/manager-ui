@@ -362,6 +362,8 @@ export function fetchItems(modelZUID, options = {}) {
 
         return res;
       },
+    }).catch((err) => {
+      console.error("fetchItems failed:", err);
     });
   };
 }
