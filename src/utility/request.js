@@ -101,6 +101,7 @@ export function request(url, opts = {}) {
       } else {
         // Network errors
         store.dispatch(notify({ message: err.message, kind: "warn" }));
+        return Promise.reject(err);
       }
     });
 }
