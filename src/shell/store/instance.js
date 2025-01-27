@@ -31,18 +31,22 @@ export function fetchInstance() {
       type: "FETCHING_INSTANCE",
     });
 
-    return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`).then((res) => {
-      if (res.status === 200) {
-        dispatch({
-          type: "FETCHING_INSTANCE_SUCCESS",
-          payload: {
-            data: res.data,
-          },
-        });
-      }
+    return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`)
+      .then((res) => {
+        if (res.status === 200) {
+          dispatch({
+            type: "FETCHING_INSTANCE_SUCCESS",
+            payload: {
+              data: res.data,
+            },
+          });
+        }
 
-      return res;
-    });
+        return res;
+      })
+      .catch((err) => {
+        console.error("fetchInstance failed:", err);
+      });
   };
 }
 

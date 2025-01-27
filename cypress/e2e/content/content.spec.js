@@ -77,6 +77,7 @@ describe("Content Specs", () => {
         .find(".MuiAutocomplete-root input")
         .should("have.value", "Custom Option One");
 
+      cy.get("#12-f3152c-kjz88l").find(".MuiAutocomplete-root input").click();
       cy.get(".MuiAutocomplete-option").last().click();
       cy.get("#12-f3152c-kjz88l")
         .find(".MuiAutocomplete-root input")
@@ -409,7 +410,7 @@ describe("Content Specs", () => {
     });
   });
 
-  describe.only("Block Selector Field", () => {
+  describe("Block Selector Field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
