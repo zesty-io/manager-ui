@@ -24,6 +24,7 @@ import {
   ZoomInRounded,
   DangerousRounded,
 } from "@mui/icons-material";
+import { useLocalStorage } from "react-use";
 
 // import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
@@ -87,7 +88,7 @@ export function Preview(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [scaleAnchorEl, setScaleAnchorEl] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [zoom, setZoom] = useState(() => {
+  const [zoom, setZoom] = useLocalStorage("zoom", () => {
     return isInIframe() ? 0.35 : 1;
   });
   const [hasErrors, setHasErrors] = useState(false);
