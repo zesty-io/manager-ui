@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import {
   Box,
   Button,
@@ -64,6 +64,12 @@ export const CreateVariantDialog = ({
     onClose();
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      handleVariantCreate();
+    }
+  };
+
   return (
     <Dialog open onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle>
@@ -92,6 +98,7 @@ export const CreateVariantDialog = ({
           fullWidth
           data-cy="variant-name-input"
           onFocus={(evt) => evt.target.select()}
+          onKeyDown={handleKeyDown}
         />
       </DialogContent>
       <DialogActions>

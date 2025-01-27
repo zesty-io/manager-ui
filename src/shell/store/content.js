@@ -265,6 +265,9 @@ export function fetchItem(modelZUID, itemZUID) {
         }
         return res;
       },
+    }).catch((err) => {
+      console.error("Failed to fetch item:", err);
+      return err;
     });
   };
 }
@@ -359,6 +362,8 @@ export function fetchItems(modelZUID, options = {}) {
 
         return res;
       },
+    }).catch((err) => {
+      console.error("fetchItems failed:", err);
     });
   };
 }
@@ -450,6 +455,17 @@ export function saveItem({
           item.data[field.name] > field.settings?.maxValue)
     );
 
+    // Validates that block_selector fields contain the correct format 6-xxxx-xxxx.html?variant=7-xxxx-xxxx
+    const invalidBlockVariantValue = fields?.filter((field) => {
+      if (field.datatype === "block_selector" && !!item.data[field.name]) {
+        if (!item.data[field.name]?.split("variant=")?.[1]) return true;
+
+        return false;
+      }
+
+      return false;
+    });
+
     // When skipContentItemValidation is true, this means that only the
     // SEO meta tags were changed, so we skip validating the content item
     if (
@@ -458,7 +474,8 @@ export function saveItem({
         lackingCharLength?.length ||
         regexPatternMismatch?.length ||
         regexRestrictPatternMatch?.length ||
-        invalidRange?.length)
+        invalidRange?.length ||
+        invalidBlockVariantValue?.length)
     ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",
@@ -469,6 +486,7 @@ export function saveItem({
           regexRestrictPatternMatch,
         }),
         ...(!!invalidRange?.length && { invalidRange }),
+        ...(!!invalidBlockVariantValue && { invalidBlockVariantValue }),
       });
     }
 
@@ -516,37 +534,42 @@ export function saveItem({
           web: item.web,
         },
       }
-    ).then(async (res) => {
-      dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
-      dispatch(
-        instanceApi.util.invalidateTags([{ type: "ItemVersions", itemZUID }])
-      );
-      dispatch({
-        type: "UNMARK_ITEMS_DIRTY",
-        items: [itemZUID],
-      });
+    )
+      .then(async (res) => {
+        dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+        dispatch(
+          instanceApi.util.invalidateTags([{ type: "ItemVersions", itemZUID }])
+        );
+        dispatch({
+          type: "UNMARK_ITEMS_DIRTY",
+          items: [itemZUID],
+        });
 
-      if (res.status === 200) {
-        await dispatch(fetchItem(item.meta.contentModelZUID, itemZUID));
-        if (model?.type === "block") {
-          /*
+        if (res.status === 200) {
+          await dispatch(fetchItem(item.meta.contentModelZUID, itemZUID));
+          if (model?.type === "block") {
+            /*
             Not awaiting this because capturing the screenshot is not critical to the save operation
             and we don't want to hold up the user
           */
-          dispatch(
-            cloudFunctionsApi.endpoints.createScreenshot.initiate(
-              `${CONFIG.URL_PREVIEW_PROTOCOL}${itemBlockPreviewUrl}`
-            )
-          ).then(() =>
-            dispatch(instanceApi.util.invalidateTags(["ContentItems"]))
-          );
+            dispatch(
+              cloudFunctionsApi.endpoints.createScreenshot.initiate(
+                `${CONFIG.URL_PREVIEW_PROTOCOL}${itemBlockPreviewUrl}`
+              )
+            ).then(() =>
+              dispatch(instanceApi.util.invalidateTags(["ContentItems"]))
+            );
+          }
         }
-      }
 
-      zesty.trigger("PREVIEW_REFRESH");
+        zesty.trigger("PREVIEW_REFRESH");
 
-      return res;
-    });
+        return res;
+      })
+      .catch((err) => {
+        console.error("Failed to save item:", err);
+        return err;
+      });
   };
 }
 
@@ -637,13 +660,25 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
           item.data[field.name] > field.settings?.maxValue)
     );
 
+    // Validates that block_selector fields contain the correct format 6-xxxx-xxxx.html?variant=7-xxxx-xxxx
+    const invalidBlockVariantValue = fields?.filter((field) => {
+      if (field.datatype === "block_selector" && !!item.data[field.name]) {
+        if (!item.data[field.name]?.split("variant=")?.[1]) return true;
+
+        return false;
+      }
+
+      return false;
+    });
+
     if (
       missingRequired?.length ||
       lackingCharLength?.length ||
       regexPatternMismatch?.length ||
       regexRestrictPatternMatch?.length ||
       invalidRange?.length ||
-      hasMissingRequiredSEOFields
+      hasMissingRequiredSEOFields ||
+      invalidBlockVariantValue?.length
     ) {
       return Promise.resolve({
         err: "VALIDATION_ERROR",
@@ -654,6 +689,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
           regexRestrictPatternMatch,
         }),
         ...(!!invalidRange?.length && { invalidRange }),
+        ...(!!invalidBlockVariantValue && { invalidBlockVariantValue }),
       });
     }
 
@@ -669,28 +705,33 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
         web: item.web,
         meta: item.meta,
       },
-    }).then(async (res) => {
-      if (!res.error) {
-        dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
-        dispatch({
-          type: "REMOVE_ITEM",
-          itemZUID,
-        });
+    })
+      .then(async (res) => {
+        if (!res.error) {
+          dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+          dispatch({
+            type: "REMOVE_ITEM",
+            itemZUID,
+          });
 
-        if (model?.type === "block") {
-          const newItem = await dispatch(
-            fetchItem(item.meta.contentModelZUID, res?.data?.ZUID)
-          );
-          await dispatch(
-            saveItem({
-              itemZUID: res?.data?.ZUID,
-              itemOverride: newItem?.data,
-            })
-          );
+          if (model?.type === "block") {
+            const newItem = await dispatch(
+              fetchItem(item.meta.contentModelZUID, res?.data?.ZUID)
+            );
+            await dispatch(
+              saveItem({
+                itemZUID: res?.data?.ZUID,
+                itemOverride: newItem?.data,
+              })
+            );
+          }
         }
-      }
-      return res;
-    });
+        return res;
+      })
+      .catch((err) => {
+        console.error("Failed to create item:", err);
+        return err;
+      });
   };
 }
 
@@ -701,29 +742,34 @@ export function deleteItem(modelZUID, itemZUID) {
       {
         method: "DELETE",
       }
-    ).then((res) => {
-      if (res.status >= 400) {
-        dispatch(
-          notify({
-            message: `Failure deleting item: ${res.statusText}`,
-            kind: "error",
-          })
-        );
-      } else {
-        dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
-        dispatch({
-          type: "REMOVE_ITEM",
-          itemZUID,
-        });
-        dispatch(
-          notify({
-            message: `Successfully deleted item`,
-            kind: "save",
-          })
-        );
-      }
-      return res;
-    });
+    )
+      .then((res) => {
+        if (res.status >= 400) {
+          dispatch(
+            notify({
+              message: `Failure deleting item: ${res.statusText}`,
+              kind: "error",
+            })
+          );
+        } else {
+          dispatch(instanceApi.util.invalidateTags(["ContentNav"]));
+          dispatch({
+            type: "REMOVE_ITEM",
+            itemZUID,
+          });
+          dispatch(
+            notify({
+              message: `Successfully deleted item`,
+              kind: "save",
+            })
+          );
+        }
+        return res;
+      })
+      .catch((err) => {
+        console.error("Failed to delete item:", err);
+        return err;
+      });
   };
 }
 
@@ -906,7 +952,9 @@ export function checkLock(itemZUID) {
       {
         credentials: "omit",
       }
-    );
+    ).catch((err) => {
+      console.error("checkLock failed:", err);
+    });
   };
 }
 
@@ -917,7 +965,9 @@ export function unlock(itemZUID) {
       {
         credentials: "omit",
       }
-    );
+    ).catch((err) => {
+      console.error("unlock failed:", err);
+    });
   };
 }
 
@@ -936,6 +986,8 @@ export function lock(itemZUID) {
           userZUID: user.ZUID,
           path: itemZUID,
         },
+      }).catch((err) => {
+        console.error("unlock failed:", err);
       });
     }
   };

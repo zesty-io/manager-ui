@@ -23,7 +23,8 @@ export type FieldType =
   | "files"
   | "fontawesome"
   | "wysiwyg_advanced"
-  | "article_writer";
+  | "article_writer"
+  | "block_selector"; // TODO: Will need to confirm if this type is already supported by the api
 interface FieldListData {
   type: FieldType;
   name: string;
@@ -184,6 +185,17 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       proTip:
         "You can use External URL fields if you want to link to external websites.",
       subHeaderText: "Use this field to link to an internal content item",
+    },
+    {
+      type: "block_selector",
+      name: "Block Selector",
+      shortDescription: "Link to a variant of a block model",
+      description:
+        "The Block Selector field allows a user to select a unique variant of any block model they would like to see rendered on their page.",
+      commonUses: ["Footer Section", "Block at the end of article", "Forms"],
+      proTip:
+        "These are great to use when you want to use different end blocks at the end of different pages of the same model",
+      subHeaderText: "Link to a variant of a block model",
     },
   ],
   numeric: [
@@ -351,6 +363,7 @@ const TYPE_TEXT: Record<FieldType, string> = {
   wysiwyg_advanced: "WYSIWYG (Advanced)",
   wysiwyg_basic: "WYSIWYG",
   yes_no: "Boolean",
+  block_selector: "Block Selector",
 };
 
 const COMMON_FIELDS: InputField[] = [
@@ -699,6 +712,10 @@ const FORM_CONFIG: Record<FieldType, FormConfig> = {
       ...COMMON_FIELDS.slice(3),
     ],
     rules: [...COMMON_RULES],
+  },
+  block_selector: {
+    details: [...COMMON_FIELDS],
+    rules: [],
   },
 };
 

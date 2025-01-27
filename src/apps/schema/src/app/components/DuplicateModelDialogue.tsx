@@ -322,7 +322,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
           <Box display="flex" gap={1}>
             <Checkbox
               sx={{ width: "24px", height: "24px" }}
-              defaultChecked
+              checked={!!model?.listed}
               onChange={(event) =>
                 updateNewModel({ listed: event.target.checked })
               }

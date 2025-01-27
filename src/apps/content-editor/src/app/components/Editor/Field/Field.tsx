@@ -21,6 +21,7 @@ import {
   TextField,
   Dialog,
   IconButton,
+  Autocomplete,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -53,6 +54,7 @@ import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDa
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
+import { FieldTypeBlockSelector } from "../../../../../../../shell/components/FieldTypeBlockSelector";
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
@@ -617,21 +619,30 @@ export const Field = ({
 
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <Select
-            name={name}
-            variant="outlined"
-            displayEmpty
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value, name)}
-            error={errors && Object.values(errors)?.some((error) => !!error)}
-          >
-            <MenuItem value="">Select</MenuItem>
-            {dropdownOptions.map((dropdownOption, idx) => (
-              <MenuItem key={idx} value={dropdownOption.value}>
-                {dropdownOption.text}
-              </MenuItem>
-            ))}
-          </Select>
+          <Autocomplete
+            clearOnBlur
+            disablePortal
+            options={dropdownOptions}
+            value={
+              dropdownOptions.find((option) => option.value === value) || null
+            }
+            onChange={(e, newValue) => onChange(newValue?.value || "", name)}
+            isOptionEqualToValue={(option, value) =>
+              option.value === value.value
+            }
+            getOptionLabel={(option) => option.text || ""}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                name={name}
+                placeholder="Select"
+                variant="outlined"
+                error={
+                  errors && Object.values(errors)?.some((error) => !!error)
+                }
+              />
+            )}
+          />
         </FieldShell>
       );
 
@@ -716,7 +727,7 @@ export const Field = ({
             })
           );
         } else {
-          return Promise.reject("Missing modelZUID");
+          return Promise.reject(new Error("Missing modelZUID"));
         }
       }, [allLanguages.length, relatedModelZUID, langID]);
 
@@ -957,6 +968,18 @@ export const Field = ({
               onChange(parseInt(evt.target.value) || 0, name);
             }}
             error={errors && Object.values(errors)?.some((error) => !!error)}
+          />
+        </FieldShell>
+      );
+
+    case "block_selector":
+      return (
+        <FieldShell settings={fieldData} errors={errors}>
+          <FieldTypeBlockSelector
+            value={value ? value?.toString() : null}
+            onChange={(value) => onChange(value, name, datatype)}
+            requiredError={errors?.MISSING_REQUIRED}
+            missingVariantError={errors?.INVALID_BLOCK_VARIANT}
           />
         </FieldShell>
       );

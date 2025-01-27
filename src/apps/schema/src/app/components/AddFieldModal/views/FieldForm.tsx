@@ -201,51 +201,51 @@ export const FieldForm = ({
     flattenedFormConfig?.forEach((field) => {
       if (isUpdateField) {
         if (field.name === "list") {
-          formFields.list = fieldData.settings.list;
+          formFields.list = fieldData.settings?.list;
         } else if (field.name === "limit") {
-          formFields[field.name] = fieldData.settings[field.name];
+          formFields[field.name] = fieldData.settings?.[field.name];
         } else if (field.name === "group_id") {
-          formFields[field.name] = fieldData.settings[field.name];
+          formFields[field.name] = fieldData.settings?.[field.name];
         } else if (field.name === "options") {
           // Convert the options object to an Array of objects for easier rendering
-          const options = Object.entries(fieldData.settings.options ?? {})?.map(
-            ([key, value]) => {
-              return {
-                [key]: value,
-              };
-            }
-          );
+          const options = Object.entries(
+            fieldData.settings?.options ?? {}
+          )?.map(([key, value]) => {
+            return {
+              [key]: value,
+            };
+          });
           formFields.options = options;
         } else if (field.name === "tooltip") {
-          formFields["tooltip"] = fieldData.settings.tooltip || "";
+          formFields["tooltip"] = fieldData.settings?.tooltip || "";
         } else if (field.name === "defaultValue") {
           formFields["defaultValue"] =
-            fieldData.settings.defaultValue !== null &&
-            fieldData.settings.defaultValue !== undefined
-              ? fieldData.settings.defaultValue
+            fieldData.settings?.defaultValue !== null &&
+            fieldData.settings?.defaultValue !== undefined
+              ? fieldData.settings?.defaultValue
               : null;
         } else if (field.name === "minCharLimit") {
           formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
         } else if (field.name === "maxCharLimit") {
           formFields["maxCharLimit"] = fieldData.settings?.maxCharLimit ?? null;
         } else if (field.name === "regexMatchPattern") {
-          formFields[field.name] = fieldData.settings[field.name] || null;
+          formFields[field.name] = fieldData.settings?.[field.name] || null;
         } else if (field.name === "regexMatchErrorMessage") {
-          formFields[field.name] = fieldData.settings[field.name] || null;
+          formFields[field.name] = fieldData.settings?.[field.name] || null;
         } else if (field.name === "regexRestrictPattern") {
-          formFields[field.name] = fieldData.settings[field.name] || null;
+          formFields[field.name] = fieldData.settings?.[field.name] || null;
         } else if (field.name === "regexRestrictErrorMessage") {
-          formFields[field.name] = fieldData.settings[field.name] || null;
+          formFields[field.name] = fieldData.settings?.[field.name] || null;
         } else if (field.name === "minValue") {
-          formFields[field.name] = fieldData.settings[field.name] ?? null;
+          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "maxValue") {
-          formFields[field.name] = fieldData.settings[field.name] ?? null;
+          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "currency") {
           formFields[field.name] = fieldData.settings?.currency ?? "USD";
         } else if (field.name === "fileExtensions") {
-          formFields[field.name] = fieldData.settings[field.name] ?? null;
+          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else if (field.name === "fileExtensionsErrorMessage") {
-          formFields[field.name] = fieldData.settings[field.name] ?? null;
+          formFields[field.name] = fieldData.settings?.[field.name] ?? null;
         } else {
           formFields[field.name] = fieldData[field.name] as FormValue;
         }
