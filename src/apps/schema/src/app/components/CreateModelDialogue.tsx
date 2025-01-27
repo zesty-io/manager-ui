@@ -23,7 +23,7 @@ import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import { isEmpty, cloneDeep } from "lodash";
+import { isEmpty } from "lodash";
 import { theme } from "@zesty-io/material";
 
 import {
@@ -41,9 +41,8 @@ import { withCursorPosition } from "../../../../../shell/components/withCursorPo
 import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
 import { SelectModelParentInput } from "./SelectModelParentInput";
-import { SelectBlockGroupInput } from "./SelectBlockGroupInput";
 import { isZestyEmail } from "../../../../../utility/isZestyEmail";
-import { StarterBlocksDialogue } from "./StarterBlocksDialogue";
+import StarterBlocks from "./StarterBlocks";
 
 interface Props {
   onClose: () => void;
@@ -360,7 +359,8 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       return (
         <>
           {model?.type === "block" ? (
-            <StarterBlocksDialogue onClose={onClose} />
+            // <StarterBlocksDialogue onClose={onClose} />
+            <StarterBlocks onClose={onClose} />
           ) : (
             <Box component="form">
               <DialogTitle component="div">

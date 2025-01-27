@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useHistory } from "react-router";
+import { useSelector } from "react-redux";
 import {
   Box,
   Button,
@@ -17,17 +18,26 @@ import {
   CircularProgress,
   Backdrop,
 } from "@mui/material";
+
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import { useCreateStarterBlockModelMutation } from "../../../../../../shell/services/instance";
 import {
-  useCreateContentModelMutation,
-  useBulkCreateContentModelFieldMutation,
-} from "../../../../../shell/services/instance";
-import { ContentModel } from "../../../../../shell/services/types";
-
-import { Field } from "./Field";
+  ContentModel,
+  ContentModelField,
+} from "../../../../../../shell/services/types";
+import { v4 as uuidv4 } from "uuid";
+import { Field } from "../Field";
 import { StarterBlockProps } from "./configs";
+// import { uploadFile } from "../../../../../../shell/store/media";
+import {
+  useGetBinFilesQuery,
+  useGetBinsQuery,
+} from "../../../../../../shell/services/mediaManager";
+import { UploadFile } from "../../../../../../shell/store/media-revamp";
+import { useUploadFileToBinMutation } from "../../../../../../shell/services/mediaStorage";
+import { LoadingButton } from "@mui/lab";
 
 type TextInputFieldProps = {
   label: string;
@@ -45,6 +55,16 @@ type StarterBlockFormProps = {
   onClose: () => void;
   setActiveStep: (step: "selection" | "form") => void;
 };
+
+type CreateStarterBlockFieldsProps = Omit<
+  ContentModelField,
+  | "ZUID"
+  | "contentModelZUID"
+  | "datatypeOptions"
+  | "createdAt"
+  | "updatedAt"
+  | "deletedAt"
+>;
 
 const TextInputField: React.FC<TextInputFieldProps> = ({
   label = "Label",
@@ -114,14 +134,63 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
   setActiveStep,
 }) => {
   const history = useHistory();
-  const [createBlockModel] = useCreateContentModelMutation();
-  const [createBlockModelFields] = useBulkCreateContentModelFieldMutation();
   const [isLoading, setIsLoading] = useState(false);
   const [blockModelData, setBlockModelData] = useState({ ...block });
+
   const [error, setError] = useState<Record<string, string>>({
     label: "",
     name: "",
   });
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const userId = useSelector((state: any) => state.instance.ZUID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
+
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
+  const defaultBin = bins?.find((bin) => bin.default) || bins?.[0];
+  const { data: binFiles, isLoading: binFilesLoading } = useGetBinFilesQuery(
+    defaultBin?.id
+  );
+  const [createStarterBlock] = useCreateStarterBlockModelMutation();
+
+  const [uploadFileToBin] = useUploadFileToBinMutation();
+
+  const getImageDefaultValue = async (urlPath: string) => {
+    const fileName = urlPath?.split("/").pop();
+    const fileType = fileName?.split(".").pop();
+
+    const imageFile = binFiles?.filter((file) => {
+      const binFileName = file?.filename?.split(".")[0]?.toLocaleLowerCase();
+      const defaultFileName = fileName?.split(".")[0]?.toLocaleLowerCase();
+      return (
+        binFileName?.includes(defaultFileName) ||
+        binFileName === defaultFileName
+      );
+    });
+
+    if (!!imageFile?.length) return imageFile[0]?.id;
+
+    const createdFile = await fetch(urlPath);
+    const blob = await createdFile.blob();
+    const newFile = new File([blob], fileName, {
+      type: `image/${fileType}`,
+    });
+
+    try {
+      const uploadResponse: any = await uploadFileToBin({
+        userId,
+        bin: defaultBin,
+        file: {
+          file: newFile,
+          bin_id: defaultBin?.id,
+          group_id: defaultBin?.id,
+          uploadID: uuidv4(),
+        },
+      });
+      return uploadResponse?.data?.[0]?.id || urlPath;
+    } catch (error) {
+      return urlPath;
+    }
+  };
 
   function cleanString(str: string) {
     return str.toLowerCase().replace(/\W/g, "_");
@@ -150,7 +219,6 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
       e.preventDefault();
 
       if (!blockModelData?.label || !blockModelData?.name) return;
-
       setError({ label: "", name: "" });
       setIsLoading(true);
 
@@ -170,57 +238,64 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
           listed: true,
         };
 
-        // Create block model
-        const response: any = await createBlockModel(createBlockModelPayload);
+        const fieldsPayload: CreateStarterBlockFieldsProps[] =
+          await Promise.all(
+            blockModelData?.fields?.map(async (field, index) => {
+              const defaultValue =
+                field?.datatype !== "images"
+                  ? field?.settings?.defaultValue
+                  : (await getImageDefaultValue(
+                      field?.settings?.defaultValue
+                    )) || field?.settings?.defaultValue;
 
-        if (response?.error) {
-          const errorMessage = parseErrorMessage(response.error?.data?.error);
+              return {
+                name: field?.name,
+                label: field?.label,
+                description: field?.description,
+                datatype: field?.datatype,
+                sort: index + 1,
+                settings: {
+                  ...field?.settings,
+                  defaultValue: defaultValue,
+                  list: true,
+                },
+              };
+            })
+          );
+
+        const createStarterBlockRes: any = await createStarterBlock({
+          modelData: createBlockModelPayload,
+          fields: fieldsPayload,
+          code: block?.code,
+        });
+
+        if (createStarterBlockRes?.error) {
+          const errorMessage = parseErrorMessage(
+            createStarterBlockRes?.error?.error
+          );
           setError({
             name: errorMessage.includes("name")
               ? "Reference ID is already in use. Please use another Reference ID."
-              : "",
+              : errorMessage,
             label:
               errorMessage.includes("label") ||
               (errorMessage.includes("name") && cleanString(label) === name)
                 ? "Display name is already in use. Please use another display name."
                 : "",
           });
-          return;
+          throw new Error(errorMessage);
         }
+        const ZUID = createStarterBlockRes?.data?.model?.ZUID;
 
-        const ZUID = response?.data?.data?.ZUID;
-
-        if (!!blockModelData?.fields?.length) {
-          const blockModelFields =
-            blockModelData?.fields?.map((field, index) => ({
-              contentModelZUID: ZUID,
-              name: field?.name,
-              label: field?.label,
-              description: field?.description,
-              datatype: field?.datatype,
-              sort: index + 1,
-              settings: { ...field?.settings },
-              datatypeOptions: null,
-              createdAt: null,
-              updatedAt: null,
-              deletedAt: null,
-            })) || [];
-
-          // Create block model fields
-          await createBlockModelFields({
-            modelZUID: ZUID,
-            fields: blockModelFields,
-          });
-        }
+        setIsLoading(false);
         onClose();
         history.push(`/schema/${ZUID}`);
       } catch (err) {
-        console.error("Error during form submission:", err);
-      } finally {
         setIsLoading(false);
+        console.error("Error during form submission:", err);
       }
     },
-    [blockModelData, createBlockModel, createBlockModelFields, onClose, history]
+    [blockModelData, createStarterBlock, onClose, history]
   );
 
   return (
@@ -463,16 +538,20 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
         >
           Back
         </Button>
-        <Button
+        <LoadingButton
           variant="contained"
           data-cy="starter-block-form-submit"
           type="submit"
+          loading={isLoading || binFilesLoading}
           disabled={
-            !blockModelData?.label || !blockModelData?.name || !!isLoading
+            !blockModelData?.label ||
+            !blockModelData?.name ||
+            !!isLoading ||
+            !!binFilesLoading
           }
         >
           Done
-        </Button>
+        </LoadingButton>
       </DialogActions>
 
       <Backdrop

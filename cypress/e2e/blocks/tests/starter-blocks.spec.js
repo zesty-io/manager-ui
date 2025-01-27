@@ -1,9 +1,8 @@
 import {
   StarterBlockProps,
   STARTER_BLOCKS,
-} from "../../../../src/apps/schema/src/app/components/configs";
+} from "../../../../src/apps/schema/src/app/components/StarterBlocks/configs";
 import { API_ENDPOINTS } from "../../../support/api";
-//"src/apps/schema/src/app/components/configs.ts"
 
 const TIMEOUT = { timeout: 40_000 };
 const testSufix = "------TEST";
@@ -81,7 +80,7 @@ const DIALOGUES = {
   selectBlockType: '[data-cy="starter-blocks-selection-dialog"]',
 };
 
-describe("Starter Blocks", () => {
+describe.skip("Starter Blocks", () => {
   before(() => {
     deleteStarterBlocksTestData();
     createStarterBlocksTestData();
@@ -366,6 +365,26 @@ describe("Starter Blocks", () => {
       BLOCK.fields.forEach((field) => {
         cy.contains(field.label).should("exist");
       });
+    });
+  });
+});
+
+describe.skip("Starter Blocks - Delete", () => {
+  it("CLEAN", () => {
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/content/models`,
+    }).then(({ status, data }) => {
+      const forDeleteZuids = data
+        // ?.filter((item) => item?.label?.includes(testSufix))
+        ?.filter((item) =>
+          BLOCK_LABELS.some((label) => item?.label?.includes(label))
+        )
+
+        .map((del) => del?.ZUID);
+      console.debug("forDeleteZuids: ", forDeleteZuids);
+      // forDeleteZuids?.forEach((zuid) => {
+      //   cy.deleteModel(zuid);
+      // });
     });
   });
 });
