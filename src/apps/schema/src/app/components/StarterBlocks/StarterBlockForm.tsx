@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import { useHistory } from "react-router";
-import { useSelector } from "react-redux";
 import {
   Box,
   Button,
@@ -27,17 +26,8 @@ import {
   ContentModel,
   ContentModelField,
 } from "../../../../../../shell/services/types";
-import { v4 as uuidv4 } from "uuid";
 import { Field } from "../Field";
 import { StarterBlockProps } from "./configs";
-// import { uploadFile } from "../../../../../../shell/store/media";
-import {
-  useGetBinFilesQuery,
-  useGetBinsQuery,
-} from "../../../../../../shell/services/mediaManager";
-import { UploadFile } from "../../../../../../shell/store/media-revamp";
-import { useUploadFileToBinMutation } from "../../../../../../shell/services/mediaStorage";
-import { LoadingButton } from "@mui/lab";
 
 type TextInputFieldProps = {
   label: string;
@@ -141,56 +131,8 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
     label: "",
     name: "",
   });
-  const instanceId = useSelector((state: any) => state.instance.ID);
-  const userId = useSelector((state: any) => state.instance.ZUID);
-  const ecoId = useSelector((state: any) => state.instance.ecoID);
 
-  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
-  const defaultBin = bins?.find((bin) => bin.default) || bins?.[0];
-  const { data: binFiles, isLoading: binFilesLoading } = useGetBinFilesQuery(
-    defaultBin?.id
-  );
   const [createStarterBlock] = useCreateStarterBlockModelMutation();
-
-  const [uploadFileToBin] = useUploadFileToBinMutation();
-
-  const getImageDefaultValue = async (urlPath: string) => {
-    const fileName = urlPath?.split("/").pop();
-    const fileType = fileName?.split(".").pop();
-
-    const imageFile = binFiles?.filter((file) => {
-      const binFileName = file?.filename?.split(".")[0]?.toLocaleLowerCase();
-      const defaultFileName = fileName?.split(".")[0]?.toLocaleLowerCase();
-      return (
-        binFileName?.includes(defaultFileName) ||
-        binFileName === defaultFileName
-      );
-    });
-
-    if (!!imageFile?.length) return imageFile[0]?.id;
-
-    const createdFile = await fetch(urlPath);
-    const blob = await createdFile.blob();
-    const newFile = new File([blob], fileName, {
-      type: `image/${fileType}`,
-    });
-
-    try {
-      const uploadResponse: any = await uploadFileToBin({
-        userId,
-        bin: defaultBin,
-        file: {
-          file: newFile,
-          bin_id: defaultBin?.id,
-          group_id: defaultBin?.id,
-          uploadID: uuidv4(),
-        },
-      });
-      return uploadResponse?.data?.[0]?.id || urlPath;
-    } catch (error) {
-      return urlPath;
-    }
-  };
 
   function cleanString(str: string) {
     return str.toLowerCase().replace(/\W/g, "_");
@@ -239,29 +181,19 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
         };
 
         const fieldsPayload: CreateStarterBlockFieldsProps[] =
-          await Promise.all(
-            blockModelData?.fields?.map(async (field, index) => {
-              const defaultValue =
-                field?.datatype !== "images"
-                  ? field?.settings?.defaultValue
-                  : (await getImageDefaultValue(
-                      field?.settings?.defaultValue
-                    )) || field?.settings?.defaultValue;
-
-              return {
-                name: field?.name,
-                label: field?.label,
-                description: field?.description,
-                datatype: field?.datatype,
-                sort: index + 1,
-                settings: {
-                  ...field?.settings,
-                  defaultValue: defaultValue,
-                  list: true,
-                },
-              };
-            })
-          );
+          blockModelData?.fields?.map((field, index) => {
+            return {
+              name: field?.name,
+              label: field?.label,
+              description: field?.description,
+              datatype: field?.datatype,
+              sort: index + 1,
+              settings: {
+                ...field?.settings,
+                list: true,
+              },
+            };
+          });
 
         const createStarterBlockRes: any = await createStarterBlock({
           modelData: createBlockModelPayload,
@@ -538,20 +470,16 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
         >
           Back
         </Button>
-        <LoadingButton
+        <Button
           variant="contained"
           data-cy="starter-block-form-submit"
           type="submit"
-          loading={isLoading || binFilesLoading}
           disabled={
-            !blockModelData?.label ||
-            !blockModelData?.name ||
-            !!isLoading ||
-            !!binFilesLoading
+            !blockModelData?.label || !blockModelData?.name || !!isLoading
           }
         >
           Done
-        </LoadingButton>
+        </Button>
       </DialogActions>
 
       <Backdrop

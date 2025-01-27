@@ -636,18 +636,6 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["Groups"],
     }),
-    updateBlockModelTemplate: builder.mutation<
-      any,
-      { templateZUID: string; body: Partial<WebView> }
-    >({
-      query: ({ templateZUID, body }) => ({
-        url: `web/views/${templateZUID}`,
-        method: "PUT",
-        body,
-      }),
-      transformResponse: getResponseData,
-      invalidatesTags: ["WebViews"],
-    }),
     createStarterBlockModel: builder.mutation<
       any,
       {
@@ -713,14 +701,13 @@ export const instanceApi = createApi({
               code: code,
             },
           });
-          const returnData = {
-            model: createModelResponse?.data?.data,
-            fields: contentModelFieldsResponse,
-            webView: updateCodeResponse?.data?.data,
-          };
 
           return {
-            data: returnData,
+            data: {
+              model: createModelResponse?.data?.data,
+              fields: contentModelFieldsResponse,
+              webView: updateCodeResponse?.data?.data,
+            },
           };
         } catch (error) {
           console.error("Error Creating Starter block: ", error);
@@ -782,6 +769,5 @@ export const {
   useGetGroupsQuery,
   useGetGroupByZUIDQuery,
   useCreateGroupMutation,
-  useUpdateBlockModelTemplateMutation,
   useCreateStarterBlockModelMutation,
 } = instanceApi;
