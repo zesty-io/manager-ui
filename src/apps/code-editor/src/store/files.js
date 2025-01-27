@@ -321,8 +321,8 @@ export function updateFileCode(ZUID, status, code) {
 
 export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
   return (dispatch) => {
-    return request(`${CONFIG.API_INSTANCE}/web/${fileType}/${fileZUID}`).then(
-      (res) => {
+    return request(`${CONFIG.API_INSTANCE}/web/${fileType}/${fileZUID}`)
+      .then((res) => {
         if (res.status === 200) {
           dispatch({
             type: "FETCH_FILE_SUCCESS",
@@ -355,8 +355,10 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
         }
 
         return res;
-      }
-    );
+      })
+      .catch((err) => {
+        console.error("fetchFile failed:", err);
+      });
   };
 }
 

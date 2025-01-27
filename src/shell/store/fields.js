@@ -94,6 +94,8 @@ export function fetchFields(modelZUID) {
           });
         }
       },
+    }).catch((err) => {
+      console.error("fetchFields failed:", err);
     });
   };
 }

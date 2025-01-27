@@ -11,15 +11,20 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
+import { useSelector } from "react-redux";
 
 import { FieldItem } from "../FieldItem";
 import { FieldListData, FIELD_COPY_CONFIG } from "../../configs";
+import { isZestyEmail } from "../../../../../../../utility/isZestyEmail";
+import { AppState } from "../../../../../../../shell/store/types";
+import { User } from "../../../../../../../shell/services/types";
 
 interface Props {
   onFieldClick: (fieldType: string, fieldName: string) => void;
   onModalClose: () => void;
 }
 export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
+  const user: User = useSelector((state: AppState) => state.user);
   const [fieldTypes, setFieldTypes] = useState(FIELD_COPY_CONFIG);
 
   const handleFilterFields = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,18 +145,27 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
               rowGap={1.5}
               columnGap={2}
             >
-              {fieldTypes[fieldKey].map((field: FieldListData, index) => (
-                <FieldItem
-                  key={index}
-                  fieldName={field.name}
-                  shortDescription={field.shortDescription}
-                  fieldType={field.type}
-                  description={field.description}
-                  commonUses={field.commonUses}
-                  proTip={field.proTip}
-                  onFieldClick={() => onFieldClick(field.type, field.name)}
-                />
-              ))}
+              {fieldTypes[fieldKey].map((field: FieldListData, index) => {
+                if (
+                  !isZestyEmail(user.email) &&
+                  field?.type === "block_selector"
+                ) {
+                  return <></>;
+                }
+
+                return (
+                  <FieldItem
+                    key={index}
+                    fieldName={field.name}
+                    shortDescription={field.shortDescription}
+                    fieldType={field.type}
+                    description={field.description}
+                    commonUses={field.commonUses}
+                    proTip={field.proTip}
+                    onFieldClick={() => onFieldClick(field.type, field.name)}
+                  />
+                );
+              })}
             </Box>
           </Box>
         ))}
