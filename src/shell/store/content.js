@@ -567,11 +567,11 @@ export function saveItem({
               )
             );
           }
-
-          zesty.trigger("PREVIEW_REFRESH");
-
-          return res;
         }
+
+        zesty.trigger("PREVIEW_REFRESH");
+
+        return res;
       })
       .catch((err) => {
         console.error("Failed to save item:", err);
