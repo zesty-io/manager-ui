@@ -84,6 +84,8 @@ export function fetchModels() {
           }
         }
       },
+    }).catch((err) => {
+      console.error("fetchModels failed:", err);
     });
   };
 }

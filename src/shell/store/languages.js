@@ -16,11 +16,15 @@ export function fetchLangauges(type) {
       ? `${CONFIG.API_INSTANCE}/env/langs?type=${type}`
       : `${CONFIG.API_INSTANCE}/env/langs`;
 
-    return request(url).then((res) => {
-      dispatch({
-        type: "FETCH_LANGUAGES_SUCCESS",
-        payload: res.data,
+    return request(url)
+      .then((res) => {
+        dispatch({
+          type: "FETCH_LANGUAGES_SUCCESS",
+          payload: res.data,
+        });
+      })
+      .catch((err) => {
+        console.error("fetchLangauges failed:", err);
       });
-    });
   };
 }
