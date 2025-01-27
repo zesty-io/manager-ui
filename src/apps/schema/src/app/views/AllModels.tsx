@@ -19,9 +19,8 @@ export const AllModels = () => {
   const triggerCreate = new URLSearchParams(location.search).get(
     "triggerCreate"
   );
-  const [showCreateModelDialogue, setShowCreateModelDialogue] = useState(
-    triggerCreate === "true" ? true : false
-  );
+  const [showCreateModelDialogue, setShowCreateModelDialogue] =
+    useState(triggerCreate);
   const searchRef = useRef(null);
 
   return (
@@ -77,7 +76,7 @@ export const AllModels = () => {
               variant="contained"
               size="small"
               startIcon={<AddRoundedIcon />}
-              onClick={() => setShowCreateModelDialogue(true)}
+              onClick={() => setShowCreateModelDialogue("true")}
               data-cy="create-model-button-all-models"
             >
               Create Model
@@ -91,9 +90,14 @@ export const AllModels = () => {
           />
         </Box>
       </Box>
-      {showCreateModelDialogue && (
+      {!!showCreateModelDialogue && (
         <CreateModelDialogue
-          onClose={() => setShowCreateModelDialogue(false)}
+          modelType={
+            showCreateModelDialogue !== "true"
+              ? showCreateModelDialogue
+              : undefined
+          }
+          onClose={() => setShowCreateModelDialogue("")}
         />
       )}
     </>
