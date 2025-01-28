@@ -48,6 +48,7 @@ type ActiveItemProps = {
   relatedModelData: ContentModel;
   onMoveCard: (draggedItemZUID: string, dropIndex: number) => void;
   onDropCard: () => void;
+  onRemoveCard: (itemZUID: string) => void;
   draggable?: boolean;
 };
 export const ActiveItem = memo(
@@ -58,6 +59,7 @@ export const ActiveItem = memo(
     relatedModelData,
     onMoveCard,
     onDropCard,
+    onRemoveCard,
     draggable,
   }: ActiveItemProps) => {
     const [imageError, setImageError] = useState(false);
@@ -453,7 +455,7 @@ export const ActiveItem = memo(
               </ListItemIcon>
               <ListItemText primary="Copy ZUID" />
             </MenuItem>
-            <MenuItem>
+            <MenuItem onClick={() => onRemoveCard(itemZUID)}>
               <ListItemIcon>
                 <CloseRounded />
               </ListItemIcon>

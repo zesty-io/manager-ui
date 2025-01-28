@@ -84,6 +84,15 @@ export const RelationalFieldBase = ({
               )}
               onMoveCard={handleMoveCard}
               onDropCard={handleReorder}
+              onRemoveCard={(itemZUID) => {
+                setItemZUIDs((prev) =>
+                  prev.filter((zuid) => zuid !== itemZUID)
+                );
+                onChange(
+                  itemZUIDs.filter((zuid) => zuid !== itemZUID).join(","),
+                  name
+                );
+              }}
               draggable={multiselect}
             />
           ))}
