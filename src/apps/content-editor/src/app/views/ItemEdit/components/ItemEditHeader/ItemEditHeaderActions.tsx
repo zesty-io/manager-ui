@@ -8,15 +8,18 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
+  Stack,
+  List,
 } from "@mui/material";
 import {
   useCreateItemPublishingMutation,
   useDeleteItemPublishingMutation,
   useGetAuditsQuery,
+  useGetContentModelFieldsQuery,
   useGetItemPublishingsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   SaveRounded,
@@ -43,6 +46,7 @@ import {
 } from "../../../../../../../../shell/services/types";
 import { SchedulePublish } from "../../../../../../../../shell/components/SchedulePublish";
 import { ConfirmPublishModal } from "../../../../../../../../shell/components/ConfirmPublishModal";
+import { UnpublishedRelatedItem } from "./UnpublishedRelatedItem";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -82,9 +86,13 @@ export const ItemEditHeaderActions = ({
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
   );
+  const items = useSelector((state: AppState) => state.content);
   const model = useSelector(
     (state: AppState) => state.models[modelZUID]
   ) as ContentModel;
+  const { data: fields } = useGetContentModelFieldsQuery(modelZUID, {
+    skip: !modelZUID,
+  });
   const { data: users } = useGetUsersQuery();
   const { data: itemAudit } = useGetAuditsQuery({
     affectedZUID: itemZUID,
@@ -120,6 +128,56 @@ export const ItemEditHeaderActions = ({
       setIsConfirmPublishModalOpen(true);
     }
   });
+
+  const unpublishedRelatedItems = useMemo(() => {
+    if (!fields || !item.data || !items) return [];
+
+    const relatedFieldZUIDs = Object.entries(item.data)?.reduce(
+      (acc: Record<string, string[]>, [key, value]) => {
+        const field = fields.find((field) => field.name === key);
+
+        if (
+          !!value &&
+          (field?.datatype === "one_to_many" ||
+            field?.datatype === "one_to_one")
+        ) {
+          acc[field.relatedModelZUID] = [
+            ...(acc[field.relatedModelZUID] || []),
+            ...(value as string)?.split(","),
+          ];
+        }
+
+        return acc;
+      },
+      {}
+    );
+
+    const unpublishedRelatedItems = Object.entries(relatedFieldZUIDs)
+      ?.map(([modelZUID, itemZUIDs]) => {
+        const relatedItems = itemZUIDs?.map((ZUID) => {
+          const item = Object.values(items)?.find(
+            (item) =>
+              item.meta.ZUID === ZUID &&
+              item.meta.contentModelZUID === modelZUID
+          );
+
+          if (!!item) {
+            const draftVersion = item?.meta?.version;
+            const publishedVersion = item?.publishing?.version || 0;
+
+            if (draftVersion > publishedVersion) {
+              return item;
+            }
+          }
+        });
+
+        return relatedItems;
+      })
+      ?.flat()
+      ?.filter((item) => !!item);
+
+    return unpublishedRelatedItems;
+  }, [fields, item, items]);
 
   const itemState = (() => {
     if (item?.dirty) {
@@ -531,7 +589,26 @@ export const ItemEditHeaderActions = ({
             handlePublish();
           }}
           altText={model?.type === "block" && "Variant"}
-        />
+        >
+          {unpublishedRelatedItems?.length > 0 && (
+            <Stack mt={2}>
+              <Typography variant="body2" fontWeight={600}>
+                Also publish related items
+              </Typography>
+              <Typography variant="body3">
+                This will publish all items selected in the list below
+              </Typography>
+              <List sx={{ mt: 1 }}>
+                {unpublishedRelatedItems.map((item) => (
+                  <UnpublishedRelatedItem
+                    key={item.meta.ZUID}
+                    contentItem={item}
+                  />
+                ))}
+              </List>
+            </Stack>
+          )}
+        </ConfirmPublishModal>
       )}
     </>
   );

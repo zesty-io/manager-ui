@@ -20,6 +20,7 @@ export type ConfirmPublishModal = {
   contentVersion: number;
   altText?: string;
   isPublishing?: boolean;
+  children?: JSX.Element;
 };
 export const ConfirmPublishModal = ({
   contentTitle,
@@ -28,6 +29,7 @@ export const ConfirmPublishModal = ({
   contentVersion,
   altText,
   isPublishing,
+  children,
 }: ConfirmPublishModal) => {
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
@@ -64,6 +66,7 @@ export const ConfirmPublishModal = ({
           {altText ? altText?.toLowerCase() : "item"} available on all of your
           platforms. You can always unpublish this item later if needed.
         </Typography>
+        {children}
       </DialogContent>
       <DialogActions>
         <Button
