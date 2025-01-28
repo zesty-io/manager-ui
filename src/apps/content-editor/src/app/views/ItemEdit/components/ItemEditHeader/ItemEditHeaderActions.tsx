@@ -47,6 +47,7 @@ import {
 import { SchedulePublish } from "../../../../../../../../shell/components/SchedulePublish";
 import { ConfirmPublishModal } from "../../../../../../../../shell/components/ConfirmPublishModal";
 import { UnpublishedRelatedItem } from "./UnpublishedRelatedItem";
+import { uniqBy } from "lodash";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -132,33 +133,57 @@ export const ItemEditHeaderActions = ({
   const unpublishedRelatedItems = useMemo(() => {
     if (!fields || !item.data || !items) return [];
 
+    // let relatedFieldZUID = "";
+    // let relatedModelZUID = "";
+
     const relatedFieldZUIDs = Object.entries(item.data)?.reduce(
-      (acc: Record<string, string[]>, [key, value]) => {
+      (
+        acc: {
+          itemZUIDs: string[];
+          relatedFieldZUID: string;
+          relatedModelZUID: string;
+        }[],
+        [key, value]
+      ) => {
         const field = fields.find((field) => field.name === key);
+
+        // relatedFieldZUID = field?.relatedFieldZUID;
+        // relatedModelZUID = field?.relatedModelZUID;
 
         if (
           !!value &&
           (field?.datatype === "one_to_many" ||
             field?.datatype === "one_to_one")
         ) {
-          acc[field.relatedModelZUID] = [
-            ...(acc[field.relatedModelZUID] || []),
-            ...(value as string)?.split(","),
+          // acc[field.relatedModelZUID] = {
+          //   relatedFieldZUID: field.relatedFieldZUID,
+          //   itemZUIDs: [
+          //     ...(acc[field.relatedModelZUID]?.itemZUIDs || []),
+          //     ...(value as string)?.split(","),
+          //   ],
+          // };
+          acc = [
+            ...acc,
+            {
+              relatedFieldZUID: field.relatedFieldZUID,
+              relatedModelZUID: field.relatedModelZUID,
+              itemZUIDs: (value as string)?.split(","),
+            },
           ];
         }
 
         return acc;
       },
-      {}
+      []
     );
 
-    const unpublishedRelatedItems = Object.entries(relatedFieldZUIDs)
-      ?.map(([modelZUID, itemZUIDs]) => {
+    const unpublishedRelatedItems = Object.values(relatedFieldZUIDs)
+      ?.map(({ relatedFieldZUID, relatedModelZUID, itemZUIDs }) => {
         const relatedItems = itemZUIDs?.map((ZUID) => {
           const item = Object.values(items)?.find(
             (item) =>
               item.meta.ZUID === ZUID &&
-              item.meta.contentModelZUID === modelZUID
+              item.meta.contentModelZUID === relatedModelZUID
           );
 
           if (!!item) {
@@ -166,7 +191,11 @@ export const ItemEditHeaderActions = ({
             const publishedVersion = item?.publishing?.version || 0;
 
             if (draftVersion > publishedVersion) {
-              return item;
+              return {
+                ...item,
+                relatedFieldZUID,
+                relatedModelZUID,
+              };
             }
           }
         });
@@ -176,7 +205,7 @@ export const ItemEditHeaderActions = ({
       ?.flat()
       ?.filter((item) => !!item);
 
-    return unpublishedRelatedItems;
+    return uniqBy(unpublishedRelatedItems, "meta.ZUID");
   }, [fields, item, items]);
 
   const itemState = (() => {
@@ -599,10 +628,11 @@ export const ItemEditHeaderActions = ({
                 This will publish all items selected in the list below
               </Typography>
               <List sx={{ mt: 1 }}>
-                {unpublishedRelatedItems.map((item) => (
+                {unpublishedRelatedItems.map((item, index) => (
                   <UnpublishedRelatedItem
                     key={item.meta.ZUID}
                     contentItem={item}
+                    divider={unpublishedRelatedItems?.length > index + 1}
                   />
                 ))}
               </List>
