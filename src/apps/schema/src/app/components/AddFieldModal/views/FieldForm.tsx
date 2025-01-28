@@ -221,8 +221,11 @@ export const FieldForm = ({
         } else if (field.name === "defaultValue") {
           formFields["defaultValue"] =
             fieldData.settings?.defaultValue !== null &&
-            fieldData.settings?.defaultValue !== undefined
+            fieldData.settings?.defaultValue !== undefined &&
+            fieldData.settings?.defaultValue !== ""
               ? fieldData.settings?.defaultValue
+              : type === "number"
+              ? 0
               : null;
         } else if (field.name === "minCharLimit") {
           formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
@@ -262,6 +265,8 @@ export const FieldForm = ({
           formFields[field.name] = [{ "": "" }];
         } else if (field.type === "toggle_options") {
           formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
+        } else if (field.name === "defaultValue" && type === "number") {
+          formFields[field.name] = 0;
         } else {
           if (
             field.name === "defaultValue" ||
