@@ -415,6 +415,17 @@ export function saveItem({
       )
       .map((fieldZUID) => state.fields[fieldZUID]);
 
+    Object.keys(item.data).forEach((key) => {
+      const field = fields.find((field) => field.name === key);
+      if (
+        field &&
+        field.datatype === "number" &&
+        (item.data[key] === null || item.data[key] === undefined)
+      ) {
+        item.data[key] = 0;
+      }
+    });
+
     // Check required fields are not empty strings or null valuess
     // Some falsey values are allowed. e.g. false, 0
     const missingRequired = fields.filter(
