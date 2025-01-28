@@ -16,6 +16,7 @@ import {
   useGetContentModelFieldsQuery,
 } from "../../services/instance";
 import { fetchItems } from "../../store/content";
+import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
 
 type RelationalFieldBaseProps = {
   name: string;
@@ -38,13 +39,14 @@ export const RelationalFieldBase = ({
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
 
-  const { data: modelData } = useGetContentModelQuery(relatedModelZUID, {
-    skip: !relatedModelZUID,
-  });
-  const { data: modelFields } = useGetContentModelFieldsQuery(
-    relatedModelZUID,
-    { skip: !relatedModelZUID }
-  );
+  const { data: modelData, isLoading: isLoadingModelData } =
+    useGetContentModelQuery(relatedModelZUID, {
+      skip: !relatedModelZUID,
+    });
+  const { data: modelFields, isLoading: isLoadingModelFields } =
+    useGetContentModelFieldsQuery(relatedModelZUID, {
+      skip: !relatedModelZUID,
+    });
 
   useEffect(() => {
     if (!!relatedModelZUID) {
@@ -72,31 +74,37 @@ export const RelationalFieldBase = ({
   return (
     <Box component="section">
       <Stack gap={1}>
-        <DndProvider backend={HTML5Backend}>
-          {itemZUIDs?.slice(0, showAll ? undefined : 5)?.map((val, index) => (
-            <ActiveItem
-              key={val}
-              index={index}
-              itemZUID={val}
-              relatedModelData={modelData}
-              relatedFieldData={modelFields?.find(
-                (field) => field.ZUID === relatedFieldZUID
-              )}
-              onMoveCard={handleMoveCard}
-              onDropCard={handleReorder}
-              onRemoveCard={(itemZUID) => {
-                setItemZUIDs((prev) =>
-                  prev.filter((zuid) => zuid !== itemZUID)
-                );
-                onChange(
-                  itemZUIDs.filter((zuid) => zuid !== itemZUID).join(","),
-                  name
-                );
-              }}
-              draggable={multiselect}
-            />
-          ))}
-        </DndProvider>
+        {isLoadingModelData || isLoadingModelFields ? (
+          [...Array(multiselect ? 5 : 1)].map((_, index) => (
+            <ActiveItemLoading key={index} draggable />
+          ))
+        ) : (
+          <DndProvider backend={HTML5Backend}>
+            {itemZUIDs?.slice(0, showAll ? undefined : 5)?.map((val, index) => (
+              <ActiveItem
+                key={val}
+                index={index}
+                itemZUID={val}
+                relatedModelData={modelData}
+                relatedFieldData={modelFields?.find(
+                  (field) => field.ZUID === relatedFieldZUID
+                )}
+                onMoveCard={handleMoveCard}
+                onDropCard={handleReorder}
+                onRemoveCard={(itemZUID) => {
+                  setItemZUIDs((prev) =>
+                    prev.filter((zuid) => zuid !== itemZUID)
+                  );
+                  onChange(
+                    itemZUIDs.filter((zuid) => zuid !== itemZUID).join(","),
+                    name
+                  );
+                }}
+                draggable={multiselect}
+              />
+            ))}
+          </DndProvider>
+        )}
       </Stack>
       {itemZUIDs?.length > 5 && (
         <Button
@@ -126,6 +134,7 @@ export const RelationalFieldBase = ({
           sx={{
             mt: 1,
           }}
+          disabled={isLoadingModelData || isLoadingModelFields}
         >
           Add Existing {modelData?.label}
         </Button>
