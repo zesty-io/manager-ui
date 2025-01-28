@@ -1,20 +1,10 @@
-import {
-  StarterBlockProps,
-  STARTER_BLOCKS,
-} from "../../../../src/apps/schema/src/app/components/StarterBlocks/configs";
+import { STARTER_BLOCKS } from "../../../../src/apps/schema/src/app/components/StarterBlocks/configs";
 import { API_ENDPOINTS } from "../../../support/api";
 
-const TIMEOUT = { timeout: 40_000 };
+const TIMEOUT = { timeout: 50_000 };
 const testSufix = "------TEST";
 
-const BLOCK_LABELS = [
-  "Blank",
-  "Side by Side Hero Image",
-  "Hero Image Below",
-  "Contact Us Form",
-  "Feature Side By Side Image",
-  "Single Testimonial",
-];
+const BLOCK_LABELS = STARTER_BLOCKS.map((block) => block.label);
 
 const ERRORS = {
   label: "Display name is already in use. Please use another display name.",
@@ -44,43 +34,24 @@ const TEST_DATA = {
   },
 };
 
-const BUTTONS = {
-  // SELECT MODEL TYPE DIALOG
-  createModel: '[data-cy="create_new_content_item"]',
-  blockModelType: '[data-cy="model-type-block"]',
-  blockModelNext: '[data-cy="create-model-next-button"]',
-  //SELECT BLOCK TYPE DIALOG
-  blockTypeCard: '[data-cy="starter-block-card"]',
-  blockTypeNext: '[data-cy="select-block-type-next-button"]',
-  // STARTER BLOCK FORM
-  starterBlockFormSubmit: '[data-cy="starter-block-form-submit"]',
-};
-
-const INPUTS = {
-  //SELECT BLOCK TYPE DIALOG
-  blockTypeSearch: '[data-cy="starter-blocks-search"] input',
-  // STARTER BLOCK FORM
-  starterBlockFormLabel: '[data-cy="starter-block-form-label"] input',
-  starterBlockFormName: '[data-cy="starter-block-form-name"] input',
-};
-
-const CONTAINERS = {
-  starterBlocks: '[data-cy="starter-blocks-container"]',
-  starterBlockFields: '[data-cy="starter-block-form-fields-container"]',
-  formLabelError: '[data-cy="starter-block-form-label-error"]',
-  formNameError: '[data-cy="starter-block-form-name-error"]',
-};
-
 const POP_UPS = {
   formLoading: '[data-cy="starter-block-form-loading-backdrop"]',
   noResults: '[data-cy="no-results-page"]',
 };
-const DIALOGUES = {
-  createModel: '[data-cy="create-model-dialog"]',
-  selectBlockType: '[data-cy="starter-blocks-selection-dialog"]',
-};
 
-describe.skip("Starter Blocks", () => {
+const starterBlockFormField = `[data-cy="starter-block-form-fields-container"] > div[data-cy-status]`;
+const formLabelErrorContainer = '[data-cy="starter-block-form-label-error"]';
+const formNameErrorContainer = '[data-cy="starter-block-form-name-error"]';
+const schemaPageTitleContainer = 'nav[data-cy="breadcrumbs"] + div > h3';
+
+function schemaField() {
+  return cy
+    .getElement('[data-cy="SEOFields"]')
+    .parent()
+    .find("div[data-cy-status]", TIMEOUT);
+}
+
+describe("Starter Blocks", () => {
   before(() => {
     deleteStarterBlocksTestData();
     createStarterBlocksTestData();
@@ -91,9 +62,8 @@ describe.skip("Starter Blocks", () => {
 
   describe("Selection Dialogue", () => {
     it("should render starter blocks", () => {
-      //   cy.visit("/schema");
       openStarterBlocksDialogue();
-      cy.getElement(CONTAINERS.starterBlocks)
+      cy.getElement('[data-cy="starter-blocks-container"]')
         .should("be.visible")
         .children()
         .should("have.length", STARTER_BLOCKS.length);
@@ -104,12 +74,16 @@ describe.skip("Starter Blocks", () => {
     });
     it("should be able to search starter blocks", () => {
       const noResultsSearchTerm = "xxx___xxx___xxx";
-      cy.getElement(INPUTS.blockTypeSearch).clear().type("hero");
-      cy.getElement(CONTAINERS.starterBlocks)
+      cy.getElement('[data-cy="starter-blocks-search"] input')
+        .clear()
+        .type("hero");
+      cy.getElement('[data-cy="starter-blocks-container"]')
         .children()
         .should("have.length", 2);
 
-      cy.getElement(INPUTS.blockTypeSearch).clear().type(noResultsSearchTerm);
+      cy.getElement('[data-cy="starter-blocks-search"] input')
+        .clear()
+        .type(noResultsSearchTerm);
       cy.getElement(POP_UPS.noResults).should("exist");
     });
     it("Pressing search again should clear search and focus on the search input", () => {
@@ -118,7 +92,7 @@ describe.skip("Starter Blocks", () => {
         .contains("Search Again", { matchCase: false })
         .click(TIMEOUT);
 
-      cy.getElement(INPUTS.blockTypeSearch)
+      cy.getElement('[data-cy="starter-blocks-search"] input')
         .should("be.empty")
         .and("be.focused");
     });
@@ -130,20 +104,17 @@ describe.skip("Starter Blocks", () => {
     });
 
     it("Display an error message when attempting to use a name that's already in use.", () => {
-      cy.getElement(BUTTONS.blockTypeCard).first().click(TIMEOUT);
-      cy.getElement(BUTTONS.blockTypeNext).click();
+      cy.getElement('[data-cy="starter-block-card"]').first().click(TIMEOUT);
+      cy.getElement('[data-cy="select-block-type-next-button"]').click();
 
-      cy.getElement(INPUTS.starterBlockFormLabel)
+      cy.getElement('[data-cy="starter-block-form-label"] input')
         .clear()
         .type(TEST_DATA.existing.label);
-      cy.getElement(BUTTONS.starterBlockFormSubmit).click();
+      cy.getElement('[data-cy="starter-block-form-submit"]').click();
       cy.getElement(POP_UPS.formLoading).should("exist");
 
-      cy.getElement(CONTAINERS.formLabelError).should(
-        "have.text",
-        ERRORS.label
-      );
-      cy.getElement(CONTAINERS.formNameError).should("have.text", ERRORS.name);
+      cy.getElement(formLabelErrorContainer).should("have.text", ERRORS.label);
+      cy.getElement(formNameErrorContainer).should("have.text", ERRORS.name);
     });
   });
 
@@ -152,219 +123,202 @@ describe.skip("Starter Blocks", () => {
       openStarterBlocksDialogue();
     });
 
-    //BLANK STARTER BLOCK
     it(`[${STARTER_BLOCKS[0].label}]`, () => {
       const BLOCK = STARTER_BLOCKS[0];
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
 
-      // CHECK THAT NO FIELDS ARE PRESENT
-      cy.getElement(CONTAINERS.starterBlockFields).should("not.exist");
+      cy.getElement('[data-cy="starter-block-form-fields-container"]').should(
+        "not.exist"
+      );
 
-      cy.intercept("POST", "**/v1/content/models").as("createModel");
-      cy.intercept("**/v1/content/models").as("getModels");
-      // cy.intercept("**/v1/content/models/*/fields?showDeleted=true").as("getFields");
+      fillOutFormAndSubmit(TEST_LABEL);
 
-      cy.getElement(INPUTS.starterBlockFormLabel).clear().type(TEST_LABEL);
+      cy.getElement(schemaPageTitleContainer).should(
+        "contain.text",
+        TEST_LABEL,
+        { matchCase: false, ...TIMEOUT }
+      );
 
-      cy.getElement(BUTTONS.starterBlockFormSubmit).click();
-
-      cy.getElement(POP_UPS.formLoading).should("exist");
-
-      cy.wait(["@createModel", "@getModels"], TIMEOUT);
-
-      cy.getElement("h3")
-        .contains(TEST_LABEL, { matchCase: false, ...TIMEOUT })
-        .should("exist");
-
-      // CHECK THAT NO FIELDS WERE CREATED
       cy.getElement("div > button + div + p + span").should("have.length", 0);
     });
 
-    //Side by Side Hero Image
     it(`[${STARTER_BLOCKS[1].label}]`, () => {
       const BLOCK = STARTER_BLOCKS[1];
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
 
-      //CHECK IF ALL FIELDS ARE PRESENT IN THE FORM
       BLOCK.fields.forEach((field) => {
-        cy.getElement(`${CONTAINERS.starterBlockFields} > div`)
-          .contains(field.label)
-          .should("exist");
+        cy.getElement(starterBlockFormField).should(
+          "contain.text",
+          field.label
+        );
       });
 
-      cy.intercept("POST", "**/v1/content/models").as("createModel");
-      cy.intercept("**/v1/content/models").as("getModels");
-      // cy.intercept("**/v1/content/models/*/fields?showDeleted=true").as("getFields");
+      fillOutFormAndSubmit(TEST_LABEL).then((res) => {
+        cy.getElement(schemaPageTitleContainer).should(
+          "contain.text",
+          TEST_LABEL,
+          { matchCase: false, ...TIMEOUT }
+        );
 
-      cy.getElement(INPUTS.starterBlockFormLabel).clear().type(TEST_LABEL);
-
-      cy.getElement(BUTTONS.starterBlockFormSubmit).click();
-
-      cy.getElement(POP_UPS.formLoading).should("exist");
-
-      cy.wait(["@createModel", "@getModels"], TIMEOUT);
-
-      //CHECK IF THE BLOCK NAME IS CORRECT
-      cy.getElement("h3")
-        .contains(TEST_LABEL, { matchCase: false, ...TIMEOUT })
-        .should("exist");
-
-      //CHECK IF ALL FIELDS ARE CREATED
-      BLOCK.fields.forEach((field) => {
-        cy.contains(field.label).should("exist");
+        BLOCK.fields.forEach((field) => {
+          schemaField().should("contain.text", field.label);
+        });
+        cy.wrap({ ...res }).as("createModelResponse");
       });
+
+      if (!!BLOCK?.code) {
+        cy.get("@createModelResponse").then((res) => {
+          const zuid = res?.webView?.ZUID;
+
+          validateTemplateCode(zuid, BLOCK?.code);
+        });
+      }
     });
 
-    //Hero Image Below
     it(`[${STARTER_BLOCKS[2].label}]`, () => {
       const BLOCK = STARTER_BLOCKS[2];
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
 
-      //CHECK IF ALL FIELDS ARE PRESENT IN THE FORM
       BLOCK.fields.forEach((field) => {
-        cy.getElement(`${CONTAINERS.starterBlockFields} > div`)
-          .contains(field.label)
-          .should("exist");
+        cy.getElement(starterBlockFormField).should(
+          "contain.text",
+          field.label
+        );
       });
 
-      cy.intercept("POST", "**/v1/content/models").as("createModel");
-      cy.intercept("**/v1/content/models").as("getModels");
-      // cy.intercept("**/v1/content/models/*/fields?showDeleted=true").as("getFields");
+      fillOutFormAndSubmit(TEST_LABEL).then((res) => {
+        cy.getElement(schemaPageTitleContainer).should(
+          "contain.text",
+          TEST_LABEL,
+          { matchCase: false, ...TIMEOUT }
+        );
 
-      cy.getElement(INPUTS.starterBlockFormLabel).clear().type(TEST_LABEL);
-
-      cy.getElement(BUTTONS.starterBlockFormSubmit).click();
-
-      cy.getElement(POP_UPS.formLoading).should("exist");
-
-      cy.wait(["@createModel", "@getModels"], TIMEOUT);
-
-      //CHECK IF THE BLOCK NAME IS CORRECT
-      cy.getElement("h3")
-        .contains(TEST_LABEL, { matchCase: false, ...TIMEOUT })
-        .should("exist");
-
-      //CHECK IF ALL FIELDS ARE CREATED
-      BLOCK.fields.forEach((field) => {
-        cy.contains(field.label).should("exist");
+        BLOCK.fields.forEach((field) => {
+          schemaField().should("contain.text", field.label);
+        });
+        cy.wrap({ ...res }).as("createModelResponse");
       });
+
+      if (!!BLOCK?.code) {
+        cy.get("@createModelResponse").then((res) => {
+          const zuid = res?.webView?.ZUID;
+
+          validateTemplateCode(zuid, BLOCK?.code);
+        });
+      }
     });
 
-    //Contact Us Form
     it(`[${STARTER_BLOCKS[3].label}]`, () => {
       const BLOCK = STARTER_BLOCKS[3];
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
 
-      //CHECK IF ALL FIELDS ARE PRESENT IN THE FORM
       BLOCK.fields.forEach((field) => {
-        cy.getElement(`${CONTAINERS.starterBlockFields} > div`)
-          .contains(field.label)
-          .should("exist");
+        cy.getElement(starterBlockFormField).should(
+          "contain.text",
+          field.label
+        );
       });
 
-      cy.intercept("POST", "**/v1/content/models").as("createModel");
-      cy.intercept("**/v1/content/models").as("getModels");
-      // cy.intercept("**/v1/content/models/*/fields?showDeleted=true").as("getFields");
+      fillOutFormAndSubmit(TEST_LABEL).then((res) => {
+        cy.getElement(schemaPageTitleContainer).should(
+          "contain.text",
+          TEST_LABEL,
+          { matchCase: false, ...TIMEOUT }
+        );
 
-      cy.getElement(INPUTS.starterBlockFormLabel).clear().type(TEST_LABEL);
-
-      cy.getElement(BUTTONS.starterBlockFormSubmit).click();
-
-      cy.getElement(POP_UPS.formLoading).should("exist");
-
-      cy.wait(["@createModel", "@getModels"], TIMEOUT);
-
-      //CHECK IF THE BLOCK NAME IS CORRECT
-      cy.getElement("h3")
-        .contains(TEST_LABEL, { matchCase: false, ...TIMEOUT })
-        .should("exist");
-
-      //CHECK IF ALL FIELDS ARE CREATED
-      BLOCK.fields.forEach((field) => {
-        cy.contains(field.label).should("exist");
+        BLOCK.fields.forEach((field) => {
+          schemaField().should("contain.text", field.label);
+        });
+        cy.wrap({ ...res }).as("createModelResponse");
       });
+
+      if (!!BLOCK?.code) {
+        cy.get("@createModelResponse").then((res) => {
+          const zuid = res?.webView?.ZUID;
+
+          validateTemplateCode(zuid, BLOCK?.code);
+        });
+      }
     });
 
-    //Feature Side By Side Image
     it(`[${STARTER_BLOCKS[4].label}]`, () => {
       const BLOCK = STARTER_BLOCKS[4];
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
 
-      //CHECK IF ALL FIELDS ARE PRESENT IN THE FORM
       BLOCK.fields.forEach((field) => {
-        cy.getElement(`${CONTAINERS.starterBlockFields} > div`)
-          .contains(field.label)
-          .should("exist");
+        cy.getElement(starterBlockFormField).should(
+          "contain.text",
+          field.label
+        );
       });
 
-      cy.intercept("POST", "**/v1/content/models").as("createModel");
-      cy.intercept("**/v1/content/models").as("getModels");
-      // cy.intercept("**/v1/content/models/*/fields?showDeleted=true").as("getFields");
+      fillOutFormAndSubmit(TEST_LABEL).then((res) => {
+        cy.getElement(schemaPageTitleContainer).should(
+          "contain.text",
+          TEST_LABEL,
+          { matchCase: false, ...TIMEOUT }
+        );
 
-      cy.getElement(INPUTS.starterBlockFormLabel).clear().type(TEST_LABEL);
+        BLOCK.fields.forEach((field) => {
+          schemaField().should("contain.text", field.label);
+        });
 
-      cy.getElement(BUTTONS.starterBlockFormSubmit).click();
-
-      cy.getElement(POP_UPS.formLoading).should("exist");
-
-      cy.wait(["@createModel", "@getModels"], TIMEOUT);
-
-      //CHECK IF THE BLOCK NAME IS CORRECT
-      cy.getElement("h3")
-        .contains(TEST_LABEL, { matchCase: false, ...TIMEOUT })
-        .should("exist");
-
-      //CHECK IF ALL FIELDS ARE CREATED
-      BLOCK.fields.forEach((field) => {
-        cy.contains(field.label).should("exist");
+        cy.wrap({ ...res }).as("createModelResponse");
       });
+
+      if (!!BLOCK?.code) {
+        cy.get("@createModelResponse").then((res) => {
+          const zuid = res?.webView?.ZUID;
+
+          validateTemplateCode(zuid, BLOCK?.code);
+        });
+      }
     });
 
-    //Single Testimonial
     it(`[${STARTER_BLOCKS[5].label}]`, () => {
       const BLOCK = STARTER_BLOCKS[5];
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
 
-      //CHECK IF ALL FIELDS ARE PRESENT IN THE FORM
       BLOCK.fields.forEach((field) => {
-        cy.getElement(`${CONTAINERS.starterBlockFields} > div`)
-          .contains(field.label)
-          .should("exist");
+        cy.getElement(starterBlockFormField).should(
+          "contain.text",
+          field.label
+        );
       });
 
-      cy.intercept("POST", "**/v1/content/models").as("createModel");
-      cy.intercept("**/v1/content/models").as("getModels");
-      // cy.intercept("**/v1/content/models/*/fields?showDeleted=true").as("getFields");
+      fillOutFormAndSubmit(TEST_LABEL).then((res) => {
+        cy.getElement(schemaPageTitleContainer).should(
+          "contain.text",
+          TEST_LABEL,
+          { matchCase: false, ...TIMEOUT }
+        );
 
-      cy.getElement(INPUTS.starterBlockFormLabel).clear().type(TEST_LABEL);
+        BLOCK.fields.forEach((field) => {
+          schemaField().should("contain.text", field.label);
+        });
 
-      cy.getElement(BUTTONS.starterBlockFormSubmit).click();
-
-      cy.getElement(POP_UPS.formLoading).should("exist");
-
-      cy.wait(["@createModel", "@getModels"], TIMEOUT);
-
-      //CHECK IF THE BLOCK NAME IS CORRECT
-      cy.getElement("h3")
-        .contains(TEST_LABEL, { matchCase: false, ...TIMEOUT })
-        .should("exist");
-
-      //CHECK IF ALL FIELDS ARE CREATED
-      BLOCK.fields.forEach((field) => {
-        cy.contains(field.label).should("exist");
+        cy.wrap({ ...res }).as("createModelResponse");
       });
+
+      if (!!BLOCK?.code) {
+        cy.get("@createModelResponse").then((res) => {
+          const zuid = res?.webView?.ZUID;
+
+          validateTemplateCode(zuid, BLOCK?.code);
+        });
+      }
     });
   });
 });
@@ -375,16 +329,15 @@ describe.skip("Starter Blocks - Delete", () => {
       url: `${API_ENDPOINTS.devInstance}/content/models`,
     }).then(({ status, data }) => {
       const forDeleteZuids = data
-        // ?.filter((item) => item?.label?.includes(testSufix))
         ?.filter((item) =>
           BLOCK_LABELS.some((label) => item?.label?.includes(label))
         )
 
         .map((del) => del?.ZUID);
-      console.debug("forDeleteZuids: ", forDeleteZuids);
-      // forDeleteZuids?.forEach((zuid) => {
-      //   cy.deleteModel(zuid);
-      // });
+      // console.debug("forDeleteZuids: ", forDeleteZuids);
+      // // forDeleteZuids?.forEach((zuid) => {
+      // //   cy.deleteModel(zuid);
+      // // });
     });
   });
 });
@@ -393,23 +346,62 @@ Cypress.Commands.add("getElement", (selector) => {
   return cy.get(selector, TIMEOUT);
 });
 
+function fillOutFormAndSubmit(fieldLabel = "") {
+  cy.intercept("POST", "/v1/content/models").as("createModel");
+  cy.intercept("PUT", "/v1/web/views/*").as("updateWebView");
+  cy.intercept("/v1/content/models").as("getModels");
+  cy.intercept("**/v1/content/models/*/items?limit=5000", { log: false });
+  cy.intercept(`**/v1/content/models/*/fields?showDeleted=true`, {
+    log: false,
+  });
+
+  cy.getElement('[data-cy="starter-block-form-label"] input')
+    .clear()
+    .type(fieldLabel);
+  cy.getElement('[data-cy="starter-block-form-submit"]').click();
+  cy.getElement(POP_UPS.formLoading).should("exist");
+
+  return cy
+    .wait(["@createModel", "@getModels", "@updateWebView"], TIMEOUT)
+    .spread((createModel, getModels, updateWebView) => {
+      return cy.wrap({
+        createModel: createModel?.response?.body?.data,
+        getModels: getModels?.response?.body?.data,
+        webView: updateWebView?.response?.body?.data,
+      });
+    });
+}
+
+function validateTemplateCode(ZUID = "", code = "") {
+  cy.apiRequest({
+    method: "GET",
+    url: `${API_ENDPOINTS.devInstance}/web/views/${ZUID}`,
+  }).then((response) => {
+    const viewCode = response?.data?.code;
+    expect(viewCode).to.equal(code);
+  });
+}
+
 function createStarterBlock(name) {
-  cy.getElement(BUTTONS.blockTypeCard)
+  cy.getElement('[data-cy="starter-block-card"]')
     .contains(name, { matchCase: false })
     .click(TIMEOUT);
 
-  cy.getElement(BUTTONS.blockTypeNext).click();
+  cy.getElement('[data-cy="select-block-type-next-button"]').click();
 }
 
 function openStarterBlocksDialogue() {
   cy.location("pathname").then((pathName) => {
-    if (pathName !== "/schema" || !!Cypress.$(DIALOGUES.createModel).length) {
+    if (
+      pathName !== "/schema" ||
+      !!Cypress.$('[data-cy="create-model-dialog"]').length
+    ) {
       cy.visit("/schema");
     }
   });
-  cy.getElement(BUTTONS.createModel).click(TIMEOUT);
-  cy.getElement(BUTTONS.blockModelType).click();
-  cy.getElement(BUTTONS.blockModelNext).click();
+  cy.getElement('[data-cy="create_new_content_item"]').click(TIMEOUT);
+  cy.getElement('[data-cy="model-type-block"]').click();
+  cy.getElement('[data-cy="create-model-next-button"]').click();
 }
 
 function deleteStarterBlocksTestData() {
@@ -434,11 +426,6 @@ function createStarterBlocksTestData() {
     type: "block",
     listed: true,
   }).then(({ status, data }) => {
-    console.debug("createStarterBlocksTestData | status,data: ", {
-      status,
-      data,
-    });
-
     TEST_DATA.existing.fields.forEach((field) => {
       cy.createField(data?.ZUID, { ...field });
     });
