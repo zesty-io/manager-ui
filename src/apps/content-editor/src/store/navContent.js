@@ -76,65 +76,75 @@ export function fetchNav() {
         return null;
       })
       .then((granularRoles) => {
-        return request(`${CONFIG.API_INSTANCE}/env/nav`).then((res) => {
-          if (res.status === 200) {
-            // enrich nav with stored closed/hidden status
-            // FIXME: this should be scoped to the instance
-            const closed = localStorage.getItem("zesty:navContent:closed");
-            const closedArr = closed ? JSON.parse(closed) : [];
-            const closedZUIDS = closedArr.map((node) => node.ZUID);
+        return request(`${CONFIG.API_INSTANCE}/env/nav`)
+          .then((res) => {
+            if (res.status === 200) {
+              // enrich nav with stored closed/hidden status
+              // FIXME: this should be scoped to the instance
+              const closed = localStorage.getItem("zesty:navContent:closed");
+              const closedArr = closed ? JSON.parse(closed) : [];
+              const closedZUIDS = closedArr.map((node) => node.ZUID);
 
-            // FIXME: this should be scoped to the instance
-            const hidden = localStorage.getItem("zesty:navContent:hidden");
-            const hiddenArr = hidden ? JSON.parse(hidden) : [];
-            const hiddenZUIDS = hiddenArr.map((node) => node.ZUID);
+              // FIXME: this should be scoped to the instance
+              const hidden = localStorage.getItem("zesty:navContent:hidden");
+              const hiddenArr = hidden ? JSON.parse(hidden) : [];
+              const hiddenZUIDS = hiddenArr.map((node) => node.ZUID);
 
-            const hasContentItemGranularRole = granularRoles?.some((zuid) =>
-              zuid?.startsWith("7-")
-            );
-            // Only filter content items by granular roles if there is at least one granular role that target content items
-            const filteredByRole = res.data.filter((el) => {
-              if (granularRoles && hasContentItemGranularRole) {
-                return granularRoles.find((zuid) => zuid === el.ZUID);
-              } else {
-                return el;
+              const hasContentItemGranularRole = granularRoles?.some((zuid) =>
+                zuid?.startsWith("7-")
+              );
+              // Only filter content items by granular roles if there is at least one granular role that target content items
+              const filteredByRole = res.data.filter((el) => {
+                if (granularRoles && hasContentItemGranularRole) {
+                  return granularRoles.find((zuid) => zuid === el.ZUID);
+                } else {
+                  return el;
+                }
+              });
+
+              filteredByRole.forEach((node) => {
+                if (closedZUIDS.includes(node.ZUID)) {
+                  node.closed = true;
+                }
+                if (hiddenZUIDS.includes(node.ZUID)) {
+                  node.hidden = true;
+                }
+
+                // Set path
+                if (node.type === "item") {
+                  node.path = `/content/${node.contentModelZUID}/${node.ZUID}`;
+                } else if (
+                  node.type === "external" ||
+                  node.type === "internal"
+                ) {
+                  node.path = `/content/link/${node.ZUID}`;
+                } else {
+                  node.path = `/content/${node.ZUID}`;
+                }
+              });
+
+              dispatch({
+                type: "FETCH_CONTENT_NAV_SUCCESS",
+                raw: filteredByRole,
+              });
+            } else {
+              dispatch(
+                notify({
+                  message: `Failed to fetch nav`,
+                  kind: "warn",
+                })
+              );
+              if (res.error) {
+                throw new Error(res.error);
               }
-            });
-
-            filteredByRole.forEach((node) => {
-              if (closedZUIDS.includes(node.ZUID)) {
-                node.closed = true;
-              }
-              if (hiddenZUIDS.includes(node.ZUID)) {
-                node.hidden = true;
-              }
-
-              // Set path
-              if (node.type === "item") {
-                node.path = `/content/${node.contentModelZUID}/${node.ZUID}`;
-              } else if (node.type === "external" || node.type === "internal") {
-                node.path = `/content/link/${node.ZUID}`;
-              } else {
-                node.path = `/content/${node.ZUID}`;
-              }
-            });
-
-            dispatch({
-              type: "FETCH_CONTENT_NAV_SUCCESS",
-              raw: filteredByRole,
-            });
-          } else {
-            dispatch(
-              notify({
-                message: `Failed to fetch nav`,
-                kind: "warn",
-              })
-            );
-            if (res.error) {
-              throw new Error(res.error);
             }
-          }
-        });
+          })
+          .catch((err) => {
+            console.error("fetchNav /nav failed:", err);
+          });
+      })
+      .catch((err) => {
+        console.error("fetchNav /roles failed:", err);
       });
   };
 }

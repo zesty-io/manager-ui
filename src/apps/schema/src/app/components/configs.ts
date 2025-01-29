@@ -1,9 +1,5 @@
 import { InputField } from "./AddFieldModal/FieldFormInput";
-import {
-  ContentModelField,
-  ContentModelFieldDataType,
-  FieldSettings,
-} from "../../../../../shell/services/types";
+import { ContentModelField } from "../../../../../shell/services/types";
 
 export type FieldType =
   | "text"
