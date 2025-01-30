@@ -41,6 +41,7 @@ import { formatDate } from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import {
+  ContentItem,
   ContentItemWithDirtyAndPublishing,
   ContentModel,
 } from "../../../../../../../../shell/services/types";
@@ -83,6 +84,9 @@ export const ItemEditHeaderActions = ({
   const [publishAfterUnschedule, setPublishAfterUnschedule] = useState(false);
   const [isConfirmPublishModalOpen, setIsConfirmPublishModalOpen] =
     useState(false);
+  const [relatedItemsToPublish, setRelatedItemsToPublish] = useState<
+    ContentItem[]
+  >([]);
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
@@ -192,7 +196,12 @@ export const ItemEditHeaderActions = ({
       ?.flat()
       ?.filter((item) => !!item);
 
-    return uniqBy(unpublishedRelatedItems, "meta.ZUID");
+    const uniqueItems = uniqBy(unpublishedRelatedItems, "meta.ZUID");
+
+    // Make sure that unpublished related items are checked by default
+    setRelatedItemsToPublish(uniqueItems);
+
+    return uniqueItems;
   }, [fields, item, items]);
 
   const itemState = (() => {
@@ -605,6 +614,7 @@ export const ItemEditHeaderActions = ({
             handlePublish();
           }}
           altText={model?.type === "block" && "Variant"}
+          relatedItemsToPublishCount={relatedItemsToPublish.length}
         >
           {unpublishedRelatedItems?.length > 0 && (
             <Stack mt={2}>
@@ -614,12 +624,29 @@ export const ItemEditHeaderActions = ({
               <Typography variant="body3">
                 This will publish all items selected in the list below
               </Typography>
-              <List sx={{ mt: 1 }}>
+              <List disablePadding sx={{ mt: 1 }}>
                 {unpublishedRelatedItems.map((item, index) => (
                   <UnpublishedRelatedItem
                     key={item.meta.ZUID}
                     contentItem={item}
                     divider={unpublishedRelatedItems?.length > index + 1}
+                    selected={relatedItemsToPublish.some(
+                      (i) => i.meta.ZUID === item.meta.ZUID
+                    )}
+                    onChange={({ action, contentItem }) => {
+                      if (action === "add") {
+                        setRelatedItemsToPublish([
+                          ...relatedItemsToPublish,
+                          contentItem,
+                        ]);
+                      } else {
+                        setRelatedItemsToPublish(
+                          relatedItemsToPublish.filter(
+                            (item) => item.meta.ZUID !== contentItem.meta.ZUID
+                          )
+                        );
+                      }
+                    }}
                   />
                 ))}
               </List>

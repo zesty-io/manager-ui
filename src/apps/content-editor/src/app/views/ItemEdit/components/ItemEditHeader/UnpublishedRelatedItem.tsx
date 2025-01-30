@@ -9,7 +9,10 @@ import {
   Stack,
 } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
-import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
+import {
+  ContentItem,
+  ContentItemWithDirtyAndPublishing,
+} from "../../../../../../../../shell/services/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
 
 export type ContentItemWithRelatedZUIDs = ContentItemWithDirtyAndPublishing & {
@@ -18,10 +21,17 @@ export type ContentItemWithRelatedZUIDs = ContentItemWithDirtyAndPublishing & {
 };
 type UnpublishedRelatedItemProps = {
   contentItem: ContentItemWithRelatedZUIDs;
+  onChange: (payload: {
+    action: "add" | "remove";
+    contentItem: ContentItem;
+  }) => void;
+  selected: boolean;
   divider?: boolean;
 };
 export const UnpublishedRelatedItem = ({
   contentItem,
+  onChange,
+  selected,
   divider,
 }: UnpublishedRelatedItemProps) => {
   const [imageError, setImageError] = useState(false);
@@ -68,87 +78,89 @@ export const UnpublishedRelatedItem = ({
     ];
 
   return (
-    <ListItem disablePadding divider={divider}>
-      <ListItemButton
-        sx={{
-          pl: 0,
-        }}
-      >
-        <ListItemIcon>
-          <Checkbox />
-        </ListItemIcon>
-        {!!imageFieldName &&
-          (!!imageURL && !imageError ? (
-            <Box
-              component="img"
-              width={40}
-              height={40}
-              src={imageURL}
-              sx={{
-                flexShrink: 0,
-                bgcolor: "grey.100",
-                objectFit: "contain",
-                overflow: "hidden",
-                mr: 2,
-                borderRadius: 1,
-              }}
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <Stack
-              sx={{
-                flexShrink: 0,
-                bgcolor: "grey.100",
-                width: 40,
-                height: 40,
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-                mr: 2,
-                borderRadius: 1,
-              }}
-            >
-              <ImageRounded color="action" />
-            </Stack>
-          ))}
-        <ListItemText
-          primary={
-            fieldValue ||
-            contentItem?.web?.metaTitle ||
-            contentItem?.web?.metaLinkText
+    <ListItem disableGutters dense divider={divider}>
+      <ListItemIcon>
+        <Checkbox
+          checked={selected}
+          onChange={(evt) =>
+            onChange({
+              contentItem,
+              action: evt.target.checked ? "add" : "remove",
+            })
           }
-          secondary={contentItem?.web?.metaDescription}
-          primaryTypographyProps={{
-            variant: "body2",
-            fontWeight: 600,
-            color: "text.primary",
-            sx: {
-              display: "-webkit-box",
-              "-webkit-line-clamp": "1",
-              "-webkit-box-orient": "vertical",
-              wordBreak: "break-word",
-              wordWrap: "break-word",
-              hyphens: "auto",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            },
-          }}
-          secondaryTypographyProps={{
-            variant: "body2",
-            color: "text.secondary",
-            sx: {
-              display: "-webkit-box",
-              "-webkit-line-clamp": "1",
-              "-webkit-box-orient": "vertical",
-              wordBreak: "break-word",
-              wordWrap: "break-word",
-              hyphens: "auto",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            },
-          }}
         />
-      </ListItemButton>
+      </ListItemIcon>
+      {!!imageFieldName &&
+        (!!imageURL && !imageError ? (
+          <Box
+            component="img"
+            width={40}
+            height={40}
+            src={imageURL}
+            sx={{
+              flexShrink: 0,
+              bgcolor: "grey.100",
+              objectFit: "contain",
+              overflow: "hidden",
+              mr: 2,
+              borderRadius: 1,
+            }}
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <Stack
+            sx={{
+              flexShrink: 0,
+              bgcolor: "grey.100",
+              width: 40,
+              height: 40,
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+              mr: 2,
+              borderRadius: 1,
+            }}
+          >
+            <ImageRounded color="action" />
+          </Stack>
+        ))}
+      <ListItemText
+        primary={
+          fieldValue ||
+          contentItem?.web?.metaTitle ||
+          contentItem?.web?.metaLinkText
+        }
+        secondary={contentItem?.web?.metaDescription}
+        primaryTypographyProps={{
+          variant: "body2",
+          fontWeight: 600,
+          color: "text.primary",
+          sx: {
+            display: "-webkit-box",
+            "-webkit-line-clamp": "1",
+            "-webkit-box-orient": "vertical",
+            wordBreak: "break-word",
+            wordWrap: "break-word",
+            hyphens: "auto",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          },
+        }}
+        secondaryTypographyProps={{
+          variant: "body2",
+          color: "text.secondary",
+          sx: {
+            display: "-webkit-box",
+            "-webkit-line-clamp": "1",
+            "-webkit-box-orient": "vertical",
+            wordBreak: "break-word",
+            wordWrap: "break-word",
+            hyphens: "auto",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          },
+        }}
+      />
     </ListItem>
   );
 };

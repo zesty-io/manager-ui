@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { LoadingButton } from "@mui/lab";
+import pluralizeWord from "../../utility/pluralizeWord";
 
 export type ConfirmPublishModal = {
   contentTitle: string;
@@ -21,6 +22,7 @@ export type ConfirmPublishModal = {
   altText?: string;
   isPublishing?: boolean;
   children?: JSX.Element;
+  relatedItemsToPublishCount?: number;
 };
 export const ConfirmPublishModal = ({
   contentTitle,
@@ -30,6 +32,7 @@ export const ConfirmPublishModal = ({
   altText,
   isPublishing,
   children,
+  relatedItemsToPublishCount,
 }: ConfirmPublishModal) => {
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
@@ -86,7 +89,12 @@ export const ConfirmPublishModal = ({
           onClick={onConfirm}
           data-cy="ConfirmPublishButton"
         >
-          Publish {altText || "Item"}
+          Publish{" "}
+          {!!altText
+            ? pluralizeWord(altText, relatedItemsToPublishCount)
+            : pluralizeWord("Item", relatedItemsToPublishCount)}{" "}
+          {!!relatedItemsToPublishCount &&
+            `(${relatedItemsToPublishCount + 1})`}
         </LoadingButton>
       </DialogActions>
     </Dialog>
