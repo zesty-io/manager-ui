@@ -220,13 +220,9 @@ export const FieldForm = ({
           formFields["tooltip"] = fieldData.settings?.tooltip || "";
         } else if (field.name === "defaultValue") {
           formFields["defaultValue"] =
-            fieldData.settings?.defaultValue !== null &&
-            fieldData.settings?.defaultValue !== undefined &&
-            fieldData.settings?.defaultValue !== ""
-              ? fieldData.settings?.defaultValue
-              : type === "number"
-              ? 0
-              : null;
+            type === "number"
+              ? fieldData.settings?.defaultValue || 0
+              : fieldData.settings?.defaultValue ?? null;
         } else if (field.name === "minCharLimit") {
           formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
         } else if (field.name === "maxCharLimit") {

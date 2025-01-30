@@ -71,17 +71,10 @@ export const FieldTypeNumber = ({
 
         onChange(+value?.toString()?.replace(/^0+/, "") ?? 0, name);
       }}
-      onKeyDown={(evt: any) => {
-        const inputLength = evt.target.value.length;
-        const allowedKeys =
-          /^\d$/.test(evt.key) ||
-          ["ArrowLeft", "ArrowRight", "Backspace", "."]?.includes(evt.key);
-
-        if (evt.key === "Backspace" && inputLength < 2 && !value)
+      onKeyDown={(evt) => {
+        if ((evt.key === "Backspace" || evt.key === "Delete") && value === 0) {
           evt.preventDefault();
-
-        if ((!allowedKeys || evt.key === "Delete") && !value)
-          evt.preventDefault();
+        }
 
         if (
           limit &&
