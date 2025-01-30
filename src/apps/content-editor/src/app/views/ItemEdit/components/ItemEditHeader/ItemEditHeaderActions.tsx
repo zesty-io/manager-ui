@@ -185,7 +185,10 @@ export const ItemEditHeaderActions = ({
             const draftVersion = item?.meta?.version;
             const publishedVersion = item?.publishing?.version || 0;
 
-            if (draftVersion > publishedVersion) {
+            if (
+              draftVersion > publishedVersion &&
+              !item?.scheduling?.isScheduled
+            ) {
               return {
                 ...item,
                 relatedFieldZUID,
@@ -231,7 +234,6 @@ export const ItemEditHeaderActions = ({
       });
     }
 
-    // FIXME: Handle items that are currently scheduled
     Promise.allSettled([
       createPublishing({
         modelZUID,
