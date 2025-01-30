@@ -220,10 +220,9 @@ export const FieldForm = ({
           formFields["tooltip"] = fieldData.settings?.tooltip || "";
         } else if (field.name === "defaultValue") {
           formFields["defaultValue"] =
-            fieldData.settings?.defaultValue !== null &&
-            fieldData.settings?.defaultValue !== undefined
-              ? fieldData.settings?.defaultValue
-              : null;
+            type === "number"
+              ? fieldData.settings?.defaultValue || 0
+              : fieldData.settings?.defaultValue ?? null;
         } else if (field.name === "minCharLimit") {
           formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
         } else if (field.name === "maxCharLimit") {
@@ -262,6 +261,8 @@ export const FieldForm = ({
           formFields[field.name] = [{ "": "" }];
         } else if (field.type === "toggle_options") {
           formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
+        } else if (field.name === "defaultValue" && type === "number") {
+          formFields[field.name] = 0;
         } else {
           if (
             field.name === "defaultValue" ||
