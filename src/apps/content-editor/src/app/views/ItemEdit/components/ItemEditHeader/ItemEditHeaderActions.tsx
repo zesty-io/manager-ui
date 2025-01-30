@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import {
   useCreateItemPublishingMutation,
+  useCreateItemsPublishingMutation,
   useDeleteItemPublishingMutation,
   useGetAuditsQuery,
   useGetContentModelFieldsQuery,
@@ -34,7 +35,10 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useMetaKey } from "../../../../../../../../shell/hooks/useMetaKey";
-import { fetchItemPublishing } from "../../../../../../../../shell/store/content";
+import {
+  fetchItemPublishing,
+  fetchItemPublishings,
+} from "../../../../../../../../shell/store/content";
 import { LoadingButton } from "@mui/lab";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
@@ -87,6 +91,7 @@ export const ItemEditHeaderActions = ({
   const [relatedItemsToPublish, setRelatedItemsToPublish] = useState<
     ContentItem[]
   >([]);
+  const [isPublishing, setIsPublishing] = useState(false);
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
@@ -102,8 +107,7 @@ export const ItemEditHeaderActions = ({
   const { data: itemAudit } = useGetAuditsQuery({
     affectedZUID: itemZUID,
   });
-  const [createPublishing, { isLoading: publishing }] =
-    useCreateItemPublishingMutation();
+  const [createPublishing] = useCreateItemPublishingMutation();
   const [deleteItemPublishing, { isLoading: unpublishing }] =
     useDeleteItemPublishingMutation();
   const lastItemUpdateAudit = itemAudit?.find(
@@ -217,6 +221,7 @@ export const ItemEditHeaderActions = ({
   })();
 
   const handlePublish = async () => {
+    setIsPublishing(true);
     // If item is scheduled, delete the scheduled publishing first
     if (itemState === ITEM_STATES.scheduled) {
       await deleteItemPublishing({
@@ -225,18 +230,38 @@ export const ItemEditHeaderActions = ({
         publishingZUID: item?.scheduling?.ZUID,
       });
     }
-    createPublishing({
-      modelZUID,
-      itemZUID,
-      body: {
-        version: item?.meta.version,
-        publishAt: "now",
-        unpublishAt: "never",
-      },
-    }).then(() => {
-      // Retain non rtk-query fetch of item publishing for legacy code
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
-    });
+
+    // FIXME: Handle items that are currently scheduled
+    Promise.allSettled([
+      createPublishing({
+        modelZUID,
+        itemZUID,
+        body: {
+          version: item?.meta.version,
+          publishAt: "now",
+          unpublishAt: "never",
+        },
+      }),
+      relatedItemsToPublish.map((item) => {
+        return createPublishing({
+          modelZUID: item.meta.contentModelZUID,
+          itemZUID: item.meta.ZUID,
+          body: {
+            version: item.meta.version,
+            publishAt: "now",
+            unpublishAt: "never",
+          },
+        });
+      }),
+    ])
+      .then(() => {
+        // Retain non rtk-query fetch of item publishing for legacy code
+        dispatch(fetchItemPublishings());
+      })
+      .finally(() => {
+        setIsPublishing(false);
+        setIsConfirmPublishModalOpen(false);
+      });
   };
 
   const handleUnpublish = async () => {
@@ -403,7 +428,7 @@ export const ItemEditHeaderActions = ({
                     setIsConfirmPublishModalOpen(true);
                   }
                 }}
-                loading={publishing || saving || isFetching}
+                loading={isPublishing || saving || isFetching}
                 color="success"
                 variant="contained"
                 id="PublishButton"
@@ -421,7 +446,7 @@ export const ItemEditHeaderActions = ({
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);
                 }}
-                disabled={publishing || saving || isFetching}
+                disabled={isPublishing || saving || isFetching}
                 data-cy="PublishMenuButton"
               >
                 <ArrowDropDownRounded fontSize="small" />
@@ -505,7 +530,7 @@ export const ItemEditHeaderActions = ({
                 onClick={() => {
                   setIsConfirmPublishModalOpen(true);
                 }}
-                loading={publishing || publishAfterSave || isFetching}
+                loading={isPublishing || publishAfterSave || isFetching}
                 color="success"
                 variant="contained"
                 id="PublishButton"
@@ -523,7 +548,7 @@ export const ItemEditHeaderActions = ({
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);
                 }}
-                disabled={publishing || publishAfterSave || isFetching}
+                disabled={isPublishing || publishAfterSave || isFetching}
                 data-cy="PublishMenuButton"
               >
                 <ArrowDropDownRounded fontSize="small" />
@@ -609,12 +634,13 @@ export const ItemEditHeaderActions = ({
             setPublishAfterUnschedule(false);
           }}
           onConfirm={() => {
-            setIsConfirmPublishModalOpen(false);
+            // setIsConfirmPublishModalOpen(false);
             setPublishAfterUnschedule(false);
             handlePublish();
           }}
           altText={model?.type === "block" && "Variant"}
           relatedItemsToPublishCount={relatedItemsToPublish.length}
+          isPublishing={isPublishing}
         >
           {unpublishedRelatedItems?.length > 0 && (
             <Stack mt={2}>
