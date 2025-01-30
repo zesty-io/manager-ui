@@ -133,9 +133,6 @@ export const ItemEditHeaderActions = ({
   const unpublishedRelatedItems = useMemo(() => {
     if (!fields || !item.data || !items) return [];
 
-    // let relatedFieldZUID = "";
-    // let relatedModelZUID = "";
-
     const relatedFieldZUIDs = Object.entries(item.data)?.reduce(
       (
         acc: {
@@ -147,21 +144,11 @@ export const ItemEditHeaderActions = ({
       ) => {
         const field = fields.find((field) => field.name === key);
 
-        // relatedFieldZUID = field?.relatedFieldZUID;
-        // relatedModelZUID = field?.relatedModelZUID;
-
         if (
           !!value &&
           (field?.datatype === "one_to_many" ||
             field?.datatype === "one_to_one")
         ) {
-          // acc[field.relatedModelZUID] = {
-          //   relatedFieldZUID: field.relatedFieldZUID,
-          //   itemZUIDs: [
-          //     ...(acc[field.relatedModelZUID]?.itemZUIDs || []),
-          //     ...(value as string)?.split(","),
-          //   ],
-          // };
           acc = [
             ...acc,
             {

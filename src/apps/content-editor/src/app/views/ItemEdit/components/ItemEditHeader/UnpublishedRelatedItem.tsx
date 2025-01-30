@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { useMemo, useState } from "react";
 import {
   ListItem,
   ListItemButton,
@@ -6,34 +6,62 @@ import {
   ListItemIcon,
   Box,
   Checkbox,
+  Stack,
 } from "@mui/material";
+import { ImageRounded } from "@mui/icons-material";
 import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell/services/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
 
+export type ContentItemWithRelatedZUIDs = ContentItemWithDirtyAndPublishing & {
+  relatedModelZUID: string;
+  relatedFieldZUID: string;
+};
 type UnpublishedRelatedItemProps = {
-  contentItem: ContentItemWithDirtyAndPublishing & {
-    relatedModelZUID: string;
-    relatedFieldZUID: string;
-  };
+  contentItem: ContentItemWithRelatedZUIDs;
   divider?: boolean;
 };
 export const UnpublishedRelatedItem = ({
   contentItem,
   divider,
 }: UnpublishedRelatedItemProps) => {
+  const [imageError, setImageError] = useState(false);
   const { data: modelFields } = useGetContentModelFieldsQuery(
     contentItem.relatedModelZUID,
     {
       skip: !contentItem.relatedModelZUID,
     }
   );
-  console.log(
-    contentItem.relatedModelZUID,
-    contentItem.relatedFieldZUID,
-    modelFields?.find((field) => field.ZUID === contentItem.relatedFieldZUID)
-      ?.name
-  );
-  const value =
+
+  const imageFieldName = useMemo(() => {
+    if (!modelFields?.length) return null;
+
+    const imageFields = modelFields.filter(
+      (field) => !field.deletedAt && field.datatype === "images"
+    );
+
+    return imageFields?.[0]?.name || null;
+  }, [modelFields]);
+
+  const imageURL = useMemo(() => {
+    if (!contentItem?.data || !imageFieldName) return null;
+
+    if (!!contentItem.data[imageFieldName]) {
+      const value = String(contentItem.data[imageFieldName]).split(",")?.[0];
+
+      if (value.startsWith("3-")) {
+        return `${
+          // @ts-ignore
+          CONFIG.SERVICE_MEDIA_RESOLVER
+        }/resolve/${value}/getimage/?w=64&h=64&type=crop`;
+      } else {
+        return value;
+      }
+    }
+
+    return null;
+  }, [contentItem, imageFieldName]);
+
+  const fieldValue =
     contentItem?.data[
       modelFields?.find((field) => field.ZUID === contentItem.relatedFieldZUID)
         ?.name
@@ -41,17 +69,84 @@ export const UnpublishedRelatedItem = ({
 
   return (
     <ListItem disablePadding divider={divider}>
-      <ListItemButton>
+      <ListItemButton
+        sx={{
+          pl: 0,
+        }}
+      >
         <ListItemIcon>
           <Checkbox />
         </ListItemIcon>
+        {!!imageFieldName &&
+          (!!imageURL && !imageError ? (
+            <Box
+              component="img"
+              width={40}
+              height={40}
+              src={imageURL}
+              sx={{
+                flexShrink: 0,
+                bgcolor: "grey.100",
+                objectFit: "contain",
+                overflow: "hidden",
+                mr: 2,
+                borderRadius: 1,
+              }}
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <Stack
+              sx={{
+                flexShrink: 0,
+                bgcolor: "grey.100",
+                width: 40,
+                height: 40,
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+                mr: 2,
+                borderRadius: 1,
+              }}
+            >
+              <ImageRounded color="action" />
+            </Stack>
+          ))}
         <ListItemText
           primary={
-            value ||
+            fieldValue ||
             contentItem?.web?.metaTitle ||
             contentItem?.web?.metaLinkText
           }
           secondary={contentItem?.web?.metaDescription}
+          primaryTypographyProps={{
+            variant: "body2",
+            fontWeight: 600,
+            color: "text.primary",
+            sx: {
+              display: "-webkit-box",
+              "-webkit-line-clamp": "1",
+              "-webkit-box-orient": "vertical",
+              wordBreak: "break-word",
+              wordWrap: "break-word",
+              hyphens: "auto",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            },
+          }}
+          secondaryTypographyProps={{
+            variant: "body2",
+            color: "text.secondary",
+            sx: {
+              display: "-webkit-box",
+              "-webkit-line-clamp": "1",
+              "-webkit-box-orient": "vertical",
+              wordBreak: "break-word",
+              wordWrap: "break-word",
+              hyphens: "auto",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            },
+          }}
         />
       </ListItemButton>
     </ListItem>
