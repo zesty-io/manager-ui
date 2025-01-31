@@ -338,33 +338,33 @@ export const ActiveItem = memo(
               )}
             </Stack>
           </Stack>
-          {!!contentItem && (
-            <Stack direction="row" gap={2} mx={2} alignItems="center">
+
+          <Stack direction="row" gap={2} mx={2} alignItems="center">
+            {!!contentItem && (
               <VersionCell
                 itemData={contentItem}
                 publishData={contentItem.publishing}
                 scheduleData={contentItem.scheduling}
               />
-              <Stack direction="row" gap={1}>
-                <IconButton
-                  size="xsmall"
-                  onClick={() =>
-                    history.push(
-                      `/content/${relatedModelData?.ZUID}/${itemZUID}`
-                    )
-                  }
-                >
-                  <Edit fontSize="small" />
-                </IconButton>
-                <IconButton
-                  size="xsmall"
-                  onClick={(evt) => setAnchorEl(evt.currentTarget)}
-                >
-                  <MoreHoriz fontSize="small" />
-                </IconButton>
-              </Stack>
+            )}
+            <Stack direction="row" gap={1}>
+              <IconButton
+                size="xsmall"
+                onClick={() =>
+                  history.push(`/content/${relatedModelData?.ZUID}/${itemZUID}`)
+                }
+                disabled={!contentItem}
+              >
+                <Edit fontSize="small" />
+              </IconButton>
+              <IconButton
+                size="xsmall"
+                onClick={(evt) => setAnchorEl(evt.currentTarget)}
+              >
+                <MoreHoriz fontSize="small" />
+              </IconButton>
             </Stack>
-          )}
+          </Stack>
         </Stack>
         {!!anchorEl && (
           <Menu
@@ -449,12 +449,14 @@ export const ActiveItem = memo(
               </MenuItem>
             )}
 
-            <MenuItem onClick={handleCopyZUID}>
-              <ListItemIcon>
-                {isCopied ? <CheckRounded /> : <WidgetsRounded />}
-              </ListItemIcon>
-              <ListItemText primary="Copy ZUID" />
-            </MenuItem>
+            {!!contentItem && (
+              <MenuItem onClick={handleCopyZUID}>
+                <ListItemIcon>
+                  {isCopied ? <CheckRounded /> : <WidgetsRounded />}
+                </ListItemIcon>
+                <ListItemText primary="Copy ZUID" />
+              </MenuItem>
+            )}
             <MenuItem onClick={() => onRemoveCard(itemZUID)}>
               <ListItemIcon>
                 <CloseRounded />
