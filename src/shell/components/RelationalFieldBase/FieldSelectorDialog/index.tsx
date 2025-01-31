@@ -636,9 +636,18 @@ export const FieldSelectorDialog = ({
                 rowHeight={64}
                 hideFooter
                 selectionModel={filteredSelectionModels}
-                onSelectionModelChange={(selectionModel) =>
-                  setSelectionModel([...deletedItemZUIDs, ...selectionModel])
-                }
+                onSelectionModelChange={(newSelectionModel) => {
+                  let _newSelectionModel = newSelectionModel as string[];
+
+                  if (!multiselect && _newSelectionModel?.length > 1) {
+                    _newSelectionModel = [_newSelectionModel[0]];
+                  }
+
+                  setSelectionModel([
+                    ...deletedItemZUIDs,
+                    ..._newSelectionModel,
+                  ]);
+                }}
                 sx={{
                   bgcolor: "background.paper",
 
