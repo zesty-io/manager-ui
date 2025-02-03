@@ -527,6 +527,12 @@ export const AIGenerator = ({
                     (option) => option.value === fieldData.tone
                   )}
                   options={TONE_OPTIONS}
+                  filterOptions={(options, state) =>
+                    options.filter((option) => {
+                      const regex = new RegExp(`^${state.inputValue}`, "i");
+                      return regex.test(option.label);
+                    })
+                  }
                   renderInput={(params: any) => (
                     <TextField {...params} fullWidth />
                   )}
