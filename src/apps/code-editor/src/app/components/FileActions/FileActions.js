@@ -51,7 +51,15 @@ export const FileActions = memo(function FileActions(props) {
                     to={`/content/${props.contentModelZUID}`}
                     title="Edit Related Content"
                   >
-                    <Button variant="contained" size="small">
+                    <Button
+                      color="secondary"
+                      variant="contained"
+                      size="small"
+                      sx={{
+                        px: 1,
+                        minWidth: "fit-content",
+                      }}
+                    >
                       <EditIcon fontSize="small" />
                     </Button>
                   </AppLink>
@@ -61,7 +69,15 @@ export const FileActions = memo(function FileActions(props) {
                     to={`/schema/${props.contentModelZUID}`}
                     title="Edit Related Model"
                   >
-                    <Button variant="contained" size="small">
+                    <Button
+                      color="secondary"
+                      variant="contained"
+                      size="small"
+                      sx={{
+                        px: 1,
+                        minWidth: "fit-content",
+                      }}
+                    >
                       <StorageIcon fontSize="small" />
                     </Button>
                   </AppLink>
@@ -79,7 +95,17 @@ export const FileActions = memo(function FileActions(props) {
                 }`}
                 title="Diff Versions"
               >
-                <Button variant="contained" size="small">
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    px: 1,
+                    minWidth: "fit-content",
+                    // bgcolor: "text.secondary",
+                    // color: "common.white",
+                  }}
+                >
                   <HistoryIcon fontSize="small" />
                 </Button>
               </AppLink>
@@ -88,7 +114,12 @@ export const FileActions = memo(function FileActions(props) {
         </Switch>
 
         <div className={styles.FileName}>
-          <CopyButton variant="contained" size="small" value={props.fileZUID} />
+          <CopyButton
+            color="secondary"
+            variant="contained"
+            size="small"
+            value={props.fileZUID}
+          />
           {props.fileName}
         </div>
       </div>

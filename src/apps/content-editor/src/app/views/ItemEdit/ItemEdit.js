@@ -43,8 +43,6 @@ import { PublishState } from "./PublishState.tsx";
 import Analytics from "../Analytics";
 import { ApiDetails } from "../../../../../schema/src/app/components/ModelApi/ApiDetails";
 import { ApiCardList } from "../../../../../schema/src/app/components/ModelApi/ApiCardList";
-import { theme } from "@zesty-io/material";
-import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import { ItemEditHeader } from "./components/ItemEditHeader";
 import {
@@ -548,30 +546,28 @@ export default function ItemEdit() {
                 <Route
                   path="/content/:contentModelZUID/:contentItemZUID/api"
                   render={() => (
-                    <ThemeProvider theme={theme}>
-                      <Box
-                        sx={{
-                          color: "text.primary",
-                          flex: "1",
-                          overflow: "hidden",
-                          "*": {
-                            boxSizing: "border-box",
-                          },
-                          bgcolor: "grey.50",
-                        }}
-                      >
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api/:type"
-                          component={ApiDetails}
-                        />
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api"
-                          component={ApiCardList}
-                        />
-                      </Box>
-                    </ThemeProvider>
+                    <Box
+                      sx={{
+                        color: "text.primary",
+                        flex: "1",
+                        overflow: "hidden",
+                        "*": {
+                          boxSizing: "border-box",
+                        },
+                        bgcolor: "grey.50",
+                      }}
+                    >
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api/:type"
+                        component={ApiDetails}
+                      />
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api"
+                        component={ApiCardList}
+                      />
+                    </Box>
                   )}
                 />
                 <Route

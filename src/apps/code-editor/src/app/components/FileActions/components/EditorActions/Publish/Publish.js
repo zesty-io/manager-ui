@@ -13,7 +13,7 @@ export const Publish = memo(function Publish(props) {
   return (
     <LoadingButton
       variant="contained"
-      color="secondary"
+      color="info"
       onClick={() => {
         setPublishing(true);
         props

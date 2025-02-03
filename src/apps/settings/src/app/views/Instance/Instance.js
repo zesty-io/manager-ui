@@ -135,7 +135,6 @@ export default connect((state) => {
           <div className={styles.labelRow}>
             {dirtyFields.length !== 0 && (
               <Notice>
-                {" "}
                 Changes affect production on first re-render, cache-expiry, or
                 cache clear
               </Notice>
@@ -144,6 +143,7 @@ export default connect((state) => {
               variant="contained"
               id="saveSettings"
               color="success"
+              className={styles.saveButton}
               onClick={saveFields}
               disabled={dirtyFields.length === 0}
               loading={saving}
@@ -224,14 +224,24 @@ export default connect((state) => {
                       </Stack>
                     </FormLabel>
                     <ToggleButtonGroup
-                      color="secondary"
+                      color="primary"
                       size="small"
                       value={fieldValues[field.key]}
                       exclusive
                       onChange={(evt, val) => setValue(val, field.key)}
                     >
-                      <ToggleButton value={"0"}>Off </ToggleButton>
-                      <ToggleButton value={"1"}>On </ToggleButton>
+                      <ToggleButton
+                        value={"0"}
+                        sx={{ fontSize: "14px", p: 0.85 }}
+                      >
+                        Off{" "}
+                      </ToggleButton>
+                      <ToggleButton
+                        value={"1"}
+                        sx={{ fontSize: "13px", p: 0.85 }}
+                      >
+                        On{" "}
+                      </ToggleButton>
                     </ToggleButtonGroup>
                   </div>
                 );
@@ -254,14 +264,24 @@ export default connect((state) => {
                       </Stack>
                     </FormLabel>
                     <ToggleButtonGroup
-                      color="secondary"
+                      color="primary"
                       size="small"
                       value={fieldValues[field.key]}
                       exclusive
                       onChange={(evt, val) => setValue(val, field.key)}
                     >
-                      <ToggleButton value={"0"}>Off</ToggleButton>
-                      <ToggleButton value={"1"}>On </ToggleButton>
+                      <ToggleButton
+                        value={"0"}
+                        sx={{ fontSize: "13px", p: 0.85 }}
+                      >
+                        Off
+                      </ToggleButton>
+                      <ToggleButton
+                        value={"1"}
+                        sx={{ fontSize: "13px", p: 0.85 }}
+                      >
+                        On{" "}
+                      </ToggleButton>
                     </ToggleButtonGroup>
                   </div>
                 );
@@ -291,6 +311,11 @@ export default connect((state) => {
                     onChange={(evt) => setValue(evt.target.value, field.key)}
                     multiline
                     rows={6}
+                    inputProps={{
+                      style: {
+                        fontSize: "16px",
+                      },
+                    }}
                   />
                 </div>
               );
@@ -303,7 +328,9 @@ export default connect((state) => {
                       name={field.key}
                       onChange={(evt) => setValue(evt.target.value, field.key)}
                       value={fieldValues[field.key]}
-                      size="small"
+                      SelectDisplayProps={{
+                        fontSize: "16px",
+                      }}
                     >
                       {field.options.split(";").map((option, index) => {
                         let val = option.split(":");
@@ -335,6 +362,9 @@ export default connect((state) => {
                     }
                     helperText={field.tips}
                     maxLength={640}
+                    InputProps={{
+                      size: "medium",
+                    }}
                   />
                 </div>
               );

@@ -1,6 +1,5 @@
 import { memo, useState, useEffect } from "react";
 import { Prompt } from "react-router-dom";
-import { ThemeProvider } from "@mui/material/styles";
 import {
   Button,
   Dialog,
@@ -10,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { WarningAmberRounded } from "@mui/icons-material";
-import { theme } from "@zesty-io/material";
 import { LoadingButton } from "@mui/lab";
 
 type PendingEditsModalProps = {
@@ -81,61 +79,59 @@ export default memo(function PendingEditsModal(props: PendingEditsModalProps) {
   return (
     <>
       <Prompt when={Boolean(props.show)} message={"content_confirm"} />
-      <ThemeProvider theme={theme}>
-        <Dialog
-          open={open}
-          fullWidth
-          maxWidth={"xs"}
-          onClose={() => handler("cancel")}
-        >
-          <DialogTitle>
-            <Box
-              sx={{
-                backgroundColor: "warning.light",
-                borderRadius: "100%",
-                width: "40px",
-                height: "40px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                mb: 1.5,
-              }}
-            >
-              <WarningAmberRounded color="warning" />
-            </Box>
-            Unsaved Changes
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              You have unsaved changes that will be lost if you leave this page.
-            </Typography>
-          </DialogTitle>
-          <DialogActions
+      <Dialog
+        open={open}
+        fullWidth
+        maxWidth={"xs"}
+        onClose={() => handler("cancel")}
+      >
+        <DialogTitle>
+          <Box
             sx={{
-              justifyContent: "space-between",
+              backgroundColor: "warning.light",
+              borderRadius: "100%",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mb: 1.5,
             }}
           >
-            <Button color="inherit" onClick={() => handler("cancel")}>
-              Continue Editing
-            </Button>
-            <Box display="flex" gap={1}>
-              <LoadingButton
-                color="primary"
-                loading={loading}
-                onClick={() => handler("delete")}
-              >
-                Don't Save
-              </LoadingButton>
-              <LoadingButton
-                variant="contained"
-                color="primary"
-                loading={loading}
-                onClick={() => handler("save")}
-              >
-                Save
-              </LoadingButton>
-            </Box>
-          </DialogActions>
-        </Dialog>
-      </ThemeProvider>
+            <WarningAmberRounded color="warning" />
+          </Box>
+          Unsaved Changes
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            You have unsaved changes that will be lost if you leave this page.
+          </Typography>
+        </DialogTitle>
+        <DialogActions
+          sx={{
+            justifyContent: "space-between",
+          }}
+        >
+          <Button color="inherit" onClick={() => handler("cancel")}>
+            Continue Editing
+          </Button>
+          <Box display="flex" gap={1}>
+            <LoadingButton
+              color="primary"
+              loading={loading}
+              onClick={() => handler("delete")}
+            >
+              Don't Save
+            </LoadingButton>
+            <LoadingButton
+              variant="contained"
+              color="primary"
+              loading={loading}
+              onClick={() => handler("save")}
+            >
+              Save
+            </LoadingButton>
+          </Box>
+        </DialogActions>
+      </Dialog>
     </>
   );
 });

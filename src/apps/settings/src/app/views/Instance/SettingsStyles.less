@@ -1,17 +1,14 @@
 @import "~@zesty-io/core/colors.less";
-@import "~@zesty-io/core/typography.less";
-
 .Settings {
   .saveButton {
     max-width: 160px;
     align-self: flex-end;
+    color: #fff;
   }
   .selectProtocol {
     max-width: 200px;
   }
-  h1 {
-    color: @zesty-dark-blue !important;
-  }
+
   .titleIcon {
     font-size: 130%;
     padding-right: 8px;
@@ -34,9 +31,14 @@
       min-width: 45%;
       margin: 16px 2.5%;
       label {
+        font-size: 16px;
         span {
+          font-size: 16px;
           margin-bottom: 8px;
         }
+      }
+      label + div p {
+        font-size: 0.75rem;
       }
     }
   }
@@ -44,7 +46,6 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-
     align-self: flex-end;
 
     a {
@@ -56,10 +57,13 @@
     aside {
       flex: 1;
       margin: 0px 8px;
+      line-height: 14.4px;
+      font-size: 0.8em;
     }
     aside {
       border-radius: 5px;
       font-size: 0.8em;
+      line-height: 14.4px;
       svg {
         color: @zesty-orange;
       }

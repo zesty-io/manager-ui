@@ -22,6 +22,7 @@ export const Delete = memo(function Delete(props) {
     <div className={styles.DeleteBtn}>
       {props.fileName !== "loader" ? (
         <Button
+          color="secondary"
           variant="contained"
           onClick={() => setOpen(true)}
           startIcon={<DeleteIcon />}

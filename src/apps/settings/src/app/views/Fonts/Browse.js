@@ -234,7 +234,7 @@ export default connect((state) => {
                         <FormControlLabel
                           control={
                             <Checkbox
-                              color="secondary"
+                              color="primary"
                               size="small"
                               name={item}
                               id={`${item}-${itemFont.family}-${index}`}
@@ -360,7 +360,7 @@ export default connect((state) => {
           type="search"
           variant="outlined"
           fullWidth
-          size="small"
+          size="medium"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -372,19 +372,29 @@ export default connect((state) => {
             const term = evt.target.value;
             onSearch(term);
           }}
+          inputProps={{
+            style: {
+              fontSize: "1rem",
+            },
+          }}
         />
         <FieldTypeText
           placeholder="Type something to preview"
           name="previewText"
           value={previewText}
           onChange={(evt) => setPreviewText(evt.target.value)}
+          inputProps={{
+            style: {
+              fontSize: "1rem",
+            },
+          }}
         />
       </header>
       {renderFontsList()}
       <div className={styles.Pagination}>
         <Button
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={() => changePage("prev")}
           disabled={!validateActionPage("prev")}
         >
@@ -395,7 +405,7 @@ export default connect((state) => {
         </div>
         <Button
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={() => changePage("next")}
           disabled={!validateActionPage("next")}
         >

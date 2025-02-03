@@ -2,20 +2,11 @@ import { useState, FC, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 
-import {
-  Box,
-  ThemeProvider,
-  IconButton,
-  Avatar,
-  Stack,
-  Link,
-  ListItem,
-} from "@mui/material";
+import { Box, IconButton, Avatar, Stack, Link, ListItem } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import { theme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
 import Favicon from "../favicon";
@@ -52,228 +43,227 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
 
   return (
     <>
-      <ThemeProvider theme={theme}>
-        <Box
-          component="aside"
-          position="relative"
-          boxSizing="border-box"
+      <Box
+        component="aside"
+        position="relative"
+        boxSizing="border-box"
+        sx={{
+          backgroundColor: "grey.900",
+          borderRight: "1px solid",
+          borderColor: "grey.800",
+        }}
+      >
+        <ListItem
           sx={{
-            backgroundColor: "grey.900",
-            borderRight: "1px solid",
-            borderColor: "grey.800",
+            height: 36,
+            p: 0,
+            mt: 0.75,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <ListItem
+          <IconButton
+            data-cy="CollapseGlobalSideBar"
+            onClick={onClick}
+            size="large"
             sx={{
-              height: 36,
-              p: 0,
-              mt: 0.75,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              px: 1.5,
+              py: 0.75,
+              borderRadius: 0,
+              "&:hover": {
+                backgroundColor: "rgba(255, 93, 10, 0.08)",
+              },
             }}
           >
-            <IconButton
-              data-cy="CollapseGlobalSideBar"
-              onClick={onClick}
-              size="large"
+            <MenuRoundedIcon sx={{ color: "grey.400" }} />
+          </IconButton>
+          {openNav && (
+            <Box
+              component="img"
+              src={zestyLogoOnlyGrey}
+              alt="Zesty Logo"
+              width={20}
+              height={20}
+              mr={1.5}
+            />
+          )}
+        </ListItem>
+
+        <InstanceMenu openNav={openNav} />
+        <GlobalMenu />
+
+        {is15DaysFromCreation && openNav && <OnboardingCall />}
+        {/* Bottom bar */}
+        <Box position="absolute" bottom={0} left={0} right={0}>
+          <Stack
+            direction={openNav ? "row" : "column"}
+            alignItems="center"
+            justifyContent="space-between"
+            height={openNav ? 24 : "inherit"}
+            px={1.5}
+            mb={openNav ? 1.5 : 0}
+            pt={openNav ? 0 : 1.5}
+            gap={openNav ? 1.5 : 1}
+            borderTop={openNav ? "none" : "1px solid"}
+            sx={{
+              borderColor: "grey.800",
+            }}
+          >
+            <img
+              src={openNav ? zestyLogo : zestyLogoOnly}
+              alt="Zesty Logo"
+              width={openNav ? 84 : 20}
+              height={openNav ? 24 : 20}
+            />
+            <Stack direction="row" gap={0.5} alignItems="end">
+              {openNav && (
+                <Box
+                  component="img"
+                  src={githubLogoSmall}
+                  alt="Github Logo"
+                  width={12}
+                  height={12}
+                />
+              )}
+              <Link
+                fontFamily="Roboto Mono"
+                fontSize={10}
+                letterSpacing={0.15}
+                lineHeight="10px"
+                color="grey.500"
+                underline="none"
+                // @ts-ignore
+                href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
+                target="_blank"
+                rel="noopener"
+                width={openNav ? "inherit" : 32}
+                textAlign="center"
+                title="View source code commit"
+                sx={{
+                  wordWrap: "break-word",
+                }}
+              >
+                #
+                {
+                  //@ts-ignore
+                  CONFIG?.build?.data?.gitCommit
+                }
+              </Link>
+            </Stack>
+          </Stack>
+
+          <Stack
+            width="inherit"
+            justifyContent="space-between"
+            overflow="hidden"
+            borderTop={openNav ? "1px solid" : "none"}
+            alignItems="center"
+            flexDirection={openNav ? "row" : "column-reverse"}
+            pt={openNav ? 1.25 : 1}
+            pb={openNav ? 1.25 : 1.5}
+            px={openNav ? 1.5 : 1}
+            gap={openNav ? 0 : 1}
+            sx={{
+              borderColor: "grey.800",
+            }}
+          >
+            <Stack
+              ref={accountMenuBtn}
+              data-cy="globalAccountAvatar"
+              direction="row"
+              alignItems="center"
+              width={openNav ? 49 : 32}
+              onClick={() => {
+                setShowAccountMenu(true);
+              }}
+              fontSize={16}
               sx={{
-                px: 1.5,
-                py: 0.75,
-                borderRadius: 0,
                 "&:hover": {
-                  backgroundColor: "rgba(255, 93, 10, 0.08)",
+                  cursor: "pointer",
                 },
               }}
             >
-              <MenuRoundedIcon sx={{ color: "grey.400" }} />
-            </IconButton>
-            {openNav && (
-              <Box
-                component="img"
-                src={zestyLogoOnlyGrey}
-                alt="Zesty Logo"
-                width={20}
-                height={20}
-                mr={1.5}
-              />
-            )}
-          </ListItem>
-
-          <InstanceMenu openNav={openNav} />
-          <GlobalMenu />
-
-          {is15DaysFromCreation && openNav && <OnboardingCall />}
-          {/* Bottom bar */}
-          <Box position="absolute" bottom={0} left={0} right={0}>
-            <Stack
-              direction={openNav ? "row" : "column"}
-              alignItems="center"
-              justifyContent="space-between"
-              height={openNav ? 24 : "inherit"}
-              px={1.5}
-              mb={openNav ? 1.5 : 0}
-              pt={openNav ? 0 : 1.5}
-              gap={openNav ? 1.5 : 1}
-              borderTop={openNav ? "none" : "1px solid"}
-              sx={{
-                borderColor: "grey.800",
-              }}
-            >
-              <img
-                src={openNav ? zestyLogo : zestyLogoOnly}
-                alt="Zesty Logo"
-                width={openNav ? 84 : 20}
-                height={openNav ? 24 : 20}
-              />
-              <Stack direction="row" gap={0.5} alignItems="end">
-                {openNav && (
-                  <Box
-                    component="img"
-                    src={githubLogoSmall}
-                    alt="Github Logo"
-                    width={12}
-                    height={12}
-                  />
-                )}
-                <Link
-                  fontFamily="Roboto Mono"
-                  fontSize={10}
-                  letterSpacing={0.15}
-                  lineHeight="10px"
-                  color="grey.500"
-                  underline="none"
-                  // @ts-ignore
-                  href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
-                  target="_blank"
-                  rel="noopener"
-                  width={openNav ? "inherit" : 32}
-                  textAlign="center"
-                  title="View source code commit"
-                  sx={{
-                    wordWrap: "break-word",
-                  }}
-                >
-                  #
-                  {
-                    //@ts-ignore
-                    CONFIG?.build?.data?.gitCommit
-                  }
-                </Link>
-              </Stack>
-            </Stack>
-
-            <Stack
-              width="inherit"
-              justifyContent="space-between"
-              overflow="hidden"
-              borderTop={openNav ? "1px solid" : "none"}
-              alignItems="center"
-              flexDirection={openNav ? "row" : "column-reverse"}
-              pt={openNav ? 1.25 : 1}
-              pb={openNav ? 1.25 : 1.5}
-              px={openNav ? 1.5 : 1}
-              gap={openNav ? 0 : 1}
-              sx={{
-                borderColor: "grey.800",
-              }}
-            >
-              <Stack
-                ref={accountMenuBtn}
-                data-cy="globalAccountAvatar"
-                direction="row"
-                alignItems="center"
-                width={openNav ? 49 : 32}
-                onClick={() => {
-                  setShowAccountMenu(true);
-                }}
-                fontSize={16}
+              <Avatar
+                alt={`${user.firstName} ${user.lastName} Avatar`}
+                src={`https://www.gravatar.com/avatar/${user.emailHash}.jpg?&s=40`}
                 sx={{
-                  "&:hover": {
-                    cursor: "pointer",
-                  },
+                  height: 32,
+                  width: 32,
                 }}
-              >
-                <Avatar
-                  alt={`${user.firstName} ${user.lastName} Avatar`}
-                  src={`https://www.gravatar.com/avatar/${user.emailHash}.jpg?&s=40`}
+              />
+              {openNav && (
+                <ArrowDropDownRoundedIcon
+                  fontSize="small"
                   sx={{
-                    height: 32,
-                    width: 32,
+                    color: "grey.500",
                   }}
                 />
-                {openNav && (
-                  <ArrowDropDownRoundedIcon
-                    fontSize="small"
-                    sx={{
-                      color: "grey.500",
-                    }}
-                  />
-                )}
-              </Stack>
-              <Box
+              )}
+            </Stack>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: openNav ? "row" : "column",
+                alignItems: "center",
+              }}
+            >
+              <IconButton
+                data-cy="InviteUser"
+                onClick={() => setShowInviteModal(true)}
                 sx={{
-                  display: "flex",
-                  flexDirection: openNav ? "row" : "column",
-                  alignItems: "center",
+                  backgroundColor: "grey.800",
+                  height: "26px",
+                  width: "32px",
+                  borderRadius: "4px",
+                  mr: openNav ? 1 : 0,
                 }}
               >
-                <IconButton
-                  data-cy="InviteUser"
-                  onClick={() => setShowInviteModal(true)}
-                  sx={{
-                    backgroundColor: "grey.800",
-                    height: "26px",
-                    width: "32px",
-                    borderRadius: "4px",
-                    mr: openNav ? 1 : 0,
-                  }}
-                >
-                  <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
-                </IconButton>
-                <IconButton
-                  data-cy="ReadDocs"
-                  onClick={() => {
-                    setShowDocsMenu(true);
-                  }}
-                  sx={{
-                    backgroundColor: "grey.800",
-                    width: "32px",
-                    mt: openNav ? 0 : 1,
-                    height: "26px",
-                    borderRadius: "4px",
-                  }}
-                >
-                  <MenuBookIcon fontSize="small" sx={{ color: "grey.500" }} />
-                </IconButton>
-              </Box>
-              {showInviteModal && (
-                <InviteMembersModal onClose={() => setShowInviteModal(false)} />
-              )}
-
-              <GlobalAccountMenu
-                open={showAccountMenu}
-                anchorEl={accountMenuBtn?.current}
-                onClose={() => {
-                  setShowAccountMenu(false);
-                }}
-                onShowDocsMenu={() => {
-                  setShowAccountMenu(false);
+                <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
+              </IconButton>
+              <IconButton
+                data-cy="ReadDocs"
+                onClick={() => {
                   setShowDocsMenu(true);
                 }}
-              />
-
-              <GlobalDocsMenu
-                open={showDocsMenu}
-                anchorEl={accountMenuBtn?.current}
-                onClose={() => {
-                  setShowDocsMenu(false);
+                sx={{
+                  backgroundColor: "grey.800",
+                  width: "32px",
+                  mt: openNav ? 0 : 1,
+                  height: "26px",
+                  borderRadius: "4px",
                 }}
-              />
-            </Stack>
-          </Box>
+              >
+                <MenuBookIcon fontSize="small" sx={{ color: "grey.500" }} />
+              </IconButton>
+            </Box>
+            {showInviteModal && (
+              <InviteMembersModal onClose={() => setShowInviteModal(false)} />
+            )}
+
+            <GlobalAccountMenu
+              open={showAccountMenu}
+              anchorEl={accountMenuBtn?.current}
+              onClose={() => {
+                setShowAccountMenu(false);
+              }}
+              onShowDocsMenu={() => {
+                setShowAccountMenu(false);
+                setShowDocsMenu(true);
+              }}
+            />
+
+            <GlobalDocsMenu
+              open={showDocsMenu}
+              anchorEl={accountMenuBtn?.current}
+              onClose={() => {
+                setShowDocsMenu(false);
+              }}
+            />
+          </Stack>
         </Box>
-      </ThemeProvider>
+      </Box>
+
       {ui.isUpdateFaviconModalOpen && (
         <Favicon
           // @ts-ignore not a typescript file

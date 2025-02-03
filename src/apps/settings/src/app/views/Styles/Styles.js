@@ -338,6 +338,9 @@ export default connect((state) => {
             }}
             helperText={field.tips}
             maxLength={640}
+            InputProps={{
+              size: "medium",
+            }}
           />
         );
     }

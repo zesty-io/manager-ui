@@ -75,14 +75,18 @@ export function RedirectCreator(props) {
       </span>
       <span className={styles.RedirectCreatorCell}>
         <ToggleButtonGroup
-          color="secondary"
+          color="info"
           value={code}
           size="small"
           exclusive
           onChange={(evt, val) => handleToggle(val)}
         >
-          <ToggleButton value={302}>302</ToggleButton>
-          <ToggleButton value={301}>301</ToggleButton>
+          <ToggleButton value={302} sx={{ fontSize: ".85rem", padding: "7px" }}>
+            302
+          </ToggleButton>
+          <ToggleButton value={301} sx={{ fontSize: ".85rem", padding: "7px" }}>
+            301
+          </ToggleButton>
         </ToggleButtonGroup>
       </span>
       <span className={styles.RedirectCreatorCell}>

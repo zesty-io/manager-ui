@@ -115,6 +115,7 @@ export const HeadTag = (props) => {
       sx={{ m: 2 }}
     >
       <CardHeader
+        className={styles.HeadTagHeader}
         title={
           <Box
             sx={{
@@ -123,7 +124,7 @@ export const HeadTag = (props) => {
               gap: "8px",
             }}
           >
-            <FormControl size="small" sx={{ width: "210px" }}>
+            <FormControl sx={{ width: "210px" }}>
               <FormLabel>Tag</FormLabel>
               <Select
                 name={tag.ZUID}
@@ -148,6 +149,9 @@ export const HeadTag = (props) => {
                 onChange={(evt) =>
                   dispatch(updateTagSort(tag.ZUID, parseInt(evt.target.value)))
                 }
+                InputProps={{
+                  size: "medium",
+                }}
               />
             </Box>
             <Button
@@ -190,6 +194,10 @@ export const HeadTag = (props) => {
             )}
           </Box>
         }
+        sx={{
+          backgroundColor: "grey.100",
+          pb: 2,
+        }}
       ></CardHeader>
       <CardContent>
         {tag.attributes.map((attr, index) => {
@@ -209,6 +217,12 @@ export const HeadTag = (props) => {
                     })
                   )
                 }
+                InputLabelProps={{
+                  size: "medium",
+                }}
+                InputProps={{
+                  size: "medium",
+                }}
               />
               <FieldTypeText
                 className={styles.Value}
@@ -224,6 +238,9 @@ export const HeadTag = (props) => {
                     })
                   )
                 }
+                InputProps={{
+                  size: "medium",
+                }}
               />
               {attr.key !== "custom" ? (
                 <Button

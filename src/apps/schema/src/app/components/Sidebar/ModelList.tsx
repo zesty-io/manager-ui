@@ -1,16 +1,8 @@
-import {
-  Stack,
-  IconButton,
-  Typography,
-  Menu,
-  MenuItem,
-  ThemeProvider,
-} from "@mui/material";
+import { Stack, IconButton, Typography, Menu, MenuItem } from "@mui/material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import moment from "moment";
-import { theme } from "@zesty-io/material";
 
 import { ContentModel } from "../../../../../../shell/services/types";
 import { useLocation } from "react-router";
@@ -132,7 +124,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
           </Stack>
         }
       />
-      <ThemeProvider theme={theme}>
+      <>
         <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
           <MenuItem
             onClick={() => {
@@ -167,7 +159,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
             Last Modified
           </MenuItem>
         </Menu>
-      </ThemeProvider>
+      </>
       {showCreateModelDialogue && (
         <CreateModelDialogue
           modelType={type}

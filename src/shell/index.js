@@ -6,8 +6,8 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
-import { ThemeProvider } from "@mui/material/styles";
-import { legacyTheme } from "@zesty-io/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import "chart.js/auto";
@@ -51,11 +51,39 @@ window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZU
 
 MonacoSetup(store);
 
+const themeOptions = createTheme(theme, {
+  palette: {
+    ...theme.palette,
+    secondary: {
+      main: "#404759",
+      contrastText: "#ffffff",
+      light: "rgb(102, 107, 122)",
+      dark: "rgb(44, 49, 62)",
+    },
+    info: {
+      main: "#497edf",
+      contrastText: "#ffffff",
+      light: "rgb(109, 151, 229)",
+      dark: "rgb(51, 88, 156)",
+    },
+  },
+  components: {
+    ...theme.components,
+    MuiToggleButton: {
+      styleOverrides: {
+        sizeSmall: {
+          fontSize: "14px",
+        },
+      },
+    },
+  },
+});
+
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
   <StrictMode>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <ThemeProvider theme={legacyTheme}>
+      <ThemeProvider theme={themeOptions}>
         <CssBaseline>
           <Provider store={store}>
             <Router history={history}>

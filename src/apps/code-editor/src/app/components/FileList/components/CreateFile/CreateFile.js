@@ -85,11 +85,11 @@ export const CreateFile = memo(function CreateFile(props) {
     <Fragment>
       <Button
         variant="contained"
-        color="secondary"
+        color="info"
         onClick={() => setOpen(true)}
         title="Create File"
         startIcon={<AddIcon />}
-        sx={{ justifyContent: "flex-start" }}
+        sx={{ justifyContent: "flex-start", color: "common.white" }}
       >
         <span>Create File</span>
       </Button>
@@ -196,6 +196,7 @@ export const CreateFile = memo(function CreateFile(props) {
               </LoadingButton>
               <Button
                 variant="contained"
+                color="error"
                 onClick={() => {
                   setName("");
                   setType("");

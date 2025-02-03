@@ -1,5 +1,4 @@
-import { Box, ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { Box } from "@mui/material";
 // import { Sidebar } from "./components/Sidebar";
 import { Sidebar } from "./components/Sidebar";
 import { Redirect, Route, Switch } from "react-router";
@@ -11,39 +10,37 @@ import { ResizableContainer } from "../../../../shell/components/ResizeableConta
 
 export const SchemaApp = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        //TODO: Move body level styles to actual body of the application once all apps are migrated to new shell
-        sx={{
-          color: "text.primary",
-          backgroundColor: "background.paper",
-          height: "100%",
-          display: "flex",
-          "*": {
-            boxSizing: "border-box",
-          },
-        }}
+    <Box
+      //TODO: Move body level styles to actual body of the application once all apps are migrated to new shell
+      sx={{
+        color: "text.primary",
+        backgroundColor: "background.paper",
+        height: "100%",
+        display: "flex",
+        "*": {
+          boxSizing: "border-box",
+        },
+      }}
+    >
+      <ResizableContainer
+        id="schemaNav"
+        defaultWidth={220}
+        minWidth={220}
+        maxWidth={360}
       >
-        <ResizableContainer
-          id="schemaNav"
-          defaultWidth={220}
-          minWidth={220}
-          maxWidth={360}
-        >
-          <Sidebar />
-        </ResizableContainer>
-        <Switch>
-          <Route exact path="/schema" render={() => <AllModels />} />
-          <Route path="/schema/search" render={() => <SearchModels />} />
-          <Route
-            exact
-            path="/schema/start"
-            render={() => <SchemaCreateWizard />}
-          />
-          <Redirect from="/schema/new" to="/schema" />
-          <Route path="/schema/:id" render={() => <Model />} />
-        </Switch>
-      </Box>
-    </ThemeProvider>
+        <Sidebar />
+      </ResizableContainer>
+      <Switch>
+        <Route exact path="/schema" render={() => <AllModels />} />
+        <Route path="/schema/search" render={() => <SearchModels />} />
+        <Route
+          exact
+          path="/schema/start"
+          render={() => <SchemaCreateWizard />}
+        />
+        <Redirect from="/schema/new" to="/schema" />
+        <Route path="/schema/:id" render={() => <Model />} />
+      </Switch>
+    </Box>
   );
 };

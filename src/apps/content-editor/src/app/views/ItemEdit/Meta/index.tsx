@@ -11,13 +11,12 @@ import {
   Stack,
   Box,
   Typography,
-  ThemeProvider,
   Divider,
   ListItemIcon,
   ListItemText,
   ListItemButton,
 } from "@mui/material";
-import { Brain, theme } from "@zesty-io/material";
+import { Brain } from "@zesty-io/material";
 import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { keyframes } from "@mui/system";
@@ -338,7 +337,7 @@ export const Meta = forwardRef(
 
     if (isCreateItemPage && flowType === null && model?.type !== "block") {
       return (
-        <ThemeProvider theme={theme}>
+        <>
           <Box
             sx={{
               mt: 2.5,
@@ -414,13 +413,13 @@ export const Meta = forwardRef(
           <Box sx={{ display: "none" }}>
             <ItemParent onChange={handleOnChange} />
           </Box>
-        </ThemeProvider>
+        </>
       );
     }
 
     if (model?.type === "block" && isCreateItemPage) {
       return (
-        <ThemeProvider theme={theme}>
+        <>
           <Stack
             gap={3}
             pb={2}
@@ -452,12 +451,12 @@ export const Meta = forwardRef(
               }}
             />
           </Stack>
-        </ThemeProvider>
+        </>
       );
     }
 
     return (
-      <ThemeProvider theme={theme}>
+      <>
         <Box
           display="grid"
           gridTemplateColumns={
@@ -649,7 +648,7 @@ export const Meta = forwardRef(
             </Box>
           )}
         </Box>
-      </ThemeProvider>
+      </>
     );
   }
 );
