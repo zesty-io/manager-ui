@@ -529,8 +529,11 @@ export const AIGenerator = ({
                   options={TONE_OPTIONS}
                   filterOptions={(options, state) =>
                     options.filter((option) => {
+                      const wordArray = option?.label?.split(" ");
                       const regex = new RegExp(`^${state.inputValue}`, "i");
-                      return regex.test(option.label);
+                      return wordArray.some((word: string) =>
+                        regex.test(word.trim())
+                      );
                     })
                   }
                   renderInput={(params: any) => (
