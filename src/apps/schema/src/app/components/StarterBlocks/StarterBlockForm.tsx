@@ -27,7 +27,7 @@ import {
   ContentModelField,
 } from "../../../../../../shell/services/types";
 import { Field } from "../Field";
-import { StarterBlockProps } from "./configs";
+import { OG_IMAGE_FIELD, StarterBlockProps } from "./configs";
 
 type TextInputFieldProps = {
   label: string;
@@ -180,20 +180,22 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
           listed: true,
         };
 
-        const fieldsPayload: CreateStarterBlockFieldsProps[] =
-          blockModelData?.fields?.map((field, index) => {
-            return {
-              name: field?.name,
-              label: field?.label,
-              description: field?.description,
-              datatype: field?.datatype,
-              sort: index + 1,
-              settings: {
-                ...field?.settings,
-                list: true,
-              },
-            };
-          });
+        const fieldsPayload: CreateStarterBlockFieldsProps[] = [
+          ...blockModelData?.fields,
+          OG_IMAGE_FIELD,
+        ]?.map((field, index) => {
+          return {
+            name: field?.name,
+            label: field?.label,
+            description: field?.description,
+            datatype: field?.datatype,
+            sort: index + 1,
+            settings: {
+              ...field?.settings,
+              list: field?.name === "og_image" ? false : true,
+            },
+          };
+        });
 
         const createStarterBlockRes: any = await createStarterBlock({
           modelData: createBlockModelPayload,

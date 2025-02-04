@@ -408,6 +408,20 @@ const single_testimonial___code = `
 </section>
 `;
 
+const OG_IMAGE_FIELD: StarterBlockFieldProps = {
+  name: "og_image",
+  label: "Meta Image",
+  description:
+    "This field allows you to set an open graph image via the SEO tab. An Open Graph (OG) image is an image that appears on a social media post when a web page is shared.",
+  datatype: "images",
+  settings: {
+    defaultValue: null,
+    group_id: "",
+    limit: 1,
+    list: false,
+  },
+};
+
 const STARTER_BLOCKS: StarterBlockProps[] = [
   {
     label: "Blank",
@@ -867,4 +881,9 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
   },
 ];
 
-export { StarterBlockFieldProps, StarterBlockProps, STARTER_BLOCKS };
+export {
+  StarterBlockFieldProps,
+  StarterBlockProps,
+  STARTER_BLOCKS,
+  OG_IMAGE_FIELD,
+};
