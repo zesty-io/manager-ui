@@ -128,15 +128,17 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
 
   const [search, setSearch] = useState("");
 
-  function handleBlockSelect(blockType: any) {
-    selectBlockType(blockType);
-    setActiveBlock(blockType);
-  }
+  const handleBlockSelect = (blockType: any) => {
+    return () => {
+      selectBlockType(blockType);
+      setActiveBlock(blockType);
+    };
+  };
 
-  function handleSearchRetry() {
+  const handleSearchRetry = () => {
     setSearch("");
     searchRef.current?.focus();
-  }
+  };
 
   const handleNext = useCallback(() => {
     if (!!activeBlock) {
@@ -264,7 +266,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
                   <BlockItem
                     block={block}
                     isActive={activeBlock?.name === block?.name}
-                    onClick={() => handleBlockSelect(block)}
+                    onClick={handleBlockSelect(block)}
                   />
                 </Grid>
               ))}

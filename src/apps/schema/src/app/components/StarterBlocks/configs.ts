@@ -411,7 +411,7 @@ const single_testimonial___code = `
 const STARTER_BLOCKS: StarterBlockProps[] = [
   {
     label: "Blank",
-    image: `${location.origin}/images/block_blank.png`,
+    image: `${location.origin}/images/blockPlaceholder.png`,
     name: "blank",
     description: "A blank block",
     fields: [],
