@@ -109,6 +109,7 @@ export const SchedulePublish = ({
   return (
     <ThemeProvider theme={theme}>
       <Dialog
+        data-cy="SchedulePublishModal"
         open
         onClose={onClose}
         PaperProps={{

@@ -73,6 +73,7 @@ export const ConfirmPublishModal = ({
       </DialogContent>
       <DialogActions>
         <Button
+          data-cy="CancelPublishButton"
           variant="text"
           color="inherit"
           onClick={onCancel}

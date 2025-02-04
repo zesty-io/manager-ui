@@ -237,6 +237,7 @@ export const ActiveItem = memo(
     return (
       <>
         <Stack
+          data-cy="active-relational-item"
           ref={(node) => drop(preview(node))}
           direction="row"
           sx={{
@@ -358,6 +359,7 @@ export const ActiveItem = memo(
                 <Edit fontSize="small" />
               </IconButton>
               <IconButton
+                data-cy="active-relational-item-more-button"
                 size="xsmall"
                 onClick={(evt) => setAnchorEl(evt.currentTarget)}
               >
@@ -382,6 +384,7 @@ export const ActiveItem = memo(
           >
             {isPublishable && (
               <MenuItem
+                data-cy="active-relational-item-publish-now-button"
                 onClick={() => {
                   setAnchorEl(null);
                   setIsPublishModalOpen(true);
@@ -395,6 +398,7 @@ export const ActiveItem = memo(
             )}
             {isPublishable && (
               <MenuItem
+                data-cy="active-relational-item-schedule-publish-button"
                 onClick={() => {
                   setAnchorEl(null);
                   setIsScheduleModalOpen(true);
@@ -457,7 +461,10 @@ export const ActiveItem = memo(
                 <ListItemText primary="Copy ZUID" />
               </MenuItem>
             )}
-            <MenuItem onClick={() => onRemoveCard(itemZUID)}>
+            <MenuItem
+              data-cy="active-relational-item-remove-item-button"
+              onClick={() => onRemoveCard(itemZUID)}
+            >
               <ListItemIcon>
                 <CloseRounded />
               </ListItemIcon>

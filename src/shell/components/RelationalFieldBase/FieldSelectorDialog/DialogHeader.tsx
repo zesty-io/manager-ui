@@ -60,7 +60,7 @@ export const DialogHeader = ({
         alignItems: "center",
       }}
     >
-      <Typography variant="h3" fontWeight={700}>
+      <Typography variant="h3" fontWeight={700} data-cy="selected-count">
         {multiselect ? selectedCount : "1 / 1"} selected
       </Typography>
       <Stack direction="row" gap={1}>
@@ -74,6 +74,7 @@ export const DialogHeader = ({
           Deselect All
         </Button>
         <Button
+          data-cy="done-selecting-item-button"
           size="small"
           variant="contained"
           onClick={onDone}

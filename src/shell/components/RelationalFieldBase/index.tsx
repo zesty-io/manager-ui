@@ -108,6 +108,7 @@ export const RelationalFieldBase = ({
       </Stack>
       {itemZUIDs?.length > 5 && (
         <Button
+          data-cy="show-all-button"
           fullWidth
           size="large"
           color="inherit"
@@ -126,6 +127,7 @@ export const RelationalFieldBase = ({
       )}
       {(multiselect || (!multiselect && !value)) && (
         <Button
+          data-cy="add-relational-item-button"
           variant="outlined"
           size="large"
           startIcon={<LinkRounded />}
