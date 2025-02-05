@@ -18,6 +18,7 @@ import {
 } from "../../services/instance";
 import { fetchItems } from "../../store/content";
 import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
+import { CreateNewItemDialog } from "./CreateNewItemDialog";
 
 type RelationalFieldBaseProps = {
   name: string;
@@ -39,6 +40,8 @@ export const RelationalFieldBase = ({
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
+  const [isCreateNewItemDialogOpen, setIsCreateNewItemDialogOpen] =
+    useState(false);
 
   const { data: modelData, isLoading: isLoadingModelData } =
     useGetContentModelQuery(relatedModelZUID, {
@@ -146,7 +149,7 @@ export const RelationalFieldBase = ({
               size="large"
               startIcon={<AddRounded />}
               fullWidth
-              // onClick={(evt) => setAnchorEl(evt.currentTarget)}
+              onClick={() => setIsCreateNewItemDialogOpen(true)}
               disabled={isLoadingModelData || isLoadingModelFields}
             >
               Create & Add New {modelData?.label}
@@ -172,6 +175,13 @@ export const RelationalFieldBase = ({
             setItemZUIDs(!!selectedZUIDs?.length ? selectedZUIDs : null);
             setAnchorEl(null);
           }}
+        />
+      )}
+      {isCreateNewItemDialogOpen && (
+        <CreateNewItemDialog
+          modelZUID={relatedModelZUID}
+          onItemCreated={() => {}}
+          onClose={() => setIsCreateNewItemDialogOpen(false)}
         />
       )}
     </Box>
