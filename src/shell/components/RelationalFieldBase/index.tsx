@@ -4,6 +4,7 @@ import {
   LinkRounded,
   KeyboardArrowUpRounded,
   KeyboardArrowDownRounded,
+  AddRounded,
 } from "@mui/icons-material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -126,20 +127,32 @@ export const RelationalFieldBase = ({
         </Button>
       )}
       {(multiselect || (!multiselect && !value)) && (
-        <Button
-          data-cy="add-relational-item-button"
-          variant="outlined"
-          size="large"
-          startIcon={<LinkRounded />}
-          fullWidth
-          onClick={(evt) => setAnchorEl(evt.currentTarget)}
-          sx={{
-            mt: 1,
-          }}
-          disabled={isLoadingModelData || isLoadingModelFields}
-        >
-          Add Existing {modelData?.label}
-        </Button>
+        <Stack direction="row" gap={1} mt={1}>
+          <Button
+            data-cy="add-relational-item-button"
+            variant="outlined"
+            size="large"
+            startIcon={<LinkRounded />}
+            fullWidth
+            onClick={(evt) => setAnchorEl(evt.currentTarget)}
+            disabled={isLoadingModelData || isLoadingModelFields}
+          >
+            Add Existing {modelData?.label}
+          </Button>
+          {multiselect && (
+            <Button
+              data-cy="create-new-relational-item-button"
+              variant="outlined"
+              size="large"
+              startIcon={<AddRounded />}
+              fullWidth
+              // onClick={(evt) => setAnchorEl(evt.currentTarget)}
+              disabled={isLoadingModelData || isLoadingModelFields}
+            >
+              Create & Add New {modelData?.label}
+            </Button>
+          )}
+        </Stack>
       )}
       {!!anchorEl && (
         <FieldSelectorDialog
