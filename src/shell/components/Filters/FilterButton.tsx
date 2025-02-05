@@ -6,7 +6,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 interface FilterButton {
   isFilterActive: boolean;
-  buttonText: string;
+  buttonText: string | React.ReactNode;
   onOpenMenu: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onRemoveFilter: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children?: React.ReactNode;
@@ -32,7 +32,21 @@ export const FilterButton: FC<FilterButton> = ({
             onClick={onOpenMenu}
             data-cy={`${filterId}_selected`}
           >
-            {buttonText}
+            <Typography
+              variant="inherit"
+              sx={{
+                display: "-webkit-box",
+                "-webkit-line-clamp": "1",
+                "-webkit-box-orient": "vertical",
+                wordBreak: "break-word",
+                wordWrap: "break-word",
+                hyphens: "auto",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {buttonText}
+            </Typography>
           </Button>
           <Button
             size="small"
