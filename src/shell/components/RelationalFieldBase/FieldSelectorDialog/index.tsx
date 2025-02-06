@@ -214,43 +214,45 @@ export const FieldSelectorDialog = ({
 
     let _rows = [...contentItems];
 
-    return _rows?.map((item) => ({
-      id: item.meta?.ZUID,
-      image: {
-        imageFieldName,
-        itemZUID: item.meta?.ZUID,
-      },
-      title: {
-        primary:
-          item.data?.[relatedFieldName] ||
-          item.web?.metaTitle ||
-          item.web?.metaLinkText,
-        secondary: item.web?.metaDescription,
-      },
-      version: {
-        itemData: {
-          ...item,
-          createdByName: resolveUserZUID(item.meta?.createdByUserZUID),
+    return _rows
+      ?.filter((item) => !item.meta?.ZUID?.startsWith("new"))
+      ?.map((item) => ({
+        id: item.meta?.ZUID,
+        image: {
+          imageFieldName,
+          itemZUID: item.meta?.ZUID,
         },
-        publishData: item?.publishing?.version
-          ? {
-              ...item.publishing,
-              publishedByName: resolveUserZUID(
-                item.publishing?.publishedByUserZUID
-              ),
-            }
-          : null,
-        scheduleData: item?.scheduling?.version
-          ? {
-              ...item.scheduling,
-              scheduledByName: resolveUserZUID(
-                item.scheduling?.publishedByUserZUID
-              ),
-            }
-          : null,
-      },
-      item,
-    }));
+        title: {
+          primary:
+            item.data?.[relatedFieldName] ||
+            item.web?.metaTitle ||
+            item.web?.metaLinkText,
+          secondary: item.web?.metaDescription,
+        },
+        version: {
+          itemData: {
+            ...item,
+            createdByName: resolveUserZUID(item.meta?.createdByUserZUID),
+          },
+          publishData: item?.publishing?.version
+            ? {
+                ...item.publishing,
+                publishedByName: resolveUserZUID(
+                  item.publishing?.publishedByUserZUID
+                ),
+              }
+            : null,
+          scheduleData: item?.scheduling?.version
+            ? {
+                ...item.scheduling,
+                scheduledByName: resolveUserZUID(
+                  item.scheduling?.publishedByUserZUID
+                ),
+              }
+            : null,
+        },
+        item,
+      }));
   }, [contentItems, users, relatedFieldName, imageFieldName]);
 
   const rows = useMemo(() => {
