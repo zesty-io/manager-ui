@@ -142,7 +142,7 @@ export const RelationalFieldBase = ({
             startIcon={<LinkRounded />}
             fullWidth
             onClick={(evt) => setAnchorEl(evt.currentTarget)}
-            disabled={isLoadingModelData || isLoadingModelFields}
+            disabled={isLoadingModelData || isLoadingModelFields || !modelData}
           >
             Add Existing {modelData?.label}
           </Button>
@@ -154,7 +154,9 @@ export const RelationalFieldBase = ({
               startIcon={<AddRounded />}
               fullWidth
               onClick={() => setIsCreateNewItemDialogOpen(true)}
-              disabled={isLoadingModelData || isLoadingModelFields}
+              disabled={
+                isLoadingModelData || isLoadingModelFields || !modelData
+              }
             >
               Create & Add New {modelData?.label}
             </Button>
