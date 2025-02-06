@@ -447,12 +447,12 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 pb={2.5}
               >
                 <Typography variant="body2" color="text.secondary">
-                  This hero is perfect for when you want to showcase a large
-                  video in your hero.
+                  {block?.description}
                 </Typography>
                 <Link
                   variant="body2"
-                  href="#"
+                  href={block?.codeReference}
+                  target="_blank"
                   underline="always"
                   color="info.main"
                   mt={2}

@@ -16,6 +16,7 @@ type StarterBlockProps = {
   image: string;
   name: string;
   description: string;
+  codeReference?: string;
   fields?: StarterBlockFieldProps[];
   code?: string | null;
 };
@@ -437,6 +438,7 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     name: "side_by_side_hero_image",
     description:
       "A hero with text and CTA buttons on the left and an image on the right",
+    codeReference: "https://block.codescandy.com/blocks/hero-snippet-3.html",
     fields: [
       {
         name: "title",
@@ -552,6 +554,7 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     description:
       "A hero with text and CTA buttons on the top and an image below",
     image: `${location.origin}/images/block_hero_image_below.png`,
+    codeReference: "https://block.codescandy.com/blocks/hero-snippet-2.html",
     fields: [
       {
         label: "Top CTA Button Text",
@@ -641,8 +644,9 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
   {
     label: "Contact Us Form",
     name: "contact_us_form",
-    description: "",
+    description: "A simple contact us form to capture leads from any page",
     image: `${location.origin}/images/block_contact_us_form.png`,
+    codeReference: "https://block.codescandy.com/contact-2.html",
     fields: [
       {
         label: "Title",
@@ -735,6 +739,7 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     name: "feature_side_by_side_image",
     description: "A feature with text on the left and image on the right",
     image: `${location.origin}/images/block_feature_side_by_side_image.png`,
+    codeReference: "https://block.codescandy.com/blocks/features.html",
     fields: [
       {
         label: "Feature Intro Text",
@@ -811,6 +816,7 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     description:
       "A single testimonial quote with a person's name, image, and company details",
     image: `${location.origin}/images/block_single_testimonial.png`,
+    codeReference: "https://block.codescandy.com/blocks/testimonails.html",
     fields: [
       {
         label: "Quote",
