@@ -19,6 +19,7 @@ import {
 import { fetchItems } from "../../store/content";
 import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
 import { CreateNewItemDialog } from "./CreateNewItemDialog";
+import { useParams } from "../../hooks/useParams";
 
 type RelationalFieldBaseProps = {
   name: string;
@@ -37,6 +38,7 @@ export const RelationalFieldBase = ({
   multiselect,
 }: RelationalFieldBaseProps) => {
   const dispatch = useDispatch();
+  const [params] = useParams();
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
@@ -74,6 +76,8 @@ export const RelationalFieldBase = ({
   const handleReorder = useCallback(() => {
     onChange(itemZUIDs?.join(","), name);
   }, [itemZUIDs]);
+
+  const isRenderedAsDialog = params.get("isDialog") === "true";
 
   return (
     <Box component="section">
@@ -142,7 +146,7 @@ export const RelationalFieldBase = ({
           >
             Add Existing {modelData?.label}
           </Button>
-          {multiselect && (
+          {multiselect && !isRenderedAsDialog && (
             <Button
               data-cy="create-new-relational-item-button"
               variant="outlined"
