@@ -11,7 +11,7 @@ export const CREATE_NEW_ITEM_DIALOG_EVENTS = {
 } as const;
 type CreateNewItemDialogProps = {
   modelZUID: string;
-  onItemCreated: () => void;
+  onItemCreated: (evt: CustomEvent) => void;
   onClose: () => void;
 };
 export const CreateNewItemDialog = ({

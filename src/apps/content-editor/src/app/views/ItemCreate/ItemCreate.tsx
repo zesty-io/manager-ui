@@ -38,6 +38,8 @@ import { Meta } from "../ItemEdit/Meta";
 import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
+import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
+import { CREATE_NEW_ITEM_DIALOG_EVENTS } from "../../../../../../shell/components/RelationalFieldBase/CreateNewItemDialog";
 
 export type ActionAfterSave =
   | ""
@@ -65,6 +67,8 @@ export const ItemCreate = () => {
   const history = useHistory();
   const isMounted = useIsMounted();
   const dispatch = useDispatch();
+  const [queryParams] = useQueryParams();
+  const isRenderedAsDialog = queryParams.get("isDialog") === "true";
   const { modelZUID } = useParams<{ modelZUID: string }>();
   const itemZUID = `new:${modelZUID}`;
   const model = useSelector((state: AppState) => state.models[modelZUID]);
@@ -79,7 +83,7 @@ export const ItemCreate = () => {
   const [active, setActive] = useState();
   const [newItemZUID, setNewItemZUID] = useState();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
-  const [willRedirect, setWillRedirect] = useState(true);
+  const [willRedirect, setWillRedirect] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [saveClicked, setSaveClicked] = useState(false);
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
@@ -125,7 +129,7 @@ export const ItemCreate = () => {
     if (!isPublishing && isPublished) {
       // console.log("will it redirect?", redirect);
       if (willRedirect) {
-        history.push(`/content/${modelZUID}/${publishedItem?.data?.itemZUID}`);
+        handleRedirect(publishedItem?.data?.itemZUID);
       }
     }
   }, [isPublishing, isPublished, publishedItem, willRedirect]);
@@ -303,6 +307,7 @@ export const ItemCreate = () => {
         await dispatch(fetchItem(modelZUID, res.data.ZUID));
 
         setNewItemZUID(res.data.ZUID);
+        setFieldErrors({});
 
         switch (action) {
           case "addNew":
@@ -336,11 +341,7 @@ export const ItemCreate = () => {
 
           default:
             // Redirect to new item
-            history.push(
-              `/${
-                model?.type === "block" ? "blocks" : "content"
-              }/${modelZUID}/${res.data.ZUID}`
-            );
+            handleRedirect(res.data.ZUID);
             break;
         }
 
@@ -382,6 +383,24 @@ export const ItemCreate = () => {
       // Retain non rtk-query fetch of item publishing for legacy code
       dispatch(fetchItemPublishing(modelZUID, newItemZUID));
     });
+  };
+
+  const handleRedirect = (itemZUID: string) => {
+    if (isRenderedAsDialog) {
+      window.dispatchEvent(
+        new CustomEvent(CREATE_NEW_ITEM_DIALOG_EVENTS.ITEM_CREATED, {
+          detail: {
+            itemZUID,
+          },
+        })
+      );
+    } else {
+      history.push(
+        `/${
+          model?.type === "block" ? "blocks" : "content"
+        }/${modelZUID}/${itemZUID}`
+      );
+    }
   };
 
   if (!loading && !model) {
@@ -512,13 +531,19 @@ export const ItemCreate = () => {
       {isScheduleDialogOpen && !isLoadingNewItem && (
         <SchedulePublish
           item={newItemData as ContentItemWithDirtyAndPublishing}
-          onClose={() => setIsScheduleDialogOpen(false)}
+          onClose={() => {
+            setIsScheduleDialogOpen(false);
+
+            if (willRedirect) {
+              handleRedirect(newItemData?.meta?.ZUID);
+            }
+          }}
           onPublishNow={() => handlePublish(newItemZUID)}
           onScheduleSuccess={() => {
             setIsScheduleDialogOpen(false);
 
             if (willRedirect) {
-              history.push(`/content/${modelZUID}/${newItemData?.meta?.ZUID}`);
+              handleRedirect(newItemData?.meta?.ZUID);
             }
           }}
         />
