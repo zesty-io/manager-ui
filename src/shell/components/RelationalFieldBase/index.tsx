@@ -180,7 +180,18 @@ export const RelationalFieldBase = ({
       {isCreateNewItemDialogOpen && (
         <CreateNewItemDialog
           modelZUID={relatedModelZUID}
-          onItemCreated={() => {}}
+          onItemCreated={(evt) => {
+            setIsCreateNewItemDialogOpen(false);
+
+            const { itemZUID } = evt.detail;
+            const newItemZUIDs = [...itemZUIDs, itemZUID];
+
+            onChange(
+              !!newItemZUIDs?.length ? newItemZUIDs.join(",") : null,
+              name
+            );
+            setItemZUIDs(!!newItemZUIDs?.length ? newItemZUIDs : null);
+          }}
           onClose={() => setIsCreateNewItemDialogOpen(false)}
         />
       )}
