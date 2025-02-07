@@ -54,6 +54,9 @@ const SELECTORS = {
   MAX_CHARACTER_LIMIT_INPUT: "MaxCharacterLimitInput",
   MIN_CHARACTER_ERROR_MSG: "MinCharacterErrorMsg",
   MAX_CHARACTER_ERROR_MSG: "MaxCharacterErrorMsg",
+  ADD_NEW_RELATED_ITEM: "add-relational-item-button",
+  CONFIRM_NEW_RELATED_ITEM: "done-selecting-item-button",
+  ACTIVE_RELATED_ITEM: "active-relational-item",
 };
 
 /**
@@ -341,13 +344,12 @@ describe("Schema: Fields", () => {
     // click on the default value checkbox
     cy.getBySelector(SELECTORS.DEFAULT_VALUE_CHECKBOX).click();
     // enter a default value
-    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT).click();
+    cy.getBySelector(SELECTORS.ADD_NEW_RELATED_ITEM).click();
     // Select the option
-    cy.get("[role=listbox] [role=option]").first().click();
+    cy.get(".MuiDataGrid-row").first().find("input").click();
+    cy.getBySelector(SELECTORS.CONFIRM_NEW_RELATED_ITEM).click();
     // verify that the default value is set
-    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT)
-      .find("input")
-      .should("have.value", "- None -");
+    cy.getBySelector(SELECTORS.ACTIVE_RELATED_ITEM).should("have.length", 1);
     cy.getBySelector(SELECTORS.DEFAULT_VALUE_CHECKBOX).click();
 
     // Click done
