@@ -394,7 +394,8 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 pb={2.5}
               >
                 <Link
-                  href="#"
+                  data-cy="starter-block-form-preview-link"
+                  href={block?.previewLink}
                   target="_blank"
                   color="primary.main"
                   variant="body2"
@@ -414,7 +415,8 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                   <OpenInNewRoundedIcon fontSize="small" />
                 </Link>
                 <Link
-                  href="#"
+                  data-cy="starter-block-form-code-template-link"
+                  href={block?.codeTemplateLink}
                   target="_blank"
                   color="primary.main"
                   variant="body2"
@@ -446,7 +448,11 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 pt={1.5}
                 pb={2.5}
               >
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  data-cy="starter-block-form-description"
+                >
                   {block?.description}
                 </Typography>
                 <Link
@@ -456,6 +462,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                   underline="always"
                   color="info.main"
                   mt={2}
+                  data-cy="starter-block-form-code-reference-link"
                 >
                   See Bootstrap Template
                 </Link>

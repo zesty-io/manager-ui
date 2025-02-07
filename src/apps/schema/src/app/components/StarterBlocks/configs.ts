@@ -16,6 +16,8 @@ type StarterBlockProps = {
   image: string;
   name: string;
   description: string;
+  previewLink?: string;
+  codeTemplateLink?: string;
   codeReference?: string;
   fields?: StarterBlockFieldProps[];
   code?: string | null;
@@ -429,6 +431,9 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     image: `${location.origin}/images/blockPlaceholder.png`,
     name: "blank",
     description: "A blank block",
+    previewLink: "#",
+    codeTemplateLink: "#",
+    codeReference: "#",
     fields: [],
     code: null,
   },
@@ -438,6 +443,8 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     name: "side_by_side_hero_image",
     description:
       "A hero with text and CTA buttons on the left and an image on the right",
+    previewLink: "#",
+    codeTemplateLink: "#",
     codeReference: "https://block.codescandy.com/blocks/hero-snippet-3.html",
     fields: [
       {
@@ -553,6 +560,8 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     name: "hero_image_below",
     description:
       "A hero with text and CTA buttons on the top and an image below",
+    previewLink: "#",
+    codeTemplateLink: "#",
     image: `${location.origin}/images/block_hero_image_below.png`,
     codeReference: "https://block.codescandy.com/blocks/hero-snippet-2.html",
     fields: [
@@ -645,6 +654,8 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     label: "Contact Us Form",
     name: "contact_us_form",
     description: "A simple contact us form to capture leads from any page",
+    previewLink: "#",
+    codeTemplateLink: "#",
     image: `${location.origin}/images/block_contact_us_form.png`,
     codeReference: "https://block.codescandy.com/contact-2.html",
     fields: [
@@ -739,6 +750,8 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     name: "feature_side_by_side_image",
     description: "A feature with text on the left and image on the right",
     image: `${location.origin}/images/block_feature_side_by_side_image.png`,
+    previewLink: "#",
+    codeTemplateLink: "#",
     codeReference: "https://block.codescandy.com/blocks/features.html",
     fields: [
       {
@@ -816,6 +829,8 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     description:
       "A single testimonial quote with a person's name, image, and company details",
     image: `${location.origin}/images/block_single_testimonial.png`,
+    previewLink: "#",
+    codeTemplateLink: "#",
     codeReference: "https://block.codescandy.com/blocks/testimonails.html",
     fields: [
       {

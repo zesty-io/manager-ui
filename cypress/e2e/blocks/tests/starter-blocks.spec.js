@@ -1,7 +1,7 @@
 import { STARTER_BLOCKS } from "../../../../src/apps/schema/src/app/components/StarterBlocks/configs";
 import { API_ENDPOINTS } from "../../../support/api";
 
-const TIMEOUT = { timeout: 50_000 };
+const TIMEOUT = { timeout: 60_000 };
 const testSufix = "------TEST";
 
 const BLOCK_LABELS = STARTER_BLOCKS.map((block) => block.label);
@@ -62,7 +62,12 @@ describe("Starter Blocks", () => {
 
   describe("Selection Dialogue", () => {
     it("should render starter blocks", () => {
-      openStarterBlocksDialogue();
+      // openStarterBlocksDialogue();
+      cy.visit("/schema");
+      cy.getElement('[data-cy="create_new_content_item"]').click(TIMEOUT);
+      cy.getElement('[data-cy="model-type-block"]').click();
+      cy.getElement('[data-cy="create-model-next-button"]').click();
+
       cy.getElement('[data-cy="starter-blocks-container"]')
         .should("be.visible")
         .children()
@@ -128,12 +133,22 @@ describe("Starter Blocks", () => {
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
+      validatePrimaryDetails(BLOCK);
 
       cy.getElement('[data-cy="starter-block-form-fields-container"]').should(
         "not.exist"
       );
 
-      fillOutFormAndSubmit(TEST_LABEL);
+      cy.intercept("POST", "/v1/content/models").as("createModel");
+      cy.intercept("/v1/content/models").as("getModels");
+
+      cy.getElement('[data-cy="starter-block-form-label"] input')
+        .clear()
+        .type(TEST_LABEL);
+      cy.getElement('[data-cy="starter-block-form-submit"]').click();
+      cy.getElement(POP_UPS.formLoading).should("exist");
+
+      cy.wait(["@createModel", "@getModels"], TIMEOUT);
 
       cy.getElement(schemaPageTitleContainer).should(
         "contain.text",
@@ -149,6 +164,7 @@ describe("Starter Blocks", () => {
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
+      validatePrimaryDetails(BLOCK);
 
       BLOCK.fields.forEach((field) => {
         cy.getElement(starterBlockFormField).should(
@@ -184,6 +200,7 @@ describe("Starter Blocks", () => {
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
+      validatePrimaryDetails(BLOCK);
 
       BLOCK.fields.forEach((field) => {
         cy.getElement(starterBlockFormField).should(
@@ -219,6 +236,7 @@ describe("Starter Blocks", () => {
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
+      validatePrimaryDetails(BLOCK);
 
       BLOCK.fields.forEach((field) => {
         cy.getElement(starterBlockFormField).should(
@@ -254,6 +272,7 @@ describe("Starter Blocks", () => {
 
       createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
+      validatePrimaryDetails(BLOCK);
 
       BLOCK.fields.forEach((field) => {
         cy.getElement(starterBlockFormField).should(
@@ -289,7 +308,10 @@ describe("Starter Blocks", () => {
       const BLOCK = STARTER_BLOCKS[5];
 
       createStarterBlock(BLOCK?.label);
+
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
+
+      validatePrimaryDetails(BLOCK);
 
       BLOCK.fields.forEach((field) => {
         cy.getElement(starterBlockFormField).should(
@@ -323,37 +345,52 @@ describe("Starter Blocks", () => {
   });
 });
 
-describe.skip("Starter Blocks - Delete", () => {
-  it("CLEAN", () => {
-    cy.apiRequest({
-      url: `${API_ENDPOINTS.devInstance}/content/models`,
-    }).then(({ status, data }) => {
-      const forDeleteZuids = data
-        ?.filter((item) =>
-          BLOCK_LABELS.some((label) => item?.label?.includes(label))
-        )
-
-        .map((del) => del?.ZUID);
-      // console.debug("forDeleteZuids: ", forDeleteZuids);
-      // // forDeleteZuids?.forEach((zuid) => {
-      // //   cy.deleteModel(zuid);
-      // // });
-    });
-  });
-});
-
 Cypress.Commands.add("getElement", (selector) => {
   return cy.get(selector, TIMEOUT);
 });
+
+function validatePrimaryDetails(BLOCK) {
+  cy.location("href").then((path) => {
+    cy.getElement('[data-cy="starter-block-form-label"] input').should(
+      "have.value",
+      BLOCK?.label
+    );
+    cy.getElement('[data-cy="starter-block-form-name"] input').should(
+      "have.value",
+      BLOCK?.name
+    );
+    cy.getElement('[data-cy="starter-block-form-description"]').should(
+      "contain.text",
+      BLOCK?.description
+    );
+    cy.getElement('[data-cy="starter-block-form-preview-link"]').should(
+      "have.prop",
+      "href",
+      BLOCK?.previewLink === "#"
+        ? `${path}${BLOCK?.previewLink}`
+        : BLOCK?.previewLink
+    );
+    cy.getElement('[data-cy="starter-block-form-code-template-link"]').should(
+      "have.prop",
+      "href",
+      BLOCK?.codeTemplateLink === "#"
+        ? `${path}${BLOCK?.codeTemplateLink}`
+        : BLOCK?.codeTemplateLink
+    );
+    cy.getElement('[data-cy="starter-block-form-code-reference-link"]').should(
+      "have.prop",
+      "href",
+      BLOCK?.codeReference === "#"
+        ? `${path}${BLOCK?.codeReference}`
+        : BLOCK?.codeReference
+    );
+  });
+}
 
 function fillOutFormAndSubmit(fieldLabel = "") {
   cy.intercept("POST", "/v1/content/models").as("createModel");
   cy.intercept("PUT", "/v1/web/views/*").as("updateWebView");
   cy.intercept("/v1/content/models").as("getModels");
-  cy.intercept("**/v1/content/models/*/items?limit=5000", { log: false });
-  cy.intercept(`**/v1/content/models/*/fields?showDeleted=true`, {
-    log: false,
-  });
 
   cy.getElement('[data-cy="starter-block-form-label"] input')
     .clear()
@@ -391,17 +428,12 @@ function createStarterBlock(name) {
 }
 
 function openStarterBlocksDialogue() {
-  cy.location("pathname").then((pathName) => {
-    if (
-      pathName !== "/schema" ||
-      !!Cypress.$('[data-cy="create-model-dialog"]').length
-    ) {
-      cy.visit("/schema");
-    }
+  cy.visit("/blocks", {
+    onBeforeLoad(win) {
+      win.localStorage.setItem("zesty:blocks:onboarding", "false");
+    },
   });
   cy.getElement('[data-cy="create_new_content_item"]').click(TIMEOUT);
-  cy.getElement('[data-cy="model-type-block"]').click();
-  cy.getElement('[data-cy="create-model-next-button"]').click();
 }
 
 function deleteStarterBlocksTestData() {
