@@ -430,4 +430,111 @@ describe("Content Specs", () => {
       cy.getBySelector("BlockFieldVariantPreview").should("exist");
     });
   });
+
+  context("One to one field", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+      });
+
+      cy.intercept({ method: "GET", url: "**/items*" }).as("fetchItems");
+      cy.intercept({ method: "GET", url: "**/models*" }).as("fetchModels");
+      cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
+
+      cy.wait("@fetchFields");
+      cy.getBySelector("DuoModeToggle").click();
+    });
+
+    it("can only select/add one item", () => {
+      cy.get("#12-edee00-6zb866 [data-cy='add-relational-item-button']").click({
+        force: true,
+      });
+
+      cy.wait("@fetchItems");
+
+      cy.get(".MuiDataGrid-row").first().find("input").click();
+      cy.get(".MuiDataGrid-row").eq(1).find("input").click();
+
+      cy.getBySelector("selected-count").contains("1 / 1 selected");
+      cy.getBySelector("done-selecting-item-button").click();
+      cy.get("#12-edee00-6zb866 [data-cy='active-relational-item']").should(
+        "have.length",
+        1
+      );
+    });
+
+    it("can publish an item", () => {
+      cy.get(
+        "#12-edee00-6zb866 [data-cy='active-relational-item-more-button']"
+      ).click();
+      cy.getBySelector("active-relational-item-publish-now-button").click();
+      cy.getBySelector("ConfirmPublishModal").should("exist");
+      cy.getBySelector("CancelPublishButton").click();
+    });
+
+    it("can schedule publish an item", () => {
+      cy.get(
+        "#12-edee00-6zb866 [data-cy='active-relational-item-more-button']"
+      ).click();
+      cy.getBySelector(
+        "active-relational-item-schedule-publish-button"
+      ).click();
+      cy.getBySelector("SchedulePublishModal").should("exist");
+      cy.getBySelector("CancelSchedulePublishButton").click();
+    });
+
+    it("can remove the selected item", () => {
+      cy.get(
+        "#12-edee00-6zb866 [data-cy='active-relational-item-more-button']"
+      ).click();
+      cy.getBySelector("active-relational-item-remove-item-button").click();
+      cy.get("#12-edee00-6zb866 [data-cy='active-relational-item']").should(
+        "not.exist"
+      );
+    });
+  });
+
+  context("One to many field", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+      });
+
+      cy.intercept({ method: "GET", url: "**/items*" }).as("fetchItems");
+      cy.intercept({ method: "GET", url: "**/models*" }).as("fetchModels");
+      cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
+
+      cy.wait("@fetchFields");
+      cy.getBySelector("DuoModeToggle").click();
+    });
+
+    it("can add multiple items", () => {
+      cy.get("#12-269a28-1bkm34 [data-cy='add-relational-item-button']").click({
+        force: true,
+      });
+
+      cy.wait("@fetchItems");
+
+      [...Array(3)].forEach((_, i) => {
+        cy.get(".MuiDataGrid-row").eq(i).find("input").click();
+      });
+      cy.getBySelector("selected-count").contains("3 selected");
+      cy.getBySelector("done-selecting-item-button").click();
+      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']").should(
+        "have.length",
+        3
+      );
+    });
+
+    it("can remove the selected item", () => {
+      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item-more-button']")
+        .first()
+        .click();
+      cy.getBySelector("active-relational-item-remove-item-button").click();
+      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']").should(
+        "have.length",
+        2
+      );
+    });
+  });
 });
