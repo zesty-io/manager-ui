@@ -135,6 +135,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
       <ThemeProvider theme={theme}>
         <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
           <MenuItem
+            selected={sort === "asc"}
             onClick={() => {
               handleClose();
               setSort("asc");
@@ -143,6 +144,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
             Name (A to Z)
           </MenuItem>
           <MenuItem
+            selected={sort === "desc"}
             onClick={() => {
               handleClose();
               setSort("desc");
@@ -151,6 +153,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
             Name (Z to A)
           </MenuItem>
           <MenuItem
+            selected={!sort}
             onClick={() => {
               handleClose();
               setSort("");
@@ -159,6 +162,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
             Last Created
           </MenuItem>
           <MenuItem
+            selected={sort === "modified"}
             onClick={() => {
               handleClose();
               setSort("modified");

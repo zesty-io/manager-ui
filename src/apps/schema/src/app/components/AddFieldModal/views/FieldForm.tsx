@@ -220,10 +220,9 @@ export const FieldForm = ({
           formFields["tooltip"] = fieldData.settings?.tooltip || "";
         } else if (field.name === "defaultValue") {
           formFields["defaultValue"] =
-            fieldData.settings?.defaultValue !== null &&
-            fieldData.settings?.defaultValue !== undefined
-              ? fieldData.settings?.defaultValue
-              : null;
+            type === "number"
+              ? fieldData.settings?.defaultValue || 0
+              : fieldData.settings?.defaultValue ?? null;
         } else if (field.name === "minCharLimit") {
           formFields["minCharLimit"] = fieldData.settings?.minCharLimit ?? null;
         } else if (field.name === "maxCharLimit") {
@@ -262,6 +261,8 @@ export const FieldForm = ({
           formFields[field.name] = [{ "": "" }];
         } else if (field.type === "toggle_options") {
           formFields[field.name] = [{ 0: "No" }, { 1: "Yes" }];
+        } else if (field.name === "defaultValue" && type === "number") {
+          formFields[field.name] = 0;
         } else {
           if (
             field.name === "defaultValue" ||
@@ -337,12 +338,18 @@ export const FieldForm = ({
     let newErrorsObj: Errors = {};
 
     Object.keys(formData).map((inputName) => {
-      if (
-        inputName === "defaultValue" &&
-        isDefaultValueEnabled &&
-        (formData.defaultValue === "" || formData.defaultValue === null)
-      ) {
-        newErrorsObj[inputName] = "Required Field. Please enter a value.";
+      if (inputName === "defaultValue" && isDefaultValueEnabled) {
+        if (formData.defaultValue === "" || formData.defaultValue === null) {
+          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+        } else if (
+          type === "one_to_many" &&
+          (formData.defaultValue as string)?.length > 255
+        ) {
+          // Value is stored as string in DB with max char limit of 255.
+          // This means users can only add up to 12 item zuids
+          newErrorsObj[inputName] =
+            "Cannot save field. Please reduce the total number of items selected.";
+        }
       }
 
       if (type === "text" || type === "textarea") {
