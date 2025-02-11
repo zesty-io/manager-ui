@@ -79,6 +79,8 @@ export const DialogContentItem = ({ item }: DialogContentItemProps) => {
               backgroundColor: "grey.100",
               width: 40,
               height: 40,
+              minWidth: 40,
+              minHeight: 40,
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
