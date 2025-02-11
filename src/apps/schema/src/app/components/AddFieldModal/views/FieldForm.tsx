@@ -338,12 +338,18 @@ export const FieldForm = ({
     let newErrorsObj: Errors = {};
 
     Object.keys(formData).map((inputName) => {
-      if (
-        inputName === "defaultValue" &&
-        isDefaultValueEnabled &&
-        (formData.defaultValue === "" || formData.defaultValue === null)
-      ) {
-        newErrorsObj[inputName] = "Required Field. Please enter a value.";
+      if (inputName === "defaultValue" && isDefaultValueEnabled) {
+        if (formData.defaultValue === "" || formData.defaultValue === null) {
+          newErrorsObj[inputName] = "Required Field. Please enter a value.";
+        } else if (
+          type === "one_to_many" &&
+          (formData.defaultValue as string)?.length > 255
+        ) {
+          // Value is stored as string in DB with max char limit of 255.
+          // This means users can only add up to 12 item zuids
+          newErrorsObj[inputName] =
+            "Cannot save field. Please reduce the total number of items selected.";
+        }
       }
 
       if (type === "text" || type === "textarea") {

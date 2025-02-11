@@ -136,7 +136,7 @@ export const RelationalFieldBase = ({
           sx={{
             mt: 1,
           }}
-          disabled={isLoadingModelData || isLoadingModelFields}
+          disabled={isLoadingModelData || isLoadingModelFields || !modelData}
         >
           Add Existing {modelData?.label}
         </Button>
