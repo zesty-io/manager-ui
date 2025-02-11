@@ -532,6 +532,7 @@ export const FieldSelectorDialog = ({
         sx: {
           width: 800,
           maxWidth: 800,
+          minHeight: 680,
           maxHeight: "min(1240px, calc(100% - 64px))",
         },
       }}
