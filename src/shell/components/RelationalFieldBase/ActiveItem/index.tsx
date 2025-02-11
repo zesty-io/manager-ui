@@ -8,6 +8,7 @@ import {
   ListItemText,
   ListItemIcon,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import {
   DragIndicatorRounded,
@@ -254,16 +255,22 @@ export const ActiveItem = memo(
         >
           <Stack direction="row" alignItems="center" flexGrow={1}>
             {draggable && (
-              <IconButton
-                ref={drag}
-                disableRipple
-                disableFocusRipple
-                disableTouchRipple
-                size="xsmall"
-                sx={{ cursor: "grab", mx: 0.5 }}
+              <Tooltip
+                enterDelay={1000}
+                disableInteractive
+                title="Drag and Drop to Reorder"
               >
-                <DragIndicatorRounded fontSize="small" />
-              </IconButton>
+                <IconButton
+                  ref={drag}
+                  disableRipple
+                  disableFocusRipple
+                  disableTouchRipple
+                  size="xsmall"
+                  sx={{ cursor: "grab", mx: 0.5 }}
+                >
+                  <DragIndicatorRounded fontSize="small" />
+                </IconButton>
+              </Tooltip>
             )}
             {!!imageFieldName &&
               (!!imageURL && !imageError ? (
@@ -349,22 +356,36 @@ export const ActiveItem = memo(
               />
             )}
             <Stack direction="row" gap={1}>
-              <IconButton
-                size="xsmall"
-                onClick={() =>
-                  history.push(`/content/${relatedModelData?.ZUID}/${itemZUID}`)
-                }
-                disabled={!contentItem}
+              <Tooltip
+                enterDelay={1000}
+                disableInteractive
+                title="Edit Content Item"
               >
-                <Edit fontSize="small" />
-              </IconButton>
-              <IconButton
-                data-cy="active-relational-item-more-button"
-                size="xsmall"
-                onClick={(evt) => setAnchorEl(evt.currentTarget)}
+                <IconButton
+                  size="xsmall"
+                  onClick={() =>
+                    history.push(
+                      `/content/${relatedModelData?.ZUID}/${itemZUID}`
+                    )
+                  }
+                  disabled={!contentItem}
+                >
+                  <Edit fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip
+                enterDelay={1000}
+                disableInteractive
+                title="More Options"
               >
-                <MoreHoriz fontSize="small" />
-              </IconButton>
+                <IconButton
+                  data-cy="active-relational-item-more-button"
+                  size="xsmall"
+                  onClick={(evt) => setAnchorEl(evt.currentTarget)}
+                >
+                  <MoreHoriz fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Stack>
           </Stack>
         </Stack>
