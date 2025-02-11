@@ -156,8 +156,16 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
     setFilteredBlockTypes(filtered);
   }, [search, STARTER_BLOCKS]);
   return (
-    <>
-      <DialogTitle component="div">
+    <Box
+      height="100%"
+      width="100%"
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+      alignItems="stretch"
+      overflow="hidden"
+    >
+      <DialogTitle component="div" flexGrow={0}>
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -188,16 +196,20 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
         sx={{
           py: 2.5,
           backgroundColor: "grey.50",
-          minHeight: "610px",
+          minHeight: "400px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
           alignItems: "stretch",
           rowGap: 2,
+          overflowY: "auto",
+          overflowX: "hidden",
+          flexGrow: 1,
+          position: "relative",
         }}
         dividers
       >
-        <Box sx={{ flexGrow: 0 }}>
+        <Box flexGrow={0}>
           <TextField
             data-cy="starter-blocks-search"
             size="small"
@@ -215,12 +227,8 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
             inputRef={searchRef}
           />
         </Box>
-        <Box
-          sx={{
-            flexGrow: 1,
-            position: "relative",
-          }}
-        >
+
+        <Box flexGrow={1} position="relative">
           {!filteredBlockTypes?.length ? (
             <Box
               data-cy="no-results-page"
@@ -228,6 +236,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
               height="100%"
               display="grid"
               position="absolute"
+              overflow="hidden"
               sx={{ placeContent: "center", minHeight: "100%" }}
             >
               <NoResults
@@ -259,7 +268,6 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
                   md={4}
                   sx={{
                     width: "100%",
-                    height: "100%",
                     position: "relative",
                   }}
                 >
@@ -274,7 +282,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
           )}
         </Box>
       </DialogContent>
-      <DialogActions sx={{ pt: 2.5 }}>
+      <DialogActions sx={{ pt: 2.5, flexGrow: 0 }}>
         <Button variant="outlined" color="inherit" onClick={onClose}>
           Cancel
         </Button>
@@ -287,6 +295,6 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
           Next
         </Button>
       </DialogActions>
-    </>
+    </Box>
   );
 };

@@ -235,7 +235,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
   return (
     <Box
       component="form"
-      height="100%"
+      maxHeight="100%"
       width="100%"
       display="flex"
       flexDirection="column"
@@ -297,7 +297,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
               loading="lazy"
               src={block?.image}
               alt={block?.label}
-              style={{ maxWidth: "65%" }}
+              style={{ maxWidth: "65%", minHeight: "200px" }}
             />
           </Box>
           <Box
