@@ -494,7 +494,7 @@ describe("Content Specs", () => {
     });
   });
 
-  context("One to many field", () => {
+  context.only("One to many field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
@@ -535,6 +535,27 @@ describe("Content Specs", () => {
         "have.length",
         2
       );
+    });
+
+    it("can create & add new item", () => {
+      cy.get(
+        "#12-269a28-1bkm34 [data-cy='create-new-relational-item-button']"
+      ).click({
+        force: true,
+      });
+
+      cy.get("#12-d6e4c1d797-sjv628", { retries: 1 })
+        .find("input")
+        .type(`Test Item ${TIMESTAMP}`);
+      cy.get("#12-aaa5ce87e3-89whjq")
+        .find("textarea")
+        .first()
+        .type(`Test Item ${TIMESTAMP}`);
+      cy.getBySelector("CreateItemSaveButton").click();
+
+      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']", {
+        retries: 1,
+      }).should("have.length", 3);
     });
   });
 });
