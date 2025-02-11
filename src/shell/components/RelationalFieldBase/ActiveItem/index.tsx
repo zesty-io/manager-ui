@@ -251,6 +251,7 @@ export const ActiveItem = memo(
             alignItems: "center",
             overflow: "hidden",
             opacity: isDragging ? 0 : 1,
+            transform: "translate(0, 0)",
           }}
         >
           <Stack direction="row" alignItems="center" flexGrow={1}>
