@@ -71,19 +71,19 @@ export type FieldFilters = {
 type FieldSelectorDialogProps = {
   onClose: () => void;
   modelZUID: string;
-  modelName: string;
   relatedFieldName: string;
   selectedZUIDs: string[];
   onUpdateSelectedZUIDs: (selectedZUIDs: string[]) => void;
+  fieldLabel: string;
   multiselect?: boolean;
 };
 export const FieldSelectorDialog = ({
   onClose,
   modelZUID,
-  modelName,
   relatedFieldName,
   selectedZUIDs,
   onUpdateSelectedZUIDs,
+  fieldLabel,
   multiselect,
 }: FieldSelectorDialogProps) => {
   const dispatch = useDispatch();
@@ -538,7 +538,7 @@ export const FieldSelectorDialog = ({
       }}
     >
       <DialogHeader
-        modelName={modelName}
+        fieldLabel={fieldLabel}
         multiselect={multiselect}
         selectedCount={filteredSelectionModels?.length || 0}
         onClose={onClose}

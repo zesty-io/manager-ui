@@ -21,6 +21,7 @@ import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
 type RelationalFieldBaseProps = {
   name: string;
   value: string;
+  fieldLabel: string;
   relatedModelZUID: string;
   relatedFieldZUID: string;
   onChange: (value: string, name: string) => void;
@@ -29,6 +30,7 @@ type RelationalFieldBaseProps = {
 export const RelationalFieldBase = ({
   name,
   value,
+  fieldLabel,
   relatedModelZUID,
   relatedFieldZUID,
   onChange,
@@ -138,7 +140,7 @@ export const RelationalFieldBase = ({
           }}
           disabled={isLoadingModelData || isLoadingModelFields || !modelData}
         >
-          Add Existing {modelData?.label}
+          Add Existing {fieldLabel}
         </Button>
       )}
       {!!anchorEl && (
@@ -146,7 +148,7 @@ export const RelationalFieldBase = ({
           multiselect={multiselect}
           onClose={() => setAnchorEl(null)}
           modelZUID={relatedModelZUID}
-          modelName={modelData?.label}
+          fieldLabel={fieldLabel}
           relatedFieldName={
             modelFields?.find((field) => field.ZUID === relatedFieldZUID)?.name
           }
