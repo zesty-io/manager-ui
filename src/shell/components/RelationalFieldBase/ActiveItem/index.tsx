@@ -68,6 +68,7 @@ export const ActiveItem = memo(
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false);
     const history = useHistory();
     const dispatch = useDispatch();
     const domain = useDomain();
@@ -260,6 +261,9 @@ export const ActiveItem = memo(
                 enterDelay={1000}
                 disableInteractive
                 title="Drag and Drop to Reorder"
+                open={showTooltip}
+                onOpen={() => setShowTooltip(true)}
+                onClose={() => setShowTooltip(false)}
               >
                 <IconButton
                   ref={drag}
@@ -268,6 +272,7 @@ export const ActiveItem = memo(
                   disableTouchRipple
                   size="xsmall"
                   sx={{ cursor: "grab", mx: 0.5 }}
+                  onClick={() => setShowTooltip(false)}
                 >
                   <DragIndicatorRounded fontSize="small" />
                 </IconButton>
