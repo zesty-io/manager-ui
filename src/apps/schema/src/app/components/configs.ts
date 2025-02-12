@@ -263,7 +263,7 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
       subHeaderText: "Use to track dates along with specific times",
     },
   ],
-  advanced: [
+  options: [
     {
       type: "yes_no",
       name: "Boolean",
