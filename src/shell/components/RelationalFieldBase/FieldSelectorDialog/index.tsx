@@ -602,6 +602,7 @@ export const FieldSelectorDialog = ({
           >
             {!rows?.length && isFilteringResults ? (
               <NoSearchResults
+                isFilter
                 query={filterKeyword}
                 onSearchAgain={() => {
                   if (!!filterKeyword) {
