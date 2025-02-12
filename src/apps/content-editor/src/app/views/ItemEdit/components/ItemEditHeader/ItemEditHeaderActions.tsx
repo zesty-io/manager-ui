@@ -89,7 +89,7 @@ export const ItemEditHeaderActions = ({
   const [isConfirmPublishModalOpen, setIsConfirmPublishModalOpen] =
     useState(false);
   const [relatedItemsToPublish, setRelatedItemsToPublish] = useState<
-    ContentItem[]
+    ContentItemWithDirtyAndPublishing[]
   >([]);
   const [isPublishing, setIsPublishing] = useState(false);
   const item = useSelector(
@@ -184,10 +184,11 @@ export const ItemEditHeaderActions = ({
           if (!!item) {
             const draftVersion = item?.meta?.version;
             const publishedVersion = item?.publishing?.version || 0;
+            const scheduledVersion = item?.scheduling?.version || 0;
 
             if (
-              draftVersion > publishedVersion &&
-              !item?.scheduling?.isScheduled
+              draftVersion > publishedVersion ||
+              scheduledVersion > publishedVersion
             ) {
               return {
                 ...item,
@@ -225,45 +226,60 @@ export const ItemEditHeaderActions = ({
 
   const handlePublish = async () => {
     setIsPublishing(true);
-    // If item is scheduled, delete the scheduled publishing first
-    if (itemState === ITEM_STATES.scheduled) {
-      await deleteItemPublishing({
-        modelZUID,
-        itemZUID,
-        publishingZUID: item?.scheduling?.ZUID,
-      });
-    }
+    try {
+      // Delete scheduled publishings first
+      const deleteScheduledPromises = [
+        // Delete main item's scheduled publishing if it exists
+        itemState === ITEM_STATES.scheduled &&
+          deleteItemPublishing({
+            modelZUID,
+            itemZUID,
+            publishingZUID: item?.scheduling?.ZUID,
+          }),
+        // Delete related items' scheduled publishings if they exist
+        ...relatedItemsToPublish
+          .filter((item) => !!item.scheduling?.ZUID)
+          .map((item) =>
+            deleteItemPublishing({
+              modelZUID: item.meta.contentModelZUID,
+              itemZUID: item.meta.ZUID,
+              publishingZUID: item.scheduling.ZUID,
+            })
+          ),
+      ].filter((item) => !!item);
 
-    Promise.allSettled([
-      createPublishing({
-        modelZUID,
-        itemZUID,
-        body: {
-          version: item?.meta.version,
-          publishAt: "now",
-          unpublishAt: "never",
-        },
-      }),
-      relatedItemsToPublish.map((item) => {
-        return createPublishing({
-          modelZUID: item.meta.contentModelZUID,
-          itemZUID: item.meta.ZUID,
+      await Promise.all(deleteScheduledPromises);
+
+      // Proceed with publishing
+      await Promise.allSettled([
+        createPublishing({
+          modelZUID,
+          itemZUID,
           body: {
-            version: item.meta.version,
+            version: item?.meta.version,
             publishAt: "now",
             unpublishAt: "never",
           },
-        });
-      }),
-    ])
-      .then(() => {
-        // Retain non rtk-query fetch of item publishing for legacy code
-        dispatch(fetchItemPublishings());
-      })
-      .finally(() => {
-        setIsPublishing(false);
-        setIsConfirmPublishModalOpen(false);
-      });
+        }),
+        ...relatedItemsToPublish.map((item) =>
+          createPublishing({
+            modelZUID: item.meta.contentModelZUID,
+            itemZUID: item.meta.ZUID,
+            body: {
+              version: item.meta.version,
+              publishAt: "now",
+              unpublishAt: "never",
+            },
+          })
+        ),
+      ]);
+
+      // Retain non rtk-query fetch of item publishing for legacy code
+      dispatch(fetchItemPublishings());
+    } finally {
+      setIsPublishing(false);
+      setIsConfirmPublishModalOpen(false);
+    }
   };
 
   const handleUnpublish = async () => {
@@ -649,7 +665,7 @@ export const ItemEditHeaderActions = ({
               <Typography variant="body2" fontWeight={600}>
                 Also publish related items
               </Typography>
-              <Typography variant="body3">
+              <Typography variant="body3" color="text.secondary">
                 This will publish all items selected in the list below
               </Typography>
               <List disablePadding sx={{ mt: 1 }}>
@@ -657,7 +673,7 @@ export const ItemEditHeaderActions = ({
                   <UnpublishedRelatedItem
                     key={item.meta.ZUID}
                     contentItem={item}
-                    divider={unpublishedRelatedItems?.length > index + 1}
+                    divider
                     selected={relatedItemsToPublish.some(
                       (i) => i.meta.ZUID === item.meta.ZUID
                     )}

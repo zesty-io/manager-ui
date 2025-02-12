@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { LoadingButton } from "@mui/lab";
-import pluralizeWord from "../../utility/pluralizeWord";
 
 export type ConfirmPublishModal = {
   contentTitle: string;
@@ -90,10 +89,7 @@ export const ConfirmPublishModal = ({
           onClick={onConfirm}
           data-cy="ConfirmPublishButton"
         >
-          Publish{" "}
-          {!!altText
-            ? pluralizeWord(altText, relatedItemsToPublishCount)
-            : pluralizeWord("Item", relatedItemsToPublishCount)}{" "}
+          Publish {altText || !!relatedItemsToPublishCount ? "Items " : "Item "}
           {!!relatedItemsToPublishCount &&
             `(${relatedItemsToPublishCount + 1})`}
         </LoadingButton>

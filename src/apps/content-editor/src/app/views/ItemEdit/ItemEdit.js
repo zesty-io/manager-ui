@@ -57,6 +57,10 @@ import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
+import {
+  fetchItemPublishings,
+  fetchItems,
+} from "../../../../../../shell/store/content";
 
 const selectItemHeadTags = createSelector(
   (state) => state.headTags,
@@ -416,6 +420,7 @@ export default function ItemEdit() {
     } finally {
       if (isMounted.current) {
         setSaving(false);
+        dispatch(fetchItemPublishings());
       }
     }
   }

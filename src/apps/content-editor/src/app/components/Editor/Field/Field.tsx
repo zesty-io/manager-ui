@@ -806,6 +806,7 @@ export const Field = ({
               relatedModelZUID={relatedModelZUID}
               relatedFieldZUID={relatedFieldZUID}
               onChange={onChange}
+              fieldLabel={fieldData?.label}
             />
             {/**
             <FieldTypeOneToOne
@@ -877,6 +878,7 @@ export const Field = ({
               relatedModelZUID={relatedModelZUID}
               relatedFieldZUID={relatedFieldZUID}
               onChange={onChange}
+              fieldLabel={fieldData?.label}
             />
             {/**
             <FieldTypeOneToMany
