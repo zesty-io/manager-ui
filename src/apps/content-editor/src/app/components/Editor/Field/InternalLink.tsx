@@ -10,8 +10,6 @@ type InternalLinkProps = {
   name: string;
   value: string;
   onChange: (value: any, name: string, datatype?: string) => void;
-  // onInternalLinkSearch: (search: string) => void;
-  // internalLinkOptions: any;
   error: boolean;
   langID: number;
 };

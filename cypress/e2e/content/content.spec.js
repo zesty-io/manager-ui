@@ -494,7 +494,7 @@ describe("Content Specs", () => {
     });
   });
 
-  context.only("One to many field", () => {
+  context("One to many field", () => {
     before(() => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
