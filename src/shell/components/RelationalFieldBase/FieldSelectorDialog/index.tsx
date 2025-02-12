@@ -660,6 +660,23 @@ export const FieldSelectorDialog = ({
                     mx: "3px",
                   },
 
+                  "& .MuiDataGrid-row.Mui-selected": {
+                    borderBottom: (theme) =>
+                      `1px solid ${theme.palette.primary.main}`,
+
+                    "& .MuiDataGrid-cell": {
+                      borderBottom: 0,
+                    },
+                  },
+
+                  "& .MuiDataGrid-cell:focus-within": {
+                    outline: "none",
+                  },
+
+                  ".MuiDataGrid-row": {
+                    cursor: "pointer",
+                  },
+
                   "& [data-field='image']": {
                     p: 0,
                   },

@@ -244,7 +244,7 @@ export const ActiveItem = memo(
           direction="row"
           sx={{
             bgcolor: "background.paper",
-            height: 64,
+            height: !!imageFieldName ? 62 : 58,
             width: "100%",
             border: 1,
             borderColor: "border",
@@ -271,7 +271,7 @@ export const ActiveItem = memo(
                   disableFocusRipple
                   disableTouchRipple
                   size="xsmall"
-                  sx={{ cursor: "grab", mx: 0.5 }}
+                  sx={{ cursor: "grab", mx: 0.25 }}
                   onClick={() => setShowTooltip(false)}
                 >
                   <DragIndicatorRounded fontSize="small" />
