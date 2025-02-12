@@ -73,10 +73,12 @@ export const RelationalFieldBase = ({
     onChange(itemZUIDs?.join(","), name);
   }, [itemZUIDs]);
 
+  const isLoading = isLoadingModelData || isLoadingModelFields;
+
   return (
     <Box component="section">
       <Stack gap={1}>
-        {isLoadingModelData || isLoadingModelFields ? (
+        {isLoading ? (
           [...Array(multiselect ? 5 : 1)].map((_, index) => (
             <ActiveItemLoading key={index} draggable />
           ))
@@ -136,9 +138,9 @@ export const RelationalFieldBase = ({
           fullWidth
           onClick={(evt) => setAnchorEl(evt.currentTarget)}
           sx={{
-            mt: 1,
+            mt: !!itemZUIDs?.length || isLoading ? 1 : 0,
           }}
-          disabled={isLoadingModelData || isLoadingModelFields || !modelData}
+          disabled={isLoading || !modelData}
         >
           Add Existing {fieldLabel}
         </Button>
