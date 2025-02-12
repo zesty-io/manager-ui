@@ -9,7 +9,7 @@ import { CheckRounded, CloseRounded } from "@mui/icons-material";
 
 type DialogHeaderProps = {
   selectedCount: number;
-  modelName: string;
+  fieldLabel: string;
   onClose: () => void;
   onDeselectAll: () => void;
   onDone: () => void;
@@ -18,7 +18,7 @@ type DialogHeaderProps = {
 };
 export const DialogHeader = ({
   selectedCount,
-  modelName,
+  fieldLabel,
   onClose,
   onDone,
   onDeselectAll,
@@ -39,7 +39,7 @@ export const DialogHeader = ({
         }}
       >
         <Typography variant="h3" fontWeight={700}>
-          Select {modelName}
+          Select {fieldLabel}
         </Typography>
         <IconButton size="small" onClick={onClose}>
           <CloseRounded fontSize="small" />

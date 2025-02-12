@@ -56,6 +56,7 @@ type DefaultValueInputProps = {
   };
   options: FieldSettingsOptions[];
   currency?: string;
+  fieldLabel: string;
 };
 
 export const DefaultValueInput = ({
@@ -67,6 +68,7 @@ export const DefaultValueInput = ({
   relationshipFields: { relatedModelZUID, relatedFieldZUID },
   options,
   currency,
+  fieldLabel,
 }: DefaultValueInputProps) => {
   const [imageModal, setImageModal] = useState(null);
   const dispatch = useDispatch();
@@ -308,6 +310,7 @@ export const DefaultValueInput = ({
           relatedModelZUID={relatedModelZUID}
           relatedFieldZUID={relatedFieldZUID}
           onChange={(value) => onChange(value)}
+          fieldLabel={fieldLabel}
         />
       );
     case "one_to_many":
@@ -319,6 +322,7 @@ export const DefaultValueInput = ({
           relatedModelZUID={relatedModelZUID}
           relatedFieldZUID={relatedFieldZUID}
           onChange={(value) => onChange(value)}
+          fieldLabel={fieldLabel}
         />
       );
     case "link":
