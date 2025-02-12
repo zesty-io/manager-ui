@@ -24,6 +24,7 @@ import { useParams } from "../../hooks/useParams";
 type RelationalFieldBaseProps = {
   name: string;
   value: string;
+  fieldLabel: string;
   relatedModelZUID: string;
   relatedFieldZUID: string;
   onChange: (value: string, name: string) => void;
@@ -32,6 +33,7 @@ type RelationalFieldBaseProps = {
 export const RelationalFieldBase = ({
   name,
   value,
+  fieldLabel,
   relatedModelZUID,
   relatedFieldZUID,
   onChange,
@@ -78,11 +80,12 @@ export const RelationalFieldBase = ({
   }, [itemZUIDs]);
 
   const isRenderedAsDialog = params.get("isDialog") === "true";
+  const isLoading = isLoadingModelData || isLoadingModelFields;
 
   return (
     <Box component="section">
       <Stack gap={1}>
-        {isLoadingModelData || isLoadingModelFields ? (
+        {isLoading ? (
           [...Array(multiselect ? 5 : 1)].map((_, index) => (
             <ActiveItemLoading key={index} draggable />
           ))
@@ -134,7 +137,11 @@ export const RelationalFieldBase = ({
         </Button>
       )}
       {(multiselect || (!multiselect && !value)) && (
-        <Stack direction="row" gap={1} mt={1}>
+        <Stack
+          direction="row"
+          gap={1}
+          mt={!!itemZUIDs?.length || isLoading ? 1 : 0}
+        >
           <Button
             data-cy="add-relational-item-button"
             variant="outlined"
@@ -142,7 +149,7 @@ export const RelationalFieldBase = ({
             startIcon={<LinkRounded />}
             fullWidth
             onClick={(evt) => setAnchorEl(evt.currentTarget)}
-            disabled={isLoadingModelData || isLoadingModelFields || !modelData}
+            disabled={isLoading || !modelData}
           >
             Add Existing {modelData?.label}
           </Button>
@@ -154,9 +161,7 @@ export const RelationalFieldBase = ({
               startIcon={<AddRounded />}
               fullWidth
               onClick={() => setIsCreateNewItemDialogOpen(true)}
-              disabled={
-                isLoadingModelData || isLoadingModelFields || !modelData
-              }
+              disabled={isLoading || !modelData}
             >
               Create & Add New {modelData?.label}
             </Button>
@@ -168,7 +173,7 @@ export const RelationalFieldBase = ({
           multiselect={multiselect}
           onClose={() => setAnchorEl(null)}
           modelZUID={relatedModelZUID}
-          modelName={modelData?.label}
+          fieldLabel={fieldLabel}
           relatedFieldName={
             modelFields?.find((field) => field.ZUID === relatedFieldZUID)?.name
           }

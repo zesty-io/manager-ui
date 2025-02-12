@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, ChangeEvent } from "react";
+import { useMemo, useState, useEffect, ChangeEvent, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch } from "react-redux";
 import moment from "moment-timezone";
@@ -51,6 +51,7 @@ import {
 } from "../../../../../../../shell/services/types";
 import { ResolvedOption } from "./ResolvedOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
+import { debounce } from "lodash";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -177,6 +178,22 @@ export const Field = ({
   const value = item?.data?.[name];
   const version = item?.meta?.version;
   const fieldData = fields?.find((field) => field.ZUID === ZUID);
+  const [inputValue, setInputValue] = useState(value || "");
+
+  const debouncedOnChange = useMemo(() => debounce(onChange, 300), [onChange]);
+
+  const deferredChange = useCallback(
+    (value, name) => {
+      setInputValue(value);
+      debouncedOnChange(value, name);
+    },
+    [debouncedOnChange]
+  );
+
+  // Keep local input value in sync with global field value
+  useEffect(() => {
+    setInputValue(value || "");
+  }, [value]);
 
   useEffect(() => {
     if (datatype !== "date" && datatype !== "datetime") {
@@ -262,7 +279,7 @@ export const Field = ({
           ZUID={fieldData?.ZUID}
           name={fieldData?.name || name}
           label={fieldData?.label || label}
-          valueLength={(value as string)?.length ?? 0}
+          valueLength={(inputValue as string)?.length ?? 0}
           settings={
             fieldData || {
               name: name,
@@ -278,11 +295,11 @@ export const Field = ({
           minLength={minLength}
           errors={errors}
           aiType="text"
-          value={value}
+          value={inputValue}
         >
           <TextField
-            value={value}
-            onChange={(evt) => onChange(evt.target.value, name)}
+            value={inputValue}
+            onChange={(evt) => deferredChange(evt.target.value, name)}
             fullWidth
             inputProps={{
               name: fieldData?.name || name,
@@ -296,12 +313,12 @@ export const Field = ({
       return (
         <FieldShell
           settings={fieldData}
-          valueLength={(value as string)?.length ?? 0}
+          valueLength={(inputValue as string)?.length ?? 0}
           errors={errors}
         >
           <TextField
-            value={value}
-            onChange={(evt) => onChange(evt.target.value, name)}
+            value={inputValue}
+            onChange={(evt) => deferredChange(evt.target.value, name)}
             fullWidth
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />
@@ -312,14 +329,14 @@ export const Field = ({
       return (
         <FieldShell
           settings={fieldData}
-          valueLength={(value as string)?.length ?? 0}
+          valueLength={(inputValue as string)?.length ?? 0}
           errors={errors}
           maxLength={maxLength}
           withLengthCounter
         >
           <TextField
-            value={value}
-            onChange={(evt) => onChange(evt.target.value, name)}
+            value={inputValue}
+            onChange={(evt) => deferredChange(evt.target.value, name)}
             fullWidth
             type="url"
             error={errors && Object.values(errors)?.some((error) => !!error)}
@@ -351,7 +368,7 @@ export const Field = ({
           ZUID={fieldData?.ZUID}
           name={fieldData?.name}
           label={fieldData?.label}
-          valueLength={(value as string)?.length ?? 0}
+          valueLength={(inputValue as string)?.length ?? 0}
           settings={fieldData}
           onChange={(evt: ChangeEvent<HTMLInputElement>) =>
             onChange(evt.target.value, name)
@@ -361,11 +378,11 @@ export const Field = ({
           aiType="word"
           maxLength={maxLength}
           minLength={minLength}
-          value={value}
+          value={inputValue}
         >
           <TextField
-            value={value}
-            onChange={(evt) => onChange(evt.target.value, name)}
+            value={inputValue}
+            onChange={(evt) => deferredChange(evt.target.value, name)}
             fullWidth
             multiline
             rows={6}
@@ -398,7 +415,7 @@ export const Field = ({
               name={name}
               value={value}
               version={version}
-              onChange={onChange}
+              onChange={deferredChange}
               onSave={onSave}
               onCharacterCountChange={(charCount: number) =>
                 setCharacterCount(charCount)
@@ -422,7 +439,7 @@ export const Field = ({
             ZUID={fieldData?.ZUID}
             name={fieldData?.name}
             label={fieldData?.label}
-            valueLength={(value as string)?.length ?? 0}
+            valueLength={(inputValue as string)?.length ?? 0}
             settings={fieldData}
             onChange={onChange}
             errors={errors}
@@ -430,14 +447,14 @@ export const Field = ({
             datatype={fieldData?.datatype}
             editorType={editorType}
             onEditorChange={(value: EditorType) => setEditorType(value)}
-            value={value}
+            value={inputValue}
           >
             <FieldTypeEditor
               // @ts-ignore component not typed
               name={name}
-              value={value}
+              value={inputValue}
               version={version}
-              onChange={onChange}
+              onChange={deferredChange}
               datatype={datatype}
               mediaBrowser={(opts: any) => {
                 setImageModal(opts);
@@ -643,6 +660,7 @@ export const Field = ({
             relatedModelZUID={relatedModelZUID}
             relatedFieldZUID={relatedFieldZUID}
             onChange={onChange}
+            fieldLabel={fieldData?.label}
           />
         </FieldShell>
       );
@@ -657,6 +675,7 @@ export const Field = ({
             relatedModelZUID={relatedModelZUID}
             relatedFieldZUID={relatedFieldZUID}
             onChange={onChange}
+            fieldLabel={fieldData?.label}
           />
         </FieldShell>
       );
@@ -679,10 +698,10 @@ export const Field = ({
       return (
         <FieldShell settings={fieldData} errors={errors}>
           <FieldTypeNumber
-            value={+value || 0}
+            value={+inputValue || 0}
             name={name}
             required={required}
-            onChange={onChange}
+            onChange={deferredChange}
             hasError={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
@@ -698,8 +717,8 @@ export const Field = ({
           <FieldTypeCurrency
             name={name}
             currency={settings?.currency ?? "USD"}
-            value={String(value)}
-            onChange={onChange}
+            value={String(inputValue)}
+            onChange={deferredChange}
             error={errors && Object.values(errors)?.some((error) => !!error)}
           />
         </FieldShell>
