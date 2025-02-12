@@ -649,7 +649,7 @@ export const ItemEditHeaderActions = ({
               <Typography variant="body2" fontWeight={600}>
                 Also publish related items
               </Typography>
-              <Typography variant="body3">
+              <Typography variant="body3" color="text.secondary">
                 This will publish all items selected in the list below
               </Typography>
               <List disablePadding sx={{ mt: 1 }}>
@@ -657,7 +657,7 @@ export const ItemEditHeaderActions = ({
                   <UnpublishedRelatedItem
                     key={item.meta.ZUID}
                     contentItem={item}
-                    divider={unpublishedRelatedItems?.length > index + 1}
+                    divider
                     selected={relatedItemsToPublish.some(
                       (i) => i.meta.ZUID === item.meta.ZUID
                     )}
