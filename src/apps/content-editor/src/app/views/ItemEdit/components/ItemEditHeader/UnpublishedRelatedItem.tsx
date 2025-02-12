@@ -23,7 +23,7 @@ type UnpublishedRelatedItemProps = {
   contentItem: ContentItemWithRelatedZUIDs;
   onChange: (payload: {
     action: "add" | "remove";
-    contentItem: ContentItem;
+    contentItem: ContentItemWithDirtyAndPublishing;
   }) => void;
   selected: boolean;
   divider?: boolean;
