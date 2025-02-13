@@ -303,6 +303,14 @@ export function searchItems(
         }
         return res;
       },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to search item: ${err?.message || err || ""}`,
+          })
+        );
+      },
     });
   };
 }
@@ -915,6 +923,16 @@ export function fetchItemPublishing(modelZUID, itemZUID) {
           );
         }
       },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch item publishing: ${
+              err?.message || err || ""
+            }`,
+          })
+        );
+      },
     });
   };
 }
@@ -940,6 +958,16 @@ export function fetchItemPublishings() {
             })
           );
         }
+      },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch item publishings: ${
+              err?.message || err || ""
+            }`,
+          })
+        );
       },
     });
   };
