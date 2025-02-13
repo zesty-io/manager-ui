@@ -77,10 +77,6 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
     setFieldTypes(filteredFields);
   };
 
-  useEffect(() => {
-    console.debug("fieldTypes: ", fieldTypes);
-  }, [fieldTypes]);
-
   return (
     <>
       <DialogTitle component="div">
