@@ -1,16 +1,19 @@
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 import { Box, Stack } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
-import { useState } from "react";
+
+import { FileTypePreview } from "../../../../../../media/src/app/components/FileModal/FileTypePreview";
+import { useGetFileQuery } from "../../../../../../../shell/services/mediaManager";
 
 type ImageCellProps = { params: GridRenderCellParams };
 export const ImageCell = ({ params }: ImageCellProps) => {
-  const [hasError, setHasError] = useState(false);
-  const handleImageError = () => {
-    setHasError(true);
-  };
+  const isFileZUID = !!params.value?.startsWith("3-");
 
-  if (!params.value || hasError) {
+  const { data, isFetching } = useGetFileQuery(params.value, {
+    skip: !isFileZUID,
+  });
+
+  if (!params.value) {
     return (
       <Stack
         sx={{
@@ -28,18 +31,49 @@ export const ImageCell = ({ params }: ImageCellProps) => {
     );
   }
 
+  if (isFileZUID) {
+    if (isFetching) {
+      // TODO: Add skeleton loader
+      return <></>;
+    }
+
+    return (
+      <Box
+        sx={{
+          height: "100%",
+          width: "100%",
+
+          "[data-cy='file-preview']": {
+            width: "100%",
+          },
+        }}
+      >
+        <FileTypePreview
+          isMediaThumbnail
+          src={data?.url}
+          filename={data?.filename}
+          updatedAt={data?.updated_at}
+        />
+      </Box>
+    );
+  }
+
   return (
     <Box
-      component="img"
       sx={{
-        backgroundColor: (theme) => theme.palette.grey[100],
-        objectFit: "contain",
-        zIndex: -1,
+        height: "100%",
+        width: "100%",
+
+        "[data-cy='file-preview']": {
+          width: "100%",
+        },
       }}
-      width="68px"
-      height="58px"
-      src={params.value}
-      onError={handleImageError}
-    />
+    >
+      <FileTypePreview
+        isMediaThumbnail
+        src={params?.value}
+        filename={params?.value?.split("/").pop()}
+      />
+    </Box>
   );
 };
