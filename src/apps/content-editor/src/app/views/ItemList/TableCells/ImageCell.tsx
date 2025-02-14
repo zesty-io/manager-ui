@@ -1,5 +1,5 @@
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
-import { Box, Stack } from "@mui/material";
+import { Box, Skeleton, Stack } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
 
 import { FileTypePreview } from "../../../../../../media/src/app/components/FileModal/FileTypePreview";
@@ -33,8 +33,14 @@ export const ImageCell = ({ params }: ImageCellProps) => {
 
   if (isFileZUID) {
     if (isFetching) {
-      // TODO: Add skeleton loader
-      return <></>;
+      return (
+        <Skeleton
+          variant="rectangular"
+          width="100%"
+          height="100%"
+          animation="wave"
+        />
+      );
     }
 
     return (
