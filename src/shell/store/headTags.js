@@ -126,6 +126,14 @@ export const fetchHeadTags = () => {
           }
         }
       },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch head tags: ${err?.message || err || ""}`,
+          })
+        );
+      },
     });
   };
 };

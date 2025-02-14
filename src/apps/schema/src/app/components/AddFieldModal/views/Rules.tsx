@@ -67,6 +67,7 @@ export const Rules = ({
         }}
         options={formData["options"] as FieldSettingsOptions[]}
         currency={(formData["currency"] as string) || "USD"}
+        fieldLabel={formData["label"] as string}
       />
 
       {type === "images" && (
