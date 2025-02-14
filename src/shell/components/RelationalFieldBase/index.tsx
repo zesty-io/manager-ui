@@ -21,6 +21,7 @@ import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
 type RelationalFieldBaseProps = {
   name: string;
   value: string;
+  fieldLabel: string;
   relatedModelZUID: string;
   relatedFieldZUID: string;
   onChange: (value: string, name: string) => void;
@@ -29,6 +30,7 @@ type RelationalFieldBaseProps = {
 export const RelationalFieldBase = ({
   name,
   value,
+  fieldLabel,
   relatedModelZUID,
   relatedFieldZUID,
   onChange,
@@ -71,10 +73,12 @@ export const RelationalFieldBase = ({
     onChange(itemZUIDs?.join(","), name);
   }, [itemZUIDs]);
 
+  const isLoading = isLoadingModelData || isLoadingModelFields;
+
   return (
     <Box component="section">
       <Stack gap={1}>
-        {isLoadingModelData || isLoadingModelFields ? (
+        {isLoading ? (
           [...Array(multiselect ? 5 : 1)].map((_, index) => (
             <ActiveItemLoading key={index} draggable />
           ))
@@ -134,11 +138,11 @@ export const RelationalFieldBase = ({
           fullWidth
           onClick={(evt) => setAnchorEl(evt.currentTarget)}
           sx={{
-            mt: 1,
+            mt: !!itemZUIDs?.length || isLoading ? 1 : 0,
           }}
-          disabled={isLoadingModelData || isLoadingModelFields}
+          disabled={isLoading || !modelData}
         >
-          Add Existing {modelData?.label}
+          Add Existing {fieldLabel}
         </Button>
       )}
       {!!anchorEl && (
@@ -146,7 +150,7 @@ export const RelationalFieldBase = ({
           multiselect={multiselect}
           onClose={() => setAnchorEl(null)}
           modelZUID={relatedModelZUID}
-          modelName={modelData?.label}
+          fieldLabel={fieldLabel}
           relatedFieldName={
             modelFields?.find((field) => field.ZUID === relatedFieldZUID)?.name
           }

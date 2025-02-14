@@ -23,7 +23,7 @@ type UnpublishedRelatedItemProps = {
   contentItem: ContentItemWithRelatedZUIDs;
   onChange: (payload: {
     action: "add" | "remove";
-    contentItem: ContentItem;
+    contentItem: ContentItemWithDirtyAndPublishing;
   }) => void;
   selected: boolean;
   divider?: boolean;
@@ -79,15 +79,27 @@ export const UnpublishedRelatedItem = ({
 
   return (
     <ListItem disableGutters dense divider={divider}>
-      <ListItemIcon>
+      <ListItemIcon
+        sx={{
+          minWidth: 0,
+        }}
+      >
         <Checkbox
           checked={selected}
+          disableRipple
           onChange={(evt) =>
             onChange({
               contentItem,
               action: evt.target.checked ? "add" : "remove",
             })
           }
+          sx={{
+            pl: 0,
+            pr: 2,
+            "&:hover": {
+              bgcolor: "transparent",
+            },
+          }}
         />
       </ListItemIcon>
       {!!imageFieldName &&

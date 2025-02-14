@@ -4,7 +4,6 @@ import {
   Menu,
   MenuItem,
   Button,
-  Chip,
   ToggleButtonGroup,
   ToggleButton,
   Select,
@@ -24,23 +23,13 @@ import {
 } from "../../../../../content-editor/src/app/components/Editor/Field/FieldShell";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { FieldTypeMedia } from "../../../../../content-editor/src/app/components/FieldTypeMedia";
-import { AppLink } from "@zesty-io/core/AppLink";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+
 import { useDispatch, useSelector } from "react-redux";
-import { fetchItems, searchItems } from "../../../../../../shell/store/content";
-import {
-  FieldTypeOneToMany,
-  OneToManyOptions,
-} from "../../../../../../shell/components/FieldTypeOneToMany";
+import { searchItems } from "../../../../../../shell/store/content";
+
 import { AppState } from "../../../../../../shell/store/types";
 import { FieldSettingsOptions } from "../../../../../../shell/services/types";
-import { FieldTypeOneToOne } from "../../../../../../shell/components/FieldTypeOneToOne";
-import {
-  resolveRelatedOptions,
-  sortHTML,
-} from "../../../../../content-editor/src/app/components/Editor/Field/Field";
-import { fetchFields } from "../../../../../../shell/store/fields";
+import { sortHTML } from "../../../../../content-editor/src/app/components/Editor/Field/Field";
 import { FieldTypeInternalLink } from "../../../../../../shell/components/FieldTypeInternalLink";
 import { LinkOption } from "../../../../../content-editor/src/app/components/Editor/Field/LinkOption";
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
@@ -49,6 +38,7 @@ import { FieldTypeDate } from "../../../../../../shell/components/FieldTypeDate"
 import { FieldTypeDateTime } from "../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeColor } from "../../../../../../shell/components/FieldTypeColor";
 import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort";
+import { RelationalFieldBase } from "../../../../../../shell/components/RelationalFieldBase";
 import moment from "moment";
 
 type DefaultValueInputProps = {
@@ -66,6 +56,7 @@ type DefaultValueInputProps = {
   };
   options: FieldSettingsOptions[];
   currency?: string;
+  fieldLabel: string;
 };
 
 export const DefaultValueInput = ({
@@ -77,6 +68,7 @@ export const DefaultValueInput = ({
   relationshipFields: { relatedModelZUID, relatedFieldZUID },
   options,
   currency,
+  fieldLabel,
 }: DefaultValueInputProps) => {
   const [imageModal, setImageModal] = useState(null);
   const dispatch = useDispatch();
@@ -311,170 +303,26 @@ export const DefaultValueInput = ({
         </>
       );
     case "one_to_one":
-      const onOneToOneOpen = () => {
-        return dispatch(
-          fetchItems(relatedModelZUID, {
-            lang: "en-US",
-          })
-        );
-      };
-
-      let oneToOneOptions: OneToManyOptions[] = useMemo(() => {
-        const filterValidItems = (items: any) => {
-          // remove items that are only saved in memory
-          const filteredValidItems = Object.entries<any>(items).filter(
-            ([, value]) => value.web.version
-          );
-          // Reshape the array back into an object
-          let options = Object.fromEntries(filteredValidItems);
-
-          return options;
-        };
-        const options = filterValidItems(allItems);
-
-        return [
-          {
-            inputLabel: "- None -",
-            value: null,
-            component: "- None -",
-          },
-          ...resolveRelatedOptions(
-            allFields,
-            options,
-            relatedFieldZUID,
-            relatedModelZUID,
-            1,
-            value
-          ),
-        ];
-      }, [
-        Object.keys(allFields).length,
-        Object.keys(allItems).length,
-        relatedModelZUID,
-        relatedFieldZUID,
-        value,
-      ]);
-
-      if (value && !oneToOneOptions.find((opt) => opt.value === value)) {
-        //the related option is not in the array, we need to insert it
-        oneToOneOptions.unshift({
-          value: value as string,
-          inputLabel: `Selected item not found: ${value}`,
-          component: (
-            <span>
-              <span onClick={(evt) => evt.stopPropagation()}>
-                <AppLink
-                  style={{
-                    textShadow: "none",
-                  }}
-                  to={`/content/${relatedModelZUID}/${value}`}
-                >
-                  <FontAwesomeIcon icon={faEdit} />
-                </AppLink>
-              </span>
-              &nbsp;Selected item not found: {value}
-            </span>
-          ),
-        });
-      }
-
       return (
-        <FieldTypeOneToOne
-          data-cy="DefaultValueInput"
-          name={"defaultValue"}
-          value={
-            oneToOneOptions?.find((options) => options.value === value) || null
-          }
-          onChange={(_, option) => onChange(option.value)}
-          options={oneToOneOptions}
-          // @ts-ignore
-          onOpen={onOneToOneOpen}
-          startAdornment={
-            value && (
-              <AppLink to={`/content/${relatedModelZUID}/${value}`}>
-                <FontAwesomeIcon icon={faEdit} />
-              </AppLink>
-            )
-          }
-          endAdornment={value && <em>en-US</em>}
-          error={error}
+        <RelationalFieldBase
+          name="defaultValue"
+          value={!!value ? String(value) : null}
+          relatedModelZUID={relatedModelZUID}
+          relatedFieldZUID={relatedFieldZUID}
+          onChange={(value) => onChange(value)}
+          fieldLabel={fieldLabel}
         />
       );
     case "one_to_many":
-      const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
-        const filterValidItems = (items: any) => {
-          // remove items that are only saved in memory
-          const filteredValidItems = Object.entries<any>(items).filter(
-            ([, value]) => value.web.version
-          );
-          // Reshape the array back into an object
-          let options = Object.fromEntries(filteredValidItems);
-
-          return options;
-        };
-        const options = filterValidItems(allItems);
-
-        return resolveRelatedOptions(
-          allFields,
-          options,
-          relatedFieldZUID,
-          relatedModelZUID,
-          1,
-          value
-        );
-      }, [
-        Object.keys(allFields).length,
-        Object.keys(allItems).length,
-        relatedModelZUID,
-        relatedFieldZUID,
-        1,
-        value,
-      ]);
-      const onOneToManyOpen = useCallback(() => {
-        return Promise.all([
-          dispatch(fetchFields(relatedModelZUID)),
-          dispatch(
-            fetchItems(relatedModelZUID, {
-              lang: "en-US",
-            })
-          ),
-        ]);
-      }, [relatedModelZUID]);
-
       return (
-        <FieldTypeOneToMany
-          data-cy="DefaultValueInput"
-          name={"defaultValue"}
-          value={
-            (value &&
-              (value as string)
-                ?.split(",")
-                ?.map(
-                  (value: any) =>
-                    oneToManyOptions?.find(
-                      (options) => options.value === value
-                    ) || { value, inputLabel: value, component: value }
-                )) ||
-            []
-          }
-          onChange={(_, options: OneToManyOptions[]) => {
-            const selectedOptions = options?.length
-              ? options.map((option) => option.value).join(",")
-              : null;
-            onChange(selectedOptions);
-          }}
-          options={oneToManyOptions}
-          onOpen={onOneToManyOpen}
-          renderTags={(tags, getTagProps) =>
-            tags.map((tag, index) => (
-              <Chip
-                size="small"
-                label={tag.component}
-                {...getTagProps({ index })}
-              />
-            ))
-          }
-          error={error}
+        <RelationalFieldBase
+          name="defaultValue"
+          multiselect
+          value={!!value ? String(value) : null}
+          relatedModelZUID={relatedModelZUID}
+          relatedFieldZUID={relatedFieldZUID}
+          onChange={(value) => onChange(value)}
+          fieldLabel={fieldLabel}
         />
       );
     case "link":
