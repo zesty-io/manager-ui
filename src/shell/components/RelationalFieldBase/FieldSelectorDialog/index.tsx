@@ -71,19 +71,19 @@ export type FieldFilters = {
 type FieldSelectorDialogProps = {
   onClose: () => void;
   modelZUID: string;
-  modelName: string;
   relatedFieldName: string;
   selectedZUIDs: string[];
   onUpdateSelectedZUIDs: (selectedZUIDs: string[]) => void;
+  fieldLabel: string;
   multiselect?: boolean;
 };
 export const FieldSelectorDialog = ({
   onClose,
   modelZUID,
-  modelName,
   relatedFieldName,
   selectedZUIDs,
   onUpdateSelectedZUIDs,
+  fieldLabel,
   multiselect,
 }: FieldSelectorDialogProps) => {
   const dispatch = useDispatch();
@@ -532,12 +532,13 @@ export const FieldSelectorDialog = ({
         sx: {
           width: 800,
           maxWidth: 800,
+          minHeight: 680,
           maxHeight: "min(1240px, calc(100% - 64px))",
         },
       }}
     >
       <DialogHeader
-        modelName={modelName}
+        fieldLabel={fieldLabel}
         multiselect={multiselect}
         selectedCount={filteredSelectionModels?.length || 0}
         onClose={onClose}
@@ -601,6 +602,7 @@ export const FieldSelectorDialog = ({
           >
             {!rows?.length && isFilteringResults ? (
               <NoSearchResults
+                isFilter
                 query={filterKeyword}
                 onSearchAgain={() => {
                   if (!!filterKeyword) {
@@ -657,6 +659,23 @@ export const FieldSelectorDialog = ({
 
                   "& .MuiDataGrid-cellCheckbox": {
                     mx: "3px",
+                  },
+
+                  "& .MuiDataGrid-row.Mui-selected": {
+                    borderBottom: (theme) =>
+                      `1px solid ${theme.palette.primary.main}`,
+
+                    "& .MuiDataGrid-cell": {
+                      borderBottom: 0,
+                    },
+                  },
+
+                  "& .MuiDataGrid-cell:focus-within": {
+                    outline: "none",
+                  },
+
+                  ".MuiDataGrid-row": {
+                    cursor: "pointer",
                   },
 
                   "& [data-field='image']": {

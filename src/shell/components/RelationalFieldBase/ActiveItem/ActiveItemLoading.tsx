@@ -10,7 +10,7 @@ export const ActiveItemLoading = ({ draggable }: ActiveItemLoadingProps) => {
       direction="row"
       sx={{
         bgcolor: "background.paper",
-        height: 64,
+        height: 62,
         width: "100%",
         border: 1,
         borderColor: "border",
@@ -20,7 +20,7 @@ export const ActiveItemLoading = ({ draggable }: ActiveItemLoadingProps) => {
     >
       <Stack direction="row" alignItems="center" flexGrow={1}>
         {draggable && (
-          <IconButton size="xsmall" sx={{ cursor: "grab", mx: 0.5 }} disabled>
+          <IconButton size="xsmall" sx={{ cursor: "grab", mx: 0.25 }} disabled>
             <DragIndicatorRounded fontSize="small" />
           </IconButton>
         )}

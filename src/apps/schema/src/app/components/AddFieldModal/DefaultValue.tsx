@@ -28,6 +28,7 @@ type DefaultValueProps = {
   };
   options: FieldSettingsOptions[];
   currency?: string;
+  fieldLabel: string;
 };
 
 export const DefaultValue = ({
@@ -41,6 +42,7 @@ export const DefaultValue = ({
   relationshipFields,
   options,
   currency,
+  fieldLabel,
 }: DefaultValueProps) => {
   return (
     <Box>
@@ -91,6 +93,7 @@ export const DefaultValue = ({
               relationshipFields={relationshipFields}
               options={options}
               currency={currency}
+              fieldLabel={fieldLabel}
             />
             <FormHelperText>
               <Box display="flex" justifyContent="space-between">

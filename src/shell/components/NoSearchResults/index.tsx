@@ -18,6 +18,7 @@ type Props = {
   hideBackButton?: boolean;
   onSearchAgain?: () => void;
   imageHeight?: number;
+  isFilter?: boolean;
 };
 
 export const NoSearchResults: FC<Props> = ({
@@ -26,6 +27,7 @@ export const NoSearchResults: FC<Props> = ({
   ignoreFilters,
   hideBackButton,
   imageHeight = 200,
+  isFilter,
 }) => {
   const history = useHistory();
   const [params, setParams] = useParams();
@@ -68,7 +70,7 @@ export const NoSearchResults: FC<Props> = ({
               "No results that matched your filters could be found"
             ) : (
               <>
-                Your search
+                Your {isFilter ? "filter" : "search"}
                 <Box component="strong" fontWeight="bold">
                   {" "}
                   "{query}"{" "}
