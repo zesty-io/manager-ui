@@ -165,10 +165,12 @@ export const FieldForm = ({
       ?.sort((a, b) => a.label.localeCompare(b.label));
   }, [allModels]);
   const fieldsOptions: DropdownOptions[] = useMemo(() => {
-    return selectedModelFields?.map((field) => ({
-      label: field.label,
-      value: field.ZUID,
-    }));
+    return selectedModelFields
+      ?.filter((field) => !field.deletedAt)
+      ?.map((field) => ({
+        label: field.label,
+        value: field.ZUID,
+      }));
   }, [selectedModelFields]);
   const [
     deleteContentModelField,
