@@ -41,9 +41,10 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
   useEffect(() => {
     if (isSuccess) {
       onClose();
-      history.push("/schema");
+      const targetPath = `/${history?.location?.pathname.split("/")[1]}`;
+      history.push(targetPath);
     }
-  }, [isSuccess]);
+  }, [isSuccess, history]);
 
   useEffect(() => {
     // @ts-ignore
