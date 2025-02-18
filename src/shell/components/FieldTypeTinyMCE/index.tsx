@@ -339,6 +339,13 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
               // Customize editor buttons and actions
               setup: (editor: any) => {
+                editor.on("init", function () {
+                  editor.addShortcut("meta+p", "", () => {
+                    window.dispatchEvent(
+                      new KeyboardEvent("keydown", { key: "p", metaKey: true })
+                    );
+                  });
+                });
                 editor.on("SkinLoaded", () => {
                   setIsSkinLoaded(true);
                 });
