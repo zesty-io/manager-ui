@@ -266,7 +266,7 @@ export const ItemList = () => {
                   CONFIG.SERVICE_MEDIA_RESOLVER
                 }/resolve/${
                   value?.split(",")[0]
-                }/getimage/?w=${68}&h=${58}&type=fit`
+                }/getimage/?w=${68}&h=auto&type=fit`
               : value?.split(",")?.[0];
             break;
           case "internal_link":
