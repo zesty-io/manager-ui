@@ -8,15 +8,19 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
+  Stack,
+  List,
 } from "@mui/material";
 import {
   useCreateItemPublishingMutation,
+  useCreateItemsPublishingMutation,
   useDeleteItemPublishingMutation,
   useGetAuditsQuery,
+  useGetContentModelFieldsQuery,
   useGetItemPublishingsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   SaveRounded,
@@ -31,18 +35,24 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useMetaKey } from "../../../../../../../../shell/hooks/useMetaKey";
-import { fetchItemPublishing } from "../../../../../../../../shell/store/content";
+import {
+  fetchItemPublishing,
+  fetchItemPublishings,
+} from "../../../../../../../../shell/store/content";
 import { LoadingButton } from "@mui/lab";
 import { useGetUsersQuery } from "../../../../../../../../shell/services/accounts";
 import { formatDate } from "../../../../../../../../utility/formatDate";
 import { UnpublishDialog } from "./UnpublishDialog";
 import { usePermission } from "../../../../../../../../shell/hooks/use-permissions";
 import {
+  ContentItem,
   ContentItemWithDirtyAndPublishing,
   ContentModel,
 } from "../../../../../../../../shell/services/types";
-import { ConfirmPublishModal } from "./ConfirmPublishModal";
 import { SchedulePublish } from "../../../../../../../../shell/components/SchedulePublish";
+import { ConfirmPublishModal } from "../../../../../../../../shell/components/ConfirmPublishModal";
+import { UnpublishedRelatedItem } from "./UnpublishedRelatedItem";
+import { uniqBy } from "lodash";
 
 const ITEM_STATES = {
   dirty: "dirty",
@@ -78,19 +88,26 @@ export const ItemEditHeaderActions = ({
   const [publishAfterUnschedule, setPublishAfterUnschedule] = useState(false);
   const [isConfirmPublishModalOpen, setIsConfirmPublishModalOpen] =
     useState(false);
+  const [relatedItemsToPublish, setRelatedItemsToPublish] = useState<
+    ContentItemWithDirtyAndPublishing[]
+  >([]);
+  const [isPublishing, setIsPublishing] = useState(false);
   const item = useSelector(
     (state: AppState) =>
       state.content[itemZUID] as ContentItemWithDirtyAndPublishing
   );
+  const items = useSelector((state: AppState) => state.content);
   const model = useSelector(
     (state: AppState) => state.models[modelZUID]
   ) as ContentModel;
+  const { data: fields } = useGetContentModelFieldsQuery(modelZUID, {
+    skip: !modelZUID,
+  });
   const { data: users } = useGetUsersQuery();
   const { data: itemAudit } = useGetAuditsQuery({
     affectedZUID: itemZUID,
   });
-  const [createPublishing, { isLoading: publishing }] =
-    useCreateItemPublishingMutation();
+  const [createPublishing] = useCreateItemPublishingMutation();
   const [deleteItemPublishing, { isLoading: unpublishing }] =
     useDeleteItemPublishingMutation();
   const lastItemUpdateAudit = itemAudit?.find(
@@ -121,6 +138,80 @@ export const ItemEditHeaderActions = ({
     }
   });
 
+  const unpublishedRelatedItems = useMemo(() => {
+    if (!fields || !item.data || !items) return [];
+
+    const relatedFieldZUIDs = Object.entries(item.data)?.reduce(
+      (
+        acc: {
+          itemZUIDs: string[];
+          relatedFieldZUID: string;
+          relatedModelZUID: string;
+        }[],
+        [key, value]
+      ) => {
+        const field = fields.find((field) => field.name === key);
+
+        if (
+          !!value &&
+          (field?.datatype === "one_to_many" ||
+            field?.datatype === "one_to_one")
+        ) {
+          acc = [
+            ...acc,
+            {
+              relatedFieldZUID: field.relatedFieldZUID,
+              relatedModelZUID: field.relatedModelZUID,
+              itemZUIDs: (value as string)?.split(","),
+            },
+          ];
+        }
+
+        return acc;
+      },
+      []
+    );
+
+    const unpublishedRelatedItems = Object.values(relatedFieldZUIDs)
+      ?.map(({ relatedFieldZUID, relatedModelZUID, itemZUIDs }) => {
+        const relatedItems = itemZUIDs?.map((ZUID) => {
+          const item = Object.values(items)?.find(
+            (item) =>
+              item.meta.ZUID === ZUID &&
+              item.meta.contentModelZUID === relatedModelZUID
+          );
+
+          if (!!item) {
+            const draftVersion = item?.meta?.version;
+            const publishedVersion = item?.publishing?.version || 0;
+            const scheduledVersion = item?.scheduling?.version || 0;
+
+            if (
+              draftVersion > publishedVersion ||
+              scheduledVersion > publishedVersion
+            ) {
+              return {
+                ...item,
+                relatedFieldZUID,
+                relatedModelZUID,
+              };
+            }
+          }
+        });
+
+        return relatedItems;
+      })
+      ?.flat()
+      ?.filter((item) => !!item);
+
+    const uniqueItems = uniqBy(unpublishedRelatedItems, "meta.ZUID");
+
+    // Make sure that unpublished related items are checked by default
+    setRelatedItemsToPublish(uniqueItems);
+
+    return uniqueItems;
+  }, [fields, item, items]);
+
   const itemState = (() => {
     if (item?.dirty) {
       return ITEM_STATES.dirty;
@@ -134,26 +225,61 @@ export const ItemEditHeaderActions = ({
   })();
 
   const handlePublish = async () => {
-    // If item is scheduled, delete the scheduled publishing first
-    if (itemState === ITEM_STATES.scheduled) {
-      await deleteItemPublishing({
-        modelZUID,
-        itemZUID,
-        publishingZUID: item?.scheduling?.ZUID,
-      });
-    }
-    createPublishing({
-      modelZUID,
-      itemZUID,
-      body: {
-        version: item?.meta.version,
-        publishAt: "now",
-        unpublishAt: "never",
-      },
-    }).then(() => {
+    setIsPublishing(true);
+    try {
+      // Delete scheduled publishings first
+      const deleteScheduledPromises = [
+        // Delete main item's scheduled publishing if it exists
+        itemState === ITEM_STATES.scheduled &&
+          deleteItemPublishing({
+            modelZUID,
+            itemZUID,
+            publishingZUID: item?.scheduling?.ZUID,
+          }),
+        // Delete related items' scheduled publishings if they exist
+        ...relatedItemsToPublish
+          .filter((item) => !!item.scheduling?.ZUID)
+          .map((item) =>
+            deleteItemPublishing({
+              modelZUID: item.meta.contentModelZUID,
+              itemZUID: item.meta.ZUID,
+              publishingZUID: item.scheduling.ZUID,
+            })
+          ),
+      ].filter((item) => !!item);
+
+      await Promise.all(deleteScheduledPromises);
+
+      // Proceed with publishing
+      await Promise.allSettled([
+        createPublishing({
+          modelZUID,
+          itemZUID,
+          body: {
+            version: item?.meta.version,
+            publishAt: "now",
+            unpublishAt: "never",
+          },
+        }),
+        ...relatedItemsToPublish.map((item) =>
+          createPublishing({
+            modelZUID: item.meta.contentModelZUID,
+            itemZUID: item.meta.ZUID,
+            body: {
+              version: item.meta.version,
+              publishAt: "now",
+              unpublishAt: "never",
+            },
+          })
+        ),
+      ]);
+
       // Retain non rtk-query fetch of item publishing for legacy code
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
-    });
+      dispatch(fetchItemPublishings());
+    } finally {
+      setIsPublishing(false);
+      setIsConfirmPublishModalOpen(false);
+    }
   };
 
   const handleUnpublish = async () => {
@@ -320,7 +446,7 @@ export const ItemEditHeaderActions = ({
                     setIsConfirmPublishModalOpen(true);
                   }
                 }}
-                loading={publishing || saving || isFetching}
+                loading={isPublishing || saving || isFetching}
                 color="success"
                 variant="contained"
                 id="PublishButton"
@@ -338,7 +464,7 @@ export const ItemEditHeaderActions = ({
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);
                 }}
-                disabled={publishing || saving || isFetching}
+                disabled={isPublishing || saving || isFetching}
                 data-cy="PublishMenuButton"
               >
                 <ArrowDropDownRounded fontSize="small" />
@@ -422,7 +548,7 @@ export const ItemEditHeaderActions = ({
                 onClick={() => {
                   setIsConfirmPublishModalOpen(true);
                 }}
-                loading={publishing || publishAfterSave || isFetching}
+                loading={isPublishing || publishAfterSave || isFetching}
                 color="success"
                 variant="contained"
                 id="PublishButton"
@@ -440,7 +566,7 @@ export const ItemEditHeaderActions = ({
                 onClick={(e) => {
                   setPublishMenu(e.currentTarget);
                 }}
-                disabled={publishing || publishAfterSave || isFetching}
+                disabled={isPublishing || publishAfterSave || isFetching}
                 data-cy="PublishMenuButton"
               >
                 <ArrowDropDownRounded fontSize="small" />
@@ -526,12 +652,51 @@ export const ItemEditHeaderActions = ({
             setPublishAfterUnschedule(false);
           }}
           onConfirm={() => {
-            setIsConfirmPublishModalOpen(false);
+            // setIsConfirmPublishModalOpen(false);
             setPublishAfterUnschedule(false);
             handlePublish();
           }}
           altText={model?.type === "block" && "Variant"}
-        />
+          relatedItemsToPublishCount={relatedItemsToPublish.length}
+          isPublishing={isPublishing}
+        >
+          {unpublishedRelatedItems?.length > 0 && (
+            <Stack mt={2}>
+              <Typography variant="body2" fontWeight={600}>
+                Also publish related items
+              </Typography>
+              <Typography variant="body3" color="text.secondary">
+                This will publish all items selected in the list below
+              </Typography>
+              <List disablePadding sx={{ mt: 1 }}>
+                {unpublishedRelatedItems.map((item, index) => (
+                  <UnpublishedRelatedItem
+                    key={item.meta.ZUID}
+                    contentItem={item}
+                    divider
+                    selected={relatedItemsToPublish.some(
+                      (i) => i.meta.ZUID === item.meta.ZUID
+                    )}
+                    onChange={({ action, contentItem }) => {
+                      if (action === "add") {
+                        setRelatedItemsToPublish([
+                          ...relatedItemsToPublish,
+                          contentItem,
+                        ]);
+                      } else {
+                        setRelatedItemsToPublish(
+                          relatedItemsToPublish.filter(
+                            (item) => item.meta.ZUID !== contentItem.meta.ZUID
+                          )
+                        );
+                      }
+                    }}
+                  />
+                ))}
+              </List>
+            </Stack>
+          )}
+        </ConfirmPublishModal>
       )}
     </>
   );

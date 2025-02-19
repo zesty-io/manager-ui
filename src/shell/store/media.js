@@ -422,6 +422,14 @@ function fetchGroups(binZUID) {
           throw res;
         }
       },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch groups: ${err?.message || err || ""}`,
+          })
+        );
+      },
     });
   };
 }
@@ -521,6 +529,14 @@ export function fetchBinFiles(binZUID) {
           throw res;
         }
       },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch bin files: ${err?.message || err || ""}`,
+          })
+        );
+      },
     });
   };
 }
@@ -542,6 +558,16 @@ export function fetchGroupFiles(groupZUID) {
           );
           throw res;
         }
+      },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch group files: ${
+              err?.message || err || ""
+            }`,
+          })
+        );
       },
     });
   };
@@ -768,6 +794,14 @@ export function searchFiles(term) {
           dispatch(searchFilesError());
           throw res;
         }
+      },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to search for file: ${err?.message || err || ""}`,
+          })
+        );
       },
     });
   };

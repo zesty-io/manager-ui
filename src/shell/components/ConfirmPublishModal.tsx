@@ -1,23 +1,27 @@
+import { useRef } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
   Box,
-  Stack,
+  Button,
   ButtonBaseActions,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Typography,
 } from "@mui/material";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
-import { useRef } from "react";
+import { LoadingButton } from "@mui/lab";
 
-type ConfirmPublishModal = {
+export type ConfirmPublishModal = {
   contentTitle: string;
   onCancel: () => void;
   onConfirm: () => void;
   contentVersion: number;
   altText?: string;
+  isPublishing?: boolean;
+  children?: JSX.Element;
+  relatedItemsToPublishCount?: number;
 };
 export const ConfirmPublishModal = ({
   contentTitle,
@@ -25,6 +29,9 @@ export const ConfirmPublishModal = ({
   onConfirm,
   contentVersion,
   altText,
+  isPublishing,
+  children,
+  relatedItemsToPublishCount,
 }: ConfirmPublishModal) => {
   const actionRef = useRef<ButtonBaseActions | null>(null);
   const onEntered = () => actionRef?.current?.focusVisible();
@@ -61,12 +68,20 @@ export const ConfirmPublishModal = ({
           {altText ? altText?.toLowerCase() : "item"} available on all of your
           platforms. You can always unpublish this item later if needed.
         </Typography>
+        {children}
       </DialogContent>
       <DialogActions>
-        <Button variant="text" color="inherit" onClick={onCancel}>
+        <Button
+          data-cy="CancelPublishButton"
+          variant="text"
+          color="inherit"
+          onClick={onCancel}
+          disabled={isPublishing}
+        >
           Cancel
         </Button>
-        <Button
+        <LoadingButton
+          loading={isPublishing}
           action={(actions) => (actionRef.current = actions)}
           variant="contained"
           color="success"
@@ -74,8 +89,10 @@ export const ConfirmPublishModal = ({
           onClick={onConfirm}
           data-cy="ConfirmPublishButton"
         >
-          Publish {altText || "Item"}
-        </Button>
+          Publish {altText || !!relatedItemsToPublishCount ? "Items " : "Item "}
+          {!!relatedItemsToPublishCount &&
+            `(${relatedItemsToPublishCount + 1})`}
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

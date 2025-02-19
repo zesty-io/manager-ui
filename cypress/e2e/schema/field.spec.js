@@ -54,6 +54,9 @@ const SELECTORS = {
   MAX_CHARACTER_LIMIT_INPUT: "MaxCharacterLimitInput",
   MIN_CHARACTER_ERROR_MSG: "MinCharacterErrorMsg",
   MAX_CHARACTER_ERROR_MSG: "MaxCharacterErrorMsg",
+  ADD_NEW_RELATED_ITEM: "add-relational-item-button",
+  CONFIRM_NEW_RELATED_ITEM: "done-selecting-item-button",
+  ACTIVE_RELATED_ITEM: "active-relational-item",
 };
 
 /**
@@ -305,9 +308,6 @@ describe("Schema: Fields", () => {
   it("Creates a One-to-one relationship field", () => {
     cy.intercept("**/fields?showDeleted=true").as("getFields");
 
-    const fieldLabel = `One to One ${timestamp}`;
-    const fieldName = `one_to_one_${timestamp}`;
-
     // Open the add field modal
     cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
       .should("exist")
@@ -316,9 +316,6 @@ describe("Schema: Fields", () => {
 
     // Select one-to-one relationship field
     cy.getBySelector(SELECTORS.FIELD_SELECT_ONE_TO_ONE).should("exist").click();
-
-    // Fill up fields
-    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
 
     // Select a related model
     cy.getBySelector(SELECTORS.AUTOCOMPLETE_MODEL_ZUID)
@@ -341,13 +338,12 @@ describe("Schema: Fields", () => {
     // click on the default value checkbox
     cy.getBySelector(SELECTORS.DEFAULT_VALUE_CHECKBOX).click();
     // enter a default value
-    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT).click();
+    cy.getBySelector(SELECTORS.ADD_NEW_RELATED_ITEM).click();
     // Select the option
-    cy.get("[role=listbox] [role=option]").first().click();
+    cy.get(".MuiDataGrid-row").first().find("input").click();
+    cy.getBySelector(SELECTORS.CONFIRM_NEW_RELATED_ITEM).click();
     // verify that the default value is set
-    cy.getBySelector(SELECTORS.DEFAULT_VALUE_INPUT)
-      .find("input")
-      .should("have.value", "- None -");
+    cy.getBySelector(SELECTORS.ACTIVE_RELATED_ITEM).should("have.length", 1);
     cy.getBySelector(SELECTORS.DEFAULT_VALUE_CHECKBOX).click();
 
     // Click done
@@ -357,7 +353,9 @@ describe("Schema: Fields", () => {
     cy.wait("@getFields");
 
     // Check if field exists
-    cy.getBySelector(`Field_${fieldName}`).should("exist");
+    cy.getBySelector(
+      "Field_cypress_test__group_with_visible_fields_in_list_"
+    ).should("exist");
   });
 
   it("Creates a currency field", () => {

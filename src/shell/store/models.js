@@ -119,6 +119,14 @@ export function fetchModel(modelZUID) {
           }
         }
       },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch model: ${err?.message || err || ""}`,
+          })
+        );
+      },
     });
   };
 }

@@ -114,6 +114,14 @@ export function fetchField(modelZUID, fieldZUID) {
           },
         });
       },
+      error: (err) => {
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to fetch field: ${err?.message || err || ""}`,
+          })
+        );
+      },
     });
   };
 }
