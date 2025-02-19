@@ -169,7 +169,7 @@ export const RelationalFieldBase = ({
             onClick={(evt) => setAnchorEl(evt.currentTarget)}
             disabled={isLoading || !modelData}
           >
-            Add Existing {modelData?.label}
+            Add Existing {fieldLabel}
           </Button>
           {multiselect && !isRenderedAsDialog && (
             <Button
@@ -181,7 +181,7 @@ export const RelationalFieldBase = ({
               onClick={() => setInitiatorZUID(fieldZUID)}
               disabled={isLoading || !modelData}
             >
-              Create & Add New {modelData?.label}
+              Create & Add New {fieldLabel}
             </Button>
           )}
         </Stack>
