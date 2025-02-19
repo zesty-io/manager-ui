@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
@@ -39,7 +39,7 @@ import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
-import { CREATE_NEW_ITEM_DIALOG_EVENTS } from "../../../../../../shell/components/RelationalFieldBase/CreateNewItemDialog";
+import { CreateContentItemDialogContext } from "../../../../../../shell/contexts/CreateContentItemDialogProvider";
 
 export type ActionAfterSave =
   | ""
@@ -67,6 +67,9 @@ export const ItemCreate = () => {
   const history = useHistory();
   const isMounted = useIsMounted();
   const dispatch = useDispatch();
+  const [_, __, ___, setNewlyCreatedItemZUID] = useContext(
+    CreateContentItemDialogContext
+  );
   const [queryParams] = useQueryParams();
   const isRenderedAsDialog = queryParams.get("isDialog") === "true";
   const { modelZUID } = useParams<{ modelZUID: string }>();
@@ -387,13 +390,7 @@ export const ItemCreate = () => {
 
   const handleRedirect = (itemZUID: string) => {
     if (isRenderedAsDialog) {
-      window.dispatchEvent(
-        new CustomEvent(CREATE_NEW_ITEM_DIALOG_EVENTS.ITEM_CREATED, {
-          detail: {
-            itemZUID,
-          },
-        })
-      );
+      setNewlyCreatedItemZUID(itemZUID);
     } else {
       history.push(
         `/${
@@ -441,7 +438,7 @@ export const ItemCreate = () => {
               </Box>
             )}
             <AIGeneratorProvider>
-              {model.type === "block" && (
+              {model?.type === "block" && (
                 <Meta
                   onUpdateSEOErrors={(errors: FieldErrors) => {
                     setSEOErrors(errors);
@@ -471,7 +468,7 @@ export const ItemCreate = () => {
                   setFieldErrors(errors);
                 }}
               />
-              {model.type !== "block" && (
+              {model?.type !== "block" && (
                 <Meta
                   onUpdateSEOErrors={(errors: FieldErrors) => {
                     setSEOErrors(errors);

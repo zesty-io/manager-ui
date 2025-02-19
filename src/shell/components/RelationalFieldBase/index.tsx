@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { Box, Button, Stack } from "@mui/material";
 import {
   LinkRounded,
@@ -20,11 +20,13 @@ import { fetchItems } from "../../store/content";
 import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
 import { CreateNewItemDialog } from "./CreateNewItemDialog";
 import { useParams } from "../../hooks/useParams";
+import { CreateContentItemDialogContext } from "../../contexts/CreateContentItemDialogProvider";
 
 type RelationalFieldBaseProps = {
   name: string;
   value: string;
   fieldLabel: string;
+  fieldZUID: string;
   relatedModelZUID: string;
   relatedFieldZUID: string;
   onChange: (value: string, name: string) => void;
@@ -34,6 +36,7 @@ export const RelationalFieldBase = ({
   name,
   value,
   fieldLabel,
+  fieldZUID,
   relatedModelZUID,
   relatedFieldZUID,
   onChange,
@@ -44,8 +47,12 @@ export const RelationalFieldBase = ({
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
-  const [isCreateNewItemDialogOpen, setIsCreateNewItemDialogOpen] =
-    useState(false);
+  const [
+    initiatorZUID,
+    setInitiatorZUID,
+    newlyCreatedItemZUID,
+    setNewlyCreatedItemZUID,
+  ] = useContext(CreateContentItemDialogContext);
 
   const { data: modelData, isLoading: isLoadingModelData } =
     useGetContentModelQuery(relatedModelZUID, {
@@ -61,6 +68,17 @@ export const RelationalFieldBase = ({
       dispatch(fetchItems(relatedModelZUID));
     }
   }, [relatedModelZUID]);
+
+  useEffect(() => {
+    if (!!newlyCreatedItemZUID && initiatorZUID === fieldZUID) {
+      const newItemZUIDs = [...itemZUIDs, newlyCreatedItemZUID];
+
+      onChange(!!newItemZUIDs?.length ? newItemZUIDs.join(",") : null, name);
+      setItemZUIDs(!!newItemZUIDs?.length ? newItemZUIDs : null);
+      setInitiatorZUID(null);
+      setNewlyCreatedItemZUID(null);
+    }
+  }, [newlyCreatedItemZUID, itemZUIDs, initiatorZUID]);
 
   const handleMoveCard = useCallback(
     (draggedItemZUID: string, dropIndex: number) => {
@@ -160,7 +178,7 @@ export const RelationalFieldBase = ({
               size="large"
               startIcon={<AddRounded />}
               fullWidth
-              onClick={() => setIsCreateNewItemDialogOpen(true)}
+              onClick={() => setInitiatorZUID(fieldZUID)}
               disabled={isLoading || !modelData}
             >
               Create & Add New {modelData?.label}
@@ -188,22 +206,10 @@ export const RelationalFieldBase = ({
           }}
         />
       )}
-      {isCreateNewItemDialogOpen && (
+      {initiatorZUID === fieldZUID && (
         <CreateNewItemDialog
           modelZUID={relatedModelZUID}
-          onItemCreated={(evt) => {
-            setIsCreateNewItemDialogOpen(false);
-
-            const { itemZUID } = evt.detail;
-            const newItemZUIDs = [...itemZUIDs, itemZUID];
-
-            onChange(
-              !!newItemZUIDs?.length ? newItemZUIDs.join(",") : null,
-              name
-            );
-            setItemZUIDs(!!newItemZUIDs?.length ? newItemZUIDs : null);
-          }}
-          onClose={() => setIsCreateNewItemDialogOpen(false)}
+          onClose={() => setInitiatorZUID(null)}
         />
       )}
     </Box>

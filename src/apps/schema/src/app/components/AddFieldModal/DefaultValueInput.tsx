@@ -306,6 +306,7 @@ export const DefaultValueInput = ({
       return (
         <RelationalFieldBase
           name="defaultValue"
+          fieldZUID="newDefaultValue"
           value={!!value ? String(value) : null}
           relatedModelZUID={relatedModelZUID}
           relatedFieldZUID={relatedFieldZUID}
@@ -317,6 +318,7 @@ export const DefaultValueInput = ({
       return (
         <RelationalFieldBase
           name="defaultValue"
+          fieldZUID="newDefaultValue"
           multiselect
           value={!!value ? String(value) : null}
           relatedModelZUID={relatedModelZUID}

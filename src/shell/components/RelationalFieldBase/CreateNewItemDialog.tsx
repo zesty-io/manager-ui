@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { MemoryRouter } from "react-router";
 import { Dialog, IconButton } from "@mui/material";
 import { createPortal } from "react-dom";
@@ -11,33 +11,16 @@ export const CREATE_NEW_ITEM_DIALOG_EVENTS = {
 } as const;
 type CreateNewItemDialogProps = {
   modelZUID: string;
-  onItemCreated: (evt: CustomEvent) => void;
   onClose: () => void;
 };
 export const CreateNewItemDialog = ({
   modelZUID,
-  onItemCreated,
   onClose,
 }: CreateNewItemDialogProps) => {
-  useEffect(() => {
-    window.addEventListener(CREATE_NEW_ITEM_DIALOG_EVENTS.CLOSE, onClose);
-    window.addEventListener(
-      CREATE_NEW_ITEM_DIALOG_EVENTS.ITEM_CREATED,
-      onItemCreated
-    );
-
-    return () => {
-      window.removeEventListener(CREATE_NEW_ITEM_DIALOG_EVENTS.CLOSE, onClose);
-      window.addEventListener(
-        CREATE_NEW_ITEM_DIALOG_EVENTS.ITEM_CREATED,
-        onItemCreated
-      );
-    };
-  }, []);
-
   return createPortal(
     <MemoryRouter initialEntries={[`/content/${modelZUID}/new?isDialog=true`]}>
       <Dialog
+        id="createNewItemDialog"
         open
         fullScreen
         sx={{ my: 2.5, mx: 10 }}

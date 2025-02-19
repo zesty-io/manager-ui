@@ -657,6 +657,7 @@ export const Field = ({
           <RelationalFieldBase
             name={name}
             value={!!value ? String(value) : null}
+            fieldZUID={ZUID}
             relatedModelZUID={relatedModelZUID}
             relatedFieldZUID={relatedFieldZUID}
             onChange={onChange}
@@ -672,6 +673,7 @@ export const Field = ({
             name={name}
             multiselect
             value={!!value ? String(value) : null}
+            fieldZUID={ZUID}
             relatedModelZUID={relatedModelZUID}
             relatedFieldZUID={relatedFieldZUID}
             onChange={onChange}

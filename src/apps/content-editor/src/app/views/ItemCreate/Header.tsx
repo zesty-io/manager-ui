@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -26,7 +26,7 @@ import { ContentModel } from "../../../../../../shell/services/types";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
 import { ActionAfterSave } from "./ItemCreate";
 import { useParams } from "../../../../../../shell/hooks/useParams";
-import { CREATE_NEW_ITEM_DIALOG_EVENTS } from "../../../../../../shell/components/RelationalFieldBase/CreateNewItemDialog";
+import { CreateContentItemDialogContext } from "../../../../../../shell/contexts/CreateContentItemDialogProvider";
 
 type DropdownMenuType = "default" | "addNew";
 const DropdownMenu: Record<DropdownMenuType, Record<string, string>> = {
@@ -51,6 +51,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
   const [dropdownMenuType, setDropdownMenuType] =
     useState<DropdownMenuType | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
+  const [_, setInitiatorZUID] = useContext(CreateContentItemDialogContext);
 
   const metaShortcut = useMetaKey("s", onSave);
   const isRenderedAsDialog = params.get("isDialog") === "true";
@@ -171,9 +172,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
               <IconButton
                 size="small"
                 onClick={() => {
-                  window.dispatchEvent(
-                    new CustomEvent(CREATE_NEW_ITEM_DIALOG_EVENTS.CLOSE)
-                  );
+                  setInitiatorZUID(null);
                 }}
               >
                 <CloseRounded />
