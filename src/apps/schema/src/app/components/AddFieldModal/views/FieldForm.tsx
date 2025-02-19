@@ -700,30 +700,35 @@ export const FieldForm = ({
     inputName: string;
     value: FormValue;
   }) => {
-    const isAutoPopulateName = inputName === "label" && !isUpdateField;
+    const modelName =
+      inputName === "relatedModelZUID" && !!value
+        ? allModels?.find((model) => model.ZUID === value)?.label
+        : "";
 
     // Form data update
     setFormData((prevData) => ({
       ...prevData,
       [inputName]:
         inputName === "name" ? convertLabelValue(value as string) : value,
-    }));
 
-    // Auto populate "name" when "label" field changes
-    if (isAutoPopulateName) {
-      setFormData((prevData) => ({
-        ...prevData,
-        name: convertLabelValue(value as string),
-      }));
-    }
+      // Auto populate "name" when "label" field changes
+      ...(inputName === "label" &&
+        !isUpdateField && {
+          name: convertLabelValue(value as string),
+        }),
 
-    // Reset relatedFieldZUID when model zuid changes
-    if (inputName === "relatedModelZUID") {
-      setFormData((prevData) => ({
-        ...prevData,
+      // Reset relatedFieldZUID when model zuid changes
+      ...(inputName === "relatedModelZUID" && {
         relatedFieldZUID: "",
-      }));
-    }
+      }),
+
+      // Auto populate "name" and "label" when relatedModelZUID changes
+      ...(inputName === "relatedModelZUID" &&
+        !isUpdateField && {
+          name: convertLabelValue(modelName),
+          label: modelName,
+        }),
+    }));
   };
 
   const handleAddAnotherField = () => {
