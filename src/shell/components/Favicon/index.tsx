@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MemoryRouter } from "react-router";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Dialog, IconButton, Button } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 
@@ -21,7 +21,6 @@ import {
   ModalHeader,
 } from "@zesty-io/core/Modal";
 
-import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { MediaApp } from "../../../apps/media/src/app";
@@ -38,32 +37,22 @@ import {
 import { FieldTypeMedia } from "../../../apps/content-editor/src/app/components/FieldTypeMedia";
 import { theme } from "@zesty-io/material";
 import { AppState } from "../../store/types";
+import instanceZUID from "../../../utility/instanceZUID";
+
+const SIZES = [32, 128, 152, 167, 180, 192, 196] as const;
 
 type FaviconProps = {
   onCloseFaviconModal: () => void;
-  dispatch: any;
-  instance: any;
-  ui: any;
 };
-export default connect((state: AppState) => {
-  return {
-    instance: state.instance,
-    ui: state.ui,
-  };
-})(function favicon({
-  onCloseFaviconModal,
-  dispatch,
-  instance,
-  ui,
-}: FaviconProps) {
-  const [loading, setLoading] = useState(false);
+export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
+  const dispatch = useDispatch();
+  const ui = useSelector((state: AppState) => state.ui);
 
+  const [loading, setLoading] = useState(false);
   const [faviconZUID, setFaviconZUID] = useState("");
   const [faviconURL, setFaviconURL] = useState("");
   const [imageModal, setImageModal] = useState(null);
   const [headtagZUID, setHeadTagZUID] = useState("");
-
-  const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
 
   const { data: headTags } = useGetHeadTagsQuery();
   const [deleteHeadTag] = useDeleteHeadTagMutation();
@@ -96,6 +85,7 @@ export default connect((state: AppState) => {
         (tag) => tag.attributes?.sizes === "196x196"
       );
 
+      console.log("tag", tag);
       if (tag) {
         setHeadTagZUID(tag.ZUID);
         setFaviconURL(tag.attributes?.href);
@@ -126,7 +116,7 @@ export default connect((state: AppState) => {
 
     createHeadTag({
       type: "link",
-      resourceZUID: instance.ZUID,
+      resourceZUID: instanceZUID,
       attributes: {
         rel: "icon",
         type: "image/png",
@@ -190,7 +180,6 @@ export default connect((state: AppState) => {
   };
 
   const images = faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : [];
-  console.log("images", images);
 
   return (
     <>
@@ -203,26 +192,6 @@ export default connect((state: AppState) => {
           <h1 className={styles.headline}>Select Instance Favicon</h1>
         </ModalHeader>
         <ModalContent>
-          {/* <FieldTypeImage
-            data-cy="FieldTypeImage"
-            name="favicon"
-            label="Image to be used as instance favicon"
-            description="Favicons are used by search engine, browsers and applications. They are typically displayed along side your domain name. We recommend using a square PNG image with a transparent background, 228 x 228 or greater."
-            tooltip="Because favicons are used in multiple settings we will create multiple sizes of the image you select to fit each use case."
-            // limit={1}
-            // values field displays
-            images={images}
-            imageZUID={headtagZUID}
-            // feed to media app
-            value={faviconZUID}
-            onChange={handleImage}
-            resolveImage={(zuid, width, height) =>
-              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
-            }
-            mediaBrowser={(opts) => {
-              setImageModal(opts);
-            }}
-          /> */}
           <ThemeProvider theme={theme}>
             <FieldTypeMedia
               limit={1}
@@ -278,7 +247,7 @@ export default connect((state: AppState) => {
 
           {faviconZUID && (
             <section className={styles.Sizes}>
-              {sizes.map((size) => (
+              {SIZES.map((size) => (
                 <figure key={size}>
                   <img
                     // @ts-expect-error
@@ -325,4 +294,4 @@ export default connect((state: AppState) => {
       </Modal>
     </>
   );
-});
+};
