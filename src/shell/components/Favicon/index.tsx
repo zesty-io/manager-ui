@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
 import { MemoryRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { Dialog, IconButton, Button } from "@mui/material";
+import { Dialog, IconButton, Button, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -73,7 +73,8 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
     }
   );
 
-  const { data: headTags } = useGetHeadTagsQuery();
+  const { data: headTags, isFetching: isFetchingHeadTags } =
+    useGetHeadTagsQuery();
   const [deleteHeadTag] = useDeleteHeadTagMutation();
   const [
     createHeadTag,
@@ -83,7 +84,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
       error: faviconUpdateError,
     },
   ] = useCreateHeadTagMutation();
-  const { data: bins } = useGetBinsQuery({
+  const { data: bins, isFetching: isFetchingBins } = useGetBinsQuery({
     instanceId: instance?.ID,
     ecoId: instance?.ecoId,
   });
@@ -117,9 +118,6 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
       )?.id;
 
       if (tag) {
-        // setHeadTagZUID(tag.ZUID);
-        // setFaviconURL(tag.attributes?.href);
-        // setFaviconZUID(faviconZUID);
         updateFaviconData({
           headtagZUID: tag.ZUID,
           faviconURL: tag.attributes?.href,
@@ -131,8 +129,6 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
 
   const handleImage = (zuid: string) => {
     if (!zuid) {
-      // setFaviconZUID("");
-      // setFaviconURL("");
       updateFaviconData({
         faviconZUID: "",
         faviconURL: "",
@@ -142,8 +138,6 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
       // @ts-expect-error
       request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${zuid}`).then((res) => {
         const { url, id } = res.data[0];
-        // setFaviconURL(url);
-        // setFaviconZUID(id);
         updateFaviconData({
           faviconZUID: id,
           faviconURL: url,
@@ -228,6 +222,8 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
     : faviconData?.faviconURL
     ? [faviconData.faviconURL]
     : [];
+  const isLoading =
+    isFetchingHeadTags || isFetchingBins || isFetchingAllMediaFiles;
 
   return (
     <>
@@ -240,82 +236,88 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
           <h1 className={styles.headline}>Select Instance Favicon</h1>
         </ModalHeader>
         <ModalContent>
-          <ThemeProvider theme={theme}>
-            <FieldTypeMedia
-              limit={1}
-              images={images}
-              openMediaBrowser={(opts) => {
-                setImageModal({
-                  ...opts,
-                });
-              }}
-              name={"favicon"}
-              onChange={handleImage}
-              hideDrag
-              lockedToGroupId={null}
-            />
-            {imageModal && (
-              <MemoryRouter>
-                <Dialog
-                  open
-                  fullScreen
-                  sx={{ my: 2.5, mx: 10 }}
-                  PaperProps={{
-                    style: {
-                      overflow: "hidden",
-                    },
+          {isLoading ? (
+            <Skeleton height={82} variant="rounded" />
+          ) : (
+            <>
+              <ThemeProvider theme={theme}>
+                <FieldTypeMedia
+                  limit={1}
+                  images={images}
+                  openMediaBrowser={(opts) => {
+                    setImageModal({
+                      ...opts,
+                    });
                   }}
-                  onClose={() => setImageModal(null)}
-                >
-                  <IconButton
-                    sx={{
-                      position: "fixed",
-                      right: 5,
-                      top: 0,
-                    }}
-                    onClick={() => setImageModal(null)}
-                  >
-                    <CloseIcon sx={{ color: "common.white" }} />
-                  </IconButton>
-                  <MediaApp
-                    limitSelected={1}
-                    isSelectDialog={true}
-                    showHeaderActions={false}
-                    addImagesCallback={(images) => {
-                      if (!isImage(images[0])) return;
-                      imageModal.callback(images);
-                      setImageModal(null);
-                    }}
-                    isReplace={imageModal.isReplace}
-                  />
-                </Dialog>
-              </MemoryRouter>
-            )}
-          </ThemeProvider>
+                  name={"favicon"}
+                  onChange={handleImage}
+                  hideDrag
+                  lockedToGroupId={null}
+                />
+                {imageModal && (
+                  <MemoryRouter>
+                    <Dialog
+                      open
+                      fullScreen
+                      sx={{ my: 2.5, mx: 10 }}
+                      PaperProps={{
+                        style: {
+                          overflow: "hidden",
+                        },
+                      }}
+                      onClose={() => setImageModal(null)}
+                    >
+                      <IconButton
+                        sx={{
+                          position: "fixed",
+                          right: 5,
+                          top: 0,
+                        }}
+                        onClick={() => setImageModal(null)}
+                      >
+                        <CloseIcon sx={{ color: "common.white" }} />
+                      </IconButton>
+                      <MediaApp
+                        limitSelected={1}
+                        isSelectDialog={true}
+                        showHeaderActions={false}
+                        addImagesCallback={(images) => {
+                          if (!isImage(images[0])) return;
+                          imageModal.callback(images);
+                          setImageModal(null);
+                        }}
+                        isReplace={imageModal.isReplace}
+                      />
+                    </Dialog>
+                  </MemoryRouter>
+                )}
+              </ThemeProvider>
 
-          {faviconData?.faviconZUID && (
-            <section className={styles.Sizes}>
-              {SIZES.map((size) => (
-                <figure key={size}>
-                  <img
-                    // @ts-expect-error
-                    src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconData?.faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
-                  />
-                  <figcaption>{`${size}x${size}`}</figcaption>
-                </figure>
-              ))}
-            </section>
+              {faviconData?.faviconZUID && (
+                <section className={styles.Sizes}>
+                  {SIZES.map((size) => (
+                    <figure key={size}>
+                      <img
+                        // @ts-expect-error
+                        src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconData?.faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
+                      />
+                      <figcaption>{`${size}x${size}`}</figcaption>
+                    </figure>
+                  ))}
+                </section>
+              )}
+              <AppLink
+                className={styles.SettingsLink}
+                to="/settings/head"
+                onClick={() => {
+                  onCloseFaviconModal();
+                }}
+              >
+                <FontAwesomeIcon icon={faCog} />
+                Manage Instance Head Tags
+              </AppLink>
+            </>
           )}
-          <AppLink
-            className={styles.SettingsLink}
-            to="/settings/head"
-            onClick={() => {
-              onCloseFaviconModal();
-            }}
-          >
-            <FontAwesomeIcon icon={faCog} />
-            Manage Instance Head Tags
-          </AppLink>
         </ModalContent>
         <ModalFooter className={styles.Actions}>
           <Button
