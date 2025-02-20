@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { MemoryRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog, IconButton, Button } from "@mui/material";
@@ -37,22 +37,41 @@ import {
 import { FieldTypeMedia } from "../../../apps/content-editor/src/app/components/FieldTypeMedia";
 import { theme } from "@zesty-io/material";
 import { AppState } from "../../store/types";
-import instanceZUID from "../../../utility/instanceZUID";
+import {
+  useGetAllBinFilesQuery,
+  useGetBinsQuery,
+} from "../../services/mediaManager";
 
 const SIZES = [32, 128, 152, 167, 180, 192, 196] as const;
 
+type FaviconData = {
+  faviconZUID: string;
+  faviconURL: string;
+  headtagZUID: string;
+};
 type FaviconProps = {
   onCloseFaviconModal: () => void;
 };
 export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
   const dispatch = useDispatch();
   const ui = useSelector((state: AppState) => state.ui);
+  const instance = useSelector((state: AppState) => state.instance);
 
   const [loading, setLoading] = useState(false);
-  const [faviconZUID, setFaviconZUID] = useState("");
-  const [faviconURL, setFaviconURL] = useState("");
   const [imageModal, setImageModal] = useState(null);
-  const [headtagZUID, setHeadTagZUID] = useState("");
+  const [faviconData, updateFaviconData] = useReducer(
+    (state: FaviconData, update: Partial<FaviconData>) => {
+      return {
+        ...state,
+        ...update,
+      };
+    },
+    {
+      faviconZUID: "",
+      faviconURL: "",
+      headtagZUID: "",
+    }
+  );
 
   const { data: headTags } = useGetHeadTagsQuery();
   const [deleteHeadTag] = useDeleteHeadTagMutation();
@@ -64,6 +83,15 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
       error: faviconUpdateError,
     },
   ] = useCreateHeadTagMutation();
+  const { data: bins } = useGetBinsQuery({
+    instanceId: instance?.ID,
+    ecoId: instance?.ecoId,
+  });
+  const { data: allMediaFiles, isFetching: isFetchingAllMediaFiles } =
+    useGetAllBinFilesQuery(
+      bins?.map((bin) => bin.id),
+      { skip: !bins?.length }
+    );
 
   useEffect(() => {
     if (isFaviconUpdated || !!faviconUpdateError) {
@@ -80,48 +108,64 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
   }, [isFaviconUpdated, faviconUpdateError]);
 
   useEffect(() => {
-    if (headTags?.length) {
+    if (!!headTags?.length && !!allMediaFiles?.length) {
       const tag = Object.values(headTags).find(
         (tag) => tag.attributes?.sizes === "196x196"
       );
+      const faviconZUID = allMediaFiles.find(
+        (file) => file.url === tag.attributes?.href
+      )?.id;
 
-      console.log("tag", tag);
       if (tag) {
-        setHeadTagZUID(tag.ZUID);
-        setFaviconURL(tag.attributes?.href);
+        // setHeadTagZUID(tag.ZUID);
+        // setFaviconURL(tag.attributes?.href);
+        // setFaviconZUID(faviconZUID);
+        updateFaviconData({
+          headtagZUID: tag.ZUID,
+          faviconURL: tag.attributes?.href,
+          faviconZUID: faviconZUID,
+        });
       }
     }
-  }, [headTags]);
+  }, [headTags, allMediaFiles]);
 
   const handleImage = (zuid: string) => {
     if (!zuid) {
-      setFaviconZUID("");
-      setFaviconURL("");
+      // setFaviconZUID("");
+      // setFaviconURL("");
+      updateFaviconData({
+        faviconZUID: "",
+        faviconURL: "",
+      });
     } else {
       setLoading(true);
       // @ts-expect-error
       request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${zuid}`).then((res) => {
         const { url, id } = res.data[0];
-        setFaviconURL(url);
-        setFaviconZUID(id);
+        // setFaviconURL(url);
+        // setFaviconZUID(id);
+        updateFaviconData({
+          faviconZUID: id,
+          faviconURL: url,
+        });
         setLoading(false);
       });
     }
   };
 
   const handleSave = () => {
-    if (headtagZUID) {
-      deleteHeadTag(headtagZUID);
+    if (faviconData?.headtagZUID) {
+      deleteHeadTag(faviconData.headtagZUID);
     }
 
     createHeadTag({
       type: "link",
-      resourceZUID: instanceZUID,
+      resourceZUID: instance.ZUID,
       attributes: {
         rel: "icon",
         type: "image/png",
         sizes: "196x196",
-        href: faviconURL,
+        href: faviconData?.faviconURL,
       },
       sort: 0,
     });
@@ -179,7 +223,11 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
     // }
   };
 
-  const images = faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : [];
+  const images = faviconData?.faviconZUID
+    ? [faviconData.faviconZUID]
+    : faviconData?.faviconURL
+    ? [faviconData.faviconURL]
+    : [];
 
   return (
     <>
@@ -245,13 +293,13 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             )}
           </ThemeProvider>
 
-          {faviconZUID && (
+          {faviconData?.faviconZUID && (
             <section className={styles.Sizes}>
               {SIZES.map((size) => (
                 <figure key={size}>
                   <img
                     // @ts-expect-error
-                    src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
+                    src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconData?.faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
                   />
                   <figcaption>{`${size}x${size}`}</figcaption>
                 </figure>
