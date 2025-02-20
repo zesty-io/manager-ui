@@ -3,30 +3,21 @@ import { MemoryRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog, IconButton, Button, Skeleton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-
-import CloseIcon from "@mui/icons-material/Close";
-import SaveIcon from "@mui/icons-material/Save";
-import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import { Close, Save, DoDisturbAlt } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
-
-import { request } from "../../../utility/request";
-
 import {
   Modal,
   ModalContent,
   ModalFooter,
   ModalHeader,
 } from "@zesty-io/core/Modal";
-
 import { AppLink } from "@zesty-io/core/AppLink";
+import { theme } from "@zesty-io/material";
 
 import { MediaApp } from "../../../apps/media/src/app";
-
 import { notify } from "../../store/notifications";
-
 import styles from "./favicon.less";
 import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
 import {
@@ -35,7 +26,6 @@ import {
   useDeleteHeadTagMutation,
 } from "../../services/instance";
 import { FieldTypeMedia } from "../../../apps/content-editor/src/app/components/FieldTypeMedia";
-import { theme } from "@zesty-io/material";
 import { AppState } from "../../store/types";
 import {
   useGetAllBinFilesQuery,
@@ -284,7 +274,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
                         }}
                         onClick={() => setImageModal(null)}
                       >
-                        <CloseIcon sx={{ color: "common.white" }} />
+                        <Close sx={{ color: "common.white" }} />
                       </IconButton>
                       <MediaApp
                         limitSelected={1}
@@ -334,7 +324,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             onClick={() => {
               onCloseFaviconModal();
             }}
-            startIcon={<DoDisturbAltIcon />}
+            startIcon={<DoDisturbAlt />}
           >
             Cancel (ESC)
           </Button>
@@ -346,7 +336,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             onClick={handleSave}
             disabled={isLoading}
             loading={isUpdatingFavicon}
-            startIcon={<SaveIcon />}
+            startIcon={<Save />}
           >
             Save Favicon
           </LoadingButton>
