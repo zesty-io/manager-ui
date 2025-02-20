@@ -57,7 +57,6 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
   const ui = useSelector((state: AppState) => state.ui);
   const instance = useSelector((state: AppState) => state.instance);
 
-  const [loading, setLoading] = useState(false);
   const [imageModal, setImageModal] = useState(null);
   const [showSizePreviews, setShowSizePreviews] = useState(false);
   const [faviconData, updateFaviconData] = useReducer(
@@ -128,23 +127,31 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
     }
   }, [headTags, allMediaFiles]);
 
-  const handleImage = (zuid: string) => {
-    if (!zuid) {
+  const handleImage = (ZUID: string) => {
+    if (ZUID) {
+      if (ZUID.startsWith("3-")) {
+        const faviconMediaItem = allMediaFiles?.find(
+          (file) => file.id === ZUID
+        );
+
+        if (!!faviconMediaItem) {
+          updateFaviconData({
+            faviconZUID: ZUID,
+            faviconURL: faviconMediaItem?.url,
+          });
+          setShowSizePreviews(true);
+        }
+      } else {
+        // External URL (e.g. from Bynder)
+        updateFaviconData({
+          faviconZUID: "",
+          faviconURL: ZUID,
+        });
+      }
+    } else {
       updateFaviconData({
         faviconZUID: "",
         faviconURL: "",
-      });
-    } else {
-      setLoading(true);
-      // @ts-expect-error
-      request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${zuid}`).then((res) => {
-        const { url, id } = res.data[0];
-        updateFaviconData({
-          faviconZUID: id,
-          faviconURL: url,
-        });
-        setLoading(false);
-        setShowSizePreviews(true);
       });
     }
   };
@@ -337,7 +344,8 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             data-cy="faviconSave"
             loadingPosition="start"
             onClick={handleSave}
-            loading={loading || isUpdatingFavicon}
+            disabled={isLoading}
+            loading={isUpdatingFavicon}
             startIcon={<SaveIcon />}
           >
             Save Favicon
