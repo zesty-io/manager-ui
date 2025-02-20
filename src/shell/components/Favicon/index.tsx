@@ -59,6 +59,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
 
   const [loading, setLoading] = useState(false);
   const [imageModal, setImageModal] = useState(null);
+  const [showSizePreviews, setShowSizePreviews] = useState(false);
   const [faviconData, updateFaviconData] = useReducer(
     (state: FaviconData, update: Partial<FaviconData>) => {
       return {
@@ -143,6 +144,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
           faviconURL: url,
         });
         setLoading(false);
+        setShowSizePreviews(true);
       });
     }
   };
@@ -293,7 +295,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
                 )}
               </ThemeProvider>
 
-              {faviconData?.faviconZUID && (
+              {faviconData?.faviconZUID && showSizePreviews && (
                 <section className={styles.Sizes}>
                   {SIZES.map((size) => (
                     <figure key={size}>
