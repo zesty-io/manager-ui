@@ -12,7 +12,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
 
-import { request } from "utility/request";
+import { request } from "../../../utility/request";
 
 import {
   Modal,
@@ -26,7 +26,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import { MediaApp } from "../../../apps/media/src/app";
 
-import { notify } from "shell/store/notifications";
+import { notify } from "../../store/notifications";
 
 import styles from "./favicon.less";
 import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
@@ -34,22 +34,34 @@ import {
   useCreateHeadTagMutation,
   useGetHeadTagsQuery,
   useDeleteHeadTagMutation,
-} from "../../../shell/services/instance";
+} from "../../services/instance";
 import { FieldTypeMedia } from "../../../apps/content-editor/src/app/components/FieldTypeMedia";
 import { theme } from "@zesty-io/material";
+import { AppState } from "../../store/types";
 
-export default connect((state) => {
+type FaviconProps = {
+  onCloseFaviconModal: () => void;
+  dispatch: any;
+  instance: any;
+  ui: any;
+};
+export default connect((state: AppState) => {
   return {
     instance: state.instance,
     ui: state.ui,
   };
-})(function favicon(props) {
+})(function favicon({
+  onCloseFaviconModal,
+  dispatch,
+  instance,
+  ui,
+}: FaviconProps) {
   const [loading, setLoading] = useState(false);
 
   const [faviconZUID, setFaviconZUID] = useState("");
   const [faviconURL, setFaviconURL] = useState("");
-  const [imageModal, setImageModal] = useState();
-  const [headtagZUID, setHeadTagZUID] = useState();
+  const [imageModal, setImageModal] = useState(null);
+  const [headtagZUID, setHeadTagZUID] = useState("");
 
   const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
 
@@ -66,11 +78,11 @@ export default connect((state) => {
 
   useEffect(() => {
     if (isFaviconUpdated || !!faviconUpdateError) {
-      props.onCloseFaviconModal();
-      props.dispatch(
+      onCloseFaviconModal();
+      dispatch(
         notify({
           message: !!faviconUpdateError
-            ? faviconUpdateError.data.error
+            ? "Failed to update favicon"
             : "Favicon updated",
           kind: !!faviconUpdateError ? "warn" : "success",
         })
@@ -91,12 +103,13 @@ export default connect((state) => {
     }
   }, [headTags]);
 
-  const handleImage = (zuid) => {
+  const handleImage = (zuid: string) => {
     if (!zuid) {
       setFaviconZUID("");
       setFaviconURL("");
     } else {
       setLoading(true);
+      // @ts-expect-error
       request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${zuid}`).then((res) => {
         const { url, id } = res.data[0];
         setFaviconURL(url);
@@ -113,7 +126,7 @@ export default connect((state) => {
 
     createHeadTag({
       type: "link",
-      resourceZUID: props.instance.ZUID,
+      resourceZUID: instance.ZUID,
       attributes: {
         rel: "icon",
         type: "image/png",
@@ -177,13 +190,14 @@ export default connect((state) => {
   };
 
   const images = faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : [];
+  console.log("images", images);
 
   return (
     <>
       <Modal
-        open={props.ui.isUpdateFaviconModalOpen}
+        open={ui.isUpdateFaviconModalOpen}
         className={styles.Modal}
-        onClose={() => props.onCloseFaviconModal()}
+        onClose={() => onCloseFaviconModal()}
       >
         <ModalHeader>
           <h1 className={styles.headline}>Select Instance Favicon</h1>
@@ -212,7 +226,7 @@ export default connect((state) => {
           <ThemeProvider theme={theme}>
             <FieldTypeMedia
               limit={1}
-              imageZUIDs={images}
+              images={images}
               openMediaBrowser={(opts) => {
                 setImageModal({
                   ...opts,
@@ -221,7 +235,7 @@ export default connect((state) => {
               name={"favicon"}
               onChange={handleImage}
               hideDrag
-              images={[]}
+              lockedToGroupId={null}
             />
             {imageModal && (
               <MemoryRouter>
@@ -234,7 +248,7 @@ export default connect((state) => {
                       overflow: "hidden",
                     },
                   }}
-                  onClose={() => setImageModal()}
+                  onClose={() => setImageModal(null)}
                 >
                   <IconButton
                     sx={{
@@ -242,7 +256,7 @@ export default connect((state) => {
                       right: 5,
                       top: 0,
                     }}
-                    onClick={() => setImageModal()}
+                    onClick={() => setImageModal(null)}
                   >
                     <CloseIcon sx={{ color: "common.white" }} />
                   </IconButton>
@@ -253,7 +267,7 @@ export default connect((state) => {
                     addImagesCallback={(images) => {
                       if (!isImage(images[0])) return;
                       imageModal.callback(images);
-                      setImageModal();
+                      setImageModal(null);
                     }}
                     isReplace={imageModal.isReplace}
                   />
@@ -267,6 +281,7 @@ export default connect((state) => {
               {sizes.map((size) => (
                 <figure key={size}>
                   <img
+                    // @ts-expect-error
                     src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
                   />
                   <figcaption>{`${size}x${size}`}</figcaption>
@@ -278,7 +293,7 @@ export default connect((state) => {
             className={styles.SettingsLink}
             to="/settings/head"
             onClick={() => {
-              props.onCloseFaviconModal();
+              onCloseFaviconModal();
             }}
           >
             <FontAwesomeIcon icon={faCog} />
@@ -289,7 +304,7 @@ export default connect((state) => {
           <Button
             variant="contained"
             onClick={() => {
-              props.onCloseFaviconModal();
+              onCloseFaviconModal();
             }}
             startIcon={<DoDisturbAltIcon />}
           >

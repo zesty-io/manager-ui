@@ -967,3 +967,5 @@ export const MediaItem = ({
     </>
   );
 };
+
+FieldTypeMedia.displayName = "FieldTypeMedia";
