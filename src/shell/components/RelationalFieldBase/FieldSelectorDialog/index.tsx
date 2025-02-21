@@ -45,6 +45,7 @@ import { titleFilterOperator } from "./titleFilter";
 import { versionFilterOperator } from "./versionFilter";
 import { statusFilterOperator } from "./statusFilter";
 import { userFilterOperator } from "./userFilter";
+import { keywordSearchFilterOperator } from "./keywordSearchFilter";
 
 const selectFilteredItems = (
   state: AppState,
@@ -161,14 +162,15 @@ export const FieldSelectorDialog = ({
 
   const columns = useMemo(() => {
     let defaultCols: GridColumns<any> = [
+      // Column is only used for keyword search purposes
       {
-        field: "keywordFilter",
+        field: "keywordSearch",
         hide: true,
+        filterOperators: [keywordSearchFilterOperator],
       },
       {
         field: "title",
         flex: 1,
-        filterOperators: [titleFilterOperator],
         renderCell: (params: GridRenderCellParams) => (
           <TitleCell
             primaryText={params.formattedValue?.primary}
@@ -179,11 +181,7 @@ export const FieldSelectorDialog = ({
       {
         field: "version",
         width: 60,
-        filterOperators: [
-          versionFilterOperator,
-          userFilterOperator,
-          statusFilterOperator,
-        ],
+        filterOperators: [userFilterOperator, statusFilterOperator],
         renderCell: (params: GridRenderCellParams) => (
           <VersionCell
             itemData={params.value?.itemData}
@@ -231,6 +229,38 @@ export const FieldSelectorDialog = ({
 
     return _rows?.map((item) => ({
       id: item.meta?.ZUID,
+      // Column is only used for keyword search purposes
+      keywordSearch: {
+        title: {
+          primary:
+            item.data?.[relatedFieldName] ||
+            item.web?.metaTitle ||
+            item.web?.metaLinkText,
+          secondary: item.web?.metaDescription,
+        },
+        version: {
+          itemData: {
+            ...item,
+            createdByName: resolveUserZUID(item.meta?.createdByUserZUID),
+          },
+          publishData: item?.publishing?.version
+            ? {
+                ...item.publishing,
+                publishedByName: resolveUserZUID(
+                  item.publishing?.publishedByUserZUID
+                ),
+              }
+            : null,
+          scheduleData: item?.scheduling?.version
+            ? {
+                ...item.scheduling,
+                scheduledByName: resolveUserZUID(
+                  item.scheduling?.publishedByUserZUID
+                ),
+              }
+            : null,
+        },
+      },
       image: {
         imageFieldName,
         itemZUID: item.meta?.ZUID,
@@ -438,31 +468,6 @@ export const FieldSelectorDialog = ({
       }
     });
 
-    // Filtering
-    // if (filters.status) {
-    //   _rows = _rows?.filter((item) => {
-    //     if (filters.status === "published") {
-    //       return (
-    //         item.item?.publishing?.publishAt &&
-    //         !item.item?.scheduling?.publishAt
-    //       );
-    //     } else if (filters.status === "scheduled") {
-    //       return item.item?.scheduling?.publishAt;
-    //     } else if (filters.status === "notPublished") {
-    //       return (
-    //         !item.item?.publishing?.publishAt &&
-    //         !item.item?.scheduling?.publishAt
-    //       );
-    //     }
-    //   });
-    // }
-
-    // if (filters.user) {
-    //   _rows = _rows.filter(
-    //     (item) => item.item?.meta?.createdByUserZUID === filters.user
-    //   );
-    // }
-
     const dateFilterFn = getDateFilterFnByValues(filters.date);
     if (dateFilterFn) {
       _rows = _rows.filter((item) => {
@@ -623,16 +628,10 @@ export const FieldSelectorDialog = ({
                 filterModel={{
                   items: [
                     {
-                      columnField: "title",
-                      operatorValue: "titleContains",
+                      columnField: "keywordSearch",
+                      operatorValue: "keywordContains",
                       value: filterKeyword,
-                      id: "title",
-                    },
-                    {
-                      columnField: "version",
-                      operatorValue: "versionContains",
-                      value: filterKeyword,
-                      id: "version",
+                      id: "keyword",
                     },
                     ...(filters.status
                       ? [
@@ -644,7 +643,6 @@ export const FieldSelectorDialog = ({
                           },
                         ]
                       : []),
-                    ,
                     ...(filters.user
                       ? [
                           {
@@ -655,12 +653,8 @@ export const FieldSelectorDialog = ({
                           },
                         ]
                       : []),
-                    ,
                   ],
-                  linkOperator:
-                    !!filters.status || filters.user
-                      ? GridLinkOperator.And
-                      : GridLinkOperator.Or,
+                  linkOperator: GridLinkOperator.And,
                 }}
                 onSelectionModelChange={(newSelectionModel) => {
                   let _newSelectionModel = newSelectionModel as string[];
