@@ -19,6 +19,7 @@ import {
   GridColumns,
   GridInputSelectionModel,
   GridRenderCellParams,
+  GridLinkOperator,
 } from "@mui/x-data-grid-pro";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,6 +41,10 @@ import { AppState } from "../../../store/types";
 import { ContentItem } from "../../../services/types";
 import moment from "moment";
 import { getDateFilterFnByValues } from "../../Filters/DateFilter/getDateFilter";
+import { titleFilterOperator } from "./titleFilter";
+import { versionFilterOperator } from "./versionFilter";
+import { statusFilterOperator } from "./statusFilter";
+import { userFilterOperator } from "./userFilter";
 
 const selectFilteredItems = (
   state: AppState,
@@ -157,8 +162,13 @@ export const FieldSelectorDialog = ({
   const columns = useMemo(() => {
     let defaultCols: GridColumns<any> = [
       {
+        field: "keywordFilter",
+        hide: true,
+      },
+      {
         field: "title",
         flex: 1,
+        filterOperators: [titleFilterOperator],
         renderCell: (params: GridRenderCellParams) => (
           <TitleCell
             primaryText={params.formattedValue?.primary}
@@ -169,6 +179,11 @@ export const FieldSelectorDialog = ({
       {
         field: "version",
         width: 60,
+        filterOperators: [
+          versionFilterOperator,
+          userFilterOperator,
+          statusFilterOperator,
+        ],
         renderCell: (params: GridRenderCellParams) => (
           <VersionCell
             itemData={params.value?.itemData}
@@ -423,63 +438,30 @@ export const FieldSelectorDialog = ({
       }
     });
 
-    // Keyword search
-    if (!!filterKeyword) {
-      const search = filterKeyword.toLowerCase();
-
-      _rows = _rows?.filter((row) => {
-        const matchedUser = users.find(
-          (user) => user.ZUID === row?.item?.meta?.createdByUserZUID
-        );
-        const creator = matchedUser
-          ? `${matchedUser.firstName} ${matchedUser.lastName}`
-          : null;
-
-        return (
-          Object.values(row?.item.data).some((value: any) => {
-            if (!value) return false;
-
-            if (value?.filename || value?.title) {
-              return (
-                value?.filename?.toLowerCase()?.includes(search) ||
-                value?.title?.toLowerCase()?.includes(search)
-              );
-            }
-
-            return value.toString().toLowerCase().includes(search);
-          }) ||
-          row?.item?.meta?.createdAt?.toLowerCase().includes(search) ||
-          row?.item?.web?.updatedAt?.toLowerCase().includes(search) ||
-          row?.item?.meta?.ZUID?.toLowerCase().includes(search) ||
-          creator?.toLowerCase()?.includes(search)
-        );
-      });
-    }
-
     // Filtering
-    if (filters.status) {
-      _rows = _rows?.filter((item) => {
-        if (filters.status === "published") {
-          return (
-            item.item?.publishing?.publishAt &&
-            !item.item?.scheduling?.publishAt
-          );
-        } else if (filters.status === "scheduled") {
-          return item.item?.scheduling?.publishAt;
-        } else if (filters.status === "notPublished") {
-          return (
-            !item.item?.publishing?.publishAt &&
-            !item.item?.scheduling?.publishAt
-          );
-        }
-      });
-    }
+    // if (filters.status) {
+    //   _rows = _rows?.filter((item) => {
+    //     if (filters.status === "published") {
+    //       return (
+    //         item.item?.publishing?.publishAt &&
+    //         !item.item?.scheduling?.publishAt
+    //       );
+    //     } else if (filters.status === "scheduled") {
+    //       return item.item?.scheduling?.publishAt;
+    //     } else if (filters.status === "notPublished") {
+    //       return (
+    //         !item.item?.publishing?.publishAt &&
+    //         !item.item?.scheduling?.publishAt
+    //       );
+    //     }
+    //   });
+    // }
 
-    if (filters.user) {
-      _rows = _rows.filter(
-        (item) => item.item?.meta?.createdByUserZUID === filters.user
-      );
-    }
+    // if (filters.user) {
+    //   _rows = _rows.filter(
+    //     (item) => item.item?.meta?.createdByUserZUID === filters.user
+    //   );
+    // }
 
     const dateFilterFn = getDateFilterFnByValues(filters.date);
     if (dateFilterFn) {
@@ -638,6 +620,48 @@ export const FieldSelectorDialog = ({
                 rowHeight={64}
                 hideFooter
                 selectionModel={filteredSelectionModels}
+                filterModel={{
+                  items: [
+                    {
+                      columnField: "title",
+                      operatorValue: "titleContains",
+                      value: filterKeyword,
+                      id: "title",
+                    },
+                    {
+                      columnField: "version",
+                      operatorValue: "versionContains",
+                      value: filterKeyword,
+                      id: "version",
+                    },
+                    ...(filters.status
+                      ? [
+                          {
+                            columnField: "version",
+                            operatorValue: "statusEquals",
+                            value: filters.status,
+                            id: "status",
+                          },
+                        ]
+                      : []),
+                    ,
+                    ...(filters.user
+                      ? [
+                          {
+                            columnField: "version",
+                            operatorValue: "userEquals",
+                            value: filters.user,
+                            id: "user",
+                          },
+                        ]
+                      : []),
+                    ,
+                  ],
+                  linkOperator:
+                    !!filters.status || filters.user
+                      ? GridLinkOperator.And
+                      : GridLinkOperator.Or,
+                }}
                 onSelectionModelChange={(newSelectionModel) => {
                   let _newSelectionModel = newSelectionModel as string[];
 
