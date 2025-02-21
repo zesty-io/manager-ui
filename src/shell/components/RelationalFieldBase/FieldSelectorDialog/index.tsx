@@ -41,11 +41,10 @@ import { AppState } from "../../../store/types";
 import { ContentItem } from "../../../services/types";
 import moment from "moment";
 import { getDateFilterFnByValues } from "../../Filters/DateFilter/getDateFilter";
-import { titleFilterOperator } from "./titleFilter";
-import { versionFilterOperator } from "./versionFilter";
 import { statusFilterOperator } from "./statusFilter";
 import { userFilterOperator } from "./userFilter";
 import { keywordSearchFilterOperator } from "./keywordSearchFilter";
+import { dateFilterOperator } from "./dateFilter";
 
 const selectFilteredItems = (
   state: AppState,
@@ -181,7 +180,11 @@ export const FieldSelectorDialog = ({
       {
         field: "version",
         width: 60,
-        filterOperators: [userFilterOperator, statusFilterOperator],
+        filterOperators: [
+          userFilterOperator,
+          statusFilterOperator,
+          dateFilterOperator,
+        ],
         renderCell: (params: GridRenderCellParams) => (
           <VersionCell
             itemData={params.value?.itemData}
@@ -468,16 +471,16 @@ export const FieldSelectorDialog = ({
       }
     });
 
-    const dateFilterFn = getDateFilterFnByValues(filters.date);
-    if (dateFilterFn) {
-      _rows = _rows.filter((item) => {
-        if (!!item.item?.meta?.updatedAt) {
-          return dateFilterFn(item.item?.meta?.updatedAt);
-        }
+    // const dateFilterFn = getDateFilterFnByValues(filters.date);
+    // if (dateFilterFn) {
+    //   _rows = _rows.filter((item) => {
+    //     if (!!item.item?.meta?.updatedAt) {
+    //       return dateFilterFn(item.item?.meta?.updatedAt);
+    //     }
 
-        return false;
-      });
-    }
+    //     return false;
+    //   });
+    // }
     return _rows;
   }, [mappedRows, filterKeyword, relatedModelFields]);
 
@@ -650,6 +653,18 @@ export const FieldSelectorDialog = ({
                             operatorValue: "userEquals",
                             value: filters.user,
                             id: "user",
+                          },
+                        ]
+                      : []),
+                    ...(filters.date.preset ||
+                    filters.date.from ||
+                    filters.date.to
+                      ? [
+                          {
+                            columnField: "version",
+                            operatorValue: "dateFilter",
+                            value: filters.date,
+                            id: "date",
                           },
                         ]
                       : []),
