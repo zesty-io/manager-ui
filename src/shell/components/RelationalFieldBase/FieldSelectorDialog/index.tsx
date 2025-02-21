@@ -471,16 +471,6 @@ export const FieldSelectorDialog = ({
       }
     });
 
-    // const dateFilterFn = getDateFilterFnByValues(filters.date);
-    // if (dateFilterFn) {
-    //   _rows = _rows.filter((item) => {
-    //     if (!!item.item?.meta?.updatedAt) {
-    //       return dateFilterFn(item.item?.meta?.updatedAt);
-    //     }
-
-    //     return false;
-    //   });
-    // }
     return _rows;
   }, [mappedRows, filterKeyword, relatedModelFields]);
 
@@ -590,144 +580,147 @@ export const FieldSelectorDialog = ({
               },
             }}
           >
-            {!rows?.length && isFilteringResults ? (
-              <NoSearchResults
-                isFilter
-                query={filterKeyword}
-                onSearchAgain={() => {
-                  if (!!filterKeyword) {
-                    setFilterKeyword("");
-                    if (!!searchField.current) {
-                      searchField.current.querySelector("input").value = "";
-                      searchField.current.querySelector("input").focus();
-                    }
-                  }
+            <DataGridPro
+              sortingMode="server"
+              checkboxSelection
+              columns={columns}
+              rows={rows}
+              headerHeight={0}
+              rowHeight={64}
+              hideFooter
+              filterModel={{
+                items: [
+                  {
+                    columnField: "keywordSearch",
+                    operatorValue: "keywordContains",
+                    value: filterKeyword,
+                    id: "keyword",
+                  },
+                  ...(filters.status
+                    ? [
+                        {
+                          columnField: "version",
+                          operatorValue: "statusEquals",
+                          value: filters.status,
+                          id: "status",
+                        },
+                      ]
+                    : []),
+                  ...(filters.user
+                    ? [
+                        {
+                          columnField: "version",
+                          operatorValue: "userEquals",
+                          value: filters.user,
+                          id: "user",
+                        },
+                      ]
+                    : []),
+                  ...(filters.date.preset ||
+                  filters.date.from ||
+                  filters.date.to
+                    ? [
+                        {
+                          columnField: "version",
+                          operatorValue: "dateFilter",
+                          value: filters.date,
+                          id: "date",
+                        },
+                      ]
+                    : []),
+                ],
+                linkOperator: GridLinkOperator.And,
+              }}
+              selectionModel={filteredSelectionModels}
+              onSelectionModelChange={(newSelectionModel) => {
+                let _newSelectionModel = newSelectionModel as string[];
 
-                  updateFilters({
-                    sortOrder: "lastSaved",
-                    user: null,
-                    date: {
-                      preset: null,
-                      from: null,
-                      to: null,
-                    },
-                    lang: langs.find((lang) => lang.default)?.ID,
-                    status: null,
-                  });
-                }}
-                ignoreFilters
-                hideBackButton
-              />
-            ) : (
-              <DataGridPro
-                sortingMode="server"
-                checkboxSelection
-                columns={columns}
-                rows={rows}
-                headerHeight={0}
-                rowHeight={64}
-                hideFooter
-                selectionModel={filteredSelectionModels}
-                filterModel={{
-                  items: [
-                    {
-                      columnField: "keywordSearch",
-                      operatorValue: "keywordContains",
-                      value: filterKeyword,
-                      id: "keyword",
-                    },
-                    ...(filters.status
-                      ? [
-                          {
-                            columnField: "version",
-                            operatorValue: "statusEquals",
-                            value: filters.status,
-                            id: "status",
-                          },
-                        ]
-                      : []),
-                    ...(filters.user
-                      ? [
-                          {
-                            columnField: "version",
-                            operatorValue: "userEquals",
-                            value: filters.user,
-                            id: "user",
-                          },
-                        ]
-                      : []),
-                    ...(filters.date.preset ||
-                    filters.date.from ||
-                    filters.date.to
-                      ? [
-                          {
-                            columnField: "version",
-                            operatorValue: "dateFilter",
-                            value: filters.date,
-                            id: "date",
-                          },
-                        ]
-                      : []),
-                  ],
-                  linkOperator: GridLinkOperator.And,
-                }}
-                onSelectionModelChange={(newSelectionModel) => {
-                  let _newSelectionModel = newSelectionModel as string[];
+                if (!multiselect && _newSelectionModel?.length > 1) {
+                  _newSelectionModel = [_newSelectionModel[0]];
+                }
 
-                  if (!multiselect && _newSelectionModel?.length > 1) {
-                    _newSelectionModel = [_newSelectionModel[0]];
-                  }
+                setSelectionModel([...deletedItemZUIDs, ..._newSelectionModel]);
+              }}
+              components={{
+                NoResultsOverlay: () => (
+                  <NoSearchResults
+                    isFilter
+                    query={filterKeyword}
+                    onSearchAgain={() => {
+                      if (!!filterKeyword) {
+                        setFilterKeyword("");
+                        if (!!searchField.current) {
+                          searchField.current.querySelector("input").value = "";
+                          searchField.current.querySelector("input").focus();
+                        }
+                      }
 
-                  setSelectionModel([
-                    ...deletedItemZUIDs,
-                    ..._newSelectionModel,
-                  ]);
-                }}
-                sx={{
-                  bgcolor: "background.paper",
+                      updateFilters({
+                        sortOrder: "lastSaved",
+                        user: null,
+                        date: {
+                          preset: null,
+                          from: null,
+                          to: null,
+                        },
+                        lang: langs.find((lang) => lang.default)?.ID,
+                        status: null,
+                      });
+                    }}
+                    ignoreFilters
+                    hideBackButton
+                  />
+                ),
+              }}
+              sx={{
+                bgcolor: "background.paper",
 
-                  "& .MuiDataGrid-columnHeaders": {
+                "& .MuiDataGrid-columnHeaders": {
+                  borderBottom: 0,
+                },
+
+                "& .MuiDataGrid-cellCheckbox": {
+                  mx: "3px",
+                },
+
+                "& .MuiDataGrid-row.Mui-selected": {
+                  borderBottom: (theme) =>
+                    `1px solid ${theme.palette.primary.main}`,
+
+                  "& .MuiDataGrid-cell": {
                     borderBottom: 0,
                   },
+                },
 
-                  "& .MuiDataGrid-cellCheckbox": {
-                    mx: "3px",
-                  },
+                "& .MuiDataGrid-cell:focus-within": {
+                  outline: "none",
+                },
 
-                  "& .MuiDataGrid-row.Mui-selected": {
-                    borderBottom: (theme) =>
-                      `1px solid ${theme.palette.primary.main}`,
+                ".MuiDataGrid-row": {
+                  cursor: "pointer",
+                },
 
-                    "& .MuiDataGrid-cell": {
-                      borderBottom: 0,
-                    },
-                  },
+                "& [data-field='image']": {
+                  p: 0,
+                },
 
-                  "& .MuiDataGrid-cell:focus-within": {
-                    outline: "none",
-                  },
+                "& [data-field='title']": {
+                  pl: !!imageFieldName ? 2 : 0,
+                  pr: 2,
+                },
 
-                  ".MuiDataGrid-row": {
-                    cursor: "pointer",
-                  },
+                "& [data-field='version']": {
+                  pl: 0,
+                  pr: 2,
+                  justifyContent: "center",
+                },
 
-                  "& [data-field='image']": {
-                    p: 0,
-                  },
-
-                  "& [data-field='title']": {
-                    pl: !!imageFieldName ? 2 : 0,
-                    pr: 2,
-                  },
-
-                  "& [data-field='version']": {
-                    pl: 0,
-                    pr: 2,
-                    justifyContent: "center",
-                  },
-                }}
-              />
-            )}
+                // Makes sure that the custom overlay is interactive
+                "& [data-cy='NoSearchResults']": {
+                  pointerEvents: "all",
+                },
+              }}
+            />
           </Box>
         )}
       </DialogContent>
