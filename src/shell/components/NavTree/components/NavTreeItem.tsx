@@ -48,6 +48,7 @@ export const NavTreeItem: FC<Props> = React.memo(
     }, [itemTreeRef?.current]);
 
     useEffect(() => {
+      if (!itemTreeRef?.current) return;
       if (selected === nodeId && !scrolled) {
         if (isVisible) return setScrolled(true);
         setTimeout(() => {
