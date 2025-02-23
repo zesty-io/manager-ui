@@ -1,4 +1,4 @@
-import React, { FC, HTMLAttributes } from "react";
+import React, { FC } from "react";
 import { TreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
@@ -88,6 +88,7 @@ export const NavTree: FC<Readonly<Props>> = ({
                 nodeData={item.nodeData}
                 onItemDrop={onItemDrop}
                 dragAndDrop={dragAndDrop}
+                selected={selected}
               />
             );
           })}

@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, HTMLAttributes, useEffect, useRef } from "react";
 import { TreeItem } from "@mui/x-tree-view";
 import { Stack, Box, Typography, Tooltip, alpha } from "@mui/material";
 
@@ -15,6 +15,7 @@ interface Props {
   nodeData?: any;
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
+  selected?: string;
 }
 export const NavTreeItem: FC<Props> = React.memo(
   ({
@@ -28,12 +29,43 @@ export const NavTreeItem: FC<Props> = React.memo(
     nodeData,
     onItemDrop,
     dragAndDrop = false,
+    selected = "",
   }) => {
+    const itemTreeRef = useRef(null);
     const currentDepth = depth + 1;
     const depthPadding = currentDepth * 1;
+    const [isVisible, setIsVisible] = React.useState(false);
+    const [scrolled, setScrolled] = React.useState(false);
+
+    useEffect(() => {
+      if (!itemTreeRef?.current) return;
+      const observer = new IntersectionObserver(([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      });
+
+      observer.observe(itemTreeRef?.current);
+      return () => observer.disconnect();
+    }, [itemTreeRef?.current]);
+
+    useEffect(() => {
+      if (!itemTreeRef?.current) return;
+      if (selected === nodeId && !scrolled) {
+        if (isVisible) return setScrolled(true);
+        if (!isVisible) {
+          setTimeout(() => {
+            itemTreeRef.current?.scrollIntoView({
+              behavior: "instant",
+              block: "center",
+            });
+            setScrolled(true);
+          }, 200);
+        }
+      }
+    }, [selected, nodeId, itemTreeRef?.current, isVisible, scrolled]);
 
     return (
       <TreeItem
+        ref={itemTreeRef}
         nodeId={nodeId}
         label={
           <Stack
@@ -111,6 +143,10 @@ export const NavTreeItem: FC<Props> = React.memo(
             borderColor: "primary.main",
             pl: 0.75,
 
+            "& .MuiMenu-root .MuiTypography-root": {
+              color: "common.black",
+            },
+
             ".MuiTreeItem-iconContainer svg": {
               color: "primary.main",
             },
@@ -177,6 +213,7 @@ export const NavTreeItem: FC<Props> = React.memo(
                 actions={item.actions ?? []}
                 onItemDrop={onItemDrop}
                 dragAndDrop={dragAndDrop}
+                selected={selected}
               />
             );
           })}

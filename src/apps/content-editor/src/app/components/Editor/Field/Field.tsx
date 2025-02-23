@@ -71,7 +71,7 @@ import {
 import { ResolvedOption } from "./ResolvedOption";
 import { LinkOption } from "./LinkOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
-import { debounce } from "lodash";
+import { debounce, parseInt } from "lodash";
 
 const AIFieldShell = withAI(FieldShell);
 
