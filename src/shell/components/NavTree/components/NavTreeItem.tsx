@@ -1,6 +1,6 @@
-import React, { FC, HTMLAttributes, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { TreeItem } from "@mui/x-tree-view";
-import { Stack, Box, Typography, Tooltip, alpha } from "@mui/material";
+import { Stack, Box, Typography, Tooltip } from "@mui/material";
 
 import { TreeItem as TreeItemType } from "../index";
 
@@ -34,32 +34,29 @@ export const NavTreeItem: FC<Props> = React.memo(
     const itemTreeRef = useRef(null);
     const currentDepth = depth + 1;
     const depthPadding = currentDepth * 1;
-    const [isVisible, setIsVisible] = React.useState(false);
-    const [scrolled, setScrolled] = React.useState(false);
+    const itemId = `${nodeId}-${currentDepth}`;
+    const [isVisible, setIsVisible] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
       if (!itemTreeRef?.current) return;
       const observer = new IntersectionObserver(([entry]) => {
         setIsVisible(entry.isIntersecting);
       });
-
       observer.observe(itemTreeRef?.current);
       return () => observer.disconnect();
     }, [itemTreeRef?.current]);
 
     useEffect(() => {
-      if (!itemTreeRef?.current) return;
       if (selected === nodeId && !scrolled) {
         if (isVisible) return setScrolled(true);
-        if (!isVisible) {
-          setTimeout(() => {
-            itemTreeRef.current?.scrollIntoView({
-              behavior: "instant",
-              block: "center",
-            });
-            setScrolled(true);
-          }, 200);
-        }
+        setTimeout(() => {
+          itemTreeRef.current?.scrollIntoView({
+            behavior: "instant",
+            block: "center",
+          });
+          setScrolled(true);
+        }, 500);
       }
     }, [selected, nodeId, itemTreeRef?.current, isVisible, scrolled]);
 
