@@ -19,6 +19,7 @@ import {
   GridColumns,
   GridInputSelectionModel,
   GridRenderCellParams,
+  GridLinkOperator,
 } from "@mui/x-data-grid-pro";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,6 +41,10 @@ import { AppState } from "../../../store/types";
 import { ContentItem } from "../../../services/types";
 import moment from "moment";
 import { getDateFilterFnByValues } from "../../Filters/DateFilter/getDateFilter";
+import { statusFilterOperator } from "./statusFilter";
+import { userFilterOperator } from "./userFilter";
+import { keywordSearchFilterOperator } from "./keywordSearchFilter";
+import { dateFilterOperator } from "./dateFilter";
 
 const selectFilteredItems = (
   state: AppState,
@@ -156,6 +161,12 @@ export const FieldSelectorDialog = ({
 
   const columns = useMemo(() => {
     let defaultCols: GridColumns<any> = [
+      // Column is only used for keyword search purposes
+      {
+        field: "keywordSearch",
+        hide: true,
+        filterOperators: [keywordSearchFilterOperator],
+      },
       {
         field: "title",
         flex: 1,
@@ -169,6 +180,11 @@ export const FieldSelectorDialog = ({
       {
         field: "version",
         width: 60,
+        filterOperators: [
+          userFilterOperator,
+          statusFilterOperator,
+          dateFilterOperator,
+        ],
         renderCell: (params: GridRenderCellParams) => (
           <VersionCell
             itemData={params.value?.itemData}
@@ -216,6 +232,38 @@ export const FieldSelectorDialog = ({
 
     return _rows?.map((item) => ({
       id: item.meta?.ZUID,
+      // Column is only used for keyword search purposes
+      keywordSearch: {
+        title: {
+          primary:
+            item.data?.[relatedFieldName] ||
+            item.web?.metaTitle ||
+            item.web?.metaLinkText,
+          secondary: item.web?.metaDescription,
+        },
+        version: {
+          itemData: {
+            ...item,
+            createdByName: resolveUserZUID(item.meta?.createdByUserZUID),
+          },
+          publishData: item?.publishing?.version
+            ? {
+                ...item.publishing,
+                publishedByName: resolveUserZUID(
+                  item.publishing?.publishedByUserZUID
+                ),
+              }
+            : null,
+          scheduleData: item?.scheduling?.version
+            ? {
+                ...item.scheduling,
+                scheduledByName: resolveUserZUID(
+                  item.scheduling?.publishedByUserZUID
+                ),
+              }
+            : null,
+        },
+      },
       image: {
         imageFieldName,
         itemZUID: item.meta?.ZUID,
@@ -423,74 +471,6 @@ export const FieldSelectorDialog = ({
       }
     });
 
-    // Keyword search
-    if (!!filterKeyword) {
-      const search = filterKeyword.toLowerCase();
-
-      _rows = _rows?.filter((row) => {
-        const matchedUser = users.find(
-          (user) => user.ZUID === row?.item?.meta?.createdByUserZUID
-        );
-        const creator = matchedUser
-          ? `${matchedUser.firstName} ${matchedUser.lastName}`
-          : null;
-
-        return (
-          Object.values(row?.item.data).some((value: any) => {
-            if (!value) return false;
-
-            if (value?.filename || value?.title) {
-              return (
-                value?.filename?.toLowerCase()?.includes(search) ||
-                value?.title?.toLowerCase()?.includes(search)
-              );
-            }
-
-            return value.toString().toLowerCase().includes(search);
-          }) ||
-          row?.item?.meta?.createdAt?.toLowerCase().includes(search) ||
-          row?.item?.web?.updatedAt?.toLowerCase().includes(search) ||
-          row?.item?.meta?.ZUID?.toLowerCase().includes(search) ||
-          creator?.toLowerCase()?.includes(search)
-        );
-      });
-    }
-
-    // Filtering
-    if (filters.status) {
-      _rows = _rows?.filter((item) => {
-        if (filters.status === "published") {
-          return (
-            item.item?.publishing?.publishAt &&
-            !item.item?.scheduling?.publishAt
-          );
-        } else if (filters.status === "scheduled") {
-          return item.item?.scheduling?.publishAt;
-        } else if (filters.status === "notPublished") {
-          return (
-            !item.item?.publishing?.publishAt &&
-            !item.item?.scheduling?.publishAt
-          );
-        }
-      });
-    }
-
-    if (filters.user) {
-      _rows = _rows.filter(
-        (item) => item.item?.meta?.createdByUserZUID === filters.user
-      );
-    }
-
-    const dateFilterFn = getDateFilterFnByValues(filters.date);
-    if (dateFilterFn) {
-      _rows = _rows.filter((item) => {
-        if (!!item.item?.meta?.updatedAt) {
-          return dateFilterFn(item.item?.meta?.updatedAt);
-        }
-
-        return false;
-      });
-    }
     return _rows;
   }, [mappedRows, filterKeyword, relatedModelFields]);
 
@@ -600,101 +580,147 @@ export const FieldSelectorDialog = ({
               },
             }}
           >
-            {!rows?.length && isFilteringResults ? (
-              <NoSearchResults
-                isFilter
-                query={filterKeyword}
-                onSearchAgain={() => {
-                  if (!!filterKeyword) {
-                    setFilterKeyword("");
-                    if (!!searchField.current) {
-                      searchField.current.querySelector("input").value = "";
-                      searchField.current.querySelector("input").focus();
-                    }
-                  }
+            <DataGridPro
+              sortingMode="server"
+              checkboxSelection
+              columns={columns}
+              rows={rows}
+              headerHeight={0}
+              rowHeight={64}
+              hideFooter
+              filterModel={{
+                items: [
+                  {
+                    columnField: "keywordSearch",
+                    operatorValue: "keywordContains",
+                    value: filterKeyword,
+                    id: "keyword",
+                  },
+                  ...(filters.status
+                    ? [
+                        {
+                          columnField: "version",
+                          operatorValue: "statusEquals",
+                          value: filters.status,
+                          id: "status",
+                        },
+                      ]
+                    : []),
+                  ...(filters.user
+                    ? [
+                        {
+                          columnField: "version",
+                          operatorValue: "userEquals",
+                          value: filters.user,
+                          id: "user",
+                        },
+                      ]
+                    : []),
+                  ...(filters.date.preset ||
+                  filters.date.from ||
+                  filters.date.to
+                    ? [
+                        {
+                          columnField: "version",
+                          operatorValue: "dateFilter",
+                          value: filters.date,
+                          id: "date",
+                        },
+                      ]
+                    : []),
+                ],
+                linkOperator: GridLinkOperator.And,
+              }}
+              selectionModel={filteredSelectionModels}
+              onSelectionModelChange={(newSelectionModel) => {
+                let _newSelectionModel = newSelectionModel as string[];
 
-                  updateFilters({
-                    sortOrder: "lastSaved",
-                    user: null,
-                    date: {
-                      preset: null,
-                      from: null,
-                      to: null,
-                    },
-                    lang: langs.find((lang) => lang.default)?.ID,
-                    status: null,
-                  });
-                }}
-                ignoreFilters
-                hideBackButton
-              />
-            ) : (
-              <DataGridPro
-                sortingMode="server"
-                checkboxSelection
-                columns={columns}
-                rows={rows}
-                headerHeight={0}
-                rowHeight={64}
-                hideFooter
-                selectionModel={filteredSelectionModels}
-                onSelectionModelChange={(newSelectionModel) => {
-                  let _newSelectionModel = newSelectionModel as string[];
+                if (!multiselect && _newSelectionModel?.length > 1) {
+                  _newSelectionModel = [_newSelectionModel[0]];
+                }
 
-                  if (!multiselect && _newSelectionModel?.length > 1) {
-                    _newSelectionModel = [_newSelectionModel[0]];
-                  }
+                setSelectionModel([...deletedItemZUIDs, ..._newSelectionModel]);
+              }}
+              components={{
+                NoResultsOverlay: () => (
+                  <NoSearchResults
+                    isFilter
+                    query={filterKeyword}
+                    onSearchAgain={() => {
+                      if (!!filterKeyword) {
+                        setFilterKeyword("");
+                        if (!!searchField.current) {
+                          searchField.current.querySelector("input").value = "";
+                          searchField.current.querySelector("input").focus();
+                        }
+                      }
 
-                  setSelectionModel([
-                    ...deletedItemZUIDs,
-                    ..._newSelectionModel,
-                  ]);
-                }}
-                sx={{
-                  bgcolor: "background.paper",
+                      updateFilters({
+                        sortOrder: "lastSaved",
+                        user: null,
+                        date: {
+                          preset: null,
+                          from: null,
+                          to: null,
+                        },
+                        lang: langs.find((lang) => lang.default)?.ID,
+                        status: null,
+                      });
+                    }}
+                    ignoreFilters
+                    hideBackButton
+                  />
+                ),
+              }}
+              sx={{
+                bgcolor: "background.paper",
 
-                  "& .MuiDataGrid-columnHeaders": {
+                "& .MuiDataGrid-columnHeaders": {
+                  borderBottom: 0,
+                },
+
+                "& .MuiDataGrid-cellCheckbox": {
+                  mx: "3px",
+                },
+
+                "& .MuiDataGrid-row.Mui-selected": {
+                  borderBottom: (theme) =>
+                    `1px solid ${theme.palette.primary.main}`,
+
+                  "& .MuiDataGrid-cell": {
                     borderBottom: 0,
                   },
+                },
 
-                  "& .MuiDataGrid-cellCheckbox": {
-                    mx: "3px",
-                  },
+                "& .MuiDataGrid-cell:focus-within": {
+                  outline: "none",
+                },
 
-                  "& .MuiDataGrid-row.Mui-selected": {
-                    borderBottom: (theme) =>
-                      `1px solid ${theme.palette.primary.main}`,
+                ".MuiDataGrid-row": {
+                  cursor: "pointer",
+                },
 
-                    "& .MuiDataGrid-cell": {
-                      borderBottom: 0,
-                    },
-                  },
+                "& [data-field='image']": {
+                  p: 0,
+                },
 
-                  "& .MuiDataGrid-cell:focus-within": {
-                    outline: "none",
-                  },
+                "& [data-field='title']": {
+                  pl: !!imageFieldName ? 2 : 0,
+                  pr: 2,
+                },
 
-                  ".MuiDataGrid-row": {
-                    cursor: "pointer",
-                  },
+                "& [data-field='version']": {
+                  pl: 0,
+                  pr: 2,
+                  justifyContent: "center",
+                },
 
-                  "& [data-field='image']": {
-                    p: 0,
-                  },
-
-                  "& [data-field='title']": {
-                    pl: !!imageFieldName ? 2 : 0,
-                    pr: 2,
-                  },
-
-                  "& [data-field='version']": {
-                    pl: 0,
-                    pr: 2,
-                    justifyContent: "center",
-                  },
-                }}
-              />
-            )}
+                // Makes sure that the custom overlay is interactive
+                "& [data-cy='NoSearchResults']": {
+                  pointerEvents: "all",
+                },
+              }}
+            />
           </Box>
         )}
       </DialogContent>
