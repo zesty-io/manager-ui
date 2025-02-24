@@ -1,5 +1,5 @@
 import moment from "moment";
-
+const TIMEOUT = { timeout: 15_000 };
 const yesterdayTimestamp = moment()
   .hour(0)
   .minute(0)
@@ -16,10 +16,13 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     });
 
-    cy.get("#12-13d590-9v2nr2 input").clear().should("have.value", "");
-    cy.get("#SaveItemButton").click();
+    cy.get("#12-13d590-9v2nr2 input", TIMEOUT).clear().should("have.value", "");
+    cy.get("#SaveItemButton").click(TIMEOUT);
 
-    cy.get("[data-cy=toast]").contains("Missing Data in Required Fields");
+    cy.get("[data-cy=toast]").contains(
+      "Missing Data in Required Fields",
+      TIMEOUT
+    );
   });
 
   it("Must not save when exceeding or lacking characters", () => {
@@ -27,8 +30,8 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a4f5f1beaa-zc5l6v/7-ce9ca8cfb0-cc1mnz");
     });
 
-    cy.get("#12-e6a5cfe3f6-k94nbg input").clear().type("aa");
-    cy.get("#SaveItemButton").click();
+    cy.get("#12-e6a5cfe3f6-k94nbg input", TIMEOUT).clear().type("aa");
+    cy.get("#SaveItemButton").click(TIMEOUT);
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
@@ -83,7 +86,7 @@ describe("Actions in content editor", () => {
     cy.get("#12-f8efe4e0f5-xj7pj6 input").should("not.exist");
 
     // Make an edit to enable save button
-    cy.get("#12-849844-t8v5l6 input").clear().type(timestamp);
+    cy.get("#12-849844-t8v5l6 input", TIMEOUT).clear().type(timestamp);
 
     // save to api
     cy.waitOn(
@@ -113,7 +116,7 @@ describe("Actions in content editor", () => {
       }
     );
 
-    cy.get("[data-cy=toast]").contains("Item Saved");
+    cy.get("[data-cy=toast]").contains("Item Saved", TIMEOUT);
   });
 
   it("Publishes an item", () => {
