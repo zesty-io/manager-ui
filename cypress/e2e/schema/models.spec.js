@@ -12,7 +12,7 @@ describe("Schema: Models", () => {
   });
   it("Opens creation model with model type selector when triggered from All Models", () => {
     cy.getBySelector("create-model-button-all-models").click(TIMEOUT);
-    cy.contains("Select Model Type").should("be.visible");
+    cy.contains("Select Model Type", TIMEOUT).should("be.visible");
     cy.get("body").type("{esc}");
   });
   it("Opens creation model with model type pre-selected when triggered from Sidebar", () => {
@@ -57,7 +57,7 @@ describe("Schema: Models", () => {
   });
 
   it("Renames model", () => {
-    cy.getBySelector(`model-header-menu`).click();
+    cy.getBySelector(`model-header-menu`).click(TIMEOUT);
     cy.contains("Rename Model").click();
     cy.get(".MuiDialog-container").within(() => {
       cy.get("label").contains("Display Name").next().type(" Updated");

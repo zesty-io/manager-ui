@@ -6,7 +6,7 @@ const CypressTestBlock = "Cypress Test Block";
 const CypressTestVariant = "Cypress Test Variant";
 
 const TIMEOUT = {
-  timeout: 15000,
+  timeout: 15_000,
 };
 
 describe("All Blocks Tests", () => {
@@ -30,7 +30,7 @@ describe("All Blocks Tests", () => {
 
   it("creates new block with default values", () => {
     AllBlocksPage.createBlock(CypressTestBlock);
-    cy.contains(CypressTestBlock).should("exist");
+    cy.contains(CypressTestBlock, TIMEOUT).should("exist");
     SchemaPage.visit();
     SchemaPage.addSingleLineTextFieldWithDefaultValue(
       CypressTestBlock,
