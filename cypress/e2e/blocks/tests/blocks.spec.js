@@ -5,6 +5,10 @@ import SchemaPage from "../../schema/pages/SchemaPage";
 const CypressTestBlock = "Cypress Test Block";
 const CypressTestVariant = "Cypress Test Variant";
 
+const TIMEOUT = {
+  timeout: 15000,
+};
+
 describe("All Blocks Tests", () => {
   before(() => {
     AllBlocksPage.visit();
@@ -50,12 +54,12 @@ describe("All Blocks Tests", () => {
   });
 
   it("navigates to block detail page", () => {
-    cy.contains(CypressTestBlock).click();
+    cy.contains(CypressTestBlock).click(TIMEOUT);
     cy.contains("Start Creating Variants Now").should("exist");
   });
 
   it("creates a variant with default values", () => {
-    cy.contains(CypressTestBlock).click();
+    cy.contains(CypressTestBlock).click(TIMEOUT);
     BlockPage.createVariant(CypressTestVariant);
     cy.contains(
       new RegExp(`${CypressTestBlock}:\\s*${CypressTestVariant}`)

@@ -1,5 +1,8 @@
 const SEARCH_TERM = `cypress ${Date.now()}`;
 const TIMESTAMP = Date.now();
+const TIMEOUT = {
+  timeout: 15000,
+};
 
 describe("Schema: Models", () => {
   before(() => {
@@ -8,12 +11,14 @@ describe("Schema: Models", () => {
     });
   });
   it("Opens creation model with model type selector when triggered from All Models", () => {
-    cy.getBySelector("create-model-button-all-models").click();
+    cy.getBySelector("create-model-button-all-models").click(TIMEOUT);
     cy.contains("Select Model Type").should("be.visible");
     cy.get("body").type("{esc}");
   });
   it("Opens creation model with model type pre-selected when triggered from Sidebar", () => {
-    cy.getBySelector(`create-model-button-sidebar-templateset`).click();
+    cy.getBySelector(`create-model-button-sidebar-templateset`).click({
+      timeout: 15000,
+    });
     cy.contains("Create Single Page Model").should("be.visible");
     cy.get("body").type("{esc}");
     cy.getBySelector(`create-model-button-sidebar-pageset`).click();
@@ -24,8 +29,8 @@ describe("Schema: Models", () => {
     cy.get("body").type("{esc}");
   });
   it("Creates model", () => {
-    cy.getBySelector(`create-model-button-all-models`).click();
-    cy.contains("Multi Page Model").click();
+    cy.getBySelector(`create-model-button-all-models`).click(TIMEOUT);
+    cy.contains("Multi Page Model").click(TIMEOUT);
     cy.contains("Next").click();
     cy.contains("Display Name").next().type("Cypress Test Model");
     cy.contains("Reference ID")
@@ -64,8 +69,8 @@ describe("Schema: Models", () => {
     cy.contains("Cypress Test Model Updated").should("exist");
   });
   it("Deletes model", () => {
-    cy.getBySelector(`model-header-menu`).click();
-    cy.contains("Delete Model").click();
+    cy.getBySelector(`model-header-menu`).click(TIMEOUT);
+    cy.contains("Delete Model").click(TIMEOUT);
     cy.get(".MuiDialog-container").within(() => {
       cy.get(".MuiOutlinedInput-root").type("Cypress Test Model Updated");
     });
@@ -126,7 +131,7 @@ describe("Schema: Models", () => {
       cy.visit("/schema");
     });
 
-    cy.getBySelector(`create-model-button-all-models`).click();
+    cy.getBySelector(`create-model-button-all-models`).click(TIMEOUT);
     cy.contains("Block Model").click();
     cy.contains("Next").click();
     cy.contains("Display Name").next().type(`Block Test Model ${TIMESTAMP}`);

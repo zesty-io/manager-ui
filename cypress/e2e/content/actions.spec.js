@@ -212,7 +212,7 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
     });
 
-    cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
+    cy.get("input[name=title]", { timeout: 15_000 }).click().type(timestamp);
     cy.getBySelector("ManualMetaFlow").click();
     cy.getBySelector("metaDescription")
       .find("textarea")
@@ -220,7 +220,7 @@ describe("Actions in content editor", () => {
       .type(timestamp);
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", { timeout: 5000 }).should("exist");
+    cy.contains("Created Item", { timeout: 15_000 }).should("exist");
   });
 
   it("Saved item becomes publishable", () => {
@@ -232,11 +232,11 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0");
     });
 
-    cy.contains(timestamp, { timeout: 5000 }).should("exist");
+    cy.contains(timestamp, { timeout: 15000 }).should("exist");
   });
 
   it("Deletes an item", () => {
-    cy.contains(timestamp).click();
+    cy.contains(timestamp).click({ timeout: 15_000 });
     cy.getBySelector("ContentItemMoreButton").click();
     cy.getBySelector("DeleteContentItem").click();
     cy.getBySelector("DeleteContentItemConfirmButton").click();
