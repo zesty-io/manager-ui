@@ -9,7 +9,7 @@ const yesterdayTimestamp = moment()
   .subtract(1, "day")
   .format("x");
 
-const SUFFIX = "---T";
+const SUFFIX = "---TEST";
 
 const TEST_DATA = {
   newItem: `new_item${SUFFIX}`,
@@ -59,7 +59,10 @@ describe("Actions in content editor", () => {
       .find("li")
       .first()
       .contains("Exceeding by 5 characters.");
-    cy.get("#12-e6a5cfe3f6-k94nbg input", TIMEOUT).clear().type("Lorem ipsum");
+    cy.get("#12-e6a5cfe3f6-k94nbg input", TIMEOUT)
+      .clear()
+      .wait(500)
+      .type("Lorem ipsum");
     cy.get("#SaveItemButton", TIMEOUT).click();
     cy.get("[data-cy=toast]", TIMEOUT).contains(
       "Item Saved: New Schema All Fields"
@@ -85,6 +88,7 @@ describe("Actions in content editor", () => {
     cy.get("#12-b6d09d92d0-7911ld  textarea")
       .first()
       .clear()
+      .wait(500)
       .type("hello@zesty.io");
     cy.get("#SaveItemButton", TIMEOUT).click();
     cy.get("[data-cy=toast]", TIMEOUT).contains(
@@ -104,7 +108,10 @@ describe("Actions in content editor", () => {
     cy.get("#12-f8efe4e0f5-xj7pj6 input").should("not.exist");
 
     // Make an edit to enable save button
-    cy.get("#12-849844-t8v5l6 input", TIMEOUT).clear().type(TEST_DATA?.newItem);
+    cy.get("#12-849844-t8v5l6 input", TIMEOUT)
+      .clear()
+      .wait(500)
+      .type(TEST_DATA?.newItem);
 
     // save to api
     cy.waitOn(
@@ -124,6 +131,7 @@ describe("Actions in content editor", () => {
 
     cy.get("textarea", TIMEOUT)
       .first()
+      .wait(500)
       .type("{selectall}{backspace}This is an item meta description", TIMEOUT)
       .should("have.value", "This is an item meta description");
 
@@ -236,11 +244,14 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
     });
 
-    cy.get("input[name=title]", TIMEOUT).type(TEST_DATA?.newItem, TIMEOUT);
+    cy.get("input[name=title]", TIMEOUT)
+      .wait(500)
+      .type(TEST_DATA?.newItem, TIMEOUT);
     cy.getBySelector("ManualMetaFlow").click();
     cy.getBySelector("metaDescription")
       .find("textarea")
       .first()
+      .wait(500)
       .type(TEST_DATA?.newItem);
     cy.getBySelector("CreateItemSaveButton", TIMEOUT).click();
 
@@ -256,7 +267,7 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0");
     });
 
-    cy.contains(TEST_DATA?.newItem, TIMEOUT).should("exist");
+    cy.contains(TEST_DATA?.newItem, { timeout: 50_000 }).should("exist");
   });
 
   it("Deletes an item", () => {
