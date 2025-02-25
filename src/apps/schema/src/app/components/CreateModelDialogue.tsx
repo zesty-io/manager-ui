@@ -389,8 +389,9 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                     />
                     <Stack>
                       <Typography variant="h5" fontWeight={700}>
-                        Create
-                        {modelTypes.find((x) => x.key === model.type).name}
+                        {`Create ${
+                          modelTypes.find((x) => x.key === model.type).name
+                        }`}
                       </Typography>
                       <Typography variant="body3" color="text.secondary">
                         {

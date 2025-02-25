@@ -9,7 +9,7 @@ const yesterdayTimestamp = moment()
   .subtract(1, "day")
   .format("x");
 
-const SUFFIX = "-TEST-DATA";
+const SUFFIX = "---T";
 
 const TEST_DATA = {
   newItem: `new_item${SUFFIX}`,
@@ -231,13 +231,12 @@ describe("Actions in content editor", () => {
   });
 
   it("Creates a new item", () => {
+    cleanTestData();
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
     });
 
-    cy.get("input[name=title]", TIMEOUT)
-      // .click()
-      .type(TEST_DATA?.newItem);
+    cy.get("input[name=title]", TIMEOUT).type(TEST_DATA?.newItem, TIMEOUT);
     cy.getBySelector("ManualMetaFlow").click();
     cy.getBySelector("metaDescription")
       .find("textarea")
@@ -262,7 +261,7 @@ describe("Actions in content editor", () => {
 
   it("Deletes an item", () => {
     cy.contains(TEST_DATA?.newItem, TIMEOUT).click();
-    cy.getBySelector("ContentItemMoreButton").click();
+    cy.getBySelector("ContentItemMoreButton", TIMEOUT).click();
     cy.getBySelector("DeleteContentItem").click();
     cy.getBySelector("DeleteContentItemConfirmButton").click();
 
@@ -359,11 +358,6 @@ describe("Actions in content editor", () => {
   });
 });
 
-function repeat(cb) {
-  cb();
-  cb();
-}
-
 function cleanTestData() {
   cy.apiRequest({
     url: `${API_ENDPOINTS.devInstance}/content/models/6-a1a600-k0b6f0/items?limit=5000&page=1&lang=en-US`,
@@ -371,13 +365,6 @@ function cleanTestData() {
     const zuids = response?.data
       ?.filter((resData) => resData?.data?.title?.includes(SUFFIX))
       ?.map((item) => item?.meta?.ZUID);
-    // .forEach((forDelete) => {
-    //   cy.apiRequest({
-    //     url: `${API_ENDPOINTS.devInstance}/content/models/6-a1a600-k0b6f0/items/batch`,
-    //     method: "DELETE",
-    //     body:"cc"
-    //   });
-    // });
 
     cy.apiRequest({
       url: `${API_ENDPOINTS.devInstance}/content/models/6-a1a600-k0b6f0/items/batch`,

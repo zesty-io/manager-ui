@@ -8,7 +8,7 @@ class AllBlocksPage {
   }
 
   get createBlockButton() {
-    return cy.getBySelector("create-block-button");
+    return cy.getBySelector("create-block-button", TIMEOUT);
   }
 
   get onboardingDialog() {
@@ -33,8 +33,8 @@ class AllBlocksPage {
 
   createBlock(name) {
     this.createBlockButton.click(TIMEOUT);
-    cy.getBySelector("create-model-display-name-input").type(name);
-    cy.getBySelector("create-model-submit-button").click(TIMEOUT);
+    cy.getBySelector("create-model-display-name-input", TIMEOUT).type(name);
+    cy.getBySelector("create-model-submit-button", TIMEOUT).click();
   }
 }
 
