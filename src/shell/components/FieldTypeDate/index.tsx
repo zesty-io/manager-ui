@@ -17,6 +17,7 @@ import { Typography, Stack, Box, TextField } from "@mui/material";
 import format from "date-fns/format";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import moment from "moment";
+import { parseInt } from "lodash";
 
 export interface FieldTypeDateProps extends DatePickerProps<Date> {
   name: string;

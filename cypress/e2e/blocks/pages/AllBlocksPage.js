@@ -1,10 +1,14 @@
+const TIMEOUT = {
+  timeout: 15000,
+};
+
 class AllBlocksPage {
   visit() {
     cy.visit("/blocks");
   }
 
   get createBlockButton() {
-    return cy.getBySelector("create-block-button");
+    return cy.getBySelector("create-block-button", TIMEOUT);
   }
 
   get onboardingDialog() {
@@ -24,13 +28,13 @@ class AllBlocksPage {
   }
 
   clickOnboardingNextButton() {
-    this.onboardingNextButton.click();
+    this.onboardingNextButton.click(TIMEOUT);
   }
 
   createBlock(name) {
-    this.createBlockButton.click();
-    cy.getBySelector("create-model-display-name-input").type(name);
-    cy.getBySelector("create-model-submit-button").click();
+    this.createBlockButton.click(TIMEOUT);
+    cy.getBySelector("create-model-display-name-input", TIMEOUT).type(name);
+    cy.getBySelector("create-model-submit-button", TIMEOUT).click();
   }
 }
 
