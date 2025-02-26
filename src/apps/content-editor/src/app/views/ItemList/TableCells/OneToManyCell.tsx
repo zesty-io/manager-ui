@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Box, Chip, Tooltip } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 
 import { AppState } from "../../../../../../../shell/store/types";
 import { searchItems } from "../../../../../../../shell/store/content";
+import { createSelector } from "reselect";
 
 const getNumOfItemsToRender = (
   parentWidth: number,
@@ -25,15 +26,20 @@ const getNumOfItemsToRender = (
   return validIndex;
 };
 
+const selectContent = (state: AppState) => state.content;
+
+const selectContentCount = createSelector(
+  [selectContent],
+  (content) => Object.keys(content).length
+);
+
 type OneToManyCellProps = {
   items: any[];
 };
 export const OneToManyCell = ({ items }: OneToManyCellProps) => {
-  const allItems = useSelector((state: AppState) => state.content);
+  const contentCount = useSelector(selectContentCount, shallowEqual);
   const chipContainerRef = useRef<HTMLDivElement>();
-  const [lastValidIndex, setLastValidIndex] = useState(
-    Object.keys(allItems)?.length - 1
-  );
+  const [lastValidIndex, setLastValidIndex] = useState(contentCount - 1);
   const parentWidth = chipContainerRef.current?.parentElement?.clientWidth;
   const hiddenItems = items?.length - lastValidIndex - 1;
 
