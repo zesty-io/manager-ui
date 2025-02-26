@@ -47,6 +47,8 @@ export default memo(function Editor({
   const isNewItem = itemZUID.slice(0, 3) === "new";
   const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
+    useState(null);
 
   const metaFields = useMemo(() => {
     if (fields?.length) {
@@ -309,12 +311,20 @@ export default memo(function Editor({
               ?.slice(0, 160) || ""
           );
 
-          dispatch({
-            type: "SET_ITEM_WEB",
-            itemZUID,
-            key: "metaDescription",
-            value: cleanedValue,
-          });
+          if (
+            item?.web?.["metaDescription"] === prevFirstContentFieldValue ||
+            !item?.web?.["metaDescription"] ||
+            !prevFirstContentFieldValue
+          ) {
+            dispatch({
+              type: "SET_ITEM_WEB",
+              itemZUID,
+              key: "metaDescription",
+              value: cleanedValue,
+            });
+
+            setPrevFirstContentFieldValue(cleanedValue);
+          }
 
           if ("og_description" in metaFields) {
             dispatch({
@@ -336,7 +346,13 @@ export default memo(function Editor({
         }
       }
     },
-    [fieldErrors, metaFields]
+    [
+      fieldErrors,
+      metaFields,
+      item,
+      prevFirstContentFieldValue,
+      setPrevFirstContentFieldValue,
+    ]
   );
 
   const applyDefaultValuesToItemData = useCallback(() => {
