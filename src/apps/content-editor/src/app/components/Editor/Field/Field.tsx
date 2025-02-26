@@ -51,7 +51,7 @@ import {
 } from "../../../../../../../shell/services/types";
 import { ResolvedOption } from "./ResolvedOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
-import { debounce } from "lodash";
+import { debounce, parseInt } from "lodash";
 
 const AIFieldShell = withAI(FieldShell);
 

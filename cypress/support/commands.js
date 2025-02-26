@@ -1,3 +1,5 @@
+import "./api";
+
 Cypress.Commands.add("login", () => {
   const formBody = new FormData();
 
