@@ -47,7 +47,12 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={onClose}>
+      <Menu
+        anchorEl={anchorEl}
+        open={!!anchorEl}
+        onClose={onClose}
+        container={() => document.getElementById(modelZUID)!}
+      >
         <MenuItem
           onClick={() => {
             setShowDialogue("rename");

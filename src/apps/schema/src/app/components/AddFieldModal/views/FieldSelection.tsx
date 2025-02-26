@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DialogContent,
   DialogTitle,
@@ -23,6 +23,12 @@ interface Props {
   onFieldClick: (fieldType: string, fieldName: string) => void;
   onModalClose: () => void;
 }
+
+const FIELD_CATEGORIES: Record<string, string> = {
+  dateandtime: "Date & Time",
+  options: "Advanced",
+};
+
 export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
   const user: User = useSelector((state: AppState) => state.user);
   const [fieldTypes, setFieldTypes] = useState(FIELD_COPY_CONFIG);
@@ -137,7 +143,7 @@ export const FieldSelection = ({ onFieldClick, onModalClose }: Props) => {
               mb={1.5}
               color="text.secondary"
             >
-              {fieldKey === "dateandtime" ? "Date & Time" : fieldKey}
+              {FIELD_CATEGORIES?.[fieldKey] || fieldKey}
             </Typography>
             <Box
               display="grid"

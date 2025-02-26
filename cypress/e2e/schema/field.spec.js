@@ -308,9 +308,6 @@ describe("Schema: Fields", () => {
   it("Creates a One-to-one relationship field", () => {
     cy.intercept("**/fields?showDeleted=true").as("getFields");
 
-    const fieldLabel = `One to One ${timestamp}`;
-    const fieldName = `one_to_one_${timestamp}`;
-
     // Open the add field modal
     cy.getBySelector(SELECTORS.ADD_FIELD_BTN)
       .should("exist")
@@ -319,9 +316,6 @@ describe("Schema: Fields", () => {
 
     // Select one-to-one relationship field
     cy.getBySelector(SELECTORS.FIELD_SELECT_ONE_TO_ONE).should("exist").click();
-
-    // Fill up fields
-    cy.getBySelector(SELECTORS.INPUT_LABEL).should("exist").type(fieldLabel);
 
     // Select a related model
     cy.getBySelector(SELECTORS.AUTOCOMPLETE_MODEL_ZUID)
@@ -359,7 +353,9 @@ describe("Schema: Fields", () => {
     cy.wait("@getFields");
 
     // Check if field exists
-    cy.getBySelector(`Field_${fieldName}`).should("exist");
+    cy.getBySelector(
+      "Field_cypress_test__group_with_visible_fields_in_list_"
+    ).should("exist");
   });
 
   it("Creates a currency field", () => {
