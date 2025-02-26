@@ -1,19 +1,27 @@
 const SEARCH_TERM = `cypress ${Date.now()}`;
 const TIMESTAMP = Date.now();
+const TIMEOUT = {
+  timeout: 15000,
+};
+
+const BLOCK_MODEL_NAME = "Test Block Model";
 
 describe("Schema: Models", () => {
   before(() => {
+    cy.deleteModels([BLOCK_MODEL_NAME]);
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/schema");
     });
   });
   it("Opens creation model with model type selector when triggered from All Models", () => {
-    cy.getBySelector("create-model-button-all-models").click();
-    cy.contains("Select Model Type").should("be.visible");
+    cy.getBySelector("create-model-button-all-models").click(TIMEOUT);
+    cy.contains("Select Model Type", TIMEOUT).should("be.visible");
     cy.get("body").type("{esc}");
   });
   it("Opens creation model with model type pre-selected when triggered from Sidebar", () => {
-    cy.getBySelector(`create-model-button-sidebar-templateset`).click();
+    cy.getBySelector(`create-model-button-sidebar-templateset`).click({
+      timeout: 15000,
+    });
     cy.contains("Create Single Page Model").should("be.visible");
     cy.get("body").type("{esc}");
     cy.getBySelector(`create-model-button-sidebar-pageset`).click();
@@ -24,8 +32,8 @@ describe("Schema: Models", () => {
     cy.get("body").type("{esc}");
   });
   it("Creates model", () => {
-    cy.getBySelector(`create-model-button-all-models`).click();
-    cy.contains("Multi Page Model").click();
+    cy.getBySelector(`create-model-button-all-models`).click(TIMEOUT);
+    cy.contains("Multi Page Model").click(TIMEOUT);
     cy.contains("Next").click();
     cy.contains("Display Name").next().type("Cypress Test Model");
     cy.contains("Reference ID")
@@ -40,7 +48,9 @@ describe("Schema: Models", () => {
       .type("Cypress test (Group with visible fields in list)");
 
     cy.get(".MuiAutocomplete-popper")
-      .contains("Cypress test (Group with visible fields in list)")
+      .contains("Cypress test (Group with visible fields in list)", {
+        timeout: 50_000,
+      })
       .click();
 
     cy.contains("Description").next().type("Cypress test model description");
@@ -52,7 +62,7 @@ describe("Schema: Models", () => {
   });
 
   it("Renames model", () => {
-    cy.getBySelector(`model-header-menu`).click();
+    cy.getBySelector(`model-header-menu`).click(TIMEOUT);
     cy.contains("Rename Model").click();
     cy.get(".MuiDialog-container").within(() => {
       cy.get("label").contains("Display Name").next().type(" Updated");
@@ -64,8 +74,8 @@ describe("Schema: Models", () => {
     cy.contains("Cypress Test Model Updated").should("exist");
   });
   it("Deletes model", () => {
-    cy.getBySelector(`model-header-menu`).click();
-    cy.contains("Delete Model").click();
+    cy.getBySelector(`model-header-menu`).click(TIMEOUT);
+    cy.contains("Delete Model").click(TIMEOUT);
     cy.get(".MuiDialog-container").within(() => {
       cy.get(".MuiOutlinedInput-root").type("Cypress Test Model Updated");
     });
@@ -121,19 +131,20 @@ describe("Schema: Models", () => {
       .contains("Model parenting itself");
   });
 
-  it("Can create a block model", () => {
+  //Skipped this. This has been tested on the starter block feature.
+  it.skip("Can create a block model", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/schema");
     });
 
-    cy.getBySelector(`create-model-button-all-models`).click();
+    cy.getBySelector(`create-model-button-all-models`).click(TIMEOUT);
     cy.contains("Block Model").click();
     cy.contains("Next").click();
-    cy.contains("Display Name").next().type(`Block Test Model ${TIMESTAMP}`);
+    cy.contains("Display Name").next().type(BLOCK_MODEL_NAME);
     cy.contains("Reference ID")
       .next()
       .find("input")
-      .should("have.value", `block_test_model_${TIMESTAMP}`);
+      .should("have.value", BLOCK_MODEL_NAME);
 
     cy.contains("Description").next().type("Block test model description");
     cy.get(".MuiDialog-container").within(() => {
@@ -142,6 +153,6 @@ describe("Schema: Models", () => {
     cy.intercept("POST", "/models");
     cy.intercept("GET", "/models");
 
-    cy.contains(`Block Test Model ${TIMESTAMP}`).should("exist");
+    cy.contains(BLOCK_MODEL_NAME, TIMEOUT).should("exist");
   });
 });

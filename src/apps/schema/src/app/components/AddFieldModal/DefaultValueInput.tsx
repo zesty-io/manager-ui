@@ -40,6 +40,7 @@ import { FieldTypeColor } from "../../../../../../shell/components/FieldTypeColo
 import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort";
 import { RelationalFieldBase } from "../../../../../../shell/components/RelationalFieldBase";
 import moment from "moment";
+import { parseInt } from "lodash";
 
 type DefaultValueInputProps = {
   type: string;
