@@ -21,10 +21,6 @@ import { SearchRounded, RestartAltRounded } from "@mui/icons-material";
 import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
 import { ItemListFilters } from "./ItemListFilters";
 import { useParams } from "../../../../../../shell/hooks/useParams";
-import {
-  useGetAllBinFilesQuery,
-  useGetBinsQuery,
-} from "../../../../../../shell/services/mediaManager";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { useStagedChanges } from "./StagedChangesContext";
@@ -41,6 +37,7 @@ import {
 import { fetchItems } from "../../../../../../shell/store/content";
 import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
+import { debounce } from "lodash";
 
 const formatDateTime = (source: string) => {
   const dateObj = new Date(source);
@@ -70,22 +67,6 @@ const formatDate = (source: string) => {
   });
 };
 
-const selectFilteredItems = (
-  state: AppState,
-  modelZUID: string,
-  activeLangId: number,
-  skip = false
-) => {
-  if (skip) {
-    return [];
-  }
-  return Object.values(state.content).filter(
-    (item: ContentItem) =>
-      item.meta.contentModelZUID === modelZUID &&
-      item.meta.langID === activeLangId
-  );
-};
-
 export const ItemList = () => {
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const [params, setParams] = useParams();
@@ -98,17 +79,20 @@ export const ItemList = () => {
   const { data: languages } = useGetLangsQuery({});
   const activeLangId =
     languages?.find((lang) => lang.code === activeLanguageCode)?.ID || 1;
-  const [hasMounted, setHasMounted] = useState(false);
   const allItems = useSelector((state: AppState) => state.content);
-  const items = useSelector((state: AppState) =>
-    selectFilteredItems(state, modelZUID, activeLangId, !hasMounted)
-  );
+  const items = useMemo(() => {
+    return Object.values(allItems).filter(
+      (item: ContentItem) =>
+        item.meta.contentModelZUID === modelZUID &&
+        item.meta.langID === activeLangId
+    );
+  }, [allItems, modelZUID, activeLangId]);
+
   const allFields = useSelector((state: AppState) => state.fields);
   const user = useSelector((state: AppState) => state.user);
   const { data: users, isFetching: isUsersFetching } = useGetUsersQuery();
-
+  const [processedItems, setProcessedItems] = useState([]);
   const [isModelItemsFetching, setIsModelItemsFetching] = useState(true);
-
   const [sortModel] = useContext(TableSortContext);
   const { stagedChanges } = useStagedChanges();
   const [selectedItems] = useSelectedItems();
@@ -171,9 +155,6 @@ export const ItemList = () => {
 
   useEffect(() => {
     dispatch(fetchFields(modelZUID));
-    setTimeout(() => {
-      setHasMounted(true);
-    }, 0);
   }, []);
 
   useEffect(() => {
@@ -199,9 +180,8 @@ export const ItemList = () => {
     }
   }, [languages, activeLanguageCode]);
 
-  const processedItems = useMemo(() => {
+  const computeProcessedItems = useCallback(() => {
     if (!items || isFieldsFetching || isUsersFetching) return [];
-
     const fieldMap = fields?.reduce((acc, field) => {
       // @ts-ignore
       acc[field.name] = field.datatype;
@@ -303,6 +283,29 @@ export const ItemList = () => {
       return clonedItem;
     });
   }, [items, allItems, fields, users, isFieldsFetching, isUsersFetching]);
+
+  /* 
+    We debounce the processed items compute since certain fields can call for items to be fetched if they are not in memory 
+    and we don't want to trigger a heavy computation on every item fetched in parallel. This reduces initial load time.
+  */
+  const debouncedCompute = useMemo(() => {
+    return debounce(() => {
+      setProcessedItems(computeProcessedItems());
+    }, 300);
+  }, [computeProcessedItems]);
+
+  useEffect(() => {
+    debouncedCompute();
+    return () => debouncedCompute.cancel();
+  }, [
+    debouncedCompute,
+    items,
+    allItems,
+    fields,
+    users,
+    isFieldsFetching,
+    isUsersFetching,
+  ]);
 
   const sortedAndFilteredItems = useMemo(() => {
     const sort = sortModel?.[0]?.field;
@@ -634,6 +637,7 @@ export const ItemList = () => {
                     flex={1}
                     display="flex"
                     alignItems="center"
+                    paddingBottom={12}
                   >
                     <Box
                       data-cy="NoResults"
@@ -665,8 +669,7 @@ export const ItemList = () => {
               {!sortedAndFilteredItems?.length &&
                 !isModelItemsFetching &&
                 !search &&
-                (!!sortModel?.length ||
-                  statusFilter ||
+                (statusFilter ||
                   dateFilter?.preset ||
                   dateFilter?.from ||
                   dateFilter?.to ||
@@ -676,6 +679,7 @@ export const ItemList = () => {
                     flex={1}
                     display="flex"
                     alignItems="center"
+                    paddingBottom={12}
                   >
                     <Box
                       data-cy="NoResults"
