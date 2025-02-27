@@ -18,7 +18,7 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { theme } from "@zesty-io/material";
 
 import GlobalMenu from "../global-menu";
-import Favicon from "../favicon";
+import { Favicon } from "../Favicon";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import zestyLogoOnly from "../../../../public/images/zestyLogoOnly.svg";
 import zestyLogoOnlyGrey from "../../../../public/images/zestyLogoOnlyGrey.svg";
