@@ -3,6 +3,7 @@ import { TreeItem } from "@mui/x-tree-view";
 import { Stack, Box, Typography, Tooltip } from "@mui/material";
 
 import { TreeItem as TreeItemType } from "../index";
+import { useIntersectionObserver } from "../../../hooks/useIntersectionObserver";
 
 interface Props {
   labelName: string;
@@ -17,6 +18,7 @@ interface Props {
   dragAndDrop?: boolean;
   selected?: string;
 }
+
 export const NavTreeItem: FC<Props> = React.memo(
   ({
     labelName,
@@ -34,18 +36,8 @@ export const NavTreeItem: FC<Props> = React.memo(
     const itemTreeRef = useRef(null);
     const currentDepth = depth + 1;
     const depthPadding = currentDepth * 1;
-    const itemId = `${nodeId}-${currentDepth}`;
-    const [isVisible, setIsVisible] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-
-    useEffect(() => {
-      if (!itemTreeRef?.current) return;
-      const observer = new IntersectionObserver(([entry]) => {
-        setIsVisible(entry.isIntersecting);
-      });
-      observer.observe(itemTreeRef?.current);
-      return () => observer.disconnect();
-    }, [itemTreeRef?.current]);
+    const { isVisible } = useIntersectionObserver(itemTreeRef);
 
     useEffect(() => {
       if (!itemTreeRef?.current) return;
@@ -59,7 +51,14 @@ export const NavTreeItem: FC<Props> = React.memo(
           setScrolled(true);
         }, 500);
       }
-    }, [selected, nodeId, itemTreeRef?.current, isVisible, scrolled]);
+    }, [
+      selected,
+      nodeId,
+      itemTreeRef?.current,
+      isVisible,
+      scrolled,
+      setScrolled,
+    ]);
 
     return (
       <TreeItem
@@ -140,10 +139,6 @@ export const NavTreeItem: FC<Props> = React.memo(
             borderLeft: "2px solid",
             borderColor: "primary.main",
             pl: 0.75,
-
-            "& .MuiMenu-root .MuiTypography-root": {
-              color: "common.black",
-            },
 
             ".MuiTreeItem-iconContainer svg": {
               color: "primary.main",
