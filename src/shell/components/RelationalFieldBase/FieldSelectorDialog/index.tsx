@@ -81,6 +81,7 @@ type FieldSelectorDialogProps = {
   onUpdateSelectedZUIDs: (selectedZUIDs: string[]) => void;
   fieldLabel: string;
   multiselect?: boolean;
+  isReplacement?: boolean;
 };
 export const FieldSelectorDialog = ({
   onClose,
@@ -90,6 +91,7 @@ export const FieldSelectorDialog = ({
   onUpdateSelectedZUIDs,
   fieldLabel,
   multiselect,
+  isReplacement = false,
 }: FieldSelectorDialogProps) => {
   const dispatch = useDispatch();
   const searchField = useRef(null);
@@ -113,8 +115,9 @@ export const FieldSelectorDialog = ({
       status: null,
     }
   );
-  const [selectionModel, setSelectionModel] =
-    useState<GridInputSelectionModel>(selectedZUIDs);
+  const [selectionModel, setSelectionModel] = useState<GridInputSelectionModel>(
+    isReplacement ? [] : selectedZUIDs
+  );
   const [isFetchingContentItems, setIsFetchingContentItems] = useState(false);
 
   const { data: langs } = useGetLangsQuery({});
@@ -527,6 +530,7 @@ export const FieldSelectorDialog = ({
         onDeselectAll={() => setSelectionModel([])}
         onDone={() => onUpdateSelectedZUIDs(selectionModel as string[])}
         loading={isLoading}
+        isReplacement={isReplacement}
       />
       <DialogContent
         id="fieldSelectorDialogBody"

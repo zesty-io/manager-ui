@@ -9,6 +9,8 @@ import {
   ListItemIcon,
   IconButton,
   Tooltip,
+  SvgIcon,
+  SvgIconProps,
 } from "@mui/material";
 import {
   DragIndicatorRounded,
@@ -42,6 +44,23 @@ import { fetchItemPublishing } from "../../../store/content";
 import { SchedulePublish } from "../../SchedulePublish";
 import { useDomain } from "../../../hooks/use-domain";
 
+const ReplaceContentIcon = (props: SvgIconProps) => {
+  return (
+    <SvgIcon {...props}>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none">
+        <path
+          d="M2 16.9691V14.6661H13.4191V16.9691H2ZM2 10.636V8.33307H19.8899V10.636H2ZM2 4.30293V2H19.8899V4.30293H2Z"
+          fill="currentColor"
+        />
+        <path
+          d="M18 19C17.337 19 16.7011 18.7366 16.2322 18.2678C15.7634 17.7989 15.5 17.163 15.5 16.5C15.5 16.1 15.59 15.72 15.76 15.38L14.67 14.29C14.25 14.92 14 15.68 14 16.5C14 18.71 15.79 20.5 18 20.5V22L20.25 19.75L18 17.5V19ZM18 12.5V11L15.75 13.25L18 15.5V14C18.663 14 19.2989 14.2634 19.7678 14.7322C20.2366 15.2011 20.5 15.837 20.5 16.5C20.5 16.9 20.41 17.28 20.24 17.62L21.33 18.71C21.75 18.08 22 17.32 22 16.5C22 14.29 20.21 12.5 18 12.5Z"
+          fill="currentColor"
+        />
+      </svg>
+    </SvgIcon>
+  );
+};
+
 type ActiveItemProps = {
   itemZUID: string;
   index: number;
@@ -51,6 +70,7 @@ type ActiveItemProps = {
   onDropCard: () => void;
   onRemoveCard: (itemZUID: string) => void;
   draggable?: boolean;
+  openFieldSelectorDialog?: (evt: React.MouseEvent<HTMLButtonElement>) => void;
 };
 export const ActiveItem = memo(
   ({
@@ -62,6 +82,7 @@ export const ActiveItem = memo(
     onDropCard,
     onRemoveCard,
     draggable,
+    openFieldSelectorDialog,
   }: ActiveItemProps) => {
     const [imageError, setImageError] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -362,6 +383,19 @@ export const ActiveItem = memo(
               />
             )}
             <Stack direction="row" gap={1}>
+              <Tooltip
+                enterDelay={1000}
+                disableInteractive
+                title="Replace Item"
+              >
+                <IconButton
+                  size="xsmall"
+                  onClick={openFieldSelectorDialog}
+                  disabled={!contentItem}
+                >
+                  <ReplaceContentIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
               <Tooltip
                 enterDelay={1000}
                 disableInteractive
