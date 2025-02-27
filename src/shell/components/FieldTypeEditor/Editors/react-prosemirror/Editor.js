@@ -1,78 +1,72 @@
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import "prosemirror-view/style/prosemirror.css";
 
-export default class Editor extends React.Component {
-  constructor(props) {
-    super(props);
+const Editor = ({
+  options,
+  onChange,
+  attributes,
+  nodeViews,
+  autoFocus,
+  render,
+  modals,
+}) => {
+  const editorRef = useRef(null);
+  const [view, setView] = useState(null);
 
-    this.editorRef = React.createRef();
-  }
-
-  componentWillMount() {
-    this.view = new EditorView(null, {
-      state: EditorState.create(this.props.options),
+  useEffect(() => {
+    const editorView = new EditorView(null, {
+      state: EditorState.create(options),
       dispatchTransaction: (transaction) => {
         const { state, transactions } =
-          this.view.state.applyTransaction(transaction);
-        this.view.updateState(state);
+          editorView.state.applyTransaction(transaction);
+        editorView.updateState(state);
 
-        if (transactions.some((tr) => tr.docChanged) && this.props.onChange) {
-          this.props.onChange(state.doc);
+        if (transactions.some((tr) => tr.docChanged) && onChange) {
+          onChange(state.doc);
         }
-
-        this.forceUpdate();
       },
-      attributes: this.props.attributes,
-      nodeViews: this.props.nodeViews,
+      attributes,
+      nodeViews,
     });
-  }
 
-  componentDidMount() {
-    // this.editorRef.current.appendChild(this.view?.dom);
-    console.log(this.view);
+    setView(editorView);
 
-    if (this.props.autoFocus) {
-      this.view.focus();
-    }
-  }
+    return () => {
+      if (editorView) {
+        editorView.destroy();
+      }
+    };
+  }, []);
 
-  componentWillUnmount() {
-    if (this.view) {
-      this.view.destroy();
-      this.view = null;
-    }
-  }
+  useEffect(() => {
+    if (view && editorRef.current) {
+      const element = editorRef.current;
+      if (view.dom) {
+        element.appendChild(view.dom);
 
-  shouldComponentUpdate(nextProps) {
-    // NOTE: If prosemirror options have changed
-    // trigger prosemirrors internal document update
-    if (nextProps.options !== this.props.options) {
-      this.view.updateState(EditorState.create(nextProps.options));
-    }
-
-    // NOTE: if modals are provided and their display state changes, re-render
-    if (nextProps.modals && this.props.modals) {
-      if (
-        nextProps.modals.showEmbedModal !== this.props.modals.showEmbedModal ||
-        nextProps.modals.showLinkModal !== this.props.modals.showLinkModal
-      ) {
-        return true;
+        if (autoFocus) {
+          view.focus();
+        }
       }
     }
+  }, [view, autoFocus]);
 
-    return false;
-  }
+  useEffect(() => {
+    if (view) {
+      view.updateState(EditorState.create(options));
+    }
+  }, [options]);
 
-  render() {
-    const editor = <div ref={this.editorRef} />;
+  const editor = <div ref={editorRef} id="editorRef" />;
 
-    return this.props.render && this.view
-      ? this.props.render({
-          editor,
-          view: this.view,
-        })
-      : editor;
-  }
-}
+  return render && view
+    ? render({
+        editor,
+        view,
+      })
+    : editor;
+};
+
+export default Editor;
