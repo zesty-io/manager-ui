@@ -32,6 +32,7 @@ import { ResizableContainer } from "../../../../shell/components/ResizeableConta
 import { StagedChangesProvider } from "./views/ItemList/StagedChangesContext";
 import { SelectedItemsProvider } from "./views/ItemList/SelectedItemsContext";
 import { TableSortProvider } from "./views/ItemList/TableSortProvider";
+import { useParams } from "../../../../shell/hooks/useParams";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 export let customTheme = createTheme(legacyTheme, {
@@ -101,6 +102,7 @@ export let customTheme = createTheme(legacyTheme, {
 export default function ContentEditor() {
   const navContent = useSelector((state) => state.navContent);
   const dispatch = useDispatch();
+  const [params] = useParams();
 
   const [loading, setLoading] = useState(true);
 
@@ -133,14 +135,17 @@ export default function ContentEditor() {
             </div>
           ) : (
             <section className={cx(styles.ContentEditor)}>
-              <ResizableContainer
-                id="contentNav"
-                defaultWidth={220}
-                minWidth={220}
-                maxWidth={360}
-              >
-                <ContentNav />
-              </ResizableContainer>
+              {params.get("isDialog") !== "true" && (
+                <ResizableContainer
+                  id="contentNav"
+                  defaultWidth={220}
+                  minWidth={220}
+                  maxWidth={360}
+                >
+                  <ContentNav />
+                </ResizableContainer>
+              )}
+
               <div className={cx(styles.Content)}>
                 <div className={styles.ContentWrap}>
                   <Switch>
