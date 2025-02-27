@@ -34,6 +34,7 @@ import Shell from "./views/Shell";
 import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
 import { actions } from "shell/store/ui";
 import { CommentProvider } from "./contexts/CommentProvider";
+import { CreateContentItemDialogProvider } from "./contexts/CreateContentItemDialogProvider";
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
@@ -60,11 +61,13 @@ const App = Sentry.withProfiler(() => (
           <Provider store={store}>
             <Router history={history}>
               <CommentProvider>
-                <PrivateRoute>
-                  <LoadInstance>
-                    <Shell />
-                  </LoadInstance>
-                </PrivateRoute>
+                <CreateContentItemDialogProvider>
+                  <PrivateRoute>
+                    <LoadInstance>
+                      <Shell />
+                    </LoadInstance>
+                  </PrivateRoute>
+                </CreateContentItemDialogProvider>
               </CommentProvider>
             </Router>
           </Provider>
