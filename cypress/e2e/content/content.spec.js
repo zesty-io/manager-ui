@@ -536,5 +536,26 @@ describe("Content Specs", () => {
         2
       );
     });
+
+    it("can create & add new item", () => {
+      cy.get(
+        "#12-269a28-1bkm34 [data-cy='create-new-relational-item-button']"
+      ).click({
+        force: true,
+      });
+
+      cy.get("#12-d6e4c1d797-sjv628", { retries: 1 })
+        .find("input")
+        .type(`Test Item ${TIMESTAMP}`);
+      cy.get("#12-aaa5ce87e3-89whjq")
+        .find("textarea")
+        .first()
+        .type(`Test Item ${TIMESTAMP}`);
+      cy.getBySelector("CreateItemSaveButton").click();
+
+      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']", {
+        retries: 1,
+      }).should("have.length", 3);
+    });
   });
 });

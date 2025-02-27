@@ -1,9 +1,10 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { Box, Button, Stack } from "@mui/material";
 import {
   LinkRounded,
   KeyboardArrowUpRounded,
   KeyboardArrowDownRounded,
+  AddRounded,
 } from "@mui/icons-material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -17,11 +18,15 @@ import {
 } from "../../services/instance";
 import { fetchItems } from "../../store/content";
 import { ActiveItemLoading } from "./ActiveItem/ActiveItemLoading";
+import { CreateNewItemDialog } from "./CreateNewItemDialog";
+import { useParams } from "../../hooks/useParams";
+import { CreateContentItemDialogContext } from "../../contexts/CreateContentItemDialogProvider";
 
 type RelationalFieldBaseProps = {
   name: string;
   value: string;
   fieldLabel: string;
+  fieldZUID: string;
   relatedModelZUID: string;
   relatedFieldZUID: string;
   onChange: (value: string, name: string) => void;
@@ -31,15 +36,23 @@ export const RelationalFieldBase = ({
   name,
   value,
   fieldLabel,
+  fieldZUID,
   relatedModelZUID,
   relatedFieldZUID,
   onChange,
   multiselect,
 }: RelationalFieldBaseProps) => {
   const dispatch = useDispatch();
+  const [params] = useParams();
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
+  const [
+    initiatorZUID,
+    setInitiatorZUID,
+    newlyCreatedItemZUID,
+    setNewlyCreatedItemZUID,
+  ] = useContext(CreateContentItemDialogContext);
 
   const { data: modelData, isLoading: isLoadingModelData } =
     useGetContentModelQuery(relatedModelZUID, {
@@ -55,6 +68,17 @@ export const RelationalFieldBase = ({
       dispatch(fetchItems(relatedModelZUID));
     }
   }, [relatedModelZUID]);
+
+  useEffect(() => {
+    if (!!newlyCreatedItemZUID && initiatorZUID === fieldZUID) {
+      const newItemZUIDs = [...itemZUIDs, newlyCreatedItemZUID];
+
+      onChange(!!newItemZUIDs?.length ? newItemZUIDs.join(",") : null, name);
+      setItemZUIDs(!!newItemZUIDs?.length ? newItemZUIDs : null);
+      setInitiatorZUID(null);
+      setNewlyCreatedItemZUID(null);
+    }
+  }, [newlyCreatedItemZUID, itemZUIDs, initiatorZUID]);
 
   const handleMoveCard = useCallback(
     (draggedItemZUID: string, dropIndex: number) => {
@@ -73,6 +97,7 @@ export const RelationalFieldBase = ({
     onChange(itemZUIDs?.join(","), name);
   }, [itemZUIDs]);
 
+  const isRenderedAsDialog = params.get("isDialog") === "true";
   const isLoading = isLoadingModelData || isLoadingModelFields;
 
   return (
@@ -130,20 +155,36 @@ export const RelationalFieldBase = ({
         </Button>
       )}
       {(multiselect || (!multiselect && !value)) && (
-        <Button
-          data-cy="add-relational-item-button"
-          variant="outlined"
-          size="large"
-          startIcon={<LinkRounded />}
-          fullWidth
-          onClick={(evt) => setAnchorEl(evt.currentTarget)}
-          sx={{
-            mt: !!itemZUIDs?.length || isLoading ? 1 : 0,
-          }}
-          disabled={isLoading || !modelData}
+        <Stack
+          direction="row"
+          gap={1}
+          mt={!!itemZUIDs?.length || isLoading ? 1 : 0}
         >
-          Add Existing {fieldLabel}
-        </Button>
+          <Button
+            data-cy="add-relational-item-button"
+            variant="outlined"
+            size="large"
+            startIcon={<LinkRounded />}
+            fullWidth
+            onClick={(evt) => setAnchorEl(evt.currentTarget)}
+            disabled={isLoading || !modelData}
+          >
+            Add Existing {fieldLabel}
+          </Button>
+          {multiselect && !isRenderedAsDialog && (
+            <Button
+              data-cy="create-new-relational-item-button"
+              variant="outlined"
+              size="large"
+              startIcon={<AddRounded />}
+              fullWidth
+              onClick={() => setInitiatorZUID(fieldZUID)}
+              disabled={isLoading || !modelData}
+            >
+              Create & Add New {fieldLabel}
+            </Button>
+          )}
+        </Stack>
       )}
       {!!anchorEl && (
         <FieldSelectorDialog
@@ -163,6 +204,12 @@ export const RelationalFieldBase = ({
             setItemZUIDs(!!selectedZUIDs?.length ? selectedZUIDs : null);
             setAnchorEl(null);
           }}
+        />
+      )}
+      {initiatorZUID === fieldZUID && (
+        <CreateNewItemDialog
+          modelZUID={relatedModelZUID}
+          onClose={() => setInitiatorZUID(null)}
         />
       )}
     </Box>

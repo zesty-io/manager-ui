@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -11,18 +11,22 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  IconButton,
 } from "@mui/material";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
+import { CloseRounded } from "@mui/icons-material";
 import { theme } from "@zesty-io/material";
 
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { ContentModel } from "../../../../../../shell/services/types";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
 import { ActionAfterSave } from "./ItemCreate";
+import { useParams } from "../../../../../../shell/hooks/useParams";
+import { CreateContentItemDialogContext } from "../../../../../../shell/contexts/CreateContentItemDialogProvider";
 
 type DropdownMenuType = "default" | "addNew";
 const DropdownMenu: Record<DropdownMenuType, Record<string, string>> = {
@@ -43,11 +47,14 @@ interface Props {
   isDirty: boolean;
 }
 export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
+  const [params] = useParams();
   const [dropdownMenuType, setDropdownMenuType] =
     useState<DropdownMenuType | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
+  const [_, setInitiatorZUID] = useContext(CreateContentItemDialogContext);
 
   const metaShortcut = useMetaKey("s", onSave);
+  const isRenderedAsDialog = params.get("isDialog") === "true";
 
   return (
     <ThemeProvider theme={theme}>
@@ -84,38 +91,40 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
             </Typography>
           </Stack>
           <Stack direction="row" gap={1} flexShrink={0} alignItems="flex-start">
-            <ButtonGroup
-              variant="outlined"
-              color="primary"
-              size="small"
-              disabled={!isDirty || isLoading}
-            >
-              <LoadingButton
-                startIcon={<AddRoundedIcon />}
-                onClick={() => {
-                  onSave("addNew");
-                }}
-                loading={isLoading}
+            {!isRenderedAsDialog && (
+              <ButtonGroup
                 variant="outlined"
+                color="primary"
+                size="small"
+                disabled={!isDirty || isLoading}
               >
-                Create & Add New
-              </LoadingButton>
-              <Button
-                size="xsmall"
-                onClick={(evt) => {
-                  setAnchorEl(evt.currentTarget);
-                  setDropdownMenuType("addNew");
-                }}
-                sx={{
-                  px: 1,
-                  "&.MuiButtonGroup-grouped": {
-                    minWidth: 34,
-                  },
-                }}
-              >
-                <ArrowDropDownRoundedIcon sx={{ fontSize: 18 }} />
-              </Button>
-            </ButtonGroup>
+                <LoadingButton
+                  startIcon={<AddRoundedIcon />}
+                  onClick={() => {
+                    onSave("addNew");
+                  }}
+                  loading={isLoading}
+                  variant="outlined"
+                >
+                  Create & Add New
+                </LoadingButton>
+                <Button
+                  size="xsmall"
+                  onClick={(evt) => {
+                    setAnchorEl(evt.currentTarget);
+                    setDropdownMenuType("addNew");
+                  }}
+                  sx={{
+                    px: 1,
+                    "&.MuiButtonGroup-grouped": {
+                      minWidth: 34,
+                    },
+                  }}
+                >
+                  <ArrowDropDownRoundedIcon sx={{ fontSize: 18 }} />
+                </Button>
+              </ButtonGroup>
+            )}
             <ButtonGroup
               variant="contained"
               color="primary"
@@ -159,6 +168,16 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
                 <ArrowDropDownRoundedIcon sx={{ fontSize: 18 }} />
               </Button>
             </ButtonGroup>
+            {isRenderedAsDialog && (
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setInitiatorZUID(null);
+                }}
+              >
+                <CloseRounded />
+              </IconButton>
+            )}
           </Stack>
         </Stack>
         <Menu
