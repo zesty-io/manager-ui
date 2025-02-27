@@ -30,7 +30,8 @@ export default class Editor extends React.Component {
   }
 
   componentDidMount() {
-    this.editorRef.current.appendChild(this.view.dom);
+    // this.editorRef.current.appendChild(this.view?.dom);
+    console.log(this.view);
 
     if (this.props.autoFocus) {
       this.view.focus();
