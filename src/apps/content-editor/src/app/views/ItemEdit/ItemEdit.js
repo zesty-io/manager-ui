@@ -89,7 +89,6 @@ export default function ItemEdit() {
   const metaRef = useRef(null);
   const fieldErrorRef = useRef(null);
   const item = useSelector((state) => state.content[itemZUID]);
-  const items = useSelector((state) => state.content);
   const model = useSelector((state) => state.models[modelZUID]);
   const tags = useSelector((state) => selectItemHeadTags(state, itemZUID));
   const languages = useSelector((state) => state.languages);
@@ -608,7 +607,6 @@ export default function ItemEdit() {
                           fields={fields}
                           itemZUID={itemZUID}
                           item={item}
-                          items={items}
                           user={user}
                           onSave={() =>
                             save().catch((err) => console.error(err))

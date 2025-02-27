@@ -331,9 +331,8 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
           })),
       ];
     }
-    return result;
+    return [...result, ...METADATA_COLUMNS];
   }, [fields]);
-
   if (!initialState) {
     return (
       <Box
@@ -352,7 +351,7 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
       apiRef={apiRef}
       loading={loading}
       rows={rows}
-      columns={[...columns, ...METADATA_COLUMNS]}
+      columns={columns}
       pinnedColumns={pinnedColumns}
       onPinnedColumnsChange={(newPinnedColumns) =>
         setPinnedColumns(newPinnedColumns)
@@ -425,10 +424,6 @@ export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
         !(stagedChanges && Object.keys(stagedChanges)?.length)
       }
       sx={{
-        ...(!rows?.length &&
-          !loading && {
-            maxHeight: 56,
-          }),
         backgroundColor: "common.white",
         ".MuiDataGrid-row": {
           cursor: "pointer",
