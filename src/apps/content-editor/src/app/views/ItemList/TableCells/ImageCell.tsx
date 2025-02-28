@@ -18,7 +18,7 @@ export const ImageCell = ({ params }: ImageCellProps) => {
 
   const { data: bins, isFetching: isFetchingBins } = useGetBinsQuery({
     instanceId: instance?.ID,
-    ecoId: instance?.ecoId,
+    ecoId: instance?.ecoID,
   });
   // Query below will not necessarily be made on every render as this
   // is already performed on component load, we're simply accessing the cached data
