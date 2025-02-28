@@ -23,7 +23,7 @@ import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import { isEmpty, cloneDeep } from "lodash";
+import { isEmpty } from "lodash";
 import { theme } from "@zesty-io/material";
 
 import {
@@ -41,8 +41,8 @@ import { withCursorPosition } from "../../../../../shell/components/withCursorPo
 import { formatPathPart } from "../../../../../utility/formatPathPart";
 import { AppState } from "../../../../../shell/store/types";
 import { SelectModelParentInput } from "./SelectModelParentInput";
-import { SelectBlockGroupInput } from "./SelectBlockGroupInput";
 import { isZestyEmail } from "../../../../../utility/isZestyEmail";
+import StarterBlocks from "./StarterBlocks";
 
 interface Props {
   onClose: () => void;
@@ -79,6 +79,8 @@ const modelTypes = [
     key: "block",
   },
 ];
+
+const largeWidth = ["block"];
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -363,104 +365,116 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       );
     } else {
       return (
-        <Box component="form">
-          <DialogTitle component="div">
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="flex-start"
-            >
-              <Box display="flex" alignItems="center" gap={1.5}>
-                <SvgIcon
-                  sx={{ fontSize: "28px" }}
-                  color="action"
-                  component={
-                    modelIconMap[
-                      modelTypes.find((x) => x.key === model.type)
-                        .key as keyof typeof modelIconMap
-                    ]
-                  }
-                />
-                <Stack>
-                  <Typography variant="h5" fontWeight={700}>
-                    Create {modelTypes.find((x) => x.key === model.type).name}
-                  </Typography>
-                  <Typography variant="body3" color="text.secondary">
-                    {modelTypes.find((x) => x.key === model.type).description}
-                  </Typography>
+        <>
+          {model?.type === "block" ? (
+            <StarterBlocks onClose={onClose} />
+          ) : (
+            <Box component="form">
+              <DialogTitle component="div">
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                >
+                  <Box display="flex" alignItems="center" gap={1.5}>
+                    <SvgIcon
+                      sx={{ fontSize: "28px" }}
+                      color="action"
+                      component={
+                        modelIconMap[
+                          modelTypes.find((x) => x.key === model.type)
+                            .key as keyof typeof modelIconMap
+                        ]
+                      }
+                    />
+                    <Stack>
+                      <Typography variant="h5" fontWeight={700}>
+                        {`Create ${
+                          modelTypes.find((x) => x.key === model.type).name
+                        }`}
+                      </Typography>
+                      <Typography variant="body3" color="text.secondary">
+                        {
+                          modelTypes.find((x) => x.key === model.type)
+                            .description
+                        }
+                      </Typography>
+                    </Stack>
+                  </Box>
+                  <IconButton size="small" onClick={() => onClose()}>
+                    <CloseRoundedIcon fontSize="small" />
+                  </IconButton>
                 </Stack>
-              </Box>
-              <IconButton size="small" onClick={() => onClose()}>
-                <CloseRoundedIcon fontSize="small" />
-              </IconButton>
-            </Stack>
-          </DialogTitle>
-          <DialogContent dividers sx={{ pt: 2.5, backgroundColor: "grey.50" }}>
-            <Box display="flex" flexDirection="column" gap={2.5}>
-              <Box>
-                <InputLabel>
-                  Display Name
-                  <Tooltip
-                    placement="top"
-                    title="Name that is shown to content editors"
-                  >
-                    <InfoRoundedIcon
-                      sx={{ ml: 1, width: "10px", height: "10px" }}
-                      color="action"
+              </DialogTitle>
+              <DialogContent
+                dividers
+                sx={{ pt: 2.5, backgroundColor: "grey.50" }}
+              >
+                <Box display="flex" flexDirection="column" gap={2.5}>
+                  <Box>
+                    <InputLabel>
+                      Display Name
+                      <Tooltip
+                        placement="top"
+                        title="Name that is shown to content editors"
+                      >
+                        <InfoRoundedIcon
+                          sx={{ ml: 1, width: "10px", height: "10px" }}
+                          color="action"
+                        />
+                      </Tooltip>
+                    </InputLabel>
+                    <TextField
+                      inputProps={{
+                        maxLength: 100,
+                      }}
+                      placeholder="e.g. Home Page, About Page, Contact Page, etc."
+                      value={model.label}
+                      onChange={(event) =>
+                        updateModel({ label: event.target.value })
+                      }
+                      fullWidth
+                      autoFocus
+                      data-cy="create-model-display-name-input"
                     />
-                  </Tooltip>
-                </InputLabel>
-                <TextField
-                  inputProps={{
-                    maxLength: 100,
-                  }}
-                  placeholder="e.g. Home Page, About Page, Contact Page, etc."
-                  value={model.label}
-                  onChange={(event) =>
-                    updateModel({ label: event.target.value })
-                  }
-                  fullWidth
-                  autoFocus
-                  data-cy="create-model-display-name-input"
-                />
-              </Box>
-              <Box>
-                <InputLabel>
-                  Reference ID
-                  <Tooltip
-                    placement="top"
-                    title="ID used for accessing this model through our API or Parsley"
-                  >
-                    <InfoRoundedIcon
-                      sx={{ ml: 1, width: "10px", height: "10px" }}
-                      color="action"
+                  </Box>
+                  <Box>
+                    <InputLabel>
+                      Reference ID
+                      <Tooltip
+                        placement="top"
+                        title="ID used for accessing this model through our API or Parsley"
+                      >
+                        <InfoRoundedIcon
+                          sx={{ ml: 1, width: "10px", height: "10px" }}
+                          color="action"
+                        />
+                      </Tooltip>
+                    </InputLabel>
+                    <TextFieldWithCursorPosition
+                      inputProps={{
+                        maxLength: 100,
+                      }}
+                      placeholder="Auto-Generated from Display Name"
+                      value={model.name}
+                      onChange={(event: any) =>
+                        updateModel({ name: event.target.value })
+                      }
+                      fullWidth
                     />
-                  </Tooltip>
-                </InputLabel>
-                <TextFieldWithCursorPosition
-                  inputProps={{
-                    maxLength: 100,
-                  }}
-                  placeholder="Auto-Generated from Display Name"
-                  value={model.name}
-                  onChange={(event: any) =>
-                    updateModel({ name: event.target.value })
-                  }
-                  fullWidth
-                />
-              </Box>
-              <SelectModelParentInput
-                modelType={model.type}
-                value={model.parentZUID}
-                onChange={(value) =>
-                  updateModel({
-                    parentZUID: value,
-                  })
-                }
-                tooltip="Selecting a parent affects default routing and content navigation in the UI"
-              />
-              {/* Block grouping will be implemented at a different point  */}
-              {/* {model.type === "block" && (
+                  </Box>
+                  <SelectModelParentInput
+                    modelType={model.type}
+                    value={model.parentZUID}
+                    onChange={(value) =>
+                      updateModel({
+                        parentZUID: value,
+                      })
+                    }
+                    tooltip="Selecting a parent affects default routing and content navigation in the UI"
+                  />
+                  {/* Block grouping will be implemented at a different point  */}
+                  {/* {model.type === "block" && (
                 <SelectBlockGroupInput
                   groupType="available"
                   groupZUID=""
@@ -470,80 +484,82 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
                   onNewGroupNameChange={() => {}}
                 />
               )} */}
-              <Box>
-                <InputLabel>
-                  Description
-                  <Tooltip
-                    placement="top"
-                    title="Displays the purpose of the model to help content writers"
-                  >
-                    <InfoRoundedIcon
-                      sx={{ ml: 1, width: "10px", height: "10px" }}
-                      color="action"
+                  <Box>
+                    <InputLabel>
+                      Description
+                      <Tooltip
+                        placement="top"
+                        title="Displays the purpose of the model to help content writers"
+                      >
+                        <InfoRoundedIcon
+                          sx={{ ml: 1, width: "10px", height: "10px" }}
+                          color="action"
+                        />
+                      </Tooltip>
+                    </InputLabel>
+                    <TextField
+                      inputProps={{
+                        maxLength: 500,
+                      }}
+                      value={model.description}
+                      placeholder="What is this model going to be used for"
+                      onChange={(event) =>
+                        updateModel({ description: event.target.value })
+                      }
+                      fullWidth
+                      multiline
+                      rows={4}
                     />
-                  </Tooltip>
-                </InputLabel>
-                <TextField
-                  inputProps={{
-                    maxLength: 500,
-                  }}
-                  value={model.description}
-                  placeholder="What is this model going to be used for"
-                  onChange={(event) =>
-                    updateModel({ description: event.target.value })
-                  }
-                  fullWidth
-                  multiline
-                  rows={4}
-                />
-              </Box>
-              <Box display="flex" gap={1}>
-                <Checkbox
-                  sx={{ width: "24px", height: "24px" }}
-                  checked={!!model?.listed}
-                  onChange={(event) =>
-                    updateModel({ listed: event.target.checked })
-                  }
-                />
-                <Box>
-                  <Typography variant="body2">List this model</Typography>
-                  <Typography
-                    component="p"
-                    variant="body3"
-                    color="text.secondary"
-                    fontWeight={600}
-                  >
-                    Listed models have their content items available to
-                    programmatic navigation calls.
-                  </Typography>
+                  </Box>
+                  <Box display="flex" gap={1}>
+                    <Checkbox
+                      sx={{ width: "24px", height: "24px" }}
+                      defaultChecked
+                      onChange={(event) =>
+                        updateModel({ listed: event.target.checked })
+                      }
+                    />
+                    <Box>
+                      <Typography variant="body2">List this model</Typography>
+                      <Typography
+                        component="p"
+                        variant="body3"
+                        color="text.secondary"
+                        fontWeight={600}
+                      >
+                        Listed models have their content items available to
+                        programmatic navigation calls.
+                      </Typography>
+                    </Box>
+                  </Box>
                 </Box>
-              </Box>
+              </DialogContent>
+              <DialogActions sx={{ pt: 2.5 }}>
+                <Button variant="outlined" color="inherit" onClick={onClose}>
+                  Cancel
+                </Button>
+                <LoadingButton
+                  data-cy="create-model-submit-button"
+                  type="submit"
+                  variant="contained"
+                  disabled={!model.name || !model.label}
+                  loading={
+                    !!isCreatingModel ||
+                    !!isCreatingContentItem ||
+                    !!isCreatingOgImageField
+                  }
+                  onClick={() =>
+                    createModel({
+                      ...model,
+                    })
+                  }
+                >
+                  Create Model
+                </LoadingButton>
+              </DialogActions>
             </Box>
-          </DialogContent>
-          <DialogActions sx={{ pt: 2.5 }}>
-            <Button variant="outlined" color="inherit" onClick={onClose}>
-              Cancel
-            </Button>
-            <LoadingButton
-              data-cy="create-model-submit-button"
-              type="submit"
-              variant="contained"
-              disabled={!model.name || !model.label}
-              loading={
-                !!isCreatingModel ||
-                !!isCreatingContentItem ||
-                !!isCreatingOgImageField
-              }
-              onClick={() =>
-                createModel({
-                  ...model,
-                })
-              }
-            >
-              Create Model
-            </LoadingButton>
-          </DialogActions>
-        </Box>
+          )}
+        </>
       );
     }
   };
@@ -559,8 +575,8 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
         }}
         PaperProps={{
           sx: {
-            maxWidth: "640px",
-            width: 640,
+            maxWidth: largeWidth?.includes(model?.type) ? "1080px" : "640px",
+            width: largeWidth?.includes(model?.type) ? 1080 : 640,
             maxHeight: "min(100%, 1000px)",
             m: 0,
           },

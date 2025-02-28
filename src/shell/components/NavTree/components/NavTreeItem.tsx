@@ -125,6 +125,11 @@ export const NavTreeItem: FC<Props> = React.memo(
                 // Makes sure that the add new content icon color does not change when tree item is selected
                 color: "common.white",
               },
+
+            ".MuiMenu-root .MuiList-root .MuiListItemText-root .MuiTypography-root":
+              {
+                color: "common.black",
+              },
           },
           "& .MuiCollapse-root.MuiTreeItem-group": {
             // This makes sure that the whole row is highlighted while still maintaining tree item depth

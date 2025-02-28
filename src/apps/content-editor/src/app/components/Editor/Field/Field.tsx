@@ -1,23 +1,16 @@
-import { useMemo, useCallback, useState, useEffect, ChangeEvent } from "react";
+import { useMemo, useState, useEffect, ChangeEvent, useCallback } from "react";
 import ReactDOM from "react-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import moment from "moment-timezone";
 import zuid from "zuid";
 
-import { fetchFields } from "../../../../../../../shell/store/fields";
-import {
-  fetchItems,
-  searchItems,
-} from "../../../../../../../shell/store/content";
+import { searchItems } from "../../../../../../../shell/store/content";
 import { EditorType, FieldShell, Error } from "./FieldShell";
 
 import {
   ToggleButtonGroup,
   ToggleButton,
   Box,
-  Select,
-  MenuItem,
-  Chip,
   TextField,
   Dialog,
   IconButton,
@@ -27,41 +20,29 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
 import { MediaApp } from "../../../../../../media/src/app";
 import { FieldTypeUUID } from "../../../../../../../shell/components/FieldTypeUUID";
 import { FieldTypeCurrency } from "../../../../../../../shell/components/FieldTypeCurrency";
-import { FieldTypeInternalLink } from "../../../../../../../shell/components/FieldTypeInternalLink";
-import { FieldTypeImage } from "../../../../../../../shell/components/FieldTypeImage";
 import { FieldTypeEditor } from "../../../../../../../shell/components/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "../../../../../../../shell/components/FieldTypeTinyMCE";
 import { FieldTypeColor } from "../../../../../../../shell/components/FieldTypeColor";
-import {
-  FieldTypeOneToMany,
-  OneToManyOptions,
-} from "../../../../../../../shell/components/FieldTypeOneToMany";
-import {
-  FieldTypeOneToOne,
-  OneToOneOptions,
-} from "../../../../../../../shell/components/FieldTypeOneToOne";
+import { OneToManyOptions } from "../../../../../../../shell/components/FieldTypeOneToMany";
 import { RelationalFieldBase } from "../../../../../../../shell/components/RelationalFieldBase";
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
 import { FieldTypeNumber } from "../../../../../../../shell/components/FieldTypeNumber";
 import { FieldTypeBlockSelector } from "../../../../../../../shell/components/FieldTypeBlockSelector";
+import { InternalLink } from "./InternalLink";
 
 import styles from "./Field.less";
 import { MemoryRouter } from "react-router";
 import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
-import { AppState } from "../../../../../../../shell/store/types";
 import {
   ContentItem,
   ContentModelField,
@@ -69,9 +50,8 @@ import {
   Language,
 } from "../../../../../../../shell/services/types";
 import { ResolvedOption } from "./ResolvedOption";
-import { LinkOption } from "./LinkOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
-import { debounce } from "lodash";
+import { debounce, parseInt } from "lodash";
 
 const AIFieldShell = withAI(FieldShell);
 
@@ -153,9 +133,6 @@ export const resolveRelatedOptions = (
     .sort((a, b) => (a.inputLabel > b.inputLabel ? 1 : -1));
 };
 
-const getSelectedLang = (langs: Language[], langID: number) =>
-  langs.find((lang: any) => lang.ID === langID).code;
-
 type FieldProps = {
   ZUID: string;
   contentModelZUID: string;
@@ -193,9 +170,6 @@ export const Field = ({
   minLength,
 }: FieldProps) => {
   const dispatch = useDispatch();
-  const allItems = useSelector((state: AppState) => state.content);
-  const allFields = useSelector((state: AppState) => state.fields);
-  const allLanguages = useSelector((state: AppState) => state.languages);
   const { data: fields } = useGetContentModelFieldsQuery(contentModelZUID);
 
   const [imageModal, setImageModal] = useState(null);
@@ -665,257 +639,46 @@ export const Field = ({
       );
 
     case "internal_link":
-      let internalLinkRelatedItem = allItems[value];
-      let internalLinkOptions = useMemo(() => {
-        const options = Object.keys(allItems)
-          .filter(
-            (itemZUID) =>
-              !itemZUID.includes("new") && // exclude new items
-              allItems[itemZUID].meta.ZUID && // ensure the item has a zuid
-              allItems[itemZUID].web.pathPart && // exclude non-routeable items
-              allItems[itemZUID].meta.langID === langID // exclude non-relevant langs
-          )
-          .map((itemZUID) => {
-            let item = allItems[itemZUID];
-            let html = "";
-
-            if (item.web.metaTitle) {
-              html += `<strong style="display:block;font-weight:bold;">${item.web.metaTitle}</strong>`;
-            } else {
-              return {
-                component: (
-                  <LinkOption
-                    modelZUID={item.meta.contentModelZUID}
-                    itemZUID={itemZUID}
-                  />
-                ),
-              };
-            }
-
-            if (item.web.path || item.web.pathPart) {
-              html += `<small style="font-style:italic;">${
-                item.web.path || item.web.pathPart
-              }</small>`;
-            }
-
-            return {
-              value: itemZUID,
-              html: html,
-            };
-          })
-          .sort(sortHTML);
-
-        // if the selected item is not found, insert a placeholder
-        if (internalLinkRelatedItem && !internalLinkRelatedItem?.meta?.ZUID) {
-          // insert placeholder
-          options.unshift({
-            value: value as string,
-            html: `Selected item not found: ${value}`,
-          });
-        }
-
-        return options;
-      }, [internalLinkRelatedItem, Object.keys(allItems).length]);
-
-      const onInternalLinkSearch = useCallback(
-        (term) => dispatch(searchItems(term)),
-        []
-      );
-
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <FieldTypeInternalLink
-            // @ts-ignore component not typed
+          <InternalLink
             name={name}
-            value={value}
+            value={value as string}
             onChange={onChange}
-            onSearch={onInternalLinkSearch}
-            options={internalLinkOptions}
             error={errors && Object.values(errors)?.some((error) => !!error)}
+            langID={langID}
           />
         </FieldShell>
       );
 
     case "one_to_one":
-      const onOneToOneOpen = useCallback(() => {
-        if (zuid.isValid(relatedModelZUID)) {
-          return dispatch(
-            fetchItems(relatedModelZUID, {
-              lang: getSelectedLang(allLanguages, langID),
-            })
-          );
-        } else {
-          return Promise.reject(new Error("Missing modelZUID"));
-        }
-      }, [allLanguages.length, relatedModelZUID, langID]);
-
-      let oneToOneOptions: OneToManyOptions[] = useMemo(() => {
-        const options = filterValidItems(allItems);
-
-        return [
-          {
-            inputLabel: "- None -",
-            value: null,
-            component: "- None -",
-          },
-          ...resolveRelatedOptions(
-            allFields,
-            options,
-            relatedFieldZUID,
-            relatedModelZUID,
-            langID,
-            value
-          ),
-        ];
-      }, [
-        Object.keys(allFields).length,
-        Object.keys(allItems).length,
-        relatedModelZUID,
-        relatedFieldZUID,
-        langID,
-        value,
-      ]);
-
-      if (value && !oneToOneOptions.find((opt) => opt.value === value)) {
-        //the related option is not in the array, we need to insert it
-        oneToOneOptions.unshift({
-          value: value as string,
-          inputLabel: `Selected item not found: ${value}`,
-          component: (
-            <span>
-              <span onClick={(evt) => evt.stopPropagation()}>
-                <AppLink
-                  className={styles.relatedItemLink}
-                  to={`/content/${relatedModelZUID}/${value}`}
-                >
-                  <FontAwesomeIcon icon={faEdit} />
-                </AppLink>
-              </span>
-              &nbsp;Selected item not found: {value}
-            </span>
-          ),
-        });
-      }
-
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <>
-            <RelationalFieldBase
-              name={name}
-              value={!!value ? String(value) : null}
-              relatedModelZUID={relatedModelZUID}
-              relatedFieldZUID={relatedFieldZUID}
-              onChange={onChange}
-              fieldLabel={fieldData?.label}
-            />
-            {/**
-            <FieldTypeOneToOne
-              name={name}
-              value={
-                oneToOneOptions?.find((options) => options.value === value) ||
-                null
-              }
-              onChange={(_, option) => onChange(option.value, name)}
-              options={oneToOneOptions}
-              onOpen={onOneToOneOpen}
-              startAdornment={
-                value && (
-                  <AppLink to={`/content/${relatedModelZUID}/${value}`}>
-                    <FontAwesomeIcon icon={faEdit} />
-                  </AppLink>
-                )
-              }
-              endAdornment={
-                value && <em>{getSelectedLang(allLanguages, langID)}</em>
-              }
-              error={errors && Object.values(errors)?.some((error) => !!error)}
-            />
-              */}
-          </>
+          <RelationalFieldBase
+            name={name}
+            value={!!value ? String(value) : null}
+            fieldZUID={ZUID}
+            relatedModelZUID={relatedModelZUID}
+            relatedFieldZUID={relatedFieldZUID}
+            onChange={onChange}
+            fieldLabel={fieldData?.label}
+          />
         </FieldShell>
       );
 
     case "one_to_many":
-      const oneToManyOptions: OneToManyOptions[] = useMemo(() => {
-        const options = filterValidItems(allItems);
-
-        return resolveRelatedOptions(
-          allFields,
-          options,
-          relatedFieldZUID,
-          relatedModelZUID,
-          langID,
-          value
-        );
-      }, [
-        Object.keys(allFields).length,
-        Object.keys(allItems).length,
-        relatedModelZUID,
-        relatedFieldZUID,
-        langID,
-        value,
-      ]);
-
-      // Delay loading options until user opens dropdown
-      const onOneToManyOpen = useCallback(() => {
-        return Promise.all([
-          dispatch(fetchFields(relatedModelZUID)),
-          dispatch(
-            fetchItems(relatedModelZUID, {
-              lang: getSelectedLang(allLanguages, langID),
-            })
-          ),
-        ]);
-      }, [allLanguages.length, relatedModelZUID, langID]);
-
       return (
         <FieldShell settings={fieldData} errors={errors}>
-          <>
-            <RelationalFieldBase
-              name={name}
-              multiselect
-              value={!!value ? String(value) : null}
-              relatedModelZUID={relatedModelZUID}
-              relatedFieldZUID={relatedFieldZUID}
-              onChange={onChange}
-              fieldLabel={fieldData?.label}
-            />
-            {/**
-            <FieldTypeOneToMany
-              name={name}
-              value={
-                (value &&
-                  (value as string)
-                    ?.split(",")
-                    ?.map(
-                      (value: any) =>
-                        oneToManyOptions?.find(
-                          (options) => options.value === value
-                        ) || { value, inputLabel: value, component: value }
-                    )) ||
-                []
-              }
-              onChange={(_, options: OneToManyOptions[]) => {
-                const selectedOptions = options?.length
-                  ? options.map((option) => option.value).join(",")
-                  : null;
-                onChange(selectedOptions, name);
-              }}
-              options={oneToManyOptions}
-              onOpen={onOneToManyOpen}
-              renderTags={(tags, getTagProps) =>
-                tags.map((tag, index) => (
-                  <Chip
-                    size="small"
-                    label={tag.component}
-                    {...getTagProps({ index })}
-                  />
-                ))
-              }
-              error={errors && Object.values(errors)?.some((error) => !!error)}
-            />
-              */}
-          </>
+          <RelationalFieldBase
+            name={name}
+            multiselect
+            value={!!value ? String(value) : null}
+            fieldZUID={ZUID}
+            relatedModelZUID={relatedModelZUID}
+            relatedFieldZUID={relatedFieldZUID}
+            onChange={onChange}
+            fieldLabel={fieldData?.label}
+          />
         </FieldShell>
       );
 

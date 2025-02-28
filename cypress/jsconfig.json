@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "types": ["cypress", "node"],
+    "jsx": "react-jsx",
+    "resolveJsonModule": true
+  }
+}

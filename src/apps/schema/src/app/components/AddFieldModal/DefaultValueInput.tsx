@@ -40,6 +40,7 @@ import { FieldTypeColor } from "../../../../../../shell/components/FieldTypeColo
 import { FieldTypeSort } from "../../../../../../shell/components/FieldTypeSort";
 import { RelationalFieldBase } from "../../../../../../shell/components/RelationalFieldBase";
 import moment from "moment";
+import { parseInt } from "lodash";
 
 type DefaultValueInputProps = {
   type: string;
@@ -306,6 +307,7 @@ export const DefaultValueInput = ({
       return (
         <RelationalFieldBase
           name="defaultValue"
+          fieldZUID="newDefaultValue"
           value={!!value ? String(value) : null}
           relatedModelZUID={relatedModelZUID}
           relatedFieldZUID={relatedFieldZUID}
@@ -317,6 +319,7 @@ export const DefaultValueInput = ({
       return (
         <RelationalFieldBase
           name="defaultValue"
+          fieldZUID="newDefaultValue"
           multiselect
           value={!!value ? String(value) : null}
           relatedModelZUID={relatedModelZUID}

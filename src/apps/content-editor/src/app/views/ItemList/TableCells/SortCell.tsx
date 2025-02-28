@@ -1,6 +1,7 @@
 import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 import { useStagedChanges } from "../StagedChangesContext";
 import { FieldTypeSort } from "../../../../../../../shell/components/FieldTypeSort";
+import { parseInt } from "lodash";
 
 export const SortCell = ({ params }: { params: GridRenderCellParams }) => {
   const { stagedChanges, updateStagedChanges } = useStagedChanges();
