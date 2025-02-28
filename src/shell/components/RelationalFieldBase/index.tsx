@@ -47,7 +47,7 @@ export const RelationalFieldBase = ({
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
-  const [isReplacement, setIsReplacement] = useState(false);
+  const [replace, setReplace] = useState<string | null>(null);
   const [
     initiatorZUID,
     setInitiatorZUID,
@@ -99,7 +99,7 @@ export const RelationalFieldBase = ({
   }, [itemZUIDs]);
 
   const closeFieldSelectorDialog = () => {
-    setIsReplacement(false);
+    setReplace(null);
     setAnchorEl(null);
   };
 
@@ -137,7 +137,7 @@ export const RelationalFieldBase = ({
                 }}
                 draggable={multiselect}
                 openFieldSelectorDialog={(evt) => {
-                  setIsReplacement(true);
+                  setReplace(val);
                   setAnchorEl(evt.currentTarget);
                 }}
               />
@@ -198,7 +198,7 @@ export const RelationalFieldBase = ({
       )}
       {!!anchorEl && (
         <FieldSelectorDialog
-          multiselect={multiselect}
+          multiselect={!!replace ? false : multiselect}
           onClose={closeFieldSelectorDialog}
           modelZUID={relatedModelZUID}
           fieldLabel={fieldLabel}
@@ -214,7 +214,7 @@ export const RelationalFieldBase = ({
             setItemZUIDs(!!selectedZUIDs?.length ? selectedZUIDs : null);
             closeFieldSelectorDialog();
           }}
-          isReplacement={isReplacement}
+          replace={replace}
         />
       )}
       {initiatorZUID === fieldZUID && (

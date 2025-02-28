@@ -35,7 +35,7 @@ import { VersionCell } from "./VersionCell";
 import { ItemsLoading } from "./ItemsLoading";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { NoSearchResults } from "../../NoSearchResults";
-import { DialogHeader } from "./DialogHeader";
+import { DialogHeader, ReplaceDialogHeader } from "./DialogHeader";
 import { fetchItems } from "../../../store/content";
 import { AppState } from "../../../store/types";
 import { ContentItem } from "../../../services/types";
@@ -81,7 +81,7 @@ type FieldSelectorDialogProps = {
   onUpdateSelectedZUIDs: (selectedZUIDs: string[]) => void;
   fieldLabel: string;
   multiselect?: boolean;
-  isReplacement?: boolean;
+  replace?: string | null;
 };
 export const FieldSelectorDialog = ({
   onClose,
@@ -91,7 +91,7 @@ export const FieldSelectorDialog = ({
   onUpdateSelectedZUIDs,
   fieldLabel,
   multiselect,
-  isReplacement = false,
+  replace = null,
 }: FieldSelectorDialogProps) => {
   const dispatch = useDispatch();
   const searchField = useRef(null);
@@ -116,7 +116,7 @@ export const FieldSelectorDialog = ({
     }
   );
   const [selectionModel, setSelectionModel] = useState<GridInputSelectionModel>(
-    isReplacement ? [] : selectedZUIDs
+    !!replace ? [] : selectedZUIDs
   );
   const [isFetchingContentItems, setIsFetchingContentItems] = useState(false);
 
@@ -522,16 +522,29 @@ export const FieldSelectorDialog = ({
         },
       }}
     >
-      <DialogHeader
-        fieldLabel={fieldLabel}
-        multiselect={multiselect}
-        selectedCount={filteredSelectionModels?.length || 0}
-        onClose={onClose}
-        onDeselectAll={() => setSelectionModel([])}
-        onDone={() => onUpdateSelectedZUIDs(selectionModel as string[])}
-        loading={isLoading}
-        isReplacement={isReplacement}
-      />
+      {!!replace ? (
+        <ReplaceDialogHeader
+          selectedCount={filteredSelectionModels?.length || 0}
+          onClose={onClose}
+          onDone={() => {
+            const newSelectionModel = selectedZUIDs?.map((zuid) =>
+              zuid === replace ? (selectionModel as string[])[0] : zuid
+            );
+            onUpdateSelectedZUIDs(newSelectionModel as string[]);
+          }}
+          loading={isLoading}
+        />
+      ) : (
+        <DialogHeader
+          fieldLabel={fieldLabel}
+          multiselect={multiselect}
+          selectedCount={filteredSelectionModels?.length || 0}
+          onClose={onClose}
+          onDeselectAll={() => setSelectionModel([])}
+          onDone={() => onUpdateSelectedZUIDs(selectionModel as string[])}
+          loading={isLoading}
+        />
+      )}
       <DialogContent
         id="fieldSelectorDialogBody"
         sx={{
@@ -590,7 +603,11 @@ export const FieldSelectorDialog = ({
               sortingMode="server"
               checkboxSelection
               columns={columns}
-              rows={rows}
+              rows={
+                !!replace
+                  ? rows?.filter((row) => !selectedZUIDs?.includes(row?.id))
+                  : rows
+              }
               headerHeight={0}
               rowHeight={64}
               hideFooter
