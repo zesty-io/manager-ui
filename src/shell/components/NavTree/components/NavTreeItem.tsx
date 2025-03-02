@@ -1,9 +1,7 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { TreeItem } from "@mui/x-tree-view";
 import { Stack, Box, Typography, Tooltip } from "@mui/material";
-
 import { TreeItem as TreeItemType } from "../index";
-import { useIntersectionObserver } from "../../../hooks/useIntersectionObserver";
 
 interface Props {
   labelName: string;
@@ -36,29 +34,18 @@ export const NavTreeItem: FC<Props> = React.memo(
     const itemTreeRef = useRef(null);
     const currentDepth = depth + 1;
     const depthPadding = currentDepth * 1;
-    const [scrolled, setScrolled] = useState(false);
-    const { isVisible } = useIntersectionObserver(itemTreeRef);
 
     useEffect(() => {
       if (!itemTreeRef?.current) return;
-      if (selected === nodeId && !scrolled) {
-        if (isVisible) return setScrolled(true);
+      if (selected === nodeId) {
         setTimeout(() => {
           itemTreeRef.current?.scrollIntoView({
-            behavior: "instant",
-            block: "center",
+            behavior: "smooth",
+            block: "nearest",
           });
-          setScrolled(true);
         }, 500);
       }
-    }, [
-      selected,
-      nodeId,
-      itemTreeRef?.current,
-      isVisible,
-      scrolled,
-      setScrolled,
-    ]);
+    }, [selected, nodeId, itemTreeRef]);
 
     return (
       <TreeItem
