@@ -32,7 +32,6 @@ import {
   CloseRounded,
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
-import { CompactView, Modal, Login } from "@bynder/compact-view";
 import { Bynder, FileReplace } from "@zesty-io/material";
 
 import {
