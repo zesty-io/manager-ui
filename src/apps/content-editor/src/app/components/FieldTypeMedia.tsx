@@ -51,7 +51,7 @@ import cx from "classnames";
 import { FileTypePreview } from "../../../../media/src/app/components/FileModal/FileTypePreview";
 import { useGetInstanceSettingsQuery } from "../../../../../shell/services/instance";
 import { ReplaceFileModal } from "../../../../media/src/app/components/FileModal/ReplaceFileModal";
-import { showReportDialog } from "@sentry/react";
+import openBynder from "../../../../../utility/openBynder";
 
 type FieldTypeMediaProps = {
   images: string[];
@@ -90,7 +90,6 @@ export const FieldTypeMedia = forwardRef(
     const dispatch = useDispatch();
     const [showFileModal, setShowFileModal] = useState("");
     const [imageToReplace, setImageToReplace] = useState("");
-    const [isBynderOpen, setIsBynderOpen] = useState(false);
     const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
     const [selectionError, setSelectionError] = useState("");
 
@@ -180,8 +179,8 @@ export const FieldTypeMedia = forwardRef(
       onChange([...images, ...filteredImageZUIDs].join(","), name);
     };
 
-    const addBynderAsset = (selectedAsset: any[]) => {
-      if (images.length > limit) return;
+    const addBynderAsset = (selectedAsset: ReadonlyArray<BynderImage>) => {
+      if (images.length > limit || !selectedAsset?.length) return;
 
       const removedAssets: any[] = [];
       const filteredBynderAssets = selectedAsset?.filter((asset) => {
@@ -263,7 +262,7 @@ export const FieldTypeMedia = forwardRef(
       onChange(newImageZUIDs.join(","), name);
     };
 
-    const replaceBynderAsset = (selectedAsset: any) => {
+    const replaceBynderAsset = (selectedAsset: BynderImage) => {
       // Prevent adding bynder asset that has already been added
       if (localImageZUIDs.includes(selectedAsset.originalUrl)) return;
 
@@ -327,6 +326,33 @@ export const FieldTypeMedia = forwardRef(
       setLocalImageZUIDs(newLocalImages);
       onChange(newLocalImages.join(","), name);
     };
+
+    const handleOpenBynder = () => {
+      openBynder({
+        url: bynderPortalUrlSetting?.value,
+        onSuccess: (assets) => {
+          if (imageToReplace) {
+            replaceBynderAsset(assets[0]);
+          } else {
+            addBynderAsset(assets);
+          }
+        },
+        mode: limit > 1 && !imageToReplace ? "MultiSelect" : "SingleSelect",
+      });
+    };
+
+    useEffect(() => {
+      if (!!imageToReplace) {
+        if (imageToReplace.includes("bynder.com")) {
+          handleOpenBynder();
+        } else {
+          openMediaBrowser({
+            callback: replaceImage,
+            isReplace: true,
+          });
+        }
+      }
+    }, [imageToReplace]);
 
     const sortedImages = useMemo(() => {
       if (draggedIndex === null || hoveredIndex === null) {
@@ -428,7 +454,7 @@ export const FieldTypeMedia = forwardRef(
                         data-cy="addFromBynderBtn"
                         size="large"
                         variant="outlined"
-                        onClick={() => setIsBynderOpen(true)}
+                        onClick={handleOpenBynder}
                         startIcon={<Bynder />}
                         fullWidth
                         sx={{
@@ -449,18 +475,6 @@ export const FieldTypeMedia = forwardRef(
               </Typography>
             )}
           </div>
-          <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
-            <Login>
-              <CompactView
-                onSuccess={(assets) => {
-                  if (assets?.length) {
-                    addBynderAsset(assets);
-                    setIsBynderOpen(false);
-                  }
-                }}
-              />
-            </Login>
-          </Modal>
         </>
       );
 
@@ -488,15 +502,6 @@ export const FieldTypeMedia = forwardRef(
                 onRemove={removeImage}
                 onReplace={(imageZUID) => {
                   setImageToReplace(imageZUID);
-
-                  if (isBynderAsset) {
-                    setIsBynderOpen(true);
-                  } else {
-                    openMediaBrowser({
-                      callback: replaceImage,
-                      isReplace: true,
-                    });
-                  }
                 }}
                 hideDrag={hideDrag || limit === 1}
                 isBynderAsset={isBynderAsset}
@@ -536,7 +541,7 @@ export const FieldTypeMedia = forwardRef(
                   data-cy="addFromBynderBtn"
                   size="large"
                   variant="outlined"
-                  onClick={() => setIsBynderOpen(true)}
+                  onClick={handleOpenBynder}
                   startIcon={<Bynder />}
                   fullWidth
                 >
@@ -565,23 +570,6 @@ export const FieldTypeMedia = forwardRef(
             }}
           />
         )}
-        <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
-          <Login>
-            <CompactView
-              onSuccess={(assets) => {
-                if (assets?.length) {
-                  if (imageToReplace) {
-                    replaceBynderAsset(assets[0]);
-                  } else {
-                    addBynderAsset(assets);
-                  }
-
-                  setIsBynderOpen(false);
-                }
-              }}
-            />
-          </Login>
-        </Modal>
       </>
     );
   }
