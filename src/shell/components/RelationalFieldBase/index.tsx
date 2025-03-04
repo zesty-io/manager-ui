@@ -171,7 +171,7 @@ export const RelationalFieldBase = ({
           >
             Add Existing {fieldLabel}
           </Button>
-          {multiselect && !isRenderedAsDialog && (
+          {!isRenderedAsDialog && (
             <Button
               data-cy="create-new-relational-item-button"
               variant="outlined"
