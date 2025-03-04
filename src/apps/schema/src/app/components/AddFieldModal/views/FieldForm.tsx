@@ -551,7 +551,14 @@ export const FieldForm = ({
     const hasErrors = Object.values(errors)
       .flat(2)
       .some((error) => error.length);
-    const sort = isInbetweenField ? sortIndex : fields?.length;
+    // Calculate the highest sort value from all fields
+    const highestSortValue = fields.reduce(
+      (max, field) => (field.sort > max ? field.sort : max),
+      0
+    );
+
+    console.log(highestSortValue);
+    const sort = isInbetweenField ? sortIndex : highestSortValue + 1;
 
     if (hasErrors) {
       // Switch the active tab to details to show the user the errors if
