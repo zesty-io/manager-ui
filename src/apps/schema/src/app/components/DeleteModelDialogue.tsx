@@ -111,6 +111,7 @@ export const DeleteModelDialogue = ({ onClose, model }: Props) => {
           below.
         </InputLabel>
         <TextField
+          autoFocus
           data-cy="delete-model-confirmation-input"
           value={deleteConfirmation}
           onChange={(event) => setDeleteConfirmation(event.target.value)}
