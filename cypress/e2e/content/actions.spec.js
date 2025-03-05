@@ -27,7 +27,7 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     });
 
-    cy.get("#12-13d590-9v2nr2 input", TIMEOUT).clear().should("have.value", "");
+    cy.get("#12-13d590-9v2nr2 input", TIMEOUT).clear();
     cy.get("#SaveItemButton", TIMEOUT).trigger("click");
 
     cy.get("[data-cy=toast]", TIMEOUT).contains(

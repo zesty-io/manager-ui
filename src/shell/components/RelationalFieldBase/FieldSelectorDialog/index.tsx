@@ -36,7 +36,6 @@ import { ItemsLoading } from "./ItemsLoading";
 import { useGetUsersQuery } from "../../../services/accounts";
 import { NoSearchResults } from "../../NoSearchResults";
 import { DialogHeader } from "./DialogHeader";
-import { ReplaceDialogHeader } from "./ReplaceDialogHeader";
 import { fetchItems } from "../../../store/content";
 import { AppState } from "../../../store/types";
 import { ContentItem } from "../../../services/types";
@@ -523,29 +522,25 @@ export const FieldSelectorDialog = ({
         },
       }}
     >
-      {!!replace ? (
-        <ReplaceDialogHeader
-          selectedCount={filteredSelectionModels?.length || 0}
-          onClose={onClose}
-          onDone={() => {
+      <DialogHeader
+        fieldLabel={fieldLabel}
+        multiselect={multiselect}
+        selectedCount={filteredSelectionModels?.length || 0}
+        onClose={onClose}
+        onDeselectAll={() => setSelectionModel([])}
+        onDone={() => {
+          if (!!replace) {
             const newSelectionModel = selectedZUIDs?.map((zuid) =>
               zuid === replace ? (selectionModel as string[])[0] : zuid
             );
             onUpdateSelectedZUIDs(newSelectionModel as string[]);
-          }}
-          loading={isLoading}
-        />
-      ) : (
-        <DialogHeader
-          fieldLabel={fieldLabel}
-          multiselect={multiselect}
-          selectedCount={filteredSelectionModels?.length || 0}
-          onClose={onClose}
-          onDeselectAll={() => setSelectionModel([])}
-          onDone={() => onUpdateSelectedZUIDs(selectionModel as string[])}
-          loading={isLoading}
-        />
-      )}
+          } else {
+            onUpdateSelectedZUIDs(selectionModel as string[]);
+          }
+        }}
+        loading={isLoading}
+        replace={replace || null}
+      />
       <DialogContent
         id="fieldSelectorDialogBody"
         sx={{
