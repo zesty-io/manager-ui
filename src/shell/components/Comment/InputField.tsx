@@ -16,10 +16,6 @@ import {
   useUpdateReplyMutation,
 } from "../../services/accounts";
 
-const PLACEHOLDER = '<p class="placeholder">Reply or add others with @</p>';
-const EMAIL_MENTION_REGEX =
-  /(?<!\>)@[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}(?!\<span\>)/gm;
-
 type InputFieldProps = {
   isFirstComment: boolean;
   onCancel: () => void;
@@ -75,7 +71,7 @@ export const InputField = ({
   const inputRef = useRef<HTMLDivElement>();
   const mentionListRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
-  const [initialValue, setInitialValue] = useState(PLACEHOLDER);
+  const [initialValue, setInitialValue] = useState("");
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
   const [userFilterKeyword, setUserFilterKeyword] = useState("");
 
@@ -158,14 +154,14 @@ export const InputField = ({
     // No need to save edit mode changes in draft
     if (inputValue && !isEditMode) {
       updateComments({
-        [commentResourceZUID]: inputValue === PLACEHOLDER ? "" : inputValue,
+        [commentResourceZUID]: inputValue,
       });
     }
   }, [inputValue, isEditMode]);
 
   useEffect(() => {
     if (isCommentCreated || isReplyCreated) {
-      tinymce?.activeEditor.setContent(PLACEHOLDER);
+      tinymce?.activeEditor.setContent("");
       setInputValue("");
       updateComments({
         [commentResourceZUID]: "",
@@ -175,7 +171,7 @@ export const InputField = ({
 
   useEffect(() => {
     if (isCommentUpdated || isReplyUpdated) {
-      tinymce?.activeEditor.setContent(PLACEHOLDER);
+      tinymce?.activeEditor.setContent("");
       setInputValue("");
       setCommentZUIDtoEdit(null);
     }
@@ -235,6 +231,8 @@ export const InputField = ({
             initialValue={initialValue}
             init={{
               inline: true,
+              auto_focus: true,
+              placeholder: "Reply or add others with @",
 
               setup: (editor) => {
                 editor.on("ResizeEditor", () => {
@@ -245,18 +243,7 @@ export const InputField = ({
               },
 
               content_style: "ul, ol { margin-left: 16px }",
-            }}
-            onClick={() => {
-              // Removes the placeholder
-              if (tinymce?.activeEditor.getContent() === PLACEHOLDER) {
-                tinymce?.activeEditor.setContent("");
-              }
-            }}
-            onBlur={() => {
-              // Re-adds the placeholder when user clicks out and there's no value
-              if (!tinymce?.activeEditor.getContent()) {
-                tinymce?.activeEditor.setContent(PLACEHOLDER);
-              }
+              skin_url: "/vendors/tinymce/skins/ui/Zesty",
             }}
             onEditorChange={(value, editor) => {
               setInputValue(value);
@@ -357,7 +344,7 @@ export const InputField = ({
         justifyContent="end"
         mt={1.5}
       >
-        {inputValue && inputValue !== PLACEHOLDER && (
+        {inputValue && (
           <>
             <Button
               variant="outlined"
