@@ -153,7 +153,8 @@ export default function FileStatus(props) {
             File ZUID:&nbsp;
             <em>
               <CopyButton
-                variant="contained"
+                variant="text"
+                color="inherit"
                 size="small"
                 value={props.file.ZUID}
               />

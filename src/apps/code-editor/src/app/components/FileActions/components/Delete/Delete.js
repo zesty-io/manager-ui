@@ -12,78 +12,33 @@ import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { deleteFile } from "../../../../../store/files";
 
 import styles from "./Delete.less";
+import { DeleteDialogue } from "./DeleteDialogue";
 
 export const Delete = memo(function Delete(props) {
   const [open, setOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const history = useHistory();
 
   return (
-    <div className={styles.DeleteBtn}>
+    <>
       {props.fileName !== "loader" ? (
         <Button
-          variant="contained"
+          variant="text"
+          color="inherit"
+          size="small"
+          minWidth="fit-content"
           onClick={() => setOpen(true)}
-          startIcon={<DeleteIcon />}
-          sx={{
-            "&:hover": {
-              backgroundColor: "error.main",
-            },
-          }}
         >
-          Delete
+          <DeleteIcon fontSize="small" />
         </Button>
       ) : (
         " "
       )}
-      <Modal
-        className={styles.DeleteFileModal}
-        type="local"
-        open={open}
+      <DeleteDialogue
+        isOpen={open}
         onClose={() => setOpen(false)}
-      >
-        <ModalContent className={styles.ModalContent}>
-          <Notice>
-            Deleting a file will remove it and trigger a CDN purge causing
-            production to update immediately. Are you sure you want to delete
-            this file?
-          </Notice>
-        </ModalContent>
-        <ModalFooter className={styles.ModalFooter}>
-          <LoadingButton
-            variant="contained"
-            color="error"
-            onClick={() => {
-              setDeleting(true);
-              props
-                .dispatch(deleteFile(props.fileZUID, props.status))
-                .then((res) => {
-                  setDeleting(false);
-                  if (res.status === 200) {
-                    setOpen(false);
-                    history.push("/code");
-                  }
-                })
-                .catch((err) => {
-                  setDeleting(false);
-                });
-            }}
-            loading={deleting}
-            loadingPosition="start"
-            startIcon={<DeleteIcon />}
-          >
-            Delete File
-          </LoadingButton>
-
-          <Button
-            variant="contained"
-            onClick={() => setOpen(false)}
-            startIcon={<DoDisturbIcon />}
-          >
-            Cancel (ESC)
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </div>
+        fileName={props?.fileName}
+        fileZUID={props?.fileZUID}
+        status={props?.status}
+      />
+    </>
   );
 });

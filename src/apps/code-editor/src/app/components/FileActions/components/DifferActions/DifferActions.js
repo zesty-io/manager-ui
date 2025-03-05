@@ -203,7 +203,8 @@ export const DifferActions = memo(function DifferActions(props) {
             variant="contained"
             color="success"
             onClick={loadVersion}
-            startIcon={<HistoryIcon />}
+            size="small"
+            startIcon={<HistoryIcon fontSize="small" />}
             sx={{ ml: 1, minWidth: "fit-content" }}
           >
             <span className={styles.Hide}>Load Version&nbsp;</span>{" "}
@@ -212,7 +213,9 @@ export const DifferActions = memo(function DifferActions(props) {
           <AppLink to={`/code/file/${props.fileType}/${props.fileZUID}`}>
             <Button
               variant="contained"
-              startIcon={<DoDisturbAltIcon />}
+              color="error"
+              size="small"
+              startIcon={<DoDisturbAltIcon fontSize="small" />}
               sx={{ ml: 1 }}
             >
               Cancel
@@ -223,11 +226,13 @@ export const DifferActions = memo(function DifferActions(props) {
         <>
           <LoadingButton
             variant="contained"
+            color="success"
             loadingPosition="start"
             onClick={resolveSync}
             disabled={saving}
             sx={{ ml: 1 }}
-            startIcon={<SaveIcon />}
+            size="small"
+            startIcon={<SaveIcon fontSize="small" />}
           >
             Save Version {selectedVersion}
           </LoadingButton>

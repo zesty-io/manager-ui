@@ -51,7 +51,7 @@ export const FileActions = memo(function FileActions(props) {
                     to={`/content/${props.contentModelZUID}`}
                     title="Edit Related Content"
                   >
-                    <Button variant="contained" size="small">
+                    <Button variant="text" color="inherit" size="small">
                       <EditIcon fontSize="small" />
                     </Button>
                   </AppLink>
@@ -61,13 +61,18 @@ export const FileActions = memo(function FileActions(props) {
                     to={`/schema/${props.contentModelZUID}`}
                     title="Edit Related Model"
                   >
-                    <Button variant="contained" size="small">
+                    <Button variant="text" color="inherit" size="small">
                       <StorageIcon fontSize="small" />
                     </Button>
                   </AppLink>
                 </Fragment>
               )}
-
+              <Delete
+                dispatch={props.dispatch}
+                fileZUID={props.fileZUID}
+                status={props.status}
+                fileName={props.fileName}
+              />
               <AppLink
                 className={styles.Link}
                 to={`/code/file/${props.fileType}/${
@@ -79,7 +84,7 @@ export const FileActions = memo(function FileActions(props) {
                 }`}
                 title="Diff Versions"
               >
-                <Button variant="contained" size="small">
+                <Button variant="text" color="inherit" size="small">
                   <HistoryIcon fontSize="small" />
                 </Button>
               </AppLink>
@@ -87,10 +92,14 @@ export const FileActions = memo(function FileActions(props) {
           </Route>
         </Switch>
 
-        <div className={styles.FileName}>
-          <CopyButton variant="contained" size="small" value={props.fileZUID} />
-          {props.fileName}
-        </div>
+        <CopyButton
+          variant="text"
+          color="inherit"
+          size="small"
+          value={props.fileZUID}
+          sx={{ whiteSpace: "nowrap" }}
+        />
+        {props.fileName}
       </div>
 
       {!props.synced && (
@@ -122,12 +131,6 @@ export const FileActions = memo(function FileActions(props) {
             version={props.version}
             synced={props.synced}
             status={props.status}
-          />
-          <Delete
-            dispatch={props.dispatch}
-            fileZUID={props.fileZUID}
-            status={props.status}
-            fileName={props.fileName}
           />
         </Route>
       </Switch>

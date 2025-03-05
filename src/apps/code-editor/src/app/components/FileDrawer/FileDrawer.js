@@ -108,11 +108,19 @@ export const FileDrawer = memo(function FileDrawer(props) {
     >
       <DrawerHandle className={styles.DrawerHandle} onClick={handleSetOpen}>
         <Button
-          variant="contained"
+          variant="text"
+          color="inherit"
           size="small"
           title="Open for additional file information"
+          sx={{
+            minWidth: "fit-content",
+          }}
         >
-          {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+          {open ? (
+            <ExpandMoreIcon fontSize="small" />
+          ) : (
+            <ExpandLessIcon fontSize="small" />
+          )}
         </Button>
 
         {open ? null : (

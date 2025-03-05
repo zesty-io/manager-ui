@@ -31,6 +31,8 @@ export const NavTreeItem: FC<Props> = React.memo(
   }) => {
     const currentDepth = depth + 1;
     const depthPadding = currentDepth * 1;
+    const isCodeAppNav = nodeData?.navSource === "code";
+    const isDir = nodeData?.isDir;
 
     return (
       <TreeItem
@@ -46,14 +48,14 @@ export const NavTreeItem: FC<Props> = React.memo(
                 display: "flex",
                 position: "absolute",
                 right: 0,
-                zIndex: -1,
+                zIndex: isCodeAppNav ? 2 : -1,
               },
               "&:hover .treeActions": {
                 zIndex: 2,
               },
               // HACK: Makes sure that the label width is adjusted when the overlay buttons are rendered
               "& .treeSpacer": {
-                display: "none",
+                display: isCodeAppNav ? "block" : "none",
               },
               "&:hover .treeSpacer": {
                 display: "block",
@@ -140,7 +142,7 @@ export const NavTreeItem: FC<Props> = React.memo(
           },
         }}
         ContentProps={{
-          id: nodeId.split("/").pop(),
+          id: isDir ? null : nodeId?.split("/")?.pop(),
           onDragOver: (event: any) => {
             if (dragAndDrop) {
               event.preventDefault();
