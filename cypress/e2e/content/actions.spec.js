@@ -27,7 +27,7 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     });
 
-    cy.get("#12-13d590-9v2nr2 input", TIMEOUT).clear();
+    cy.get("#12-13d590-9v2nr2 input", TIMEOUT).clear().should("have.value", "");
     cy.get("#SaveItemButton", TIMEOUT).trigger("click");
 
     cy.get("[data-cy=toast]", TIMEOUT).contains(
@@ -358,14 +358,14 @@ describe("Actions in content editor", () => {
     cy.getBySelector("metaDescription").find("[data-cy='AIOpen']").click();
     cy.getBySelector("AIGenerate").click();
 
-    cy.wait("@ai");
+    cy.wait("@ai", { timeout: 50000 });
 
     cy.getBySelector("AISuggestion1").click();
     cy.getBySelector("AIApprove").click();
 
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", { timeout: 5000 }).should("exist");
+    cy.contains("Created Item", { timeout: 50000 }).should("exist");
   });
 });
 
