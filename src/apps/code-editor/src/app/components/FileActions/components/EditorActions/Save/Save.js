@@ -6,8 +6,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import LoadingButton from "@mui/lab/LoadingButton";
 
 import { saveFile } from "../../../../../../store/files";
-
-import styles from "../EditorActions.less";
+import { Tooltip } from "@mui/material";
 
 export function Save(props) {
   const [saving, setSaving] = useState(false);
@@ -27,17 +26,19 @@ export function Save(props) {
   const metaShortcut = useMetaKey("s", onSave);
 
   return (
-    <LoadingButton
-      variant="contained"
-      color="success"
-      onClick={onSave}
-      loadingPosition="start"
-      startIcon={<SaveIcon />}
-      sx={{ mx: 0.5 }}
-      loading={saving}
-    >
-      Save&nbsp;
-      <span className={styles.HideSmall}>{metaShortcut}</span>
-    </LoadingButton>
+    <Tooltip title={metaShortcut}>
+      <LoadingButton
+        variant="contained"
+        color="primary"
+        size="small"
+        onClick={onSave}
+        loadingPosition="start"
+        startIcon={<SaveIcon fontSize="small" />}
+        sx={{ px: 1 }}
+        loading={saving}
+      >
+        Save
+      </LoadingButton>
+    </Tooltip>
   );
 }

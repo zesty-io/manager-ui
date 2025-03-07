@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
 
-import styles from "./PreviewMode.less";
-import { theme } from "@zesty-io/material";
 export default function PreviewMode(props) {
   const origin = window.location.origin;
   const instance = useSelector((state) => state.instance);
@@ -106,21 +103,21 @@ export default function PreviewMode(props) {
 
   return (
     // <div data-cy="DuoModeContainer" className={styles.DMContainer}>
-    <ThemeProvider theme={theme}>
-      <Box
-        height="100%"
-        width="100%"
-        sx={{
-          border: (theme) => `1px solid ${theme.palette.border}`,
-          borderRadius: "8px",
-        }}
-        component="iframe"
-        ref={preview}
-        src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-        // src={`https://${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-        frameBorder="0"
-      ></Box>
-    </ThemeProvider>
+
+    <Box
+      height="100%"
+      width="100%"
+      sx={{
+        border: (theme) => `1px solid ${theme.palette.border}`,
+        borderRadius: "8px",
+      }}
+      component="iframe"
+      ref={preview}
+      src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+      // src={`https://${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+      frameBorder="0"
+    ></Box>
+
     // </div>
   );
 }

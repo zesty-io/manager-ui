@@ -6,6 +6,7 @@ import { NavTreeItem } from "./components/NavTreeItem";
 import { ContentNavItem } from "../../services/types";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
+import { Box } from "@mui/material";
 
 export type TreeItem = {
   icon: any;
@@ -48,7 +49,7 @@ export const NavTree: FC<Readonly<Props>> = ({
 
   return (
     <>
-      {HeaderComponent}
+      <Box className="navtree-header">{HeaderComponent}</Box>
       {error ? (
         ErrorComponent
       ) : (

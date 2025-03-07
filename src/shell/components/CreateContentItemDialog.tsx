@@ -10,6 +10,7 @@ import {
   InputLabel,
   Autocomplete,
   Typography,
+  Avatar,
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { useHistory } from "react-router";
@@ -69,87 +70,87 @@ export const CreateContentItemDialog = ({
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Dialog
-        data-cy="create_new_content_item_dialog"
-        open={open}
-        onClose={onClose}
-        fullWidth
-        maxWidth={"xs"}
-      >
-        <DialogTitle component={Box}>
-          <EditRoundedIcon
-            color="primary"
-            sx={{
-              padding: "8px",
-              borderRadius: "20px",
-              backgroundColor: "deepOrange.50",
-              display: "block",
-              mb: 1.5,
-            }}
-          />
-          <Typography variant="h5" fontWeight={700} mb={1}>
-            Create Content Item
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            You can only create a content item for a pre-existing model
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <InputLabel sx={{ mb: 0.5 }}>Select Model</InputLabel>
-          <Autocomplete
-            data-cy="create_new_content_item_input"
-            size="small"
-            fullWidth
-            value={selectedModel}
-            disableClearable
-            options={
-              sortedModels
-                ? [
-                    {
-                      label: "None",
-                      ZUID: "",
-                    },
-                    {
-                      label: "Internal/External Link",
-                      ZUID: "link",
-                    },
-                    ...sortedModels,
-                  ]
-                : []
+    <Dialog
+      data-cy="create_new_content_item_dialog"
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth={"xs"}
+    >
+      <DialogTitle component={Box}>
+        <Avatar
+          sizes="extraLarge"
+          sx={{
+            // padding: "8px",
+            // borderRadius: "20px",
+            backgroundColor: "deepOrange.50",
+            // display: "block",
+            mb: 1.5,
+          }}
+        >
+          <EditRoundedIcon color="primary" />
+        </Avatar>
+        <Typography variant="h5" fontWeight={700} mb={1}>
+          Create Content Item
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          You can only create a content item for a pre-existing model
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <InputLabel sx={{ mb: 0.5 }}>Select Model</InputLabel>
+        <Autocomplete
+          data-cy="create_new_content_item_input"
+          size="small"
+          fullWidth
+          value={selectedModel}
+          disableClearable
+          options={
+            sortedModels
+              ? [
+                  {
+                    label: "None",
+                    ZUID: "",
+                  },
+                  {
+                    label: "Internal/External Link",
+                    ZUID: "link",
+                  },
+                  ...sortedModels,
+                ]
+              : []
+          }
+          renderInput={(params) => <TextField {...params} hiddenLabel />}
+          getOptionLabel={(option: any) => option.label}
+          isOptionEqualToValue={(option, value) => option.ZUID === value.ZUID}
+          onChange={(event, newValue) => setSelectedModel(newValue)}
+          onKeyDown={(evt) => {
+            if (evt.key.toLowerCase() === "enter" && !!selectedModel?.ZUID) {
+              evt.preventDefault();
+              onCreateClick();
             }
-            renderInput={(params) => <TextField {...params} hiddenLabel />}
-            getOptionLabel={(option: any) => option.label}
-            isOptionEqualToValue={(option, value) => option.ZUID === value.ZUID}
-            onChange={(event, newValue) => setSelectedModel(newValue)}
-            onKeyDown={(evt) => {
-              if (evt.key.toLowerCase() === "enter" && !!selectedModel?.ZUID) {
-                evt.preventDefault();
-                onCreateClick();
-              }
-            }}
-            ListboxProps={{
-              style: {
-                height: "250px",
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="inherit">
-            Discard
-          </Button>
-          <Button
-            data-cy="create_new_content_item_btn"
-            variant="contained"
-            color="primary"
-            disabled={!selectedModel.ZUID}
-            onClick={onCreateClick}
-          >
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </ThemeProvider>
+          }}
+          ListboxProps={{
+            style: {
+              height: "250px",
+            },
+          }}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="inherit">
+          Discard
+        </Button>
+        <Button
+          data-cy="create_new_content_item_btn"
+          variant="contained"
+          color="primary"
+          disabled={!selectedModel.ZUID}
+          onClick={onCreateClick}
+        >
+          Create
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };

@@ -565,25 +565,23 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Dialog
-        data-cy="create-model-dialog"
-        open
-        onClose={onClose}
-        sx={{
-          my: "20px",
-        }}
-        PaperProps={{
-          sx: {
-            maxWidth: largeWidth?.includes(model?.type) ? "1080px" : "640px",
-            width: largeWidth?.includes(model?.type) ? 1080 : 640,
-            maxHeight: "min(100%, 1000px)",
-            m: 0,
-          },
-        }}
-      >
-        {getView()}
-      </Dialog>
-    </ThemeProvider>
+    <Dialog
+      data-cy="create-model-dialog"
+      open
+      onClose={onClose}
+      sx={{
+        my: "20px",
+      }}
+      PaperProps={{
+        sx: {
+          maxWidth: largeWidth?.includes(model?.type) ? "1080px" : "640px",
+          width: largeWidth?.includes(model?.type) ? 1080 : 640,
+          maxHeight: "min(100%, 1000px)",
+          m: 0,
+        },
+      }}
+    >
+      {getView()}
+    </Dialog>
   );
 };

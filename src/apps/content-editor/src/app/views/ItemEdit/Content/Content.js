@@ -104,49 +104,46 @@ export default function Content(props) {
       </Box>
       {!showDuoMode ? (
         <Box display="flex" gap={1}>
-          <ThemeProvider theme={theme}>
-            <Stack
-              gap={1.5}
-              sx={{
-                ...(!showSidebar && {
-                  position: "absolute",
-                  right: "24px",
-                }),
-              }}
+          <Stack
+            gap={1.5}
+            sx={{
+              ...(!showSidebar && {
+                position: "absolute",
+                right: "24px",
+              }),
+            }}
+          >
+            <Tooltip
+              title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
+              placement="left"
             >
-              <Tooltip
-                title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
-                placement="left"
+              <IconButton
+                size="small"
+                onClick={() => setShowSidebar(!showSidebar)}
+                data-cy="ContentSidebarToggle"
               >
+                <StartRounded
+                  fontSize="small"
+                  sx={{
+                    transform: showSidebar ? "rotate(0deg)" : "rotate(180deg)",
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
+            {!isDisabled && (
+              <Tooltip title="Open DUO Mode" placement="left" dark>
                 <IconButton
                   size="small"
-                  onClick={() => setShowSidebar(!showSidebar)}
-                  data-cy="ContentSidebarToggle"
+                  onClick={() => {
+                    setShowDuoMode(true);
+                  }}
                 >
-                  <StartRounded
-                    fontSize="small"
-                    sx={{
-                      transform: showSidebar
-                        ? "rotate(0deg)"
-                        : "rotate(180deg)",
-                    }}
-                  />
+                  <DesktopMacRounded fontSize="small" />
                 </IconButton>
               </Tooltip>
-              {!isDisabled && (
-                <Tooltip title="Open DUO Mode" placement="left" dark>
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      setShowDuoMode(true);
-                    }}
-                  >
-                    <DesktopMacRounded fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </Stack>
-          </ThemeProvider>
+            )}
+          </Stack>
+
           {showSidebar && (
             <Box
               maxWidth={320}

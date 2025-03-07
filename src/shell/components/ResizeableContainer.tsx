@@ -84,85 +84,83 @@ export const ResizableContainer = ({
   const MemoizedChildren = useMemo(() => children, [children]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box width={collapsed ? 0 : width} position="relative">
-        <Box
-          overflow={collapsed ? "hidden" : "visible"}
-          height="100%"
-          width="inherit"
-        >
-          {MemoizedChildren}
-        </Box>
-        <Box
-          sx={{
-            width: "4px",
-            height: "100%",
-            position: "absolute",
-            right: "-2px",
-            top: "0",
-            zIndex: "2",
-            bgcolor: isResizing ? "rgba(255, 93, 10, 0.5)" : "transparent",
-            "&:hover": {
-              backgroundColor: "rgba(255, 93, 10, 0.5)",
-              cursor: "col-resize",
-            },
+    <Box width={collapsed ? 0 : width} position="relative">
+      <Box
+        overflow={collapsed ? "hidden" : "visible"}
+        height="100%"
+        width="inherit"
+      >
+        {MemoizedChildren}
+      </Box>
+      <Box
+        sx={{
+          width: "4px",
+          height: "100%",
+          position: "absolute",
+          right: "-2px",
+          top: "0",
+          zIndex: "2",
+          bgcolor: isResizing ? "rgba(255, 93, 10, 0.5)" : "transparent",
+          "&:hover": {
+            backgroundColor: "rgba(255, 93, 10, 0.5)",
+            cursor: "col-resize",
+          },
+        }}
+        onMouseDown={handleMouseDown}
+        display={collapsed ? "none" : "block"}
+      />
+      <Tooltip
+        title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+        placement="right-start"
+        enterDelay={1000}
+        enterNextDelay={1000}
+        open={isTooltipOpen && isHoveringCollapseButton}
+        onOpen={() => setIsTooltipOpen(true)}
+        onClose={() => setIsTooltipOpen(false)}
+      >
+        <IconButton
+          data-cy="collapseAppSideBar"
+          onClick={() => {
+            setIsTooltipOpen(false);
+            setCollapsed(!collapsed);
+            setIsHoveringCollapseButton(false);
           }}
-          onMouseDown={handleMouseDown}
-          display={collapsed ? "none" : "block"}
-        />
-        <Tooltip
-          title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-          placement="right-start"
-          enterDelay={1000}
-          enterNextDelay={1000}
-          open={isTooltipOpen && isHoveringCollapseButton}
-          onOpen={() => setIsTooltipOpen(true)}
-          onClose={() => setIsTooltipOpen(false)}
-        >
-          <IconButton
-            data-cy="collapseAppSideBar"
-            onClick={() => {
-              setIsTooltipOpen(false);
-              setCollapsed(!collapsed);
-              setIsHoveringCollapseButton(false);
-            }}
-            onMouseOver={() => setIsHoveringCollapseButton(true)}
-            sx={{
-              borderRadius: "50%",
-              borderColor: "grey.600",
-              borderStyle: "solid",
-              borderWidth: "1px",
+          onMouseOver={() => setIsHoveringCollapseButton(true)}
+          sx={{
+            borderRadius: "50%",
+            borderColor: "grey.600",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            backgroundColor: "grey.900",
+
+            width: "24px",
+            height: "24px",
+
+            position: "absolute",
+            top: "32px",
+            right: "-12px",
+            zIndex: (theme) => theme.zIndex.appBar,
+
+            "&:hover": {
               backgroundColor: "grey.900",
 
-              width: "24px",
-              height: "24px",
-
-              position: "absolute",
-              top: "32px",
-              right: "-12px",
-              zIndex: (theme) => theme.zIndex.appBar,
-
-              "&:hover": {
-                backgroundColor: "grey.900",
-
-                ".MuiSvgIcon-root": {
-                  color: "common.white",
-                },
+              ".MuiSvgIcon-root": {
+                color: "common.white",
               },
+            },
+          }}
+        >
+          <SvgIcon
+            component={
+              collapsed ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft
+            }
+            fontSize="small"
+            sx={{
+              color: "grey.500",
             }}
-          >
-            <SvgIcon
-              component={
-                collapsed ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft
-              }
-              fontSize="small"
-              sx={{
-                color: "grey.500",
-              }}
-            />
-          </IconButton>
-        </Tooltip>
-      </Box>
-    </ThemeProvider>
+          />
+        </IconButton>
+      </Tooltip>
+    </Box>
   );
 };

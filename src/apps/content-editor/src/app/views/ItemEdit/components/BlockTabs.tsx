@@ -10,11 +10,9 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { useRef, useState } from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
+
 import { VerticalSplitRounded, InfoRounded } from "@mui/icons-material";
 import { Actions } from "../Content/Actions";
-import { customTheme } from "../../../ContentEditor";
 import { useHistory, useParams } from "react-router";
 import { useGetContentModelItemsQuery } from "../../../../../../../shell/services/instance";
 import { ContentItem } from "../../../../../../../shell/services/types";
@@ -36,7 +34,7 @@ export const BlockTabs = (props: any) => {
   const [createVariantDialogOpen, setCreateVariantDialogOpen] = useState(false);
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Box
         display="flex"
         justifyContent={"space-between"}
@@ -192,24 +190,22 @@ export const BlockTabs = (props: any) => {
         </>
       )}
       {value === 1 && (
-        <ThemeProvider theme={customTheme}>
-          <Box
-            height="calc(100% - 64px)"
-            sx={{
-              overflowY: "auto",
+        <Box
+          height="calc(100% - 64px)"
+          sx={{
+            overflowY: "auto",
+          }}
+        >
+          <Actions
+            {...props}
+            site={{}}
+            set={{
+              type: props.model?.type,
             }}
-          >
-            <Actions
-              {...props}
-              site={{}}
-              set={{
-                type: props.model?.type,
-              }}
-            />
-          </Box>
-        </ThemeProvider>
+          />
+        </Box>
       )}
-    </ThemeProvider>
+    </>
   );
 };
 

@@ -132,46 +132,46 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
           </Stack>
         }
       />
-      <ThemeProvider theme={theme}>
-        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-          <MenuItem
-            selected={sort === "asc"}
-            onClick={() => {
-              handleClose();
-              setSort("asc");
-            }}
-          >
-            Name (A to Z)
-          </MenuItem>
-          <MenuItem
-            selected={sort === "desc"}
-            onClick={() => {
-              handleClose();
-              setSort("desc");
-            }}
-          >
-            Name (Z to A)
-          </MenuItem>
-          <MenuItem
-            selected={!sort}
-            onClick={() => {
-              handleClose();
-              setSort("");
-            }}
-          >
-            Last Created
-          </MenuItem>
-          <MenuItem
-            selected={sort === "modified"}
-            onClick={() => {
-              handleClose();
-              setSort("modified");
-            }}
-          >
-            Last Modified
-          </MenuItem>
-        </Menu>
-      </ThemeProvider>
+
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <MenuItem
+          selected={sort === "asc"}
+          onClick={() => {
+            handleClose();
+            setSort("asc");
+          }}
+        >
+          Name (A to Z)
+        </MenuItem>
+        <MenuItem
+          selected={sort === "desc"}
+          onClick={() => {
+            handleClose();
+            setSort("desc");
+          }}
+        >
+          Name (Z to A)
+        </MenuItem>
+        <MenuItem
+          selected={!sort}
+          onClick={() => {
+            handleClose();
+            setSort("");
+          }}
+        >
+          Last Created
+        </MenuItem>
+        <MenuItem
+          selected={sort === "modified"}
+          onClick={() => {
+            handleClose();
+            setSort("modified");
+          }}
+        >
+          Last Modified
+        </MenuItem>
+      </Menu>
+
       {showCreateModelDialogue && (
         <CreateModelDialogue
           modelType={type}

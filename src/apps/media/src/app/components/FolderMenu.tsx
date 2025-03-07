@@ -41,7 +41,7 @@ export const FolderMenu: FC<Props> = ({
   const [_, setHiddenGroups] = useLocalStorage("zesty:navMedia:hidden", []);
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={onCloseMenu}>
         <MenuItem
           divider
@@ -138,6 +138,6 @@ export const FolderMenu: FC<Props> = ({
           groupId={groupId}
         />
       ) : null}
-    </ThemeProvider>
+    </>
   );
 };
