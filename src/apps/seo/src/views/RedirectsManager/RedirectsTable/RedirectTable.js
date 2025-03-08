@@ -181,7 +181,7 @@ export default function RedirectTable(props) {
           columns={columns}
           rows={rows}
           rowHeight={60}
-          // initialState={{ pinnedColumns: { right: ["actions"] } }}
+          initialState={{ pinnedColumns: { right: ["actions"] } }}
           hideFooter
         />
       </div>

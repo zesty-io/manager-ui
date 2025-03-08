@@ -78,18 +78,18 @@ export const CreateContentItemDialog = ({
       maxWidth={"xs"}
     >
       <DialogTitle component={Box}>
-        <Avatar
-          sizes="extraLarge"
+        <EditRoundedIcon
+          color="primary"
           sx={{
-            // padding: "8px",
-            // borderRadius: "20px",
+            padding: "8px",
+            borderRadius: "20px",
             backgroundColor: "deepOrange.50",
-            // display: "block",
+            display: "block",
             mb: 1.5,
+            width: "40px",
+            height: "40px",
           }}
-        >
-          <EditRoundedIcon color="primary" />
-        </Avatar>
+        />
         <Typography variant="h5" fontWeight={700} mb={1}>
           Create Content Item
         </Typography>

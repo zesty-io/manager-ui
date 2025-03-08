@@ -55,48 +55,25 @@ interface Props {
 
 const darkTheme = {
   backgroundColor: "grey.900",
-  color: "grey.400",
-  "& .app-sidebar-header-container": {
-    "& svg": { color: "grey.400" },
-    "& .MuiTextField-root": {
-      "& input, input::placeholder, fieldset": {
-        color: "grey.300",
-        border: "none",
-      },
+  "& .MuiTreeItem-label,\
+  & .app-sidebar-header-container input,\
+  & .app-sidebar-header-container input::placeholder,\
+  & .app-sidebar-header-container fieldset":
+    {
+      color: "grey.300",
+      border: "none",
     },
-    "& .app-sidebar-header": {
-      "& .MuiTypography-root, & .MuiSvgIcon-root": {
-        color: "common.white",
-      },
-    },
-  },
-  "& .nav-tree-container": {
-    "& .navtree-header": {
-      "& .MuiTypography-root, & .MuiSvgIcon-root": {
-        color: "grey.400",
-      },
-      "& .MuiIconButton-root:hover": {
-        backgroundColor: "grey.800",
-      },
-    },
-    "& .MuiTreeItem-iconContainer svg, & .MuiTreeItem-label svg": {
+  "& .MuiAccordion-root .MuiTypography-root,\
+  & .navtree-header .MuiTypography-root,\
+  & .MuiSvgIcon-root":
+    {
       color: "grey.400",
     },
-    "& .MuiTreeItem-label": {
-      color: "grey.300",
+  "& .app-sidebar-header .MuiTypography-root, \
+  & .app-sidebar-header .MuiSvgIcon-root":
+    {
+      color: "common.white",
     },
-    "& .MuiTreeItem-content.Mui-selected .MuiTreeItem-label .treeActions": {
-      "& .MuiSvgIcon-root": {
-        color: "grey.400",
-      },
-      '& [variant="contained"] .MuiSvgIcon-root': {
-        color: "common.white",
-      },
-    },
-    "& .MuiTreeItem-content:hover": {
-      backgroundColor: "rgba(255, 93, 10, 0.06)",
-    },
-  },
 };
 
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(

@@ -116,7 +116,7 @@ export const CreateFile = memo(function CreateFile(props) {
         size="small"
         title="Create File"
         startIcon={<AddIcon />}
-        sx={{ justifyContent: "flex-start" }}
+        sx={{ justifyContent: "flex-start", my: 0.5 }}
       >
         <span>Create File</span>
       </Button>

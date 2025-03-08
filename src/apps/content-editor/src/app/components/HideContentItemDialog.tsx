@@ -7,7 +7,6 @@ import {
   Typography,
   Stack,
   SvgIcon,
-  Avatar,
 } from "@mui/material";
 import { VisibilityOffRounded, VisibilityRounded } from "@mui/icons-material";
 
@@ -31,25 +30,20 @@ export const HideContentItemDialog: FC<Readonly<Props>> = ({
     <Dialog open onClose={onClose} fullWidth maxWidth={"xs"}>
       <DialogContent sx={{ mt: 2.5 }}>
         <Stack>
-          <Avatar
-            sizes="extraLarge"
+          <SvgIcon
+            component={isHide ? VisibilityOffRounded : VisibilityRounded}
+            color="primary"
             sx={{
+              padding: "8px",
+              borderRadius: "20px",
               backgroundColor: "deepOrange.50",
+              display: "block",
               mb: 1.5,
+              width: "40px",
+              height: "40px",
             }}
-          >
-            <SvgIcon
-              component={isHide ? VisibilityOffRounded : VisibilityRounded}
-              color="primary"
-              // sx={{
-              //   padding: "8px",
-              //   borderRadius: "20px",
-              //   backgroundColor: "deepOrange.50",
-              //   display: "block",
-              //   mb: 1.5,
-              // }}
-            />
-          </Avatar>
+          />
+
           <Typography variant="h5" fontWeight={600} mb={1}>
             {isHide ? `Hide ${item.label}?` : `Unhide ${item.label}?`}
           </Typography>

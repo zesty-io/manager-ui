@@ -117,7 +117,7 @@ export const NavTreeItem: FC<Props> = React.memo(
 
             ".MuiTreeItem-label .treeActions [data-cy='tree-item-hide'] svg": {
               // Makes sure that the hide icon color does not change when tree item is selected
-              color: "action.active",
+              color: "grey.400",
             },
 
             ".MuiTreeItem-label .treeActions [data-cy='tree-item-add-new-content'] svg":

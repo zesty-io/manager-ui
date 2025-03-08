@@ -5,36 +5,33 @@ import LoadingButton from "@mui/lab/LoadingButton";
 
 import { publishFile, fetchFiles } from "../../../../../../store/files";
 
-import { Tooltip } from "@mui/material";
+import styles from "../EditorActions.less";
 
 export const Publish = memo(function Publish(props) {
   const [publishing, setPublishing] = useState(false);
 
   return (
-    <Tooltip title={`Publish Version ${props.version}`}>
-      <LoadingButton
-        variant="contained"
-        color="success"
-        size="small"
-        onClick={() => {
-          setPublishing(true);
-          props
-            .dispatch(publishFile(props.fileZUID, props.status))
-            .finally(() => {
-              setPublishing(false);
-
-              props.dispatch(fetchFiles("views"));
-              props.dispatch(fetchFiles("stylesheets"));
-              props.dispatch(fetchFiles("scripts"));
-            });
-        }}
-        loading={publishing}
-        loadingPosition="start"
-        startIcon={<UploadIcon fontSize="small" />}
-        sx={{ px: 1 }}
-      >
-        Publish
-      </LoadingButton>
-    </Tooltip>
+    <LoadingButton
+      variant="contained"
+      color="success"
+      size="small"
+      onClick={() => {
+        setPublishing(true);
+        props
+          .dispatch(publishFile(props.fileZUID, props.status))
+          .finally(() => {
+            setPublishing(false);
+            props.dispatch(fetchFiles("views"));
+            props.dispatch(fetchFiles("stylesheets"));
+            props.dispatch(fetchFiles("scripts"));
+          });
+      }}
+      loading={publishing}
+      loadingPosition="start"
+      startIcon={<UploadIcon fontSize="small" />}
+    >
+      Publish
+      <span className={styles.HideSmall}>&nbsp;Version {props.version}</span>
+    </LoadingButton>
   );
 });

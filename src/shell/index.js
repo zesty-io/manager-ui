@@ -64,6 +64,7 @@ const appTheme = createTheme(theme, {
     action: {
       disabled: "rgba(112, 112, 112, 0.5)",
       disabledBackground: "rgba(112, 112, 112, 0.2)",
+      hover: "rgba(255, 93, 10, 0.06)",
     },
   },
   components: {
