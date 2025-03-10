@@ -165,7 +165,6 @@ export const SideBar = memo(function SideBar({
           )}
         </AppSideBar>
       </ResizableContainer>
-
       <CreateFile
         open={isCreateFileOpen}
         onClose={() => {
