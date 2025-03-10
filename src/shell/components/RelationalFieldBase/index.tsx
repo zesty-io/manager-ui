@@ -47,6 +47,7 @@ export const RelationalFieldBase = ({
   const [itemZUIDs, setItemZUIDs] = useState<string[]>(value?.split(",") || []);
   const [showAll, setShowAll] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>(null);
+  const [replace, setReplace] = useState<string | null>(null);
   const [
     initiatorZUID,
     setInitiatorZUID,
@@ -97,6 +98,11 @@ export const RelationalFieldBase = ({
     onChange(itemZUIDs?.join(","), name);
   }, [itemZUIDs]);
 
+  const closeFieldSelectorDialog = () => {
+    setReplace(null);
+    setAnchorEl(null);
+  };
+
   const isRenderedAsDialog = params.get("isDialog") === "true";
   const isLoading = isLoadingModelData || isLoadingModelFields;
 
@@ -130,6 +136,10 @@ export const RelationalFieldBase = ({
                   );
                 }}
                 draggable={multiselect}
+                openFieldSelectorDialog={(evt) => {
+                  setReplace(val);
+                  setAnchorEl(evt.currentTarget);
+                }}
               />
             ))}
           </DndProvider>
@@ -188,8 +198,8 @@ export const RelationalFieldBase = ({
       )}
       {!!anchorEl && (
         <FieldSelectorDialog
-          multiselect={multiselect}
-          onClose={() => setAnchorEl(null)}
+          multiselect={!!replace ? false : multiselect}
+          onClose={closeFieldSelectorDialog}
           modelZUID={relatedModelZUID}
           fieldLabel={fieldLabel}
           relatedFieldName={
@@ -202,8 +212,9 @@ export const RelationalFieldBase = ({
               name
             );
             setItemZUIDs(!!selectedZUIDs?.length ? selectedZUIDs : null);
-            setAnchorEl(null);
+            closeFieldSelectorDialog();
           }}
+          replace={replace}
         />
       )}
       {initiatorZUID === fieldZUID && (
