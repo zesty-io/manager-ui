@@ -2,7 +2,7 @@ import { memo, Fragment } from "react";
 
 import { Switch, Route, useRouteMatch } from "react-router";
 
-import Button from "@mui/material/Button";
+import { Button, Box } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import EditIcon from "@mui/icons-material/Edit";
 import StorageIcon from "@mui/icons-material/Storage";
@@ -20,26 +20,28 @@ import { EditorActions } from "./components/EditorActions";
 import { Delete } from "./components/Delete";
 
 import styles from "./FileActions.less";
+
 export const FileActions = memo(function FileActions(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
 
   return (
     <header className={styles.FileActions}>
       <div className={styles.FileMeta}>
-        {props.contentModelZUID ? (
-          <Link
-            underline="none"
-            color="secondary"
-            href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.contentModelZUID}.json`}
-            target="_blank"
-            title="Preview JSON"
-            sx={{ m: 0, pr: 2, pl: 3.25, py: 0 }}
-          >
-            <FontAwesomeIcon icon={faBolt} />
-          </Link>
-        ) : (
-          <FontAwesomeIcon className={styles.FileLink} icon={faFileCode} />
-        )}
+        <Box sx={{ m: 0, pr: 2, pl: 3.25, py: 0 }}>
+          {props.contentModelZUID ? (
+            <Link
+              underline="none"
+              color="secondary"
+              href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.contentModelZUID}.json`}
+              target="_blank"
+              title="Preview JSON"
+            >
+              <FontAwesomeIcon icon={faBolt} />
+            </Link>
+          ) : (
+            <FontAwesomeIcon icon={faFileCode} />
+          )}
+        </Box>
 
         <Switch>
           <Route path={`${match.url}`}>
