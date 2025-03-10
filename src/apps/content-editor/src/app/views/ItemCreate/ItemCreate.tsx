@@ -300,8 +300,8 @@ export const ItemCreate = () => {
         if (res.error) {
           dispatch(
             notify({
-              message: res.error,
-              kind: "warn",
+              message: `Cannot Save: ${res.error}`,
+              kind: "error",
             })
           );
         }
