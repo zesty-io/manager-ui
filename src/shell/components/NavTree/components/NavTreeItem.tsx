@@ -142,7 +142,7 @@ export const NavTreeItem: FC<Props> = React.memo(
           },
         }}
         ContentProps={{
-          id: nodeData?.isDir ? "" : nodeId.split("/").pop(),
+          id: nodeId.split("/").pop(),
           onDragOver: (event: any) => {
             if (dragAndDrop) {
               event.preventDefault();

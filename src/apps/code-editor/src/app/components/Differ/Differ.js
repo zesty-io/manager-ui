@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { MonacoDiffEditor } from "react-monaco-editor";
 
 import { resolveMonacoLang } from "../../../store/files";
@@ -12,9 +12,11 @@ import { FileActions } from "../FileActions";
  * This is done for performance reasons. Constantly re-rendering slows down the editor typing experience.
  * But we still want to broadcast store updates `onChange`
  */
-import styles from "./Differ.less";
+import Box from "@mui/material/Box";
 export const Differ = memo(
   function Differ(props) {
+    const editorContainerRef = useRef(null);
+    const [editorWidth, setEditorWidth] = useState("100%");
     const [loading, setLoading] = useState(false);
     const [versionCodeLeft, setVersionCodeLeft] = useState(
       props.currentCode || ""
@@ -23,8 +25,18 @@ export const Differ = memo(
       props.versionCode || ""
     );
 
+    window.onresize = () => {
+      const rects = editorContainerRef.current.getBoundingClientRect();
+      setEditorWidth(rects?.width);
+    };
+
     return (
-      <main className={styles.Differ}>
+      <Box
+        position="relative"
+        width="100%"
+        height="100%"
+        boxSizing="border-box"
+      >
         <FileActions
           contentModelZUID={props.contentModelZUID}
           fileZUID={props.fileZUID}
@@ -41,8 +53,16 @@ export const Differ = memo(
         />
 
         <WithLoader condition={!loading} message="Finding File Versions">
-          <div className={styles.EditorLayout}>
+          <Box
+            ref={editorContainerRef}
+            position="absolute"
+            width="100%"
+            height="100%"
+            bgcolor="grey.900"
+            boxSizing="border-box"
+          >
             <MonacoDiffEditor
+              width={editorWidth}
               theme="vs-dark"
               original={versionCodeLeft}
               value={versionCodeRight}
@@ -51,9 +71,9 @@ export const Differ = memo(
                 selectOnLineNumbers: true,
               }}
             />
-          </div>
+          </Box>
         </WithLoader>
-      </main>
+      </Box>
     );
   },
   (prevProps, nextProps) => {

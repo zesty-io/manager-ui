@@ -1,17 +1,15 @@
 import { useEffect } from "react";
 import { connect } from "react-redux";
-import { Switch, useRouteMatch } from "react-router-dom";
-import { Grid } from "@mui/material";
+import { useRouteMatch } from "react-router-dom";
+import { Box, Grid } from "@mui/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import Workspace from "../../components/Workspace";
+import { Workspace } from "../../components/Workspace/";
 
 import { fetchFiles } from "../../../store/files";
 import SideBar from "../../components/SideBar";
-import { Route } from "react-router";
-import { GettingStarted } from "../../components/Workspace/components/GettingStarted";
-import { NotFound } from "../../components/Workspace/components/NotFound";
+import styles from "./CodeEditor.less";
 
 export default connect((state) => {
   return {
@@ -75,37 +73,14 @@ export default connect((state) => {
         >
           <SideBar {...props} />
         </Grid>
-        <Grid
-          item
-          xs
-          sx={{
-            position: "relative",
-            height: "100%",
-            width: "100%",
-            overflow: "hidden",
-            bgcolor: "#1e1e1e",
-          }}
-        >
-          <Switch>
-            <Route exact path="/code">
-              <GettingStarted files={props.files} />
-            </Route>
-            <Route
-              path="/code/file/:fileType/:fileZUID"
-              render={(routeProps) => {
-                return (
-                  <Workspace
-                    {...routeProps}
-                    dispatch={props.dispatch}
-                    status={props.status}
-                  />
-                );
-              }}
+        <Grid item xs sx={{ position: "relative", height: "100%" }}>
+          <Box position="absolute" width="100%" height="100%">
+            <Workspace
+              dispatch={props.dispatch}
+              files={props.files}
+              status={props.status}
             />
-            <Route path="*">
-              <NotFound />
-            </Route>
-          </Switch>
+          </Box>
         </Grid>
       </Grid>
     </WithLoader>
