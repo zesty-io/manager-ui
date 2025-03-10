@@ -392,11 +392,11 @@ export default function ItemEdit() {
       if (res.status === 400) {
         dispatch(
           notify({
-            message: `Cannot Save: ${item.web.metaTitle}`,
+            message: `Cannot Save: ${item.web.metaTitle} - ${res.error}`,
             kind: "error",
           })
         );
-        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
+        throw new Error(`Cannot Save: ${item.web.metaTitle} - ${res.error}`);
       }
 
       dispatch(
