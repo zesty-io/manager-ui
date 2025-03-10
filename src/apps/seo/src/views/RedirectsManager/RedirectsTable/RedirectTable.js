@@ -1,9 +1,8 @@
 import { useMemo, useCallback } from "react";
 import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
-import { Box, Tooltip } from "@mui/material";
+import { Box, Tooltip, Typography } from "@mui/material";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
-import styles from "./RedirectTable.less";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
@@ -16,6 +15,33 @@ import { removeRedirect } from "../../../store/redirects";
 
 import { RedirectCreator } from "./RedirectCreator";
 import { RedirectTargetCell } from "./RedirectTargetCell";
+
+const CellWrapper = ({ color = "", children }) => {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 0.75,
+        position: "relative",
+        overflow: "hidden",
+        "& svg": {
+          color: color || "text.disabled",
+          flexGrow: 0,
+        },
+        "& .MuiTypography-root": {
+          color: color || "text.primary",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          flexGrow: 1,
+        },
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
 
 export default function RedirectTable(props) {
   const handleRemoveRedirect = useCallback((zuid) => {
@@ -30,10 +56,12 @@ export default function RedirectTable(props) {
         flex: 2,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Typography variant="body2" fontWeight={600} color="text.primary">
+              Incoming Path
+            </Typography>
             <Tooltip title="File Path Only" arrow placement="top-start">
-              <InfoIcon fontSize="small" />
+              <InfoIcon fontSize="small" sx={{ color: "text.secondary" }} />
             </Tooltip>
-            Incoming Path
           </Box>
         ),
         renderCell: ({ value }) => (
@@ -52,6 +80,9 @@ export default function RedirectTable(props) {
         width: 135,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Typography variant="body2" fontWeight={600} color="text.primary">
+              HTTP Code
+            </Typography>
             <Tooltip
               title={
                 <>
@@ -62,16 +93,18 @@ export default function RedirectTable(props) {
               arrow
               placement="top-start"
             >
-              <InfoIcon fontSize="small" />
+              <InfoIcon fontSize="small" sx={{ color: "text.secondary" }} />
             </Tooltip>
-            HTTP Code
           </Box>
         ),
         renderCell: ({ value }) => {
           return (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              {value} <FontAwesomeIcon icon={faArrowRight} />
-            </Box>
+            <CellWrapper>
+              <Typography variant="body2" fontWeight={600} color="text.primary">
+                {value}
+              </Typography>
+              <FontAwesomeIcon icon={faArrowRight} />
+            </CellWrapper>
           );
         },
       },
@@ -80,6 +113,9 @@ export default function RedirectTable(props) {
         width: 140,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Typography variant="body2" fontWeight={600} color="text.primary">
+              Redirect Type
+            </Typography>
             <Tooltip
               title={
                 <>
@@ -91,43 +127,53 @@ export default function RedirectTable(props) {
               arrow
               placement="top-start"
             >
-              <InfoIcon fontSize="small" />
+              <InfoIcon fontSize="small" sx={{ color: "text.secondary" }} />
             </Tooltip>
-            Redirect Type
           </Box>
         ),
         renderCell: ({ value }) => {
           return (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <CellWrapper>
               {value === "external" ? (
                 <>
-                  <FontAwesomeIcon
-                    icon={faExternalLinkAlt}
-                    className={styles.mr}
-                  />
+                  <Box color="text.secondary">
+                    <FontAwesomeIcon icon={faExternalLinkAlt} />
+                  </Box>
                   External&nbsp;
                 </>
               ) : value === "path" ? (
                 <>
-                  <FontAwesomeIcon icon={faFile} className={styles.mr} />
+                  <Box color="text.secondary">
+                    <FontAwesomeIcon icon={faFile} />
+                  </Box>
                   Wildcard&nbsp;
                 </>
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faFileAlt} className={styles.mr} />
+                  <Box color="text.secondary">
+                    <FontAwesomeIcon icon={faFileAlt} />
+                  </Box>
                   Internal&nbsp;
                 </>
               )}
-            </Box>
+            </CellWrapper>
           );
         },
       },
       {
         field: "target",
-        headerName: "Redirect Target",
+        headerName: (
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            Redirect Target
+          </Typography>
+        ),
         flex: 2,
         renderCell: ({ value, row }) => (
-          <RedirectTargetCell target={value} targetType={row.targetType} />
+          <RedirectTargetCell
+            wrapper={CellWrapper}
+            target={value}
+            targetType={row.targetType}
+          />
         ),
       },
       {
@@ -137,10 +183,14 @@ export default function RedirectTable(props) {
         getActions: ({ row }) => [
           <GridActionsCellItem
             icon={<DeleteIcon />}
-            color="warning"
+            color="text.secondary"
             label="Delete"
-            sx={{ "&:hover": { color: "error.main" } }}
             onClick={() => handleRemoveRedirect(row.ZUID)}
+            sx={{
+              "&:hover": {
+                color: "error.main",
+              },
+            }}
           />,
         ],
       },
@@ -169,23 +219,33 @@ export default function RedirectTable(props) {
   );
 
   return (
-    <section className={styles.RedirectsTable}>
-      <main className={styles.TableBody}>
-        <RedirectCreator
-          options={props.paths}
-          siteZuid={props.siteZuid}
-          dispatch={props.dispatch}
-        />
-      </main>
-      <div style={{ height: "100%" }}>
-        <DataGridPro
-          columns={columns}
-          rows={rows}
-          rowHeight={60}
-          initialState={{ pinnedColumns: { right: ["actions"] } }}
-          hideFooter
-        />
-      </div>
-    </section>
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      justifyContent="space-between"
+      alignItems="stretch"
+      width="100%"
+      position="relative"
+      rowGap="24px"
+    >
+      <RedirectCreator
+        options={props.paths}
+        siteZuid={props.siteZuid}
+        dispatch={props.dispatch}
+      />
+
+      <DataGridPro
+        columns={columns}
+        rows={rows}
+        rowHeight={60}
+        sx={{
+          bgcolor: "background.paper",
+          color: "text.primary",
+          fontSize: "typography.body2.fontSize",
+        }}
+        hideFooter
+      />
+    </Box>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchItems } from "shell/store/content";
-import { Box, Link as MuiLink } from "@mui/material";
+import { Box, Link as MuiLink, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAsterisk,
@@ -14,6 +14,7 @@ import {
 export const RedirectTargetCell = (props) => {
   const dispatch = useDispatch();
   const [loaded, setLoaded] = useState(false);
+  const CellWrapper = props?.wrapper ?? Box;
   // Only select content from store if targetType is "page" and select specific object instead of whole store
   const contentItem =
     props.targetType === "page"
@@ -33,42 +34,45 @@ export const RedirectTargetCell = (props) => {
   return (
     <>
       {props.targetType === "page" ? (
-        <span>
+        <>
           {contentItem?.meta?.contentModelZUID ? (
             <Link
               to={`/content/${contentItem.meta.contentModelZUID}/${props.target}`}
+              style={{ textOverflow: "ellipsis", overflow: "hidden" }}
             >
-              <FontAwesomeIcon icon={faLink} />
-              &nbsp;
-              <code>{contentItem.web.path}</code>
+              <CellWrapper>
+                <FontAwesomeIcon icon={faLink} />
+                <Typography variant="body2">{contentItem.web.path}</Typography>
+              </CellWrapper>
             </Link>
           ) : loaded ? (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <CellWrapper>
               <FontAwesomeIcon icon={faBan} />
-              Redirect Target has been deleted
-            </Box>
+              <Typography variant="body2">Redirect Target has been</Typography>
+            </CellWrapper>
           ) : (
-            <span>Loading...</span>
+            <Typography variant="body2">Loading...</Typography>
           )}
-        </span>
+        </>
       ) : props.targetType === "external" ? (
-        <span>
-          <MuiLink
-            underline="none"
-            color="secondary"
-            href={props.target}
-            target="_blank"
-            title="Redirect URL"
-          >
+        <MuiLink
+          underline="none"
+          color="secondary"
+          href={props.target}
+          target="_blank"
+          title="Redirect URL"
+          sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
+        >
+          <CellWrapper color="primary.main">
             <FontAwesomeIcon icon={faExternalLinkAlt} />
-            &nbsp;<code>{props.target}</code>
-          </MuiLink>
-        </span>
+            <Typography variant="body2">{props.target}</Typography>
+          </CellWrapper>
+        </MuiLink>
       ) : (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+        <CellWrapper>
           <FontAwesomeIcon icon={faAsterisk} />
-          <code>{props.target}</code>
-        </Box>
+          <Typography variant="body2">{props.target}</Typography>
+        </CellWrapper>
       )}
     </>
   );

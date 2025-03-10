@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
-
 import { WithLoader } from "@zesty-io/core/WithLoader";
-
-import RedirectActions from "./RedirectActions";
 import RedirectsTable from "./RedirectsTable";
 import RedirectImportTable from "./RedirectImportTable";
-
 import { fetchRedirects } from "../../store/redirects";
+import { Box } from "@mui/material";
+import RedirectActions from "./RedirectActions";
 
-import styles from "./RedirectsManager.less";
 export default function RedirectManager(props) {
   const [loading, setLoading] = useState(true);
 
@@ -30,23 +27,47 @@ export default function RedirectManager(props) {
   }, []);
 
   return (
-    <div className={styles.RedirectsManager}>
-      <RedirectActions
-        dispatch={props.dispatch}
-        redirectsTotal={Object.keys(props.redirects).length}
-      />
-
-      <WithLoader
-        condition={!loading}
-        message="Loading Redirects"
-        height="calc(100vh - 172px)"
+    <>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        // boxSizing="border-box"
+        px={4}
+        pt={4}
+        pb={1.75}
+        sx={{
+          borderBottom: (theme) => `2px solid ${theme.palette.border}`,
+          backgroundColor: "background.paper",
+        }}
       >
-        {Object.keys(props.imports).length ? (
-          <RedirectImportTable {...props} />
-        ) : (
-          <RedirectsTable {...props} />
-        )}
-      </WithLoader>
-    </div>
+        <RedirectActions
+          dispatch={props.dispatch}
+          redirectsTotal={Object.keys(props.redirects).length}
+        />
+      </Box>
+
+      <Box
+        flexGrow={1}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        px={4}
+        py={2}
+        boxSizing="border-box"
+        position="relative"
+      >
+        <WithLoader
+          condition={!loading}
+          message="Loading Redirects"
+          height="100%"
+        >
+          {Object.keys(props.imports).length ? (
+            <RedirectImportTable {...props} />
+          ) : (
+            <RedirectsTable {...props} />
+          )}
+        </WithLoader>
+      </Box>
+    </>
   );
 }
