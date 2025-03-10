@@ -1,40 +1,40 @@
 const options = { timeout: 15000 };
 const forceClick = { force: true };
 
+const commentBox = '#commentInputField[contenteditable="true"]';
+
 describe("Content Item: Comments", () => {
   before(() => {
     cleanComments();
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/comments*", () => {
-        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.visit(
+          "/content/6-556370-8sh47g/7-b939a4-457q19/comment/12-6d41d0-n10vtc"
+        );
       });
     });
-    cy.getBySelector("DuoModeToggle", { timeout: 50000 }).click();
   });
 
   it("Creates an initial comment", () => {
-    cy.getBySelector("OpenCommentsButton", options).first().click(forceClick);
-    cy.get("#commentInputField", options).should("exist");
-    cy.get("#commentInputField")
-      .should("exist")
-      .click()
-      .type("This is a new comment.");
-    cy.getBySelector("SubmitNewComment").click();
     cy.intercept("/v1/comments/*").as("getAllComments");
+    cy.get(commentBox, { timeout: 50000 }).should("exist");
+    cy.get(commentBox).focus();
+    cy.get(commentBox).type("This is a new comment.");
+    cy.get('[data-cy="SubmitNewComment"]').click();
+
     cy.wait("@getAllComments");
-    cy.getBySelector("CommentItem").should("have.length", 1);
+    cy.get('[data-cy="CommentItem"]').should("have.length", 1);
   });
 
   it("Replies to a comment", () => {
-    cy.get("#commentInputField", options)
-      .click()
-      .type("Hello, this is a new reply!");
-    cy.getBySelector("SubmitNewComment").click();
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
     );
+    cy.get(commentBox, options).type("Hello, this is a new reply!");
+    cy.get('[data-cy="SubmitNewComment"]').click();
+
     cy.wait("@getReplies");
-    cy.getBySelector("CommentItem", options).should("have.length", 2);
+    cy.get('[data-cy="CommentItem"]').should("have.length", 2);
   });
 
   it("Updates an existing comment", () => {
@@ -42,9 +42,7 @@ describe("Content Item: Comments", () => {
 
     cy.getBySelector("CommentMenuButton", options).first().click(forceClick);
     cy.getBySelector("EditCommentButton").click();
-    cy.get("#commentInputField")
-      .click()
-      .type(`{selectall}{backspace}${UPDATED_TEXT}`);
+    cy.get(commentBox).type(`{selectall}{backspace}${UPDATED_TEXT}`);
     cy.getBySelector("SubmitNewComment").click();
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
@@ -54,7 +52,7 @@ describe("Content Item: Comments", () => {
   });
 
   it("Resolves a comment", () => {
-    cy.getBySelector("ResolveCommentButton").click();
+    cy.getBySelector("ResolveCommentButton").click(forceClick);
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
     );
@@ -67,7 +65,7 @@ describe("Content Item: Comments", () => {
   });
 
   it("Reopens a comment when there is a new reply", () => {
-    cy.get("#commentInputField").click().type("Reopening ticket.");
+    cy.get(commentBox, options).type("Reopening ticket.");
     cy.getBySelector("SubmitNewComment").click();
     cy.intercept("/v1/comments/*?showReplies=true&showResolved=true").as(
       "getReplies"
@@ -81,10 +79,6 @@ describe("Content Item: Comments", () => {
   });
 
   it("Delete a comment", () => {
-    cy.visit(
-      "/content/6-556370-8sh47g/7-b939a4-457q19/comment/12-6d41d0-n10vtc"
-    );
-
     cy.intercept("DELETE", "/v1/comments/*").as("deleteComment");
     cy.intercept("/v1/instances/*/comments?resource=*").as("getComments");
 
@@ -98,11 +92,9 @@ describe("Content Item: Comments", () => {
       forceClick
     );
 
-    cy.get('[data-cy="DeleteCommentButton"]').click(forceClick);
+    cy.get('[data-cy="DeleteCommentButton"]').click();
 
-    cy.get('[data-cy="ConfirmDeleteCommentButton"]', options).click({
-      force: true,
-    });
+    cy.get('[data-cy="ConfirmDeleteCommentButton"]', options).click();
 
     cy.wait(["@deleteComment", "@getComments"]).spread(
       (deleteComment, getComments) => {

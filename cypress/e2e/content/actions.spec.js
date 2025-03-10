@@ -365,7 +365,7 @@ describe("Actions in content editor", () => {
 
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", { timeout: 50000 }).should("exist");
+    cy.contains("Created Item", { timeout: 15000 }).should("exist");
   });
 });
 
