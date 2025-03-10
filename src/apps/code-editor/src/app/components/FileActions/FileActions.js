@@ -2,7 +2,7 @@ import { memo, Fragment } from "react";
 
 import { Switch, Route, useRouteMatch } from "react-router";
 
-import Button from "@mui/material/Button";
+import { Button, Box } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import EditIcon from "@mui/icons-material/Edit";
 import StorageIcon from "@mui/icons-material/Storage";

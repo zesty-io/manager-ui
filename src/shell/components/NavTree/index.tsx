@@ -62,12 +62,20 @@ export const NavTree: FC<Readonly<Props>> = ({
           defaultExpandIcon={<ArrowRightRoundedIcon />}
           //  @ts-expect-error changed typed definition from mui/lab
           onNodeSelect={(evt: any, nodeIds: string) => {
-            if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
+            if (
+              !!evt.currentTarget.id &&
+              evt.target.tagName !== "svg" &&
+              evt.target.tagName !== "path"
+            ) {
               history.push(nodeIds);
             }
           }}
           onNodeToggle={(evt: any, nodeIds: string[]) => {
-            if (evt.target.tagName === "svg" || evt.target.tagName === "path") {
+            if (
+              !evt.currentTarget.id ||
+              evt.target.tagName === "svg" ||
+              evt.target.tagName === "path"
+            ) {
               onToggleCollapse(nodeIds);
             }
           }}
