@@ -211,18 +211,6 @@ export default memo(function Editor({
         };
       }
 
-      if (field.datatype === "one_to_many") {
-        // Value is stored as string in DB with max char limit of 255.
-        // This means users can only add up to 12 item zuids
-        errors[name] = {
-          ...(errors[name] ?? []),
-          CUSTOM_ERROR:
-            !!value && value?.length > 255
-              ? "Cannot save field. Please reduce the total number of items selected."
-              : "",
-        };
-      }
-
       onUpdateFieldErrors(errors);
 
       // Always dispatch the data update
