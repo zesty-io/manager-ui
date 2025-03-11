@@ -397,11 +397,22 @@ export default function ItemEdit() {
           if (dataLongErrorMatch?.[1]) {
             const fieldName = dataLongErrorMatch[1];
             const errors = cloneDeep(fieldErrors);
+            const oneToManyFieldNames = activeFields?.reduce(
+              (names, currItem) => {
+                if (currItem?.datatype === "one_to_many") {
+                  return [...names, currItem?.name];
+                }
+
+                return names;
+              },
+              []
+            );
 
             errors[fieldName] = {
               ...(errors[fieldName] ?? {}),
-              CUSTOM_ERROR:
-                "Cannot save field. Please reduce the total number of items selected.",
+              CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                ? "Cannot save field. Please reduce the total number of items selected."
+                : "Cannot save field. Value is too long.",
             };
 
             setFieldErrors(errors);
