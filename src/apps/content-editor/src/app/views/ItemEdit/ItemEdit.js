@@ -389,6 +389,24 @@ export default function ItemEdit() {
         throw new Error(errors);
       }
       if (res.status === 400) {
+        // Handles backend validation error for when the data is too long
+        if (res.error?.toLowerCase()?.includes("data too long")) {
+          const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+          if (dataLongErrorMatch?.[1]) {
+            const fieldName = dataLongErrorMatch[1];
+            const errors = cloneDeep(fieldErrors);
+
+            errors[fieldName] = {
+              ...(errors[fieldName] ?? {}),
+              CUSTOM_ERROR:
+                "Cannot save field. Please reduce the total number of items selected.",
+            };
+
+            setFieldErrors(errors);
+          }
+        }
+
         dispatch(
           notify({
             message: `Cannot Save: ${item.web.metaTitle} - ${res.error}`,

@@ -211,6 +211,14 @@ export default memo(function Editor({
         };
       }
 
+      if (field.datatype === "one_to_many") {
+        // Clear out the error after changing the value
+        errors[name] = {
+          ...(errors[name] ?? []),
+          CUSTOM_ERROR: "",
+        };
+      }
+
       onUpdateFieldErrors(errors);
 
       // Always dispatch the data update
