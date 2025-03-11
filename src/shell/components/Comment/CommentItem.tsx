@@ -55,6 +55,7 @@ type CommentItemProps = {
   withResolveButton?: boolean;
   withReopenButton?: boolean;
   onParentCommentDeleted: () => void;
+  commentCount: number;
 };
 export const CommentItem = ({
   commentZUID,
@@ -65,6 +66,7 @@ export const CommentItem = ({
   withResolveButton,
   withReopenButton,
   onParentCommentDeleted,
+  commentCount,
 }: CommentItemProps) => {
   const { resourceZUID } = useParams<PathParams>();
   const location = useLocation();
@@ -229,6 +231,7 @@ export const CommentItem = ({
               onCancel={() => setCommentZUIDtoEdit(null)}
               commentResourceZUID={resourceZUID}
               parentCommentZUID={parentCommentZUID}
+              commentCount={commentCount}
             />
           ) : (
             <Typography
