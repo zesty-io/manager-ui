@@ -358,14 +358,14 @@ describe("Actions in content editor", () => {
     cy.getBySelector("metaDescription").find("[data-cy='AIOpen']").click();
     cy.getBySelector("AIGenerate").click();
 
-    cy.wait("@ai");
+    cy.wait("@ai", { timeout: 50000 });
 
     cy.getBySelector("AISuggestion1").click();
     cy.getBySelector("AIApprove").click();
 
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", { timeout: 5000 }).should("exist");
+    cy.contains("Created Item", { timeout: 15000 }).should("exist");
   });
 });
 

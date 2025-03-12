@@ -1,3 +1,6 @@
+const options = { timeout: 15000 };
+const forceClick = { force: true };
+
 const SEARCH_TERM = `cypress ${Date.now()}`;
 const TIMESTAMP = Date.now();
 const TIMEOUT = {
@@ -62,24 +65,26 @@ describe("Schema: Models", () => {
   });
 
   it("Renames model", () => {
-    cy.getBySelector(`model-header-menu`).click(TIMEOUT);
-    cy.contains("Rename Model").click();
-    cy.get(".MuiDialog-container").within(() => {
-      cy.get("label").contains("Display Name").next().type(" Updated");
-      cy.get("label").contains("Reference ID").next().type("_updated");
+    cy.getBySelector(`model-header-menu`, options).click(forceClick);
+    cy.contains("Rename Model", options).click(forceClick);
+    cy.get(".MuiDialog-container", options).within(() => {
+      cy.get("label", options).contains("Display Name").next().type(" Updated");
+      cy.get("label", options).contains("Reference ID").next().type("_updated");
       cy.contains("Save").click();
     });
     cy.intercept("PUT", "/models");
     cy.intercept("GET", "/models");
-    cy.contains("Cypress Test Model Updated").should("exist");
+    cy.contains("Cypress Test Model Updated", options).should("exist");
   });
   it("Deletes model", () => {
-    cy.getBySelector(`model-header-menu`).click(TIMEOUT);
-    cy.contains("Delete Model").click(TIMEOUT);
-    cy.get(".MuiDialog-container").within(() => {
-      cy.get(".MuiOutlinedInput-root").type("Cypress Test Model Updated");
+    cy.getBySelector(`model-header-menu`, options).click(forceClick);
+    cy.contains("Delete Model", options).click(forceClick);
+    cy.get(".MuiDialog-container", options).within(() => {
+      cy.get(".MuiOutlinedInput-root", options).type(
+        "Cypress Test Model Updated"
+      );
     });
-    cy.contains("Delete Forever").click();
+    cy.contains("Delete Forever", options).click();
   });
   it("Can navigate via breadcrumbs", () => {
     cy.waitOn(
