@@ -156,6 +156,9 @@ const ICON_CONFIG: { [index: string]: SvgIconComponent } = Object.freeze({
 
 // Thunk helper functions
 export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
+  const tab1Segments = tab1.pathname.split("/").filter((part) => part);
+  const tab2Segments = tab2.pathname.split("/").filter((part) => part);
+
   // Makes sure that a new tab isn't created when the user searches for something and only the filters are changed in the params
   if (tab1.pathname === "/search" && tab2.pathname === "/search") {
     const params1 = new URLSearchParams(tab1.search);
@@ -163,34 +166,18 @@ export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
 
     return params1.get("q") === params2.get("q");
   } else if (
-    (tab1.pathname.startsWith("/content") &&
-      tab2.pathname.startsWith("/content")) ||
-    (tab1.pathname.startsWith("/blocks") && tab2.pathname.startsWith("/blocks"))
+    (tab1Segments?.[0] === "content" && tab2Segments?.[0] === "content") ||
+    (tab1Segments?.[0] === "blocks" && tab2Segments?.[0] === "blocks")
   ) {
-    const tab1Segments = tab1.pathname.split("/").filter((part) => part);
-    const tab2Segments = tab2.pathname.split("/").filter((part) => part);
-
     // Makes sure that we stay on the same tab if the modelZUID and itemZUID is the same
     return (
       tab1Segments?.[1] === tab2Segments?.[1] &&
       tab1Segments?.[2] === tab2Segments?.[2]
     );
-  } else if (
-    tab1.pathname.startsWith("/schema") &&
-    tab2.pathname.startsWith("/schema")
-  ) {
-    const tab1Segments = tab1.pathname.split("/").filter((part) => part);
-    const tab2Segments = tab2.pathname.split("/").filter((part) => part);
-
+  } else if (tab1Segments?.[0] === "schema" && tab2Segments?.[0] === "schema") {
     // Makes sure that we stay on the same tab if the modelZUID is the same
     return tab1Segments?.[1] === tab2Segments?.[1];
-  } else if (
-    tab1.pathname.startsWith("/media") &&
-    tab2.pathname.startsWith("/media")
-  ) {
-    const tab1Segments = tab1.pathname.split("/").filter((part) => part);
-    const tab2Segments = tab2.pathname.split("/").filter((part) => part);
-
+  } else if (tab1Segments?.[0] === "media" && tab2Segments?.[0] === "media") {
     if (tab1Segments.length === 1 && tab2Segments.length === 1) {
       // This means that the user is on the /media page and we want to stay in just 1 tab even
       // if they're looking at an item which adds ?fileId on the URL
