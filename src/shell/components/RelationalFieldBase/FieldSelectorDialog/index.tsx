@@ -81,6 +81,7 @@ type FieldSelectorDialogProps = {
   onUpdateSelectedZUIDs: (selectedZUIDs: string[]) => void;
   fieldLabel: string;
   multiselect?: boolean;
+  replace?: string | null;
 };
 export const FieldSelectorDialog = ({
   onClose,
@@ -90,6 +91,7 @@ export const FieldSelectorDialog = ({
   onUpdateSelectedZUIDs,
   fieldLabel,
   multiselect,
+  replace = null,
 }: FieldSelectorDialogProps) => {
   const dispatch = useDispatch();
   const searchField = useRef(null);
@@ -113,8 +115,9 @@ export const FieldSelectorDialog = ({
       status: null,
     }
   );
-  const [selectionModel, setSelectionModel] =
-    useState<GridInputSelectionModel>(selectedZUIDs);
+  const [selectionModel, setSelectionModel] = useState<GridInputSelectionModel>(
+    !!replace ? [] : selectedZUIDs
+  );
   const [isFetchingContentItems, setIsFetchingContentItems] = useState(false);
 
   const { data: langs } = useGetLangsQuery({});
@@ -230,10 +233,46 @@ export const FieldSelectorDialog = ({
 
     let _rows = [...contentItems];
 
-    return _rows?.map((item) => ({
-      id: item.meta?.ZUID,
-      // Column is only used for keyword search purposes
-      keywordSearch: {
+    return _rows
+      ?.filter((item) => !item.meta?.ZUID?.startsWith("new"))
+      ?.map((item) => ({
+        id: item.meta?.ZUID,
+        // Column is only used for keyword search purposes
+        keywordSearch: {
+          title: {
+            primary:
+              item.data?.[relatedFieldName] ||
+              item.web?.metaTitle ||
+              item.web?.metaLinkText,
+            secondary: item.web?.metaDescription,
+          },
+          version: {
+            itemData: {
+              ...item,
+              createdByName: resolveUserZUID(item.meta?.createdByUserZUID),
+            },
+            publishData: item?.publishing?.version
+              ? {
+                  ...item.publishing,
+                  publishedByName: resolveUserZUID(
+                    item.publishing?.publishedByUserZUID
+                  ),
+                }
+              : null,
+            scheduleData: item?.scheduling?.version
+              ? {
+                  ...item.scheduling,
+                  scheduledByName: resolveUserZUID(
+                    item.scheduling?.publishedByUserZUID
+                  ),
+                }
+              : null,
+          },
+        },
+        image: {
+          imageFieldName,
+          itemZUID: item.meta?.ZUID,
+        },
         title: {
           primary:
             item.data?.[relatedFieldName] ||
@@ -263,42 +302,8 @@ export const FieldSelectorDialog = ({
               }
             : null,
         },
-      },
-      image: {
-        imageFieldName,
-        itemZUID: item.meta?.ZUID,
-      },
-      title: {
-        primary:
-          item.data?.[relatedFieldName] ||
-          item.web?.metaTitle ||
-          item.web?.metaLinkText,
-        secondary: item.web?.metaDescription,
-      },
-      version: {
-        itemData: {
-          ...item,
-          createdByName: resolveUserZUID(item.meta?.createdByUserZUID),
-        },
-        publishData: item?.publishing?.version
-          ? {
-              ...item.publishing,
-              publishedByName: resolveUserZUID(
-                item.publishing?.publishedByUserZUID
-              ),
-            }
-          : null,
-        scheduleData: item?.scheduling?.version
-          ? {
-              ...item.scheduling,
-              scheduledByName: resolveUserZUID(
-                item.scheduling?.publishedByUserZUID
-              ),
-            }
-          : null,
-      },
-      item,
-    }));
+        item,
+      }));
   }, [contentItems, users, relatedFieldName, imageFieldName]);
 
   const rows = useMemo(() => {
@@ -523,8 +528,18 @@ export const FieldSelectorDialog = ({
         selectedCount={filteredSelectionModels?.length || 0}
         onClose={onClose}
         onDeselectAll={() => setSelectionModel([])}
-        onDone={() => onUpdateSelectedZUIDs(selectionModel as string[])}
+        onDone={() => {
+          if (!!replace) {
+            const newSelectionModel = selectedZUIDs?.map((zuid) =>
+              zuid === replace ? (selectionModel as string[])[0] : zuid
+            );
+            onUpdateSelectedZUIDs(newSelectionModel as string[]);
+          } else {
+            onUpdateSelectedZUIDs(selectionModel as string[]);
+          }
+        }}
         loading={isLoading}
+        replace={replace || null}
       />
       <DialogContent
         id="fieldSelectorDialogBody"
@@ -584,7 +599,11 @@ export const FieldSelectorDialog = ({
               sortingMode="server"
               checkboxSelection
               columns={columns}
-              rows={rows}
+              rows={
+                !!replace
+                  ? rows?.filter((row) => !selectedZUIDs?.includes(row?.id))
+                  : rows
+              }
               headerHeight={0}
               rowHeight={64}
               hideFooter

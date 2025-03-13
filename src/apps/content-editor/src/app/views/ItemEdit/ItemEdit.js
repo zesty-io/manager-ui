@@ -89,7 +89,6 @@ export default function ItemEdit() {
   const metaRef = useRef(null);
   const fieldErrorRef = useRef(null);
   const item = useSelector((state) => state.content[itemZUID]);
-  const items = useSelector((state) => state.content);
   const model = useSelector((state) => state.models[modelZUID]);
   const tags = useSelector((state) => selectItemHeadTags(state, itemZUID));
   const languages = useSelector((state) => state.languages);
@@ -390,13 +389,42 @@ export default function ItemEdit() {
         throw new Error(errors);
       }
       if (res.status === 400) {
+        // Handles backend validation error for when the data is too long
+        if (res.error?.toLowerCase()?.includes("data too long")) {
+          const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+          if (dataLongErrorMatch?.[1]) {
+            const fieldName = dataLongErrorMatch[1];
+            const errors = cloneDeep(fieldErrors);
+            const oneToManyFieldNames = activeFields?.reduce(
+              (names, currItem) => {
+                if (currItem?.datatype === "one_to_many") {
+                  return [...names, currItem?.name];
+                }
+
+                return names;
+              },
+              []
+            );
+
+            errors[fieldName] = {
+              ...(errors[fieldName] ?? {}),
+              CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                ? "Cannot save field. Please reduce the total number of items selected."
+                : "Cannot save field. Value is too long.",
+            };
+
+            setFieldErrors(errors);
+          }
+        }
+
         dispatch(
           notify({
-            message: `Cannot Save: ${item.web.metaTitle}`,
+            message: `Cannot Save: ${item.web.metaTitle} - ${res.error}`,
             kind: "error",
           })
         );
-        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
+        throw new Error(`Cannot Save: ${item.web.metaTitle} - ${res.error}`);
       }
 
       dispatch(
@@ -608,7 +636,6 @@ export default function ItemEdit() {
                           fields={fields}
                           itemZUID={itemZUID}
                           item={item}
-                          items={items}
                           user={user}
                           onSave={() =>
                             save().catch((err) => console.error(err))

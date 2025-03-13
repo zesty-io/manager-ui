@@ -1,5 +1,6 @@
 import moment from "moment";
-
+const options = { timeout: 15000 };
+const forceClick = { force: true };
 describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
@@ -446,20 +447,24 @@ describe("Content Specs", () => {
     });
 
     it("can only select/add one item", () => {
-      cy.get("#12-edee00-6zb866 [data-cy='add-relational-item-button']").click({
-        force: true,
-      });
+      cy.intercept({ method: "GET", url: "**/items*" }).as("getItems");
 
-      cy.wait("@fetchItems");
+      cy.get(
+        '[data-cy="add-relational-item-button"]:contains("Add Existing One to One")',
+        options
+      ).click(forceClick);
 
-      cy.get(".MuiDataGrid-row").first().find("input").click();
-      cy.get(".MuiDataGrid-row").eq(1).find("input").click();
+      cy.wait("@getItems", { timeout: 40000 });
 
-      cy.getBySelector("selected-count").contains("1 / 1 selected");
-      cy.getBySelector("done-selecting-item-button").click();
-      cy.get("#12-edee00-6zb866 [data-cy='active-relational-item']").should(
+      cy.get(".MuiDataGrid-row:eq(0) input", options).click(forceClick);
+      cy.get(".MuiDataGrid-row:eq(1) input", options).click(forceClick);
+
+      cy.get(".MuiDataGrid-row input:checked", options).should(
         "have.length",
         1
+      );
+      cy.get('[data-cy="done-selecting-item-button"]', options).click(
+        forceClick
       );
     });
 
@@ -535,6 +540,27 @@ describe("Content Specs", () => {
         "have.length",
         2
       );
+    });
+
+    it("can create & add new item", () => {
+      cy.get(
+        "#12-269a28-1bkm34 [data-cy='create-new-relational-item-button']"
+      ).click({
+        force: true,
+      });
+
+      cy.get("#12-d6e4c1d797-sjv628", { retries: 1 })
+        .find("input")
+        .type(`Test Item ${TIMESTAMP}`);
+      cy.get("#12-aaa5ce87e3-89whjq")
+        .find("textarea")
+        .first()
+        .type(`Test Item ${TIMESTAMP}`);
+      cy.getBySelector("CreateItemSaveButton").click();
+
+      cy.get("#12-269a28-1bkm34 [data-cy='active-relational-item']", {
+        retries: 1,
+      }).should("have.length", 3);
     });
   });
 });

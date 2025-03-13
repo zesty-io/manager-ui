@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
@@ -38,6 +38,8 @@ import { Meta } from "../ItemEdit/Meta";
 import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
+import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
+import { CreateContentItemDialogContext } from "../../../../../../shell/contexts/CreateContentItemDialogProvider";
 
 export type ActionAfterSave =
   | ""
@@ -65,6 +67,11 @@ export const ItemCreate = () => {
   const history = useHistory();
   const isMounted = useIsMounted();
   const dispatch = useDispatch();
+  const [_, __, ___, setNewlyCreatedItemZUID] = useContext(
+    CreateContentItemDialogContext
+  );
+  const [queryParams] = useQueryParams();
+  const isRenderedAsDialog = queryParams.get("isDialog") === "true";
   const { modelZUID } = useParams<{ modelZUID: string }>();
   const itemZUID = `new:${modelZUID}`;
   const model = useSelector((state: AppState) => state.models[modelZUID]);
@@ -79,7 +86,7 @@ export const ItemCreate = () => {
   const [active, setActive] = useState();
   const [newItemZUID, setNewItemZUID] = useState();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
-  const [willRedirect, setWillRedirect] = useState(true);
+  const [willRedirect, setWillRedirect] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [saveClicked, setSaveClicked] = useState(false);
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
@@ -125,7 +132,7 @@ export const ItemCreate = () => {
     if (!isPublishing && isPublished) {
       // console.log("will it redirect?", redirect);
       if (willRedirect) {
-        history.push(`/content/${modelZUID}/${publishedItem?.data?.itemZUID}`);
+        handleRedirect(publishedItem?.data?.itemZUID);
       }
     }
   }, [isPublishing, isPublished, publishedItem, willRedirect]);
@@ -291,10 +298,39 @@ export const ItemCreate = () => {
         }
 
         if (res.error) {
+          // Handles backend validation error for when the data is too long
+          if (res.error?.toLowerCase()?.includes("data too long")) {
+            const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+            if (dataLongErrorMatch?.[1]) {
+              const fieldName = dataLongErrorMatch[1];
+              const errors = cloneDeep(fieldErrors);
+              const oneToManyFieldNames = activeFields?.reduce(
+                (names, currItem) => {
+                  if (currItem?.datatype === "one_to_many") {
+                    return [...names, currItem?.name];
+                  }
+
+                  return names;
+                },
+                []
+              );
+
+              errors[fieldName] = {
+                ...(errors[fieldName] ?? {}),
+                CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                  ? "Cannot save field. Please reduce the total number of items selected."
+                  : "Cannot save field. Value is too long.",
+              };
+
+              setFieldErrors(errors);
+            }
+          }
+
           dispatch(
             notify({
-              message: res.error,
-              kind: "warn",
+              message: `Cannot Save: ${res.error}`,
+              kind: "error",
             })
           );
         }
@@ -303,6 +339,7 @@ export const ItemCreate = () => {
         await dispatch(fetchItem(modelZUID, res.data.ZUID));
 
         setNewItemZUID(res.data.ZUID);
+        setFieldErrors({});
 
         switch (action) {
           case "addNew":
@@ -336,11 +373,7 @@ export const ItemCreate = () => {
 
           default:
             // Redirect to new item
-            history.push(
-              `/${
-                model?.type === "block" ? "blocks" : "content"
-              }/${modelZUID}/${res.data.ZUID}`
-            );
+            handleRedirect(res.data.ZUID);
             break;
         }
 
@@ -384,6 +417,18 @@ export const ItemCreate = () => {
     });
   };
 
+  const handleRedirect = (itemZUID: string) => {
+    if (isRenderedAsDialog) {
+      setNewlyCreatedItemZUID(itemZUID);
+    } else {
+      history.push(
+        `/${
+          model?.type === "block" ? "blocks" : "content"
+        }/${modelZUID}/${itemZUID}`
+      );
+    }
+  };
+
   if (!loading && !model) {
     return <NotFound message={`Model "${modelZUID}" not found`} />;
   }
@@ -422,7 +467,7 @@ export const ItemCreate = () => {
               </Box>
             )}
             <AIGeneratorProvider>
-              {model.type === "block" && (
+              {model?.type === "block" && (
                 <Meta
                   onUpdateSEOErrors={(errors: FieldErrors) => {
                     setSEOErrors(errors);
@@ -452,7 +497,7 @@ export const ItemCreate = () => {
                   setFieldErrors(errors);
                 }}
               />
-              {model.type !== "block" && (
+              {model?.type !== "block" && (
                 <Meta
                   onUpdateSEOErrors={(errors: FieldErrors) => {
                     setSEOErrors(errors);
@@ -512,13 +557,19 @@ export const ItemCreate = () => {
       {isScheduleDialogOpen && !isLoadingNewItem && (
         <SchedulePublish
           item={newItemData as ContentItemWithDirtyAndPublishing}
-          onClose={() => setIsScheduleDialogOpen(false)}
+          onClose={() => {
+            setIsScheduleDialogOpen(false);
+
+            if (willRedirect) {
+              handleRedirect(newItemData?.meta?.ZUID);
+            }
+          }}
           onPublishNow={() => handlePublish(newItemZUID)}
           onScheduleSuccess={() => {
             setIsScheduleDialogOpen(false);
 
             if (willRedirect) {
-              history.push(`/content/${modelZUID}/${newItemData?.meta?.ZUID}`);
+              handleRedirect(newItemData?.meta?.ZUID);
             }
           }}
         />

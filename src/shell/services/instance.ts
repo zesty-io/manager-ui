@@ -636,6 +636,86 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["Groups"],
     }),
+    createStarterBlockModel: builder.mutation<
+      any,
+      {
+        modelData: Partial<ContentModel>;
+        fields: Omit<
+          ContentModelField,
+          | "ZUID"
+          | "contentModelZUID"
+          | "datatypeOptions"
+          | "createdAt"
+          | "updatedAt"
+          | "deletedAt"
+        >[];
+        code: string;
+      }
+    >({
+      async queryFn(
+        { modelData, fields, code },
+        _queryApi,
+        _extraOptions,
+        fetchWithBQ
+      ) {
+        try {
+          const createModelResponse: any = await fetchWithBQ({
+            url: `content/models`,
+            method: "POST",
+            body: modelData,
+          });
+
+          if (!!createModelResponse?.error)
+            return {
+              error: {
+                data: {},
+                error: createModelResponse?.error?.data?.error,
+              },
+            };
+
+          const modelZUID = createModelResponse?.data?.data?.ZUID;
+
+          const contentModelFields = fields.map((field) => ({
+            url: `content/models/${modelZUID}/fields`,
+            method: "POST",
+            body: { contentModelZUID: modelZUID, ...field },
+          }));
+          const contentModelFieldsResponse: any = await batchApiRequests(
+            contentModelFields,
+            fetchWithBQ
+          );
+
+          const webViewsResponse: any = await fetchWithBQ({
+            url: "web/views",
+          });
+
+          const webViewData = webViewsResponse?.data?.data
+            ?.filter((view: any) => view?.contentModelZUID === modelZUID)
+            .sort((a: any, b: any) => a?.varsion - b?.version)[0];
+
+          const updateCodeResponse: any = await fetchWithBQ({
+            url: `web/views/${webViewData?.ZUID}`,
+            method: "PUT",
+            body: {
+              ...webViewData,
+              code: code,
+            },
+          });
+
+          return {
+            data: {
+              model: createModelResponse?.data?.data,
+              fields: contentModelFieldsResponse,
+              webView: updateCodeResponse?.data?.data,
+            },
+          };
+        } catch (error) {
+          console.error("Error Creating Starter block: ", error);
+          return error;
+        }
+      },
+      invalidatesTags: ["ContentModels", "WebViews", "ContentModelFields"],
+    }),
   }),
 });
 
@@ -689,4 +769,5 @@ export const {
   useGetGroupsQuery,
   useGetGroupByZUIDQuery,
   useCreateGroupMutation,
+  useCreateStarterBlockModelMutation,
 } = instanceApi;

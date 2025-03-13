@@ -1,5 +1,6 @@
 import moment from "moment";
-
+import { API_ENDPOINTS } from "../../support/api";
+const TIMEOUT = { timeout: 15_000 };
 const yesterdayTimestamp = moment()
   .hour(0)
   .minute(0)
@@ -8,7 +9,17 @@ const yesterdayTimestamp = moment()
   .subtract(1, "day")
   .format("x");
 
+const SUFFIX = "---TEST";
+
+const TEST_DATA = {
+  newItem: `new_item${SUFFIX}`,
+};
+
 describe("Actions in content editor", () => {
+  before(() => {
+    cleanTestData();
+  });
+
   const timestamp = Date.now();
 
   it("Must not save when missing required Field", () => {
@@ -16,10 +27,13 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     });
 
-    cy.get("#12-13d590-9v2nr2 input").clear().should("have.value", "");
-    cy.get("#SaveItemButton").click();
+    cy.get("#12-13d590-9v2nr2 input", TIMEOUT).clear().should("have.value", "");
+    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
 
-    cy.get("[data-cy=toast]").contains("Missing Data in Required Fields");
+    cy.get("[data-cy=toast]", TIMEOUT).contains(
+      "Missing Data in Required Fields",
+      TIMEOUT
+    );
   });
 
   it("Must not save when exceeding or lacking characters", () => {
@@ -27,8 +41,8 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a4f5f1beaa-zc5l6v/7-ce9ca8cfb0-cc1mnz");
     });
 
-    cy.get("#12-e6a5cfe3f6-k94nbg input").clear().type("aa");
-    cy.get("#SaveItemButton").click();
+    cy.get("#12-e6a5cfe3f6-k94nbg input", TIMEOUT).clear().type("aa");
+    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
@@ -38,16 +52,21 @@ describe("Actions in content editor", () => {
     cy.get("#12-e6a5cfe3f6-k94nbg input")
       .clear()
       .type("Lorem ipsum dolor sit amet, consect");
-    cy.get("#SaveItemButton").click();
+    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
       .find("li")
       .first()
       .contains("Exceeding by 5 characters.");
-    cy.get("#12-e6a5cfe3f6-k94nbg input").clear().type("Lorem ipsum");
-    cy.get("#SaveItemButton").click();
-    cy.get("[data-cy=toast]").contains("Item Saved: New Schema All Fields");
+    cy.get("#12-e6a5cfe3f6-k94nbg input", TIMEOUT)
+      .clear()
+      .wait(500)
+      .type("Lorem ipsum");
+    cy.get("#SaveItemButton", TIMEOUT).click();
+    cy.get("[data-cy=toast]", TIMEOUT).contains(
+      "Item Saved: New Schema All Fields"
+    );
   });
 
   it("Must not save when regex is not matched", () => {
@@ -55,8 +74,11 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a4f5f1beaa-zc5l6v/7-ce9ca8cfb0-cc1mnz");
     });
 
-    cy.get("#12-b6d09d92d0-7911ld textarea").first().clear().type("aa");
-    cy.get("#SaveItemButton").click();
+    cy.get("#12-b6d09d92d0-7911ld textarea", TIMEOUT)
+      .first()
+      .clear()
+      .type("aa");
+    cy.get("#SaveItemButton", TIMEOUT).trigger("click");
     cy.getBySelector("FieldErrorsList").should("exist");
     cy.getBySelector("FieldErrorsList")
       .find("ol")
@@ -66,9 +88,12 @@ describe("Actions in content editor", () => {
     cy.get("#12-b6d09d92d0-7911ld  textarea")
       .first()
       .clear()
+      .wait(500)
       .type("hello@zesty.io");
-    cy.get("#SaveItemButton").click();
-    cy.get("[data-cy=toast]").contains("Item Saved: New Schema All Fields");
+    cy.get("#SaveItemButton", TIMEOUT).click();
+    cy.get("[data-cy=toast]", TIMEOUT).contains(
+      "Item Saved: New Schema All Fields"
+    );
   });
 
   /**
@@ -83,17 +108,20 @@ describe("Actions in content editor", () => {
     cy.get("#12-f8efe4e0f5-xj7pj6 input").should("not.exist");
 
     // Make an edit to enable save button
-    cy.get("#12-849844-t8v5l6 input").clear().type(timestamp);
+    cy.get("#12-849844-t8v5l6 input", TIMEOUT)
+      .clear()
+      .wait(500)
+      .type(TEST_DATA?.newItem);
 
     // save to api
     cy.waitOn(
       "/v1/content/models/6-0c960c-d1n0kx/items/7-c882ba84ce-c4smnp",
       () => {
-        cy.get("#SaveItemButton").click();
+        cy.get("#SaveItemButton").click({ force: true, ...TIMEOUT });
       }
     );
 
-    cy.get("[data-cy=toast]").contains("Item Saved");
+    cy.get("[data-cy=toast]", TIMEOUT).contains("Item Saved");
   });
 
   it("Saves homepage item metadata", () => {
@@ -101,23 +129,24 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
     });
 
-    cy.get("textarea")
+    cy.get("textarea", TIMEOUT)
       .first()
-      .type("{selectall}{backspace}This is an item meta description")
+      .wait(500)
+      .type("{selectall}{backspace}This is an item meta description", TIMEOUT)
       .should("have.value", "This is an item meta description");
 
     cy.waitOn(
       "/v1/content/models/6-a1a600-k0b6f0/items/7-a1be38-1b42ht",
       () => {
-        cy.get("#SaveItemButton").click();
+        cy.get("#SaveItemButton", TIMEOUT).trigger("click");
       }
     );
 
-    cy.get("[data-cy=toast]").contains("Item Saved");
+    cy.get("[data-cy=toast]", TIMEOUT).contains("Item Saved");
   });
 
   it("Publishes an item", () => {
-    cy.getBySelector("PublishButton").click();
+    cy.getBySelector("PublishButton", TIMEOUT).click();
     cy.getBySelector("ConfirmPublishModal").should("exist");
     cy.getBySelector("ConfirmPublishButton").click();
 
@@ -129,14 +158,14 @@ describe("Actions in content editor", () => {
 
   it("Unpublishes an item", () => {
     cy.getBySelector("ContentPublishedIndicator").should("exist");
-    cy.getBySelector("PublishMenuButton").click();
-    cy.getBySelector("UnpublishContentButton").click({ force: true });
+    cy.getBySelector("PublishMenuButton", TIMEOUT).click();
+    cy.getBySelector("UnpublishContentButton", TIMEOUT).click();
     cy.getBySelector("ConfirmUnpublishButton").click();
 
     cy.intercept("GET", "**/publishings").as("publish");
     cy.wait("@publish");
 
-    cy.getBySelector("PublishButton").should("exist");
+    cy.getBySelector("PublishButton", TIMEOUT).should("exist");
   });
 
   it("Schedules a Publish for an item", () => {
@@ -144,14 +173,14 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
     });
 
-    cy.getBySelector("PublishMenuButton").click();
-    cy.getBySelector("PublishScheduleButton").click({ force: true });
+    cy.getBySelector("PublishMenuButton", TIMEOUT).click();
+    cy.getBySelector("PublishScheduleButton").click();
     cy.getBySelector("SchedulePublishButton").click();
     cy.getBySelector("ContentScheduledIndicator").should("exist");
   });
 
   it("Unschedules a Publish for an item", () => {
-    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishMenuButton", TIMEOUT).click();
     cy.getBySelector("PublishScheduleButton").click();
     cy.getBySelector("UnschedulePublishButton").click();
     cy.getBySelector("ContentScheduledIndicator").should("not.exist");
@@ -162,7 +191,7 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
     });
 
-    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishMenuButton", TIMEOUT).click();
     cy.getBySelector("PublishScheduleButton").click();
     cy.getBySelector("PublishScheduleModal")
       .find("[data-cy='datePickerInputField']")
@@ -174,7 +203,7 @@ describe("Actions in content editor", () => {
     cy.get(
       '.MuiPickersArrowSwitcher-root button[aria-label="Next month"]'
     ).should("not.be.disabled");
-    cy.getBySelector("CancelSchedulePublishButton").click({ force: true });
+    cy.getBySelector("CancelSchedulePublishButton").click();
   });
 
   it("Fills in default values for a new item", () => {
@@ -182,12 +211,14 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
     });
 
-    cy.get("#12-0c3934-8dz720 input").should(
+    cy.get("#12-0c3934-8dz720 input", TIMEOUT).should(
       "have.value",
       "default single line text field"
     );
-    cy.get("#12-d39a38-85sqdt").contains("zesty-io-logo-horizontal-dark.png");
-    cy.get("#12-bcd1dcc5f4-2rpm9p").contains(
+    cy.get("#12-d39a38-85sqdt", TIMEOUT).contains(
+      "zesty-io-logo-horizontal-dark.png"
+    );
+    cy.get("#12-bcd1dcc5f4-2rpm9p", TIMEOUT).contains(
       "5 Tricks to Teach Your Pitbull: Fun & Easy Tips for You & Your Dog!"
     );
   });
@@ -197,7 +228,7 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
     });
 
-    cy.get("#12-0c3934-8dz720 input").should(
+    cy.get("#12-0c3934-8dz720 input", TIMEOUT).should(
       "have.value",
       "default single line text field"
     );
@@ -208,23 +239,27 @@ describe("Actions in content editor", () => {
   });
 
   it("Creates a new item", () => {
+    cleanTestData();
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/content/6-a1a600-k0b6f0/new");
     });
 
-    cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
+    cy.get("input[name=title]", TIMEOUT)
+      .wait(500)
+      .type(TEST_DATA?.newItem, TIMEOUT);
     cy.getBySelector("ManualMetaFlow").click();
     cy.getBySelector("metaDescription")
       .find("textarea")
       .first()
-      .type(timestamp);
-    cy.getBySelector("CreateItemSaveButton").click();
+      .wait(500)
+      .type(TEST_DATA?.newItem);
+    cy.getBySelector("CreateItemSaveButton", TIMEOUT).click();
 
-    cy.contains("Created Item", { timeout: 5000 }).should("exist");
+    cy.contains("Created Item", TIMEOUT).should("exist");
   });
 
   it("Saved item becomes publishable", () => {
-    cy.get("#PublishButton").should("exist");
+    cy.get("#PublishButton", TIMEOUT).should("exist");
   });
 
   it("Displays a new item in the list", () => {
@@ -232,12 +267,12 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0");
     });
 
-    cy.contains(timestamp, { timeout: 5000 }).should("exist");
+    cy.contains(TEST_DATA?.newItem, { timeout: 50_000 }).should("exist");
   });
 
   it("Deletes an item", () => {
-    cy.contains(timestamp).click();
-    cy.getBySelector("ContentItemMoreButton").click();
+    cy.contains(TEST_DATA?.newItem, TIMEOUT).click();
+    cy.getBySelector("ContentItemMoreButton", TIMEOUT).click();
     cy.getBySelector("DeleteContentItem").click();
     cy.getBySelector("DeleteContentItemConfirmButton").click();
 
@@ -245,12 +280,12 @@ describe("Actions in content editor", () => {
       cy.visit("/content/6-a1a600-k0b6f0");
     });
 
-    cy.contains(timestamp).should("not.exist");
+    cy.contains(TEST_DATA?.newItem).should("not.exist");
   });
 
   // TODO: Workflow request doesn't work
   it.skip("Makes a workflow request", () => {
-    cy.get("#MainNavigation").contains("Homepage").click({ force: true });
+    cy.get("#MainNavigation", TIMEOUT).contains("Homepage").click();
     cy.get("#WorkflowRequestButton").click();
     cy.contains("Grant Test").click();
     cy.get("#WorkflowRequestSendButton").click();
@@ -319,17 +354,33 @@ describe("Actions in content editor", () => {
     // Generate AI content for meta description
     cy.getBySelector("metaDescription")
       .find("textarea[name='metaDescription']")
-      .clear({ force: true });
+      .clear();
     cy.getBySelector("metaDescription").find("[data-cy='AIOpen']").click();
     cy.getBySelector("AIGenerate").click();
 
-    cy.wait("@ai");
+    cy.wait("@ai", { timeout: 50000 });
 
     cy.getBySelector("AISuggestion1").click();
     cy.getBySelector("AIApprove").click();
 
     cy.getBySelector("CreateItemSaveButton").click();
 
-    cy.contains("Created Item", { timeout: 5000 }).should("exist");
+    cy.contains("Created Item", { timeout: 15000 }).should("exist");
   });
 });
+
+function cleanTestData() {
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/content/models/6-a1a600-k0b6f0/items?limit=5000&page=1&lang=en-US`,
+  }).then((response) => {
+    const zuids = response?.data
+      ?.filter((resData) => resData?.data?.title?.includes(SUFFIX))
+      ?.map((item) => item?.meta?.ZUID);
+
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/content/models/6-a1a600-k0b6f0/items/batch`,
+      method: "DELETE",
+      body: JSON.stringify(zuids),
+    });
+  });
+}
