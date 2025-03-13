@@ -163,14 +163,12 @@ export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
 
     return params1.get("q") === params2.get("q");
   } else if (
-    tab1.pathname.startsWith("/content") &&
-    tab2.pathname.startsWith("/content")
+    (tab1.pathname.startsWith("/content") &&
+      tab2.pathname.startsWith("/content")) ||
+    (tab1.pathname.startsWith("/blocks") && tab2.pathname.startsWith("/blocks"))
   ) {
     const tab1Segments = tab1.pathname.split("/").filter((part) => part);
     const tab2Segments = tab2.pathname.split("/").filter((part) => part);
-
-    console.log(tab1Segments, tab2Segments);
-    // return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
 
     // Makes sure that we stay on the same tab if the modelZUID and itemZUID is the same
     return (
