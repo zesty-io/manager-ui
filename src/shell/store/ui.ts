@@ -186,6 +186,24 @@ export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
 
     // Makes sure that we stay on the same tab if the modelZUID is the same
     return tab1Segments?.[1] === tab2Segments?.[1];
+  } else if (
+    tab1.pathname.startsWith("/media") &&
+    tab2.pathname.startsWith("/media")
+  ) {
+    const tab1Segments = tab1.pathname.split("/").filter((part) => part);
+    const tab2Segments = tab2.pathname.split("/").filter((part) => part);
+
+    if (tab1Segments.length === 1 && tab2Segments.length === 1) {
+      // This means that the user is on the /media page and we want to stay in just 1 tab even
+      // if they're looking at an item which adds ?fileId on the URL
+      return true;
+    } else {
+      // Makes sure that we stay on the same tab if the binZUID/folder is the same
+      return (
+        tab1Segments?.[1] === tab2Segments?.[1] &&
+        tab1Segments?.[2] === tab2Segments?.[2]
+      );
+    }
   } else {
     return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
   }
