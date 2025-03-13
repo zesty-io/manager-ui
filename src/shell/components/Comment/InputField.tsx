@@ -23,6 +23,7 @@ type InputFieldProps = {
   parentCommentZUID: string;
   isEditMode?: boolean;
   editModeValue?: string;
+  commentCount: number;
 };
 export const InputField = ({
   isFirstComment,
@@ -31,6 +32,7 @@ export const InputField = ({
   parentCommentZUID,
   isEditMode = false,
   editModeValue = "",
+  commentCount,
 }: InputFieldProps) => {
   const [
     createComment,
@@ -74,6 +76,7 @@ export const InputField = ({
   const [initialValue, setInitialValue] = useState("");
   const [mentionListAnchorEl, setMentionListAnchorEl] = useState(null);
   const [userFilterKeyword, setUserFilterKeyword] = useState("");
+  const [prevCommentCount, setPrevCommentCount] = useState(commentCount);
 
   const handleSubmit = () => {
     if (isFirstComment) {
@@ -160,14 +163,18 @@ export const InputField = ({
   }, [inputValue, isEditMode]);
 
   useEffect(() => {
-    if (isCommentCreated || isReplyCreated) {
+    if (
+      (isCommentCreated || isReplyCreated) &&
+      prevCommentCount !== commentCount
+    ) {
       tinymce?.activeEditor.setContent("");
       setInputValue("");
       updateComments({
         [commentResourceZUID]: "",
       });
+      setPrevCommentCount(commentCount);
     }
-  }, [isCommentCreated, isReplyCreated]);
+  }, [isCommentCreated, isReplyCreated, prevCommentCount, commentCount]);
 
   useEffect(() => {
     if (isCommentUpdated || isReplyUpdated) {
@@ -229,6 +236,7 @@ export const InputField = ({
           <Editor
             id="commentInputField"
             initialValue={initialValue}
+            disabled={isLoading}
             init={{
               inline: true,
               auto_focus: true,

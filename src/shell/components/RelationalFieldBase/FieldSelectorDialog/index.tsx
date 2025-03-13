@@ -81,6 +81,7 @@ type FieldSelectorDialogProps = {
   onUpdateSelectedZUIDs: (selectedZUIDs: string[]) => void;
   fieldLabel: string;
   multiselect?: boolean;
+  replace?: string | null;
 };
 export const FieldSelectorDialog = ({
   onClose,
@@ -90,6 +91,7 @@ export const FieldSelectorDialog = ({
   onUpdateSelectedZUIDs,
   fieldLabel,
   multiselect,
+  replace = null,
 }: FieldSelectorDialogProps) => {
   const dispatch = useDispatch();
   const searchField = useRef(null);
@@ -113,8 +115,9 @@ export const FieldSelectorDialog = ({
       status: null,
     }
   );
-  const [selectionModel, setSelectionModel] =
-    useState<GridInputSelectionModel>(selectedZUIDs);
+  const [selectionModel, setSelectionModel] = useState<GridInputSelectionModel>(
+    !!replace ? [] : selectedZUIDs
+  );
   const [isFetchingContentItems, setIsFetchingContentItems] = useState(false);
 
   const { data: langs } = useGetLangsQuery({});
@@ -525,8 +528,18 @@ export const FieldSelectorDialog = ({
         selectedCount={filteredSelectionModels?.length || 0}
         onClose={onClose}
         onDeselectAll={() => setSelectionModel([])}
-        onDone={() => onUpdateSelectedZUIDs(selectionModel as string[])}
+        onDone={() => {
+          if (!!replace) {
+            const newSelectionModel = selectedZUIDs?.map((zuid) =>
+              zuid === replace ? (selectionModel as string[])[0] : zuid
+            );
+            onUpdateSelectedZUIDs(newSelectionModel as string[]);
+          } else {
+            onUpdateSelectedZUIDs(selectionModel as string[]);
+          }
+        }}
         loading={isLoading}
+        replace={replace || null}
       />
       <DialogContent
         id="fieldSelectorDialogBody"
@@ -586,7 +599,11 @@ export const FieldSelectorDialog = ({
               sortingMode="server"
               checkboxSelection
               columns={columns}
-              rows={rows}
+              rows={
+                !!replace
+                  ? rows?.filter((row) => !selectedZUIDs?.includes(row?.id))
+                  : rows
+              }
               headerHeight={0}
               rowHeight={64}
               hideFooter
