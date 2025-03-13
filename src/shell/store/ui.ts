@@ -162,9 +162,24 @@ export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
     const params2 = new URLSearchParams(tab2.search);
 
     return params1.get("q") === params2.get("q");
-  }
+  } else if (
+    tab1.pathname.startsWith("/content") &&
+    tab2.pathname.startsWith("/content")
+  ) {
+    const tab1Segments = tab1.pathname.split("/").filter((part) => part);
+    const tab2Segments = tab2.pathname.split("/").filter((part) => part);
 
-  return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
+    console.log(tab1Segments, tab2Segments);
+    // return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
+
+    // Makes sure that we stay on the same tab if the modelZUID and itemZUID is the same
+    return (
+      tab1Segments?.[1] === tab2Segments?.[1] &&
+      tab1Segments?.[2] === tab2Segments?.[2]
+    );
+  } else {
+    return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
+  }
 }
 
 type TabLocation = Pick<Location, "pathname" | "search">;
