@@ -125,7 +125,7 @@ export const NavTreeItem: FC<Props> = React.memo(
                 // Makes sure that the add new content icon color does not change when tree item is selected
                 color: "common.white",
               },
-            //Override the nested menu item text color set by .Mui-selected.
+
             ".MuiMenu-root .MuiList-root .MuiListItemText-root .MuiTypography-root":
               {
                 color: "common.black",
