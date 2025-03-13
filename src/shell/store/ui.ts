@@ -177,6 +177,15 @@ export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
       tab1Segments?.[1] === tab2Segments?.[1] &&
       tab1Segments?.[2] === tab2Segments?.[2]
     );
+  } else if (
+    tab1.pathname.startsWith("/schema") &&
+    tab2.pathname.startsWith("/schema")
+  ) {
+    const tab1Segments = tab1.pathname.split("/").filter((part) => part);
+    const tab2Segments = tab2.pathname.split("/").filter((part) => part);
+
+    // Makes sure that we stay on the same tab if the modelZUID is the same
+    return tab1Segments?.[1] === tab2Segments?.[1];
   } else {
     return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
   }
