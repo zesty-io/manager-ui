@@ -64,7 +64,7 @@ const darkTheme = {
       border: "none",
     },
   "& .MuiAccordion-root .MuiTypography-root,\
-  & .navtree-header .MuiTypography-root,\
+  & .nav-tree-header .MuiTypography-root,\
   & .MuiSvgIcon-root":
     {
       color: "grey.400",
@@ -74,6 +74,9 @@ const darkTheme = {
     {
       color: "common.white",
     },
+  "& .nav-tree-header .MuiIconButton-root:hover": {
+    bgcolor: "grey.800",
+  },
 };
 
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(

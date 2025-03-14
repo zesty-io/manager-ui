@@ -62,23 +62,28 @@ const appTheme = createTheme(theme, {
       contrastText: "#fff",
     },
     action: {
-      disabled: "rgba(112, 112, 112, 0.5)",
-      disabledBackground: "rgba(112, 112, 112, 0.2)",
+      active: "rgba(127, 127, 126, 0.7)",
+      selected: "rgba(127,127, 126, 0.13)",
+      disabled: "rgba(127,127, 126, 0.48)",
+      disabledBackground: "rgba(127,127, 126, 0.2)",
       hover: "rgba(255, 93, 10, 0.06)",
     },
   },
+
   components: {
     MuiToggleButton: {
-      styleOverrides: {
+      styleOverrides: (theme) => ({
         sizeSmall: {
-          fontSize: "14px",
+          ...theme.typography.body2,
         },
-      },
+      }),
     },
   },
 });
 
 MonacoSetup(store);
+
+console.debug("appTheme: ", JSON.stringify(appTheme, null, 2));
 
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
