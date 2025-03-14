@@ -166,18 +166,17 @@ export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
 
     return params1.get("q") === params2.get("q");
   } else if (
-    (tab1Segments?.[0] === "content" && tab2Segments?.[0] === "content") ||
-    (tab1Segments?.[0] === "blocks" && tab2Segments?.[0] === "blocks")
+    (tab1Segments[0] === "content" && tab2Segments[0] === "content") ||
+    (tab1Segments[0] === "blocks" && tab2Segments[0] === "blocks")
   ) {
     // Makes sure that we stay on the same tab if the modelZUID and itemZUID is the same
     return (
-      tab1Segments?.[1] === tab2Segments?.[1] &&
-      tab1Segments?.[2] === tab2Segments?.[2]
+      tab1Segments[1] === tab2Segments[1] && tab1Segments[2] === tab2Segments[2]
     );
-  } else if (tab1Segments?.[0] === "schema" && tab2Segments?.[0] === "schema") {
+  } else if (tab1Segments[0] === "schema" && tab2Segments[0] === "schema") {
     // Makes sure that we stay on the same tab if the modelZUID is the same
-    return tab1Segments?.[1] === tab2Segments?.[1];
-  } else if (tab1Segments?.[0] === "media" && tab2Segments?.[0] === "media") {
+    return tab1Segments[1] === tab2Segments[1];
+  } else if (tab1Segments[0] === "media" && tab2Segments[0] === "media") {
     if (tab1Segments.length === 1 && tab2Segments.length === 1) {
       // This means that the user is on the /media page and we want to stay in just 1 tab even
       // if they're looking at an item which adds ?fileId on the URL
@@ -185,8 +184,8 @@ export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
     } else {
       // Makes sure that we stay on the same tab if the binZUID/folder is the same
       return (
-        tab1Segments?.[1] === tab2Segments?.[1] &&
-        tab1Segments?.[2] === tab2Segments?.[2]
+        tab1Segments[1] === tab2Segments[1] &&
+        tab1Segments[2] === tab2Segments[2]
       );
     }
   } else {
@@ -202,14 +201,13 @@ export function parsePath({ pathname: path, search }: TabLocation) {
   let contentSection = null;
 
   if (parts.length > 1) {
-    if (
-      parts[parts.length - 1] === "head" ||
-      parts[parts.length - 1] === "meta"
-    ) {
-      contentSection = parts.pop();
-    }
-    if (zuidIsValid(parts[parts.length - 1])) {
-      zuid = parts.pop();
+    if (parts[0] === "content" || parts[0] === "blocks") {
+      zuid = zuidIsValid(parts[2]) ? parts[2] : null;
+      contentSection = parts[3];
+    } else if (parts[0] === "schema") {
+      zuid = zuidIsValid(parts[1]) ? parts[1] : null;
+    } else if (parts[0] === "media") {
+      zuid = zuidIsValid(parts[2]) ? parts[2] : null;
     }
   }
 
@@ -244,6 +242,7 @@ export function createTab(
   };
 
   if (parts[0] === "app") {
+    // App page specific tab naming rules
     // Icon is non-serializable so it cannot be saved to idb
     Object.defineProperty(tab, "icon", {
       value: ICON_CONFIG.app,
@@ -255,6 +254,8 @@ export function createTab(
     );
     tab.name = app?.label || app?.name || "Custom App";
   } else if (parts[0] === "reports") {
+    // Reports page specific tab naming rules
+
     // Icon is non-serializable so it cannot be saved to idb
     Object.defineProperty(tab, "icon", {
       value: ICON_CONFIG.reports,
@@ -299,7 +300,26 @@ export function createTab(
         tab.app = "Metrics";
         break;
     }
+  } else if (parts[0] === "settings") {
+    // Settings specific tab naming rules
+    if (parts[2]) {
+      if (parts[1] === "instance") {
+        tab.name = `${parts[2]
+          .replace("-", " ")
+          .replace("_", " ")
+          .split(" ")
+          .map(toCapitalCase)
+          .join(" ")} Settings`;
+      } else if (parts[1] === "fonts") {
+        tab.name = `${toCapitalCase(parts[2])} Fonts`;
+      } else {
+        tab.name = `${toCapitalCase(parts[1])} Settings`;
+      }
+    } else {
+      tab.name = `${toCapitalCase(parts[1])} Settings`;
+    }
   } else if (parts[0] in appNameMap) {
+    // Every other pages (content, blocks etc.)
     const name = parts[0] as keyof typeof appNameMap;
 
     // Icon is non-serializable so it cannot be saved to idb
@@ -311,14 +331,12 @@ export function createTab(
     tab.name = appNameMap[name];
     tab.app = appNameMap[name];
 
+    // Creating a new content item
     if (parts[0] === "content" && parts[2] === "new" && zuidIsValid(parts[1])) {
       tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
     }
-    if (parts[0] === "schema" && zuidIsValid(parts[1])) {
-      tab.name = queryData?.instance?.models?.find(
-        (model: ContentModel) => model.ZUID === parts[1]
-      )?.label;
-    }
+
+    // Global search
     if (parts[0] === "search") {
       // Replaces the tab name to whatever the search keyword is on the /search page
       const searchParams = new URLSearchParams(search);
@@ -328,7 +346,14 @@ export function createTab(
         tab.name = keyword;
       }
     }
+
+    // In-app searching example: schema search
+    if (parts[1] === "search" && parts[0] in appNameMap) {
+      const name = parts[0] as keyof typeof appNameMap;
+      tab.name = `${appNameMap[name]} Search Results`;
+    }
   }
+
   // resolve ZUID from store to determine display information
   switch (prefix) {
     case "1":
@@ -382,30 +407,7 @@ export function createTab(
     case "17":
       break;
   }
-  if (parts[0] === "settings") {
-    if (parts[2]) {
-      if (parts[1] === "instance") {
-        tab.name =
-          parts[2]
-            .replace("-", " ")
-            .replace("_", " ")
-            .split(" ")
-            .map(toCapitalCase)
-            .join(" ") + " Settings";
-      } else if (parts[1] === "fonts") {
-        tab.name = toCapitalCase(parts[2]) + " Fonts";
-      } else {
-        tab.name = toCapitalCase(parts[1]) + " Settings";
-      }
-    } else if (parts[1] === "styles") {
-      tab.name = toCapitalCase(parts[1]) + " Settings";
-    }
-  }
 
-  if (parts[1] === "search" && parts[0] in appNameMap) {
-    const name = parts[0] as keyof typeof appNameMap;
-    tab.name = `${appNameMap[name]} Search Results`;
-  }
   return tab;
 }
 

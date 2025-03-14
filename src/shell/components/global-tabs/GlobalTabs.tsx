@@ -116,7 +116,6 @@ export default memo(function GlobalTabs() {
    * Determines which tabs will be placed on the topbar and dropdown menu.
    */
   const getTabs = (numTabs: number) => {
-    // TODO: Handle old pinned tabs so that we avoid having duplicate active tabs
     const isCurrLocPinned = Boolean(
       tabs.find((tab) => tabLocationEquality(location, tab))
     );
