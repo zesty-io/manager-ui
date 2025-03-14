@@ -1,17 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Box,
-  SvgIcon,
-  IconButton,
-  Tooltip,
-  ThemeProvider,
-} from "@mui/material";
+import { Box, SvgIcon, IconButton, Tooltip } from "@mui/material";
 import { useLocalStorage } from "react-use";
 import {
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
 } from "@mui/icons-material";
-import { theme } from "@zesty-io/material";
 
 type Props = {
   children: React.ReactNode;

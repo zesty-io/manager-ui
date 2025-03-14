@@ -66,7 +66,6 @@ const appTheme = createTheme(theme, {
       selected: "rgba(127,127, 126, 0.13)",
       disabled: "rgba(127,127, 126, 0.48)",
       disabledBackground: "rgba(127,127, 126, 0.2)",
-      hover: "rgba(255, 93, 10, 0.06)",
     },
   },
 
@@ -82,8 +81,6 @@ const appTheme = createTheme(theme, {
 });
 
 MonacoSetup(store);
-
-console.debug("appTheme: ", JSON.stringify(appTheme, null, 2));
 
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (

@@ -1,13 +1,6 @@
 import { Editor } from "../../../components/Editor";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
-import {
-  Box,
-  Stack,
-  IconButton,
-  Tooltip,
-  useMediaQuery,
-  ThemeProvider,
-} from "@mui/material";
+import { Box, Stack, IconButton, Tooltip, useMediaQuery } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";

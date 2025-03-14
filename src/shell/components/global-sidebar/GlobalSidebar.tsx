@@ -2,15 +2,7 @@ import { useState, FC, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 
-import {
-  Box,
-  ThemeProvider,
-  IconButton,
-  Avatar,
-  Stack,
-  Link,
-  ListItem,
-} from "@mui/material";
+import { Box, IconButton, Avatar, Stack, Link, ListItem } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";

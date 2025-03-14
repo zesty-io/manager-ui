@@ -1,6 +1,6 @@
 import { useParams as useRouterParams } from "react-router";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
-import { Box, Button, ThemeProvider, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelQuery,

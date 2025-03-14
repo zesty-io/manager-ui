@@ -20,12 +20,14 @@ import {
   InputAdornment,
   ListItemButton,
   SvgIcon,
+  Theme,
 } from "@mui/material";
 import { IconButton as IconButtonCustom } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import { useLocation, useHistory } from "react-router-dom";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import { AddRounded } from "@mui/icons-material";
+import { alpha } from "@mui/material";
 
 export interface SubMenu {
   name: string;
@@ -76,6 +78,9 @@ const darkTheme = {
     },
   "& .nav-tree-header .MuiIconButton-root:hover": {
     bgcolor: "grey.800",
+  },
+  "& .MuiTreeItem-content:hover": {
+    bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.08),
   },
 };
 

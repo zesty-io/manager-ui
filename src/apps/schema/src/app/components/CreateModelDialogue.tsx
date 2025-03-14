@@ -17,7 +17,6 @@ import {
   TextField,
   Tooltip,
   Checkbox,
-  ThemeProvider,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";

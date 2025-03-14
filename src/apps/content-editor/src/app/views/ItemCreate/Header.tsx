@@ -4,7 +4,6 @@ import {
   Box,
   Stack,
   Typography,
-  ThemeProvider,
   Button,
   ButtonGroup,
   Menu,
