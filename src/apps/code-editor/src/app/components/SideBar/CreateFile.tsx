@@ -245,8 +245,6 @@ const CreateFile = memo(function CreateFile({
           display: "flex",
           justifyContent: "flex-end",
           alignItems: "center",
-          //   width: "100%",
-
           px: 3,
           py: 3,
         }}
