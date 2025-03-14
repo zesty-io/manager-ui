@@ -76,7 +76,9 @@ export const NavTreeItem: FC<Props> = React.memo(
               },
             }}
           >
-            <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
+            {!labelIcon && !!nodeData?.isDir ? null : (
+              <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
+            )}
             <Tooltip title={labelName} enterDelay={1000} enterNextDelay={1000}>
               <Typography variant="body2" noWrap width="100%">
                 {labelName}

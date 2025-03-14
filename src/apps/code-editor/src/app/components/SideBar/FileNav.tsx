@@ -1,6 +1,13 @@
 import { FC, useState, useMemo } from "react";
 import { useLocation } from "react-router";
-import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Stack,
+  Tooltip,
+  Typography,
+  SvgIcon,
+} from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
@@ -20,6 +27,27 @@ type FileNavProps = {
   header: string;
   toolTip: string;
   tree: FileNodeProps[];
+};
+
+const createIcon = (icon: any) => {
+  if (!icon) return null;
+  const {
+    icon: [width, height, , , svgPathData],
+  } = icon;
+  return () => (
+    <SvgIcon
+      viewBox={`0 0 ${width} ${height}`}
+      sx={{ height: "14px", width: "14px", mr: 0.75 }}
+    >
+      {typeof svgPathData === "string" ? (
+        <path d={svgPathData} />
+      ) : (
+        svgPathData.map((d: string, i: number) => (
+          <path style={{ opacity: i === 0 ? 0.4 : 1 }} d={d} />
+        ))
+      )}
+    </SvgIcon>
+  );
 };
 
 const FileNav: FC<FileNavProps> = ({
@@ -59,24 +87,6 @@ const FileNav: FC<FileNavProps> = ({
 
       if (isDir) setExpanded((prev) => [...prev, `/code/file/views/${path}`]);
 
-      const TreeItemIcon = () => {
-        if (!icon || isDir) return null;
-        return (
-          <FontAwesomeIcon
-            color="grey.300"
-            icon={icon}
-            className="MuiSvgIcon-root"
-            style={{
-              padding: 0,
-              width: "14px",
-              height: "16px",
-              marginRight: "8px",
-              opacity: 0.8,
-            }}
-          />
-        );
-      };
-
       const actions =
         canPublish &&
         !treeItem.isLive &&
@@ -90,12 +100,6 @@ const FileNav: FC<FileNavProps> = ({
                   dispatch(publishFile(treeItem?.ZUID, treeItem?.status));
                   dispatch(fetchFiles(group));
                 }}
-                sx={{
-                  opacity: 0.5,
-                  "&:hover": {
-                    opacity: 1,
-                  },
-                }}
               >
                 <CloudUploadRoundedIcon
                   sx={{ fontSize: 14, color: "grey!important" }}
@@ -105,7 +109,7 @@ const FileNav: FC<FileNavProps> = ({
           : [];
 
       return {
-        icon: TreeItemIcon,
+        icon: createIcon(treeItem?.icon),
         path: filePath,
         label: treeItem?.label,
         children: treeItem?.children?.map((child: NavCodeTypes) =>
@@ -122,7 +126,7 @@ const FileNav: FC<FileNavProps> = ({
   return (
     <>
       {!!treeData?.length && (
-        <Box width="100%">
+        <Box>
           <NavTree
             id={id}
             tree={treeData}

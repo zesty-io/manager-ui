@@ -9,7 +9,6 @@ import { Workspace } from "../../components/Workspace/";
 
 import { fetchFiles } from "../../../store/files";
 import SideBar from "../../components/SideBar";
-import styles from "./CodeEditor.less";
 
 export default connect((state) => {
   return {
