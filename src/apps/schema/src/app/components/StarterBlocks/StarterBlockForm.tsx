@@ -223,7 +223,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
 
         setIsLoading(false);
         onClose();
-        history.push(`/schema/${ZUID}`);
+        history.push(`/blocks/${ZUID}`);
       } catch (err) {
         setIsLoading(false);
         console.error("Error during form submission:", err);
