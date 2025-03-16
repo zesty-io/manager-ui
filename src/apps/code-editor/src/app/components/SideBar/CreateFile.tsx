@@ -139,7 +139,7 @@ const CreateFile = memo(function CreateFile({
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <Box sx={{ px: 3, py: 3, backgroundColor: "grey.100" }}>
-          <FormControl fullWidth sx={{ mb: 2 }} size="small">
+          <Box width="100%">
             <Typography
               variant="body2"
               color="text.primary"
@@ -149,6 +149,10 @@ const CreateFile = memo(function CreateFile({
               File Type
             </Typography>
             <Autocomplete
+              color="primary"
+              disableClearable
+              autoHighlight
+              size="small"
               value={fileTypeOptions.find((option) => option.value === type)}
               onChange={(event, newValue) => {
                 setType(newValue?.value || "");
@@ -160,17 +164,12 @@ const CreateFile = memo(function CreateFile({
                 option.value === value.value
               }
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  fullWidth
-                  placeholder="-- choose a file type --"
-                />
+                <TextField {...params} placeholder="-- choose a file type --" />
               )}
             />
-          </FormControl>
+          </Box>
           {!!type && (
-            <Box mb={2}>
+            <Box mt={2}>
               {type === "snippet" && (
                 <Typography variant="body2" color="text.secondary">
                   Parsley accessible file meant to abstract common use of code,
@@ -223,12 +222,13 @@ const CreateFile = memo(function CreateFile({
             </Box>
           )}
 
-          <FormControl fullWidth size="small">
+          <Box mt={2} width="100%">
             <Typography variant="body2" color="text.primary" fontWeight={600}>
               File Name
             </Typography>
             <TextField
               name="file_name"
+              fullWidth
               value={name}
               onChange={(evt) => setName(evt.target.value)}
               size="small"
@@ -236,7 +236,7 @@ const CreateFile = memo(function CreateFile({
                 maxLength: 100,
               }}
             />
-          </FormControl>
+          </Box>
         </Box>
       </DialogContent>
 
