@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import { Switch, useRouteMatch } from "react-router-dom";
-import { Grid } from "@mui/material";
+import { Grid, Typography, Box } from "@mui/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -11,7 +11,6 @@ import { fetchFiles } from "../../../store/files";
 import SideBar from "../../components/SideBar";
 import { Route } from "react-router";
 import { GettingStarted } from "../../components/Workspace/components/GettingStarted";
-import { NotFound } from "../../components/Workspace/components/NotFound";
 
 export default connect((state) => {
   return {
@@ -70,7 +69,7 @@ export default connect((state) => {
             position: "relative",
             height: "100%",
             borderRight: "text.primary",
-            bgcolor: "#101828",
+            bgcolor: "grey.900",
           }}
         >
           <SideBar {...props} />
@@ -83,7 +82,7 @@ export default connect((state) => {
             height: "100%",
             width: "100%",
             overflow: "hidden",
-            bgcolor: "#1e1e1e",
+            bgcolor: "grey.900",
           }}
         >
           <Switch>
@@ -98,12 +97,20 @@ export default connect((state) => {
                     {...routeProps}
                     dispatch={props.dispatch}
                     status={props.status}
+                    match={match}
                   />
                 );
               }}
             />
             <Route path="*">
-              <NotFound />
+              <Box
+                width="100%"
+                height="100%"
+                display="grid"
+                placeContent="center"
+              >
+                <Typography variant="h1">File Not Found</Typography>
+              </Box>
             </Route>
           </Switch>
         </Grid>
