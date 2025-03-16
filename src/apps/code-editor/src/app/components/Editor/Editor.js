@@ -1,40 +1,36 @@
 import { memo } from "react";
-
-import { FileActions } from "../FileActions";
+import { Box } from "@mui/material";
 import { MemoizedEditor } from "./components/MemoizedEditor/MemoizedEditor";
-
+import { TopBar } from "../TopBar";
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle
  * This is done for performance reasons. Constantly re-rendering slows down the editor typing experience.
  * But we still want to broadcast store updates `onChange`
  */
-import { Box } from "@mui/material";
+
 export const Editor = memo(function Editor(props) {
   return (
     <>
+      <TopBar
+        contentModelZUID={props.contentModelZUID}
+        fileZUID={props.fileZUID}
+        fileType={props.fileType}
+        fileName={props.fileName}
+        publishedVersion={props.publishedVersion}
+        version={props.version}
+        synced={props.synced}
+        status={props.status}
+        dispatch={props.dispatch}
+        isLive={props.isLive}
+        code={props.code}
+        isDiffer={false}
+      />
+
       <Box
         sx={{
           position: "relative",
           width: "100%",
-          flexGrow: 0,
-        }}
-      >
-        <FileActions
-          contentModelZUID={props.contentModelZUID}
-          fileZUID={props.fileZUID}
-          fileType={props.fileType}
-          fileName={props.fileName}
-          publishedVersion={props.publishedVersion}
-          version={props.version}
-          synced={props.synced}
-          status={props.status}
-          dispatch={props.dispatch}
-        />
-      </Box>
-      <Box
-        sx={{
-          position: "relative",
-          width: "100%",
+          height: "calc(100% - 84px)",
           flexGrow: 1,
           boxSizing: "border-box",
         }}
