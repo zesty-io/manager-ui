@@ -162,7 +162,7 @@ export const ItemList = () => {
       setIsModelItemsFetching(true);
       dispatch(
         fetchItems(modelZUID, {
-          limit: 5000,
+          limit: 1000,
           page: 1,
           lang: activeLanguageCode,
         })
@@ -291,7 +291,7 @@ export const ItemList = () => {
   const debouncedCompute = useMemo(() => {
     return debounce(() => {
       setProcessedItems(computeProcessedItems());
-    }, 300);
+    }, 500);
   }, [computeProcessedItems]);
 
   useEffect(() => {
@@ -437,7 +437,7 @@ export const ItemList = () => {
           : a.meta?.ZUID?.localeCompare(b.meta?.ZUID);
       } else if (fields?.find((field) => field.name === sort)) {
         const dataType = fields?.find((field) => field.name === sort)?.datatype;
-        if (typeof a.data[sort] === "number") {
+        if (typeof a.data[sort] === "number" || dataType === "sort") {
           if (a.data[sort] == null) return 1;
           if (b.data[sort] == null) return -1;
 
@@ -476,9 +476,9 @@ export const ItemList = () => {
         }
 
         const aValue =
-          dataType === "images" ? a.data[sort]?.filename : a.data[sort];
+          dataType === "images" ? a.data[sort]?.filename : a.data[sort] || "";
         const bValue =
-          dataType === "images" ? b.data[sort]?.filename : b.data[sort];
+          dataType === "images" ? b.data[sort]?.filename : b.data[sort] || "";
 
         return sortOrder === "asc"
           ? bValue?.trim()?.localeCompare(aValue?.trim())

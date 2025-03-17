@@ -31,8 +31,11 @@ import { useGetContentModelsQuery } from "../../../../../../shell/services/insta
 import { CascadingMenuItem } from "../../../../../../shell/components/CascadingMenuItem";
 import { APIEndpoints } from "../../components/APIEndpoints";
 import { useLazyDownloadCsvQuery } from "../../../../../../shell/services/cloudFunctions";
+import { useDispatch } from "react-redux";
+import { searchItems } from "../../../../../../shell/store/content";
 
 export const ItemListActions = forwardRef((props, ref) => {
+  const dispatch = useDispatch();
   const { modelZUID } = useRouterParams<{ modelZUID: string }>();
   const { data: contentModels } = useGetContentModelsQuery();
   const history = useHistory();
@@ -65,8 +68,9 @@ export const ItemListActions = forwardRef((props, ref) => {
   const debouncedSetParams = useCallback(
     debounce((value) => {
       setParams(value, "search");
-    }, 300),
-    [setParams]
+      dispatch(searchItems(value));
+    }, 500),
+    [setParams, dispatch, searchItems]
   );
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
