@@ -382,7 +382,6 @@ export function createTab(
         const matchedSetting = allSettings.find(
           (setting: { ZUID: string }) => setting.ZUID === zuid
         );
-        console.log(matchedSetting);
         if (matchedSetting) {
           tab.name =
             parts[0] === "reports"
