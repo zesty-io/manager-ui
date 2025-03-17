@@ -97,7 +97,6 @@ export const SideBar = memo(function SideBar({
           headerTitle="Code"
           searchPlaceholder="Filter Models"
           ref={sideBarChildrenContainerRef}
-          // subMenus={SUB_MENUS}
           onAddClick={() => setIsCreateFileOpen(true)}
           onFilterChange={(keyword) => setKeyword(keyword)}
           titleButtonTooltip="Create File"

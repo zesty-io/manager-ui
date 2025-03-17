@@ -87,7 +87,6 @@ const Dropzone = (props: any) => {
 
   return (
     <div
-      // className={cx("Dropzone", props.className)}
       onDragEnd={onDragEnd}
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
@@ -112,7 +111,6 @@ const Draggable = (props: any) => {
   return (
     <div
       ref={dragEl}
-      // className={cx("Draggable", props.className)}
       data-index={props.index}
       draggable={props.draggable}
       onDragOver={() => {
@@ -288,7 +286,6 @@ const OrderFiles = (props: OrderFilesProps) => {
                   )})`}</Typography>
                   <FontAwesomeIcon
                     size="sm"
-                    // className={styles.Icon}
                     color="grey.500"
                     icon={faExpandArrowsAlt}
                   />
