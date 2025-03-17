@@ -18,9 +18,10 @@ import {
   SvgIconComponent,
   ExtensionRounded,
   ShuffleRounded,
+  BreakfastDiningOutlined,
 } from "@mui/icons-material";
 import { Database, Block } from "@zesty-io/material";
-import { isEqual } from "lodash";
+import { capitalize, isEqual } from "lodash";
 
 export type Tab = {
   pathname: string;
@@ -201,22 +202,48 @@ export function parsePath({ pathname: path, search }: TabLocation) {
   let contentSection = null;
 
   if (parts.length > 1) {
-    if (parts[0] === "content" || parts[0] === "blocks") {
-      const modelZUID = parts[1];
-      const itemZUID = parts[2];
-      contentSection = parts[3];
+    switch (parts[0]) {
+      case "content":
+      case "blocks":
+        const modelZUID = parts[1];
+        const itemZUID = parts[2];
+        contentSection = parts[3];
 
-      if (itemZUID) {
-        zuid = zuidIsValid(itemZUID) ? itemZUID : null;
-      } else {
-        zuid = zuidIsValid(modelZUID) ? modelZUID : null;
-      }
-    } else if (parts[0] === "schema") {
-      // Use modelZUID
-      zuid = zuidIsValid(parts[1]) ? parts[1] : null;
-    } else if (parts[0] === "media") {
-      // Use folder ZUID
-      zuid = zuidIsValid(parts[2]) ? parts[2] : null;
+        // If there's no modelZUID then this means we're on the multi-page view
+        if (itemZUID) {
+          zuid = zuidIsValid(itemZUID) ? itemZUID : null;
+        } else {
+          zuid = zuidIsValid(modelZUID) ? modelZUID : null;
+        }
+        break;
+
+      case "schema":
+        // Use modelZUID
+        zuid = zuidIsValid(parts[1]) ? parts[1] : null;
+        break;
+
+      case "media":
+        // Use folder ZUID
+        zuid = zuidIsValid(parts[2]) ? parts[2] : null;
+        break;
+
+      case "apps":
+        // Use app ZUID
+        zuid = zuidIsValid(parts[1]) ? parts[1] : null;
+        break;
+
+      case "code":
+        // Use code file ZUID
+        zuid = zuidIsValid(parts[3]) ? parts[3] : null;
+        break;
+
+      case "reports":
+        zuid = zuidIsValid(parts[3]) ? parts[3] : null;
+        break;
+
+      default:
+        zuid = null;
+        break;
     }
   }
 
@@ -263,38 +290,73 @@ export function createTab(
   if (prefix) {
     // resolve ZUID from store to determine display information
     switch (prefix) {
+      // Media Bin
       case "1":
         const bin = queryData?.mediaManager?.bins?.find(
           (bin: any) => bin.id === zuid
         );
         if (bin) {
-          tab.name = bin.name;
+          tab.name =
+            parts[0] === "reports" ? `${bin.name} - Activity Log` : bin.name;
         }
         break;
+
+      // Media Folder / Bin Group
       case "2":
         const group = queryData?.mediaManager?.binGroups?.find(
           (group: any) => group.id === zuid
         );
         if (group) {
-          tab.name = group.name;
+          tab.name =
+            parts[0] === "reports"
+              ? `${group.name} - Activity Log`
+              : group.name;
         }
         break;
+
+      // User
+      case "5":
+        const user = state.users.find(
+          (user: { ZUID: string }) => user.ZUID === zuid
+        );
+        if (user) {
+          const { firstName, lastName } = user;
+          tab.name =
+            parts[0] === "reports"
+              ? `${firstName} ${lastName} - Activity Log`
+              : `${firstName} ${lastName}`;
+        }
+        break;
+
+      // Model
       case "6":
         if (state.models) {
           const model: any = state.models[zuid];
 
-          tab.name = model?.label;
+          tab.name =
+            parts[0] === "reports"
+              ? `${model?.label} - Activity Log`
+              : model?.label;
         }
         break;
+
+      // Content Item
       case "7":
         if (state.content) {
           const item = state.content[zuid];
+
           if (item && item.web) {
-            tab.name =
+            const contentTitle =
               item.web.metaLinkText || item.web.metaTitle || item.web.pathPart;
+            tab.name =
+              parts[0] === "reports"
+                ? `${contentTitle} - Activity Log`
+                : contentTitle;
           }
         }
         break;
+
+      // Code File
       case "10":
       case "11":
         if (state.files) {
@@ -307,21 +369,44 @@ export function createTab(
             if (name.charAt(0) === "/") name = name.slice(1);
             // prepend asterix to unsaved file
             if (selectedFile.dirty) name = `*${name}`;
-            tab.name = name;
+            tab.name = parts[0] === "reports" ? `${name} - Activity Log` : name;
           }
         }
         break;
-      case "17":
+
+      // Settings
+      case "29":
+        const allSettings = state.settings
+          ? Object.values(state.settings).flat()
+          : [];
+        const matchedSetting = allSettings.find(
+          (setting: { ZUID: string }) => setting.ZUID === zuid
+        );
+        console.log(matchedSetting);
+        if (matchedSetting) {
+          tab.name =
+            parts[0] === "reports"
+              ? // @ts-expect-error untyped
+                `${matchedSetting.keyFriendly} - Activity Log`
+              : // @ts-expect-error untyped
+                matchedSetting.keyFriendly;
+        }
+        break;
+
+      // App item
+      case "80":
+        const app = state.apps.installed.find(
+          (app: { ZUID: string }) => app.ZUID === zuid
+        );
+        const appName = app?.label || app?.name || "Custom App";
+        tab.name =
+          parts[0] === "reports" ? `${appName} - Activity Log` : appName;
+
         break;
     }
   } else {
-    if (parts[0] === "app") {
-      // App page specific tab naming rules
-
-      const app = state.apps.installed.find(
-        (app: { ZUID: string }) => app.ZUID === zuid
-      );
-      tab.name = app?.label || app?.name || "Custom App";
+    if (parts[0] === "apps") {
+      tab.name = "Apps";
     } else if (parts[0] === "reports") {
       // Reports page specific tab naming rules
 
@@ -329,22 +414,11 @@ export function createTab(
         case "activity-log":
           tab.name = "Activity Log";
           tab.app = "Activity Log";
-          /*
-          If there is a user associated with an activity log page,
-          put that user's name in the tab
-        */
+
           if (parts[2]) {
-            tab.name = `${toCapitalCase(parts[2])} - Activity Log`;
-            if (parts[2] === "users" && Boolean(zuid)) {
-              const user = state.users.find(
-                (user: { ZUID: string }) => user.ZUID === zuid
-              );
-              if (user) {
-                const { firstName, lastName } = user;
-                tab.name = `${firstName} ${lastName} - Activity Log`;
-              }
-            }
+            tab.name = `${capitalize(parts[2])} - Activity Log`;
           }
+
           // Hacky way to get the user ZUID out of the search string
           const url = new URL(`http://example.com/${search}`);
           const userZUID = url.searchParams.get("actionByUserZUID");
@@ -358,9 +432,13 @@ export function createTab(
             }
           }
           break;
+
         case "metrics":
           tab.name = "Metrics";
           tab.app = "Metrics";
+          break;
+
+        default:
           break;
       }
     } else if (parts[0] === "settings") {
@@ -382,18 +460,15 @@ export function createTab(
         tab.name = `${toCapitalCase(parts[1])} Settings`;
       }
     } else if (parts[0] in appNameMap) {
-      // Every other pages (content, blocks etc.)
-      // Creating a new content item
       if (
         parts[0] === "content" &&
         parts[2] === "new" &&
         zuidIsValid(parts[1])
       ) {
+        // Creating a new content item
         tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
-      }
-
-      // Global search
-      if (parts[0] === "search") {
+      } else if (parts[0] === "search") {
+        // Global search
         // Replaces the tab name to whatever the search keyword is on the /search page
         const searchParams = new URLSearchParams(search);
         const keyword = searchParams.get("q");
@@ -401,12 +476,12 @@ export function createTab(
         if (keyword) {
           tab.name = keyword;
         }
-      }
-
-      // In-app searching example: schema search
-      if (parts[1] === "search" && parts[0] in appNameMap) {
+      } else if (parts[1] === "search" && parts[0] in appNameMap) {
+        // In-app searching example: schema search
         const name = parts[0] as keyof typeof appNameMap;
         tab.name = `${appNameMap[name]} Search Results`;
+      } else {
+        tab.name = appNameMap[name];
       }
     }
   }
@@ -415,6 +490,8 @@ export function createTab(
 }
 
 function toCapitalCase(string: string) {
+  if (!string) return "";
+
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
