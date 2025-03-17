@@ -2,18 +2,29 @@ import StorageIcon from "@mui/icons-material/Storage";
 import Link from "@mui/material/Link";
 import { List, Typography, Divider } from "@mui/material";
 import { FileCardListItem, FileCard } from "./FileCard";
+import { NavCodeTypes } from "../SideBar/constants";
 
-export default function LinkedSchema(props) {
+interface Field {
+  ZUID: string;
+  name: string;
+}
+
+interface LinkedSchemaProps {
+  file: NavCodeTypes;
+  fields: Field[];
+}
+
+export default function LinkedSchema({ file, fields }: LinkedSchemaProps) {
   return (
     <FileCard
-      title={`${props.file.fileName}'s  Related Model Schema`}
+      title={`${file?.fileName}'s Related Model Schema`}
       icon={StorageIcon}
-      link={`/content/${props.file.contentModelZUID}`}
+      link={`/schema/${file.contentModelZUID}`}
       linkLabel="Edit Linked Schema"
     >
       <Typography variant="body2" color="grey.400">
-        Use the below Parsley syntax to reference this models fields. This will
-        dynamically link to the fields content.&nbsp;
+        Use the below Parsley syntax to reference this model's fields. This will
+        dynamically link to the field's content.&nbsp;
         <Link
           href="https://zesty.org/services/web-engine/introduction-to-parsley"
           target="_blank"
@@ -39,12 +50,12 @@ export default function LinkedSchema(props) {
           },
         }}
       >
-        {props.fields.map((field) => (
-          <FileCardListItem key={field.ZUID}>
+        {fields.map((field) => (
+          <FileCardListItem key={field?.ZUID}>
             <span>
               <span className="brackets">{"{{"}</span>
               <span className="keywords">this.</span>
-              <span className="fields">{field.name}</span>
+              <span className="fields">{field?.name}</span>
               <span className="brackets">{"}}"}</span>
             </span>
           </FileCardListItem>

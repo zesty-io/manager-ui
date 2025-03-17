@@ -4,20 +4,34 @@ import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { NavLink } from "react-router-dom";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import FiberManualRecordRoundedIcon from "@mui/icons-material/FiberManualRecordRounded";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import { ListItem } from "@mui/material";
+import { ReactNode, ElementType } from "react";
 
-const FileCard = ({ title, icon, link = "", linkLabel = "", children }) => {
+type FileCardProps = {
+  title: string;
+  icon: ElementType;
+  link?: string;
+  linkLabel?: string;
+  children?: ReactNode;
+};
+
+const FileCard: React.FC<FileCardProps> = ({
+  title,
+  icon: Icon,
+  link = "",
+  linkLabel = "",
+  children,
+}) => {
   return (
     <Card
       sx={{
         boxSizing: "border-box",
         bgcolor: "grey.800",
         color: "grey.400",
-        color: "text.secondary",
         width: "100%",
         px: 2,
         pt: 3,
@@ -55,7 +69,7 @@ const FileCard = ({ title, icon, link = "", linkLabel = "", children }) => {
         boxSizing="border-box"
       >
         <Box
-          component={icon}
+          component={Icon}
           sx={{ position: "absolute", top: 0, left: 0, color: "grey.400" }}
         />
         <Typography
@@ -86,9 +100,10 @@ const FileCard = ({ title, icon, link = "", linkLabel = "", children }) => {
               alignItems: "center",
               justifyContent: "flex-start",
               gap: 2,
+              fontSize: "14px",
             }}
           >
-            <OpenInNewIcon fontSize="small" />
+            <LinkRoundedIcon />
             {linkLabel}
           </NavLink>
         )}
@@ -97,7 +112,11 @@ const FileCard = ({ title, icon, link = "", linkLabel = "", children }) => {
   );
 };
 
-const FileCardListItem = ({ children }) => {
+type FileCardListItemProps = {
+  children: ReactNode;
+};
+
+const FileCardListItem: React.FC<FileCardListItemProps> = ({ children }) => {
   return (
     <ListItem
       disablePadding
@@ -109,7 +128,7 @@ const FileCardListItem = ({ children }) => {
         wordBreak: "break-all",
       }}
     >
-      <ListItemIcon sx={{ minWidth: "18px", color: "grey.400" }}>
+      <ListItemIcon sx={{ minWidth: "16px", color: "grey.400" }}>
         <FiberManualRecordRoundedIcon sx={{ fontSize: 10 }} />
       </ListItemIcon>
       <ListItemText
