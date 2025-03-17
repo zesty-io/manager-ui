@@ -443,8 +443,10 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     name: "side_by_side_hero_image",
     description:
       "A hero with text and CTA buttons on the left and an image on the right",
-    previewLink: "#",
-    codeTemplateLink: "#",
+    previewLink:
+      "https://c15fp3zk-dev.webengine.zesty.io/-/block/side_by_side_hero_image.html",
+    codeTemplateLink:
+      "https://github.com/zesty-io/manager-ui/blob/ff6231a5457bb9d559496cdcdb2bc4a964e608af/src/apps/schema/src/app/components/StarterBlocks/configs.ts#L26",
     codeReference: "https://block.codescandy.com/blocks/hero-snippet-3.html",
     fields: [
       {
@@ -560,8 +562,10 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     name: "hero_image_below",
     description:
       "A hero with text and CTA buttons on the top and an image below",
-    previewLink: "#",
-    codeTemplateLink: "#",
+    previewLink:
+      "https://c15fp3zk-dev.webengine.zesty.io/-/block/hero_image_below.html",
+    codeTemplateLink:
+      "https://github.com/zesty-io/manager-ui/blob/ff6231a5457bb9d559496cdcdb2bc4a964e608af/src/apps/schema/src/app/components/StarterBlocks/configs.ts#L101",
     image: `${location.origin}/images/block_hero_image_below.png`,
     codeReference: "https://block.codescandy.com/blocks/hero-snippet-2.html",
     fields: [
@@ -654,8 +658,10 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     label: "Contact Us Form",
     name: "contact_us_form",
     description: "A simple contact us form to capture leads from any page",
-    previewLink: "#",
-    codeTemplateLink: "#",
+    previewLink:
+      "https://c15fp3zk-dev.webengine.zesty.io/-/block/contact_us_form.html",
+    codeTemplateLink:
+      "https://github.com/zesty-io/manager-ui/blob/ff6231a5457bb9d559496cdcdb2bc4a964e608af/src/apps/schema/src/app/components/StarterBlocks/configs.ts#L165",
     image: `${location.origin}/images/block_contact_us_form.png`,
     codeReference: "https://block.codescandy.com/contact-2.html",
     fields: [
@@ -750,8 +756,10 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     name: "feature_side_by_side_image",
     description: "A feature with text on the left and image on the right",
     image: `${location.origin}/images/block_feature_side_by_side_image.png`,
-    previewLink: "#",
-    codeTemplateLink: "#",
+    previewLink:
+      "https://c15fp3zk-dev.webengine.zesty.io/-/block/feature_side_by_side_image.html",
+    codeTemplateLink:
+      "https://github.com/zesty-io/manager-ui/blob/ff6231a5457bb9d559496cdcdb2bc4a964e608af/src/apps/schema/src/app/components/StarterBlocks/configs.ts#L320",
     codeReference: "https://block.codescandy.com/blocks/features.html",
     fields: [
       {
@@ -829,8 +837,10 @@ const STARTER_BLOCKS: StarterBlockProps[] = [
     description:
       "A single testimonial quote with a person's name, image, and company details",
     image: `${location.origin}/images/block_single_testimonial.png`,
-    previewLink: "#",
-    codeTemplateLink: "#",
+    previewLink:
+      "https://c15fp3zk-dev.webengine.zesty.io/-/block/single_testimonial.html",
+    codeTemplateLink:
+      "https://github.com/zesty-io/manager-ui/blob/ff6231a5457bb9d559496cdcdb2bc4a964e608af/src/apps/schema/src/app/components/StarterBlocks/configs.ts#L372",
     codeReference: "https://block.codescandy.com/blocks/testimonails.html",
     fields: [
       {
