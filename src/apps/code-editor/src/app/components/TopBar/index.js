@@ -17,7 +17,7 @@ import StorageRoundedIcon from "@mui/icons-material/StorageRounded";
 import RestoreOutlinedIcon from "@mui/icons-material/RestoreOutlined";
 import { Notice } from "@zesty-io/core/Notice";
 import { DifferActions } from "./DifferActions";
-import EditorActions from "./EditorActions";
+import { EditorActions } from "./EditorActions";
 import ElectricBoltOutlinedIcon from "@mui/icons-material/ElectricBoltOutlined";
 import { DeleteDialog } from "./DeleteDialog";
 import CheckIcon from "@mui/icons-material/Check";
@@ -129,7 +129,6 @@ const MoreOptions = (props) => {
       navigator?.clipboard
         ?.writeText(data)
         .then(() => {
-          console.log("Written");
           setIsCopied(true);
           setTimeout(() => {
             setIsCopied(false);

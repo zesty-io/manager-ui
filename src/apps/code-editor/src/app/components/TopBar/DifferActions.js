@@ -176,9 +176,6 @@ export const DifferActions = memo(function DifferActions(props) {
           }}
           sx={{ width: 300 }}
           MenuProps={{
-            PaperProps: {
-              style: {},
-            },
             MenuListProps: {
               sx: (theme) => ({
                 ...theme.typography.body2,
@@ -207,9 +204,6 @@ export const DifferActions = memo(function DifferActions(props) {
             if (version) {
               props.setVersionCodeRight(version.code);
               setSelectedVersion(version.version);
-            } else {
-              console.log(`Missing selected version, ${version}`);
-              // TODO fetch selected version from API?
             }
           }}
           sx={{ width: 300 }}

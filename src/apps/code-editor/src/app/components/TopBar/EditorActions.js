@@ -10,7 +10,7 @@ import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import Divider from "@mui/material/Divider";
 
-const EditorActions = memo(function EditorActions(props) {
+export const EditorActions = memo(function EditorActions(props) {
   const canPublish = usePermission("PUBLISH");
   const canUpdate = usePermission("UPDATE", props?.fileZUID);
   const [isSaving, setIsSaving] = useState(false);
@@ -99,7 +99,10 @@ const EditorActions = memo(function EditorActions(props) {
           disabled={isPublishing || !canPublish || !canUpdate}
           sx={{
             "& .MuiButtonGroup-grouped:not(:last-of-type)": {
-              ...(!isUnpublished && { border: "none" }),
+              ...(!isUnpublished && {
+                border: "none",
+                color: "success.main",
+              }),
             },
           }}
         >
@@ -121,10 +124,8 @@ const EditorActions = memo(function EditorActions(props) {
               size="small"
               onClick={onPublish}
               loading={isPublishing}
-              sx={{
-                pointerEvents: isUnpublished ? "auto" : "none",
-                pl: 1,
-              }}
+              pl={1}
+              disabled={!isUnpublished}
             >
               {!isUnpublished ? "Published" : "Publish"}
             </LoadingButton>
@@ -132,10 +133,10 @@ const EditorActions = memo(function EditorActions(props) {
           <Button
             variant={publishButtonVariant}
             color={isUnpublished ? "success" : "inherit"}
-            size={isUnpublished ? "xsmall" : "small"}
+            size="small"
             sx={{
-              width: 32,
-              minWidth: "unset !important",
+              width: "32px",
+              // minWidth: "unset !important",
             }}
           >
             <ArrowDropDownRoundedIcon fontSize="small" />
@@ -145,5 +146,3 @@ const EditorActions = memo(function EditorActions(props) {
     </>
   );
 });
-
-export default EditorActions;
