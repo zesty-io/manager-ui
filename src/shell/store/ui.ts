@@ -4,7 +4,6 @@ import { Location } from "history";
 import idb from "../../utility/idb";
 import { AppState } from "./types";
 import { isValid as zuidIsValid } from "zuid";
-import { ContentModel } from "../../shell/services/types";
 import {
   SearchRounded,
   RocketLaunchRounded,
@@ -18,7 +17,6 @@ import {
   SvgIconComponent,
   ExtensionRounded,
   ShuffleRounded,
-  BreakfastDiningOutlined,
 } from "@mui/icons-material";
 import { Database, Block } from "@zesty-io/material";
 import { capitalize, isEqual } from "lodash";
