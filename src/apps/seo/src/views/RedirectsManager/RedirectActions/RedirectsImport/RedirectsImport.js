@@ -1,7 +1,6 @@
 import Button from "@mui/material/Button";
 import UploadIcon from "@mui/icons-material/Upload";
 
-// import styles from "./RedirectsImport.less";
 import Box from "@mui/material/Box";
 export default function RedirectsImport(props) {
   let fileInput = null;

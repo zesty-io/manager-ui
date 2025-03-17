@@ -31,7 +31,6 @@ export default function RedirectManager(props) {
       <Box
         display="flex"
         justifyContent="space-between"
-        // boxSizing="border-box"
         px={4}
         pt={4}
         pb={1.75}
