@@ -347,11 +347,17 @@ export const FieldTypeMedia = forwardRef(
     if (!images?.length)
       return (
         <>
-          <div
+          <Box
             {...getRootProps({
               onClick: (evt) => evt.stopPropagation(),
               onKeyDown: (evt) => evt.stopPropagation(),
             })}
+            sx={{
+              "&:focus-visible": {
+                outlineColor: (theme) => theme.palette.primary.main,
+                borderRadius: 2,
+              },
+            }}
           >
             <input {...getInputProps()} />
             <Box
@@ -448,7 +454,7 @@ export const FieldTypeMedia = forwardRef(
                 {selectionError}
               </Typography>
             )}
-          </div>
+          </Box>
           <Modal isOpen={isBynderOpen} onClose={() => setIsBynderOpen(false)}>
             <Login>
               <CompactView
