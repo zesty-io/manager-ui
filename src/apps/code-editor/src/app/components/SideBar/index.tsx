@@ -27,7 +27,7 @@ const filterTreeData = (
     .map((item: FileNodeProps) => {
       const isDir = item?.type === "directory";
       const searchString =
-        `${item?.ZUID}|${item?.fileName}|${item?.label}|${item?.path}|${item?.contentModelZUID}|${item?.contentModelType}`
+        `${item?.ZUID}\n${item?.fileName}\n${item?.label}\n${item?.path}\n${item?.contentModelZUID}\n${item?.contentModelType}`
           ?.toLowerCase()
           ?.trim();
       const isFound: boolean = searchString.includes(keyword);
