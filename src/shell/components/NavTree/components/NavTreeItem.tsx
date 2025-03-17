@@ -1,7 +1,6 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { TreeItem } from "@mui/x-tree-view";
-import { Stack, Box, Typography, Tooltip, alpha } from "@mui/material";
-
+import { Stack, Box, Typography, Tooltip } from "@mui/material";
 import { TreeItem as TreeItemType } from "../index";
 
 interface Props {
@@ -15,7 +14,9 @@ interface Props {
   nodeData?: any;
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
+  selected?: string;
 }
+
 export const NavTreeItem: FC<Props> = React.memo(
   ({
     labelName,
@@ -28,12 +29,27 @@ export const NavTreeItem: FC<Props> = React.memo(
     nodeData,
     onItemDrop,
     dragAndDrop = false,
+    selected = "",
   }) => {
+    const itemTreeRef = useRef(null);
     const currentDepth = depth + 1;
     const depthPadding = currentDepth * 1;
 
+    useEffect(() => {
+      if (!itemTreeRef?.current) return;
+      if (selected === nodeId) {
+        setTimeout(() => {
+          itemTreeRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        }, 500);
+      }
+    }, [selected, nodeId, itemTreeRef]);
+
     return (
       <TreeItem
+        ref={itemTreeRef}
         nodeId={nodeId}
         label={
           <Stack
@@ -182,6 +198,7 @@ export const NavTreeItem: FC<Props> = React.memo(
                 actions={item.actions ?? []}
                 onItemDrop={onItemDrop}
                 dragAndDrop={dragAndDrop}
+                selected={selected}
               />
             );
           })}
