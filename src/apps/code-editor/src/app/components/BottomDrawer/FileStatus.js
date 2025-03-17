@@ -58,8 +58,9 @@ export default function FileStatus(props) {
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/ajax/${props.file.fileName}/`}
                 target="_blank"
                 title={`Preview ${props.file.fileName} Webpage`}
+                style={{ fontStyle: "italic" }}
               >
-                <em>/-/ajax/{props.file.fileName}/</em>
+                /-/ajax/{props.file.fileName}/
               </Link>
             )}
           {!props.file.fileName.includes("/") &&
@@ -70,8 +71,9 @@ export default function FileStatus(props) {
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/custom/${props.file.fileName}/`}
                 target="_blank"
                 title={`Preview ${props.file.fileName} Webpage`}
+                style={{ fontStyle: "italic" }}
               >
-                <em>/-/custom/{props.file.fileName}/</em>
+                /-/custom/{props.file.fileName}/
               </Link>
             )}
           {props.file.ZUID.includes("10-") &&
@@ -82,8 +84,9 @@ export default function FileStatus(props) {
                 href={`${CONFIG.URL_PREVIEW_FULL}/site.js`}
                 target="_blank"
                 title="Preview Javascript Webpage"
+                style={{ fontStyle: "italic" }}
               >
-                <em>Compiles to /site.js</em>
+                Compiles to /site.js
               </Link>
             )}
           {props.file.ZUID.includes("10-") &&
@@ -94,8 +97,9 @@ export default function FileStatus(props) {
                 href={`${CONFIG.URL_PREVIEW_FULL}/site.css`}
                 target="_blank"
                 title="Preview CSS Webpage"
+                style={{ fontStyle: "italic" }}
               >
-                <em>Compiles to /site.css</em>
+                Compiles to /site.css
               </Link>
             )}
           {props.file.contentModelZUID && props.items.length !== 0 && (
@@ -105,8 +109,9 @@ export default function FileStatus(props) {
               href={`${CONFIG.URL_PREVIEW_FULL}${props.items[0].web.path}`}
               target="_blank"
               title={`Preview ${props.items[0].web.path} Webpage `}
+              style={{ fontStyle: "italic" }}
             >
-              <em>{props.items[0].web.path}</em>
+              {props.items[0].web.path}
             </Link>
           )}
           {!props.file.contentModelZUID && props.file.fileName.includes("/") && (
@@ -116,6 +121,7 @@ export default function FileStatus(props) {
               href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
               target="_blank"
               title={`"WebEngine ${props.file.fileName} Link"`}
+              style={{ fontStyle: "italic" }}
             >
               {`${props.file.fileName}`}
             </Link>
@@ -124,23 +130,22 @@ export default function FileStatus(props) {
 
         <FileCardListItem>
           File ZUID:&nbsp;
-          <em>
-            <CopyButton
-              variant="text"
-              size="small"
-              value={props.file.ZUID}
-              sx={{
-                color: "grey.400",
-                pl: "25px",
-                textAlign: "left",
-                "& .MuiButton-startIcon": {
-                  position: "absolute",
-                  top: "6px",
-                  left: "5px",
-                },
-              }}
-            />
-          </em>
+          <CopyButton
+            variant="text"
+            size="small"
+            value={props.file.ZUID}
+            sx={{
+              fontStyle: "italic",
+              color: "grey.400",
+              pl: "25px",
+              textAlign: "left",
+              "& .MuiButton-startIcon": {
+                position: "absolute",
+                top: "6px",
+                left: "5px",
+              },
+            }}
+          />
         </FileCardListItem>
         <FileCardListItem>
           File Type:&nbsp;

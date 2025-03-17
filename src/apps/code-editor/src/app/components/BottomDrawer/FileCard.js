@@ -27,9 +27,6 @@ const FileCard = ({ title, icon, link = "", linkLabel = "", children }) => {
         justifyContent: "flex-start",
         alignItems: "stretch",
         "& .MuiCardContent-root": {
-          // "& .MuiTypography-root": {
-          //   color: "grey.400",
-          // },
           "& a": {
             width: "fit-content",
           },

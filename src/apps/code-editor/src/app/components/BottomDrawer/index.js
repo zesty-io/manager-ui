@@ -105,7 +105,6 @@ const BottomDrawer = memo(function BottomDrawer(props) {
         width: "100%",
         bgcolor: "grey.900",
         color: "grey.400",
-        // maxHeight: "45vh",
         flexGrow: 0,
         display: "flex",
         flexDirection: "column",
@@ -133,7 +132,7 @@ const BottomDrawer = memo(function BottomDrawer(props) {
             size="small"
             color="inherit"
             title="Open for additional file information"
-            onClick={() => setOpen((prev) => !prev)}
+            onClick={handleSetOpen}
           >
             {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
           </IconButton>
@@ -174,7 +173,6 @@ const BottomDrawer = memo(function BottomDrawer(props) {
                 alignItems: "stretch",
                 pb: 2,
                 minHeight: "100%",
-                // height
               }}
             >
               <FileStatus file={props.file || {}} items={items || []} />
