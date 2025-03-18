@@ -141,7 +141,7 @@ export const ItemList = () => {
 
       if (fieldDataType === "internal_link") {
         return (
-          allItems[relatedContentItemZUID]?.web?.metaTitle ||
+          allItems?.[relatedContentItemZUID]?.web?.metaTitle ||
           relatedContentItemZUID
         );
       }
@@ -151,13 +151,10 @@ export const ItemList = () => {
         return;
       }
 
-      const relatedFieldData = allFields[fieldData.relatedFieldZUID];
-      if (!relatedFieldData) {
-        return;
-      }
+      const relatedFieldData = allFields?.[fieldData?.relatedFieldZUID];
 
       return (
-        allItems[relatedContentItemZUID]?.data?.[relatedFieldData.name] ||
+        allItems?.[relatedContentItemZUID]?.data?.[relatedFieldData.name] ||
         relatedContentItemZUID
       );
     },
@@ -238,7 +235,6 @@ export const ItemList = () => {
       };
 
       Object.keys(data).forEach((key) => {
-        // Get the field's datatype from our memo
         const fieldData = fieldMap.get(key);
         const fieldType = fieldData?.datatype;
         const value = data[key] as string;
