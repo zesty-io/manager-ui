@@ -121,9 +121,9 @@ export function Preview(props) {
     function receiveMessage(msg) {
       setSaving(false);
       // Prevent malicious communication to this window
-      // if (msg.origin !== window.location.origin) {
-      //   return;
-      // }
+      if (msg.origin !== window.location.origin) {
+        return;
+      }
 
       if (msg.data.source === "zesty") {
         if (msg.data.route) {
