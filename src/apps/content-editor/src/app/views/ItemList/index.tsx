@@ -160,7 +160,7 @@ export const ItemList = () => {
 
   useEffect(() => {
     dispatch(fetchFields(modelZUID));
-  }, []);
+  }, [modelZUID]);
 
   useEffect(() => {
     if (activeLanguageCode) {
