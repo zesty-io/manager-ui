@@ -303,10 +303,39 @@ export const ItemCreate = () => {
         }
 
         if (res.error) {
+          // Handles backend validation error for when the data is too long
+          if (res.error?.toLowerCase()?.includes("data too long")) {
+            const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+            if (dataLongErrorMatch?.[1]) {
+              const fieldName = dataLongErrorMatch[1];
+              const errors = cloneDeep(fieldErrors);
+              const oneToManyFieldNames = activeFields?.reduce(
+                (names, currItem) => {
+                  if (currItem?.datatype === "one_to_many") {
+                    return [...names, currItem?.name];
+                  }
+
+                  return names;
+                },
+                []
+              );
+
+              errors[fieldName] = {
+                ...(errors[fieldName] ?? {}),
+                CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                  ? "Cannot save field. Please reduce the total number of items selected."
+                  : "Cannot save field. Value is too long.",
+              };
+
+              setFieldErrors(errors);
+            }
+          }
+
           dispatch(
             notify({
-              message: res.error,
-              kind: "warn",
+              message: `Cannot Save: ${res.error}`,
+              kind: "error",
             })
           );
         }

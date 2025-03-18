@@ -513,12 +513,13 @@ export const FieldSelectorDialog = ({
     <Dialog
       open
       onClose={onClose}
+      fullScreen
       PaperProps={{
         sx: {
           width: 800,
           maxWidth: 800,
           minHeight: 680,
-          maxHeight: "min(1240px, calc(100% - 64px))",
+          maxHeight: "min(1240px, calc(100% - 40px))", // 40px is the top & bottom margin
         },
       }}
     >
