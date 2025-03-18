@@ -26,7 +26,7 @@ import {
 import { useHistory } from "react-router";
 import { useDrag, useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
-
+import { ReplaceContentItem } from "@zesty-io/material";
 import {
   useCreateItemPublishingMutation,
   useDeleteItemPublishingMutation,
@@ -51,6 +51,7 @@ type ActiveItemProps = {
   onDropCard: () => void;
   onRemoveCard: (itemZUID: string) => void;
   draggable?: boolean;
+  openFieldSelectorDialog?: (evt: React.MouseEvent<HTMLButtonElement>) => void;
 };
 export const ActiveItem = memo(
   ({
@@ -62,6 +63,7 @@ export const ActiveItem = memo(
     onDropCard,
     onRemoveCard,
     draggable,
+    openFieldSelectorDialog,
   }: ActiveItemProps) => {
     const [imageError, setImageError] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -362,6 +364,19 @@ export const ActiveItem = memo(
               />
             )}
             <Stack direction="row" gap={1}>
+              <Tooltip
+                enterDelay={1000}
+                disableInteractive
+                title="Replace Item"
+              >
+                <IconButton
+                  size="xsmall"
+                  onClick={openFieldSelectorDialog}
+                  disabled={!contentItem}
+                >
+                  <ReplaceContentItem fontSize="small" />
+                </IconButton>
+              </Tooltip>
               <Tooltip
                 enterDelay={1000}
                 disableInteractive

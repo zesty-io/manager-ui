@@ -371,110 +371,114 @@ export const FieldTypeMedia = forwardRef(
 
     if (!images?.length)
       return (
-        <>
-          <div
-            {...getRootProps({
-              onClick: (evt) => evt.stopPropagation(),
-              onKeyDown: (evt) => evt.stopPropagation(),
-            })}
+        <Box
+          {...getRootProps({
+            onClick: (evt) => evt.stopPropagation(),
+            onKeyDown: (evt) => evt.stopPropagation(),
+          })}
+          sx={{
+            "&:focus-visible": {
+              outlineColor: (theme) => theme.palette.primary.main,
+              borderRadius: 2,
+            },
+          }}
+        >
+          <input {...getInputProps()} />
+          <Box
+            sx={{
+              border: (theme) => `1px dashed ${theme.palette.primary.main}`,
+              borderRadius: "8px",
+              backgroundColor: (theme) =>
+                alpha(theme.palette.primary.main, 0.04),
+              borderColor: hasError ? "error.main" : "primary.main",
+            }}
           >
-            <input {...getInputProps()} />
-            <Box
-              sx={{
-                border: (theme) => `1px dashed ${theme.palette.primary.main}`,
-                borderRadius: "8px",
-                backgroundColor: (theme) =>
-                  alpha(theme.palette.primary.main, 0.04),
-                borderColor: hasError ? "error.main" : "primary.main",
-              }}
-            >
-              <Stack alignItems="center" gap={2} py={4} justifyContent="center">
+            <Stack alignItems="center" gap={2} py={4} justifyContent="center">
+              {isDragActive ? (
+                <UploadRounded color="primary" />
+              ) : (
+                <AttachmentRounded color="primary" />
+              )}
+              <Typography
+                align="center"
+                variant="h5"
+                color="primary"
+                fontWeight={600}
+              >
                 {isDragActive ? (
-                  <UploadRounded color="primary" />
+                  "Drop your files here to Upload"
                 ) : (
-                  <AttachmentRounded color="primary" />
+                  <>
+                    Drag and drop your files here <br /> or
+                  </>
                 )}
-                <Typography
-                  align="center"
-                  variant="h5"
-                  color="primary"
-                  fontWeight={600}
-                >
-                  {isDragActive ? (
-                    "Drop your files here to Upload"
-                  ) : (
-                    <>
-                      Drag and drop your files here <br /> or
-                    </>
-                  )}
-                </Typography>
-                {!isDragActive && (
-                  <Box
-                    display="flex"
-                    gap={1}
-                    width={400}
-                    justifyContent="center"
-                    flexWrap="wrap"
-                  >
-                    <Button
-                      size="large"
-                      variant="outlined"
-                      onClick={open}
-                      startIcon={<UploadRounded />}
-                      fullWidth
-                      sx={{
-                        maxWidth: "196px",
-                        flexShrink: 0,
-                      }}
-                    >
-                      Upload
-                    </Button>
-                    <Button
-                      data-cy="selectFromMediaButton"
-                      fullWidth
-                      size="large"
-                      startIcon={<AddRounded />}
-                      variant="outlined"
-                      onClick={() => {
-                        openMediaBrowser({
-                          limit,
-                          callback: addZestyImage,
-                        });
-                      }}
-                      sx={{
-                        maxWidth: "196px",
-                        flexShrink: 0,
-                      }}
-                    >
-                      Add from Media
-                    </Button>
-                    {isBynderSessionValid && (
-                      <Button
-                        data-cy="addFromBynderBtn"
-                        size="large"
-                        variant="outlined"
-                        onClick={handleOpenBynder}
-                        startIcon={<Bynder />}
-                        fullWidth
-                        sx={{
-                          maxWidth: "240px",
-                          flexShrink: 0,
-                        }}
-                      >
-                        Add from Bynder
-                      </Button>
-                    )}
-                  </Box>
-                )}
-              </Stack>
-            </Box>
-            {selectionError && (
-              <Typography variant="body2" color="error.dark" mt={0.5}>
-                {selectionError}
               </Typography>
-            )}
-          </div>
-        </>
+              {!isDragActive && (
+                <Box
+                  display="flex"
+                  gap={1}
+                  width={400}
+                  justifyContent="center"
+                  flexWrap="wrap"
+                >
+                  <Button
+                    size="large"
+                    variant="outlined"
+                    onClick={open}
+                    startIcon={<UploadRounded />}
+                    fullWidth
+                    sx={{
+                      maxWidth: "196px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Upload
+                  </Button>
+                  <Button
+                    data-cy="selectFromMediaButton"
+                    fullWidth
+                    size="large"
+                    startIcon={<AddRounded />}
+                    variant="outlined"
+                    onClick={() => {
+                      openMediaBrowser({
+                        limit,
+                        callback: addZestyImage,
+                      });
+                    }}
+                    sx={{
+                      maxWidth: "196px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Add from Media
+                  </Button>
+                  {isBynderSessionValid && (
+                    <Button
+                      data-cy="addFromBynderBtn"
+                      size="large"
+                      variant="outlined"
+                      onClick={handleOpenBynder}
+                      startIcon={<Bynder />}
+                      fullWidth
+                      sx={{
+                        maxWidth: "240px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      Add from Bynder
+                    </Button>
+                  )}
+                </Box>
+              )}
+            </Stack>
+          </Box>
+          {selectionError && (
+            <Typography variant="body2" color="error.dark" mt={0.5}>
+              {selectionError}
+            </Typography>
+          )}
+        </Box>
       );
 
     return (
