@@ -39,32 +39,36 @@ import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
 
-const formatDateTime = (source: string) => {
-  const dateObj = new Date(source);
-  if (!source || isNaN(dateObj.getTime())) return "";
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
 
-  const date = dateObj.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-  const time = dateObj.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-  });
+const timeFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "numeric",
+});
+
+const formatDateTime = (source: string) => {
+  if (!source) return "";
+
+  const dateObj = new Date(source);
+  if (isNaN(dateObj.getTime())) return "";
+
+  const date = dateFormatter.format(dateObj);
+  const time = timeFormatter.format(dateObj);
 
   return `${date} ${time}`;
 };
 
 const formatDate = (source: string) => {
-  const dateObj = new Date(source + "T00:00:00");
-  if (!source || isNaN(dateObj.getTime())) return "";
+  if (!source) return "";
 
-  return dateObj.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const dateObj = new Date(source);
+  if (isNaN(dateObj.getTime())) return "";
+
+  return dateFormatter.format(dateObj);
 };
 
 export const ItemList = () => {
@@ -109,6 +113,15 @@ export const ItemList = () => {
   }, [params]);
   const userFilter = params.get("user");
 
+  const fieldMap = useMemo(() => {
+    if (!fields?.length) return new Map<string, any>();
+    return new Map(
+      fields
+        .filter((field) => !field.deletedAt)
+        .map((field) => [field.name, field])
+    );
+  }, [fields]);
+
   const resolveFieldRelationshipTitle = useCallback(
     (
       fieldName: string,
@@ -126,31 +139,30 @@ export const ItemList = () => {
         return;
       }
 
-      // Internal link has a simpler way of deriving the value
       if (fieldDataType === "internal_link") {
         return (
-          allItems?.[relatedContentItemZUID]?.web?.metaTitle ||
+          allItems[relatedContentItemZUID]?.web?.metaTitle ||
           relatedContentItemZUID
         );
       }
 
-      // Finds the related field zuid that's stored in the specific field's data
-      const fieldData = fields?.find(
-        (field) =>
-          field.name === fieldName &&
-          !field.deletedAt &&
-          field.datatype === fieldDataType
-      );
+      const fieldData = fieldMap.get(fieldName);
+      // Ensure the field exists and has the correct datatype
+      if (!fieldData || fieldData.datatype !== fieldDataType) {
+        return;
+      }
 
-      // Gets the data of the related field determined above
-      const relatedFieldData = allFields?.[fieldData?.relatedFieldZUID];
+      const relatedFieldData = allFields[fieldData.relatedFieldZUID];
+      if (!relatedFieldData) {
+        return;
+      }
 
       return (
-        allItems?.[relatedContentItemZUID]?.data?.[relatedFieldData?.name] ??
+        allItems[relatedContentItemZUID]?.data?.[relatedFieldData.name] ||
         relatedContentItemZUID
       );
     },
-    [allItems, fields, allFields, modelZUID]
+    [allItems, allFields, fieldMap]
   );
 
   useEffect(() => {
@@ -162,7 +174,7 @@ export const ItemList = () => {
       setIsModelItemsFetching(true);
       dispatch(
         fetchItems(modelZUID, {
-          limit: 1000,
+          limit: 10,
           page: 1,
           lang: activeLanguageCode,
         })
@@ -182,24 +194,16 @@ export const ItemList = () => {
 
   const computeProcessedItems = useCallback(() => {
     if (!items || isFieldsFetching || isUsersFetching) return [];
-    const fieldMap = fields?.reduce((acc, field) => {
-      // @ts-ignore
-      acc[field.name] = field.datatype;
-      return acc;
-    }, {});
+
+    const userMap = new Map(users?.map((user) => [user.ZUID, user]));
 
     return items.map((item: ContentItemWithDirtyAndPublishing) => {
       const { meta, data, web, publishing } = item;
-      const metaUser = users.find(
-        (user) => user.ZUID === meta.createdByUserZUID
-      );
-      const webUser = users.find((user) => user.ZUID === web.createdByUserZUID);
-      const publishedByUser = users.find(
-        (user) => user.ZUID === item.publishing?.publishedByUserZUID
-      );
-      const scheduledByUser = users.find(
-        (user) => user.ZUID === item.scheduling?.publishedByUserZUID
-      );
+      const metaUser = userMap.get(meta.createdByUserZUID);
+      const webUser = userMap.get(web.createdByUserZUID);
+      const publishedByUser = userMap.get(publishing?.publishedByUserZUID);
+      const scheduledByUser = userMap.get(item.scheduling?.publishedByUserZUID);
+
       const clonedItem = {
         ...item,
         id: meta.ZUID,
@@ -235,20 +239,21 @@ export const ItemList = () => {
       };
 
       Object.keys(data).forEach((key) => {
-        // @ts-ignore
-        const fieldType = fieldMap?.[key];
+        // Get the field's datatype from our memo
+        const fieldData = fieldMap.get(key);
+        const fieldType = fieldData?.datatype;
         const value = data[key] as string;
+
         switch (fieldType) {
-          case "images":
-            clonedItem.data[key] = value?.split(",")[0]?.startsWith("3-")
-              ? `${
-                  // @ts-ignore
-                  CONFIG.SERVICE_MEDIA_RESOLVER
-                }/resolve/${
-                  value?.split(",")[0]
-                }/getimage/?w=${68}&h=auto&type=fit`
-              : value?.split(",")?.[0];
+          case "images": {
+            const parts = value?.split(",") || [];
+            const firstPart = parts[0];
+            clonedItem.data[key] = firstPart?.startsWith("3-")
+              ? // @ts-ignore
+                `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${firstPart}/getimage/?w=68&h=auto&type=fit`
+              : firstPart;
             break;
+          }
           case "internal_link":
           case "one_to_one":
             clonedItem.data[key] = resolveFieldRelationshipTitle(
@@ -272,9 +277,8 @@ export const ItemList = () => {
           case "dropdown":
           case "yes_no":
             // @ts-ignore
-            clonedItem.fieldData[key] = fields.find(
-              (field) => field.name === key
-            );
+            clonedItem.fieldData[key] = fieldData;
+            break;
           default:
             break;
         }
@@ -282,7 +286,7 @@ export const ItemList = () => {
 
       return clonedItem;
     });
-  }, [items, allItems, fields, users, isFieldsFetching, isUsersFetching]);
+  }, [items, fields, users, isFieldsFetching, isUsersFetching, fieldMap]);
 
   /* 
     We debounce the processed items compute since certain fields can call for items to be fetched if they are not in memory 
@@ -291,7 +295,7 @@ export const ItemList = () => {
   const debouncedCompute = useMemo(() => {
     return debounce(() => {
       setProcessedItems(computeProcessedItems());
-    }, 500);
+    }, 300);
   }, [computeProcessedItems]);
 
   useEffect(() => {
@@ -301,7 +305,7 @@ export const ItemList = () => {
     debouncedCompute,
     items,
     allItems,
-    fields,
+    fieldMap,
     users,
     isFieldsFetching,
     isUsersFetching,
@@ -554,7 +558,6 @@ export const ItemList = () => {
       );
     }
 
-    // filter items by all fields
     return clonedItems;
   }, [processedItems, search, sortModel, statusFilter, dateFilter, userFilter]);
 
