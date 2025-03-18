@@ -147,14 +147,11 @@ export const ItemList = () => {
       }
 
       const fieldData = fieldMap.get(fieldName);
-      if (!fieldData || fieldData.datatype !== fieldDataType) {
-        return;
-      }
 
       const relatedFieldData = allFields?.[fieldData?.relatedFieldZUID];
 
       return (
-        allItems?.[relatedContentItemZUID]?.data?.[relatedFieldData.name] ||
+        allItems?.[relatedContentItemZUID]?.data?.[relatedFieldData?.name] ??
         relatedContentItemZUID
       );
     },
