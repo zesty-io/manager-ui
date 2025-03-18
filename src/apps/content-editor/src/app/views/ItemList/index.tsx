@@ -147,7 +147,6 @@ export const ItemList = () => {
       }
 
       const fieldData = fieldMap.get(fieldName);
-      // Ensure the field exists and has the correct datatype
       if (!fieldData || fieldData.datatype !== fieldDataType) {
         return;
       }
