@@ -167,7 +167,7 @@ export const ItemList = () => {
       setIsModelItemsFetching(true);
       dispatch(
         fetchItems(modelZUID, {
-          limit: 10,
+          limit: 1000,
           page: 1,
           lang: activeLanguageCode,
         })
