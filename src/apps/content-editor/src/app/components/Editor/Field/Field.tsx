@@ -195,18 +195,6 @@ export const Field = ({
     setInputValue(value || "");
   }, [value]);
 
-  useEffect(() => {
-    if (datatype !== "date" && datatype !== "datetime") {
-      if (value && typeof value === "string") {
-        value.split(",").forEach((z) => {
-          if (zuid.isValid(z) && !zuid.matches(z, zuid.prefix["MEDIA_FILE"])) {
-            dispatch(searchItems(z));
-          }
-        });
-      }
-    }
-  }, []);
-
   const renderMediaModal = () => {
     return ReactDOM.createPortal(
       <MemoryRouter

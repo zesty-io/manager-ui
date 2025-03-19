@@ -1,7 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
+import zuid from "zuid";
+
 import { FieldTypeInternalLink } from "../../../../../../../shell/components/FieldTypeInternalLink";
 import { AppState } from "../../../../../../../shell/store/types";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { searchItems } from "../../../../../../../shell/store/content";
 import { LinkOption } from "./LinkOption";
 import { sortHTML } from "./Field";
@@ -24,6 +26,18 @@ export const InternalLink = ({
 
   const allItems = useSelector((state: AppState) => state.content);
   let internalLinkRelatedItem = allItems[value];
+
+  useEffect(() => {
+    // Resolve the itemZUID in case it isn't in the store cache
+    if (
+      !internalLinkRelatedItem &&
+      zuid.isValid(value) &&
+      zuid.matches(value, zuid.prefix["SITE_CONTENT_ITEM"])
+    ) {
+      dispatch(searchItems(value));
+    }
+  }, [internalLinkRelatedItem]);
+
   let internalLinkOptions = useMemo(() => {
     const options = Object.keys(allItems)
       .filter(
