@@ -148,6 +148,7 @@ export type ContentItemWithDirtyAndPublishing = ContentItem & {
   dirty: boolean;
   publishing: Publishing;
   scheduling: any;
+  capturingScreenshot?: boolean;
 };
 
 export interface Instance {
