@@ -2,9 +2,7 @@ import { useMemo, useState, useEffect, ChangeEvent, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch } from "react-redux";
 import moment from "moment-timezone";
-import zuid from "zuid";
 
-import { searchItems } from "../../../../../../../shell/store/content";
 import { EditorType, FieldShell, Error } from "./FieldShell";
 
 import {
@@ -30,7 +28,6 @@ import { FieldTypeCurrency } from "../../../../../../../shell/components/FieldTy
 import { FieldTypeEditor } from "../../../../../../../shell/components/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "../../../../../../../shell/components/FieldTypeTinyMCE";
 import { FieldTypeColor } from "../../../../../../../shell/components/FieldTypeColor";
-import { OneToManyOptions } from "../../../../../../../shell/components/FieldTypeOneToMany";
 import { RelationalFieldBase } from "../../../../../../../shell/components/RelationalFieldBase";
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 import { FieldTypeDateTime } from "../../../../../../../shell/components/FieldTypeDateTime";
@@ -45,11 +42,8 @@ import { withAI } from "../../../../../../../shell/components/withAi";
 import { useGetContentModelFieldsQuery } from "../../../../../../../shell/services/instance";
 import {
   ContentItem,
-  ContentModelField,
   FieldSettings,
-  Language,
 } from "../../../../../../../shell/services/types";
-import { ResolvedOption } from "./ResolvedOption";
 import { FieldTypeMedia } from "../../FieldTypeMedia";
 import { debounce, parseInt } from "lodash";
 
@@ -66,71 +60,6 @@ export const sortHTML = (a: any, b: any) => {
   }
   // names must be equal
   return 0;
-};
-
-export const resolveRelatedOptions = (
-  fields: Record<string, ContentModelField>,
-  items: any,
-  fieldZUID: string,
-  modelZUID: string,
-  langID: number,
-  value: any
-): OneToManyOptions[] => {
-  // guard against absent data in state
-  const field = fields && fields[fieldZUID];
-  if (!field || !items) {
-    return [];
-  }
-
-  return Object.keys(items)
-    .filter((itemZUID) => {
-      return (
-        items[itemZUID] &&
-        items[itemZUID].meta &&
-        items[itemZUID].meta.contentModelZUID === modelZUID &&
-        // filter by content language
-        (langID === items[itemZUID].meta.langID ||
-          // ...unless option already selected
-          value?.split(",").includes(itemZUID))
-      );
-    })
-    .map((itemZUID) => {
-      // Matching ItemZUID to languageZUID to get language code {key} to display in dropdown
-      let langCode = "";
-      if (items[itemZUID].siblings) {
-        const match = Object.entries(items[itemZUID].siblings).find(
-          (arr) => items[itemZUID].meta.ZUID === arr[1]
-        );
-        if (match) {
-          langCode = match[0];
-        }
-      }
-
-      return {
-        value: itemZUID,
-        inputLabel: items[itemZUID].data[field.name] || "",
-        component: (
-          <ResolvedOption
-            modelZUID={modelZUID}
-            itemZUID={itemZUID}
-            html={
-              <div
-                style={{
-                  display: "inline-grid",
-                  gridTemplateColumns: "minmax(50px, 100%) 41px",
-                }}
-              >
-                <span style={{ textOverflow: "ellipsis", overflow: "hidden" }}>
-                  {items[itemZUID].data[field.name]}
-                </span>
-                <em className={styles.Language}>&nbsp;{langCode}</em>
-              </div>
-            }
-          />
-        ),
-      };
-    })
-    .sort((a, b) => (a.inputLabel > b.inputLabel ? 1 : -1));
 };
 
 type FieldProps = {
