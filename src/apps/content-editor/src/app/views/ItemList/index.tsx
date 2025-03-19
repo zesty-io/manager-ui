@@ -628,87 +628,114 @@ export const ItemList = () => {
                 key={modelZUID}
                 loading={isFieldsFetching || isUsersFetching}
                 rows={sortedAndFilteredItems}
+                noRowsOverlay={() => {
+                  if (search && !isModelItemsFetching) {
+                    return (
+                      <Box
+                        bgcolor="common.white"
+                        flex={1}
+                        display="flex"
+                        alignItems="center"
+                        height="100%"
+                      >
+                        <Box
+                          data-cy="NoResults"
+                          textAlign="center"
+                          sx={{
+                            maxWidth: 387,
+                            mx: "auto",
+                          }}
+                        >
+                          <img src={noSearchResults} alt="No search results" />
+                          <Typography
+                            pt={4}
+                            pb={1}
+                            variant="h4"
+                            fontWeight={600}
+                          >
+                            Your filter <strong>"{search}"</strong> could not
+                            find any results
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            pb={3}
+                            color="text.secondary"
+                          >
+                            Try adjusting your search. We suggest check all
+                            words are spelled correctly or try using different
+                            keywords.
+                          </Typography>
+                          <Button
+                            onClick={() => searchRef.current?.focus()}
+                            variant="contained"
+                            startIcon={<SearchRounded />}
+                          >
+                            Search Again
+                          </Button>
+                        </Box>
+                      </Box>
+                    );
+                  }
+
+                  if (
+                    !isModelItemsFetching &&
+                    !search &&
+                    (statusFilter ||
+                      dateFilter?.preset ||
+                      dateFilter?.from ||
+                      dateFilter?.to ||
+                      userFilter)
+                  ) {
+                    return (
+                      <Box
+                        bgcolor="common.white"
+                        flex={1}
+                        display="flex"
+                        alignItems="center"
+                        height="100%"
+                      >
+                        <Box
+                          data-cy="NoResults"
+                          textAlign="center"
+                          sx={{
+                            maxWidth: 387,
+                            mx: "auto",
+                          }}
+                        >
+                          <img src={noSearchResults} alt="No search results" />
+                          <Typography
+                            pt={4}
+                            pb={1}
+                            variant="h4"
+                            fontWeight={600}
+                          >
+                            No results that matched your filters could be found
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            pb={3}
+                            color="text.secondary"
+                          >
+                            Try adjusting your filters to find what you're
+                            looking for
+                          </Typography>
+                          <Button
+                            onClick={() => {
+                              setParams(null, "statusFilter");
+                            }}
+                            variant="contained"
+                            startIcon={<RestartAltRounded />}
+                          >
+                            Reset Filters
+                          </Button>
+                        </Box>
+                      </Box>
+                    );
+                  }
+
+                  return <></>;
+                }}
               />
-              {!sortedAndFilteredItems?.length &&
-                search &&
-                !isModelItemsFetching && (
-                  <Box
-                    bgcolor="common.white"
-                    flex={1}
-                    display="flex"
-                    alignItems="center"
-                    paddingBottom={12}
-                  >
-                    <Box
-                      data-cy="NoResults"
-                      textAlign="center"
-                      sx={{
-                        maxWidth: 387,
-                        mx: "auto",
-                      }}
-                    >
-                      <img src={noSearchResults} alt="No search results" />
-                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        Your filter <strong>"{search}"</strong> could not find
-                        any results
-                      </Typography>
-                      <Typography variant="body2" pb={3} color="text.secondary">
-                        Try adjusting your search. We suggest check all words
-                        are spelled correctly or try using different keywords.
-                      </Typography>
-                      <Button
-                        onClick={() => searchRef.current?.focus()}
-                        variant="contained"
-                        startIcon={<SearchRounded />}
-                      >
-                        Search Again
-                      </Button>
-                    </Box>
-                  </Box>
-                )}
-              {!sortedAndFilteredItems?.length &&
-                !isModelItemsFetching &&
-                !search &&
-                (statusFilter ||
-                  dateFilter?.preset ||
-                  dateFilter?.from ||
-                  dateFilter?.to ||
-                  userFilter) && (
-                  <Box
-                    bgcolor="common.white"
-                    flex={1}
-                    display="flex"
-                    alignItems="center"
-                    paddingBottom={12}
-                  >
-                    <Box
-                      data-cy="NoResults"
-                      textAlign="center"
-                      sx={{
-                        maxWidth: 387,
-                        mx: "auto",
-                      }}
-                    >
-                      <img src={noSearchResults} alt="No search results" />
-                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        No results that matched your filters could be found
-                      </Typography>
-                      <Typography variant="body2" pb={3} color="text.secondary">
-                        Try adjusting your filters to find what you're looking
-                        for
-                      </Typography>
-                      <Button
-                        onClick={() => {
-                          setParams(null, "statusFilter");
-                        }}
-                        variant="contained"
-                        startIcon={<RestartAltRounded />}
-                      >
-                        Reset Filters
-                      </Button>
-                    </Box>
-                  </Box>
-                )}
             </>
           )}
         </Box>
