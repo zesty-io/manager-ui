@@ -20,14 +20,11 @@ import { EditorActions } from "./EditorActions";
 import ElectricBoltOutlinedIcon from "@mui/icons-material/ElectricBoltOutlined";
 import { DeleteDialog } from "./DeleteDialog";
 import CheckIcon from "@mui/icons-material/Check";
-import { Dispatch } from "redux";
-import { useDispatch } from "react-redux";
 
 interface TopBarProps {
   fileName: string;
   synced: boolean;
   isDiffer?: boolean;
-  dispatch: Dispatch;
   fileZUID: string;
   fileType: string;
   publishedVersion?: string;
@@ -43,8 +40,6 @@ interface TopBarProps {
 
 const TopBar = memo(function TopBar(props: TopBarProps) {
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
-  const dispatch = useDispatch();
-
   return (
     <>
       <Box
@@ -95,7 +90,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
               setVersionCodeLeft={props.setVersionCodeLeft}
               setVersionCodeRight={props.setVersionCodeRight}
               setLoading={props.setLoading}
-              currentCode={props.code}
+              code={props.code}
             />
           ) : (
             <>
@@ -164,7 +159,6 @@ const MoreOptions = (props: MoreOptionsProps) => {
           }, 700);
         })
         .catch((err) => {
-          console.error("Error");
           console.error(err);
         });
     };

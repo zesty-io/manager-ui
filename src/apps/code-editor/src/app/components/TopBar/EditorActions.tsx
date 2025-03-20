@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState, ReactNode } from "react";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
@@ -8,8 +8,8 @@ import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { fetchFiles, publishFile, saveFile } from "../../../store/files";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import { Dispatch } from "redux";
 import { useDispatch } from "react-redux";
+import { ReactElement } from "react";
 
 interface EditorActionsProps {
   fileZUID: string;
@@ -30,6 +30,7 @@ export const EditorActions = memo(function EditorActions(
   const canUpdate = usePermission("UPDATE", props?.fileZUID);
   const [isSaving, setIsSaving] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [fileZUID, setFileZUID] = useState(null);
   const [initialCode, setInitialCode] = useState(props.code);
 
   const isNotSaved = initialCode !== props.code;
@@ -50,9 +51,7 @@ export const EditorActions = memo(function EditorActions(
     setIsSaving(true);
 
     try {
-      await dispatch(saveFile(props.fileZUID, props.status));
-    } catch (err: any) {
-      console.error(err);
+      await Promise.resolve(dispatch(saveFile(props.fileZUID, props.status)));
     } finally {
       getUpdatedFiles();
       setInitialCode(props.code);
@@ -61,14 +60,26 @@ export const EditorActions = memo(function EditorActions(
   };
   const onPublish = async () => {
     setIsPublishing(true);
+
     try {
-      await dispatch(publishFile(props.fileZUID, props.status));
+      if (isNotSaved) {
+        await Promise.resolve(dispatch(saveFile(props.fileZUID, props.status)));
+      }
+      await Promise.resolve(
+        dispatch(publishFile(props.fileZUID, props.status))
+      );
     } finally {
       getUpdatedFiles();
       setInitialCode(props.code);
       setIsPublishing(false);
     }
   };
+  useEffect(() => {
+    if (props.fileZUID !== fileZUID) {
+      setInitialCode(props?.code);
+      setFileZUID(props.fileZUID);
+    }
+  }, [props.fileZUID, props?.code, fileZUID]);
 
   return (
     <Box
@@ -81,81 +92,89 @@ export const EditorActions = memo(function EditorActions(
       <Tooltip
         enterDelay={500}
         enterNextDelay={500}
-        title={`Save File ${saveShortcut}`}
+        title={saveButtonVariant === "text" ? "" : `Save File ${saveShortcut}`}
         placement="bottom"
       >
-        <LoadingButton
-          variant={saveButtonVariant}
-          startIcon={
-            isNotSaved ? (
-              <SaveRoundedIcon fontSize="small" />
-            ) : (
-              <CheckCircleRounded fontSize="small" />
-            )
-          }
-          color={isNotSaved ? "primary" : "inherit"}
-          size="small"
-          onClick={onSave}
-          loading={isNotSaved && (isSaving || isPublishing)}
-          sx={{
-            color: isNotSaved ? "primary.contrastText" : "grey.400",
-            pointerEvents: isNotSaved ? "auto" : "none",
-          }}
-          disabled={!canUpdate}
-        >
-          {isNotSaved ? "Save" : "Saved"}
-        </LoadingButton>
-      </Tooltip>
-
-      <ButtonGroup
-        variant={publishButtonVariant}
-        color="success"
-        size="small"
-        disabled={isPublishing || !canPublish || !canUpdate}
-        sx={{
-          "& .MuiButtonGroup-grouped:not(:last-of-type)": {
-            ...(!isUnpublished && {
-              border: "none",
-              color: "success.main",
-            }),
-          },
-        }}
-      >
-        <Tooltip
-          enterDelay={500}
-          enterNextDelay={500}
-          title={`Publish File ${publishShortcut}`}
-          placement="bottom"
-        >
+        <div>
           <LoadingButton
-            variant={publishButtonVariant}
+            variant={saveButtonVariant}
             startIcon={
-              isUnpublished ? (
-                <CloudUploadRoundedIcon fontSize="small" />
+              isNotSaved ? (
+                <SaveRoundedIcon fontSize="small" />
               ) : (
                 <CheckCircleRounded fontSize="small" />
               )
             }
+            color={isNotSaved ? "primary" : "inherit"}
             size="small"
-            onClick={onPublish}
-            loading={isPublishing}
-            sx={{ pl: 1 }}
-            disabled={!isUnpublished}
+            onClick={onSave}
+            loading={isNotSaved && (isSaving || isPublishing)}
+            sx={{
+              color: isNotSaved ? "primary.contrastText" : "grey.400",
+              pointerEvents: isNotSaved ? "auto" : "none",
+            }}
+            disabled={!canUpdate}
           >
-            {!isUnpublished ? "Published" : "Publish"}
+            {isNotSaved ? "Save" : "Saved"}
           </LoadingButton>
-        </Tooltip>
-        <Button
-          variant={publishButtonVariant}
-          color={isUnpublished ? "success" : "inherit"}
-          size="small"
-          sx={{
-            width: "32px",
-          }}
-        >
-          <ArrowDropDownRoundedIcon fontSize="small" />
-        </Button>
-      </ButtonGroup>
+        </div>
+      </Tooltip>
+      <Tooltip
+        enterDelay={500}
+        enterNextDelay={500}
+        title={
+          publishButtonVariant === "text"
+            ? ""
+            : `Publish File ${publishShortcut}`
+        }
+        placement="bottom"
+      >
+        <div>
+          <ButtonGroup
+            variant={publishButtonVariant}
+            color="success"
+            size="small"
+            disabled={isPublishing || !canPublish || !canUpdate}
+            sx={{
+              "& .MuiButtonGroup-grouped:not(:last-of-type)": {
+                ...(!isUnpublished && {
+                  border: "none!important",
+                  color: "success.main",
+                }),
+              },
+            }}
+          >
+            <LoadingButton
+              variant={publishButtonVariant}
+              startIcon={
+                isUnpublished ? (
+                  <CloudUploadRoundedIcon fontSize="small" />
+                ) : (
+                  <CheckCircleRounded fontSize="small" />
+                )
+              }
+              size="small"
+              onClick={onPublish}
+              loading={isPublishing}
+              sx={{ pl: 1 }}
+              disabled={!isUnpublished}
+            >
+              {!isUnpublished ? "Published" : "Publish"}
+            </LoadingButton>
+
+            <Button
+              variant={publishButtonVariant}
+              color={isUnpublished ? "success" : "inherit"}
+              size="small"
+              sx={{
+                width: "32px",
+              }}
+            >
+              <ArrowDropDownRoundedIcon fontSize="small" />
+            </Button>
+          </ButtonGroup>
+        </div>
+      </Tooltip>
     </Box>
   );
 });

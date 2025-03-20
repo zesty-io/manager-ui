@@ -98,7 +98,6 @@ const FileNav: FC<FileNavProps> = ({
                 size="xsmall"
                 onClick={() => {
                   dispatch(publishFile(treeItem?.ZUID, treeItem?.status));
-                  dispatch(fetchFiles(group));
                 }}
               >
                 <CloudUploadRoundedIcon

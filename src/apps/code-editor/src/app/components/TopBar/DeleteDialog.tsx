@@ -1,6 +1,5 @@
 import { memo, useState, useCallback } from "react";
 import { useHistory } from "react-router";
-import DeleteIcon from "@mui/icons-material/Delete";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
@@ -13,7 +12,6 @@ import {
 } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
-import { IconButton } from "@mui/material";
 import { deleteFile } from "../../../store/files";
 
 interface DeleteDialogProps {

@@ -7,7 +7,6 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 import EastIcon from "@mui/icons-material/East";
 
-import { Dispatch } from "redux";
 import {
   fetchFileVersions,
   saveFile,
@@ -21,7 +20,7 @@ interface DifferActionsProps {
   publishedVersion?: string | "local";
   status: string;
   synced: boolean;
-  currentCode: string;
+  code: string;
   setVersionCodeLeft: (code: string) => void;
   setVersionCodeRight: (code: string) => void;
   setLoading: (loading: boolean) => void;
@@ -48,7 +47,7 @@ export const DifferActions = memo(function DifferActions(
 
   const loadVersion = () => {
     if (selectedVersion === "local") {
-      dispatch(updateFileCode(props.fileZUID, props.status, props.currentCode));
+      dispatch(updateFileCode(props.fileZUID, props.status, props.code));
     } else {
       const version = versions.find(
         (v) => v.version === Number(selectedVersion)
@@ -65,7 +64,7 @@ export const DifferActions = memo(function DifferActions(
     setSaving(true);
 
     if (selectedVersion === "local") {
-      dispatch(updateFileCode(props.fileZUID, props.status, props.currentCode));
+      dispatch(updateFileCode(props.fileZUID, props.status, props.code));
     } else {
       const version = versions.find((v) => v.version === selectedVersion);
       if (version) {
@@ -104,7 +103,7 @@ export const DifferActions = memo(function DifferActions(
             return 0;
           });
         versions.unshift({
-          code: props.currentCode,
+          code: props.code,
           version: "local",
           status: props.status,
           createdAt: new Date().toISOString(),
@@ -136,7 +135,7 @@ export const DifferActions = memo(function DifferActions(
     props.fileZUID,
     props.fileType,
     props.status,
-    props.currentCode,
+    props.code,
     props.publishedVersion,
     props.setLoading,
     props.setVersionCodeRight,
