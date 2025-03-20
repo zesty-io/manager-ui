@@ -1,14 +1,16 @@
 import { useEffect } from "react";
 import { connect } from "react-redux";
-import { useRouteMatch } from "react-router-dom";
-import { Box, Grid } from "@mui/material";
+import { Switch, useRouteMatch } from "react-router-dom";
+import { Grid, Typography, Box } from "@mui/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import { Workspace } from "../../components/Workspace/";
+import Workspace from "../../components/Workspace";
 
 import { fetchFiles } from "../../../store/files";
 import SideBar from "../../components/SideBar";
+import { Route } from "react-router";
+import { GettingStarted } from "../../components/Workspace/components/GettingStarted";
 
 export default connect((state) => {
   return {
@@ -67,19 +69,50 @@ export default connect((state) => {
             position: "relative",
             height: "100%",
             borderRight: "text.primary",
-            bgcolor: "#101828",
+            bgcolor: "grey.900",
           }}
         >
           <SideBar {...props} />
         </Grid>
-        <Grid item xs sx={{ position: "relative", height: "100%" }}>
-          <Box position="absolute" width="100%" height="100%">
-            <Workspace
-              dispatch={props.dispatch}
-              files={props.files}
-              status={props.status}
+        <Grid
+          item
+          xs
+          sx={{
+            position: "relative",
+            height: "100%",
+            width: "100%",
+            overflow: "hidden",
+            bgcolor: "grey.900",
+          }}
+        >
+          <Switch>
+            <Route exact path="/code">
+              <GettingStarted files={props.files} />
+            </Route>
+            <Route
+              path="/code/file/:fileType/:fileZUID"
+              render={(routeProps) => {
+                return (
+                  <Workspace
+                    {...routeProps}
+                    dispatch={props.dispatch}
+                    status={props.status}
+                    match={match}
+                  />
+                );
+              }}
             />
-          </Box>
+            <Route path="*">
+              <Box
+                width="100%"
+                height="100%"
+                display="grid"
+                placeContent="center"
+              >
+                <Typography variant="h1">File Not Found</Typography>
+              </Box>
+            </Route>
+          </Switch>
         </Grid>
       </Grid>
     </WithLoader>
