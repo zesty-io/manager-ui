@@ -82,7 +82,7 @@ describe("Content media selection modal", () => {
 
   // Dependent on state of previous test
   it("only searches the locked group", () => {
-    cy.get("[data-testid='media-thumbnail-content']").should("have.length", 4);
+    cy.get("[data-testid='media-thumbnail-content']").should("have.length", 6);
     cy.get("input[type='text'][placeholder='Search Media']").type(
       "zesty{enter}"
     );

@@ -4,7 +4,6 @@ import { Location } from "history";
 import idb from "../../utility/idb";
 import { AppState } from "./types";
 import { isValid as zuidIsValid } from "zuid";
-import { ContentModel } from "../../shell/services/types";
 import {
   SearchRounded,
   RocketLaunchRounded,
@@ -20,7 +19,7 @@ import {
   ShuffleRounded,
 } from "@mui/icons-material";
 import { Database, Block } from "@zesty-io/material";
-import { isEqual } from "lodash";
+import { capitalize, isEqual } from "lodash";
 
 export type Tab = {
   pathname: string;
@@ -156,15 +155,41 @@ const ICON_CONFIG: { [index: string]: SvgIconComponent } = Object.freeze({
 
 // Thunk helper functions
 export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
+  const tab1Segments = tab1.pathname.split("/").filter((part) => part);
+  const tab2Segments = tab2.pathname.split("/").filter((part) => part);
+
   // Makes sure that a new tab isn't created when the user searches for something and only the filters are changed in the params
   if (tab1.pathname === "/search" && tab2.pathname === "/search") {
     const params1 = new URLSearchParams(tab1.search);
     const params2 = new URLSearchParams(tab2.search);
 
     return params1.get("q") === params2.get("q");
+  } else if (
+    (tab1Segments[0] === "content" && tab2Segments[0] === "content") ||
+    (tab1Segments[0] === "blocks" && tab2Segments[0] === "blocks")
+  ) {
+    // Makes sure that we stay on the same tab if the modelZUID and itemZUID is the same
+    return (
+      tab1Segments[1] === tab2Segments[1] && tab1Segments[2] === tab2Segments[2]
+    );
+  } else if (tab1Segments[0] === "schema" && tab2Segments[0] === "schema") {
+    // Makes sure that we stay on the same tab if the modelZUID is the same
+    return tab1Segments[1] === tab2Segments[1];
+  } else if (tab1Segments[0] === "media" && tab2Segments[0] === "media") {
+    if (tab1Segments.length === 1 && tab2Segments.length === 1) {
+      // This means that the user is on the /media page and we want to stay in just 1 tab even
+      // if they're looking at an item which adds ?fileId on the URL
+      return true;
+    } else {
+      // Makes sure that we stay on the same tab if the binZUID/folder is the same
+      return (
+        tab1Segments[1] === tab2Segments[1] &&
+        tab1Segments[2] === tab2Segments[2]
+      );
+    }
+  } else {
+    return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
   }
-
-  return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
 }
 
 type TabLocation = Pick<Location, "pathname" | "search">;
@@ -175,14 +200,48 @@ export function parsePath({ pathname: path, search }: TabLocation) {
   let contentSection = null;
 
   if (parts.length > 1) {
-    if (
-      parts[parts.length - 1] === "head" ||
-      parts[parts.length - 1] === "meta"
-    ) {
-      contentSection = parts.pop();
-    }
-    if (zuidIsValid(parts[parts.length - 1])) {
-      zuid = parts.pop();
+    switch (parts[0]) {
+      case "content":
+      case "blocks":
+        const modelZUID = parts[1];
+        const itemZUID = parts[2];
+        contentSection = parts[3];
+
+        // If there's no modelZUID then this means we're on the multi-page view
+        if (itemZUID) {
+          zuid = zuidIsValid(itemZUID) ? itemZUID : null;
+        } else {
+          zuid = zuidIsValid(modelZUID) ? modelZUID : null;
+        }
+        break;
+
+      case "schema":
+        // Use modelZUID
+        zuid = zuidIsValid(parts[1]) ? parts[1] : null;
+        break;
+
+      case "media":
+        // Use folder ZUID
+        zuid = zuidIsValid(parts[2]) ? parts[2] : null;
+        break;
+
+      case "apps":
+        // Use app ZUID
+        zuid = zuidIsValid(parts[1]) ? parts[1] : null;
+        break;
+
+      case "code":
+        // Use code file ZUID
+        zuid = zuidIsValid(parts[3]) ? parts[3] : null;
+        break;
+
+      case "reports":
+        zuid = zuidIsValid(parts[3]) ? parts[3] : null;
+        break;
+
+      default:
+        zuid = null;
+        break;
     }
   }
 
@@ -216,173 +275,220 @@ export function createTab(
     apps: "Apps",
   };
 
-  if (parts[0] === "app") {
-    // Icon is non-serializable so it cannot be saved to idb
-    Object.defineProperty(tab, "icon", {
-      value: ICON_CONFIG.app,
-      enumerable: false,
-    });
+  const name = parts[0] as keyof typeof appNameMap;
+  // Icon is non-serializable so it cannot be saved to idb
+  Object.defineProperty(tab, "icon", {
+    value: ICON_CONFIG[name],
+    enumerable: false,
+  });
+  tab.app = appNameMap[name];
 
-    const app = state.apps.installed.find(
-      (app: { ZUID: string }) => app.ZUID === zuid
-    );
-    tab.name = app?.label || app?.name || "Custom App";
-  } else if (parts[0] === "reports") {
-    // Icon is non-serializable so it cannot be saved to idb
-    Object.defineProperty(tab, "icon", {
-      value: ICON_CONFIG.reports,
-      enumerable: false,
-    });
+  // If there is a ZUID prefix (ie 6- for model, 7- for content item) we can resolve the name of the tab
+  // else we can use the app name to determine the tab name
+  if (prefix) {
+    // resolve ZUID from store to determine display information
+    switch (prefix) {
+      // Media Bin
+      case "1":
+        const bin = queryData?.mediaManager?.bins?.find(
+          (bin: any) => bin.id === zuid
+        );
+        if (bin) {
+          tab.name =
+            parts[0] === "reports" ? `${bin.name} - Activity Log` : bin.name;
+        }
+        break;
 
-    switch (parts[1]) {
-      case "activity-log":
-        tab.name = "Activity Log";
-        tab.app = "Activity Log";
-        /*
-          If there is a user associated with an activity log page,
-          put that user's name in the tab
-        */
-        if (parts[2]) {
-          tab.name = `${toCapitalCase(parts[2])} - Activity Log`;
-          if (parts[2] === "users" && Boolean(zuid)) {
+      // Media Folder / Bin Group
+      case "2":
+        const group = queryData?.mediaManager?.binGroups?.find(
+          (group: any) => group.id === zuid
+        );
+        if (group) {
+          tab.name =
+            parts[0] === "reports"
+              ? `${group.name} - Activity Log`
+              : group.name;
+        }
+        break;
+
+      // User
+      case "5":
+        const user = state.users.find(
+          (user: { ZUID: string }) => user.ZUID === zuid
+        );
+        if (user) {
+          const { firstName, lastName } = user;
+          tab.name =
+            parts[0] === "reports"
+              ? `${firstName} ${lastName} - Activity Log`
+              : `${firstName} ${lastName}`;
+        }
+        break;
+
+      // Model
+      case "6":
+        if (state.models) {
+          const model: any = state.models[zuid];
+
+          tab.name =
+            parts[0] === "reports"
+              ? `${model?.label} - Activity Log`
+              : model?.label;
+        }
+        break;
+
+      // Content Item
+      case "7":
+        if (state.content) {
+          const item = state.content[zuid];
+
+          if (item && item.web) {
+            const contentTitle =
+              item.web.metaLinkText || item.web.metaTitle || item.web.pathPart;
+            tab.name =
+              parts[0] === "reports"
+                ? `${contentTitle} - Activity Log`
+                : contentTitle;
+          }
+        }
+        break;
+
+      // Code File
+      case "10":
+      case "11":
+        if (state.files) {
+          const selectedFile = state.files.find(
+            (file: any) => file.ZUID === zuid
+          );
+          if (selectedFile) {
+            let name = selectedFile.fileName;
+            // Trim leading slash
+            if (name.charAt(0) === "/") name = name.slice(1);
+            // prepend asterix to unsaved file
+            if (selectedFile.dirty) name = `*${name}`;
+            tab.name = parts[0] === "reports" ? `${name} - Activity Log` : name;
+          }
+        }
+        break;
+
+      // Settings
+      case "29":
+        const allSettings = state.settings
+          ? Object.values(state.settings).flat()
+          : [];
+        const matchedSetting = allSettings.find(
+          (setting: { ZUID: string }) => setting.ZUID === zuid
+        );
+        if (matchedSetting) {
+          tab.name =
+            parts[0] === "reports"
+              ? // @ts-expect-error untyped
+                `${matchedSetting.keyFriendly} - Activity Log`
+              : // @ts-expect-error untyped
+                matchedSetting.keyFriendly;
+        }
+        break;
+
+      // App item
+      case "80":
+        const app = state.apps.installed.find(
+          (app: { ZUID: string }) => app.ZUID === zuid
+        );
+        const appName = app?.label || app?.name || "Custom App";
+        tab.name =
+          parts[0] === "reports" ? `${appName} - Activity Log` : appName;
+
+        break;
+    }
+  } else {
+    if (parts[0] === "apps") {
+      tab.name = "Apps";
+    } else if (parts[0] === "reports") {
+      // Reports page specific tab naming rules
+
+      switch (parts[1]) {
+        case "activity-log":
+          tab.name = "Activity Log";
+          tab.app = "Activity Log";
+
+          if (parts[2]) {
+            tab.name = `${capitalize(parts[2])} - Activity Log`;
+          }
+
+          // Hacky way to get the user ZUID out of the search string
+          const url = new URL(`http://example.com/${search}`);
+          const userZUID = url.searchParams.get("actionByUserZUID");
+          if (userZUID) {
             const user = state.users.find(
-              (user: { ZUID: string }) => user.ZUID === zuid
+              (user: { ZUID: string }) => user.ZUID === userZUID
             );
             if (user) {
               const { firstName, lastName } = user;
               tab.name = `${firstName} ${lastName} - Activity Log`;
             }
           }
-        }
-        // Hacky way to get the user ZUID out of the search string
-        const url = new URL(`http://example.com/${search}`);
-        const userZUID = url.searchParams.get("actionByUserZUID");
-        if (userZUID) {
-          const user = state.users.find(
-            (user: { ZUID: string }) => user.ZUID === userZUID
-          );
-          if (user) {
-            const { firstName, lastName } = user;
-            tab.name = `${firstName} ${lastName} - Activity Log`;
-          }
-        }
-        break;
-      case "metrics":
-        tab.name = "Metrics";
-        tab.app = "Metrics";
-        break;
-    }
-  } else if (parts[0] in appNameMap) {
-    const name = parts[0] as keyof typeof appNameMap;
+          break;
 
-    // Icon is non-serializable so it cannot be saved to idb
-    Object.defineProperty(tab, "icon", {
-      value: ICON_CONFIG[name],
-      enumerable: false,
-    });
+        case "metrics":
+          tab.name = "Metrics";
+          tab.app = "Metrics";
+          break;
 
-    tab.name = appNameMap[name];
-    tab.app = appNameMap[name];
-
-    if (parts[0] === "content" && parts[2] === "new" && zuidIsValid(parts[1])) {
-      tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
-    }
-    if (parts[0] === "schema" && zuidIsValid(parts[1])) {
-      tab.name = queryData?.instance?.models?.find(
-        (model: ContentModel) => model.ZUID === parts[1]
-      )?.label;
-    }
-    if (parts[0] === "search") {
-      // Replaces the tab name to whatever the search keyword is on the /search page
-      const searchParams = new URLSearchParams(search);
-      const keyword = searchParams.get("q");
-
-      if (keyword) {
-        tab.name = keyword;
+        default:
+          break;
       }
-    }
-  }
-  // resolve ZUID from store to determine display information
-  switch (prefix) {
-    case "1":
-      const bin = queryData?.mediaManager?.bins?.find(
-        (bin: any) => bin.id === zuid
-      );
-      if (bin) {
-        tab.name = bin.name;
-      }
-      break;
-    case "2":
-      const group = queryData?.mediaManager?.binGroups?.find(
-        (group: any) => group.id === zuid
-      );
-      if (group) {
-        tab.name = group.name;
-      }
-      break;
-    case "6":
-      if (state.models) {
-        const model: any = state.models[zuid];
-
-        tab.name = model?.label;
-      }
-      break;
-    case "7":
-      if (state.content) {
-        const item = state.content[zuid];
-        if (item && item.web) {
-          tab.name =
-            item.web.metaLinkText || item.web.metaTitle || item.web.pathPart;
-        }
-      }
-      break;
-    case "10":
-    case "11":
-      if (state.files) {
-        const selectedFile = state.files.find(
-          (file: any) => file.ZUID === zuid
-        );
-        if (selectedFile) {
-          let name = selectedFile.fileName;
-          // Trim leading slash
-          if (name.charAt(0) === "/") name = name.slice(1);
-          // prepend asterix to unsaved file
-          if (selectedFile.dirty) name = `*${name}`;
-          tab.name = name;
-        }
-      }
-      break;
-    case "17":
-      break;
-  }
-  if (parts[0] === "settings") {
-    if (parts[2]) {
-      if (parts[1] === "instance") {
-        tab.name =
-          parts[2]
+    } else if (parts[0] === "settings") {
+      // Settings specific tab naming rules
+      if (parts[2]) {
+        if (parts[1] === "instance") {
+          tab.name = `${parts[2]
             .replace("-", " ")
             .replace("_", " ")
             .split(" ")
             .map(toCapitalCase)
-            .join(" ") + " Settings";
-      } else if (parts[1] === "fonts") {
-        tab.name = toCapitalCase(parts[2]) + " Fonts";
+            .join(" ")} Settings`;
+        } else if (parts[1] === "fonts") {
+          tab.name = `${toCapitalCase(parts[2])} Fonts`;
+        } else {
+          tab.name = `${toCapitalCase(parts[1])} Settings`;
+        }
       } else {
-        tab.name = toCapitalCase(parts[1]) + " Settings";
+        tab.name = `${toCapitalCase(parts[1])} Settings`;
       }
-    } else if (parts[1] === "styles") {
-      tab.name = toCapitalCase(parts[1]) + " Settings";
+    } else if (parts[0] in appNameMap) {
+      if (
+        parts[0] === "content" &&
+        parts[2] === "new" &&
+        zuidIsValid(parts[1])
+      ) {
+        // Creating a new content item
+        tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
+      } else if (parts[0] === "search") {
+        // Global search
+        // Replaces the tab name to whatever the search keyword is on the /search page
+        const searchParams = new URLSearchParams(search);
+        const keyword = searchParams.get("q");
+
+        if (keyword) {
+          tab.name = keyword;
+        }
+      } else if (parts[1] === "search" && parts[0] in appNameMap) {
+        // In-app searching example: schema search
+        const name = parts[0] as keyof typeof appNameMap;
+        tab.name = `${appNameMap[name]} Search Results`;
+      } else {
+        tab.name = appNameMap[name];
+      }
     }
   }
 
-  if (parts[1] === "search" && parts[0] in appNameMap) {
-    const name = parts[0] as keyof typeof appNameMap;
-    tab.name = `${appNameMap[name]} Search Results`;
-  }
   return tab;
 }
 
 function toCapitalCase(string: string) {
+  if (!string) return "";
+
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
