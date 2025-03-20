@@ -49,11 +49,11 @@ export default function FileStatus({ file, items }: FileStatusProps) {
   return (
     <FileCard title="File Information" icon={InfoIcon}>
       <List dense>
-        {file.contentModelZUID && (
+        {file?.contentModelZUID && (
           <FileCardListItem>
             Model ZUID:&nbsp;
             <Link
-              to={`/schema/${file.contentModelZUID}`}
+              to={`/schema/${file?.contentModelZUID}`}
               title="Edit Related Model"
             >
               {file.contentModelZUID}
@@ -95,15 +95,17 @@ export default function FileStatus({ file, items }: FileStatusProps) {
               Compiles to /site.css
             </Link>
           )}
-          {file.contentModelZUID && items.length !== 0 && (
-            <Link
-              to={items[0].web.path}
-              target="_blank"
-              title={`Preview ${items[0].web.path} Webpage`}
-            >
-              {items[0].web.path}
-            </Link>
-          )}
+          {file.contentModelZUID &&
+            items.length !== 0 &&
+            items?.[0]?.web?.path && (
+              <Link
+                to={items?.[0]?.web?.path}
+                target="_blank"
+                title={`Preview ${items[0].web.path} Webpage`}
+              >
+                {items[0].web.path}
+              </Link>
+            )}
           {!file.contentModelZUID && file.fileName.includes("/") && (
             <Link
               to={`/${file.fileName}`}
