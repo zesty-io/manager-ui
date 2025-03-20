@@ -4,7 +4,6 @@ import {
   Box,
   Stack,
   Typography,
-  ThemeProvider,
   Button,
   ButtonGroup,
   Menu,
@@ -57,106 +56,60 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
   const isRenderedAsDialog = params.get("isDialog") === "true";
 
   return (
-    <ThemeProvider theme={theme}>
-      <>
-        <Stack
-          px={4}
-          pt={4}
-          pb={1.75}
-          borderBottom="2px solid"
-          borderColor="border"
-          sx={{ backgroundColor: "background.paper" }}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="flext-start"
-        >
-          <Stack gap={0.25}>
-            {model?.type !== "block" && <ContentBreadcrumbs />}
-            <Typography
-              variant="h3"
-              fontWeight={700}
-              color="text.primary"
-              sx={{
-                display: "-webkit-box",
-                "-webkit-line-clamp": "2",
-                "-webkit-box-orient": "vertical",
-                wordBreak: "break-word",
-                wordWrap: "break-word",
-                hyphens: "auto",
-                overflow: "hidden",
-              }}
-            >
-              Create{" "}
-              {model.type === "block" ? "Variant" : `${model.label} Item`}
-            </Typography>
-          </Stack>
-          <Stack direction="row" gap={1} flexShrink={0} alignItems="flex-start">
-            {!isRenderedAsDialog && (
-              <ButtonGroup
-                variant="outlined"
-                color="primary"
-                size="small"
-                disabled={!isDirty || isLoading}
-              >
-                <LoadingButton
-                  startIcon={<AddRoundedIcon />}
-                  onClick={() => {
-                    onSave("addNew");
-                  }}
-                  loading={isLoading}
-                  variant="outlined"
-                >
-                  Create & Add New
-                </LoadingButton>
-                <Button
-                  size="xsmall"
-                  onClick={(evt) => {
-                    setAnchorEl(evt.currentTarget);
-                    setDropdownMenuType("addNew");
-                  }}
-                  sx={{
-                    px: 1,
-                    "&.MuiButtonGroup-grouped": {
-                      minWidth: 34,
-                    },
-                  }}
-                >
-                  <ArrowDropDownRoundedIcon sx={{ fontSize: 18 }} />
-                </Button>
-              </ButtonGroup>
-            )}
+    <>
+      <Stack
+        px={4}
+        pt={4}
+        pb={1.75}
+        borderBottom="2px solid"
+        borderColor="border"
+        sx={{ backgroundColor: "background.paper" }}
+        direction="row"
+        justifyContent="space-between"
+        alignItems="flext-start"
+      >
+        <Stack gap={0.25}>
+          {model?.type !== "block" && <ContentBreadcrumbs />}
+          <Typography
+            variant="h3"
+            fontWeight={700}
+            color="text.primary"
+            sx={{
+              display: "-webkit-box",
+              "-webkit-line-clamp": "2",
+              "-webkit-box-orient": "vertical",
+              wordBreak: "break-word",
+              wordWrap: "break-word",
+              hyphens: "auto",
+              overflow: "hidden",
+            }}
+          >
+            Create {model.type === "block" ? "Variant" : `${model.label} Item`}
+          </Typography>
+        </Stack>
+        <Stack direction="row" gap={1} flexShrink={0} alignItems="flex-start">
+          {!isRenderedAsDialog && (
             <ButtonGroup
-              variant="contained"
+              variant="outlined"
               color="primary"
               size="small"
               disabled={!isDirty || isLoading}
-              sx={{
-                "& .MuiButtonGroup-grouped": {
-                  backgroundColor: "primary.main",
-                  color: "common.white",
-
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                },
-              }}
             >
               <LoadingButton
-                startIcon={<SaveRoundedIcon />}
+                startIcon={<AddRoundedIcon />}
                 onClick={() => {
-                  onSave("");
+                  onSave("addNew");
                 }}
                 loading={isLoading}
-                variant="contained"
-                data-cy="CreateItemSaveButton"
+                variant="outlined"
               >
-                Create
+                Create & Add New
               </LoadingButton>
               <Button
                 size="xsmall"
                 onClick={(evt) => {
                   setAnchorEl(evt.currentTarget);
-                  setDropdownMenuType("default");
+                  setDropdownMenuType("addNew");
                 }}
                 sx={{
                   px: 1,
@@ -168,70 +121,113 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
                 <ArrowDropDownRoundedIcon sx={{ fontSize: 18 }} />
               </Button>
             </ButtonGroup>
-            {isRenderedAsDialog && (
-              <IconButton
-                size="small"
+          )}
+          <ButtonGroup
+            variant="contained"
+            color="primary"
+            size="small"
+            disabled={!isDirty || isLoading}
+            sx={{
+              "& .MuiButtonGroup-grouped": {
+                backgroundColor: "primary.main",
+                color: "common.white",
+
+                "&:hover": {
+                  backgroundColor: "primary.dark",
+                },
+              },
+            }}
+          >
+            <LoadingButton
+              startIcon={<SaveRoundedIcon />}
+              onClick={() => {
+                onSave("");
+              }}
+              loading={isLoading}
+              variant="contained"
+              data-cy="CreateItemSaveButton"
+            >
+              Create
+            </LoadingButton>
+            <Button
+              size="xsmall"
+              onClick={(evt) => {
+                setAnchorEl(evt.currentTarget);
+                setDropdownMenuType("default");
+              }}
+              sx={{
+                px: 1,
+                "&.MuiButtonGroup-grouped": {
+                  minWidth: 34,
+                },
+              }}
+            >
+              <ArrowDropDownRoundedIcon sx={{ fontSize: 18 }} />
+            </Button>
+          </ButtonGroup>
+          {isRenderedAsDialog && (
+            <IconButton
+              size="small"
+              onClick={() => {
+                setInitiatorZUID(null);
+              }}
+            >
+              <CloseRounded />
+            </IconButton>
+          )}
+        </Stack>
+      </Stack>
+      <Menu
+        anchorEl={anchorEl}
+        open={!!anchorEl}
+        onClose={() => {
+          setAnchorEl(null);
+          setDropdownMenuType(null);
+        }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              mt: 1,
+            },
+          },
+        }}
+      >
+        {!!DropdownMenu[dropdownMenuType] &&
+          Object.entries(DropdownMenu[dropdownMenuType])?.map(
+            ([key, value]) => (
+              <MenuItem
+                key={key}
                 onClick={() => {
-                  setInitiatorZUID(null);
+                  onSave(key as ActionAfterSave);
+                  setAnchorEl(null);
+                  setDropdownMenuType(null);
+                }}
+                sx={{
+                  height: 40,
+                  px: 2,
+                  py: 1,
                 }}
               >
-                <CloseRounded />
-              </IconButton>
-            )}
-          </Stack>
-        </Stack>
-        <Menu
-          anchorEl={anchorEl}
-          open={!!anchorEl}
-          onClose={() => {
-            setAnchorEl(null);
-            setDropdownMenuType(null);
-          }}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          slotProps={{
-            paper: {
-              sx: {
-                mt: 1,
-              },
-            },
-          }}
-        >
-          {!!DropdownMenu[dropdownMenuType] &&
-            Object.entries(DropdownMenu[dropdownMenuType])?.map(
-              ([key, value]) => (
-                <MenuItem
-                  key={key}
-                  onClick={() => {
-                    onSave(key as ActionAfterSave);
-                    setAnchorEl(null);
-                    setDropdownMenuType(null);
-                  }}
-                  sx={{
-                    height: 40,
-                    px: 2,
-                    py: 1,
-                  }}
-                >
-                  <ListItemIcon>
-                    {["publishNow", "publishAddNew"].includes(key) ? (
-                      <CloudUploadRoundedIcon />
-                    ) : (
-                      <CalendarTodayRoundedIcon />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText>{value}</ListItemText>
-                </MenuItem>
-              )
-            )}
-        </Menu>
-      </>
-    </ThemeProvider>
+                <ListItemIcon>
+                  {["publishNow", "publishAddNew"].includes(key) ? (
+                    <CloudUploadRoundedIcon />
+                  ) : (
+                    <CalendarTodayRoundedIcon />
+                  )}
+                </ListItemIcon>
+                <ListItemText>{value}</ListItemText>
+              </MenuItem>
+            )
+          )}
+      </Menu>
+    </>
   );
 };

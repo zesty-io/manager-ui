@@ -29,47 +29,45 @@ const Analytics = ({ item }: Props) => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          boxSizing: "border-box",
-          color: (theme) => theme.palette.text.primary,
-        }}
-        height={"100%"}
-        overflow="auto"
-        bgcolor="grey.50"
-      >
-        {!isError ? (
-          <>
-            {item ? (
-              <Box px={4} py={2.5}>
-                <SinglePageAnalytics item={item} loading={isFetching} />
-              </Box>
-            ) : (
-              <AnalyticsDashboard loading={isFetching} />
-            )}
-            {!instanceSettingsFetching && !propertyId && !isFetching && (
-              <PropertiesDialog
-                onClose={(shouldNavAway = false) => {
-                  if (shouldNavAway && item) {
-                    history.push(
-                      `/content/${item?.meta?.contentModelZUID}/${item?.meta?.ZUID}`
-                    );
-                  }
-                  if (shouldNavAway && !item) {
-                    history.push(`/launchpad`);
-                  }
-                }}
-              />
-            )}
-          </>
-        ) : (
-          <Box px={3} height="100%">
-            <AuthView validateAuth={validateAuth} isDashboard={!item} />
-          </Box>
-        )}
-      </Box>
-    </ThemeProvider>
+    <Box
+      sx={{
+        boxSizing: "border-box",
+        color: (theme) => theme.palette.text.primary,
+      }}
+      height={"100%"}
+      overflow="auto"
+      bgcolor="grey.50"
+    >
+      {!isError ? (
+        <>
+          {item ? (
+            <Box px={4} py={2.5}>
+              <SinglePageAnalytics item={item} loading={isFetching} />
+            </Box>
+          ) : (
+            <AnalyticsDashboard loading={isFetching} />
+          )}
+          {!instanceSettingsFetching && !propertyId && !isFetching && (
+            <PropertiesDialog
+              onClose={(shouldNavAway = false) => {
+                if (shouldNavAway && item) {
+                  history.push(
+                    `/content/${item?.meta?.contentModelZUID}/${item?.meta?.ZUID}`
+                  );
+                }
+                if (shouldNavAway && !item) {
+                  history.push(`/launchpad`);
+                }
+              }}
+            />
+          )}
+        </>
+      ) : (
+        <Box px={3} height="100%">
+          <AuthView validateAuth={validateAuth} isDashboard={!item} />
+        </Box>
+      )}
+    </Box>
   );
 };
 

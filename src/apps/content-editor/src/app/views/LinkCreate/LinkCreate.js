@@ -214,7 +214,7 @@ export function LinkCreate() {
             <FormControlLabel
               control={
                 <Checkbox
-                  color="secondary"
+                  color="primary"
                   checked={state.targetBlank}
                   onChange={(evt, val) =>
                     setState({ ...state, targetBlank: val })
@@ -226,7 +226,7 @@ export function LinkCreate() {
             <FormControlLabel
               control={
                 <Checkbox
-                  color="secondary"
+                  color="primary"
                   checked={state.relNoFollow}
                   onChange={(evt, val) =>
                     setState({ ...state, relNoFollow: val })

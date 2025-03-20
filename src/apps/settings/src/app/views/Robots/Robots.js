@@ -174,7 +174,7 @@ export default connect((state) => {
             </Stack>
           </FormLabel>
           <ToggleButtonGroup
-            color="secondary"
+            color="primary"
             size="small"
             value={robotOn.value}
             exclusive
@@ -189,7 +189,7 @@ export default connect((state) => {
           <h2>
             <Link
               underline="none"
-              color="secondary"
+              color="primary"
               href={robotURL}
               target="_blank"
               title={robotURL}

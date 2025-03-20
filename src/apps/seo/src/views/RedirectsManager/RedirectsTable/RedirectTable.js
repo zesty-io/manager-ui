@@ -137,9 +137,8 @@ export default function RedirectTable(props) {
         getActions: ({ row }) => [
           <GridActionsCellItem
             icon={<DeleteIcon />}
-            color="warning"
+            color="text.secondary"
             label="Delete"
-            sx={{ "&:hover": { color: "error.main" } }}
             onClick={() => handleRemoveRedirect(row.ZUID)}
           />,
         ],
