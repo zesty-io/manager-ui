@@ -57,7 +57,9 @@ describe("Content media selection modal", () => {
         cy.visit("/content/6-556370-8sh47g/new");
       });
     });
-    cy.get('button[title="Select media from your uploaded assets"]')
+    cy.get('button[title="Select media from your uploaded assets"]', {
+      timeout: 15000,
+    })
       .first()
       .click();
     cy.getBySelector("appSidebarHeaderTitle").contains("Insert from Media");

@@ -172,6 +172,7 @@ export const CommentsList = ({
                 withReopenButton={index === 0 && isResolved}
                 parentCommentZUID={parentCommentZUID}
                 onParentCommentDeleted={onClose}
+                commentCount={commentThread?.length || 0}
               />
               {index + 1 < commentThread?.length && (
                 <Divider sx={{ my: 1.5 }} />
@@ -209,6 +210,7 @@ export const CommentsList = ({
               onCancel={onClose}
               commentResourceZUID={resourceZUID}
               parentCommentZUID={parentCommentZUID}
+              commentCount={commentThread?.length || 0}
             />
           )}
         </Paper>
