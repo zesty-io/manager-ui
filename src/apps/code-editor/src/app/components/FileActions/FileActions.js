@@ -1,8 +1,7 @@
 import { memo, Fragment } from "react";
 
 import { Switch, Route, useRouteMatch } from "react-router";
-
-import { Button, Box } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import EditIcon from "@mui/icons-material/Edit";
 import StorageIcon from "@mui/icons-material/Storage";
@@ -19,7 +18,6 @@ import { DifferActions } from "./components/DifferActions";
 import { EditorActions } from "./components/EditorActions";
 import { Delete } from "./components/Delete";
 
-import { Box, AppBar, IconButton, Typography, Divider } from "@mui/material";
 export const FileActions = memo(function FileActions(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
 
