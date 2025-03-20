@@ -3,20 +3,17 @@ import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
 import { Box, Tooltip, Typography } from "@mui/material";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowRight,
-  faExternalLinkAlt,
-  faFile,
-  faFileAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 
 import { removeRedirect } from "../../../store/redirects";
 
 import { RedirectCreator } from "./RedirectCreator";
 import { RedirectTargetCell } from "./RedirectTargetCell";
 
-const CellWrapper = ({ color = "", children }) => {
+const CellWrapper = ({ color = "", children, type = "text" }) => {
   return (
     <Box
       sx={{
@@ -25,16 +22,23 @@ const CellWrapper = ({ color = "", children }) => {
         gap: 0.75,
         position: "relative",
         overflow: "hidden",
-        "& svg": {
+        "& svg, & span": {
           color: color || "text.disabled",
           flexGrow: 0,
         },
-        "& .MuiTypography-root": {
+        "& .MuiTypography-root": (theme) => ({
+          ...theme.typography.body2,
           color: color || "text.primary",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
           flexGrow: 1,
+        }),
+        "&:hover": {
+          ...(type !== "text" && {
+            textDecorationLine: "underline",
+            color: color,
+          }),
         },
       }}
     >
@@ -60,7 +64,7 @@ export default function RedirectTable(props) {
               Incoming Path
             </Typography>
             <Tooltip title="File Path Only" arrow placement="top-start">
-              <InfoIcon fontSize="small" sx={{ color: "text.secondary" }} />
+              <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
             </Tooltip>
           </Box>
         ),
@@ -77,7 +81,7 @@ export default function RedirectTable(props) {
       },
       {
         field: "code",
-        width: 135,
+        width: 185,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Typography variant="body2" fontWeight={600} color="text.primary">
@@ -93,7 +97,7 @@ export default function RedirectTable(props) {
               arrow
               placement="top-start"
             >
-              <InfoIcon fontSize="small" sx={{ color: "text.secondary" }} />
+              <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
             </Tooltip>
           </Box>
         ),
@@ -103,14 +107,14 @@ export default function RedirectTable(props) {
               <Typography variant="body2" fontWeight={600} color="text.primary">
                 {value}
               </Typography>
-              <FontAwesomeIcon icon={faArrowRight} />
+              <ArrowForwardRoundedIcon fontSize="small" />
             </CellWrapper>
           );
         },
       },
       {
         field: "targetType",
-        width: 140,
+        width: 195,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Typography variant="body2" fontWeight={600} color="text.primary">
@@ -127,7 +131,7 @@ export default function RedirectTable(props) {
               arrow
               placement="top-start"
             >
-              <InfoIcon fontSize="small" sx={{ color: "text.secondary" }} />
+              <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
             </Tooltip>
           </Box>
         ),
@@ -136,23 +140,17 @@ export default function RedirectTable(props) {
             <CellWrapper>
               {value === "external" ? (
                 <>
-                  <Box color="text.secondary">
-                    <FontAwesomeIcon icon={faExternalLinkAlt} />
-                  </Box>
+                  <OpenInNewRoundedIcon fontSize="small" />
                   External&nbsp;
                 </>
               ) : value === "path" ? (
                 <>
-                  <Box color="text.secondary">
-                    <FontAwesomeIcon icon={faFile} />
-                  </Box>
+                  <InsertDriveFileRoundedIcon fontSize="small" />
                   Wildcard&nbsp;
                 </>
               ) : (
                 <>
-                  <Box color="text.secondary">
-                    <FontAwesomeIcon icon={faFileAlt} />
-                  </Box>
+                  <DescriptionRoundedIcon fontSize="small" />
                   Internal&nbsp;
                 </>
               )}
@@ -183,7 +181,7 @@ export default function RedirectTable(props) {
         getActions: ({ row }) => [
           <GridActionsCellItem
             icon={<DeleteIcon />}
-            color="text.secondary"
+            color="action.secondary"
             label="Delete"
             onClick={() => handleRemoveRedirect(row.ZUID)}
             sx={{
