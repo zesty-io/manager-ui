@@ -29,10 +29,11 @@ export function Save(props) {
   return (
     <LoadingButton
       variant="contained"
-      color="success"
+      color="primary"
+      size="small"
       onClick={onSave}
       loadingPosition="start"
-      startIcon={<SaveIcon />}
+      startIcon={<SaveIcon fontSize="small" />}
       sx={{ mx: 0.5 }}
       loading={saving}
     >

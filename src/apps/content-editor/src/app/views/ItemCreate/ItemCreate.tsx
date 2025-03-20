@@ -298,10 +298,39 @@ export const ItemCreate = () => {
         }
 
         if (res.error) {
+          // Handles backend validation error for when the data is too long
+          if (res.error?.toLowerCase()?.includes("data too long")) {
+            const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+            if (dataLongErrorMatch?.[1]) {
+              const fieldName = dataLongErrorMatch[1];
+              const errors = cloneDeep(fieldErrors);
+              const oneToManyFieldNames = activeFields?.reduce(
+                (names, currItem) => {
+                  if (currItem?.datatype === "one_to_many") {
+                    return [...names, currItem?.name];
+                  }
+
+                  return names;
+                },
+                []
+              );
+
+              errors[fieldName] = {
+                ...(errors[fieldName] ?? {}),
+                CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                  ? "Cannot save field. Please reduce the total number of items selected."
+                  : "Cannot save field. Value is too long.",
+              };
+
+              setFieldErrors(errors);
+            }
+          }
+
           dispatch(
             notify({
-              message: res.error,
-              kind: "warn",
+              message: `Cannot Save: ${res.error}`,
+              kind: "error",
             })
           );
         }
@@ -480,49 +509,43 @@ export const ItemCreate = () => {
               )}
             </AIGeneratorProvider>
           </Box>
-          <ThemeProvider theme={theme}>
-            <Box
-              position="sticky"
-              top={0}
-              alignSelf="flex-start"
-              maxWidth={620}
-            >
-              {model?.type !== "dataset" && model?.type !== "block" && (
-                <>
-                  <SocialMediaPreview />
-                  <Button
-                    variant="text"
-                    color="inherit"
-                    size="large"
-                    onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
-                    startIcon={
-                      <>
-                        <svg width={0} height={0}>
-                          <linearGradient
-                            id="gradientFill"
-                            x1={1}
-                            y1={0}
-                            x2={1}
-                            y2={1}
-                          >
-                            <stop offset="0%" stopColor="#0BA5EC" />
-                            <stop offset="50%" stopColor="#EE46BC" />
-                            <stop offset="100%" stopColor="#6938EF" />
-                          </linearGradient>
-                        </svg>
-                        <Brain sx={{ fill: "url(#gradientFill)" }} />
-                      </>
-                    }
-                    sx={{
-                      mt: 1.5,
-                    }}
-                  >
-                    Improve with AI
-                  </Button>
-                </>
-              )}
-            </Box>
-          </ThemeProvider>
+
+          <Box position="sticky" top={0} alignSelf="flex-start" maxWidth={620}>
+            {model?.type !== "dataset" && model?.type !== "block" && (
+              <>
+                <SocialMediaPreview />
+                <Button
+                  variant="text"
+                  color="inherit"
+                  size="large"
+                  onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
+                  startIcon={
+                    <>
+                      <svg width={0} height={0}>
+                        <linearGradient
+                          id="gradientFill"
+                          x1={1}
+                          y1={0}
+                          x2={1}
+                          y2={1}
+                        >
+                          <stop offset="0%" stopColor="#0BA5EC" />
+                          <stop offset="50%" stopColor="#EE46BC" />
+                          <stop offset="100%" stopColor="#6938EF" />
+                        </linearGradient>
+                      </svg>
+                      <Brain sx={{ fill: "url(#gradientFill)" }} />
+                    </>
+                  }
+                  sx={{
+                    mt: 1.5,
+                  }}
+                >
+                  Improve with AI
+                </Button>
+              </>
+            )}
+          </Box>
         </Box>
       </Stack>
       {isScheduleDialogOpen && !isLoadingNewItem && (

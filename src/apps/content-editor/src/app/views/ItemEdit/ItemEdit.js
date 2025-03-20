@@ -104,7 +104,7 @@ export default function ItemEdit() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [SEOErrors, setSEOErrors] = useState({});
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
-  const { data: fields, isLoading: isLoadingFields } =
+  const { data: fields, isError: fieldsLoadingError } =
     useGetContentModelFieldsQuery(modelZUID);
   const [showDuoModeLS, setShowDuoModeLS] = useLocalStorage(
     "zesty:content:duoModeOpen",
@@ -168,6 +168,17 @@ export default function ItemEdit() {
     setFieldErrors({});
     setSEOErrors({});
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (fieldsLoadingError) {
+      dispatch(
+        notify({
+          message: "Failed to load fields",
+          kind: "error",
+        })
+      );
+    }
+  }, [fieldsLoadingError]);
 
   const hasErrors = useMemo(() => {
     const hasErrors = Object.values(fieldErrors)
@@ -389,13 +400,42 @@ export default function ItemEdit() {
         throw new Error(errors);
       }
       if (res.status === 400) {
+        // Handles backend validation error for when the data is too long
+        if (res.error?.toLowerCase()?.includes("data too long")) {
+          const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
+
+          if (dataLongErrorMatch?.[1]) {
+            const fieldName = dataLongErrorMatch[1];
+            const errors = cloneDeep(fieldErrors);
+            const oneToManyFieldNames = activeFields?.reduce(
+              (names, currItem) => {
+                if (currItem?.datatype === "one_to_many") {
+                  return [...names, currItem?.name];
+                }
+
+                return names;
+              },
+              []
+            );
+
+            errors[fieldName] = {
+              ...(errors[fieldName] ?? {}),
+              CUSTOM_ERROR: oneToManyFieldNames?.includes(fieldName)
+                ? "Cannot save field. Please reduce the total number of items selected."
+                : "Cannot save field. Value is too long.",
+            };
+
+            setFieldErrors(errors);
+          }
+        }
+
         dispatch(
           notify({
-            message: `Cannot Save: ${item.web.metaTitle}`,
+            message: `Cannot Save: ${item.web.metaTitle} - ${res.error}`,
             kind: "error",
           })
         );
-        throw new Error(`Cannot Save: ${item.web.metaTitle}`);
+        throw new Error(`Cannot Save: ${item.web.metaTitle} - ${res.error}`);
       }
 
       dispatch(
@@ -441,9 +481,7 @@ export default function ItemEdit() {
         <NotFound message={notFound} />
       ) : (
         <WithLoader
-          condition={
-            !loading && item && Object.keys(item).length && !isLoadingFields
-          }
+          condition={!loading && item && Object.keys(item).length}
           message={
             model?.label ? `Loading ${model.label} Content` : "Loading Content"
           }
@@ -552,30 +590,28 @@ export default function ItemEdit() {
                 <Route
                   path="/content/:contentModelZUID/:contentItemZUID/api"
                   render={() => (
-                    <ThemeProvider theme={theme}>
-                      <Box
-                        sx={{
-                          color: "text.primary",
-                          flex: "1",
-                          overflow: "hidden",
-                          "*": {
-                            boxSizing: "border-box",
-                          },
-                          bgcolor: "grey.50",
-                        }}
-                      >
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api/:type"
-                          component={ApiDetails}
-                        />
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api"
-                          component={ApiCardList}
-                        />
-                      </Box>
-                    </ThemeProvider>
+                    <Box
+                      sx={{
+                        color: "text.primary",
+                        flex: "1",
+                        overflow: "hidden",
+                        "*": {
+                          boxSizing: "border-box",
+                        },
+                        bgcolor: "grey.50",
+                      }}
+                    >
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api/:type"
+                        component={ApiDetails}
+                      />
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api"
+                        component={ApiCardList}
+                      />
+                    </Box>
                   )}
                 />
                 <Route

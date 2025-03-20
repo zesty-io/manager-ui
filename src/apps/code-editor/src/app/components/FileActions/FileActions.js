@@ -1,8 +1,7 @@
 import { memo, Fragment } from "react";
 
 import { Switch, Route, useRouteMatch } from "react-router";
-
-import Button from "@mui/material/Button";
+import { Box, IconButton, Typography } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import EditIcon from "@mui/icons-material/Edit";
 import StorageIcon from "@mui/icons-material/Storage";
@@ -19,13 +18,23 @@ import { DifferActions } from "./components/DifferActions";
 import { EditorActions } from "./components/EditorActions";
 import { Delete } from "./components/Delete";
 
-import styles from "./FileActions.less";
 export const FileActions = memo(function FileActions(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
 
   return (
-    <header className={styles.FileActions}>
-      <div className={styles.FileMeta}>
+    <Box
+      component="header"
+      display="flex"
+      flexDirection="row"
+      justifyContent="space-between"
+      alignItems="center"
+      minHeight="42px"
+      position="relative"
+      zIndex={1}
+      padding="8px 0 12px 0px"
+      whiteSpace="nowrap"
+    >
+      <Box display="flex" alignItems="center" whiteSpace="nowrap" flexGrow={1}>
         {props.contentModelZUID ? (
           <Link
             underline="none"
@@ -38,38 +47,43 @@ export const FileActions = memo(function FileActions(props) {
             <FontAwesomeIcon icon={faBolt} />
           </Link>
         ) : (
-          <FontAwesomeIcon className={styles.FileLink} icon={faFileCode} />
+          <Box sx={{ m: 0, pr: 2, pl: 3.25, py: 0 }}>
+            <FontAwesomeIcon icon={faFileCode} />
+          </Box>
         )}
 
         <Switch>
           <Route path={`${match.url}`}>
-            <div className={styles.QuickLinks}>
+            <Box display="flex" flexDirection="row" alignItems="center">
               {props.contentModelZUID && (
                 <Fragment>
+                  <Delete
+                    dispatch={props.dispatch}
+                    fileZUID={props.fileZUID}
+                    status={props.status}
+                    fileName={props.fileName}
+                  />
                   <AppLink
-                    className={styles.Link}
                     to={`/content/${props.contentModelZUID}`}
                     title="Edit Related Content"
                   >
-                    <Button variant="contained" size="small">
+                    <IconButton size="small" sx={{ color: "grey.400" }}>
                       <EditIcon fontSize="small" />
-                    </Button>
+                    </IconButton>
                   </AppLink>
 
                   <AppLink
-                    className={styles.Link}
                     to={`/schema/${props.contentModelZUID}`}
                     title="Edit Related Model"
                   >
-                    <Button variant="contained" size="small">
+                    <IconButton size="small" sx={{ color: "grey.400" }}>
                       <StorageIcon fontSize="small" />
-                    </Button>
+                    </IconButton>
                   </AppLink>
                 </Fragment>
               )}
 
               <AppLink
-                className={styles.Link}
                 to={`/code/file/${props.fileType}/${
                   props.fileZUID
                 }/diff/local,${
@@ -79,19 +93,28 @@ export const FileActions = memo(function FileActions(props) {
                 }`}
                 title="Diff Versions"
               >
-                <Button variant="contained" size="small">
+                <IconButton size="small" sx={{ color: "grey.400" }}>
                   <HistoryIcon fontSize="small" />
-                </Button>
+                </IconButton>
               </AppLink>
-            </div>
+            </Box>
           </Route>
         </Switch>
 
-        <div className={styles.FileName}>
-          <CopyButton variant="contained" size="small" value={props.fileZUID} />
-          {props.fileName}
-        </div>
-      </div>
+        <Box display="flex" alignItems="center" whiteSpace="nowrap">
+          <CopyButton
+            variant="text"
+            value={props.fileZUID}
+            sx={{
+              color: "grey.400",
+              fontSize: "12px",
+            }}
+          />
+          <Typography variant="body2" noWrap>
+            {props.fileName}
+          </Typography>
+        </Box>
+      </Box>
 
       {!props.synced && (
         <Notice>
@@ -99,38 +122,42 @@ export const FileActions = memo(function FileActions(props) {
         </Notice>
       )}
 
-      <Switch>
-        <Route path={`${match.url}/diff`}>
-          <DifferActions
-            dispatch={props.dispatch}
-            fileZUID={props.fileZUID}
-            fileType={props.fileType}
-            publishedVersion={props.publishedVersion}
-            status={props.status}
-            synced={props.synced}
-            setVersionCodeLeft={props.setVersionCodeLeft}
-            setVersionCodeRight={props.setVersionCodeRight}
-            setLoading={props.setLoading}
-            currentCode={props.currentCode}
-          />
-        </Route>
-        <Route path={`${match.url}`}>
-          <EditorActions
-            dispatch={props.dispatch}
-            fileZUID={props.fileZUID}
-            fileType={props.fileType}
-            version={props.version}
-            synced={props.synced}
-            status={props.status}
-          />
-          <Delete
-            dispatch={props.dispatch}
-            fileZUID={props.fileZUID}
-            status={props.status}
-            fileName={props.fileName}
-          />
-        </Route>
-      </Switch>
-    </header>
+      <Box
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+        flexGrow={0}
+        px={1}
+      >
+        <Switch>
+          <Route path={`${match.url}/diff`}>
+            <DifferActions
+              dispatch={props.dispatch}
+              fileZUID={props.fileZUID}
+              fileType={props.fileType}
+              publishedVersion={props.publishedVersion}
+              status={props.status}
+              synced={props.synced}
+              setVersionCodeLeft={props.setVersionCodeLeft}
+              setVersionCodeRight={props.setVersionCodeRight}
+              setLoading={props.setLoading}
+              currentCode={props.currentCode}
+            />
+          </Route>
+
+          <Route path={`${match.url}`}>
+            <EditorActions
+              dispatch={props.dispatch}
+              fileZUID={props.fileZUID}
+              fileType={props.fileType}
+              version={props.version}
+              synced={props.synced}
+              status={props.status}
+            />
+          </Route>
+        </Switch>
+      </Box>
+    </Box>
   );
 });

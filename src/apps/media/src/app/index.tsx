@@ -1,5 +1,4 @@
-import { Box, ThemeProvider } from "@mui/material";
-import { theme } from "@zesty-io/material";
+import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Redirect, Route, Switch, useHistory } from "react-router";
@@ -72,7 +71,7 @@ export const MediaApp = ({
   }, [fileId]);
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <UploadModal />
       <Box
         sx={{
@@ -214,6 +213,6 @@ export const MediaApp = ({
           <Redirect to="/media" />
         </Switch>
       </Box>
-    </ThemeProvider>
+    </>
   );
 };

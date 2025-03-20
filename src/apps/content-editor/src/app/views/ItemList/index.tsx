@@ -1,6 +1,6 @@
 import { useParams as useRouterParams } from "react-router";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
-import { Box, Button, ThemeProvider, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelQuery,
@@ -559,160 +559,157 @@ export const ItemList = () => {
   }, [processedItems, search, sortModel, statusFilter, dateFilter, userFilter]);
 
   return (
-    <ThemeProvider theme={theme}>
+    <Box
+      sx={{
+        color: "text.primary",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        "*": {
+          boxSizing: "border-box",
+        },
+      }}
+    >
       <Box
         sx={{
-          color: "text.primary",
-          height: "100%",
+          px: 4,
+          pt: 4,
+          pb: 2,
           display: "flex",
-          flexDirection: "column",
-          "*": {
-            boxSizing: "border-box",
-          },
+          justifyContent: "space-between",
+          alignItems: "start",
+          gap: 4,
         }}
       >
-        <Box
-          sx={{
-            px: 4,
-            pt: 4,
-            pb: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "start",
-            gap: 4,
-          }}
-        >
-          {(stagedChanges && Object.keys(stagedChanges)?.length) ||
-          selectedItems?.length ? (
-            <UpdateListActions items={items as ContentItem[]} />
-          ) : (
-            <>
-              <Box flex={1}>
-                <ContentBreadcrumbs />
-                <Typography
-                  variant="h3"
-                  mt={0.25}
-                  fontWeight={700}
-                  sx={{
-                    display: "-webkit-box",
-                    "-webkit-line-clamp": "2",
-                    "-webkit-box-orient": "vertical",
-                    wordBreak: "break-word",
-                    wordWrap: "break-word",
-                    hyphens: "auto",
-                    overflow: "hidden",
-                  }}
-                >
-                  {model?.label}
-                </Typography>
-              </Box>
-              <ItemListActions ref={searchRef} />
-            </>
-          )}
-        </Box>
-        <Box
-          height="100%"
-          bgcolor="grey.50"
-          px={4}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          {!items?.length && !isModelItemsFetching ? (
-            <ItemListEmpty />
-          ) : (
-            <>
-              <ItemListFilters />
-              <ItemListTable
-                key={modelZUID}
-                loading={isFieldsFetching || isUsersFetching}
-                rows={sortedAndFilteredItems}
-              />
-              {!sortedAndFilteredItems?.length &&
-                search &&
-                !isModelItemsFetching && (
-                  <Box
-                    bgcolor="common.white"
-                    flex={1}
-                    display="flex"
-                    alignItems="center"
-                    paddingBottom={12}
-                  >
-                    <Box
-                      data-cy="NoResults"
-                      textAlign="center"
-                      sx={{
-                        maxWidth: 387,
-                        mx: "auto",
-                      }}
-                    >
-                      <img src={noSearchResults} alt="No search results" />
-                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        Your filter <strong>"{search}"</strong> could not find
-                        any results
-                      </Typography>
-                      <Typography variant="body2" pb={3} color="text.secondary">
-                        Try adjusting your search. We suggest check all words
-                        are spelled correctly or try using different keywords.
-                      </Typography>
-                      <Button
-                        onClick={() => searchRef.current?.focus()}
-                        variant="contained"
-                        startIcon={<SearchRounded />}
-                      >
-                        Search Again
-                      </Button>
-                    </Box>
-                  </Box>
-                )}
-              {!sortedAndFilteredItems?.length &&
-                !isModelItemsFetching &&
-                !search &&
-                (statusFilter ||
-                  dateFilter?.preset ||
-                  dateFilter?.from ||
-                  dateFilter?.to ||
-                  userFilter) && (
-                  <Box
-                    bgcolor="common.white"
-                    flex={1}
-                    display="flex"
-                    alignItems="center"
-                    paddingBottom={12}
-                  >
-                    <Box
-                      data-cy="NoResults"
-                      textAlign="center"
-                      sx={{
-                        maxWidth: 387,
-                        mx: "auto",
-                      }}
-                    >
-                      <img src={noSearchResults} alt="No search results" />
-                      <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                        No results that matched your filters could be found
-                      </Typography>
-                      <Typography variant="body2" pb={3} color="text.secondary">
-                        Try adjusting your filters to find what you're looking
-                        for
-                      </Typography>
-                      <Button
-                        onClick={() => {
-                          setParams(null, "statusFilter");
-                        }}
-                        variant="contained"
-                        startIcon={<RestartAltRounded />}
-                      >
-                        Reset Filters
-                      </Button>
-                    </Box>
-                  </Box>
-                )}
-            </>
-          )}
-        </Box>
+        {(stagedChanges && Object.keys(stagedChanges)?.length) ||
+        selectedItems?.length ? (
+          <UpdateListActions items={items as ContentItem[]} />
+        ) : (
+          <>
+            <Box flex={1}>
+              <ContentBreadcrumbs />
+              <Typography
+                variant="h3"
+                mt={0.25}
+                fontWeight={700}
+                sx={{
+                  display: "-webkit-box",
+                  "-webkit-line-clamp": "2",
+                  "-webkit-box-orient": "vertical",
+                  wordBreak: "break-word",
+                  wordWrap: "break-word",
+                  hyphens: "auto",
+                  overflow: "hidden",
+                }}
+              >
+                {model?.label}
+              </Typography>
+            </Box>
+            <ItemListActions ref={searchRef} />
+          </>
+        )}
       </Box>
-    </ThemeProvider>
+      <Box
+        height="100%"
+        bgcolor="grey.50"
+        px={4}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {!items?.length && !isModelItemsFetching ? (
+          <ItemListEmpty />
+        ) : (
+          <>
+            <ItemListFilters />
+            <ItemListTable
+              key={modelZUID}
+              loading={isFieldsFetching || isUsersFetching}
+              rows={sortedAndFilteredItems}
+            />
+            {!sortedAndFilteredItems?.length &&
+              search &&
+              !isModelItemsFetching && (
+                <Box
+                  bgcolor="common.white"
+                  flex={1}
+                  display="flex"
+                  alignItems="center"
+                  paddingBottom={12}
+                >
+                  <Box
+                    data-cy="NoResults"
+                    textAlign="center"
+                    sx={{
+                      maxWidth: 387,
+                      mx: "auto",
+                    }}
+                  >
+                    <img src={noSearchResults} alt="No search results" />
+                    <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                      Your filter <strong>"{search}"</strong> could not find any
+                      results
+                    </Typography>
+                    <Typography variant="body2" pb={3} color="text.secondary">
+                      Try adjusting your search. We suggest check all words are
+                      spelled correctly or try using different keywords.
+                    </Typography>
+                    <Button
+                      onClick={() => searchRef.current?.focus()}
+                      variant="contained"
+                      startIcon={<SearchRounded />}
+                    >
+                      Search Again
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+            {!sortedAndFilteredItems?.length &&
+              !isModelItemsFetching &&
+              !search &&
+              (statusFilter ||
+                dateFilter?.preset ||
+                dateFilter?.from ||
+                dateFilter?.to ||
+                userFilter) && (
+                <Box
+                  bgcolor="common.white"
+                  flex={1}
+                  display="flex"
+                  alignItems="center"
+                  paddingBottom={12}
+                >
+                  <Box
+                    data-cy="NoResults"
+                    textAlign="center"
+                    sx={{
+                      maxWidth: 387,
+                      mx: "auto",
+                    }}
+                  >
+                    <img src={noSearchResults} alt="No search results" />
+                    <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                      No results that matched your filters could be found
+                    </Typography>
+                    <Typography variant="body2" pb={3} color="text.secondary">
+                      Try adjusting your filters to find what you're looking for
+                    </Typography>
+                    <Button
+                      onClick={() => {
+                        setParams(null, "statusFilter");
+                      }}
+                      variant="contained"
+                      startIcon={<RestartAltRounded />}
+                    >
+                      Reset Filters
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+          </>
+        )}
+      </Box>
+    </Box>
   );
 };

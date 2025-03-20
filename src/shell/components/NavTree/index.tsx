@@ -1,4 +1,4 @@
-import React, { FC, HTMLAttributes } from "react";
+import React, { FC } from "react";
 import { TreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
@@ -6,6 +6,7 @@ import { NavTreeItem } from "./components/NavTreeItem";
 import { ContentNavItem } from "../../services/types";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
+import Box from "@mui/material/Box";
 
 export type TreeItem = {
   icon: any;
@@ -45,28 +46,39 @@ export const NavTree: FC<Readonly<Props>> = ({
   dragAndDrop = false,
 }) => {
   const history = useHistory();
+  const isCodeApp = ["html", "css", "js"].includes(id);
 
   return (
     <>
-      {HeaderComponent}
+      <Box className="nav-tree-header">{HeaderComponent}</Box>
       {error ? (
         ErrorComponent
       ) : (
         <TreeView
           data-cy={id}
-          expanded={expandedItems}
+          {...(isCodeApp
+            ? { defaultExpanded: expandedItems }
+            : { expanded: expandedItems })}
           //  @ts-expect-error changed typed definition from mui/lab
           selected={selected}
           defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
           defaultExpandIcon={<ArrowRightRoundedIcon />}
           //  @ts-expect-error changed typed definition from mui/lab
           onNodeSelect={(evt: any, nodeIds: string) => {
-            if (evt.target.tagName !== "svg" && evt.target.tagName !== "path") {
+            if (
+              !!evt.currentTarget.id &&
+              evt.target.tagName !== "svg" &&
+              evt.target.tagName !== "path"
+            ) {
               history.push(nodeIds);
             }
           }}
           onNodeToggle={(evt: any, nodeIds: string[]) => {
-            if (evt.target.tagName === "svg" || evt.target.tagName === "path") {
+            if (
+              !evt.currentTarget.id ||
+              evt.target.tagName === "svg" ||
+              evt.target.tagName === "path"
+            ) {
               onToggleCollapse(nodeIds);
             }
           }}
@@ -88,6 +100,7 @@ export const NavTree: FC<Readonly<Props>> = ({
                 nodeData={item.nodeData}
                 onItemDrop={onItemDrop}
                 dragAndDrop={dragAndDrop}
+                selected={selected}
               />
             );
           })}
