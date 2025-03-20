@@ -1,19 +1,19 @@
 import { memo, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import moment from "moment";
-
+import {
+  Stack,
+  Collapse,
+  Paper,
+  Typography,
+  Box,
+  IconButton,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-
-import Box from "@mui/material/Box";
-import { Collapse, Paper } from "@mui/material";
-import Typography from "@mui/material/Typography";
-import { IconButton } from "@zesty-io/material";
-import Stack from "@mui/material/Stack";
-
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import AuditTrail from "./AuditTrail";
+import AuditTrail, { LogEntry } from "./AuditTrail";
 import FileStatus from "./FileStatus";
 import LinkedContent from "./LinkedContent";
 import LinkedSchema from "./LinkedSchema";
@@ -21,80 +21,98 @@ import { fetchFields } from "../../../../../../shell/store/fields";
 import { fetchAuditTrail } from "../../../store/auditTrail";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { fetchItems } from "../../../../../../shell/store/content";
+import { NavCodeTypes } from "../SideBar/constants";
 
-const BottomDrawer = memo(function BottomDrawer(props) {
+interface Field {
+  ZUID: string;
+  name: string;
+}
+
+interface ItemMeta {
+  ZUID: string;
+  contentModelZUID: string;
+}
+
+interface ItemWeb {
+  metaTitle: string;
+  path: string;
+}
+
+interface Item {
+  meta: ItemMeta;
+  web: ItemWeb;
+}
+
+interface Log {
+  createdAt: string;
+  [key: string]: any;
+}
+
+interface BottomDrawerProps {
+  file: NavCodeTypes;
+}
+
+const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
   const dispatch = useDispatch();
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [fields, setFields] = useState([]);
-  const [items, setItems] = useState([]);
-  const [logs, setLogs] = useState([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [fields, setFields] = useState<Field[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
 
   const metaShortcut = useMetaKey("j", handleSetOpen);
 
   useEffect(() => {
     setLoading(true);
 
-    let logs = dispatch(fetchAuditTrail(props.file.ZUID));
-    let fields = Promise.resolve();
-    let items = Promise.resolve();
+    let logsPromise = dispatch(
+      fetchAuditTrail(file.ZUID)
+    ) as unknown as Promise<any>;
+    let fieldsPromise: Promise<any> = Promise.resolve();
+    let itemsPromise: Promise<any> = Promise.resolve();
 
-    if (props.file.contentModelZUID) {
-      fields = dispatch(fetchFields(props.file.contentModelZUID));
-
-      items = dispatch(
-        fetchItems(props.file.contentModelZUID, {
-          limit: 3,
-        })
-      );
+    if (file.contentModelZUID) {
+      fieldsPromise = dispatch(
+        fetchFields(file.contentModelZUID)
+      ) as unknown as Promise<any>;
+      itemsPromise = dispatch(
+        fetchItems(file.contentModelZUID, { limit: 3 })
+      ) as unknown as Promise<any>;
     }
 
-    Promise.all([logs, fields, items])
-      .then((res) => {
-        const [logs, fields, items] = res;
-
-        if (logs?.status !== 200) {
-          dispatch(
-            notify({
+    Promise.all([logsPromise, fieldsPromise, itemsPromise])
+      .then(([logsResponse, fieldsResponse, itemsResponse]) => {
+        if (logsResponse?.status !== 200) {
+          dispatch({
+            type: "NOTIFY",
+            payload: {
               message: "Unable to load Code file logs",
               kind: "warn",
-            })
-          );
-          setLogs(null);
+            },
+          });
+          setLogs([]);
           return;
         }
 
-        // Logs should always exist
         setLogs(
-          logs.data
-            .sort((a, b) => {
-              // Latest log descending
-              return moment(a.createdAt).unix() > moment(b.createdAt).unix()
-                ? -1
-                : 1;
-            })
+          logsResponse.data
+            .sort((a: Log, b: Log) =>
+              moment(a.createdAt).unix() > moment(b.createdAt).unix() ? -1 : 1
+            )
             .slice(0, 10)
         );
 
-        if (fields && fields.payload) {
-          let tempArray = [];
-          Object.keys(fields.payload).forEach((field) =>
-            tempArray.push(fields.payload[field])
-          );
-          setFields(tempArray);
+        if (fieldsResponse?.payload) {
+          setFields(Object.values(fieldsResponse.payload));
         }
-        if (items && items.data) {
-          setItems(items.data.slice(0, 3));
+        if (itemsResponse?.data) {
+          setItems(itemsResponse.data.slice(0, 3));
         }
       })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [props.file.ZUID]);
-
+      .finally(() => setLoading(false));
+  }, [file.ZUID, dispatch]);
   function handleSetOpen() {
-    // TODO persist to user settings
-    setOpen((open) => !open);
+    setOpen((prevOpen) => !prevOpen);
   }
 
   return (
@@ -105,7 +123,6 @@ const BottomDrawer = memo(function BottomDrawer(props) {
         width: "100%",
         bgcolor: "grey.900",
         color: "grey.400",
-        // maxHeight: "45vh",
         flexGrow: 0,
         display: "flex",
         flexDirection: "column",
@@ -113,9 +130,7 @@ const BottomDrawer = memo(function BottomDrawer(props) {
         flexShrink: 1,
         boxSizing: "border-box",
         boxShadow: "0px -12px 8px -14px rgba(0,0,0,1)",
-        "& *": {
-          boxSizing: "border-box",
-        },
+        "& *": { boxSizing: "border-box" },
       }}
     >
       <Box
@@ -133,11 +148,11 @@ const BottomDrawer = memo(function BottomDrawer(props) {
             size="small"
             color="inherit"
             title="Open for additional file information"
-            onClick={() => setOpen((prev) => !prev)}
+            onClick={handleSetOpen}
           >
             {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
           </IconButton>
-          {open ? null : (
+          {!open && (
             <Typography variant="body2">More file information</Typography>
           )}
         </Stack>
@@ -152,9 +167,7 @@ const BottomDrawer = memo(function BottomDrawer(props) {
           bgcolor="grey.900"
           color="grey.400"
           height="40vh"
-          sx={{
-            overflowY: "auto",
-          }}
+          sx={{ overflowY: "auto" }}
         >
           <WithLoader
             condition={!loading}
@@ -174,17 +187,16 @@ const BottomDrawer = memo(function BottomDrawer(props) {
                 alignItems: "stretch",
                 pb: 2,
                 minHeight: "100%",
-                // height
               }}
             >
-              <FileStatus file={props.file || {}} items={items || []} />
-              {props.file.contentModelZUID && (
-                <LinkedSchema file={props.file || {}} fields={fields} />
+              <FileStatus file={file} items={items} />
+              {file.contentModelZUID && (
+                <LinkedSchema file={file} fields={fields} />
               )}
-              {props.file.contentModelZUID && (
-                <LinkedContent file={props.file || {}} items={items} />
+              {file.contentModelZUID && (
+                <LinkedContent file={file} items={items} />
               )}
-              <AuditTrail file={props.file || {}} logs={logs} />
+              <AuditTrail logs={logs} />
             </Box>
           </WithLoader>
         </Box>
