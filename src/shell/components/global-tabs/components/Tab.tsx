@@ -55,7 +55,7 @@ export const TopBarTab: FC<TopBarTab> = ({
     if (isActive) {
       if (isDarkMode) {
         setStyles({
-          backgroundColor: "#1e1e1e",
+          backgroundColor: "grey.900",
           fontColor: "common.white",
           iconColor: "grey.500",
         });

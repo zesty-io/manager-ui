@@ -1,31 +1,16 @@
 import { useEffect } from "react";
 import { connect } from "react-redux";
-import { useRouteMatch } from "react-router-dom";
+import { Switch, useRouteMatch } from "react-router-dom";
+import { Grid, Typography, Box } from "@mui/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import GlobalStyles from "@mui/material/GlobalStyles";
 
-import { FileList } from "../../components/FileList";
-import { Workspace } from "../../components/Workspace/";
+import Workspace from "../../components/Workspace";
 
 import { fetchFiles } from "../../../store/files";
-
-import styles from "./CodeEditor.less";
-
-const scrollBarGlobalStyles = (
-  <GlobalStyles
-    styles={{
-      body: {
-        "*::-webkit-scrollbar-track-piece": {
-          backgroundColor: "#a7afbf",
-        },
-        "*::-webkit-scrollbar-thumb": {
-          backgroundColor: "#5b667d",
-        },
-      },
-    }}
-  />
-);
+import SideBar from "../../components/SideBar";
+import { Route } from "react-router";
+import { GettingStarted } from "../../components/Workspace/components/GettingStarted";
 
 export default connect((state) => {
   return {
@@ -61,29 +46,75 @@ export default connect((state) => {
   });
 
   return (
-    <main className={styles.CodeEditor}>
-      {scrollBarGlobalStyles}
-      <WithLoader
-        condition={props.files.length}
-        message="Starting Code Editor"
-        width="100vw"
+    <WithLoader
+      condition={props?.files?.length}
+      message="Starting Code Editor"
+      width="100vw"
+    >
+      <Grid
+        container
+        spacing={0}
+        columns={2}
+        sx={{
+          height: "calc(100vh - 40px)",
+          bgcolor: "grey.900",
+          color: "grey.300",
+          position: "relative",
+        }}
       >
-        <nav className={styles.Nav}>
-          <FileList
-            branch={props.status}
-            navCode={props.navCode}
-            dispatch={props.dispatch}
-            openFileZUID={match && match.params.fileZUID}
-          />
-        </nav>
-        <section className={styles.FileEditor}>
-          <Workspace
-            dispatch={props.dispatch}
-            files={props.files}
-            status={props.status}
-          />
-        </section>
-      </WithLoader>
-    </main>
+        <Grid
+          item
+          xs={"auto"}
+          sx={{
+            position: "relative",
+            height: "100%",
+            borderRight: "text.primary",
+            bgcolor: "grey.900",
+          }}
+        >
+          <SideBar {...props} />
+        </Grid>
+        <Grid
+          item
+          xs
+          sx={{
+            position: "relative",
+            height: "100%",
+            width: "100%",
+            overflow: "hidden",
+            bgcolor: "grey.900",
+          }}
+        >
+          <Switch>
+            <Route exact path="/code">
+              <GettingStarted files={props.files} />
+            </Route>
+            <Route
+              path="/code/file/:fileType/:fileZUID"
+              render={(routeProps) => {
+                return (
+                  <Workspace
+                    {...routeProps}
+                    dispatch={props.dispatch}
+                    status={props.status}
+                    match={match}
+                  />
+                );
+              }}
+            />
+            <Route path="*">
+              <Box
+                width="100%"
+                height="100%"
+                display="grid"
+                placeContent="center"
+              >
+                <Typography variant="h1">File Not Found</Typography>
+              </Box>
+            </Route>
+          </Switch>
+        </Grid>
+      </Grid>
+    </WithLoader>
   );
 });

@@ -1,18 +1,17 @@
 import { memo } from "react";
-
-import { FileActions } from "../FileActions";
+import { Box } from "@mui/material";
 import { MemoizedEditor } from "./components/MemoizedEditor/MemoizedEditor";
-
+import { TopBar } from "../TopBar";
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle
  * This is done for performance reasons. Constantly re-rendering slows down the editor typing experience.
  * But we still want to broadcast store updates `onChange`
  */
-import styles from "./Editor.less";
+
 export const Editor = memo(function Editor(props) {
   return (
-    <main className={styles.Editor}>
-      <FileActions
+    <>
+      <TopBar
         contentModelZUID={props.contentModelZUID}
         fileZUID={props.fileZUID}
         fileType={props.fileType}
@@ -22,20 +21,38 @@ export const Editor = memo(function Editor(props) {
         synced={props.synced}
         status={props.status}
         dispatch={props.dispatch}
+        isLive={props.isLive}
+        code={props.code}
+        isDiffer={false}
       />
 
-      <div className={styles.EditorLayout}>
-        <MemoizedEditor
-          dispatch={props.dispatch}
-          code={props.code}
-          fileName={props.fileName}
-          fileZUID={props.fileZUID}
-          contentModelZUID={props.contentModelZUID}
-          fields={props.fields}
-          status={props.status}
-          lineNumber={props.lineNumber}
-        />
-      </div>
-    </main>
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          height: "calc(100% - 84px)",
+          flexGrow: 1,
+          boxSizing: "border-box",
+        }}
+      >
+        <Box
+          position="absolute"
+          width="100%"
+          height="100%"
+          boxSizing="border-box"
+        >
+          <MemoizedEditor
+            dispatch={props.dispatch}
+            code={props.code}
+            fileName={props.fileName}
+            fileZUID={props.fileZUID}
+            contentModelZUID={props.contentModelZUID}
+            fields={props.fields}
+            status={props.status}
+            lineNumber={props.lineNumber}
+          />
+        </Box>
+      </Box>
+    </>
   );
 });
