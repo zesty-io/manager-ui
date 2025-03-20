@@ -224,7 +224,7 @@ export default connect((state) => {
                       </Stack>
                     </FormLabel>
                     <ToggleButtonGroup
-                      color="secondary"
+                      color="primary"
                       size="small"
                       value={fieldValues[field.key]}
                       exclusive
@@ -254,7 +254,7 @@ export default connect((state) => {
                       </Stack>
                     </FormLabel>
                     <ToggleButtonGroup
-                      color="secondary"
+                      color="primary"
                       size="small"
                       value={fieldValues[field.key]}
                       exclusive

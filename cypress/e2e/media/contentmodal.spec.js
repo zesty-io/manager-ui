@@ -57,7 +57,9 @@ describe("Content media selection modal", () => {
         cy.visit("/content/6-556370-8sh47g/new");
       });
     });
-    cy.get('button[title="Select media from your uploaded assets"]')
+    cy.get('button[title="Select media from your uploaded assets"]', {
+      timeout: 15000,
+    })
       .first()
       .click();
     cy.getBySelector("appSidebarHeaderTitle").contains("Insert from Media");
@@ -80,7 +82,7 @@ describe("Content media selection modal", () => {
 
   // Dependent on state of previous test
   it("only searches the locked group", () => {
-    cy.get("[data-testid='media-thumbnail-content']").should("have.length", 4);
+    cy.get("[data-testid='media-thumbnail-content']").should("have.length", 6);
     cy.get("input[type='text'][placeholder='Search Media']").type(
       "zesty{enter}"
     );

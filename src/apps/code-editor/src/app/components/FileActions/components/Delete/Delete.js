@@ -1,89 +1,120 @@
-import { memo, useState } from "react";
+import { memo, useState, useCallback } from "react";
 import { useHistory } from "react-router";
-
-import Button from "@mui/material/Button";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-import { Notice } from "@zesty-io/core/Notice";
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
-
 import { deleteFile } from "../../../../../store/files";
 
-import styles from "./Delete.less";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Typography,
+  Stack,
+  Box,
+} from "@mui/material";
+import { DeleteRounded } from "@mui/icons-material";
+
+import { useDispatch } from "react-redux";
+import { IconButton } from "@mui/material";
 
 export const Delete = memo(function Delete(props) {
+  const { fileZUID, fileName, status } = props;
+
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const history = useHistory();
+  const dispatch = useDispatch();
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleDeleteFile = useCallback(() => {
+    if (!fileZUID || !status) return;
+    setDeleting(true);
+    dispatch(deleteFile(fileZUID, status))
+      .then((res) => {
+        setDeleting(false);
+        if (res.status === 200) {
+          handleClose();
+          history.push("/code");
+        }
+      })
+      .catch((err) => {
+        setDeleting(false);
+      });
+  }, [dispatch, fileZUID, status, history, handleClose]);
 
   return (
-    <div className={styles.DeleteBtn}>
-      {props.fileName !== "loader" ? (
-        <Button
-          variant="contained"
+    <>
+      {fileName !== "loader" ? (
+        <IconButton
           onClick={() => setOpen(true)}
-          startIcon={<DeleteIcon />}
-          sx={{
-            "&:hover": {
-              backgroundColor: "error.main",
-            },
-          }}
+          size="small"
+          sx={{ color: "grey.400" }}
         >
-          Delete
-        </Button>
+          <DeleteIcon fontSize="small" />
+        </IconButton>
       ) : (
         " "
       )}
-      <Modal
-        className={styles.DeleteFileModal}
-        type="local"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
-        <ModalContent className={styles.ModalContent}>
-          <Notice>
-            Deleting a file will remove it and trigger a CDN purge causing
-            production to update immediately. Are you sure you want to delete
-            this file?
-          </Notice>
-        </ModalContent>
-        <ModalFooter className={styles.ModalFooter}>
-          <LoadingButton
-            variant="contained"
-            color="error"
-            onClick={() => {
-              setDeleting(true);
-              props
-                .dispatch(deleteFile(props.fileZUID, props.status))
-                .then((res) => {
-                  setDeleting(false);
-                  if (res.status === 200) {
-                    setOpen(false);
-                    history.push("/code");
-                  }
-                })
-                .catch((err) => {
-                  setDeleting(false);
-                });
+      <Dialog open={open} fullWidth maxWidth={"xs"} onClose={handleClose}>
+        <DialogTitle>
+          <Box
+            sx={{
+              backgroundColor: "red.100",
+              borderRadius: "100%",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
-            loading={deleting}
-            loadingPosition="start"
-            startIcon={<DeleteIcon />}
           >
-            Delete File
-          </LoadingButton>
-
+            <DeleteRounded color="error" />
+          </Box>
+          <Stack
+            mt={1.5}
+            display="flex"
+            justifyContent="flex-start"
+            columnGap={1}
+          >
+            <Typography variant="inherit" fontWeight={700}>
+              Delete File:
+            </Typography>
+            <Typography variant="inherit" fontWeight={400} noWrap>
+              {`${fileName}`}
+            </Typography>
+          </Stack>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Deleting a file will remove it and trigger a CDN purge causing A
+            production to update immediately.
+          </Typography>
+        </DialogTitle>
+        <DialogActions>
           <Button
-            variant="contained"
-            onClick={() => setOpen(false)}
-            startIcon={<DoDisturbIcon />}
+            size="small"
+            variant="outlined"
+            color="inherit"
+            onClick={handleClose}
           >
-            Cancel (ESC)
+            Cancel
           </Button>
-        </ModalFooter>
-      </Modal>
-    </div>
+          <LoadingButton
+            data-cy="DeleteContentItemConfirmButton"
+            variant="contained"
+            size="small"
+            color="error"
+            onClick={handleDeleteFile}
+            loading={deleting}
+          >
+            Delete
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 });

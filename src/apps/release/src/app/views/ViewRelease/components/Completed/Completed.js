@@ -17,7 +17,7 @@ export function Completed({ plan }) {
       <div className={styles.display}>Published {plan.successes} items</div>
       <Button
         variant="contained"
-        color="secondary"
+        color="primary"
         onClick={onStartNewPlan}
         startIcon={<AddIcon />}
       >

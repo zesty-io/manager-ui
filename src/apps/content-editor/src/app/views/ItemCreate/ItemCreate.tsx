@@ -509,49 +509,43 @@ export const ItemCreate = () => {
               )}
             </AIGeneratorProvider>
           </Box>
-          <ThemeProvider theme={theme}>
-            <Box
-              position="sticky"
-              top={0}
-              alignSelf="flex-start"
-              maxWidth={620}
-            >
-              {model?.type !== "dataset" && model?.type !== "block" && (
-                <>
-                  <SocialMediaPreview />
-                  <Button
-                    variant="text"
-                    color="inherit"
-                    size="large"
-                    onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
-                    startIcon={
-                      <>
-                        <svg width={0} height={0}>
-                          <linearGradient
-                            id="gradientFill"
-                            x1={1}
-                            y1={0}
-                            x2={1}
-                            y2={1}
-                          >
-                            <stop offset="0%" stopColor="#0BA5EC" />
-                            <stop offset="50%" stopColor="#EE46BC" />
-                            <stop offset="100%" stopColor="#6938EF" />
-                          </linearGradient>
-                        </svg>
-                        <Brain sx={{ fill: "url(#gradientFill)" }} />
-                      </>
-                    }
-                    sx={{
-                      mt: 1.5,
-                    }}
-                  >
-                    Improve with AI
-                  </Button>
-                </>
-              )}
-            </Box>
-          </ThemeProvider>
+
+          <Box position="sticky" top={0} alignSelf="flex-start" maxWidth={620}>
+            {model?.type !== "dataset" && model?.type !== "block" && (
+              <>
+                <SocialMediaPreview />
+                <Button
+                  variant="text"
+                  color="inherit"
+                  size="large"
+                  onClick={() => metaRef.current?.triggerAIGeneratedFlow?.()}
+                  startIcon={
+                    <>
+                      <svg width={0} height={0}>
+                        <linearGradient
+                          id="gradientFill"
+                          x1={1}
+                          y1={0}
+                          x2={1}
+                          y2={1}
+                        >
+                          <stop offset="0%" stopColor="#0BA5EC" />
+                          <stop offset="50%" stopColor="#EE46BC" />
+                          <stop offset="100%" stopColor="#6938EF" />
+                        </linearGradient>
+                      </svg>
+                      <Brain sx={{ fill: "url(#gradientFill)" }} />
+                    </>
+                  }
+                  sx={{
+                    mt: 1.5,
+                  }}
+                >
+                  Improve with AI
+                </Button>
+              </>
+            )}
+          </Box>
         </Box>
       </Stack>
       {isScheduleDialogOpen && !isLoadingNewItem && (
