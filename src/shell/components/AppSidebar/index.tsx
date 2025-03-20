@@ -11,7 +11,6 @@ import {
   Stack,
   Typography,
   PaletteMode,
-  ScopedCssBaseline,
   Tooltip,
   TextField,
   List,
@@ -21,14 +20,14 @@ import {
   InputAdornment,
   ListItemButton,
   SvgIcon,
+  Theme,
 } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { darkTheme, theme } from "@zesty-io/material";
 import { IconButton as IconButtonCustom } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
 import { useLocation, useHistory } from "react-router-dom";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import { AddRounded } from "@mui/icons-material";
+import { alpha } from "@mui/material";
 
 export interface SubMenu {
   name: string;
@@ -55,6 +54,36 @@ interface Props {
   titleButtonIcon?: SvgIconComponent;
   TitleButtonComponent?: React.ReactNode;
 }
+
+const darkTheme = {
+  backgroundColor: "grey.900",
+  "& .MuiTreeItem-label,\
+  & .app-sidebar-header-container input,\
+  & .app-sidebar-header-container input::placeholder,\
+  & .app-sidebar-header-container fieldset":
+    {
+      color: "grey.300",
+      border: "none",
+    },
+  "& .MuiAccordion-root .MuiTypography-root,\
+  & .nav-tree-header .MuiTypography-root,\
+  & .MuiSvgIcon-root":
+    {
+      color: "grey.400",
+    },
+  "& .app-sidebar-header .MuiTypography-root, \
+  & .app-sidebar-header .MuiSvgIcon-root":
+    {
+      color: "common.white",
+    },
+  "& .nav-tree-header .MuiIconButton-root:hover": {
+    bgcolor: "grey.800",
+  },
+  "& .MuiTreeItem-content:hover": {
+    bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.08),
+  },
+};
+
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
   (
     {
@@ -109,164 +138,157 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
       setUserInputKeyword(filterKeyword);
     }, [filterKeyword]);
 
-    const themeMode = mode === "light" ? theme : darkTheme;
-
     return (
-      <ThemeProvider theme={themeMode}>
-        <ScopedCssBaseline
-          component={Box}
-          sx={{ height: "100%", width: "inherit" }}
+      <Box height="100%" width="inherit" sx={mode === "dark" ? darkTheme : {}}>
+        <Stack
+          sx={{
+            height: "100%",
+            userSelect: "none",
+          }}
+          {...props}
         >
-          <Stack
-            sx={{
-              backgroundColor: "background.paper",
-              height: "100%",
-              userSelect: "none",
-            }}
-            {...props}
-          >
-            <Box py={1.5}>
-              <Stack gap={1.5}>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  px={1.5}
+          <Box py={1.5}>
+            <Stack gap={1.5} className="app-sidebar-header-container">
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                px={1.5}
+                className="app-sidebar-header"
+              >
+                <Typography
+                  data-cy="appSidebarHeaderTitle"
+                  variant="h6"
+                  fontWeight={700}
+                  lineHeight="24px"
+                  fontSize={18}
                 >
-                  <Typography
-                    data-cy="appSidebarHeaderTitle"
-                    variant="h6"
-                    color="text.primary"
-                    fontWeight={700}
-                    lineHeight="24px"
-                    fontSize={18}
+                  {headerTitle}
+                </Typography>
+                {!!TitleButtonComponent && TitleButtonComponent}
+                {withTitleButton && !TitleButtonComponent && (
+                  <Tooltip
+                    title={titleButtonTooltip}
+                    placement="right-start"
+                    enterDelay={1000}
+                    enterNextDelay={1000}
                   >
-                    {headerTitle}
-                  </Typography>
-                  {!!TitleButtonComponent && TitleButtonComponent}
-                  {withTitleButton && !TitleButtonComponent && (
-                    <Tooltip
-                      title={titleButtonTooltip}
-                      placement="right-start"
-                      enterDelay={1000}
-                      enterNextDelay={1000}
+                    <IconButtonCustom
+                      data-cy="create_new_content_item"
+                      variant="contained"
+                      size="xsmall"
+                      onClick={onAddClick}
                     >
-                      <IconButtonCustom
-                        data-cy="create_new_content_item"
-                        variant="contained"
-                        size="xsmall"
-                        onClick={onAddClick}
-                      >
-                        <SvgIcon component={titleButtonIcon} fontSize="small" />
-                      </IconButtonCustom>
-                    </Tooltip>
-                  )}
-                </Stack>
-                {withSearch && (
-                  <TextField
-                    data-cy={searchId}
-                    value={userInputKeyword}
-                    inputProps={{
-                      ref: textfieldRef,
-                    }}
-                    InputProps={{
-                      sx: {
-                        backgroundColor: "grey.800",
-                        height: "100%",
-                      },
-                      startAdornment: (
-                        <InputAdornment
-                          position="start"
-                          sx={{ marginRight: 0.5 }}
-                        >
-                          <ManageSearchRoundedIcon fontSize="small" />
-                        </InputAdornment>
-                      ),
-                    }}
-                    placeholder={searchPlaceholder}
-                    size="small"
-                    sx={{
-                      px: 1.5,
-                      height: 36,
-                    }}
-                    onChange={(evt) => setUserInputKeyword(evt.target.value)}
-                    onKeyDown={(evt) => {
-                      if (evt.key.toLowerCase() === "enter") {
-                        onFilterEnter && onFilterEnter(userInputKeyword);
-                      }
-                    }}
-                  />
-                )}
-                {hideSubMenuOnSearch && userInputKeyword ? (
-                  <></>
-                ) : (
-                  <List disablePadding>
-                    {!!subMenus?.length &&
-                      subMenus?.map((menu) => {
-                        const isActive = menu.substringPathMatch
-                          ? location.pathname.includes(menu.path)
-                          : location.pathname === menu.path;
-
-                        return (
-                          <ListItem
-                            key={menu.name}
-                            disablePadding
-                            selected={menu.disableActive ? false : isActive}
-                            sx={{
-                              color: "text.secondary",
-                              borderLeft:
-                                !menu.disableActive && isActive
-                                  ? "2px solid"
-                                  : "none",
-                              borderColor: "primary.main",
-                            }}
-                          >
-                            <ListItemButton
-                              sx={{
-                                height: 36,
-                                pl: isActive ? 1.25 : 1.5,
-                                pr: 1.5,
-                                py: 0.75,
-                              }}
-                              onClick={() => {
-                                if (menu.onClick) {
-                                  menu.onClick();
-                                } else {
-                                  history.push(menu.path);
-                                }
-                              }}
-                            >
-                              <ListItemIcon sx={{ minWidth: 32 }}>
-                                <SvgIcon component={menu.icon} />
-                              </ListItemIcon>
-                              <ListItemText
-                                primary={menu.name}
-                                primaryTypographyProps={{
-                                  variant: "body3",
-                                  fontWeight: 600,
-                                }}
-                              />
-                            </ListItemButton>
-                          </ListItem>
-                        );
-                      })}
-                  </List>
+                      <SvgIcon component={titleButtonIcon} fontSize="small" />
+                    </IconButtonCustom>
+                  </Tooltip>
                 )}
               </Stack>
-            </Box>
-            <Box
-              height="100%"
-              ref={childrenContainerRef}
-              sx={{
-                overflowY: "auto",
-                scrollBehavior: "smooth",
-              }}
-            >
-              {children}
-            </Box>
-          </Stack>
-        </ScopedCssBaseline>
-      </ThemeProvider>
+              {withSearch && (
+                <TextField
+                  data-cy={searchId}
+                  value={userInputKeyword}
+                  inputProps={{
+                    ref: textfieldRef,
+                  }}
+                  InputProps={{
+                    sx: {
+                      backgroundColor: "grey.800",
+                      height: "100%",
+                    },
+                    startAdornment: (
+                      <InputAdornment
+                        position="start"
+                        sx={{ marginRight: 0.5 }}
+                      >
+                        <ManageSearchRoundedIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  placeholder={searchPlaceholder}
+                  size="small"
+                  sx={{
+                    px: 1.5,
+                    height: 36,
+                  }}
+                  onChange={(evt) => setUserInputKeyword(evt.target.value)}
+                  onKeyDown={(evt) => {
+                    if (evt.key.toLowerCase() === "enter") {
+                      onFilterEnter && onFilterEnter(userInputKeyword);
+                    }
+                  }}
+                />
+              )}
+              {hideSubMenuOnSearch && userInputKeyword ? (
+                <></>
+              ) : (
+                <List disablePadding>
+                  {!!subMenus?.length &&
+                    subMenus?.map((menu) => {
+                      const isActive = menu.substringPathMatch
+                        ? location.pathname.includes(menu.path)
+                        : location.pathname === menu.path;
+
+                      return (
+                        <ListItem
+                          key={menu.name}
+                          disablePadding
+                          selected={menu.disableActive ? false : isActive}
+                          sx={{
+                            color: "grey.400",
+                            borderLeft:
+                              !menu.disableActive && isActive
+                                ? "2px solid"
+                                : "none",
+                            borderColor: "primary.main",
+                          }}
+                        >
+                          <ListItemButton
+                            sx={{
+                              height: 36,
+                              pl: isActive ? 1.25 : 1.5,
+                              pr: 1.5,
+                              py: 0.75,
+                            }}
+                            onClick={() => {
+                              if (menu.onClick) {
+                                menu.onClick();
+                              } else {
+                                history.push(menu.path);
+                              }
+                            }}
+                          >
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                              <SvgIcon component={menu.icon} />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={menu.name}
+                              primaryTypographyProps={{
+                                variant: "body3",
+                                fontWeight: 600,
+                              }}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                </List>
+              )}
+            </Stack>
+          </Box>
+          <Box
+            className="nav-tree-container"
+            height="100%"
+            ref={childrenContainerRef}
+            sx={{
+              overflowY: "auto",
+              scrollBehavior: "smooth",
+            }}
+          >
+            {children}
+          </Box>
+        </Stack>
+      </Box>
     );
   }
 );
