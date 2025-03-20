@@ -1,16 +1,16 @@
 import { memo, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import moment from "moment";
-
+import {
+  Stack,
+  Collapse,
+  Paper,
+  Typography,
+  Box,
+  IconButton,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-
-import Box from "@mui/material/Box";
-import { Collapse, Paper } from "@mui/material";
-import Typography from "@mui/material/Typography";
-import { IconButton } from "@zesty-io/material";
-import Stack from "@mui/material/Stack";
-
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import AuditTrail, { LogEntry } from "./AuditTrail";
