@@ -2,7 +2,6 @@ import { memo, useState, useCallback } from "react";
 import { useHistory } from "react-router";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LoadingButton from "@mui/lab/LoadingButton";
-
 import {
   Button,
   Dialog,
@@ -13,34 +12,43 @@ import {
   Box,
 } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
-
 import { useDispatch } from "react-redux";
 import { IconButton } from "@mui/material";
 import { deleteFile } from "../../../store/files";
 
-export const DeleteDialog = memo(function DeleteDialog(props) {
+interface DeleteDialogProps {
+  open: boolean;
+  onClose: () => void;
+  fileZUID: string;
+  fileName: string;
+  status: string;
+}
+
+export const DeleteDialog = memo(function DeleteDialog(
+  props: DeleteDialogProps
+) {
   const { open, onClose, fileZUID, fileName, status } = props;
 
   const [deleting, setDeleting] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const handleDeleteFile = useCallback(() => {
+  const handleDeleteFile = useCallback(async () => {
     if (!fileZUID || !status) return;
     setDeleting(true);
-    dispatch(deleteFile(fileZUID, status))
-      .then((res) => {
-        setDeleting(false);
-        if (res.status === 200) {
-          onClose();
-          history.push("/code");
-        }
-      })
-      .catch((err) => {
-        setDeleting(false);
-      });
-  }, [dispatch, fileZUID, status, history, onClose]);
 
+    try {
+      const res: any = await dispatch(deleteFile(fileZUID, status));
+      setDeleting(false);
+      if (res.status === 200) {
+        onClose();
+        history.push("/code");
+      }
+    } catch (err) {
+      setDeleting(false);
+      console.error("Failed to delete file:", err);
+    }
+  }, [dispatch, fileZUID, status, history, onClose]);
   return (
     <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
       <DialogTitle>

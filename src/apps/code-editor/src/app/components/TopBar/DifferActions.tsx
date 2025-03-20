@@ -7,71 +7,89 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 import EastIcon from "@mui/icons-material/East";
 
+import { Dispatch } from "redux";
 import {
   fetchFileVersions,
   saveFile,
   updateFileCode,
 } from "../../../store/files";
+import { useDispatch } from "react-redux";
 
-export const DifferActions = memo(function DifferActions(props) {
+interface DifferActionsProps {
+  fileZUID: string;
+  fileType: string;
+  publishedVersion?: string | "local";
+  status: string;
+  synced: boolean;
+  currentCode: string;
+  setVersionCodeLeft: (code: string) => void;
+  setVersionCodeRight: (code: string) => void;
+  setLoading: (loading: boolean) => void;
+}
+
+interface FileVersion {
+  code: string;
+  version: number | "local";
+  status: string;
+  createdAt: string;
+}
+
+export const DifferActions = memo(function DifferActions(
+  props: DifferActionsProps
+) {
   const [saving, setSaving] = useState(false);
-  const [versions, setVersions] = useState([]);
-  const [selectedVersion, setSelectedVersion] = useState(
-    props.publishedVersion ? props.publishedVersion : 0
+  const [versions, setVersions] = useState<FileVersion[]>([]);
+  const [selectedVersion, setSelectedVersion] = useState<string | "local">(
+    props.publishedVersion ? props.publishedVersion : "0"
   );
+
+  const dispatch = useDispatch();
   const history = useHistory();
 
-  function loadVersion() {
+  const loadVersion = () => {
     if (selectedVersion === "local") {
-      props.dispatch(
-        updateFileCode(props.fileZUID, props.status, props.currentCode)
-      );
+      dispatch(updateFileCode(props.fileZUID, props.status, props.currentCode));
     } else {
       const version = versions.find(
-        (v) => v.version == Number(selectedVersion)
+        (v) => v.version === Number(selectedVersion)
       );
-      props.dispatch(
-        updateFileCode(props.fileZUID, props.status, version.code)
-      );
+      if (version) {
+        dispatch(updateFileCode(props.fileZUID, props.status, version.code));
+      }
     }
 
     history.push(`/code/file/${props.fileType}/${props.fileZUID}`);
-  }
+  };
 
-  function resolveSync() {
+  const resolveSync = () => {
     setSaving(true);
 
     if (selectedVersion === "local") {
-      props.dispatch(
-        updateFileCode(props.fileZUID, props.status, props.currentCode)
-      );
+      dispatch(updateFileCode(props.fileZUID, props.status, props.currentCode));
     } else {
-      const version = versions.find((v) => v.version == selectedVersion);
-      props.dispatch(
-        updateFileCode(props.fileZUID, props.status, version.code)
-      );
+      const version = versions.find((v) => v.version === selectedVersion);
+      if (version) {
+        dispatch(updateFileCode(props.fileZUID, props.status, version.code));
+      }
     }
 
-    props
-      .dispatch(saveFile(props.fileZUID, props.status))
+    Promise.resolve(dispatch(saveFile(props.fileZUID, props.status)))
       .then(() => {
         history.push(`/code/file/views/${props.fileZUID}`);
       })
       .finally(() => {
         setSaving(false);
       });
-  }
-
+  };
   useEffect(() => {
     props.setLoading(true);
-    props
-      .dispatch(fetchFileVersions(props.fileZUID, props.fileType))
-      .then((res) => {
+    Promise.resolve(dispatch(fetchFileVersions(props.fileZUID, props.fileType)))
+      .then((res: any) => {
         props.setLoading(false);
 
         let versions = res.data
-          .filter((v) => v.status === props.status)
-          .sort((a, b) => {
+          .filter((v: { status: string }) => v.status === props.status)
+          .sort((a: { createdAt: string }, b: { createdAt: string }) => {
             let timeA = moment(a.createdAt).valueOf();
             let timeB = moment(b.createdAt).valueOf();
 
@@ -89,6 +107,7 @@ export const DifferActions = memo(function DifferActions(props) {
           code: props.currentCode,
           version: "local",
           status: props.status,
+          createdAt: new Date().toISOString(),
         });
 
         setVersions(versions);
@@ -96,21 +115,32 @@ export const DifferActions = memo(function DifferActions(props) {
         if (Array.isArray(res.data) && res.data.length) {
           if (props.publishedVersion) {
             let published = res.data.find(
-              (f) => f.version === props.publishedVersion
+              (f: { version: string | number }) =>
+                f.version === props.publishedVersion
             );
-            setSelectedVersion(published.version);
-            props.setVersionCodeRight(published.code);
+            if (published) {
+              setSelectedVersion(published.version);
+              props.setVersionCodeRight(published.code);
+            }
           } else {
             setSelectedVersion(res.data[0].version);
             props.setVersionCodeRight(res.data[0].code);
           }
         }
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         props.setLoading(false);
         console.error(err);
       });
-  }, []);
+  }, [
+    props.fileZUID,
+    props.fileType,
+    props.status,
+    props.currentCode,
+    props.publishedVersion,
+    props.setLoading,
+    props.setVersionCodeRight,
+  ]);
 
   const options = versions.map((version) => {
     let html = (
@@ -122,7 +152,7 @@ export const DifferActions = memo(function DifferActions(props) {
       </span>
     );
 
-    if (version.version == props.publishedVersion) {
+    if (version.version === props.publishedVersion) {
       html = (
         <>
           <strong>(Live)</strong> {html}
@@ -166,7 +196,7 @@ export const DifferActions = memo(function DifferActions(props) {
           size="small"
           onChange={(evt) => {
             const version = versions.find(
-              (version) => version.version == evt.target.value
+              (version) => version.version === evt.target.value
             );
             if (version) {
               props.setVersionCodeLeft(version.code);
@@ -199,11 +229,11 @@ export const DifferActions = memo(function DifferActions(props) {
           size="small"
           onChange={(evt) => {
             const version = versions.find(
-              (version) => version.version == evt.target.value
+              (version) => version.version === evt.target.value
             );
             if (version) {
               props.setVersionCodeRight(version.code);
-              setSelectedVersion(version.version);
+              setSelectedVersion(String(version.version));
             }
           }}
           sx={{ width: 300 }}
@@ -219,7 +249,7 @@ export const DifferActions = memo(function DifferActions(props) {
         <>
           <Button
             variant="text"
-            color="secondary"
+            color="inherit"
             size="small"
             sx={{ ml: 1 }}
             onClick={() =>

@@ -1,5 +1,4 @@
 import { memo, useState } from "react";
-
 import * as React from "react";
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
@@ -21,9 +20,30 @@ import { EditorActions } from "./EditorActions";
 import ElectricBoltOutlinedIcon from "@mui/icons-material/ElectricBoltOutlined";
 import { DeleteDialog } from "./DeleteDialog";
 import CheckIcon from "@mui/icons-material/Check";
+import { Dispatch } from "redux";
+import { useDispatch } from "react-redux";
 
-const TopBar = memo(function TopBar(props) {
+interface TopBarProps {
+  fileName: string;
+  synced: boolean;
+  isDiffer?: boolean;
+  dispatch: Dispatch;
+  fileZUID: string;
+  fileType: string;
+  publishedVersion?: string;
+  status: string;
+  version: string;
+  isLive: boolean;
+  code: string;
+  contentModelZUID?: string;
+  setVersionCodeLeft?: (code: string) => void;
+  setVersionCodeRight?: (code: string) => void;
+  setLoading?: (loading: boolean) => void;
+}
+
+const TopBar = memo(function TopBar(props: TopBarProps) {
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -67,7 +87,6 @@ const TopBar = memo(function TopBar(props) {
         >
           {props?.isDiffer ? (
             <DifferActions
-              dispatch={props.dispatch}
               fileZUID={props.fileZUID}
               fileType={props.fileType}
               publishedVersion={props.publishedVersion}
@@ -76,6 +95,7 @@ const TopBar = memo(function TopBar(props) {
               setVersionCodeLeft={props.setVersionCodeLeft}
               setVersionCodeRight={props.setVersionCodeRight}
               setLoading={props.setLoading}
+              currentCode={props.code}
             />
           ) : (
             <>
@@ -91,7 +111,6 @@ const TopBar = memo(function TopBar(props) {
               </Box>
 
               <EditorActions
-                dispatch={props.dispatch}
                 fileZUID={props.fileZUID}
                 fileType={props.fileType}
                 version={props.version}
@@ -116,15 +135,25 @@ const TopBar = memo(function TopBar(props) {
   );
 });
 
-const MoreOptions = (props) => {
+interface MoreOptionsProps {
+  contentModelZUID?: string;
+  fileType: string;
+  fileZUID: string;
+  publishedVersion?: string;
+  version: string;
+  openDeleteDialog: () => void;
+}
+
+const MoreOptions = (props: MoreOptionsProps) => {
   const history = useHistory();
   const location = useLocation();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
 
   const [isCopied, setIsCopied] = useState(false);
 
-  const handleCopyClick = (data) => {
+  const handleCopyClick = (data: string) => {
     return () => {
       navigator?.clipboard
         ?.writeText(data)
@@ -141,7 +170,7 @@ const MoreOptions = (props) => {
     };
   };
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -247,6 +276,7 @@ const MoreOptions = (props) => {
             <MenuItem
               onClick={() =>
                 window.open(
+                  //@ts-expect-error
                   `${CONFIG.URL_PREVIEW_FULL}/-/instant/${props?.contentModelZUID}.json`,
                   "_blank"
                 )
@@ -263,5 +293,4 @@ const MoreOptions = (props) => {
     </>
   );
 };
-
 export { TopBar };
