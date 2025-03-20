@@ -132,7 +132,7 @@ export const Meta = forwardRef(
     const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
 
     const metaFields = useMemo(() => {
-      if (fields.length) {
+      if (fields?.length) {
         return fields.reduce(
           (
             accu: Record<string, ContentModelField>,

@@ -203,6 +203,24 @@ export function content(state = {}, action) {
         return acc;
       }, {});
 
+    case "START_CAPTURING_SCREENSHOT":
+      return {
+        ...state,
+        [action.itemZUID]: {
+          ...state[action.itemZUID],
+          capturingScreenshot: true,
+        },
+      };
+
+    case "DONE_CAPTURING_SCREENSHOT":
+      return {
+        ...state,
+        [action.itemZUID]: {
+          ...state[action.itemZUID],
+          capturingScreenshot: false,
+        },
+      };
+
     default:
       return state;
   }
@@ -560,13 +578,21 @@ export function saveItem({
             Not awaiting this because capturing the screenshot is not critical to the save operation
             and we don't want to hold up the user
           */
+            dispatch({
+              type: "START_CAPTURING_SCREENSHOT",
+              itemZUID,
+            });
             dispatch(
               cloudFunctionsApi.endpoints.createScreenshot.initiate(
                 `${CONFIG.URL_PREVIEW_PROTOCOL}${itemBlockPreviewUrl}`
               )
-            ).then(() =>
-              dispatch(instanceApi.util.invalidateTags(["ContentItems"]))
-            );
+            ).then(() => {
+              dispatch(instanceApi.util.invalidateTags(["ContentItems"]));
+              dispatch({
+                type: "DONE_CAPTURING_SCREENSHOT",
+                itemZUID,
+              });
+            });
           }
         }
 
