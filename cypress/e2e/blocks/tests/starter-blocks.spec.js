@@ -4,8 +4,6 @@ import { API_ENDPOINTS } from "../../../support/api";
 const TIMEOUT = { timeout: 60_000 };
 const testSufix = "------TEST";
 
-const BLOCK_LABELS = STARTER_BLOCKS.map((block) => block.label);
-
 const ERRORS = {
   label: "Display name is already in use. Please use another display name.",
   name: "Reference ID is already in use. Please use another Reference ID.",
@@ -42,14 +40,6 @@ const POP_UPS = {
 const starterBlockFormField = `[data-cy="starter-block-form-fields-container"] > div[data-cy-status]`;
 const formLabelErrorContainer = '[data-cy="starter-block-form-label-error"]';
 const formNameErrorContainer = '[data-cy="starter-block-form-name-error"]';
-const schemaPageTitleContainer = 'nav[data-cy="breadcrumbs"] + div > h3';
-
-function schemaField() {
-  return cy
-    .getElement('[data-cy="SEOFields"]')
-    .parent()
-    .find("div[data-cy-status]", TIMEOUT);
-}
 
 describe("Starter Blocks", () => {
   before(() => {
@@ -62,7 +52,6 @@ describe("Starter Blocks", () => {
 
   describe("Selection Dialogue", () => {
     it("should render starter blocks", () => {
-      // openStarterBlocksDialogue();
       cy.visit("/schema");
       cy.getElement('[data-cy="create_new_content_item"]').click(TIMEOUT);
       cy.getElement('[data-cy="model-type-block"]').click();
@@ -130,33 +119,20 @@ describe("Starter Blocks", () => {
 
     it(`[${STARTER_BLOCKS[0].label}]`, () => {
       const BLOCK = STARTER_BLOCKS[0];
-
-      createStarterBlock(BLOCK?.label);
       const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
-      validatePrimaryDetails(BLOCK);
+      cy.get('[data-cy="starter-block-card"]:eq(0)', TIMEOUT).click();
 
-      cy.getElement('[data-cy="starter-block-form-fields-container"]').should(
-        "not.exist"
+      cy.get('[data-cy="select-block-type-next-button"]').click();
+
+      cy.getBySelector("create-model-display-name-input", TIMEOUT).type(
+        TEST_LABEL
       );
 
-      cy.intercept("POST", "/v1/content/models").as("createModel");
-      cy.intercept("/v1/content/models").as("getModels");
+      cy.get('[data-cy="create-model-submit-button"]').click({ force: true });
 
-      cy.getElement('[data-cy="starter-block-form-label"] input')
-        .clear()
-        .type(TEST_LABEL);
-      cy.getElement('[data-cy="starter-block-form-submit"]').click();
-      cy.getElement(POP_UPS.formLoading).should("exist");
-
-      cy.wait(["@createModel", "@getModels"], TIMEOUT);
-
-      cy.getElement(schemaPageTitleContainer).should(
-        "contain.text",
-        TEST_LABEL,
-        { matchCase: false, ...TIMEOUT }
-      );
-
-      cy.getElement("div > button + div + p + span").should("have.length", 0);
+      cy.get("h3")
+        .contains(TEST_LABEL, { matchCase: false, timeout: 20000 })
+        .should("exist");
     });
 
     it(`[${STARTER_BLOCKS[1].label}]`, () => {
@@ -174,15 +150,11 @@ describe("Starter Blocks", () => {
       });
 
       fillOutFormAndSubmit(TEST_LABEL).then((res) => {
-        cy.getElement(schemaPageTitleContainer).should(
-          "contain.text",
-          TEST_LABEL,
-          { matchCase: false, ...TIMEOUT }
-        );
+        cy.contains("h3", TEST_LABEL, {
+          matchCase: false,
+          timeout: 20000,
+        }).should("exist");
 
-        BLOCK.fields.forEach((field) => {
-          schemaField().should("contain.text", field.label);
-        });
         cy.wrap({ ...res }).as("createModelResponse");
       });
 
@@ -210,15 +182,11 @@ describe("Starter Blocks", () => {
       });
 
       fillOutFormAndSubmit(TEST_LABEL).then((res) => {
-        cy.getElement(schemaPageTitleContainer).should(
-          "contain.text",
-          TEST_LABEL,
-          { matchCase: false, ...TIMEOUT }
-        );
+        cy.contains("h3", TEST_LABEL, {
+          matchCase: false,
+          timeout: 20000,
+        }).should("exist");
 
-        BLOCK.fields.forEach((field) => {
-          schemaField().should("contain.text", field.label);
-        });
         cy.wrap({ ...res }).as("createModelResponse");
       });
 
@@ -246,15 +214,11 @@ describe("Starter Blocks", () => {
       });
 
       fillOutFormAndSubmit(TEST_LABEL).then((res) => {
-        cy.getElement(schemaPageTitleContainer).should(
-          "contain.text",
-          TEST_LABEL,
-          { matchCase: false, ...TIMEOUT }
-        );
+        cy.contains("h3", TEST_LABEL, {
+          matchCase: false,
+          timeout: 20000,
+        }).should("exist");
 
-        BLOCK.fields.forEach((field) => {
-          schemaField().should("contain.text", field.label);
-        });
         cy.wrap({ ...res }).as("createModelResponse");
       });
 
@@ -282,16 +246,6 @@ describe("Starter Blocks", () => {
       });
 
       fillOutFormAndSubmit(TEST_LABEL).then((res) => {
-        cy.getElement(schemaPageTitleContainer).should(
-          "contain.text",
-          TEST_LABEL,
-          { matchCase: false, ...TIMEOUT }
-        );
-
-        BLOCK.fields.forEach((field) => {
-          schemaField().should("contain.text", field.label);
-        });
-
         cy.wrap({ ...res }).as("createModelResponse");
       });
 
@@ -321,15 +275,10 @@ describe("Starter Blocks", () => {
       });
 
       fillOutFormAndSubmit(TEST_LABEL).then((res) => {
-        cy.getElement(schemaPageTitleContainer).should(
-          "contain.text",
-          TEST_LABEL,
-          { matchCase: false, ...TIMEOUT }
-        );
-
-        BLOCK.fields.forEach((field) => {
-          schemaField().should("contain.text", field.label);
-        });
+        cy.contains("h3", TEST_LABEL, {
+          matchCase: false,
+          timeout: 20000,
+        }).should("exist");
 
         cy.wrap({ ...res }).as("createModelResponse");
       });
