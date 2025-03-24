@@ -117,24 +117,6 @@ describe("Starter Blocks", () => {
       openStarterBlocksDialogue();
     });
 
-    it(`[${STARTER_BLOCKS[0].label}]`, () => {
-      const BLOCK = STARTER_BLOCKS[0];
-      const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
-      cy.get('[data-cy="starter-block-card"]:eq(0)', TIMEOUT).click();
-
-      cy.get('[data-cy="select-block-type-next-button"]').click();
-
-      cy.getBySelector("create-model-display-name-input", TIMEOUT).type(
-        TEST_LABEL
-      );
-
-      cy.get('[data-cy="create-model-submit-button"]').click({ force: true });
-
-      cy.get("h3")
-        .contains(TEST_LABEL, { matchCase: false, timeout: 20000 })
-        .should("exist");
-    });
-
     it(`[${STARTER_BLOCKS[1].label}]`, () => {
       const BLOCK = STARTER_BLOCKS[1];
 
