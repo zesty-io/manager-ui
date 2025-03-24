@@ -12,8 +12,6 @@ import {
   DialogActions,
   CircularProgress,
 } from "@mui/material";
-import { theme } from "@zesty-io/material";
-import { ThemeProvider } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import winnerPanel from "../../../../../../public/images/winnerPanel.svg";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -81,7 +79,7 @@ export const SchemaCreateWizard = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Box width="100%" height="100%"></Box>
       <Backdrop open={isLoading} sx={{ flexDirection: "column" }}>
         <CircularProgress />
@@ -190,6 +188,6 @@ export const SchemaCreateWizard = () => {
           </Box> */}
         </Box>
       </Dialog>
-    </ThemeProvider>
+    </>
   );
 };

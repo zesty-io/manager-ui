@@ -13,14 +13,14 @@ export const Publish = memo(function Publish(props) {
   return (
     <LoadingButton
       variant="contained"
-      color="secondary"
+      color="success"
+      size="small"
       onClick={() => {
         setPublishing(true);
         props
           .dispatch(publishFile(props.fileZUID, props.status))
           .finally(() => {
             setPublishing(false);
-
             props.dispatch(fetchFiles("views"));
             props.dispatch(fetchFiles("stylesheets"));
             props.dispatch(fetchFiles("scripts"));
@@ -28,7 +28,7 @@ export const Publish = memo(function Publish(props) {
       }}
       loading={publishing}
       loadingPosition="start"
-      startIcon={<UploadIcon />}
+      startIcon={<UploadIcon fontSize="small" />}
     >
       Publish
       <span className={styles.HideSmall}>&nbsp;Version {props.version}</span>

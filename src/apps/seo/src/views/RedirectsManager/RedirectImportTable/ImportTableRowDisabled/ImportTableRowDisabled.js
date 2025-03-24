@@ -16,7 +16,7 @@ export default function ImportTableRowDisabled({
     <div className={styles.ImportTableRowDisabled}>
       <span className={styles.RowCell}>{path}</span>
       <span className={styles.RedirectCreatorCell}>
-        <ToggleButtonGroup color="secondary" value={code} size="small" disabled>
+        <ToggleButtonGroup color="primary" value={code} size="small" disabled>
           <ToggleButton value={302}>302</ToggleButton>
           <ToggleButton value={301}>301</ToggleButton>
         </ToggleButtonGroup>
