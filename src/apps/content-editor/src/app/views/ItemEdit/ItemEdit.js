@@ -590,30 +590,28 @@ export default function ItemEdit() {
                 <Route
                   path="/content/:contentModelZUID/:contentItemZUID/api"
                   render={() => (
-                    <ThemeProvider theme={theme}>
-                      <Box
-                        sx={{
-                          color: "text.primary",
-                          flex: "1",
-                          overflow: "hidden",
-                          "*": {
-                            boxSizing: "border-box",
-                          },
-                          bgcolor: "grey.50",
-                        }}
-                      >
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api/:type"
-                          component={ApiDetails}
-                        />
-                        <Route
-                          exact
-                          path="/content/:contentModelZUID/:contentItemZUID/api"
-                          component={ApiCardList}
-                        />
-                      </Box>
-                    </ThemeProvider>
+                    <Box
+                      sx={{
+                        color: "text.primary",
+                        flex: "1",
+                        overflow: "hidden",
+                        "*": {
+                          boxSizing: "border-box",
+                        },
+                        bgcolor: "grey.50",
+                      }}
+                    >
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api/:type"
+                        component={ApiDetails}
+                      />
+                      <Route
+                        exact
+                        path="/content/:contentModelZUID/:contentItemZUID/api"
+                        component={ApiCardList}
+                      />
+                    </Box>
                   )}
                 />
                 <Route

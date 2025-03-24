@@ -35,7 +35,7 @@ export const PublishAll = memo(function PublishAll() {
     <div>
       <Button
         variant="contained"
-        color="secondary"
+        color="success"
         title="Publish All"
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}

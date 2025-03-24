@@ -75,7 +75,7 @@ export function RedirectCreator(props) {
       </span>
       <span className={styles.RedirectCreatorCell}>
         <ToggleButtonGroup
-          color="secondary"
+          color="primary"
           value={code}
           size="small"
           exclusive
@@ -148,7 +148,7 @@ export function RedirectCreator(props) {
       <span className={styles.RedirectCreatorCell}>
         <Button
           variant="contained"
-          color="success"
+          color="primary"
           onClick={handleCreateRedirect}
           disabled={!from.length || !from.startsWith("/")}
           startIcon={<AddIcon />}

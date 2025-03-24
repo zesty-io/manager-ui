@@ -135,26 +135,24 @@ export const PublishState = ({ reloadItem }: Props) => {
       height="100%"
     >
       {Array.isArray(data) && (
-        <ThemeProvider theme={theme}>
-          <Box
-            sx={{
-              boxSizing: "border-box",
-              height: "100%",
-              bgcolor: "grey.50",
-              py: 2.5,
-              px: 4,
-            }}
-          >
-            <DataGridPro
-              sx={{ backgroundColor: "common.white" }}
-              columns={columns}
-              rows={data.map((row) => ({ id: row.ZUID, ...row }))}
-              rowHeight={64}
-              hideFooter
-              disableSelectionOnClick
-            />
-          </Box>
-        </ThemeProvider>
+        <Box
+          sx={{
+            boxSizing: "border-box",
+            height: "100%",
+            bgcolor: "grey.50",
+            py: 2.5,
+            px: 4,
+          }}
+        >
+          <DataGridPro
+            sx={{ backgroundColor: "common.white" }}
+            columns={columns}
+            rows={data.map((row) => ({ id: row.ZUID, ...row }))}
+            rowHeight={64}
+            hideFooter
+            disableSelectionOnClick
+          />
+        </Box>
       )}
     </WithLoader>
   );

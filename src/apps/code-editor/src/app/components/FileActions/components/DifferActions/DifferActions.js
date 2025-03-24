@@ -3,7 +3,7 @@ import { memo, useState, useEffect } from "react";
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
 
-import { Select, Button, MenuItem } from "@mui/material";
+import { Select, Button, MenuItem, Box, FormControl } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -19,8 +19,6 @@ import {
   updateFileCode,
   saveFile,
 } from "../../../../../store/files";
-
-import styles from "./DifferActions.less";
 
 export const DifferActions = memo(function DifferActions(props) {
   const [saving, setSaving] = useState(false);
@@ -146,74 +144,84 @@ export const DifferActions = memo(function DifferActions(props) {
   });
 
   return (
-    <div className={styles.DifferActions}>
-      <Select
-        name="codeOne"
-        className={styles.VersionSelector}
-        defaultValue="local"
-        size="small"
-        onChange={(evt) => {
-          const version = versions.find(
-            (version) => version.version == evt.target.value
-          );
-          if (version) {
-            props.setVersionCodeLeft(version.code);
-          } else {
-            console.log(`Missing selected version, ${version}`);
-          }
-        }}
-      >
-        {options.map((el, i) => (
-          <MenuItem key={i} value={el.value}>
-            {el.html}
-          </MenuItem>
-        ))}
-      </Select>
-
-      <FontAwesomeIcon className={styles.Divider} icon={faArrowRight} />
-
-      <Select
-        name="codeTwo"
-        className={styles.VersionSelector}
-        value={selectedVersion}
-        size="small"
-        onChange={(evt) => {
-          const version = versions.find(
-            (version) => version.version == evt.target.value
-          );
-          if (version) {
-            props.setVersionCodeRight(version.code);
-            setSelectedVersion(version.version);
-          } else {
-            console.log(`Missing selected version, ${version}`);
-            // TODO fetch selected version from API?
-          }
-        }}
-      >
-        {options.map((el, i) => (
-          <MenuItem key={i} value={el.value}>
-            {el.html}
-          </MenuItem>
-        ))}
-      </Select>
-
+    <Box display="flex" alignItems="center" columnGap={1}>
+      <FormControl size="small">
+        <Select
+          name="codeOne"
+          defaultValue="local"
+          onChange={(evt) => {
+            const version = versions.find(
+              (version) => version.version == evt.target.value
+            );
+            if (version) {
+              props.setVersionCodeLeft(version.code);
+            } else {
+              console.log(`Missing selected version, ${version}`);
+            }
+          }}
+          sx={{
+            py: 0,
+            "& .MuiSelect-select": {
+              py: "7px",
+            },
+          }}
+        >
+          {options.map((el, i) => (
+            <MenuItem key={i} value={el.value}>
+              {el.html}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FontAwesomeIcon icon={faArrowRight} />
+      <FormControl size="small">
+        <Select
+          name="codeTwo"
+          value={selectedVersion}
+          onChange={(evt) => {
+            const version = versions.find(
+              (version) => version.version == evt.target.value
+            );
+            if (version) {
+              props.setVersionCodeRight(version.code);
+              setSelectedVersion(version.version);
+            } else {
+              console.log(`Missing selected version, ${version}`);
+              // TODO fetch selected version from API?
+            }
+          }}
+          sx={{
+            py: 0,
+            "& .MuiSelect-select": {
+              py: "7px",
+            },
+          }}
+        >
+          {options.map((el, i) => (
+            <MenuItem key={i} value={el.value}>
+              {el.html}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       {props.synced ? (
         <>
           <Button
             variant="contained"
             color="success"
             onClick={loadVersion}
-            startIcon={<HistoryIcon />}
-            sx={{ ml: 1, minWidth: "fit-content" }}
+            startIcon={<HistoryIcon fontSize="small" />}
+            size="small"
+            sx={{ minWidth: "fit-content" }}
           >
-            <span className={styles.Hide}>Load Version&nbsp;</span>{" "}
+            Load Version&nbsp;
             {selectedVersion}
           </Button>
           <AppLink to={`/code/file/${props.fileType}/${props.fileZUID}`}>
             <Button
               variant="contained"
-              startIcon={<DoDisturbAltIcon />}
-              sx={{ ml: 1 }}
+              size="small"
+              startIcon={<DoDisturbAltIcon fontSize="small" />}
             >
               Cancel
             </Button>
@@ -227,12 +235,13 @@ export const DifferActions = memo(function DifferActions(props) {
             onClick={resolveSync}
             disabled={saving}
             sx={{ ml: 1 }}
-            startIcon={<SaveIcon />}
+            size="small"
+            startIcon={<SaveIcon fontSize="small" />}
           >
             Save Version {selectedVersion}
           </LoadingButton>
         </>
       )}
-    </div>
+    </Box>
   );
 });
