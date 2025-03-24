@@ -405,12 +405,12 @@ const COMMON_FIELDS: InputField[] = [
     name: "description",
     type: "input",
     label: "Description",
-    subLabel: "Appears below the label to help content-writers and API users",
     required: false,
     fullWidth: true,
     multiline: true,
     gridSize: 12,
-    tooltip: "Perfect for giving instructions to content writers.",
+    tooltip:
+      "Appears below the display label. Use this to provide instructions to content writers and API users.",
   },
   {
     name: "required",
