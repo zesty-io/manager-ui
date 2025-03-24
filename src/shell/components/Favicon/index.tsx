@@ -239,58 +239,56 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             <Skeleton height={82} variant="rounded" />
           ) : (
             <>
-              <ThemeProvider theme={theme}>
-                <FieldTypeMedia
-                  limit={1}
-                  images={images}
-                  openMediaBrowser={(opts) => {
-                    setImageModal({
-                      ...opts,
-                    });
-                  }}
-                  name={"favicon"}
-                  onChange={handleImage}
-                  hideDrag
-                  lockedToGroupId={null}
-                />
-                {imageModal && (
-                  <MemoryRouter>
-                    <Dialog
-                      open
-                      fullScreen
-                      sx={{ my: 2.5, mx: 10 }}
-                      PaperProps={{
-                        style: {
-                          overflow: "hidden",
-                        },
+              <FieldTypeMedia
+                limit={1}
+                images={images}
+                openMediaBrowser={(opts) => {
+                  setImageModal({
+                    ...opts,
+                  });
+                }}
+                name={"favicon"}
+                onChange={handleImage}
+                hideDrag
+                lockedToGroupId={null}
+              />
+              {imageModal && (
+                <MemoryRouter>
+                  <Dialog
+                    open
+                    fullScreen
+                    sx={{ my: 2.5, mx: 10 }}
+                    PaperProps={{
+                      style: {
+                        overflow: "hidden",
+                      },
+                    }}
+                    onClose={() => setImageModal(null)}
+                  >
+                    <IconButton
+                      sx={{
+                        position: "fixed",
+                        right: 5,
+                        top: 0,
                       }}
-                      onClose={() => setImageModal(null)}
+                      onClick={() => setImageModal(null)}
                     >
-                      <IconButton
-                        sx={{
-                          position: "fixed",
-                          right: 5,
-                          top: 0,
-                        }}
-                        onClick={() => setImageModal(null)}
-                      >
-                        <Close sx={{ color: "common.white" }} />
-                      </IconButton>
-                      <MediaApp
-                        limitSelected={1}
-                        isSelectDialog={true}
-                        showHeaderActions={false}
-                        addImagesCallback={(images) => {
-                          if (!isImage(images[0])) return;
-                          imageModal.callback(images);
-                          setImageModal(null);
-                        }}
-                        isReplace={imageModal.isReplace}
-                      />
-                    </Dialog>
-                  </MemoryRouter>
-                )}
-              </ThemeProvider>
+                      <Close sx={{ color: "common.white" }} />
+                    </IconButton>
+                    <MediaApp
+                      limitSelected={1}
+                      isSelectDialog={true}
+                      showHeaderActions={false}
+                      addImagesCallback={(images) => {
+                        if (!isImage(images[0])) return;
+                        imageModal.callback(images);
+                        setImageModal(null);
+                      }}
+                      isReplace={imageModal.isReplace}
+                    />
+                  </Dialog>
+                </MemoryRouter>
+              )}
 
               {faviconData?.faviconZUID && showSizePreviews && (
                 <section className={styles.Sizes}>

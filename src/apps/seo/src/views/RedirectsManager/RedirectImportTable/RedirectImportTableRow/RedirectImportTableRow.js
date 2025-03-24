@@ -61,7 +61,7 @@ function RedirectImportTableRow(props) {
 
       <span className={styles.RedirectCreatorCell}>
         <ToggleButtonGroup
-          color="secondary"
+          color="primary"
           value={props.code}
           size="small"
           exclusive

@@ -183,255 +183,253 @@ const AnalyticsDashboard = ({ loading }: Props) => {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        color={theme.palette.text.primary}
-        bgcolor={theme.palette.grey[50]}
-        boxSizing="border-box"
-        display="flex"
-        flexDirection="column"
-        height="100%"
-      >
-        <AnalyticsDashboardHeader />
-        <Box pb={8} px={4} overflow="auto" height="100%">
-          <Box display="flex" py={2} justifyContent="space-between">
-            <AnalyticsDateFilter />
-            <Typography variant="h6" fontWeight="600" maxWidth={304} noWrap>
-              {instance.name}
-            </Typography>
-            <AnalyticsPropertySelector />
-          </Box>
-          <Box display="flex" gap={2}>
-            <Box
-              borderRadius={"8px"}
-              gap={2}
-              p={2}
-              border={(theme) => `1px solid ${theme.palette.border}`}
-              bgcolor="background.paper"
-              display="flex"
-              width="55%"
-            >
-              <Box minWidth="120px">
-                {isLoading ? (
-                  <Skeleton
-                    variant="rectangular"
-                    width="100%"
-                    height="32px"
-                    sx={{ bgcolor: "grey.200" }}
-                  />
-                ) : (
-                  <>
-                    <Typography variant="body2" fontWeight="600">
-                      Total Sessions
-                    </Typography>
-                    <Typography
-                      variant="body3"
-                      fontWeight="600"
-                      color="text.secondary"
-                    >
-                      {dateRange0Label}
-                    </Typography>
-                  </>
-                )}
-                <Box mt={2}>
-                  <Metric
-                    loading={isLoading}
-                    valueProps={{
-                      variant: "h3",
-                    }}
-                    value={
-                      +(
-                        findValuesForDimensions(
-                          metricsReport?.rows,
-                          ["date_range_0"],
-                          0
-                        ) || 0
-                      )
-                    }
-                    priorValue={
-                      +(
-                        findValuesForDimensions(
-                          metricsReport?.rows,
-                          ["date_range_1"],
-                          0
-                        ) || 0
-                      )
-                    }
-                  />
-                </Box>
-              </Box>
-              <ByDayLineChart
-                startDate={startDate}
-                endDate={endDate}
-                dateRange0Label={dateRange0Label}
-                dateRange1Label={dateRange1Label}
-                data={dailySessionsReport}
-                loading={isLoading}
-              />
-            </Box>
-            <Box
-              borderRadius={"8px"}
-              gap={2}
-              p={2}
-              border={(theme) => `1px solid ${theme.palette.border}`}
-              bgcolor="background.paper"
-              display="flex"
-              width="55%"
-            >
-              <UsersDoughnutChart
-                startDate={startDate}
-                endDate={endDate}
-                dateRange0Label={dateRange0Label}
-                dateRange1Label={dateRange1Label}
-                usersData={newVsReturningReport}
-                sourceData={userSourcesReport}
-                loading={isLoading}
-              />
-            </Box>
-          </Box>
+    <Box
+      color={theme.palette.text.primary}
+      bgcolor={theme.palette.grey[50]}
+      boxSizing="border-box"
+      display="flex"
+      flexDirection="column"
+      height="100%"
+    >
+      <AnalyticsDashboardHeader />
+      <Box pb={8} px={4} overflow="auto" height="100%">
+        <Box display="flex" py={2} justifyContent="space-between">
+          <AnalyticsDateFilter />
+          <Typography variant="h6" fontWeight="600" maxWidth={304} noWrap>
+            {instance.name}
+          </Typography>
+          <AnalyticsPropertySelector />
+        </Box>
+        <Box display="flex" gap={2}>
           <Box
-            display="flex"
-            justifyContent={"space-between"}
             borderRadius={"8px"}
             gap={2}
             p={2}
-            mt={2}
-            bgcolor="background.paper"
             border={(theme) => `1px solid ${theme.palette.border}`}
+            bgcolor="background.paper"
+            display="flex"
+            width="55%"
           >
-            <Metric
-              loading={isLoading}
-              title="Sessions"
-              value={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_0"],
-                    0
-                  ) || 0
-                )
-              }
-              priorValue={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_1"],
-                    0
-                  ) || 0
-                )
-              }
-              description="A session in Google Analytics is a period of time in which a user interacts with your website."
-            />
-            <Divider orientation="vertical" flexItem />
-            <Metric
-              loading={isLoading}
-              title="Avg. Duration"
-              formatter={convertSecondsToMinutesAndSeconds}
-              value={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_0"],
-                    1
-                  ) || 0
-                )
-              }
-              priorValue={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_1"],
-                    1
-                  ) || 0
-                )
-              }
-              description="Session duration is the time frame during which there are users interactions occurring on the website."
-            />
-            <Divider orientation="vertical" flexItem />
-            <Metric
-              loading={isLoading}
-              inverse
-              title="Bounce Rate"
-              formatter={(value: number) => `${Math.floor(value * 100)}%`}
-              value={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_0"],
-                    2
-                  ) || 0
-                )
-              }
-              priorValue={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_1"],
-                    2
-                  ) || 0
-                )
-              }
-              description="Bounce rate is the percentage of people who land on a page and leave without performing a specific action."
-            />
-            <Divider orientation="vertical" flexItem />
-            <Metric
-              loading={isLoading}
-              title="Events"
-              value={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_0"],
-                    3
-                  ) || 0
-                )
-              }
-              priorValue={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_1"],
-                    3
-                  ) || 0
-                )
-              }
-              description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
-            />
-            <Divider orientation="vertical" flexItem />
-            <Metric
-              loading={isLoading}
-              title="Conversions"
-              value={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_0"],
-                    4
-                  ) || 0
-                )
-              }
-              priorValue={
-                +(
-                  findValuesForDimensions(
-                    metricsReport?.rows,
-                    ["date_range_1"],
-                    4
-                  ) || 0
-                )
-              }
-              description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
-            />
-          </Box>
-          <Box mt={2}>
-            <ItemsTable
-              propertyId={propertyId}
+            <Box minWidth="120px">
+              {isLoading ? (
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height="32px"
+                  sx={{ bgcolor: "grey.200" }}
+                />
+              ) : (
+                <>
+                  <Typography variant="body2" fontWeight="600">
+                    Total Sessions
+                  </Typography>
+                  <Typography
+                    variant="body3"
+                    fontWeight="600"
+                    color="text.secondary"
+                  >
+                    {dateRange0Label}
+                  </Typography>
+                </>
+              )}
+              <Box mt={2}>
+                <Metric
+                  loading={isLoading}
+                  valueProps={{
+                    variant: "h3",
+                  }}
+                  value={
+                    +(
+                      findValuesForDimensions(
+                        metricsReport?.rows,
+                        ["date_range_0"],
+                        0
+                      ) || 0
+                    )
+                  }
+                  priorValue={
+                    +(
+                      findValuesForDimensions(
+                        metricsReport?.rows,
+                        ["date_range_1"],
+                        0
+                      ) || 0
+                    )
+                  }
+                />
+              </Box>
+            </Box>
+            <ByDayLineChart
               startDate={startDate}
               endDate={endDate}
+              dateRange0Label={dateRange0Label}
+              dateRange1Label={dateRange1Label}
+              data={dailySessionsReport}
+              loading={isLoading}
+            />
+          </Box>
+          <Box
+            borderRadius={"8px"}
+            gap={2}
+            p={2}
+            border={(theme) => `1px solid ${theme.palette.border}`}
+            bgcolor="background.paper"
+            display="flex"
+            width="55%"
+          >
+            <UsersDoughnutChart
+              startDate={startDate}
+              endDate={endDate}
+              dateRange0Label={dateRange0Label}
+              dateRange1Label={dateRange1Label}
+              usersData={newVsReturningReport}
+              sourceData={userSourcesReport}
+              loading={isLoading}
             />
           </Box>
         </Box>
+        <Box
+          display="flex"
+          justifyContent={"space-between"}
+          borderRadius={"8px"}
+          gap={2}
+          p={2}
+          mt={2}
+          bgcolor="background.paper"
+          border={(theme) => `1px solid ${theme.palette.border}`}
+        >
+          <Metric
+            loading={isLoading}
+            title="Sessions"
+            value={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_0"],
+                  0
+                ) || 0
+              )
+            }
+            priorValue={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_1"],
+                  0
+                ) || 0
+              )
+            }
+            description="A session in Google Analytics is a period of time in which a user interacts with your website."
+          />
+          <Divider orientation="vertical" flexItem />
+          <Metric
+            loading={isLoading}
+            title="Avg. Duration"
+            formatter={convertSecondsToMinutesAndSeconds}
+            value={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_0"],
+                  1
+                ) || 0
+              )
+            }
+            priorValue={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_1"],
+                  1
+                ) || 0
+              )
+            }
+            description="Session duration is the time frame during which there are users interactions occurring on the website."
+          />
+          <Divider orientation="vertical" flexItem />
+          <Metric
+            loading={isLoading}
+            inverse
+            title="Bounce Rate"
+            formatter={(value: number) => `${Math.floor(value * 100)}%`}
+            value={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_0"],
+                  2
+                ) || 0
+              )
+            }
+            priorValue={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_1"],
+                  2
+                ) || 0
+              )
+            }
+            description="Bounce rate is the percentage of people who land on a page and leave without performing a specific action."
+          />
+          <Divider orientation="vertical" flexItem />
+          <Metric
+            loading={isLoading}
+            title="Events"
+            value={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_0"],
+                  3
+                ) || 0
+              )
+            }
+            priorValue={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_1"],
+                  3
+                ) || 0
+              )
+            }
+            description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
+          />
+          <Divider orientation="vertical" flexItem />
+          <Metric
+            loading={isLoading}
+            title="Conversions"
+            value={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_0"],
+                  4
+                ) || 0
+              )
+            }
+            priorValue={
+              +(
+                findValuesForDimensions(
+                  metricsReport?.rows,
+                  ["date_range_1"],
+                  4
+                ) || 0
+              )
+            }
+            description="A conversion is a user action that you count because you consider it important, such as a purchase, game level completion, or website or app scroll activity."
+          />
+        </Box>
+        <Box mt={2}>
+          <ItemsTable
+            propertyId={propertyId}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        </Box>
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 };
 

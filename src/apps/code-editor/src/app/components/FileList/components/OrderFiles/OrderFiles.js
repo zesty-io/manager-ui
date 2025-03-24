@@ -114,10 +114,11 @@ export default connect((state, props) => {
   return (
     <Fragment>
       <Button
-        variant="contained"
+        variant="text"
         onClick={() => setOpen(true)}
         title="Change combine and pre-process order"
         startIcon={<ZoomOutMapIcon />}
+        sx={{ color: "grey.300" }}
       >
         Order
       </Button>

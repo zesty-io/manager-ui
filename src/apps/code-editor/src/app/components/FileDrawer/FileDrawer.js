@@ -4,7 +4,7 @@ import moment from "moment";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
-import Button from "@mui/material/Button";
+import { Button, IconButton } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
@@ -107,13 +107,13 @@ export const FileDrawer = memo(function FileDrawer(props) {
       open={open}
     >
       <DrawerHandle className={styles.DrawerHandle} onClick={handleSetOpen}>
-        <Button
-          variant="contained"
+        <IconButton
+          sx={{ color: "grey.400" }}
           size="small"
           title="Open for additional file information"
         >
           {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-        </Button>
+        </IconButton>
 
         {open ? null : (
           <span className={styles.bodyText}>More file information</span>
