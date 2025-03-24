@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Box, Chip, Tooltip } from "@mui/material";
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 
 import { AppState } from "../../../../../../../shell/store/types";
 import { searchItems } from "../../../../../../../shell/store/content";
@@ -42,12 +42,21 @@ export const OneToManyCell = ({ items }: OneToManyCellProps) => {
   const [lastValidIndex, setLastValidIndex] = useState(contentCount - 1);
   const parentWidth = chipContainerRef.current?.parentElement?.clientWidth;
   const hiddenItems = items?.length - lastValidIndex - 1;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setLastValidIndex(
       getNumOfItemsToRender(parentWidth, chipContainerRef.current?.children)
     );
   }, [parentWidth]);
+
+  useEffect(() => {
+    items?.forEach((id: string) => {
+      if (id?.startsWith("7-")) {
+        dispatch(searchItems(id));
+      }
+    });
+  }, [dispatch]);
 
   return (
     <>

@@ -178,7 +178,7 @@ ${
                     <FormControlLabel
                       control={
                         <Checkbox
-                          color="secondary"
+                          color="primary"
                           size="small"
                           name={user.email}
                           onChange={(evt, val) => handleSelectUser(evt, val)}
@@ -201,7 +201,7 @@ ${
                     <FormControlLabel
                       control={
                         <Checkbox
-                          color="secondary"
+                          color="primary"
                           size="small"
                           name={field.name}
                           onChange={(evt, val) => handleSelectField(evt, val)}
