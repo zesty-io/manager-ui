@@ -1,17 +1,10 @@
 import React, { useState, FC } from "react";
-import {
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  ThemeProvider,
-} from "@mui/material";
+import { Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import { theme } from "@zesty-io/material";
 
 import { useGetContentModelsQuery } from "../../../../../shell/services/instance";
 import { DuplicateModelDialogue } from "./DuplicateModelDialogue";
@@ -46,7 +39,7 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Menu
         anchorEl={anchorEl}
         open={!!anchorEl}
@@ -117,6 +110,6 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
           onClose={() => setShowDialogue(null)}
         />
       )}
-    </ThemeProvider>
+    </>
   );
 };

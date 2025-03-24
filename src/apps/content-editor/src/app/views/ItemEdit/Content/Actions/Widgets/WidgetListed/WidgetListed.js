@@ -78,7 +78,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
           </Stack>
         </FormLabel>
         <ToggleButtonGroup
-          color="secondary"
+          color="primary"
           size="small"
           value={props.listed}
           exclusive

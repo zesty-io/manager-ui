@@ -13,38 +13,37 @@ export const CSVImport = ({ ...routerProps }) => {
 
   return (
     <>
-      <ThemeProvider theme={theme}>
-        <Stack
-          direction="row"
-          px={4}
-          pt={4}
-          pb={2}
-          justifyContent="space-between"
-          alignItems="start"
-          color="text.primary"
-        >
-          <Stack>
-            <ContentBreadcrumbs />
-            <Typography
-              variant="h3"
-              mt={0.25}
-              fontWeight={700}
-              sx={{
-                display: "-webkit-box",
-                "-webkit-line-clamp": "2",
-                "-webkit-box-orient": "vertical",
-                wordBreak: "break-word",
-                wordWrap: "break-word",
-                hyphens: "auto",
-                overflow: "hidden",
-              }}
-            >
-              {model?.label}
-            </Typography>
-          </Stack>
-          <ItemListActions />
+      <Stack
+        direction="row"
+        px={4}
+        pt={4}
+        pb={2}
+        justifyContent="space-between"
+        alignItems="start"
+        color="text.primary"
+      >
+        <Stack>
+          <ContentBreadcrumbs />
+          <Typography
+            variant="h3"
+            mt={0.25}
+            fontWeight={700}
+            sx={{
+              display: "-webkit-box",
+              "-webkit-line-clamp": "2",
+              "-webkit-box-orient": "vertical",
+              wordBreak: "break-word",
+              wordWrap: "break-word",
+              hyphens: "auto",
+              overflow: "hidden",
+            }}
+          >
+            {model?.label}
+          </Typography>
         </Stack>
-      </ThemeProvider>
+        <ItemListActions />
+      </Stack>
+
       <Box px={4} pt={2} bgcolor="grey.50">
         <CSVImportBody {...routerProps} />
       </Box>

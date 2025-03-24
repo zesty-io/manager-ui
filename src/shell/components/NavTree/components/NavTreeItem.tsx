@@ -76,7 +76,9 @@ export const NavTreeItem: FC<Props> = React.memo(
               },
             }}
           >
-            <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
+            {!labelIcon && nodeData?.navSource == "code" ? null : (
+              <Box component={labelIcon} sx={{ fontSize: 16, mr: 1 }} />
+            )}
             <Tooltip title={labelName} enterDelay={1000} enterNextDelay={1000}>
               <Typography variant="body2" noWrap width="100%">
                 {labelName}
@@ -133,7 +135,7 @@ export const NavTreeItem: FC<Props> = React.memo(
 
             ".MuiTreeItem-label .treeActions [data-cy='tree-item-hide'] svg": {
               // Makes sure that the hide icon color does not change when tree item is selected
-              color: "action.active",
+              color: "grey.400",
             },
 
             ".MuiTreeItem-label .treeActions [data-cy='tree-item-add-new-content'] svg":
@@ -156,7 +158,7 @@ export const NavTreeItem: FC<Props> = React.memo(
           },
         }}
         ContentProps={{
-          id: nodeId.split("/").pop(),
+          id: nodeData?.isDir ? "" : nodeId.split("/").pop(),
           onDragOver: (event: any) => {
             if (dragAndDrop) {
               event.preventDefault();
