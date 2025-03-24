@@ -492,72 +492,71 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           </AccordionDetails>
         </Accordion>
       )}
-      <ThemeProvider theme={theme}>
-        <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
-          {SortMenuItems.map((menuItem) => (
-            <MenuItem
-              onClick={() => {
-                closeMenu();
-                setSort(menuItem.value);
-              }}
-              selected={sort === menuItem.value}
-            >
-              {menuItem.label}
-            </MenuItem>
-          ))}
-        </Menu>
-        {openNewFolderDialog && (
-          <NewFolderDialog open onClose={() => setOpenNewFolderDialog(false)} />
-        )}
-        <FolderMenu
-          anchorEl={folderMenuAnchorEl}
-          onCloseMenu={() => {
-            setFolderMenuAnchorEl(null);
-          }}
-          groupId={folderMenuData?.groupId}
-          id={folderMenuData?.id}
-          title={folderMenuData?.title}
-          binId={folderMenuData?.binId}
-        />
-        {openDndFailedDialog && (
-          <Dialog
-            open
-            onClose={() => setOpenDndFailedDialog(false)}
-            fullWidth
-            maxWidth={"xs"}
+
+      <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
+        {SortMenuItems.map((menuItem) => (
+          <MenuItem
+            onClick={() => {
+              closeMenu();
+              setSort(menuItem.value);
+            }}
+            selected={sort === menuItem.value}
           >
-            <DialogTitle>
-              <WarningAmberRoundedIcon
-                color="warning"
-                sx={{
-                  padding: "8px",
-                  borderRadius: "20px",
-                  backgroundColor: "warning.light",
-                  display: "block",
-                  mb: 2,
-                }}
-              />
-              Cannot move file to another eco-bin
-            </DialogTitle>
-            <DialogContent>
-              <Typography variant="body2" color="text.secondary">
-                Currently Zesty lacks the ability to allow you to move files
-                between eco-bins. If you desire this feature please contact
-                support@zesty.io.
-              </Typography>
-            </DialogContent>
-            <DialogActions>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setOpenDndFailedDialog(false)}
-              >
-                Okay
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
-      </ThemeProvider>
+            {menuItem.label}
+          </MenuItem>
+        ))}
+      </Menu>
+      {openNewFolderDialog && (
+        <NewFolderDialog open onClose={() => setOpenNewFolderDialog(false)} />
+      )}
+      <FolderMenu
+        anchorEl={folderMenuAnchorEl}
+        onCloseMenu={() => {
+          setFolderMenuAnchorEl(null);
+        }}
+        groupId={folderMenuData?.groupId}
+        id={folderMenuData?.id}
+        title={folderMenuData?.title}
+        binId={folderMenuData?.binId}
+      />
+      {openDndFailedDialog && (
+        <Dialog
+          open
+          onClose={() => setOpenDndFailedDialog(false)}
+          fullWidth
+          maxWidth={"xs"}
+        >
+          <DialogTitle>
+            <WarningAmberRoundedIcon
+              color="warning"
+              sx={{
+                padding: "8px",
+                borderRadius: "20px",
+                backgroundColor: "warning.light",
+                display: "block",
+                mb: 2,
+              }}
+            />
+            Cannot move file to another eco-bin
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" color="text.secondary">
+              Currently Zesty lacks the ability to allow you to move files
+              between eco-bins. If you desire this feature please contact
+              support@zesty.io.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setOpenDndFailedDialog(false)}
+            >
+              Okay
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </>
   );
 };

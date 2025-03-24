@@ -1,6 +1,6 @@
 import { useParams as useRouterParams } from "react-router";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
-import { Box, Button, ThemeProvider, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelQuery,
@@ -39,32 +39,36 @@ import { TableSortContext } from "./TableSortProvider";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
 
-const formatDateTime = (source: string) => {
-  const dateObj = new Date(source);
-  if (!source || isNaN(dateObj.getTime())) return "";
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
 
-  const date = dateObj.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-  const time = dateObj.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-  });
+const timeFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "numeric",
+});
+
+const formatDateTime = (source: string) => {
+  if (!source) return "";
+
+  const dateObj = new Date(source);
+  if (isNaN(dateObj.getTime())) return "";
+
+  const date = dateFormatter.format(dateObj);
+  const time = timeFormatter.format(dateObj);
 
   return `${date} ${time}`;
 };
 
 const formatDate = (source: string) => {
-  const dateObj = new Date(source + "T00:00:00");
-  if (!source || isNaN(dateObj.getTime())) return "";
+  if (!source) return "";
 
-  return dateObj.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const dateObj = new Date(source);
+  if (isNaN(dateObj.getTime())) return "";
+
+  return dateFormatter.format(dateObj);
 };
 
 export const ItemList = () => {
@@ -109,6 +113,15 @@ export const ItemList = () => {
   }, [params]);
   const userFilter = params.get("user");
 
+  const fieldMap = useMemo(() => {
+    if (!fields?.length) return new Map<string, any>();
+    return new Map(
+      fields
+        .filter((field) => !field.deletedAt)
+        .map((field) => [field.name, field])
+    );
+  }, [fields]);
+
   const resolveFieldRelationshipTitle = useCallback(
     (
       fieldName: string,
@@ -126,7 +139,6 @@ export const ItemList = () => {
         return;
       }
 
-      // Internal link has a simpler way of deriving the value
       if (fieldDataType === "internal_link") {
         return (
           allItems?.[relatedContentItemZUID]?.web?.metaTitle ||
@@ -134,15 +146,8 @@ export const ItemList = () => {
         );
       }
 
-      // Finds the related field zuid that's stored in the specific field's data
-      const fieldData = fields?.find(
-        (field) =>
-          field.name === fieldName &&
-          !field.deletedAt &&
-          field.datatype === fieldDataType
-      );
+      const fieldData = fieldMap.get(fieldName);
 
-      // Gets the data of the related field determined above
       const relatedFieldData = allFields?.[fieldData?.relatedFieldZUID];
 
       return (
@@ -150,19 +155,19 @@ export const ItemList = () => {
         relatedContentItemZUID
       );
     },
-    [allItems, fields, allFields, modelZUID]
+    [allItems, allFields, fieldMap]
   );
 
   useEffect(() => {
     dispatch(fetchFields(modelZUID));
-  }, []);
+  }, [modelZUID]);
 
   useEffect(() => {
     if (activeLanguageCode) {
       setIsModelItemsFetching(true);
       dispatch(
         fetchItems(modelZUID, {
-          limit: 5000,
+          limit: 1000,
           page: 1,
           lang: activeLanguageCode,
         })
@@ -182,24 +187,16 @@ export const ItemList = () => {
 
   const computeProcessedItems = useCallback(() => {
     if (!items || isFieldsFetching || isUsersFetching) return [];
-    const fieldMap = fields?.reduce((acc, field) => {
-      // @ts-ignore
-      acc[field.name] = field.datatype;
-      return acc;
-    }, {});
+
+    const userMap = new Map(users?.map((user) => [user.ZUID, user]));
 
     return items.map((item: ContentItemWithDirtyAndPublishing) => {
       const { meta, data, web, publishing } = item;
-      const metaUser = users.find(
-        (user) => user.ZUID === meta.createdByUserZUID
-      );
-      const webUser = users.find((user) => user.ZUID === web.createdByUserZUID);
-      const publishedByUser = users.find(
-        (user) => user.ZUID === item.publishing?.publishedByUserZUID
-      );
-      const scheduledByUser = users.find(
-        (user) => user.ZUID === item.scheduling?.publishedByUserZUID
-      );
+      const metaUser = userMap.get(meta.createdByUserZUID);
+      const webUser = userMap.get(web.createdByUserZUID);
+      const publishedByUser = userMap.get(publishing?.publishedByUserZUID);
+      const scheduledByUser = userMap.get(item.scheduling?.publishedByUserZUID);
+
       const clonedItem = {
         ...item,
         id: meta.ZUID,
@@ -235,20 +232,20 @@ export const ItemList = () => {
       };
 
       Object.keys(data).forEach((key) => {
-        // @ts-ignore
-        const fieldType = fieldMap?.[key];
+        const fieldData = fieldMap.get(key);
+        const fieldType = fieldData?.datatype;
         const value = data[key] as string;
+
         switch (fieldType) {
-          case "images":
-            clonedItem.data[key] = value?.split(",")[0]?.startsWith("3-")
-              ? `${
-                  // @ts-ignore
-                  CONFIG.SERVICE_MEDIA_RESOLVER
-                }/resolve/${
-                  value?.split(",")[0]
-                }/getimage/?w=${68}&h=auto&type=fit`
-              : value?.split(",")?.[0];
+          case "images": {
+            const parts = value?.split(",") || [];
+            const firstPart = parts[0];
+            clonedItem.data[key] = firstPart?.startsWith("3-")
+              ? // @ts-ignore
+                `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${firstPart}/getimage/?w=68&h=auto&type=fit`
+              : firstPart;
             break;
+          }
           case "internal_link":
           case "one_to_one":
             clonedItem.data[key] = resolveFieldRelationshipTitle(
@@ -272,9 +269,8 @@ export const ItemList = () => {
           case "dropdown":
           case "yes_no":
             // @ts-ignore
-            clonedItem.fieldData[key] = fields.find(
-              (field) => field.name === key
-            );
+            clonedItem.fieldData[key] = fieldData;
+            break;
           default:
             break;
         }
@@ -282,7 +278,7 @@ export const ItemList = () => {
 
       return clonedItem;
     });
-  }, [items, allItems, fields, users, isFieldsFetching, isUsersFetching]);
+  }, [items, fields, users, isFieldsFetching, isUsersFetching, fieldMap]);
 
   /* 
     We debounce the processed items compute since certain fields can call for items to be fetched if they are not in memory 
@@ -301,7 +297,7 @@ export const ItemList = () => {
     debouncedCompute,
     items,
     allItems,
-    fields,
+    fieldMap,
     users,
     isFieldsFetching,
     isUsersFetching,
@@ -437,7 +433,7 @@ export const ItemList = () => {
           : a.meta?.ZUID?.localeCompare(b.meta?.ZUID);
       } else if (fields?.find((field) => field.name === sort)) {
         const dataType = fields?.find((field) => field.name === sort)?.datatype;
-        if (typeof a.data[sort] === "number") {
+        if (typeof a.data[sort] === "number" || dataType === "sort") {
           if (a.data[sort] == null) return 1;
           if (b.data[sort] == null) return -1;
 
@@ -476,9 +472,9 @@ export const ItemList = () => {
         }
 
         const aValue =
-          dataType === "images" ? a.data[sort]?.filename : a.data[sort];
+          dataType === "images" ? a.data[sort]?.filename : a.data[sort] || "";
         const bValue =
-          dataType === "images" ? b.data[sort]?.filename : b.data[sort];
+          dataType === "images" ? b.data[sort]?.filename : b.data[sort] || "";
 
         return sortOrder === "asc"
           ? bValue?.trim()?.localeCompare(aValue?.trim())
@@ -554,192 +550,178 @@ export const ItemList = () => {
       );
     }
 
-    // filter items by all fields
     return clonedItems;
   }, [processedItems, search, sortModel, statusFilter, dateFilter, userFilter]);
 
   return (
-    <ThemeProvider theme={theme}>
+    <Box
+      sx={{
+        color: "text.primary",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        "*": {
+          boxSizing: "border-box",
+        },
+      }}
+    >
       <Box
         sx={{
-          color: "text.primary",
-          height: "100%",
+          px: 4,
+          pt: 4,
+          pb: 2,
           display: "flex",
-          flexDirection: "column",
-          "*": {
-            boxSizing: "border-box",
-          },
+          justifyContent: "space-between",
+          alignItems: "start",
+          gap: 4,
         }}
       >
-        <Box
-          sx={{
-            px: 4,
-            pt: 4,
-            pb: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "start",
-            gap: 4,
-          }}
-        >
-          {(stagedChanges && Object.keys(stagedChanges)?.length) ||
-          selectedItems?.length ? (
-            <UpdateListActions items={items as ContentItem[]} />
-          ) : (
-            <>
-              <Box flex={1}>
-                <ContentBreadcrumbs />
-                <Typography
-                  variant="h3"
-                  mt={0.25}
-                  fontWeight={700}
-                  sx={{
-                    display: "-webkit-box",
-                    "-webkit-line-clamp": "2",
-                    "-webkit-box-orient": "vertical",
-                    wordBreak: "break-word",
-                    wordWrap: "break-word",
-                    hyphens: "auto",
-                    overflow: "hidden",
-                  }}
-                >
-                  {model?.label}
-                </Typography>
-              </Box>
-              <ItemListActions ref={searchRef} />
-            </>
-          )}
-        </Box>
-        <Box
-          height="100%"
-          bgcolor="grey.50"
-          px={4}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          {!items?.length && !isModelItemsFetching ? (
-            <ItemListEmpty />
-          ) : (
-            <>
-              <ItemListFilters />
-              <ItemListTable
-                key={modelZUID}
-                loading={isFieldsFetching || isUsersFetching}
-                rows={sortedAndFilteredItems}
-                noRowsOverlay={() => {
-                  if (search && !isModelItemsFetching) {
-                    return (
-                      <Box
-                        bgcolor="common.white"
-                        flex={1}
-                        display="flex"
-                        alignItems="center"
-                        height="100%"
-                      >
-                        <Box
-                          data-cy="NoResults"
-                          textAlign="center"
-                          sx={{
-                            maxWidth: 387,
-                            mx: "auto",
-                          }}
-                        >
-                          <img src={noSearchResults} alt="No search results" />
-                          <Typography
-                            pt={4}
-                            pb={1}
-                            variant="h4"
-                            fontWeight={600}
-                          >
-                            Your filter <strong>"{search}"</strong> could not
-                            find any results
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            pb={3}
-                            color="text.secondary"
-                          >
-                            Try adjusting your search. We suggest check all
-                            words are spelled correctly or try using different
-                            keywords.
-                          </Typography>
-                          <Button
-                            onClick={() => searchRef.current?.focus()}
-                            variant="contained"
-                            startIcon={<SearchRounded />}
-                          >
-                            Search Again
-                          </Button>
-                        </Box>
-                      </Box>
-                    );
-                  }
-
-                  if (
-                    !isModelItemsFetching &&
-                    !search &&
-                    (statusFilter ||
-                      dateFilter?.preset ||
-                      dateFilter?.from ||
-                      dateFilter?.to ||
-                      userFilter)
-                  ) {
-                    return (
-                      <Box
-                        bgcolor="common.white"
-                        flex={1}
-                        display="flex"
-                        alignItems="center"
-                        height="100%"
-                      >
-                        <Box
-                          data-cy="NoResults"
-                          textAlign="center"
-                          sx={{
-                            maxWidth: 387,
-                            mx: "auto",
-                          }}
-                        >
-                          <img src={noSearchResults} alt="No search results" />
-                          <Typography
-                            pt={4}
-                            pb={1}
-                            variant="h4"
-                            fontWeight={600}
-                          >
-                            No results that matched your filters could be found
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            pb={3}
-                            color="text.secondary"
-                          >
-                            Try adjusting your filters to find what you're
-                            looking for
-                          </Typography>
-                          <Button
-                            onClick={() => {
-                              setParams(null, "statusFilter");
-                            }}
-                            variant="contained"
-                            startIcon={<RestartAltRounded />}
-                          >
-                            Reset Filters
-                          </Button>
-                        </Box>
-                      </Box>
-                    );
-                  }
-
-                  return <></>;
+        {(stagedChanges && Object.keys(stagedChanges)?.length) ||
+        selectedItems?.length ? (
+          <UpdateListActions items={items as ContentItem[]} />
+        ) : (
+          <>
+            <Box flex={1}>
+              <ContentBreadcrumbs />
+              <Typography
+                variant="h3"
+                mt={0.25}
+                fontWeight={700}
+                sx={{
+                  display: "-webkit-box",
+                  "-webkit-line-clamp": "2",
+                  "-webkit-box-orient": "vertical",
+                  wordBreak: "break-word",
+                  wordWrap: "break-word",
+                  hyphens: "auto",
+                  overflow: "hidden",
                 }}
-              />
-            </>
-          )}
-        </Box>
+              >
+                {model?.label}
+              </Typography>
+            </Box>
+            <ItemListActions ref={searchRef} />
+          </>
+        )}
       </Box>
-    </ThemeProvider>
+      <Box
+        height="100%"
+        bgcolor="grey.50"
+        px={4}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {!items?.length && !isModelItemsFetching ? (
+          <ItemListEmpty />
+        ) : (
+          <>
+            <ItemListFilters />
+            <ItemListTable
+              key={modelZUID}
+              loading={isFieldsFetching || isUsersFetching}
+              rows={sortedAndFilteredItems}
+              noRowsOverlay={() => {
+                if (search && !isModelItemsFetching) {
+                  return (
+                    <Box
+                      bgcolor="common.white"
+                      flex={1}
+                      display="flex"
+                      alignItems="center"
+                      height="100%"
+                    >
+                      <Box
+                        data-cy="NoResults"
+                        textAlign="center"
+                        sx={{
+                          maxWidth: 387,
+                          mx: "auto",
+                        }}
+                      >
+                        <img src={noSearchResults} alt="No search results" />
+                        <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                          Your filter <strong>"{search}"</strong> could not find
+                          any results
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          pb={3}
+                          color="text.secondary"
+                        >
+                          Try adjusting your search. We suggest check all words
+                          are spelled correctly or try using different keywords.
+                        </Typography>
+                        <Button
+                          onClick={() => searchRef.current?.focus()}
+                          variant="contained"
+                          startIcon={<SearchRounded />}
+                        >
+                          Search Again
+                        </Button>
+                      </Box>
+                    </Box>
+                  );
+                }
+
+                if (
+                  !isModelItemsFetching &&
+                  !search &&
+                  (statusFilter ||
+                    dateFilter?.preset ||
+                    dateFilter?.from ||
+                    dateFilter?.to ||
+                    userFilter)
+                ) {
+                  return (
+                    <Box
+                      bgcolor="common.white"
+                      flex={1}
+                      display="flex"
+                      alignItems="center"
+                      height="100%"
+                    >
+                      <Box
+                        data-cy="NoResults"
+                        textAlign="center"
+                        sx={{
+                          maxWidth: 387,
+                          mx: "auto",
+                        }}
+                      >
+                        <img src={noSearchResults} alt="No search results" />
+                        <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                          No results that matched your filters could be found
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          pb={3}
+                          color="text.secondary"
+                        >
+                          Try adjusting your filters to find what you're looking
+                          for
+                        </Typography>
+                        <Button
+                          onClick={() => {
+                            setParams(null, "statusFilter");
+                          }}
+                          variant="contained"
+                          startIcon={<RestartAltRounded />}
+                        >
+                          Reset Filters
+                        </Button>
+                      </Box>
+                    </Box>
+                  );
+                }
+
+                return <></>;
+              }}
+            />
+          </>
+        )}
+      </Box>
+    </Box>
   );
 };

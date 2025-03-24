@@ -234,7 +234,7 @@ export default connect((state) => {
                         <FormControlLabel
                           control={
                             <Checkbox
-                              color="secondary"
+                              color="primary"
                               size="small"
                               name={item}
                               id={`${item}-${itemFont.family}-${index}`}
@@ -384,7 +384,7 @@ export default connect((state) => {
       <div className={styles.Pagination}>
         <Button
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={() => changePage("prev")}
           disabled={!validateActionPage("prev")}
         >
@@ -395,7 +395,7 @@ export default connect((state) => {
         </div>
         <Button
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={() => changePage("next")}
           disabled={!validateActionPage("next")}
         >
