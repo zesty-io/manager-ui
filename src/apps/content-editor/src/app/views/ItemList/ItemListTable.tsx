@@ -473,5 +473,3 @@ export const ItemListTable = memo(
     );
   }
 );
-
-ItemListTable.displayName = "ItemListTable";
