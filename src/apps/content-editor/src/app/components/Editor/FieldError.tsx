@@ -132,57 +132,55 @@ export const FieldError = forwardRef(
     };
 
     return (
-      <ThemeProvider theme={theme}>
-        <Stack
-          data-cy="FieldErrorsList"
-          ref={errorContainerEl}
-          p={2}
-          gap={1}
-          borderRadius={1}
-          sx={{ backgroundColor: "red.50", color: "error.dark" }}
-        >
-          <DangerousRoundedIcon color="inherit" fontSize="small" />
-          <Typography variant="h6">
-            Item cannot be saved due to invalid field values.
-          </Typography>
-          <Typography variant="body2">
-            Please correct the following {fieldsWithErrors?.length} field
-            {fieldsWithErrors?.length > 1 && "s"} before saving:
-          </Typography>
-          <Box component="ol" ml={2}>
-            {fieldErrors?.map((error, index) => {
-              if (error.errorMessages.length > 0) {
-                return (
-                  <Typography key={index} variant="body2" component="li">
-                    <Box
-                      sx={{
-                        borderBottom: 1,
-                        borderColor: "error.dark",
-                        cursor: "pointer",
-                        height: 16,
-                        display: "inline-block",
-                      }}
-                      component="span"
-                      onClick={() => handleErrorClick(error.ZUID)}
-                    >
-                      {error.label}
+      <Stack
+        data-cy="FieldErrorsList"
+        ref={errorContainerEl}
+        p={2}
+        gap={1}
+        borderRadius={1}
+        sx={{ backgroundColor: "red.50", color: "error.dark" }}
+      >
+        <DangerousRoundedIcon color="inherit" fontSize="small" />
+        <Typography variant="h6">
+          Item cannot be saved due to invalid field values.
+        </Typography>
+        <Typography variant="body2">
+          Please correct the following {fieldsWithErrors?.length} field
+          {fieldsWithErrors?.length > 1 && "s"} before saving:
+        </Typography>
+        <Box component="ol" ml={2}>
+          {fieldErrors?.map((error, index) => {
+            if (error.errorMessages.length > 0) {
+              return (
+                <Typography key={index} variant="body2" component="li">
+                  <Box
+                    sx={{
+                      borderBottom: 1,
+                      borderColor: "error.dark",
+                      cursor: "pointer",
+                      height: 16,
+                      display: "inline-block",
+                    }}
+                    component="span"
+                    onClick={() => handleErrorClick(error.ZUID)}
+                  >
+                    {error.label}
+                  </Box>
+                  {error.errorMessages.length === 1 ? (
+                    <i> - {error.errorMessages[0]}</i>
+                  ) : (
+                    <Box component="ul" sx={{ pl: 3, listStyleType: "disc" }}>
+                      {error.errorMessages.map((msg, idx) => (
+                        <li key={idx}>{msg}</li>
+                      ))}
                     </Box>
-                    {error.errorMessages.length === 1 ? (
-                      <i> - {error.errorMessages[0]}</i>
-                    ) : (
-                      <Box component="ul" sx={{ pl: 3, listStyleType: "disc" }}>
-                        {error.errorMessages.map((msg, idx) => (
-                          <li key={idx}>{msg}</li>
-                        ))}
-                      </Box>
-                    )}
-                  </Typography>
-                );
-              }
-            })}
-          </Box>
-        </Stack>
-      </ThemeProvider>
+                  )}
+                </Typography>
+              );
+            }
+          })}
+        </Box>
+      </Stack>
     );
   }
 );

@@ -6,8 +6,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
-import { ThemeProvider } from "@mui/material/styles";
-import { legacyTheme } from "@zesty-io/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import "chart.js/auto";
@@ -50,13 +50,43 @@ window.zestyStore = store;
 const instanceZUID = store.getState().instance.ZUID;
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
+const appTheme = createTheme(theme, {
+  palette: {
+    success: {
+      contrastText: "#fff",
+    },
+    warning: {
+      contrastText: "#fff",
+    },
+    info: {
+      contrastText: "#fff",
+    },
+    action: {
+      active: "rgba(127, 127, 126, 0.7)",
+      selected: "rgba(127,127, 126, 0.13)",
+      disabled: "rgba(127,127, 126, 0.48)",
+      disabledBackground: "rgba(127,127, 126, 0.2)",
+    },
+  },
+
+  components: {
+    MuiToggleButton: {
+      styleOverrides: (theme) => ({
+        sizeSmall: {
+          ...theme.typography.body2,
+        },
+      }),
+    },
+  },
+});
+
 MonacoSetup(store);
 
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
   <StrictMode>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <ThemeProvider theme={legacyTheme}>
+      <ThemeProvider theme={appTheme}>
         <CssBaseline>
           <Provider store={store}>
             <Router history={history}>

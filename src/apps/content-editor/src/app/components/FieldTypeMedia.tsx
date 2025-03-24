@@ -798,7 +798,7 @@ export const MediaItem = ({
               {imageZUID}
             </Typography>
           ) : (
-            <Box>
+            <Box overflow="hidden">
               <Typography
                 variant="body2"
                 color="text.primary"
