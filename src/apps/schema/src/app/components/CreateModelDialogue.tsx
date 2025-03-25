@@ -87,6 +87,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   const [type, setType] = useState(modelType);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [selectedBlankBlock, setSelectedBlankBlock] = useState(false);
   const [model, updateModel] = useReducer(
     (prev: Partial<ContentModel>, next: any) => {
       const newModel = { ...prev, ...next };
@@ -365,8 +366,11 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
     } else {
       return (
         <>
-          {model?.type === "block" ? (
-            <StarterBlocks onClose={onClose} />
+          {model?.type === "block" && !selectedBlankBlock ? (
+            <StarterBlocks
+              onClose={onClose}
+              selectBlank={() => setSelectedBlankBlock(true)}
+            />
           ) : (
             <Box component="form">
               <DialogTitle component="div">
@@ -569,13 +573,29 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       open
       onClose={onClose}
       sx={{
-        my: "20px",
+        py: "20px",
       }}
+      fullScreen
       PaperProps={{
         sx: {
-          maxWidth: largeWidth?.includes(model?.type) ? "1080px" : "640px",
-          width: largeWidth?.includes(model?.type) ? 1080 : 640,
-          maxHeight: "min(100%, 1000px)",
+          maxWidth:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "1080px"
+              : "640px",
+          minWidth:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "1080px"
+              : "640px",
+          height:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "100%"
+              : "auto",
+          minHeight:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "860px"
+              : "auto",
+          maxHeight: "1240px",
+          overflow: "hidden",
           m: 0,
         },
       }}
