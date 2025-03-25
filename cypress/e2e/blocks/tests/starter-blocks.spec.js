@@ -98,7 +98,7 @@ describe("Starter Blocks", () => {
     });
 
     it("Display an error message when attempting to use a name that's already in use.", () => {
-      cy.getElement('[data-cy="starter-block-card"]').first().click(TIMEOUT);
+      cy.getElement('[data-cy="starter-block-card"]:eq(1)').click(TIMEOUT);
       cy.getElement('[data-cy="select-block-type-next-button"]').click();
 
       cy.getElement('[data-cy="starter-block-form-label"] input')
@@ -115,6 +115,26 @@ describe("Starter Blocks", () => {
   describe("Create Stater Blocks", () => {
     beforeEach(() => {
       openStarterBlocksDialogue();
+    });
+
+    it(`[${STARTER_BLOCKS[0].label}]`, () => {
+      const BLOCK = STARTER_BLOCKS[0];
+      const TEST_LABEL = `${BLOCK?.label}${testSufix}`;
+      cy.getElement('[data-cy="starter-block-card"]:eq(0)').click();
+
+      cy.getElement('[data-cy="select-block-type-next-button"]').click();
+
+      cy.getElement('[data-cy="create-model-display-name-input"]').type(
+        TEST_LABEL
+      );
+
+      cy.getElement('[data-cy="create-model-submit-button"]').click({
+        force: true,
+      });
+
+      cy.getElement("h3")
+        .contains(TEST_LABEL, { matchCase: false, timeout: 20000 })
+        .should("exist");
     });
 
     it(`[${STARTER_BLOCKS[1].label}]`, () => {
