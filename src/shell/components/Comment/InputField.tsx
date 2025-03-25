@@ -4,6 +4,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
 import { LoadingButton } from "@mui/lab";
 import { useParams } from "react-router";
+import { useDebounce } from "react-use";
 
 import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
@@ -153,14 +154,18 @@ export const InputField = ({
     }
   }, []);
 
-  useEffect(() => {
-    // No need to save edit mode changes in draft
-    if (inputValue && !isEditMode) {
-      updateComments({
-        [commentResourceZUID]: inputValue,
-      });
-    }
-  }, [inputValue, isEditMode]);
+  useDebounce(
+    () => {
+      // No need to save edit mode changes in draft
+      if (inputValue && !isEditMode) {
+        updateComments({
+          [commentResourceZUID]: inputValue,
+        });
+      }
+    },
+    300,
+    [inputValue, isEditMode]
+  );
 
   useEffect(() => {
     if (
