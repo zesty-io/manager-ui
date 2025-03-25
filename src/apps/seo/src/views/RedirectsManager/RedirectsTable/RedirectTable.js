@@ -23,7 +23,7 @@ const CellWrapper = ({ color = "", children, type = "text" }) => {
         position: "relative",
         overflow: "hidden",
         "& svg, & span": {
-          color: color || "text.disabled",
+          color: color || "action.active",
           flexGrow: 0,
         },
         "& .MuiTypography-root": (theme) => ({
@@ -184,11 +184,6 @@ export default function RedirectTable(props) {
             color="action.secondary"
             label="Delete"
             onClick={() => handleRemoveRedirect(row.ZUID)}
-            sx={{
-              "&:hover": {
-                color: "error.main",
-              },
-            }}
           />,
         ],
       },
