@@ -330,7 +330,7 @@ const FIELD_COPY_CONFIG: { [key: string]: FieldListData[] } = {
     {
       type: "uuid",
       name: "UUID",
-      shortDescription: "Set unique ids to each content item",
+      shortDescription: "Generates unique, uneditable alphanumeric identifiers",
       description:
         "The UUID field creates a unique alpha numeric string when an item is created. This is a helpful feature for analytics tracking, inventory management, user management, etc.",
       commonUses: ["Product ID", "Inventory ID", "Employee ID"],
@@ -405,12 +405,12 @@ const COMMON_FIELDS: InputField[] = [
     name: "description",
     type: "input",
     label: "Description",
-    subLabel: "Appears below the label to help content-writers and API users",
     required: false,
     fullWidth: true,
     multiline: true,
     gridSize: 12,
-    tooltip: "Perfect for giving instructions to content writers.",
+    tooltip:
+      "Appears below the display label. Use this to provide instructions to content writers and API users.",
   },
   {
     name: "required",
