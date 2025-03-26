@@ -80,7 +80,7 @@
       html,
       body {
         background-color: #f2f7fc;
-        color: #5b667d;
+        color: #101828;
         font-family: "Mulish", Arial, sans-serif;
         font-size: 16px;
         height: 100%;
@@ -93,56 +93,32 @@
         justify-content: center;
         width: 100vw;
         height: 100vh;
-      }
-
-      #center {
-        display: flex;
         flex-direction: column;
-        align-items: center;
-      }
-      #center h1 {
-        font-family: "Mulish", Arial, sans-serif;
-        font-size: 2em;
-        font-weight: 300;
-        text-shadow: 1px 1px 1px #d6e5ff;
       }
 
-      .loader {
-        display: flex;
-        height: 2rem;
-      }
-      .loader .bar {
-        animation: fade 1s infinite ease-in-out;
-        background-color: #5b667d;
-        margin: 0.5rem;
-        opacity: 1;
-        width: 1rem;
-      }
-      .loader .bar:nth-child(1) {
-        animation-delay: -0.16s;
-      }
-      .loader .bar:nth-child(2) {
-        animation-delay: 1s;
-      }
-      .loader .bar:nth-child(3) {
-        animation-delay: -0.32s;
-      }
-      .loader .bar:nth-child(4) {
-        animation-delay: 2s;
-      }
-      .loader .bar:nth-child(5) {
-        animation-delay: -0.16s;
+      #zestyLogo {
+        margin-bottom: 32px;
       }
 
-      @keyframes fade {
-        0%,
-        80%,
-        100% {
-          opacity: 1;
-        }
-        40% {
-          opacity: 0.3;
-        }
+      #quote {
+        margin-bottom: 12px;
+        font-weight: 400;
+        font-size: 28px;
+        line-height: 36px;
+        letter-spacing: -2%;
+        text-align: center;
+      }
+
+      #quotee {
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 28px;
+        letter-spacing: -2%;
+        text-align: center;
+      }
+
+      .quote-container {
+        max-width: 640px;
       }
     </style>
     <style>
@@ -168,28 +144,108 @@
             }
           });
       }
+
+      const QUOTES = [
+        {
+          quote: "Content is king.",
+          quotee: "Bill Gates",
+        },
+        {
+          quote:
+            "Marketing is no longer about the stuff that you make, but about the stories you tell.",
+          quotee: "Seth Godin",
+        },
+        {
+          quote:
+            "Your brand is a story unfolding across all customer touchpoints.",
+          quotee: "Jonah Sachs",
+        },
+        {
+          quote: "The best marketing doesn't feel like marketing.",
+          quotee: "Tom Fishburne",
+        },
+        {
+          quote: "People don't buy what you do; they buy why you do it.",
+          quotee: "Simon Sinek",
+        },
+        {
+          quote:
+            "If you can't explain it simply, you don't understand it well enough.",
+          quotee: "Albert Einstein",
+        },
+        {
+          quote: "The most powerful element in advertising is the truth.",
+          quotee: "Bill Bernbach",
+        },
+        {
+          quote:
+            "A brand is no longer what we tell the consumer it is—it is what consumers tell each other it is.",
+          quotee: "Scott Cook",
+        },
+        {
+          quote: "Communication works for those who work at it.",
+          quotee: "John Powell",
+        },
+        {
+          quote:
+            "The single biggest problem in communication is the illusion that it has taken place.",
+          quotee: "George Bernard Shaw",
+        },
+        {
+          quote: "The art of communication is the language of leadership.",
+          quotee: "James Humes",
+        },
+        {
+          quote:
+            "Engage, enlighten, encourage, and especially…just be yourself! Social media is a community effort; everyone is an asset.",
+          quotee: "Susan Cooper",
+        },
+        {
+          quote:
+            "The most powerful person in the world is the storyteller. The storyteller sets the vision, values, and agenda of an entire generation that is to come.",
+          quotee: "Steve Jobs",
+        },
+        {
+          quote:
+            "Your brand is what people say about you when you're not in the room.",
+          quotee: "Jeff Bezos",
+        },
+        {
+          quote: "Great stories happen to those who can tell them.",
+          quotee: "Ira Glass",
+        },
+        {
+          quote: "No matter what you do, your job is to tell a story.",
+          quotee: "Gary Vaynerchuk",
+        },
+      ];
+      const randomQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
     </script>
 
     <%= htmlWebpackPlugin.tags.headTags %>
   </head>
   <body>
     <main id="root">
+      <!-- App load screen -->
       <div id="appBoot">
-        <div id="center">
-          <img
-            src="https://brand.zesty.io/zesty-io-logo-vertical.svg"
-            alt="Displaying Zesty.io logo while application loads"
-            height="200px"
-            width="297px"
-            style="margin-bottom: 16px"
-          />
-          <div class="loader">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-          </div>
+        <img
+          id="zestyLogo"
+          src="https://zestyio.media.zestyio.com/zesty-logo-only-pulsate.svg"
+          alt="Displaying Zesty.io logo while application loads"
+          height="100px"
+          width="100px"
+        />
+        <div class="quote-container">
+          <h3 id="quote">
+            <script>
+              document.write(`"${randomQuote.quote}"`);
+            </script>
+          </h3>
+          <h5 id="quotee">
+            <script>
+              document.write(`— ${randomQuote.quotee}`);
+            </script>
+          </h5>
         </div>
       </div>
     </main>
