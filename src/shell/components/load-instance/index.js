@@ -23,8 +23,9 @@ import { loadOpenNav } from "../../store/ui";
 
 import styles from "./LoadInstance.less";
 import { Staging } from "../Staging";
-import { CircularProgress } from "@mui/material";
+import { Box } from "@mui/material";
 import { useGetCurrentUserRolesQuery } from "../../services/accounts";
+import { LoadingQuote } from "../LoadingQuote";
 
 export default connect((state) => {
   return {
@@ -142,9 +143,9 @@ export default connect((state) => {
             props.files.length ? (
               props.children
             ) : (
-              <Staging>
-                <CircularProgress />
-              </Staging>
+              <Box width="100vw" height="100vh">
+                <LoadingQuote />
+              </Box>
             )}
           </>
         )}

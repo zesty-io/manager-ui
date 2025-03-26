@@ -1,12 +1,12 @@
 import { memo, useEffect } from "react";
 import { connect } from "react-redux";
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { CircularProgress, Backdrop } from "@mui/material";
 
 import Login from "shell/components/login";
 import { notify } from "shell/store/notifications";
 import { verify } from "shell/store/auth";
 import { Staging } from "../Staging";
-import { CircularProgress, Backdrop } from "@mui/material";
+import { LoadingQuote } from "../LoadingQuote";
 
 export default connect((state) => {
   return {
@@ -75,11 +75,12 @@ export default connect((state) => {
         <Backdrop
           sx={{
             zIndex: (theme) => theme.zIndex.tooltip + 10, // Needs to be on top of everything
+            bgcolor: "background.paper",
           }}
           open={!props.auth.valid && !props.auth.checking}
         >
           <Staging>
-            {props.auth.checking ? <CircularProgress /> : <Login />}
+            <Login />
           </Staging>
         </Backdrop>
       </>
