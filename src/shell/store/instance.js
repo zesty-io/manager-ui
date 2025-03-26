@@ -46,6 +46,7 @@ export function fetchInstance() {
       })
       .catch((err) => {
         console.error("fetchInstance failed:", err);
+        Promise.reject(err);
       });
   };
 }
