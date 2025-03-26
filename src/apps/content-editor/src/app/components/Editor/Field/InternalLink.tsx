@@ -36,8 +36,7 @@ export const InternalLink = ({
     ) {
       dispatch(searchItems(value));
     }
-  }, [internalLinkRelatedItem]);
-
+  }, [internalLinkRelatedItem, value, dispatch]);
   let internalLinkOptions = useMemo(() => {
     const options = Object.keys(allItems)
       .filter(
