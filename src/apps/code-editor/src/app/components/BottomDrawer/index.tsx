@@ -122,7 +122,6 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
         justifyContent: "flex-end",
         flexShrink: 1,
         boxSizing: "border-box",
-        boxShadow: "0px -12px 8px -14px rgba(0,0,0,1)",
         borderTop: "1px solid",
         borderColor: "grey.800",
         "& *": { boxSizing: "border-box" },
