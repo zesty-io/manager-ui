@@ -5,10 +5,12 @@ import { StarterBlocksSelection } from "./StarterBlocksSelection";
 
 type StarterBlocksDialogueProps = {
   onClose: () => void;
+  selectBlank?: () => void;
 };
 
 const StarterBlocksDialogue: React.FC<StarterBlocksDialogueProps> = ({
   onClose,
+  selectBlank,
 }) => {
   const [blockType, setBlockType] = useState(null);
   const [activeStep, setActiveStep] = useState<"selection" | "form">(
@@ -22,6 +24,7 @@ const StarterBlocksDialogue: React.FC<StarterBlocksDialogueProps> = ({
           onClose={onClose}
           setActiveStep={setActiveStep}
           selectBlockType={setBlockType}
+          selectBlank={selectBlank}
         />
       ) : activeStep === "form" ? (
         <StarterBlockForm

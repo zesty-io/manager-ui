@@ -218,12 +218,13 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 : "",
           });
           throw new Error(errorMessage);
-        }
-        const ZUID = createStarterBlockRes?.data?.model?.ZUID;
+        } else {
+          const ZUID = createStarterBlockRes?.data?.model?.ZUID;
 
-        setIsLoading(false);
-        onClose();
-        history.push(`/schema/${ZUID}`);
+          setIsLoading(false);
+          onClose();
+          history.push(`/blocks/${ZUID}`);
+        }
       } catch (err) {
         setIsLoading(false);
         console.error("Error during form submission:", err);
@@ -273,31 +274,37 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
           overflowY: "auto",
           overflowX: "hidden",
           maxHeight: "100%",
+          "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
+            backgroundColor: "grey.300",
+            borderRadius: "4px",
+          },
         }}
         dividers
       >
         <Box display="flex" flexDirection="column" rowGap={2}>
           <Box
             bgcolor="grey.100"
-            sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              position: "relative",
-              overflow: "hidden",
-              boxSizing: "border-box",
-              borderBottom: ".75rem solid",
-              borderTop: ".75rem solid",
-              borderColor: "grey.100",
-            }}
+            height="320px"
+            width="100%"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            position="relative"
+            overflow="hidden"
+            boxSizing="border-box"
+            borderBottom="8px solid"
+            borderTop="8px solid"
+            borderColor="grey.100"
           >
             <img
               data-cy="starter-block-form-image"
               loading="lazy"
               src={block?.image}
               alt={block?.label}
-              style={{ maxWidth: "65%", minHeight: "200px" }}
+              style={{
+                maxWidth:
+                  blockModelData?.name === "hero_image_below" ? "50%" : "60%",
+              }}
             />
           </Box>
           <Box
@@ -305,9 +312,8 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
             flexDirection="row"
             justifyContent="space-between"
             alignItems="flex-start"
-            columnGap={3}
+            columnGap="20px"
             px={3}
-            py={1}
             sx={{
               boxSizing: "border-box",
               minHeight: "100px",
@@ -322,9 +328,9 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 flexDirection="column"
                 justifyContent="flex-start"
                 alignItems="flex-start"
-                rowGap={1.75}
-                pt={1.5}
-                pb={2.5}
+                rowGap="12px"
+                pt="8px"
+                pb="20px"
               >
                 <TextInputField
                   label="Display Name"
@@ -359,9 +365,9 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                     flexDirection="column"
                     justifyContent="flex-start"
                     alignItems="stretch"
-                    rowGap={1.5}
-                    pt={1.5}
-                    pb={2.5}
+                    rowGap="12px"
+                    pt="8px"
+                    pb="8px"
                     width="100%"
                     data-cy="starter-block-form-fields-container"
                   >
@@ -380,7 +386,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
                 </>
               )}
             </Box>
-            <Box width="36%" flexGrow={0}>
+            <Box width="320px" flexGrow={0}>
               <Typography variant="h6" fontWeight={700}>
                 Resources
               </Typography>
@@ -487,7 +493,7 @@ export const StarterBlockForm: React.FC<StarterBlockFormProps> = ({
             !blockModelData?.label || !blockModelData?.name || !!isLoading
           }
         >
-          Done
+          Create Block Model
         </Button>
       </DialogActions>
 
