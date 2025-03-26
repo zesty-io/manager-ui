@@ -34,7 +34,7 @@ const FileCard: React.FC<FileCardProps> = ({
         color: "grey.400",
         width: "100%",
         px: 2,
-        pt: 3,
+        pt: 2,
         pb: 1,
         display: "flex",
         flexDirection: "column",
@@ -79,7 +79,6 @@ const FileCard: React.FC<FileCardProps> = ({
             pl: "35px",
             wordBreak: "break-all",
             boxSizing: "border-box",
-            lineHeight: "1.2",
           }}
         >
           {title}

@@ -68,7 +68,8 @@ export default connect((state) => {
           sx={{
             position: "relative",
             height: "100%",
-            borderRight: "text.primary",
+            borderRight: "1px solid",
+            borderRightColor: "grey.800",
             bgcolor: "grey.900",
           }}
         >

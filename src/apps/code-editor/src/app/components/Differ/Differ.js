@@ -37,7 +37,7 @@ export const Differ = memo(
           setVersionCodeRight={setVersionCodeRight}
           setLoading={setLoading}
           synced={props?.synced}
-          currentCode={props?.currentCode}
+          code={props?.currentCode}
           isDiffer={true}
         />
         <Box
@@ -65,6 +65,7 @@ export const Differ = memo(
                 options={{
                   selectOnLineNumbers: true,
                   automaticLayout: true,
+                  scrollBeyondLastLine: false,
                 }}
               />
             </WithLoader>

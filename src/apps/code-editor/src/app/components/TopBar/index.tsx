@@ -20,6 +20,7 @@ import { EditorActions } from "./EditorActions";
 import ElectricBoltOutlinedIcon from "@mui/icons-material/ElectricBoltOutlined";
 import { DeleteDialog } from "./DeleteDialog";
 import CheckIcon from "@mui/icons-material/Check";
+import { parseInt } from "lodash";
 
 interface TopBarProps {
   fileName: string;
@@ -33,6 +34,14 @@ interface TopBarProps {
   isLive: boolean;
   code: string;
   contentModelZUID?: string;
+  isDirty: boolean;
+  updatedAt?: string;
+  lastEditedBy?: {
+    ID: string;
+    name: string;
+    ZUID: string;
+    email: string;
+  } | null;
   setVersionCodeLeft?: (code: string) => void;
   setVersionCodeRight?: (code: string) => void;
   setLoading?: (loading: boolean) => void;
@@ -50,6 +59,8 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
         pb={1.75}
         maxHeight="84px"
         minHeight="84px"
+        borderBottom="1px solid"
+        borderColor="grey.800"
         sx={{
           backgroundColor: "grey.900",
           color: "grey.300",
@@ -65,7 +76,9 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
           pr={3}
         >
           <Typography variant="h6" color="grey.300">
-            {props.fileName}
+            {`/${props.fileType}/${props.fileName
+              ?.trim()
+              ?.replace(/^\/+/, "")}`}
           </Typography>
         </Box>
 
@@ -91,10 +104,13 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
               setVersionCodeRight={props.setVersionCodeRight}
               setLoading={props.setLoading}
               code={props.code}
+              version={props.version}
+              updatedAt={props?.updatedAt}
+              lastEditedBy={props?.lastEditedBy}
             />
           ) : (
             <>
-              <Box px={2} color="grey.400">
+              <Box px={1} color="grey.400">
                 <MoreOptions
                   contentModelZUID={props.contentModelZUID}
                   fileType={props.fileType}
@@ -106,14 +122,22 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
               </Box>
 
               <EditorActions
-                fileZUID={props.fileZUID}
-                fileType={props.fileType}
-                version={props.version}
-                synced={props.synced}
-                status={props.status}
-                isLive={props.isLive}
+                fileZUID={props?.fileZUID}
+                fileType={props?.fileType}
+                version={parseInt(props?.version)}
+                synced={props?.synced}
+                status={props?.status}
+                isLive={props?.isLive}
+                isDirty={props?.isDirty}
                 code={props.code}
-                contentModelZUID={props.contentModelZUID}
+                contentModelZUID={props?.contentModelZUID}
+                updatedAt={props?.updatedAt}
+                lastEditedBy={props?.lastEditedBy}
+                publishedVersion={
+                  typeof props?.publishedVersion == "string"
+                    ? parseInt(props?.publishedVersion)
+                    : props?.publishedVersion
+                }
               />
             </>
           )}
@@ -175,7 +199,12 @@ const MoreOptions = (props: MoreOptionsProps) => {
 
   return (
     <>
-      <IconButton color="inherit" id="more-options" onClick={handleClick}>
+      <IconButton
+        size="small"
+        color="inherit"
+        id="more-options"
+        onClick={handleClick}
+      >
         <MoreHorizIcon />
       </IconButton>
       <Menu

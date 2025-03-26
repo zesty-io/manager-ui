@@ -5,8 +5,6 @@ import { Redirect } from "react-router-dom";
 
 // TODO implement multitab: https://github.com/Microsoft/monaco-editor/issues/604#issuecomment-344214706
 
-import { notify } from "shell/store/notifications";
-import { fetchFields } from "shell/store/fields";
 import { fetchFile } from "../../../store/files";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -19,6 +17,8 @@ import { LocalDirtyCodeModal } from "../LocalDirtyCodeModal";
 import { Box, Typography } from "@mui/material";
 import BottomDrawer from "../BottomDrawer";
 import { Differ } from "../Differ";
+import { fetchFields } from "../../../../../../shell/store/fields";
+import { notify } from "../../../../../../shell/store/notifications";
 
 const BOTTOM_DRAWER_HEIGHT = "48px";
 
@@ -26,6 +26,8 @@ const Workspace = connect((state, props) => {
   const file = state.files.find(
     (file) => file.ZUID === props?.match.params.fileZUID
   );
+  const fileUser = state?.users.find((user) => user?.ID === file?.lastEditedID);
+
   const fields =
     file && file.contentModelZUID
       ? Object.keys(state.fields)
@@ -52,14 +54,23 @@ const Workspace = connect((state, props) => {
         })
       )
     );
+  const fileInfo = file && {
+    ...file,
+    lastEditedBy: {
+      ID: fileUser?.ID,
+      ZUID: fileUser?.ZUID,
+      name: `${fileUser?.firstName || ""} ${fileUser?.lastName || ""}`.trim(),
+      email: fileUser?.email,
+    },
+  };
   return {
-    file: file ? file : {},
+    file: fileInfo ? fileInfo : {},
     fields,
     fileIsPinned,
   };
 })(
   memo(function Workspace(props) {
-    const { match, location } = props;
+    const { match, location, file } = props;
     const [loading, setLoading] = useState(false);
 
     let lineNumber = 0;
@@ -71,6 +82,7 @@ const Workspace = connect((state, props) => {
     // If we don't have the file on hand, fetch it from the api
     useEffect(() => {
       // If we already have the file on hand let the refresh happen in the background
+      if (!!props?.file) return;
       if (!props?.file || !props?.file.ZUID) {
         setLoading(true);
       }
@@ -155,12 +167,15 @@ const Workspace = connect((state, props) => {
                     contentModelZUID={props?.file.contentModelZUID}
                     publishedVersion={props?.file.publishedVersion}
                     fields={props?.fields}
-                    code={props?.file.code}
+                    code={props?.file?.code}
                     synced={props?.file.synced}
                     status={props?.status}
                     version={props?.file.version}
                     lineNumber={lineNumber}
                     isLive={props?.file?.isLive}
+                    isDirty={!!props?.file?.dirty}
+                    updatedAt={props?.file?.updatedAt}
+                    lastEditedBy={props?.file?.lastEditedBy}
                   />
                 </Route>
               </Switch>
@@ -174,7 +189,6 @@ const Workspace = connect((state, props) => {
               display="flex"
               flexDirection="column"
               justifyContent="flex-end"
-              zIndex={10}
               bgcolor="grey.900"
             >
               <BottomDrawer file={props?.file} match={match} />

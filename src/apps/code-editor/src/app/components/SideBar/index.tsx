@@ -19,6 +19,12 @@ interface SideBarProps {
   dispatch: (action: any) => void;
 }
 
+const fileTypeMap: Record<string, string> = {
+  snippets: "view",
+  "text/javascript": "script",
+  "text/css": "stylesheet",
+};
+
 const filterTreeData = (
   treeData: FileNodeProps[],
   keyword: string
@@ -125,15 +131,15 @@ export const SideBar = memo(function SideBar({
                 overflowX: "hidden",
                 overflowY: "auto",
                 width: "100%",
-                height: "calc(100vh - 36px - 110px)",
+                height: "calc(100vh - 36px - 113px)",
                 position: "relative",
               }}
             >
               <FileNav
                 id="html"
                 group="views"
-                header="HTML"
-                toolTip="HTML"
+                header="VIEWS"
+                toolTip="Views are template files that can render HTML or various other MIME types."
                 tree={htmlFiles}
                 createFile={() => openCreateFileDialog("snippet")}
                 orderFiles={() => openOrderFilesDialog("snippet")}
@@ -171,6 +177,7 @@ export const SideBar = memo(function SideBar({
           setIsCreateFileOpen(false);
         }}
         defaultType={fileType}
+        title={`Create ${fileTypeMap[fileType]}`}
       />
       <OrderFiles
         type={fileType}

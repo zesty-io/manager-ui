@@ -20,9 +20,11 @@ export const Editor = memo(function Editor(props) {
         version={props.version}
         synced={props.synced}
         status={props.status}
-        dispatch={props.dispatch}
         isLive={props.isLive}
+        isDirty={props.isDirty}
         code={props.code}
+        updatedAt={props.updatedAt}
+        lastEditedBy={props.lastEditedBy}
         isDiffer={false}
       />
 

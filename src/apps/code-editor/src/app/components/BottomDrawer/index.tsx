@@ -1,14 +1,7 @@
 import { memo, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import moment from "moment";
-import {
-  Stack,
-  Collapse,
-  Paper,
-  Typography,
-  Box,
-  IconButton,
-} from "@mui/material";
+import { Stack, Collapse, Paper, Typography, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -130,6 +123,8 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
         flexShrink: 1,
         boxSizing: "border-box",
         boxShadow: "0px -12px 8px -14px rgba(0,0,0,1)",
+        borderTop: "1px solid",
+        borderColor: "grey.800",
         "& *": { boxSizing: "border-box" },
       }}
     >
@@ -142,16 +137,12 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
+        sx={{ cursor: "pointer" }}
+        onClick={handleSetOpen}
+        title="Open for additional file information"
       >
         <Stack direction="row" alignItems="center" spacing={1}>
-          <IconButton
-            size="small"
-            color="inherit"
-            title="Open for additional file information"
-            onClick={handleSetOpen}
-          >
-            {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-          </IconButton>
+          {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
           {!open && (
             <Typography variant="body2">More file information</Typography>
           )}

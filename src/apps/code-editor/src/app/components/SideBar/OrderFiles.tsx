@@ -236,33 +236,40 @@ const OrderFiles = (props: OrderFilesProps) => {
         },
       }}
     >
-      <DialogTitle sx={{ px: 4, pt: 3 }}>
+      <DialogTitle
+        sx={{
+          padding: "20px",
+          textTransform: "capitalize",
+          borderBottom: "1px solid",
+          borderColor: "border",
+        }}
+      >
         Order {props.typePathPart}
       </DialogTitle>
       <DialogContent
         sx={{
-          px: 4,
+          px: "20px",
           py: 0,
           boxSizing: "border-box",
-          backgroundColor: "grey.100",
+          backgroundColor: "grey.50",
         }}
       >
         <Typography variant="body2" mt={2} mb={3}>
-          The displayed order is the order in which
+          The displayed order is the order in which&nbsp;
           <Link
             href="https://zesty.org/services/web-engine/css-processing-flow"
             target="_blank"
             title="Learn More About Processing Flows"
           >
-            files are processed and concatentated together
+            &nbsp;files are processed and concatentated together
           </Link>
-          into the dynamically created
+          &nbsp;into the dynamically created&nbsp;
           {props.typePathPart === "stylesheets" ? (
             <code>site.css</code>
           ) : (
             <code>site.js</code>
           )}
-          file.
+          &nbsp; file.
         </Typography>
         <Dropzone onDrop={handleReorder}>
           {files.map((file, index) => {
@@ -300,25 +307,18 @@ const OrderFiles = (props: OrderFilesProps) => {
           make the change live.
         </Alert>
       </DialogContent>
-      <DialogActions sx={{ pt: 2, px: 4 }}>
-        <Button
-          variant="outlined"
-          color="inherit"
-          size="small"
-          onClick={handleClose}
-          startIcon={<DoDisturbAltIcon />}
-        >
-          Cancel (ESC)
+      <DialogActions
+        sx={{ p: "20px", borderTop: "1px solid", borderColor: "border" }}
+      >
+        <Button variant="outlined" color="inherit" onClick={handleClose}>
+          Cancel
         </Button>
         <LoadingButton
-          size="small"
           variant="contained"
           data-cy="saveOrder"
           color="primary"
           onClick={handleSaveSort}
-          loadingPosition="start"
           loading={loading}
-          startIcon={<SaveIcon />}
         >
           Save Order
         </LoadingButton>

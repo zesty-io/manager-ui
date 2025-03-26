@@ -573,7 +573,13 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       open
       onClose={onClose}
       sx={{
-        py: "20px",
+        "& .MuiDialog-container": {
+          py: "20px",
+          alignItems:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "flex-start"
+              : "center",
+        },
       }}
       fullScreen
       PaperProps={{
@@ -592,7 +598,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               : "auto",
           minHeight:
             largeWidth?.includes(model?.type) && !selectedBlankBlock
-              ? "860px"
+              ? "680px"
               : "auto",
           maxHeight: "1240px",
           overflow: "hidden",

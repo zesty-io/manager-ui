@@ -12,12 +12,17 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FileNodeProps, NavCodeTypes } from "./constants";
+import { FileNodeProps, NavCodeTypes, stylesheets } from "./constants";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
-import { fetchFiles, publishFile } from "../../../store/files";
 import { useDispatch } from "react-redux";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
+import { publishFile } from "../../../store/files";
+
+const CreateFileToolTip = {
+  views: "Create View",
+  stylesheets: "Create Stylesheet",
+  scripts: "Create Script",
+};
 
 type FileNavProps = {
   id: string;
@@ -129,7 +134,7 @@ const FileNav: FC<FileNavProps> = ({
           <NavTree
             id={id}
             tree={treeData}
-            selected={pathname}
+            selected={pathname?.replace(/\/diff.*/, "")}
             expandedItems={expanded}
             onToggleCollapse={(nodeIds) => {
               setExpanded(nodeIds);
@@ -155,10 +160,19 @@ const FileNav: FC<FileNavProps> = ({
                     {header}
                   </Typography>
                   <Tooltip
-                    placement="top-start"
+                    placement="top"
                     title={toolTip}
                     enterDelay={1000}
                     enterNextDelay={1000}
+                    componentsProps={{
+                      popper: {
+                        sx: {
+                          "& .MuiTooltip-tooltip": {
+                            bgcolor: "grey.800",
+                          },
+                        },
+                      },
+                    }}
                   >
                     <InfoRoundedIcon
                       sx={{ width: 12, height: 12, color: "action.active" }}
@@ -168,10 +182,19 @@ const FileNav: FC<FileNavProps> = ({
                 <Stack direction="row" alignItems="center" gap={1} flexGrow={0}>
                   {group !== "views" && (
                     <Tooltip
-                      placement="top-end"
+                      placement="top"
                       title="Change combine and pre-process order"
                       enterDelay={1000}
                       enterNextDelay={1000}
+                      componentsProps={{
+                        popper: {
+                          sx: {
+                            "& .MuiTooltip-tooltip": {
+                              bgcolor: "grey.800",
+                            },
+                          },
+                        },
+                      }}
                     >
                       <IconButton onClick={() => orderFiles()} size="xxsmall">
                         <ReorderRoundedIcon sx={{ fontSize: 16 }} />
@@ -180,9 +203,18 @@ const FileNav: FC<FileNavProps> = ({
                   )}
                   <Tooltip
                     placement="top-end"
-                    title={`Create ${header}`}
+                    title={CreateFileToolTip[group]}
                     enterDelay={1000}
                     enterNextDelay={1000}
+                    componentsProps={{
+                      popper: {
+                        sx: {
+                          "& .MuiTooltip-tooltip": {
+                            bgcolor: "grey.800",
+                          },
+                        },
+                      },
+                    }}
                   >
                     <IconButton
                       onClick={() => createFile && createFile()}
