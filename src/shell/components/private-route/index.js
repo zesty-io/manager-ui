@@ -1,12 +1,10 @@
 import { memo, useEffect } from "react";
 import { connect } from "react-redux";
-import { CircularProgress, Backdrop } from "@mui/material";
+import { Backdrop, Box } from "@mui/material";
 
 import Login from "shell/components/login";
 import { notify } from "shell/store/notifications";
 import { verify } from "shell/store/auth";
-import { Staging } from "../Staging";
-import { LoadingQuote } from "../LoadingQuote";
 
 export default connect((state) => {
   return {
@@ -79,9 +77,7 @@ export default connect((state) => {
           }}
           open={!props.auth.valid && !props.auth.checking}
         >
-          <Staging>
-            <Login />
-          </Staging>
+          <Login />
         </Backdrop>
       </>
     );

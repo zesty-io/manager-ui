@@ -1,7 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import { connect } from "react-redux";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 
@@ -19,10 +18,7 @@ import { fetchItemPublishings } from "shell/store/content";
 import { fetchFiles } from "../../../apps/code-editor/src/store/files";
 import { fetchSettings } from "shell/store/settings";
 
-import { loadOpenNav } from "../../store/ui";
-
 import styles from "./LoadInstance.less";
-import { Staging } from "../Staging";
 import { Box } from "@mui/material";
 import { useGetCurrentUserRolesQuery } from "../../services/accounts";
 import { LoadingQuote } from "../LoadingQuote";
