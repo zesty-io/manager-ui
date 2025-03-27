@@ -130,6 +130,7 @@ export default connect((state) => {
             </Link>
           </div>
         ) : (
+          // TODO: Move the loading into the Shell component
           <>
             {props.products &&
             props.instance.ID &&
