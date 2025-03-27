@@ -66,6 +66,10 @@ export const Differ = memo(
                   selectOnLineNumbers: true,
                   automaticLayout: true,
                   scrollBeyondLastLine: false,
+                  padding: {
+                    top: 10,
+                    bottom: 10,
+                  },
                 }}
               />
             </WithLoader>

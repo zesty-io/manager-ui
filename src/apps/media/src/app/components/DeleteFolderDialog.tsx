@@ -46,11 +46,13 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
         <DeleteIcon
           color="error"
           sx={{
-            padding: "8px",
+            p: 1,
             borderRadius: "20px",
             backgroundColor: "red.100",
             display: "block",
             mb: 2,
+            width: "40px",
+            height: "40px",
           }}
         />
         Delete Folder?
