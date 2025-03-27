@@ -4,6 +4,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { theme } from "@zesty-io/material";
 import { LoadingButton } from "@mui/lab";
 import { useParams } from "react-router";
+import { useDebounce } from "react-use";
 
 import { MentionList } from "./MentionList";
 import tinymce from "tinymce";
@@ -153,14 +154,18 @@ export const InputField = ({
     }
   }, []);
 
-  useEffect(() => {
-    // No need to save edit mode changes in draft
-    if (inputValue && !isEditMode) {
-      updateComments({
-        [commentResourceZUID]: inputValue,
-      });
-    }
-  }, [inputValue, isEditMode]);
+  useDebounce(
+    () => {
+      // No need to save edit mode changes in draft
+      if (inputValue && !isEditMode) {
+        updateComments({
+          [commentResourceZUID]: inputValue,
+        });
+      }
+    },
+    300,
+    [inputValue, isEditMode]
+  );
 
   useEffect(() => {
     if (
@@ -201,6 +206,11 @@ export const InputField = ({
     isReplyCreationError ||
     isCommentUpdateError ||
     isReplyUpdateError;
+  // Ensures that the buttons are only shown when there is text content in the input field without blocking the user from actually
+  // pressing enter to start or end the comment with multiple line breaks if they wanted to
+  const showButtons =
+    !!inputValue &&
+    !!tinymce.activeEditor.getContent({ format: "text" }).trim();
 
   return (
     <>
@@ -352,7 +362,7 @@ export const InputField = ({
         justifyContent="end"
         mt={1.5}
       >
-        {inputValue && (
+        {showButtons && (
           <>
             <Button
               variant="outlined"
