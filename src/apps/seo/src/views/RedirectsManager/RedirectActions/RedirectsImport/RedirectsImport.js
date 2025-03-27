@@ -1,11 +1,11 @@
 import Button from "@mui/material/Button";
 import UploadIcon from "@mui/icons-material/Upload";
 
-// import styles from "./RedirectsImport.less";
+import Box from "@mui/material/Box";
 export default function RedirectsImport(props) {
   let fileInput = null;
   return (
-    <div>
+    <Box>
       <input
         type="file"
         hidden
@@ -15,6 +15,7 @@ export default function RedirectsImport(props) {
       <Button
         variant="outlined"
         color="inherit"
+        size="small"
         onClick={() => {
           fileInput.click();
         }}
@@ -22,6 +23,6 @@ export default function RedirectsImport(props) {
       >
         Import CSV/XML
       </Button>
-    </div>
+    </Box>
   );
 }
