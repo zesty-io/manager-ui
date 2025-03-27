@@ -101,18 +101,19 @@ export const VersionSelector = () => {
               setAnchorEl(null);
               onSelect(version);
             }}
+            sx={{
+              justifyContent: "space-between",
+              gap: 1,
+            }}
           >
-            <Box display="flex" justifyContent="space-between" width="100%">
-              <Box>
-                {`v${version.meta.version}${
-                  itemPublishings?.find(
-                    (itemPublishing) => itemPublishing._active
-                  )?.version === version.meta.version
-                    ? " - Live"
-                    : ""
-                }`}
-              </Box>
-              <Box>{formatDate(version.web.createdAt)}</Box>
+            <Box component="span">{`v${version.meta.version}${
+              itemPublishings?.find((itemPublishing) => itemPublishing._active)
+                ?.version === version.meta.version
+                ? " - Live"
+                : ""
+            }`}</Box>
+            <Box component="span">
+              {formatDate(version.web.createdAt, true)}
             </Box>
           </MenuItem>
         ))}

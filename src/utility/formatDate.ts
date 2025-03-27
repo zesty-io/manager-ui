@@ -1,6 +1,9 @@
 import moment from "moment-timezone";
 
-export const formatDate = (dateString: string): string => {
+export const formatDate = (
+  dateString: string,
+  showPastYear?: boolean
+): string => {
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   // Handle the case where timeZone is undefined
@@ -26,7 +29,16 @@ export const formatDate = (dateString: string): string => {
   } else if (inputDate.isSame(currentDate.subtract(1, "day"), "day")) {
     formattedDate = "Yesterday";
   } else {
-    formattedDate = inputDate.format("MMM D");
+    if (showPastYear) {
+      const currentYear = moment().year();
+      const inputYear = inputDate.year();
+      formattedDate =
+        inputYear === currentYear
+          ? inputDate.format("MMM D")
+          : inputDate.format("MMM D, YYYY");
+    } else {
+      formattedDate = inputDate.format("MMM D");
+    }
   }
 
   // Get the timezone abbreviation
