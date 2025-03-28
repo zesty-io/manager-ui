@@ -1,4 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
+import zestyLogoPulse from "../../../../public/images/zestyLogoOnlyPulsate.svg";
 
 const QUOTES = [
   {
@@ -86,8 +87,9 @@ export const LoadingQuote = () => {
     >
       <Box
         component="img"
-        src="https://zestyio.media.zestyio.com/zesty-logo-only-pulsate.svg"
+        src={zestyLogoPulse}
         loading="lazy"
+        alt="Displaying Zesty.io logo while application loads"
         sx={{
           width: 100,
           height: 100,
