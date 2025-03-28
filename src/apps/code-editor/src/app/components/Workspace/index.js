@@ -5,7 +5,7 @@ import { Redirect } from "react-router-dom";
 
 // TODO implement multitab: https://github.com/Microsoft/monaco-editor/issues/604#issuecomment-344214706
 
-import { fetchFile } from "../../../store/files";
+import { fetchFile, fetchFileVersions } from "../../../store/files";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -29,11 +29,12 @@ const Workspace = connect((state, props) => {
   const fileUser = state?.users.find((user) => user?.ID === file?.lastEditedID);
 
   const fields =
-    file && file.contentModelZUID
+    file && file?.contentModelZUID
       ? Object.keys(state.fields)
           .filter(
             (fieldZUID) =>
-              state.fields[fieldZUID].contentModelZUID === file.contentModelZUID
+              state.fields[fieldZUID].contentModelZUID ===
+              file?.contentModelZUID
           )
           .reduce((acc, fieldZUID) => {
             acc.push(state.fields[fieldZUID]);
@@ -70,8 +71,9 @@ const Workspace = connect((state, props) => {
   };
 })(
   memo(function Workspace(props) {
-    const { match, location, file } = props;
+    const { match, location } = props;
     const [loading, setLoading] = useState(false);
+    const [publishedFile, setPublishedFile] = useState(null);
 
     let lineNumber = 0;
     if (location.search) {
@@ -82,19 +84,35 @@ const Workspace = connect((state, props) => {
     // If we don't have the file on hand, fetch it from the api
     useEffect(() => {
       // If we already have the file on hand let the refresh happen in the background
-      if (!!props?.file) return;
       if (!props?.file || !props?.file.ZUID) {
         setLoading(true);
       }
-      if (props?.file.contentModelZUID && !props?.fields.length) {
+      if (props?.file?.contentModelZUID && !props?.fields.length) {
         setLoading(true);
+      }
+      if (props?.file?.publishedVersion === props?.file?.version) {
+        setPublishedFile(props?.file);
+      } else {
+        props
+          .dispatch(
+            fetchFileVersions(match.params.fileZUID, match.params.fileType)
+          )
+          .then((res) => {
+            if (res?.error) return setPublishing(null);
+            const filePublished = res?.data?.find(
+              (pubFile) =>
+                pubFile?.isLive ||
+                pubFile?.version === pubFile?.publishedVersion
+            );
+            setPublishedFile(filePublished);
+          });
       }
 
       props
         .dispatch(fetchFile(match.params.fileZUID, match.params.fileType))
         .then((res) => {
-          if (props?.file.contentModelZUID) {
-            return props?.dispatch(fetchFields(props?.file.contentModelZUID));
+          if (props?.file?.contentModelZUID) {
+            return props?.dispatch(fetchFields(props?.file?.contentModelZUID));
           } else {
             res;
           }
@@ -145,7 +163,7 @@ const Workspace = connect((state, props) => {
                     fileName={props.file.fileName}
                     fileZUID={match.params.fileZUID}
                     fileType={match.params.fileType}
-                    contentModelZUID={props.file.contentModelZUID}
+                    contentModelZUID={props.file?.contentModelZUID}
                     currentCode={props.file.code}
                     publishedVersion={props.file.publishedVersion}
                     status={props.status}
@@ -164,7 +182,7 @@ const Workspace = connect((state, props) => {
                     fileType={match.params.fileType}
                     dispatch={props?.dispatch}
                     fileName={props?.file.fileName}
-                    contentModelZUID={props?.file.contentModelZUID}
+                    contentModelZUID={props?.file?.contentModelZUID}
                     publishedVersion={props?.file.publishedVersion}
                     fields={props?.fields}
                     code={props?.file?.code}
@@ -175,6 +193,7 @@ const Workspace = connect((state, props) => {
                     isLive={props?.file?.isLive}
                     isDirty={!!props?.file?.dirty}
                     updatedAt={props?.file?.updatedAt}
+                    publishedAt={publishedFile?.updatedAt}
                     lastEditedBy={props?.file?.lastEditedBy}
                   />
                 </Route>

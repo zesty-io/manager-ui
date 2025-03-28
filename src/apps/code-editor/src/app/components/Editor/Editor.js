@@ -24,6 +24,7 @@ export const Editor = memo(function Editor(props) {
         isDirty={props.isDirty}
         code={props.code}
         updatedAt={props.updatedAt}
+        publishedAt={props.publishedAt}
         lastEditedBy={props.lastEditedBy}
         isDiffer={false}
       />

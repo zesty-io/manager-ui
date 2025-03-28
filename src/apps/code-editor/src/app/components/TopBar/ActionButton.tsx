@@ -51,9 +51,11 @@ export const ActionButton: FC<ActionButtonProps> = ({
       }}
     >
       {isActive && !isDisabled ? (
-        <LoadingButton {...props} onClick={onClick} loading={isLoading}>
-          {label}
-        </LoadingButton>
+        <span>
+          <LoadingButton {...props} onClick={onClick} loading={isLoading}>
+            {label}
+          </LoadingButton>
+        </span>
       ) : (
         <Box display="flex" alignItems="center" columnGap={1} px={1}>
           <CheckCircleRounded fontSize="small" sx={{ color: inActiveColor }} />

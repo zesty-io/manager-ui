@@ -25,6 +25,7 @@ interface EditorActionsProps {
   publishedVersion?: number;
   isDirty: boolean;
   updatedAt?: string;
+  publishedAt?: string;
   lastEditedBy?: {
     ID: string;
     name: string;
@@ -132,8 +133,8 @@ export const EditorActions = memo(function EditorActions(
         tooltip={
           isUnpublished
             ? `Publish File ${publishShortcut}`
-            : `v${props?.version} published ${!fileLastUpdate ? "" : "on"}
-              ${formatDate(props?.updatedAt)}
+            : `v${props?.version} published ${!props?.publishedAt ? "" : "on"}
+              ${formatDate(props?.publishedAt)}
               by ${props?.lastEditedBy?.name || "Unknown"}
            `
         }

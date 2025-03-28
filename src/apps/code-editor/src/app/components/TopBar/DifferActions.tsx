@@ -22,13 +22,6 @@ interface DifferActionsProps {
   synced: boolean;
   code: string;
   version: string;
-  updatedAt?: string;
-  lastEditedBy?: {
-    ID: string;
-    name: string;
-    ZUID: string;
-    email: string;
-  } | null;
   setVersionCodeLeft: (code: string) => void;
   setVersionCodeRight: (code: string) => void;
   setLoading: (loading: boolean) => void;

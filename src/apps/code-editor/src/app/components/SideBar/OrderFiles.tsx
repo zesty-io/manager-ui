@@ -25,6 +25,8 @@ import { faExpandArrowsAlt } from "@fortawesome/free-solid-svg-icons";
 import { resolvePathPart } from "../../../store/files";
 import { fetchHeaders, saveSort } from "../../../store/headers";
 import { LoadingButton } from "@mui/lab";
+import { IconButton } from "@zesty-io/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface FileHeader {
   ZUID: string;
@@ -245,6 +247,17 @@ const OrderFiles = (props: OrderFilesProps) => {
         }}
       >
         Order {props.typePathPart}
+        <IconButton
+          onClick={handleClose}
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            m: 1,
+          }}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
       </DialogTitle>
       <DialogContent
         sx={{

@@ -36,6 +36,7 @@ interface TopBarProps {
   contentModelZUID?: string;
   isDirty: boolean;
   updatedAt?: string;
+  publishedAt?: string;
   lastEditedBy?: {
     ID: string;
     name: string;
@@ -105,8 +106,6 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
               setLoading={props.setLoading}
               code={props.code}
               version={props.version}
-              updatedAt={props?.updatedAt}
-              lastEditedBy={props?.lastEditedBy}
             />
           ) : (
             <>
@@ -132,6 +131,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
                 code={props.code}
                 contentModelZUID={props?.contentModelZUID}
                 updatedAt={props?.updatedAt}
+                publishedAt={props?.publishedAt}
                 lastEditedBy={props?.lastEditedBy}
                 publishedVersion={
                   typeof props?.publishedVersion == "string"
