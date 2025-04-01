@@ -83,7 +83,6 @@ export default connect((state) => {
             height: "100%",
             width: "100%",
             overflow: "hidden",
-            // bgcolor: "#0F0F0F",
             bgcolor: "background.editor",
           }}
         >

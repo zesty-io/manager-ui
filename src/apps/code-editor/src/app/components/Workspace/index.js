@@ -5,7 +5,7 @@ import { Redirect } from "react-router-dom";
 
 // TODO implement multitab: https://github.com/Microsoft/monaco-editor/issues/604#issuecomment-344214706
 
-import { fetchFile, fetchFileVersions } from "../../../store/files";
+import { fetchFile } from "../../../store/files";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -19,12 +19,12 @@ import BottomDrawer from "../BottomDrawer";
 import { Differ } from "../Differ";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { notify } from "../../../../../../shell/store/notifications";
-import { fetchAuditTrail } from "../../../store/auditTrail";
 import moment from "moment-timezone";
 
 const BOTTOM_DRAWER_HEIGHT = "48px";
 
 const Workspace = connect((state, props) => {
+  console.debug("state, props: ", { state, props, audit: state?.auditTrail });
   const file = state.files.find(
     (file) => file.ZUID === props?.match.params.fileZUID
   );
@@ -94,33 +94,34 @@ const Workspace = connect((state, props) => {
 
     // If we don't have the file on hand, fetch it from the api
     useEffect(() => {
+      // If we already have the file on hand let the refresh happen in the background
       if (!file) {
         setLoading(true);
-
-        props
-          .dispatch(fetchFile(match.params.fileZUID, match.params.fileType))
-          .then((res) => {
-            if (file?.contentModelZUID) {
-              return props?.dispatch(fetchFields(file?.contentModelZUID));
-            } else {
-              res;
-            }
-          })
-          .catch((err) => {
-            if (err !== "duplicate request") {
-              console.error(err);
-              props?.dispatch(
-                notify({
-                  kind: "warn",
-                  message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
-                })
-              );
-            }
-          })
-          .finally(() => {
-            setLoading(false);
-          });
       }
+
+      props
+        .dispatch(fetchFile(match.params.fileZUID, match.params.fileType))
+        .then((res) => {
+          if (file?.contentModelZUID) {
+            return props?.dispatch(fetchFields(file?.contentModelZUID));
+          } else {
+            res;
+          }
+        })
+        .catch((err) => {
+          if (err !== "duplicate request") {
+            console.error(err);
+            props?.dispatch(
+              notify({
+                kind: "warn",
+                message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
+              })
+            );
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }, [match.params.fileZUID]);
 
     return (

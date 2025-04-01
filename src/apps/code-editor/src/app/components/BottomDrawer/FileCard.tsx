@@ -10,7 +10,6 @@ import ListItemText from "@mui/material/ListItemText";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import { ListItem } from "@mui/material";
 import { ReactNode, ElementType } from "react";
-import { LinkIcon } from "../../../store/icons";
 
 type FileCardProps = {
   title: string;
@@ -31,7 +30,7 @@ const FileCard: React.FC<FileCardProps> = ({
     <Card
       sx={{
         boxSizing: "border-box",
-        // bgcolor: "grey.800",
+        // Temporary: will be updated once the design is final
         bgcolor: "#2f2f2f",
         color: "grey.400",
         width: "100%",
@@ -104,7 +103,7 @@ const FileCard: React.FC<FileCardProps> = ({
               fontSize: "14px",
             }}
           >
-            <LinkIcon fontSize="small" />
+            <LinkRoundedIcon fontSize="small" />
             {linkLabel}
           </Link>
         )}

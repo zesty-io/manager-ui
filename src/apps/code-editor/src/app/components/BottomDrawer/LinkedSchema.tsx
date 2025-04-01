@@ -3,6 +3,7 @@ import Link from "@mui/material/Link";
 import { List, Typography, Divider } from "@mui/material";
 import { FileCardListItem, FileCard } from "./FileCard";
 import { NavCodeTypes } from "../SideBar/constants";
+import { Database } from "@zesty-io/material";
 
 interface Field {
   ZUID: string;
@@ -18,7 +19,7 @@ export default function LinkedSchema({ file, fields }: LinkedSchemaProps) {
   return (
     <FileCard
       title={`${file?.fileName}'s Related Model Schema`}
-      icon={StorageIcon}
+      icon={Database}
       link={`/schema/${file.contentModelZUID}`}
       linkLabel="Edit Linked Schema"
     >

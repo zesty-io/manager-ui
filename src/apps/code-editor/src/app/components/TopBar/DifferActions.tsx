@@ -1,7 +1,7 @@
 import { memo, useState, useEffect } from "react";
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
-import { Select, Button, MenuItem, Box } from "@mui/material";
+import { Select, Button, MenuItem, Box, Typography } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
@@ -145,21 +145,22 @@ export const DifferActions = memo(function DifferActions(
 
   const options = versions.map((version) => {
     let html = (
-      <span>
-        Version {version.version}{" "}
-        <small>
+      <Box display="flex" alignItems="center" columnGap={0.5}>
+        {version.version === props.publishedVersion ? (
+          <Typography variant="body2" component="span" fontWeight={700}>
+            (Live)
+          </Typography>
+        ) : (
+          ""
+        )}
+        <Typography variant="body2" component="span">
+          {`Version ${version.version}`}
+        </Typography>
+        <Typography variant="caption" component="span">
           [{moment(version.createdAt).format("MMM Do YYYY, [at] h:mm a")}]
-        </small>
-      </span>
+        </Typography>
+      </Box>
     );
-
-    if (version.version === props.publishedVersion) {
-      html = (
-        <>
-          <strong>(Live)</strong> {html}
-        </>
-      );
-    }
 
     return {
       html,

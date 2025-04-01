@@ -20,8 +20,9 @@ import ElectricBoltOutlinedIcon from "@mui/icons-material/ElectricBoltOutlined";
 import { DeleteDialog } from "./DeleteDialog";
 import CheckIcon from "@mui/icons-material/Check";
 import { parseInt } from "lodash";
-import { DatabaseIcon, FileCodeIcon } from "../../../store/icons";
 import VerticalSplitRoundedIcon from "@mui/icons-material/VerticalSplitRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import { Database } from "@zesty-io/material";
 
 export type FileVersionTypes = {
   code: string;
@@ -87,7 +88,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
           {props.contentModelZUID ? (
             <FlashOnRoundedIcon color="info" fontSize="small" />
           ) : (
-            <FileCodeIcon fontSize="small" />
+            <DescriptionRoundedIcon fontSize="small" />
           )}
           <Typography
             variant="h6"
@@ -175,7 +176,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
                           history.push(`/schema/${props.contentModelZUID}`)
                         }
                       >
-                        <DatabaseIcon fontSize="small" />
+                        <Database fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   </>
@@ -309,8 +310,8 @@ const MoreOptions = (props: MoreOptionsProps) => {
         slotProps={{
           paper: {
             sx: {
-              width: 230,
-              borderRadius: "8px",
+              width: 200,
+              borderRadius: 1,
             },
           },
         }}

@@ -1,10 +1,9 @@
-import { FC, useEffect, useState, useRef, useCallback } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Typography,
   Box,
   TextField,
   InputAdornment,
-  Avatar,
   InputLabel,
   IconButton,
   Menu,
@@ -21,15 +20,10 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import { useTheme } from "@mui/material/styles";
-import { debounce } from "lodash";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import ImageIcon from "@mui/icons-material/Image";
-import { MD5 } from "../../../../../../utility/md5";
 import {
-  mediaManagerApi,
   useUpdateFileAltTextMutation,
   useUpdateFileMutation,
   useDeleteFileMutation,
@@ -41,13 +35,15 @@ import { fileTypeToColor } from "../../utils/fileUtils";
 
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
-import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
-import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { FileReplace } from "@zesty-io/material";
 import DeleteFileModal from "./DeleteFileModal";
 import { MoveFileDialog } from "./MoveFileDialog";
+import { useDispatch } from "react-redux";
+import { notify } from "../../../../../../shell/store/notifications";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
+
 interface Props {
   id?: string;
   src?: string;
@@ -80,6 +76,7 @@ export const FileModalContent: FC<Props> = ({
   setShowEdit,
   onOpenReplaceFileModal,
 }) => {
+  const dispatch = useDispatch();
   const [newTitle, setNewTitle] = useState(title);
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isCopiedZuid, setIsCopiedZuid] = useState<boolean>(false);
@@ -92,7 +89,7 @@ export const FileModalContent: FC<Props> = ({
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const openSettings = Boolean(showSettingsDropdown);
 
-  const [deleteFile] = useDeleteFileMutation();
+  const [deleteFile, { isLoading: isLoadingDelete }] = useDeleteFileMutation();
   const [
     updateFile,
     {
@@ -194,8 +191,16 @@ export const FileModalContent: FC<Props> = ({
       body: {
         group_id: groupId,
       },
+    }).then((deleteResponse: any | FetchBaseQueryError) => {
+      if (!deleteResponse?.error) return handleCloseModal();
+      setShowDeleteFileModal(false);
+      dispatch(
+        notify({
+          kind: "error",
+          message: deleteResponse?.error?.data?.message,
+        })
+      );
     });
-    handleCloseModal();
     // history.replace(location.path);
   };
 
@@ -214,6 +219,7 @@ export const FileModalContent: FC<Props> = ({
           onDeleteFile={onDeleteFile}
           filename={filename}
           onClose={() => setShowDeleteFileModal(false)}
+          isLoadingDelete={isLoadingDelete}
         />
       )}
 

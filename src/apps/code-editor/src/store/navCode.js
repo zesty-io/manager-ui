@@ -3,32 +3,29 @@ import idb from "utility/idb";
 import DocumentScannerRoundedIcon from "@mui/icons-material/DocumentScannerRounded";
 import { resolvePathPart } from "./files";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import { SvgIcon } from "@mui/material";
-import FlashOnIcon from "@mui/icons-material/FlashOn";
-import FlashOnRoundedIcon from "@mui/icons-material/FlashOnRounded";
-import {
-  CssIcon,
-  DatabaseIcon,
-  FileCodeIcon,
-  JavaScriptIcon,
-  LessIcon,
-  LockCloseIcon,
-  SassIcon,
-  StickyNoteIcon,
-} from "./icons";
-import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
 
-const createIcon = (icon, ...other) => {
+import { Database } from "@zesty-io/material";
+import { SvgIcon } from "@mui/material";
+import {
+  faBolt,
+  faFileCode,
+  faLock,
+  faStickyNote,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faCss3Alt,
+  faJs,
+  faLess,
+  faSass,
+} from "@fortawesome/free-brands-svg-icons";
+
+const createIcon = (icon) => {
   if (!icon) return null;
   const {
     icon: [width, height, , , svgPathData],
   } = icon;
   return () => (
-    <SvgIcon
-      viewBox={`0 0 ${width} ${height}`}
-      fontSize="small"
-      sx={{ height: "15px", width: "15px", mr: "8px" }}
-    >
+    <SvgIcon viewBox={`0 0 ${width} ${height}`} sx={{ mr: 1, fontSize: 15 }}>
       {typeof svgPathData === "string" ? (
         <path d={svgPathData} />
       ) : (
@@ -196,25 +193,25 @@ export function collapseNavItem(path) {
 function resolveNavData(file) {
   const ICONS = {
     // Parsley views
-    snippet: StickyNoteIcon, // StickyNote2RoundedIcon,
-    dataset: DatabaseIcon,
+    snippet: createIcon(faStickyNote),
+    dataset: Database,
     pageset: FormatListBulletedIcon,
-    templateset: FileCodeIcon,
+    templateset: createIcon(faFileCode),
     // Instant api
-    "ajax-json": FlashOnRoundedIcon,
-    "ajax-html": FlashOnRoundedIcon,
-    "ajax-parsley": FlashOnRoundedIcon,
-    block: FlashOnRoundedIcon,
+    "ajax-json": createIcon(faBolt),
+    "ajax-html": createIcon(faBolt),
+    "ajax-parsley": createIcon(faBolt),
+    block: createIcon(faBolt),
 
     // JavaScript
-    "text/js": JavaScriptIcon,
-    "text/javascript": JavaScriptIcon,
+    "text/js": createIcon(faJs),
+    "text/javascript": createIcon(faJs),
 
     // Stylesheets
-    "text/css": CssIcon,
-    "text/less": LessIcon,
-    "text/scss": SassIcon,
-    "text/sass": SassIcon,
+    "text/css": createIcon(faCss3Alt),
+    "text/less": createIcon(faLess),
+    "text/scss": createIcon(faSass),
+    "text/sass": createIcon(faSass),
 
     404: DocumentScannerRoundedIcon,
   };
@@ -225,7 +222,7 @@ function resolveNavData(file) {
     ...file,
     label: file.sort ? `(${file.sort}) ${file.fileName}` : file.fileName,
     path: `/code/file/${pathPart}/${file.ZUID}`,
-    icon: file.fileName === "loader" ? LockCloseIcon : ICONS[file.type],
+    icon: file.fileName === "loader" ? createIcon(faLock) : ICONS[file.type],
   };
 
   // Remove this prop to ensure we don't accidentially

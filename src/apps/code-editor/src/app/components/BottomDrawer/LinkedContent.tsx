@@ -3,9 +3,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import { FileCard, FileCardListItem } from "./FileCard";
 import { NavLink } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import { NavCodeTypes } from "../SideBar/constants";
-import { EditNoteIcon } from "../../../store/icons";
+import LaunchIcon from "@mui/icons-material/Launch";
 
 interface Meta {
   ZUID: string;
@@ -60,7 +59,7 @@ export default function LinkedContent({ file, items }: LinkedContentProps) {
                         color: "info.main",
                       }}
                     >
-                      <EditNoteIcon
+                      <LaunchIcon
                         fontSize="small"
                         sx={{ position: "absolute", color: "info.main" }}
                       />
