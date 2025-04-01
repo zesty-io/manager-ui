@@ -3,13 +3,14 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import FiberManualRecordRoundedIcon from "@mui/icons-material/FiberManualRecordRounded";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import { ListItem } from "@mui/material";
 import { ReactNode, ElementType } from "react";
+import { LinkIcon } from "../../../store/icons";
 
 type FileCardProps = {
   title: string;
@@ -30,7 +31,8 @@ const FileCard: React.FC<FileCardProps> = ({
     <Card
       sx={{
         boxSizing: "border-box",
-        bgcolor: "grey.800",
+        // bgcolor: "grey.800",
+        bgcolor: "#2f2f2f",
         color: "grey.400",
         width: "100%",
         px: 2,
@@ -77,7 +79,7 @@ const FileCard: React.FC<FileCardProps> = ({
           color="grey.300"
           sx={{
             pl: "35px",
-            wordBreak: "break-all",
+            wordBreak: "break-word",
             boxSizing: "border-box",
           }}
         >
@@ -90,7 +92,7 @@ const FileCard: React.FC<FileCardProps> = ({
       </CardContent>
       <CardActions sx={{ pt: 1, flexGrow: 0 }}>
         {!!link && (
-          <NavLink
+          <Link
             to={link}
             title="Edit Related Model"
             style={{
@@ -98,13 +100,13 @@ const FileCard: React.FC<FileCardProps> = ({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-start",
-              gap: 2,
+              columnGap: "5px",
               fontSize: "14px",
             }}
           >
-            <LinkRoundedIcon />
+            <LinkIcon fontSize="small" />
             {linkLabel}
-          </NavLink>
+          </Link>
         )}
       </CardActions>
     </Card>
@@ -113,9 +115,13 @@ const FileCard: React.FC<FileCardProps> = ({
 
 type FileCardListItemProps = {
   children: ReactNode;
+  gap?: string | number;
 };
 
-const FileCardListItem: React.FC<FileCardListItemProps> = ({ children }) => {
+const FileCardListItem: React.FC<FileCardListItemProps> = ({
+  gap = "4px",
+  children,
+}) => {
   return (
     <ListItem
       disablePadding
@@ -124,7 +130,7 @@ const FileCardListItem: React.FC<FileCardListItemProps> = ({ children }) => {
         alignItems: "baseline",
         overflow: "hidden",
         maxWidth: "100%",
-        wordBreak: "break-all",
+        wordBreak: "break-word",
       }}
     >
       <ListItemIcon sx={{ minWidth: "16px", color: "grey.400" }}>
@@ -132,7 +138,12 @@ const FileCardListItem: React.FC<FileCardListItemProps> = ({ children }) => {
       </ListItemIcon>
       <ListItemText
         primary={children}
-        sx={(theme) => ({ ...theme.typography.body2, color: "grey.400" })}
+        sx={(theme) => ({
+          ...theme.typography.body2,
+          color: "grey.400",
+          wordBreak: "break-word",
+          my: gap,
+        })}
       />
     </ListItem>
   );

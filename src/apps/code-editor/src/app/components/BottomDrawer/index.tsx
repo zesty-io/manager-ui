@@ -114,8 +114,8 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
       square
       sx={{
         width: "100%",
-        bgcolor: "grey.900",
-        color: "grey.400",
+        bgcolor: "background.editor",
+        color: "grey.300",
         flexGrow: 0,
         display: "flex",
         flexDirection: "column",
@@ -142,11 +142,11 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
       >
         <Stack direction="row" alignItems="center" spacing={1}>
           {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-          {!open && (
-            <Typography variant="body2">More file information</Typography>
-          )}
+          <Typography variant="body2" noWrap>
+            More file information
+          </Typography>
         </Stack>
-        <Typography variant="body2" color="inherit" pr={1}>
+        <Typography variant="body2" color="inherit" pr={1} noWrap>
           {open ? "Close" : "Open"} Drawer {metaShortcut}
         </Typography>
       </Box>
@@ -154,10 +154,10 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
         <Box
           width="100%"
           boxSizing="border-box"
-          bgcolor="grey.900"
-          color="grey.400"
+          bgcolor="background.editor"
+          color="grey.300"
           height="40vh"
-          sx={{ overflowY: "auto" }}
+          sx={{ overflowY: "auto", bgcolor: "background.editor" }}
         >
           <WithLoader
             condition={!loading}

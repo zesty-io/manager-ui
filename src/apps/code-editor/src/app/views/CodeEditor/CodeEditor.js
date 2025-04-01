@@ -57,7 +57,7 @@ export default connect((state) => {
         columns={2}
         sx={{
           height: "calc(100vh - 40px)",
-          bgcolor: "grey.900",
+          bgcolor: "background.editor",
           color: "grey.300",
           position: "relative",
         }}
@@ -83,7 +83,8 @@ export default connect((state) => {
             height: "100%",
             width: "100%",
             overflow: "hidden",
-            bgcolor: "grey.900",
+            // bgcolor: "#0F0F0F",
+            bgcolor: "background.editor",
           }}
         >
           <Switch>
@@ -103,7 +104,7 @@ export default connect((state) => {
                 );
               }}
             />
-            <Route path="*">
+            <Route path="/f/*">
               <Box
                 width="100%"
                 height="100%"

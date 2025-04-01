@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import { NavCodeTypes } from "../SideBar/constants";
+import { EditNoteIcon } from "../../../store/icons";
 
 interface Meta {
   ZUID: string;
@@ -59,7 +60,7 @@ export default function LinkedContent({ file, items }: LinkedContentProps) {
                         color: "info.main",
                       }}
                     >
-                      <OpenInNewRoundedIcon
+                      <EditNoteIcon
                         fontSize="small"
                         sx={{ position: "absolute", color: "info.main" }}
                       />

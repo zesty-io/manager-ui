@@ -141,13 +141,13 @@ const CreateFile = memo(function CreateFile({
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
-        <Box sx={{ p: "20px", backgroundColor: "grey.50" }}>
+        <Box sx={{ p: "20px", bgcolor: "grey.50" }}>
           <Box width="100%">
             <Typography
               variant="body2"
               color="text.primary"
               fontWeight={600}
-              mb={0.25}
+              mb="4px"
             >
               File Type
             </Typography>
@@ -226,7 +226,12 @@ const CreateFile = memo(function CreateFile({
           )}
 
           <Box mt={2} width="100%">
-            <Typography variant="body2" color="text.primary" fontWeight={600}>
+            <Typography
+              variant="body2"
+              color="text.primary"
+              fontWeight={600}
+              mb="4px"
+            >
               File Name
             </Typography>
             <TextField

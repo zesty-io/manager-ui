@@ -51,7 +51,7 @@ export default function LinkedSchema({ file, fields }: LinkedSchemaProps) {
         }}
       >
         {fields.map((field) => (
-          <FileCardListItem key={field?.ZUID}>
+          <FileCardListItem key={field?.ZUID} gap={0}>
             <span>
               <span className="brackets">{"{{"}</span>
               <span className="keywords">this.</span>

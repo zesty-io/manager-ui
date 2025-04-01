@@ -19,6 +19,8 @@ import BottomDrawer from "../BottomDrawer";
 import { Differ } from "../Differ";
 import { fetchFields } from "../../../../../../shell/store/fields";
 import { notify } from "../../../../../../shell/store/notifications";
+import { fetchAuditTrail } from "../../../store/auditTrail";
+import moment from "moment-timezone";
 
 const BOTTOM_DRAWER_HEIGHT = "48px";
 
@@ -27,6 +29,15 @@ const Workspace = connect((state, props) => {
     (file) => file.ZUID === props?.match.params.fileZUID
   );
   const fileUser = state?.users.find((user) => user?.ID === file?.lastEditedID);
+
+  const publishing = state?.auditTrail
+    ?.filter(
+      (log) =>
+        log?.action === 4 && log?.meta?.version === file?.publishedVersion
+    )
+    .sort((a, b) =>
+      moment(a.createdAt).unix() > moment(b.createdAt).unix() ? -1 : 1
+    )?.[0];
 
   const fields =
     file && file?.contentModelZUID
@@ -57,12 +68,13 @@ const Workspace = connect((state, props) => {
     );
   const fileInfo = file && {
     ...file,
-    lastEditedBy: {
-      ID: fileUser?.ID,
-      ZUID: fileUser?.ZUID,
-      name: `${fileUser?.firstName || ""} ${fileUser?.lastName || ""}`.trim(),
-      email: fileUser?.email,
-    },
+    updatedBy: `${fileUser?.firstName || ""} ${
+      fileUser?.lastName || ""
+    }`.trim(),
+    publishedAt: publishing?.happenedAt,
+    publishedBy: `${publishing?.firstName || ""} ${
+      publishing?.lastName || ""
+    }`.trim(),
   };
   return {
     file: fileInfo ? fileInfo : {},
@@ -71,9 +83,8 @@ const Workspace = connect((state, props) => {
   };
 })(
   memo(function Workspace(props) {
-    const { match, location } = props;
+    const { match, location, file, fields, fileIsPinned } = props;
     const [loading, setLoading] = useState(false);
-    const [publishedFile, setPublishedFile] = useState(null);
 
     let lineNumber = 0;
     if (location.search) {
@@ -83,63 +94,42 @@ const Workspace = connect((state, props) => {
 
     // If we don't have the file on hand, fetch it from the api
     useEffect(() => {
-      // If we already have the file on hand let the refresh happen in the background
-      if (!props?.file || !props?.file.ZUID) {
+      if (!file) {
         setLoading(true);
-      }
-      if (props?.file?.contentModelZUID && !props?.fields.length) {
-        setLoading(true);
-      }
-      if (props?.file?.publishedVersion === props?.file?.version) {
-        setPublishedFile(props?.file);
-      } else {
+
         props
-          .dispatch(
-            fetchFileVersions(match.params.fileZUID, match.params.fileType)
-          )
+          .dispatch(fetchFile(match.params.fileZUID, match.params.fileType))
           .then((res) => {
-            if (res?.error) return setPublishing(null);
-            const filePublished = res?.data?.find(
-              (pubFile) =>
-                pubFile?.isLive ||
-                pubFile?.version === pubFile?.publishedVersion
-            );
-            setPublishedFile(filePublished);
+            if (file?.contentModelZUID) {
+              return props?.dispatch(fetchFields(file?.contentModelZUID));
+            } else {
+              res;
+            }
+          })
+          .catch((err) => {
+            if (err !== "duplicate request") {
+              console.error(err);
+              props?.dispatch(
+                notify({
+                  kind: "warn",
+                  message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
+                })
+              );
+            }
+          })
+          .finally(() => {
+            setLoading(false);
           });
       }
-
-      props
-        .dispatch(fetchFile(match.params.fileZUID, match.params.fileType))
-        .then((res) => {
-          if (props?.file?.contentModelZUID) {
-            return props?.dispatch(fetchFields(props?.file?.contentModelZUID));
-          } else {
-            res;
-          }
-        })
-        .catch((err) => {
-          if (err !== "duplicate request") {
-            console.error(err);
-            props?.dispatch(
-              notify({
-                kind: "warn",
-                message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
-              })
-            );
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        });
     }, [match.params.fileZUID]);
 
     return (
       <WithLoader condition={!loading} message="Finding File">
-        {props?.file && props?.file.ZUID ? (
+        {file && file.ZUID ? (
           <Fragment>
-            <LockedView ZUID={props?.file.ZUID} name={props?.file.fileName} />
+            <LockedView ZUID={file.ZUID} name={file.fileName} />
             <LocalDirtyCodeModal
-              show={props?.file.dirty && !props?.fileIsPinned}
+              show={file.dirty && !fileIsPinned}
               title="Unsaved Changes"
               content="You have unsaved changes that will be lost if you leave this page."
               dirtyCodeFileType={match.params.fileType}
@@ -152,28 +142,28 @@ const Workspace = connect((state, props) => {
               boxSizing="border-box"
               position="relative"
               width="100%"
-              bgcolor="#1e1e1e"
               height={`calc(100% - ${BOTTOM_DRAWER_HEIGHT})`}
               overflow="hidden"
+              zIndex={0}
             >
               <Switch>
                 <Route path={`${match.url}/diff`}>
                   <Differ
                     dispatch={props.dispatch}
-                    fileName={props.file.fileName}
-                    fileZUID={match.params.fileZUID}
-                    fileType={match.params.fileType}
-                    contentModelZUID={props.file?.contentModelZUID}
-                    currentCode={props.file.code}
-                    publishedVersion={props.file.publishedVersion}
+                    fileName={file?.fileName}
+                    fileZUID={file?.ZUID}
+                    fileType={file?.fileType}
+                    contentModelZUID={file?.contentModelZUID}
+                    currentCode={file?.code}
+                    publishedVersion={file?.publishedVersion}
                     status={props.status}
-                    synced={props.file.synced}
+                    synced={file?.synced}
                     lineNumber={lineNumber}
                   />
                 </Route>
                 <Route path={`${match.url}`}>
                   {/* Force Sync */}
-                  {!props?.file.synced && (
+                  {!file.synced && (
                     <Redirect push to={`${location.pathname}/diff/`} />
                   )}
 
@@ -181,20 +171,21 @@ const Workspace = connect((state, props) => {
                     fileZUID={match.params.fileZUID}
                     fileType={match.params.fileType}
                     dispatch={props?.dispatch}
-                    fileName={props?.file.fileName}
-                    contentModelZUID={props?.file?.contentModelZUID}
-                    publishedVersion={props?.file.publishedVersion}
-                    fields={props?.fields}
-                    code={props?.file?.code}
-                    synced={props?.file.synced}
+                    fileName={file.fileName}
+                    contentModelZUID={file?.contentModelZUID}
+                    publishedVersion={file.publishedVersion}
+                    fields={fields}
+                    code={file?.code}
+                    synced={file.synced}
                     status={props?.status}
-                    version={props?.file.version}
+                    version={file.version}
                     lineNumber={lineNumber}
-                    isLive={props?.file?.isLive}
-                    isDirty={!!props?.file?.dirty}
-                    updatedAt={props?.file?.updatedAt}
-                    publishedAt={publishedFile?.updatedAt}
-                    lastEditedBy={props?.file?.lastEditedBy}
+                    isLive={file?.isLive}
+                    isDirty={!!file?.dirty}
+                    updatedAt={file?.updatedAt}
+                    updatedBy={file?.updatedBy}
+                    publishedAt={file?.publishedAt}
+                    publishedBy={file?.publishedBy}
                   />
                 </Route>
               </Switch>
@@ -208,9 +199,9 @@ const Workspace = connect((state, props) => {
               display="flex"
               flexDirection="column"
               justifyContent="flex-end"
-              bgcolor="grey.900"
+              bgcolor="background.editor"
             >
-              <BottomDrawer file={props?.file} match={match} />
+              <BottomDrawer file={file} match={match} />
             </Box>
           </Fragment>
         ) : (

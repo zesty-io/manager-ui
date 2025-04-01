@@ -1,22 +1,17 @@
 import { FC, useState, useMemo } from "react";
 import { useLocation } from "react-router";
-import {
-  Box,
-  IconButton,
-  Stack,
-  Tooltip,
-  Typography,
-  SvgIcon,
-} from "@mui/material";
+import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
-import { FileNodeProps, NavCodeTypes, stylesheets } from "./constants";
+import { FileNodeProps, NavCodeTypes } from "./constants";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 import { useDispatch } from "react-redux";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
-import { publishFile } from "../../../store/files";
+import { fetchFiles, publishFile } from "../../../store/files";
+import { CircularProgress } from "@mui/material";
+import { fetchAuditTrail } from "../../../store/auditTrail";
 
 const CreateFileToolTip = {
   views: "Create View",
@@ -34,24 +29,49 @@ type FileNavProps = {
   tree: FileNodeProps[];
 };
 
-const createIcon = (icon: any) => {
-  if (!icon) return null;
-  const {
-    icon: [width, height, , , svgPathData],
-  } = icon;
-  return () => (
-    <SvgIcon
-      viewBox={`0 0 ${width} ${height}`}
-      sx={{ height: "14px", width: "14px", mr: 0.75 }}
+const ActionsButton = ({
+  ZUID,
+  status,
+  dispatch,
+  fileType,
+}: {
+  ZUID: string;
+  status: string;
+  dispatch: any;
+  fileType: string;
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  return (
+    <IconButton
+      key="publish"
+      color="inherit"
+      size="xsmall"
+      sx={{
+        transform: "translateX(5px)",
+      }}
+      onClick={() => {
+        setIsLoading(true);
+        dispatch(publishFile(ZUID, status))
+          .then(() => {
+            dispatch(fetchFiles(fileType));
+            dispatch(fetchAuditTrail(ZUID));
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      }}
     >
-      {typeof svgPathData === "string" ? (
-        <path d={svgPathData} />
+      {isLoading ? (
+        <CircularProgress size="16px" />
       ) : (
-        svgPathData.map((d: string, i: number) => (
-          <path style={{ opacity: i === 0 ? 0.4 : 1 }} d={d} />
-        ))
+        <CloudUploadRoundedIcon
+          sx={{
+            fontSize: 16,
+            color: (theme) => `${theme.palette.grey[500]}!important`,
+          }}
+        />
       )}
-    </SvgIcon>
+    </IconButton>
   );
 };
 
@@ -97,23 +117,18 @@ const FileNav: FC<FileNavProps> = ({
         !treeItem.isLive &&
         treeItem?.version > treeItem?.publishedVersion
           ? [
-              <IconButton
+              <ActionsButton
                 key="publish"
-                color="inherit"
-                size="xsmall"
-                onClick={() => {
-                  dispatch(publishFile(treeItem?.ZUID, treeItem?.status));
-                }}
-              >
-                <CloudUploadRoundedIcon
-                  sx={{ fontSize: 14, color: "grey!important" }}
-                />
-              </IconButton>,
+                ZUID={treeItem?.ZUID}
+                status={treeItem?.status}
+                dispatch={dispatch}
+                fileType={group}
+              />,
             ]
           : [];
 
       return {
-        icon: createIcon(treeItem?.icon),
+        icon: treeItem?.icon,
         path: filePath,
         label: treeItem?.label,
         children: treeItem?.children?.map((child: NavCodeTypes) =>
@@ -160,10 +175,10 @@ const FileNav: FC<FileNavProps> = ({
                     {header}
                   </Typography>
                   <Tooltip
-                    placement="top"
+                    placement="top-start"
                     title={toolTip}
-                    enterDelay={1000}
-                    enterNextDelay={1000}
+                    enterDelay={500}
+                    enterNextDelay={500}
                     componentsProps={{
                       popper: {
                         sx: {
@@ -175,7 +190,7 @@ const FileNav: FC<FileNavProps> = ({
                     }}
                   >
                     <InfoRoundedIcon
-                      sx={{ width: 12, height: 12, color: "action.active" }}
+                      sx={{ width: 12, height: 12, color: "text.secondary" }}
                     />
                   </Tooltip>
                 </Stack>

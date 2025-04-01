@@ -52,7 +52,12 @@ export const ActionButton: FC<ActionButtonProps> = ({
     >
       {isActive && !isDisabled ? (
         <span>
-          <LoadingButton {...props} onClick={onClick} loading={isLoading}>
+          <LoadingButton
+            {...props}
+            onClick={onClick}
+            loading={isLoading}
+            sx={{ whiteSpace: "nowrap" }}
+          >
             {label}
           </LoadingButton>
         </span>

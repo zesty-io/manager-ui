@@ -18,14 +18,12 @@ import {
   Box,
   Alert,
   Button,
+  IconButton,
 } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
-import { faExpandArrowsAlt } from "@fortawesome/free-solid-svg-icons";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import { resolvePathPart } from "../../../store/files";
 import { fetchHeaders, saveSort } from "../../../store/headers";
 import { LoadingButton } from "@mui/lab";
-import { IconButton } from "@zesty-io/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface FileHeader {
@@ -111,7 +109,7 @@ const Dropzone = (props: any) => {
 const Draggable = (props: any) => {
   const dragEl = useRef(null);
   return (
-    <div
+    <Box
       ref={dragEl}
       data-index={props.index}
       draggable={props.draggable}
@@ -135,7 +133,7 @@ const Draggable = (props: any) => {
       }}
     >
       {props.children}
-    </div>
+    </Box>
   );
 };
 
@@ -222,7 +220,6 @@ const OrderFiles = (props: OrderFilesProps) => {
     <Dialog
       open={props?.isOpen}
       onClose={() => props?.onClose()}
-      disablePortal
       sx={{
         "& *, & *::before, & *::after": {
           boxSizing: "border-box",
@@ -262,7 +259,7 @@ const OrderFiles = (props: OrderFilesProps) => {
       <DialogContent
         sx={{
           px: "20px",
-          py: 0,
+          py: "20px",
           boxSizing: "border-box",
           backgroundColor: "grey.50",
         }}
@@ -304,18 +301,20 @@ const OrderFiles = (props: OrderFilesProps) => {
                   <Typography variant="body2">{`${Number(
                     file.sort
                   )})`}</Typography>
-                  <FontAwesomeIcon
-                    size="sm"
-                    color="grey.500"
-                    icon={faExpandArrowsAlt}
+
+                  <ZoomOutMapIcon
+                    fontSize="small"
+                    sx={{ color: "text.secondary" }}
                   />
-                  <Typography variant="body2">{file.fileName}</Typography>
+                  <Typography variant="body2" color="text.primary">
+                    {file.fileName}
+                  </Typography>
                 </Box>
               </Draggable>
             );
           })}
         </Dropzone>
-        <Alert severity="warning" sx={{ my: 2 }}>
+        <Alert severity="warning" sx={{ mt: 2 }}>
           After ordering a publish has to occur to process the new order and
           make the change live.
         </Alert>

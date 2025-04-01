@@ -1,17 +1,14 @@
-import { memo, useEffect, useState, ReactNode } from "react";
+import { memo, useEffect, useState } from "react";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
-import LoadingButton from "@mui/lab/LoadingButton";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { Box } from "@mui/material";
-import { CheckCircleRounded } from "@mui/icons-material";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { fetchFiles, publishFile, saveFile } from "../../../store/files";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import { useDispatch } from "react-redux";
-import { ReactElement } from "react";
 import { ActionButton } from "./ActionButton";
 import { formatDate } from "../../../../../../utility/formatDate";
+import { fetchAuditTrail } from "../../../store/auditTrail";
 
 interface EditorActionsProps {
   fileZUID: string;
@@ -25,13 +22,9 @@ interface EditorActionsProps {
   publishedVersion?: number;
   isDirty: boolean;
   updatedAt?: string;
+  updatedBy?: string;
   publishedAt?: string;
-  lastEditedBy?: {
-    ID: string;
-    name: string;
-    ZUID: string;
-    email: string;
-  } | null;
+  publishedBy?: string;
 }
 
 export const EditorActions = memo(function EditorActions(
@@ -55,9 +48,8 @@ export const EditorActions = memo(function EditorActions(
     formatDate(props?.updatedAt).includes("Yesterday");
 
   const getUpdatedFiles = () => {
-    dispatch(fetchFiles("views"));
-    dispatch(fetchFiles("stylesheets"));
-    dispatch(fetchFiles("scripts"));
+    dispatch(fetchFiles(props?.fileType));
+    dispatch(fetchAuditTrail(props.fileZUID));
   };
 
   const onSave = async () => {
@@ -114,7 +106,7 @@ export const EditorActions = memo(function EditorActions(
             ? `Save File ${saveShortcut}`
             : `v${props?.version} saved ${!fileLastUpdate ? "" : "on"}
               ${formatDate(props?.updatedAt)}
-              by ${props?.lastEditedBy?.name || "Unknown"}
+              by ${props?.updatedBy || "Unknown"}
            `
         }
         isActive={isNotSaved}
@@ -124,7 +116,9 @@ export const EditorActions = memo(function EditorActions(
       />
 
       <ActionButton
-        label={isUnpublished ? "Publish" : "Published"}
+        label={
+          isUnpublished ? `${isNotSaved ? "Save & " : ""}Publish` : "Published"
+        }
         color="success"
         inActiveColor="success.main"
         variant="contained"
@@ -135,7 +129,7 @@ export const EditorActions = memo(function EditorActions(
             ? `Publish File ${publishShortcut}`
             : `v${props?.version} published ${!props?.publishedAt ? "" : "on"}
               ${formatDate(props?.publishedAt)}
-              by ${props?.lastEditedBy?.name || "Unknown"}
+              by ${props?.publishedBy || "Unknown"}
            `
         }
         isActive={isUnpublished}

@@ -54,8 +54,6 @@ export const NoPermission = ({
             borderRadius: "20px",
             backgroundColor: "red.100",
             display: "block",
-            width: "40px",
-            height: "40px",
           }}
         />
         <Box fontWeight={700} mb={1} mt={1.5}>

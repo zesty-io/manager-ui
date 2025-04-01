@@ -24,8 +24,9 @@ export const Editor = memo(function Editor(props) {
         isDirty={props.isDirty}
         code={props.code}
         updatedAt={props.updatedAt}
+        updatedBy={props.updatedBy}
         publishedAt={props.publishedAt}
-        lastEditedBy={props.lastEditedBy}
+        publishedBy={props.publishedBy}
         isDiffer={false}
       />
 
@@ -33,28 +34,21 @@ export const Editor = memo(function Editor(props) {
         sx={{
           position: "relative",
           width: "100%",
-          height: "calc(100% - 84px)",
+          height: "calc(100% - 64px)",
           flexGrow: 1,
           boxSizing: "border-box",
         }}
       >
-        <Box
-          position="absolute"
-          width="100%"
-          height="100%"
-          boxSizing="border-box"
-        >
-          <MemoizedEditor
-            dispatch={props.dispatch}
-            code={props.code}
-            fileName={props.fileName}
-            fileZUID={props.fileZUID}
-            contentModelZUID={props.contentModelZUID}
-            fields={props.fields}
-            status={props.status}
-            lineNumber={props.lineNumber}
-          />
-        </Box>
+        <MemoizedEditor
+          dispatch={props.dispatch}
+          code={props.code}
+          fileName={props.fileName}
+          fileZUID={props.fileZUID}
+          contentModelZUID={props.contentModelZUID}
+          fields={props.fields}
+          status={props.status}
+          lineNumber={props.lineNumber}
+        />
       </Box>
     </>
   );

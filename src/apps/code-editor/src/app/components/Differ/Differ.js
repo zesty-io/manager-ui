@@ -36,6 +36,7 @@ export const Differ = memo(
           setVersionCodeLeft={setVersionCodeLeft}
           setVersionCodeRight={setVersionCodeRight}
           setLoading={setLoading}
+          isLoading={loading}
           synced={props?.synced}
           code={props?.currentCode}
           isDiffer={true}
@@ -44,36 +45,30 @@ export const Differ = memo(
           sx={{
             position: "relative",
             width: "100%",
-            height: "calc(100% - 84px)",
+            height: "calc(100% - 64px)",
             flexGrow: 1,
             boxSizing: "border-box",
+            zIndex: 0,
           }}
         >
-          <Box
-            position="absolute"
-            width="100%"
-            height="100%"
-            boxSizing="border-box"
-          >
-            <WithLoader condition={!loading} message="Finding File Versions">
-              <MonacoDiffEditor
-                theme="vs-dark"
-                width="100%"
-                original={versionCodeLeft}
-                value={versionCodeRight}
-                language={resolveMonacoLang(props?.fileName)}
-                options={{
-                  selectOnLineNumbers: true,
-                  automaticLayout: true,
-                  scrollBeyondLastLine: false,
-                  padding: {
-                    top: 10,
-                    bottom: 10,
-                  },
-                }}
-              />
-            </WithLoader>
-          </Box>
+          <WithLoader condition={!loading} message="Finding File Versions">
+            <MonacoDiffEditor
+              theme="vs-dark"
+              width="100%"
+              original={versionCodeLeft}
+              value={versionCodeRight}
+              language={resolveMonacoLang(props?.fileName)}
+              options={{
+                selectOnLineNumbers: true,
+                automaticLayout: true,
+                scrollBeyondLastLine: false,
+                padding: {
+                  top: 10,
+                  bottom: 10,
+                },
+              }}
+            />
+          </WithLoader>
         </Box>
       </>
     );
