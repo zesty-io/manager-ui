@@ -91,6 +91,62 @@
         }
       }
     }
+
+    .nav-footer {
+      .github {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px 12px 12px;
+
+        img {
+          height: 24px;
+          width: 84px;
+        }
+
+        div {
+          display: flex;
+          gap: 4px;
+          align-items: center;
+
+          img {
+            width: 12px;
+            height: 12px;
+          }
+
+          .skeleton.text {
+            width: 59px;
+            height: 10px;
+          }
+        }
+      }
+
+      .accounts {
+        border-top: 1px solid var(--sidebar-border-color);
+        height: 53px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 12px;
+
+        .skeleton.circle {
+          width: 32px;
+          height: 32px;
+        }
+
+        div:last-child {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+
+          .skeleton.text {
+            width: 32px;
+            height: 26px;
+          }
+        }
+      }
+    }
   }
 
   .subapp {
