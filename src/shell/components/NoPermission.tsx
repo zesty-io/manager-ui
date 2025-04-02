@@ -54,9 +54,12 @@ export const NoPermission = ({
             borderRadius: "20px",
             backgroundColor: "red.100",
             display: "block",
+            width: "40px",
+            height: "40px",
+            mb: 1.5,
           }}
         />
-        <Box fontWeight={700} mb={1} mt={1.5}>
+        <Box fontWeight={700} mb={1}>
           {headerTitle
             ? headerTitle
             : "You do not have permission to invite users"}

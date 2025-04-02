@@ -46,6 +46,7 @@ import StarterBlocks from "./StarterBlocks";
 interface Props {
   onClose: () => void;
   modelType?: string;
+  typeIsSet?: boolean;
 }
 
 const modelTypes = [
@@ -83,8 +84,13 @@ const largeWidth = ["block"];
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
-export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
+export const CreateModelDialogue = ({
+  onClose,
+  modelType = "templateset",
+  typeIsSet = false,
+}: Props) => {
   const [type, setType] = useState(modelType);
+  const [isTypeSet, setIsTypeSet] = useState(typeIsSet);
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedBlankBlock, setSelectedBlankBlock] = useState(false);
@@ -237,7 +243,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
   }, [error]);
 
   const getView = () => {
-    if (!model.type) {
+    if (!isTypeSet) {
       return (
         <>
           <DialogTitle component="div">
@@ -354,7 +360,10 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
             </Button>
             <Button
               variant="contained"
-              onClick={() => updateModel({ type })}
+              onClick={() => {
+                setIsTypeSet(true);
+                updateModel({ type });
+              }}
               disabled={!type}
               data-cy="create-model-next-button"
             >
@@ -573,7 +582,13 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
       open
       onClose={onClose}
       sx={{
-        py: "20px",
+        "& .MuiDialog-container": {
+          py: "20px",
+          alignItems:
+            largeWidth?.includes(model?.type) && !selectedBlankBlock
+              ? "flex-start"
+              : "center",
+        },
       }}
       fullScreen
       PaperProps={{
@@ -592,7 +607,7 @@ export const CreateModelDialogue = ({ onClose, modelType = "" }: Props) => {
               : "auto",
           minHeight:
             largeWidth?.includes(model?.type) && !selectedBlankBlock
-              ? "860px"
+              ? "680px"
               : "auto",
           maxHeight: "1240px",
           overflow: "hidden",
