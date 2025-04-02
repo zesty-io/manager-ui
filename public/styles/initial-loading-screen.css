@@ -3,6 +3,8 @@
   --sidebar-border-color: #1d2939;
   --topbar-bg-color: #f2f4f7;
   --skeleton-bg-color: #344054;
+  --skeleton-light-bg-color: #e4e7ec;
+  --search-bg-color: #ffffff;
 }
 
 .initial-loading-screen {
@@ -258,6 +260,83 @@
     .global-topbar {
       grid-area: topbar;
       background-color: var(--topbar-bg-color);
+      display: flex;
+      justify-content: space-between;
+
+      .left {
+        display: flex;
+        gap: 1px;
+
+        .search {
+          display: flex;
+          background-color: var(--search-bg-color);
+          width: 288px;
+          height: 39px;
+          align-items: center;
+          padding: 0 12px;
+          justify-content: space-between;
+
+          > div {
+            display: flex;
+            align-items: center;
+
+            .skeleton.light.circle {
+              width: 24px;
+              height: 24px;
+              margin-right: 8px;
+            }
+
+            .skeleton.light.text {
+              width: 116px;
+              height: 12px;
+            }
+          }
+
+          .skeleton.light {
+            width: 16px;
+            height: 16px;
+          }
+        }
+
+        .topbar-item {
+          width: 180px;
+          height: 34px;
+          border-radius: 8px 8px 0 0;
+          background-color: var(--search-bg-color);
+          align-self: end;
+          display: flex;
+          align-items: center;
+          padding: 0 12px;
+          gap: 8px;
+
+          .skeleton.light.circle {
+            width: 16px;
+            height: 16px;
+          }
+
+          .skeleton.light.text {
+            width: 116px;
+            height: 12px;
+          }
+
+          .skeleton.light {
+            width: 12px;
+            height: 12px;
+          }
+        }
+      }
+
+      .right {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-right: 16px;
+
+        .skeleton.light {
+          width: 24px;
+          height: 24px;
+        }
+      }
     }
 
     .quote {
@@ -299,6 +378,10 @@
   animation: 2s ease-in-out 0.5s infinite normal none running pulsate;
   width: 100%;
   height: 100%;
+
+  &.light {
+    background-color: var(--skeleton-light-bg-color);
+  }
 
   &.circle {
     border-radius: 50%;
