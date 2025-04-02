@@ -6,7 +6,8 @@
 }
 
 .initial-loading-screen {
-  display: grid;
+  /* Display is set once indexedDB values are fetched to prevent UI flicker */
+  display: none;
   grid-template-columns: 200px 1fr;
   height: 100vh;
   box-sizing: border-box;
@@ -183,7 +184,7 @@
         padding: 0 12px 12px 12px;
         border-top: 0px;
 
-        img:first-child {
+        > img:first-child {
           height: 24px;
           width: 84px;
         }
