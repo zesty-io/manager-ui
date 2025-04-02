@@ -46,6 +46,7 @@ import { TableSortContext } from "./TableSortProvider";
 type ItemListTableProps = {
   loading: boolean;
   rows: ContentItem[];
+  noRowsOverlay: () => JSX.Element;
 };
 
 const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
@@ -245,230 +246,240 @@ const fieldTypeColumnConfigMap = {
   },
 } as const;
 
-export const ItemListTable = memo(({ loading, rows }: ItemListTableProps) => {
-  const { modelZUID } = useRouterParams<{ modelZUID: string }>();
-  const apiRef = useGridApiRef();
-  const [initialState, setInitialState] = useState<GridInitialState>();
-  const history = useHistory();
-  const { stagedChanges } = useStagedChanges();
-  const [selectedItems, setSelectedItems] = useSelectedItems();
-  const [params, setParams] = useParams();
-  const [sortModel, setSortModel] = useContext(TableSortContext);
-  const [pinnedColumns, setPinnedColumns] = useState<GridPinnedColumns>({});
+export const ItemListTable = memo(
+  ({ loading, rows, noRowsOverlay }: ItemListTableProps) => {
+    const { modelZUID } = useRouterParams<{ modelZUID: string }>();
+    const apiRef = useGridApiRef();
+    const [initialState, setInitialState] = useState<GridInitialState>();
+    const history = useHistory();
+    const { stagedChanges } = useStagedChanges();
+    const [selectedItems, setSelectedItems] = useSelectedItems();
+    const [params, setParams] = useParams();
+    const [sortModel, setSortModel] = useContext(TableSortContext);
+    const [pinnedColumns, setPinnedColumns] = useState<GridPinnedColumns>({});
 
-  const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
+    const { data: fields } = useGetContentModelFieldsQuery(modelZUID);
 
-  const saveSnapshot = useCallback(() => {
-    if (apiRef?.current?.exportState && localStorage) {
-      const currentState = apiRef.current.exportState();
-      localStorage.setItem(
-        `${modelZUID}-dataGridState`,
-        JSON.stringify(currentState)
+    const saveSnapshot = useCallback(() => {
+      if (apiRef?.current?.exportState && localStorage) {
+        const currentState = apiRef.current.exportState();
+        localStorage.setItem(
+          `${modelZUID}-dataGridState`,
+          JSON.stringify(currentState)
+        );
+      }
+    }, [apiRef, modelZUID]);
+
+    useLayoutEffect(() => {
+      if (!fields) return;
+      const stateFromLocalStorage = localStorage?.getItem(
+        `${modelZUID}-dataGridState`
+      );
+
+      setInitialState(
+        stateFromLocalStorage ? JSON.parse(stateFromLocalStorage) : {}
+      );
+      setPinnedColumns({
+        left: ["__check__", "version", fields?.[0]?.name],
+      });
+
+      window.addEventListener("beforeunload", saveSnapshot);
+
+      return () => {
+        window.removeEventListener("beforeunload", saveSnapshot);
+        saveSnapshot();
+      };
+    }, [saveSnapshot, fields, modelZUID]);
+
+    const columns = useMemo(() => {
+      let result: any[] = [
+        {
+          field: "version",
+          headerName: "Vers.",
+          width: 59,
+          sortable: true,
+          filterable: false,
+          renderCell: (params: GridRenderCellParams) => (
+            <VersionCell params={params} />
+          ),
+        },
+      ];
+      if (fields) {
+        result = [
+          ...result,
+          ...fields
+            ?.filter((field) => !field.deletedAt && field?.settings?.list)
+            ?.map((field) => ({
+              field: field.name,
+              headerName: field.label,
+              filterable: false,
+              valueGetter: (params: any) => {
+                if (field.datatype === "currency") {
+                  return {
+                    value: params.row.data[field.name],
+                    currency: field.settings?.currency || "USD",
+                  };
+                }
+
+                return params.row.data[field.name];
+              },
+              ...fieldTypeColumnConfigMap[field.datatype],
+              // if field is yes_no but it has custom options increase the width
+              ...(field.datatype === "yes_no" &&
+                field?.settings?.options?.[0] !== "No" &&
+                field?.settings?.options?.[1] !== "Yes" && {
+                  width: 280,
+                }),
+            })),
+        ];
+      }
+      return [...result, ...METADATA_COLUMNS];
+    }, [fields]);
+    if (!initialState) {
+      return (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <CircularProgress />
+        </Box>
       );
     }
-  }, [apiRef, modelZUID]);
 
-  useLayoutEffect(() => {
-    if (!fields) return;
-    const stateFromLocalStorage = localStorage?.getItem(
-      `${modelZUID}-dataGridState`
-    );
-
-    setInitialState(
-      stateFromLocalStorage ? JSON.parse(stateFromLocalStorage) : {}
-    );
-    setPinnedColumns({
-      left: ["__check__", "version", fields?.[0]?.name],
-    });
-
-    window.addEventListener("beforeunload", saveSnapshot);
-
-    return () => {
-      window.removeEventListener("beforeunload", saveSnapshot);
-      saveSnapshot();
-    };
-  }, [saveSnapshot, fields, modelZUID]);
-
-  const columns = useMemo(() => {
-    let result: any[] = [
-      {
-        field: "version",
-        headerName: "Vers.",
-        width: 59,
-        sortable: true,
-        filterable: false,
-        renderCell: (params: GridRenderCellParams) => (
-          <VersionCell params={params} />
-        ),
-      },
-    ];
-    if (fields) {
-      result = [
-        ...result,
-        ...fields
-          ?.filter((field) => !field.deletedAt && field?.settings?.list)
-          ?.map((field) => ({
-            field: field.name,
-            headerName: field.label,
-            filterable: false,
-            valueGetter: (params: any) => {
-              if (field.datatype === "currency") {
-                return {
-                  value: params.row.data[field.name],
-                  currency: field.settings?.currency || "USD",
-                };
-              }
-
-              return params.row.data[field.name];
-            },
-            ...fieldTypeColumnConfigMap[field.datatype],
-            // if field is yes_no but it has custom options increase the width
-            ...(field.datatype === "yes_no" &&
-              field?.settings?.options?.[0] !== "No" &&
-              field?.settings?.options?.[1] !== "Yes" && {
-                width: 280,
-              }),
-          })),
-      ];
-    }
-    return [...result, ...METADATA_COLUMNS];
-  }, [fields]);
-  if (!initialState) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  return (
-    <DataGridPro
-      apiRef={apiRef}
-      loading={loading}
-      rows={rows}
-      columns={columns}
-      pinnedColumns={pinnedColumns}
-      onPinnedColumnsChange={(newPinnedColumns) =>
-        setPinnedColumns(newPinnedColumns)
-      }
-      rowHeight={54}
-      hideFooter
-      onRowClick={(row) => {
-        if (selectedItems.length) {
-          if (selectedItems.includes(row.id)) {
-            setSelectedItems(
-              selectedItems.filter((id: string) => id !== row.id)
-            );
-          } else {
-            setSelectedItems([...selectedItems, row.id]);
-          }
-        } else {
-          if (typeof row.id === "string" && row.id?.startsWith("new")) {
-            history.push(`/content/${modelZUID}/new`);
-          } else {
-            history.push(`/content/${modelZUID}/${row.id}`);
-          }
+      <DataGridPro
+        apiRef={apiRef}
+        loading={loading}
+        rows={rows}
+        columns={columns}
+        pinnedColumns={pinnedColumns}
+        onPinnedColumnsChange={(newPinnedColumns) =>
+          setPinnedColumns(newPinnedColumns)
         }
-      }}
-      components={{
-        NoRowsOverlay: () => <></>,
-        BaseCheckbox: (props) => (
-          <Checkbox
-            disabled={stagedChanges && Object.keys(stagedChanges)?.length}
-            {...props}
-          />
-        ),
-      }}
-      componentsProps={{
-        baseTooltip: {
-          placement: "top-start",
-          slotProps: {
-            popper: {
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, -30],
+        rowHeight={54}
+        hideFooter
+        onRowClick={(row) => {
+          if (selectedItems.length) {
+            if (selectedItems.includes(row.id)) {
+              setSelectedItems(
+                selectedItems.filter((id: string) => id !== row.id)
+              );
+            } else {
+              setSelectedItems([...selectedItems, row.id]);
+            }
+          } else {
+            if (typeof row.id === "string" && row.id?.startsWith("new")) {
+              history.push(`/content/${modelZUID}/new`);
+            } else {
+              history.push(`/content/${modelZUID}/${row.id}`);
+            }
+          }
+        }}
+        components={{
+          NoRowsOverlay: noRowsOverlay,
+          BaseCheckbox: (props) => (
+            <Checkbox
+              disabled={stagedChanges && Object.keys(stagedChanges)?.length}
+              {...props}
+            />
+          ),
+        }}
+        componentsProps={{
+          baseTooltip: {
+            placement: "top-start",
+            slotProps: {
+              popper: {
+                modifiers: [
+                  {
+                    name: "offset",
+                    options: {
+                      offset: [0, -30],
+                    },
                   },
-                },
-              ],
+                ],
+              },
             },
           },
-        },
-      }}
-      getRowClassName={(params) => {
-        // if included in staged changes, highlight the row
-        if (stagedChanges?.[params.id]) {
-          return "Mui-selected";
+        }}
+        getRowClassName={(params) => {
+          // if included in staged changes, highlight the row
+          if (stagedChanges?.[params.id]) {
+            return "Mui-selected";
+          }
+        }}
+        checkboxSelection
+        disableSelectionOnClick
+        initialState={initialState}
+        sortingOrder={["desc", "asc", null]}
+        sortModel={sortModel}
+        sortingMode="server"
+        onSortModelChange={(newSortModel) => {
+          if (!Object.entries(newSortModel)?.length) {
+            setSortModel([
+              {
+                field: "lastSaved",
+                sort: "desc",
+              },
+            ]);
+          } else {
+            setSortModel(newSortModel);
+          }
+        }}
+        onSelectionModelChange={(newSelection) =>
+          setSelectedItems(newSelection)
         }
-      }}
-      checkboxSelection
-      disableSelectionOnClick
-      initialState={initialState}
-      sortingOrder={["desc", "asc", null]}
-      sortModel={sortModel}
-      sortingMode="server"
-      onSortModelChange={(newSortModel) => {
-        if (!Object.entries(newSortModel)?.length) {
-          setSortModel([
-            {
-              field: "lastSaved",
-              sort: "desc",
-            },
-          ]);
-        } else {
-          setSortModel(newSortModel);
+        selectionModel={
+          stagedChanges && Object.keys(stagedChanges)?.length
+            ? []
+            : selectedItems
         }
-      }}
-      onSelectionModelChange={(newSelection) => setSelectedItems(newSelection)}
-      selectionModel={
-        stagedChanges && Object.keys(stagedChanges)?.length ? [] : selectedItems
-      }
-      isRowSelectable={(params) =>
-        params.row?.meta?.version &&
-        !(stagedChanges && Object.keys(stagedChanges)?.length)
-      }
-      sx={{
-        backgroundColor: "common.white",
-        ".MuiDataGrid-row": {
-          cursor: "pointer",
-        },
-        border: "none",
-        "& .MuiDataGrid-columnHeaderCheckbox": {
-          padding: 0,
-        },
-        " & .MuiDataGrid-columnSeparator": {
-          visibility: "visible",
-        },
-        "& .MuiDataGrid-pinnedColumnHeaders": {
-          backgroundColor: "inherit",
-        },
-        ".MuiDataGrid-columnHeader": {
-          "&:hover .MuiDataGrid-columnSeparator": {
+        isRowSelectable={(params) =>
+          params.row?.meta?.version &&
+          !(stagedChanges && Object.keys(stagedChanges)?.length)
+        }
+        sx={{
+          backgroundColor: "common.white",
+          ".MuiDataGrid-row": {
+            cursor: "pointer",
+          },
+          border: "none",
+          "& .MuiDataGrid-columnHeaderCheckbox": {
+            padding: 0,
+          },
+          " & .MuiDataGrid-columnSeparator": {
             visibility: "visible",
           },
-        },
-        ".MuiDataGrid-columnSeparator": {
-          visibility: "hidden",
-        },
-        "& .MuiDataGrid-cell:focus-within": {
-          outline: "none",
-        },
-        "& .MuiDataGrid-columnHeader:focus-within": {
-          outline: "none",
-        },
-        "& .MuiDataGrid-cell:has([data-cy='sortCell'])": {
-          padding: 0,
-        },
-        "& .MuiDataGrid-row.Mui-selected": {
-          borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
-        },
-      }}
-    />
-  );
-});
+          "& .MuiDataGrid-pinnedColumnHeaders": {
+            backgroundColor: "inherit",
+          },
+          ".MuiDataGrid-columnHeader": {
+            "&:hover .MuiDataGrid-columnSeparator": {
+              visibility: "visible",
+            },
+          },
+          ".MuiDataGrid-columnSeparator": {
+            visibility: "hidden",
+          },
+          "& .MuiDataGrid-cell:focus-within": {
+            outline: "none",
+          },
+          "& .MuiDataGrid-columnHeader:focus-within": {
+            outline: "none",
+          },
+          "& .MuiDataGrid-cell:has([data-cy='sortCell'])": {
+            padding: 0,
+          },
+          "& .MuiDataGrid-row.Mui-selected": {
+            borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
+          },
+          // Makes sure that the custom overlay is interactive
+          "& [data-cy='NoResults']": {
+            pointerEvents: "all",
+          },
+        }}
+      />
+    );
+  }
+);
