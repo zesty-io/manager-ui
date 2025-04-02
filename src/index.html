@@ -225,6 +225,23 @@
           }
         });
       };
+      const getFromLocalStorage = (key) => {
+        try {
+          return localStorage.getItem(key);
+        } catch (err) {
+          console.error("Failed to get localStorage value:", err);
+          return null;
+        }
+      };
+      const appLocalStorageMap = {
+        settings: "settingsNav",
+        content: "contentNav",
+        media: "mediaNav",
+        apps: "appsNav",
+        reports: "reportsNav",
+        schema: "schemaNav",
+        blocks: "blocksNav",
+      };
 
       getFromIndexedDB(`${instanceZUID}:ui`)
         .then((uiState) => {
@@ -242,14 +259,29 @@
           console.error("Failed to get IndexedDB value:", error);
         })
         .finally(() => {
+          const openApp = window.location.pathname.split("/")[1];
+
           // Show/hide subapp nav depending on which app is open
-          if (
-            ["", "launchpad", "leads", "redirects"].includes(
-              window.location.pathname.split("/")[1]
-            )
-          ) {
+          if (["", "launchpad", "leads", "redirects"].includes(openApp)) {
             document.querySelector(".subapp").style.gridTemplateAreas =
               '"topbar topbar" "quote quote"';
+          } else if (!!appLocalStorageMap[openApp]) {
+            // Set subapp nav width and collapsed status based on localStorage value
+            const appWidth = getFromLocalStorage(
+              `zesty:resizableContainer:${appLocalStorageMap[openApp]}`
+            );
+            const appCollapsed = getFromLocalStorage(
+              `zesty:collapsedContainer:${appLocalStorageMap[openApp]}`
+            );
+
+            if (appCollapsed === "true") {
+              document.querySelector(".subapp").style.gridTemplateAreas =
+                '"topbar topbar" "quote quote"';
+            } else if (!!appWidth && Number(appWidth) !== 220) {
+              document.querySelector(
+                ".subapp"
+              ).style.gridTemplateColumns = `${appWidth}px 1fr`;
+            }
           }
 
           // Show the loading screen once indexedDB data is fetched
