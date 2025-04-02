@@ -10,9 +10,92 @@
   grid-template-columns: 200px 1fr;
   height: 100vh;
   box-sizing: border-box;
+  overflow: hidden;
 
   & * {
     box-sizing: border-box;
+  }
+
+  &.collapsed {
+    grid-template-columns: 48px 1fr;
+
+    .global-sidebar {
+      section {
+        .nav-header {
+          > div:first-child {
+            img {
+              display: none;
+            }
+          }
+
+          > div:nth-child(2) {
+            > .skeleton.text {
+              display: none;
+            }
+
+            > .skeleton:last-child {
+              display: none;
+            }
+          }
+        }
+
+        .nav-items {
+          li {
+            padding-left: 0;
+            padding-right: 0;
+            justify-content: center;
+
+            .skeleton.circle {
+              margin-right: 0;
+            }
+
+            .skeleton:last-child {
+              display: none;
+            }
+          }
+        }
+      }
+
+      .nav-footer {
+        .github {
+          border-top: 1px solid var(--sidebar-border-color);
+          padding: 12px 0 0 0;
+          flex-direction: column;
+          gap: 8px;
+
+          img:first-child {
+            display: none;
+          }
+
+          img:nth-child(2) {
+            display: block;
+          }
+
+          div {
+            img {
+              display: none;
+            }
+
+            .skeleton.text {
+              width: 31px;
+              height: 20px;
+            }
+          }
+        }
+
+        .accounts {
+          border-top: 0px;
+          padding: 0 0 12px 0;
+          flex-direction: column-reverse;
+          height: auto;
+
+          div:last-child {
+            flex-direction: column;
+            padding: 8px 0;
+          }
+        }
+      }
+    }
   }
 
   .global-sidebar {
@@ -98,10 +181,17 @@
         align-items: center;
         justify-content: space-between;
         padding: 0 12px 12px 12px;
+        border-top: 0px;
 
-        img {
+        img:first-child {
           height: 24px;
           width: 84px;
+        }
+
+        img:nth-child(2) {
+          display: none;
+          width: 20px;
+          height: 20px;
         }
 
         div {
