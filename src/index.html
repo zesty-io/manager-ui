@@ -71,6 +71,8 @@
       href="https://fonts.googleapis.com/css?family=Roboto+Mono"
     />
 
+    <link rel="stylesheet" href="/styles/initial-loading-screen.css" />
+
     <style type="text/css">
       * {
         margin: 0;
@@ -85,40 +87,6 @@
         font-size: 16px;
         height: 100%;
         width: 100%;
-      }
-
-      #appBoot {
-        align-items: center;
-        display: flex;
-        justify-content: center;
-        width: 100vw;
-        height: 100vh;
-        flex-direction: column;
-      }
-
-      #zestyLogo {
-        margin-bottom: 32px;
-      }
-
-      #quote {
-        margin-bottom: 12px;
-        font-weight: 400;
-        font-size: 28px;
-        line-height: 36px;
-        letter-spacing: -2%;
-        text-align: center;
-      }
-
-      #quotee {
-        font-weight: 600;
-        font-size: 20px;
-        line-height: 28px;
-        letter-spacing: -2%;
-        text-align: center;
-      }
-
-      .quote-container {
-        max-width: 640px;
       }
     </style>
     <style>
@@ -227,26 +195,57 @@
   <body>
     <main id="root">
       <!-- App load screen -->
-      <div id="appBoot">
-        <img
-          id="zestyLogo"
-          src="/images/zestyLogoOnlyPulsate.svg"
-          alt="Displaying Zesty.io logo while application loads"
-          height="100px"
-          width="100px"
-        />
-        <div class="quote-container">
-          <h3 id="quote">
-            <script>
-              document.write(`"${randomQuote.quote}"`);
-            </script>
-          </h3>
-          <h5 id="quotee">
-            <script>
-              document.write(`— ${randomQuote.quotee}`);
-            </script>
-          </h5>
-        </div>
+      <div class="initial-loading-screen">
+        <nav class="global-sidebar">
+          <section>
+            <div class="nav-header">
+              <div>
+                <div class="skeleton"></div>
+                <img
+                  src="/images/zestyLogoOnlyGrey.svg"
+                  loading="lazy"
+                  alt="Zesty grey logo"
+                />
+              </div>
+              <div>
+                <div class="skeleton circle"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+              </div>
+            </div>
+            <div class="nav-items">items</div>
+          </section>
+
+          <div class="nav-footer">footer</div>
+        </nav>
+
+        <section class="subapp">
+          <div class="global-topbar"></div>
+
+          <div class="subapp-sidebar"></div>
+
+          <div class="quote">
+            <img
+              class="logo"
+              src="/images/zestyLogoOnlyPulsate.svg"
+              alt="Displaying Zesty.io logo while application loads"
+              height="100px"
+              width="100px"
+            />
+            <div>
+              <h3 class="text">
+                <script>
+                  document.write(`"${randomQuote.quote}"`);
+                </script>
+              </h3>
+              <h5 class="quotee">
+                <script>
+                  document.write(`— ${randomQuote.quotee}`);
+                </script>
+              </h5>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
     <!-- High z-index to beat the TinyMCE toolbar which has 1300-->

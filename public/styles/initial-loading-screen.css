@@ -1,0 +1,148 @@
+:root {
+  --sidebar-bg-color: #101828;
+  --sidebar-border-color: #1d2939;
+  --topbar-bg-color: #f2f4f7;
+  --skeleton-bg-color: #344054;
+}
+
+.initial-loading-screen {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  height: 100vh;
+
+  .global-sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--sidebar-bg-color);
+    border-right: 1px solid var(--sidebar-border-color);
+    justify-content: space-between;
+
+    section {
+      .nav-header {
+        height: 96px;
+        padding: 6px 0;
+
+        > div:first-child {
+          height: 36px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 12px 0 16px;
+
+          .skeleton {
+            width: 16px;
+            height: 16px;
+          }
+
+          img {
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        > div:nth-child(2) {
+          height: 48px;
+          display: flex;
+          align-items: center;
+
+          .skeleton.circle {
+            width: 32px;
+            height: 32px;
+            margin-left: 8px;
+          }
+
+          > .skeleton:nth-child(2) {
+            width: 112px;
+            height: 12px;
+            margin-left: 8px;
+            margin-right: 16px;
+          }
+
+          > .skeleton:last-child {
+            width: 12px;
+            height: 12px;
+          }
+        }
+      }
+
+      .nav-items {
+      }
+    }
+  }
+
+  .subapp {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    grid-template-rows: 40px 1fr;
+    grid-template-areas:
+      "topbar topbar"
+      "sidebar quote";
+
+    .subapp-sidebar {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--sidebar-bg-color);
+      grid-area: sidebar;
+    }
+
+    .global-topbar {
+      grid-area: topbar;
+      background-color: var(--topbar-bg-color);
+    }
+
+    .quote {
+      grid-area: quote;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      height: 100%;
+      justify-content: center;
+
+      div {
+        max-width: 640px;
+
+        .text {
+          margin-bottom: 12px;
+          font-weight: 400;
+          font-size: 28px;
+          line-height: 36px;
+          letter-spacing: -2%;
+          text-align: center;
+        }
+
+        .quotee {
+          font-weight: 600;
+          font-size: 20px;
+          line-height: 28px;
+          letter-spacing: -2%;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+.skeleton {
+  background-color: var(--skeleton-bg-color);
+  border-radius: 4px;
+  animation: 2s ease-in-out 0.5s infinite normal none running pulsate;
+  width: 100%;
+  height: 100%;
+
+  &.circle {
+    border-radius: 50%;
+  }
+}
+
+@keyframes pulsate {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
