@@ -9,6 +9,11 @@
   display: grid;
   grid-template-columns: 200px 1fr;
   height: 100vh;
+  box-sizing: border-box;
+
+  & * {
+    box-sizing: border-box;
+  }
 
   .global-sidebar {
     display: flex;
@@ -51,7 +56,7 @@
             margin-left: 8px;
           }
 
-          > .skeleton:nth-child(2) {
+          > .skeleton.text {
             width: 112px;
             height: 12px;
             margin-left: 8px;
@@ -66,6 +71,24 @@
       }
 
       .nav-items {
+        li {
+          height: 36px;
+          display: flex;
+          align-items: center;
+          padding-left: 12px;
+          padding-right: 24px;
+
+          .skeleton.circle {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+          }
+
+          .skeleton:last-child {
+            width: 132px;
+            height: 12px;
+          }
+        }
       }
     }
   }
@@ -132,6 +155,10 @@
 
   &.circle {
     border-radius: 50%;
+  }
+
+  .text {
+    border-radius: 8px;
   }
 }
 
