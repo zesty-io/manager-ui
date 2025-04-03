@@ -1,9 +1,8 @@
-import StorageIcon from "@mui/icons-material/Storage";
 import Link from "@mui/material/Link";
 import { List, Typography, Divider } from "@mui/material";
 import { FileCardListItem, FileCard } from "./FileCard";
-import { NavCodeTypes } from "../SideBar/constants";
 import { Database } from "@zesty-io/material";
+import { NavCodeTypes } from "../constants";
 
 interface Field {
   ZUID: string;

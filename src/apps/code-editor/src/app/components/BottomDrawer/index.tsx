@@ -14,7 +14,7 @@ import { fetchFields } from "../../../../../../shell/store/fields";
 import { fetchAuditTrail } from "../../../store/auditTrail";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { fetchItems } from "../../../../../../shell/store/content";
-import { NavCodeTypes } from "../SideBar/constants";
+import { NavCodeTypes } from "../constants";
 
 interface Field {
   ZUID: string;

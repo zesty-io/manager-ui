@@ -1,11 +1,15 @@
 import { memo, useState, useEffect, useRef, useCallback } from "react";
 import { Stack, Typography, Box, Divider } from "@mui/material";
-import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
-import CreateFile from "./CreateFile";
-import { FileNodeProps } from "./constants";
+import {
+  AppSideBar,
+  SubMenu,
+} from "../../../../../../shell/components/AppSidebar";
+
 import FileNav from "./FileNav";
 import { ResizableContainer } from "../../../../../../shell/components/ResizeableContainer";
 import OrderFiles from "./OrderFiles";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+import { FileNodeProps } from "../constants";
 
 interface NavCode {
   raw?: FileNodeProps[];
@@ -19,7 +23,16 @@ type NavType = "view" | "script" | "stylesheet" | "file";
 interface SideBarProps {
   navCode: NavCode;
   dispatch: (action: any) => void;
+  openCreateFileDialog?: (type: string, nav: NavType) => void;
 }
+
+const SUB_MENUS: SubMenu[] = [
+  {
+    name: "All Files",
+    icon: FileCopyIcon,
+    path: "/code",
+  },
+];
 
 const filterTreeData = (
   treeData: FileNodeProps[],
@@ -47,6 +60,7 @@ const filterTreeData = (
 export const SideBar = memo(function SideBar({
   navCode,
   dispatch,
+  openCreateFileDialog,
 }: SideBarProps) {
   const sideBarChildrenContainerRef = useRef(null);
 
@@ -56,21 +70,10 @@ export const SideBar = memo(function SideBar({
 
   const [keyword, setKeyword] = useState("");
   const [fileType, setFileType] = useState("");
-  const [navType, setNavType] = useState<NavType | null>(null);
-  const [isCreateFileOpen, setIsCreateFileOpen] = useState(false);
   const [isOrderFilesOpen, setIsOrderFilesOpen] = useState(false);
 
-  const openCreateFileDialog = useCallback(
-    (type?: string, nav?: NavType) => {
-      setFileType(type);
-      setNavType(nav);
-      setIsCreateFileOpen(true);
-    },
-    [dispatch]
-  );
-
   const openOrderFilesDialog = useCallback(
-    (fileType?: string, nav?: NavType) => {
+    (fileType?: string) => {
       setFileType(fileType);
       setIsOrderFilesOpen(true);
     },
@@ -99,7 +102,8 @@ export const SideBar = memo(function SideBar({
           data-cy="codeNav"
           mode="dark"
           headerTitle="Code"
-          searchPlaceholder="Filter Models"
+          searchPlaceholder="Filter Files"
+          subMenus={SUB_MENUS}
           ref={sideBarChildrenContainerRef}
           onAddClick={() => openCreateFileDialog("snippet", "file")}
           onFilterChange={(keyword) => setKeyword(keyword)}
@@ -129,7 +133,7 @@ export const SideBar = memo(function SideBar({
                 overflowX: "hidden",
                 overflowY: "auto",
                 width: "100%",
-                height: "calc(100vh - 36px - 113px)",
+                height: "calc(100vh - 36px - 113px - 36px)",
                 position: "relative",
               }}
             >
@@ -140,7 +144,7 @@ export const SideBar = memo(function SideBar({
                 toolTip="Views are template files that can render HTML or various other MIME types."
                 tree={htmlFiles}
                 createFile={() => openCreateFileDialog("snippet", "view")}
-                orderFiles={() => openOrderFilesDialog("snippet", "view")}
+                orderFiles={() => openOrderFilesDialog("snippet")}
               />
 
               <Divider sx={{ my: 1, border: "none" }} />
@@ -153,9 +157,7 @@ export const SideBar = memo(function SideBar({
                 createFile={() =>
                   openCreateFileDialog("text/css", "stylesheet")
                 }
-                orderFiles={() =>
-                  openOrderFilesDialog("text/css", "stylesheet")
-                }
+                orderFiles={() => openOrderFilesDialog("text/css")}
               />
 
               <Divider sx={{ my: 1, border: "none" }} />
@@ -168,24 +170,13 @@ export const SideBar = memo(function SideBar({
                 createFile={() =>
                   openCreateFileDialog("text/javascript", "script")
                 }
-                orderFiles={() =>
-                  openOrderFilesDialog("text/javascript", "script")
-                }
+                orderFiles={() => openOrderFilesDialog("text/javascript")}
               />
             </Box>
           )}
         </AppSideBar>
       </ResizableContainer>
-      <CreateFile
-        open={isCreateFileOpen}
-        onClose={() => {
-          setFileType(null);
-          setNavType(null);
-          setIsCreateFileOpen(false);
-        }}
-        defaultType={fileType}
-        title={`Create ${navType}`}
-      />
+
       <OrderFiles
         type={fileType}
         isOpen={isOrderFilesOpen}

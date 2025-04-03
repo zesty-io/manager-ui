@@ -15,9 +15,10 @@ import {
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { createFile, fetchFiles } from "../../../store/files";
-import { notify } from "../../../../../../shell/store/notifications";
+
 import { fileTypeOptions, scripts, stylesheets } from "./constants";
+import { notify } from "../../../../../shell/store/notifications";
+import { createFile, fetchFiles } from "../../store/files";
 
 export type CreateFileProps = {
   open: boolean;

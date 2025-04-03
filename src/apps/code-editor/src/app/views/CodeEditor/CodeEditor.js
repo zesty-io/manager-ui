@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { connect } from "react-redux";
 import { Switch, useRouteMatch } from "react-router-dom";
 import { Grid, Typography, Box } from "@mui/material";
@@ -11,6 +11,8 @@ import { fetchFiles } from "../../../store/files";
 import SideBar from "../../components/SideBar";
 import { Route } from "react-router";
 import { GettingStarted } from "../../components/Workspace/components/GettingStarted";
+import { RecentFiles } from "../../components/RecentFiles";
+import CreateFile from "../../components/CreateFile";
 
 export default connect((state) => {
   return {
@@ -20,6 +22,16 @@ export default connect((state) => {
   };
 })(function CodeEditor(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
+
+  const [fileType, setFileType] = useState("");
+  const [navType, setNavType] = useState(null);
+  const [isCreateFileOpen, setIsCreateFileOpen] = useState(false);
+
+  const openCreateFileDialog = (type, nav) => {
+    setFileType(type);
+    setNavType(nav);
+    setIsCreateFileOpen(true);
+  };
 
   // On initial render load files: Templates, Stylesheets, Scripts
   useEffect(() => {
@@ -73,7 +85,7 @@ export default connect((state) => {
             bgcolor: "grey.900",
           }}
         >
-          <SideBar {...props} />
+          <SideBar {...props} openCreateFileDialog={openCreateFileDialog} />
         </Grid>
         <Grid
           item
@@ -88,7 +100,8 @@ export default connect((state) => {
         >
           <Switch>
             <Route exact path="/code">
-              <GettingStarted files={props.files} />
+              {/* <GettingStarted files={props.files} /> */}
+              <RecentFiles openCreateFileDialog={openCreateFileDialog} />
             </Route>
             <Route
               path="/code/file/:fileType/:fileZUID"
@@ -103,7 +116,7 @@ export default connect((state) => {
                 );
               }}
             />
-            <Route path="/f/*">
+            <Route path="*">
               <Box
                 width="100%"
                 height="100%"
@@ -116,6 +129,16 @@ export default connect((state) => {
           </Switch>
         </Grid>
       </Grid>
+      <CreateFile
+        open={isCreateFileOpen}
+        onClose={() => {
+          setFileType(null);
+          setNavType(null);
+          setIsCreateFileOpen(false);
+        }}
+        defaultType={fileType}
+        title={`Create ${navType}`}
+      />
     </WithLoader>
   );
 });
