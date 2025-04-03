@@ -176,7 +176,6 @@ export const SideBar = memo(function SideBar({
           )}
         </AppSideBar>
       </ResizableContainer>
-
       <OrderFiles
         type={fileType}
         isOpen={isOrderFilesOpen}
