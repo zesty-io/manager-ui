@@ -27,19 +27,25 @@ import MarketplaceApp from "../../../apps/marketplace/src";
 import { BlocksApp } from "../../../apps/blocks";
 import { AppState } from "../../store/types";
 import { LoadingQuote } from "../../components/LoadingQuote";
+import { Products } from "../../services/types";
 
 import styles from "./Shell.less";
 
 export default memo(function Shell() {
   const dispatch = useDispatch();
   const openNav = useSelector((state: AppState) => state.ui.openNav);
-  const products: string[] = useSelector((state: AppState) => state.products);
+  const {
+    products,
+    isLoadingProducts,
+  }: { products: Products[]; isLoadingProducts: boolean } = useSelector(
+    (state: AppState) => state.products
+  );
   const instance = useSelector((state: AppState) => state.instance);
   const user = useSelector((state: AppState) => state.user);
   const languages = useSelector((state: AppState) => state.languages);
   const files = useSelector((state: AppState) => state.files);
   const isAppLoaded =
-    !!products?.length &&
+    !isLoadingProducts &&
     !!instance?.ID &&
     !!instance?.domains &&
     !!user?.ID &&
