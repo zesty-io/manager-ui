@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 import zestyLogoPulse from "../../../../public/images/zestyLogoOnlyPulsate.svg";
+import { useMemo } from "react";
 
 const QUOTES = [
   {
@@ -74,9 +75,13 @@ const QUOTES = [
     quotee: "Gary Vaynerchuk",
   },
 ] as const;
-const randomQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
 
 export const LoadingQuote = () => {
+  const randomQuote = useMemo(
+    () => QUOTES[Math.floor(Math.random() * QUOTES.length)],
+    []
+  );
+
   return (
     <Stack
       alignItems="center"
@@ -96,10 +101,16 @@ export const LoadingQuote = () => {
           mb: 4,
         }}
       />
-      <Typography variant="h3" sx={{ mb: 1.5, maxWidth: 640 }}>
+      <Typography
+        variant="h3"
+        sx={{ mb: 1.5, maxWidth: 640 }}
+        color="text.primary"
+      >
         "{randomQuote.quote}"
       </Typography>
-      <Typography variant="h5">— {randomQuote.quotee}</Typography>
+      <Typography variant="h5" color="text.primary">
+        — {randomQuote.quotee}
+      </Typography>
     </Stack>
   );
 };

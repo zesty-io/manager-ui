@@ -161,10 +161,15 @@ try {
       });
 
       store.dispatch(actions.loadedUI(ui));
+
+      // Render App after all store dispatches are complete
+      render();
+    })
+    .catch((err) => {
+      throw err;
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);
-} finally {
-  // Render App once all Cache has been loaded or failed
+  // Render App if there was an error with IndexedDB access
   render();
 }

@@ -1,12 +1,7 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect } from "react";
 import { connect } from "react-redux";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
-
-import Link from "@mui/material/Link";
-
-import { fetchInstance, fetchDomains } from "shell/store/instance";
+import { fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
 import { fetchUsers } from "shell/store/users";
@@ -18,10 +13,7 @@ import { fetchItemPublishings } from "shell/store/content";
 import { fetchFiles } from "../../../apps/code-editor/src/store/files";
 import { fetchSettings } from "shell/store/settings";
 
-import styles from "./LoadInstance.less";
-import { Box } from "@mui/material";
 import { useGetCurrentUserRolesQuery } from "../../services/accounts";
-import { LoadingQuote } from "../LoadingQuote";
 
 export default connect((state) => {
   return {
@@ -35,22 +27,12 @@ export default connect((state) => {
   };
 })(
   memo(function LoadInstance(props) {
-    const [error, setError] = useState("");
     const { refetch: refetchCurrentUserRoles } = useGetCurrentUserRolesQuery();
 
     useEffect(() => {
       if (!props.auth.valid) {
         return;
       }
-
-      props.dispatch(fetchInstance()).then((res) => {
-        if (res.status !== 200) {
-          setError("You do not have permission to access this instance");
-        } else {
-          document.title = `Manager - ${res.data?.name} - Zesty`;
-          CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data?.randomHashID}${CONFIG.URL_PREVIEW}`;
-        }
-      });
 
       Promise.all([
         props.dispatch(fetchUser(props.user.ZUID)),
@@ -113,40 +95,6 @@ export default connect((state) => {
       //Check if pendo is running correctly open browser console and run pendo.validateInstall()
     }, [props.user, props.instance, props.role]);
 
-    return (
-      <>
-        {error ? (
-          <div className={styles.ErrorMessage}>
-            <h1>{error}</h1>
-            <Link
-              underline="none"
-              color="secondary"
-              title="Zesty Account"
-              href={`${CONFIG.URL_ACCOUNTS}/instances`}
-              sx={{ p: 2 }}
-            >
-              <FontAwesomeIcon icon={faUser} />
-              &nbsp; Go to Accounts
-            </Link>
-          </div>
-        ) : (
-          // TODO: Move the loading into the Shell component
-          <>
-            {props.products &&
-            props.instance.ID &&
-            props.instance.domains &&
-            props.user.ID &&
-            props.languages.length &&
-            props.files.length ? (
-              props.children
-            ) : (
-              <Box width="100vw" height="100vh">
-                <LoadingQuote />
-              </Box>
-            )}
-          </>
-        )}
-      </>
-    );
+    return props.children;
   })
 );
