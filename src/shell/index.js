@@ -87,6 +87,10 @@ const appTheme = createTheme(theme, {
       styleOverrides: (theme) => ({
         body: {
           boxSizing: "border-box",
+          "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
+            width: "8px",
+            height: "8px",
+          },
           "&::-webkit-scrollbar-track-piece, & *::-webkit-scrollbar-track-piece":
             {
               backgroundColor: theme.palette.grey[100],

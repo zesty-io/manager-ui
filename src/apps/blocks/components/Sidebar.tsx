@@ -73,6 +73,7 @@ export const Sidebar = () => {
       </AppSideBar>
       {isCreateModelDialogueOpen && (
         <CreateModelDialogue
+          typeIsSet={true}
           modelType="block"
           onClose={() => setIsCreateModelDialogueOpen(false)}
         />

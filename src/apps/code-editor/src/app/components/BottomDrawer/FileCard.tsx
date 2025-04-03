@@ -78,7 +78,6 @@ const FileCard: React.FC<FileCardProps> = ({
           color="grey.300"
           sx={{
             pl: "35px",
-            wordBreak: "break-word",
             boxSizing: "border-box",
           }}
         >
@@ -129,7 +128,6 @@ const FileCardListItem: React.FC<FileCardListItemProps> = ({
         alignItems: "baseline",
         overflow: "hidden",
         maxWidth: "100%",
-        wordBreak: "break-word",
       }}
     >
       <ListItemIcon sx={{ minWidth: "16px", color: "grey.400" }}>
@@ -140,7 +138,6 @@ const FileCardListItem: React.FC<FileCardListItemProps> = ({
         sx={(theme) => ({
           ...theme.typography.body2,
           color: "grey.400",
-          wordBreak: "break-word",
           my: gap,
         })}
       />

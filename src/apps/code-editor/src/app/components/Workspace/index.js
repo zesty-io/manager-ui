@@ -24,7 +24,6 @@ import moment from "moment-timezone";
 const BOTTOM_DRAWER_HEIGHT = "48px";
 
 const Workspace = connect((state, props) => {
-  console.debug("state, props: ", { state, props, audit: state?.auditTrail });
   const file = state.files.find(
     (file) => file.ZUID === props?.match.params.fileZUID
   );

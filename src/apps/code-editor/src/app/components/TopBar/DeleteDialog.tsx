@@ -59,7 +59,7 @@ export const DeleteDialog = memo(function DeleteDialog(
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            mb: 2,
+            mb: 1.5,
           }}
         >
           <DeleteRounded color="error" />

@@ -72,9 +72,12 @@ export const ConfirmationModal = ({
             borderRadius: "20px",
             backgroundColor: hasFailedInvites ? "red.100" : "green.100",
             display: "block",
+            width: "40px",
+            height: "40px",
+            mb: 1.5,
           }}
         />
-        <Typography variant="h5" fontWeight={700} sx={{ mt: 1.5 }}>
+        <Typography variant="h5" fontWeight={700}>
           {generateHeaderText()}
         </Typography>
 
