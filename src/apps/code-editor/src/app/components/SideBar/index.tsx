@@ -14,6 +14,8 @@ interface NavCode {
   scriptsTree?: FileNodeProps[];
 }
 
+type NavType = "view" | "script" | "stylesheet" | "file";
+
 interface SideBarProps {
   navCode: NavCode;
   dispatch: (action: any) => void;
@@ -54,19 +56,21 @@ export const SideBar = memo(function SideBar({
 
   const [keyword, setKeyword] = useState("");
   const [fileType, setFileType] = useState("");
+  const [navType, setNavType] = useState<NavType | null>(null);
   const [isCreateFileOpen, setIsCreateFileOpen] = useState(false);
   const [isOrderFilesOpen, setIsOrderFilesOpen] = useState(false);
 
   const openCreateFileDialog = useCallback(
-    (fileType?: string) => {
-      setFileType(fileType);
+    (type?: string, nav?: NavType) => {
+      setFileType(type);
+      setNavType(nav);
       setIsCreateFileOpen(true);
     },
     [dispatch]
   );
 
   const openOrderFilesDialog = useCallback(
-    (fileType?: string) => {
+    (fileType?: string, nav?: NavType) => {
       setFileType(fileType);
       setIsOrderFilesOpen(true);
     },
@@ -97,7 +101,7 @@ export const SideBar = memo(function SideBar({
           headerTitle="Code"
           searchPlaceholder="Filter Models"
           ref={sideBarChildrenContainerRef}
-          onAddClick={() => setIsCreateFileOpen(true)}
+          onAddClick={() => openCreateFileDialog("snippet", "file")}
           onFilterChange={(keyword) => setKeyword(keyword)}
           titleButtonTooltip="Create File"
           hideSubMenuOnSearch={false}
@@ -125,18 +129,18 @@ export const SideBar = memo(function SideBar({
                 overflowX: "hidden",
                 overflowY: "auto",
                 width: "100%",
-                height: "calc(100vh - 36px - 110px)",
+                height: "calc(100vh - 36px - 113px)",
                 position: "relative",
               }}
             >
               <FileNav
                 id="html"
                 group="views"
-                header="HTML"
-                toolTip="HTML"
+                header="VIEWS"
+                toolTip="Views are template files that can render HTML or various other MIME types."
                 tree={htmlFiles}
-                createFile={() => openCreateFileDialog("snippet")}
-                orderFiles={() => openOrderFilesDialog("snippet")}
+                createFile={() => openCreateFileDialog("snippet", "view")}
+                orderFiles={() => openOrderFilesDialog("snippet", "view")}
               />
 
               <Divider sx={{ my: 1, border: "none" }} />
@@ -146,8 +150,12 @@ export const SideBar = memo(function SideBar({
                 header="SITE.CSS"
                 toolTip="Site.css is a dynamically created file from the instance stylesheet files"
                 tree={cssFiles}
-                createFile={() => openCreateFileDialog("text/css")}
-                orderFiles={() => openOrderFilesDialog("text/css")}
+                createFile={() =>
+                  openCreateFileDialog("text/css", "stylesheet")
+                }
+                orderFiles={() =>
+                  openOrderFilesDialog("text/css", "stylesheet")
+                }
               />
 
               <Divider sx={{ my: 1, border: "none" }} />
@@ -157,8 +165,12 @@ export const SideBar = memo(function SideBar({
                 header="SITE.JS"
                 toolTip="Site.js is a dynamically created file from the instance JavaScript files"
                 tree={jsFiles}
-                createFile={() => openCreateFileDialog("text/javascript")}
-                orderFiles={() => openOrderFilesDialog("text/javascript")}
+                createFile={() =>
+                  openCreateFileDialog("text/javascript", "script")
+                }
+                orderFiles={() =>
+                  openOrderFilesDialog("text/javascript", "script")
+                }
               />
             </Box>
           )}
@@ -167,16 +179,18 @@ export const SideBar = memo(function SideBar({
       <CreateFile
         open={isCreateFileOpen}
         onClose={() => {
-          setFileType("");
+          setFileType(null);
+          setNavType(null);
           setIsCreateFileOpen(false);
         }}
         defaultType={fileType}
+        title={`Create ${navType}`}
       />
       <OrderFiles
         type={fileType}
         isOpen={isOrderFilesOpen}
         onClose={() => {
-          setFileType("");
+          setFileType(null);
           setIsOrderFilesOpen(false);
         }}
       />

@@ -86,6 +86,7 @@ export function files(state = [], action) {
       // Check if other branchs are ahead of "live" and mark them as can be published
       combinedFiles.forEach((f) => {
         let liveFile = liveFiles[f.ZUID];
+        f.fileType = resolvePathPart(f.type);
         if (liveFile && liveFile.version) {
           f.publishedVersion = liveFile.version;
 

@@ -3,8 +3,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import { FileCard, FileCardListItem } from "./FileCard";
 import { NavLink } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import { NavCodeTypes } from "../SideBar/constants";
+import LaunchIcon from "@mui/icons-material/Launch";
 
 interface Meta {
   ZUID: string;
@@ -45,61 +45,67 @@ export default function LinkedContent({ file, items }: LinkedContentProps) {
           <List>
             {items.map((item) => (
               <FileCardListItem key={item.meta.ZUID}>
-                <NavLink
-                  to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
-                  title="Edit item content"
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    position: "relative",
-                    marginBottom: "5px",
-                    color: "info.main",
-                  }}
-                >
-                  <OpenInNewRoundedIcon
-                    fontSize="small"
-                    sx={{ position: "absolute", color: "info.main" }}
-                  />
-                  <Typography
-                    variant="body2"
-                    pl={3}
-                    color="info"
-                    sx={{ color: "info.main" }}
-                  >
-                    {item.web.metaTitle}
-                  </Typography>
-                </NavLink>
+                {!!item?.meta?.contentModelZUID &&
+                  !!item?.meta?.ZUID &&
+                  !!item.web.metaTitle && (
+                    <NavLink
+                      to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+                      title="Edit item content"
+                      style={{
+                        display: "flex",
+                        alignItems: "baseline",
+                        position: "relative",
+                        marginBottom: "5px",
+                        color: "info.main",
+                      }}
+                    >
+                      <LaunchIcon
+                        fontSize="small"
+                        sx={{ position: "absolute", color: "info.main" }}
+                      />
+                      <Typography
+                        variant="body2"
+                        pl={3}
+                        color="info"
+                        sx={{ color: "info.main" }}
+                      >
+                        {item.web.metaTitle}
+                      </Typography>
+                    </NavLink>
+                  )}
 
-                <Link
-                  underline="none"
-                  sx={{
-                    alignItems: "baseline",
-                    display: "flex",
-                    position: "relative",
-                    color: "info.dark",
-                  }}
-                  // @ts-expect-error Config not typed
-                  href={`${CONFIG?.URL_PREVIEW_FULL}${item?.web?.path}`}
-                  target="_blank"
-                  title="Preview Item Webpage"
-                >
-                  <VisibilityIcon
+                {!!item?.web?.path && (
+                  <Link
+                    underline="none"
                     sx={{
-                      position: "absolute",
+                      alignItems: "baseline",
+                      display: "flex",
+                      position: "relative",
                       color: "info.dark",
-                      fontSize: "18px",
-                      top: "1px",
                     }}
-                  />
-                  <Typography
-                    variant="body2"
-                    fontStyle="italic"
-                    pl={3}
-                    sx={{ color: "grey.400" }}
+                    // @ts-expect-error Config not typed
+                    href={`${CONFIG?.URL_PREVIEW_FULL}${item?.web?.path}`}
+                    target="_blank"
+                    title="Preview Item Webpage"
                   >
-                    {item.web.path}
-                  </Typography>
-                </Link>
+                    <VisibilityIcon
+                      sx={{
+                        position: "absolute",
+                        color: "info.dark",
+                        fontSize: "18px",
+                        top: "1px",
+                      }}
+                    />
+                    <Typography
+                      variant="body2"
+                      fontStyle="italic"
+                      pl={3}
+                      sx={{ color: "grey.400" }}
+                    >
+                      {item.web.path}
+                    </Typography>
+                  </Link>
+                )}
               </FileCardListItem>
             ))}
           </List>

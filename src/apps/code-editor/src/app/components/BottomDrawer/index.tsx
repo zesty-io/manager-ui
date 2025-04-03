@@ -1,14 +1,7 @@
 import { memo, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import moment from "moment";
-import {
-  Stack,
-  Collapse,
-  Paper,
-  Typography,
-  Box,
-  IconButton,
-} from "@mui/material";
+import { Stack, Collapse, Paper, Typography, Box } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -121,15 +114,16 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
       square
       sx={{
         width: "100%",
-        bgcolor: "grey.900",
-        color: "grey.400",
+        bgcolor: "background.editor",
+        color: "grey.300",
         flexGrow: 0,
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-end",
         flexShrink: 1,
         boxSizing: "border-box",
-        boxShadow: "0px -12px 8px -14px rgba(0,0,0,1)",
+        borderTop: "1px solid",
+        borderColor: "grey.800",
         "& *": { boxSizing: "border-box" },
       }}
     >
@@ -142,21 +136,17 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
+        sx={{ cursor: "pointer" }}
+        onClick={handleSetOpen}
+        title="Open for additional file information"
       >
         <Stack direction="row" alignItems="center" spacing={1}>
-          <IconButton
-            size="small"
-            color="inherit"
-            title="Open for additional file information"
-            onClick={handleSetOpen}
-          >
-            {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-          </IconButton>
-          {!open && (
-            <Typography variant="body2">More file information</Typography>
-          )}
+          {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+          <Typography variant="body2" noWrap>
+            More file information
+          </Typography>
         </Stack>
-        <Typography variant="body2" color="inherit" pr={1}>
+        <Typography variant="body2" color="inherit" pr={1} noWrap>
           {open ? "Close" : "Open"} Drawer {metaShortcut}
         </Typography>
       </Box>
@@ -164,10 +154,10 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
         <Box
           width="100%"
           boxSizing="border-box"
-          bgcolor="grey.900"
-          color="grey.400"
+          bgcolor="background.editor"
+          color="grey.300"
           height="40vh"
-          sx={{ overflowY: "auto" }}
+          sx={{ overflowY: "auto", bgcolor: "background.editor" }}
         >
           <WithLoader
             condition={!loading}

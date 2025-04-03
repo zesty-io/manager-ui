@@ -18,13 +18,13 @@ import {
   Box,
   Alert,
   Button,
+  IconButton,
 } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
-import { faExpandArrowsAlt } from "@fortawesome/free-solid-svg-icons";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import { resolvePathPart } from "../../../store/files";
 import { fetchHeaders, saveSort } from "../../../store/headers";
 import { LoadingButton } from "@mui/lab";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface FileHeader {
   ZUID: string;
@@ -109,7 +109,7 @@ const Dropzone = (props: any) => {
 const Draggable = (props: any) => {
   const dragEl = useRef(null);
   return (
-    <div
+    <Box
       ref={dragEl}
       data-index={props.index}
       draggable={props.draggable}
@@ -133,7 +133,7 @@ const Draggable = (props: any) => {
       }}
     >
       {props.children}
-    </div>
+    </Box>
   );
 };
 
@@ -220,7 +220,6 @@ const OrderFiles = (props: OrderFilesProps) => {
     <Dialog
       open={props?.isOpen}
       onClose={() => props?.onClose()}
-      disablePortal
       sx={{
         "& *, & *::before, & *::after": {
           boxSizing: "border-box",
@@ -236,33 +235,51 @@ const OrderFiles = (props: OrderFilesProps) => {
         },
       }}
     >
-      <DialogTitle sx={{ px: 4, pt: 3 }}>
+      <DialogTitle
+        sx={{
+          padding: "20px",
+          textTransform: "capitalize",
+          borderBottom: "1px solid",
+          borderColor: "border",
+        }}
+      >
         Order {props.typePathPart}
+        <IconButton
+          onClick={handleClose}
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            m: 1,
+          }}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
       </DialogTitle>
       <DialogContent
         sx={{
-          px: 4,
-          py: 0,
+          px: "20px",
+          py: "20px",
           boxSizing: "border-box",
-          backgroundColor: "grey.100",
+          backgroundColor: "grey.50",
         }}
       >
         <Typography variant="body2" mt={2} mb={3}>
-          The displayed order is the order in which
+          The displayed order is the order in which&nbsp;
           <Link
             href="https://zesty.org/services/web-engine/css-processing-flow"
             target="_blank"
             title="Learn More About Processing Flows"
           >
-            files are processed and concatentated together
+            &nbsp;files are processed and concatentated together
           </Link>
-          into the dynamically created
+          &nbsp;into the dynamically created&nbsp;
           {props.typePathPart === "stylesheets" ? (
             <code>site.css</code>
           ) : (
             <code>site.js</code>
           )}
-          file.
+          &nbsp; file.
         </Typography>
         <Dropzone onDrop={handleReorder}>
           {files.map((file, index) => {
@@ -284,41 +301,36 @@ const OrderFiles = (props: OrderFilesProps) => {
                   <Typography variant="body2">{`${Number(
                     file.sort
                   )})`}</Typography>
-                  <FontAwesomeIcon
-                    size="sm"
-                    color="grey.500"
-                    icon={faExpandArrowsAlt}
+
+                  <ZoomOutMapIcon
+                    fontSize="small"
+                    sx={{ color: "text.secondary" }}
                   />
-                  <Typography variant="body2">{file.fileName}</Typography>
+                  <Typography variant="body2" color="text.primary">
+                    {file.fileName}
+                  </Typography>
                 </Box>
               </Draggable>
             );
           })}
         </Dropzone>
-        <Alert severity="warning" sx={{ my: 2 }}>
+        <Alert severity="warning" sx={{ mt: 2 }}>
           After ordering a publish has to occur to process the new order and
           make the change live.
         </Alert>
       </DialogContent>
-      <DialogActions sx={{ pt: 2, px: 4 }}>
-        <Button
-          variant="outlined"
-          color="inherit"
-          size="small"
-          onClick={handleClose}
-          startIcon={<DoDisturbAltIcon />}
-        >
-          Cancel (ESC)
+      <DialogActions
+        sx={{ p: "20px", borderTop: "1px solid", borderColor: "border" }}
+      >
+        <Button variant="outlined" color="inherit" onClick={handleClose}>
+          Cancel
         </Button>
         <LoadingButton
-          size="small"
           variant="contained"
           data-cy="saveOrder"
           color="primary"
           onClick={handleSaveSort}
-          loadingPosition="start"
           loading={loading}
-          startIcon={<SaveIcon />}
         >
           Save Order
         </LoadingButton>
