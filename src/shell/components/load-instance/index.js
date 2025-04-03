@@ -1,7 +1,10 @@
-import { memo, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { Box, Link, Typography } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
-import { fetchDomains } from "shell/store/instance";
+import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
 import { fetchUsers } from "shell/store/users";
@@ -27,6 +30,7 @@ export default connect((state) => {
   };
 })(
   memo(function LoadInstance(props) {
+    const [error, setError] = useState("");
     const { refetch: refetchCurrentUserRoles } = useGetCurrentUserRolesQuery();
 
     useEffect(() => {
@@ -34,26 +38,37 @@ export default connect((state) => {
         return;
       }
 
-      Promise.all([
-        props.dispatch(fetchUser(props.user.ZUID)),
-        props.dispatch(fetchUserRole()),
-      ]).then(() => {
-        props.dispatch(fetchProducts());
-      });
+      props.dispatch(fetchInstance()).then((res) => {
+        if (res.status !== 200) {
+          setError("You do not have permission to access this instance");
+        } else {
+          document.title = `Manager - ${res.data?.name} - Zesty`;
+          CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data?.randomHashID}${CONFIG.URL_PREVIEW}`;
 
-      refetchCurrentUserRoles();
-      props.dispatch(fetchDomains());
-      props.dispatch(fetchUsers());
-      props.dispatch(detectPlatform());
-      props.dispatch(fetchInstances());
-      props.dispatch(fetchLangauges());
-      props.dispatch(fetchSettings());
-      // Used in Publish Plan and Content sections
-      props.dispatch(fetchItemPublishings());
-      // Used in Code Editor, useFilePath Hook
-      props.dispatch(fetchFiles("views"));
-      props.dispatch(fetchFiles("stylesheets"));
-      props.dispatch(fetchFiles("scripts"));
+          // All other API calls should only be made if user has access to this instance
+          // this prevents a slew of unnecessary 403 errors
+          Promise.all([
+            props.dispatch(fetchUser(props.user.ZUID)),
+            props.dispatch(fetchUserRole()),
+          ]).then(() => {
+            props.dispatch(fetchProducts());
+          });
+
+          refetchCurrentUserRoles();
+          props.dispatch(fetchDomains());
+          props.dispatch(fetchUsers());
+          props.dispatch(detectPlatform());
+          props.dispatch(fetchInstances());
+          props.dispatch(fetchLangauges());
+          props.dispatch(fetchSettings());
+          // Used in Publish Plan and Content sections
+          props.dispatch(fetchItemPublishings());
+          // Used in Code Editor, useFilePath Hook
+          props.dispatch(fetchFiles("views"));
+          props.dispatch(fetchFiles("stylesheets"));
+          props.dispatch(fetchFiles("scripts"));
+        }
+      });
     }, [props.auth.valid]);
 
     useEffect(() => {
@@ -94,6 +109,32 @@ export default connect((state) => {
       }
       //Check if pendo is running correctly open browser console and run pendo.validateInstall()
     }, [props.user, props.instance, props.role]);
+
+    if (error) {
+      return (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            flexDirection: "column",
+          }}
+        >
+          <Typography variant="h1">{error}</Typography>
+          <Link
+            underline="none"
+            color="secondary"
+            title="Zesty Account"
+            href={`${CONFIG.URL_ACCOUNTS}/instances`}
+            sx={{ p: 2 }}
+          >
+            <FontAwesomeIcon icon={faUser} />
+            &nbsp; Go to Accounts
+          </Link>
+        </Box>
+      );
+    }
 
     return props.children;
   })
