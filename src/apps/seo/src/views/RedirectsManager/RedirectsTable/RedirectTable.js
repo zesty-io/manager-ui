@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
 import { Box, Tooltip, Typography } from "@mui/material";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
@@ -12,8 +12,9 @@ import { removeRedirect } from "../../../store/redirects";
 
 import { RedirectCreator } from "./RedirectCreator";
 import { RedirectTargetCell } from "./RedirectTargetCell";
+import { DeleteDialog } from "./DeleteDialog";
 
-const CellWrapper = ({ color = "", children, type = "text" }) => {
+export const CellWrapper = ({ color = "", children, type = "text" }) => {
   return (
     <Box
       sx={{
@@ -48,8 +49,31 @@ const CellWrapper = ({ color = "", children, type = "text" }) => {
 };
 
 export default function RedirectTable(props) {
-  const handleRemoveRedirect = useCallback((zuid) => {
-    props.dispatch(removeRedirect(zuid));
+  const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
+  const [deleteRedirect, setDeleteRedirect] = useState(null);
+  const handleRemoveRedirect = useCallback((item) => {
+    // if (item?.targetType === "page") {
+    //   const targetPath = Object.values(props?.content).find(
+    //     (item) => item?.meta?.ZUID === item?.target
+    //   );
+    //   redirect.target = targetPath?.web?.path;
+    //   redirect.targetType = "internal";
+    // }
+
+    // console.debug("item: ", { item, redirects: props.redirects, redirect });
+
+    // const redirect = { ...item };
+
+    // if (redirect?.targetType === "page") {
+    //   redirect.targetType = "internal";
+    // }
+
+    // if (redirect?.targetType === "path") {
+    //   redirect.targetType = "wildcard";
+    // }
+
+    setDeleteRedirect(item);
+    setDeleteDialogIsOpen(true);
   }, []);
 
   const columns = useMemo(
@@ -183,7 +207,7 @@ export default function RedirectTable(props) {
             icon={<DeleteIcon />}
             color="action.secondary"
             label="Delete"
-            onClick={() => handleRemoveRedirect(row.ZUID)}
+            onClick={() => handleRemoveRedirect(row)}
           />,
         ],
       },
@@ -238,6 +262,15 @@ export default function RedirectTable(props) {
           fontSize: "typography.body2.fontSize",
         }}
         hideFooter
+      />
+      <DeleteDialog
+        open={deleteDialogIsOpen}
+        onClose={() => setDeleteDialogIsOpen(false)}
+        ZUID={deleteRedirect?.ZUID}
+        path={deleteRedirect?.path}
+        type={deleteRedirect?.targetType}
+        target={deleteRedirect?.target}
+        code={deleteRedirect?.code}
       />
     </Box>
   );
