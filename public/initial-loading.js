@@ -129,7 +129,7 @@ const appLocalStorageMap = {
 
 getFromIndexedDB(`${instanceZUID}:ui`)
   .then((uiState) => {
-    if (uiState?.openNav) {
+    if (!!uiState?.openNav || !uiState) {
       document
         .querySelector(".initial-loading-screen")
         ?.classList.remove("collapsed");
