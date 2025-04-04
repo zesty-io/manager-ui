@@ -19,6 +19,7 @@ export type AppState = {
   apps: {
     frames: any;
     installed: InstalledApp[];
+    isLoadingApps: boolean;
   };
   auth: {
     checking: boolean;
