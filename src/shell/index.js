@@ -61,11 +61,17 @@ const appTheme = createTheme(theme, {
     info: {
       contrastText: "#fff",
     },
+
     action: {
       active: "rgba(127, 127, 126, 0.7)",
-      selected: "rgba(127,127, 126, 0.13)",
-      disabled: "rgba(127,127, 126, 0.48)",
-      disabledBackground: "rgba(127,127, 126, 0.2)",
+      selected: "rgba(127,127, 126, 0.125)",
+      disabled: "rgba(127,127, 126, 0.47)",
+      disabledBackground: "rgba(127,127, 126, 0.28)",
+      hover: "rgba(127, 127, 126, 0.07)",
+      hoverOpacity: 0.1,
+    },
+    background: {
+      editor: "#0F0F0F",
     },
   },
 
@@ -74,6 +80,26 @@ const appTheme = createTheme(theme, {
       styleOverrides: (theme) => ({
         sizeSmall: {
           ...theme.typography.body2,
+        },
+      }),
+    },
+    MuiCssBaseline: {
+      styleOverrides: (theme) => ({
+        body: {
+          boxSizing: "border-box",
+          "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
+            width: "8px",
+            height: "8px",
+          },
+          "&::-webkit-scrollbar-track-piece, & *::-webkit-scrollbar-track-piece":
+            {
+              backgroundColor: theme.palette.grey[100],
+              borderRadius: "4px",
+            },
+          "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
+            backgroundColor: theme.palette.grey[300],
+            borderRadius: "4px",
+          },
         },
       }),
     },

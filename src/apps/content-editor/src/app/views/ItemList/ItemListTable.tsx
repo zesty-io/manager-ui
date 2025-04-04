@@ -361,10 +361,20 @@ export const ItemListTable = memo(
         rowHeight={54}
         hideFooter
         onRowClick={(row) => {
-          if (typeof row.id === "string" && row.id?.startsWith("new")) {
-            history.push(`/content/${modelZUID}/new`);
+          if (selectedItems.length) {
+            if (selectedItems.includes(row.id)) {
+              setSelectedItems(
+                selectedItems.filter((id: string) => id !== row.id)
+              );
+            } else {
+              setSelectedItems([...selectedItems, row.id]);
+            }
           } else {
-            history.push(`/content/${modelZUID}/${row.id}`);
+            if (typeof row.id === "string" && row.id?.startsWith("new")) {
+              history.push(`/content/${modelZUID}/new`);
+            } else {
+              history.push(`/content/${modelZUID}/${row.id}`);
+            }
           }
         }}
         components={{

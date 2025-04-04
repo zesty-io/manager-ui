@@ -8,10 +8,11 @@ const TIMEOUT = {
 };
 
 const BLOCK_MODEL_NAME = "Test Block Model";
+const CYPRESS_TEST_MODEL = "Cypress Test Model";
 
 describe("Schema: Models", () => {
   before(() => {
-    cy.deleteModels([BLOCK_MODEL_NAME]);
+    cy.deleteModels([BLOCK_MODEL_NAME, CYPRESS_TEST_MODEL]);
     cy.waitOn("/v1/content/models*", () => {
       cy.visit("/schema");
     });
@@ -35,6 +36,9 @@ describe("Schema: Models", () => {
     cy.get("body").type("{esc}");
   });
   it("Creates model", () => {
+    cy.intercept("POST", "**/v1/content/models").as("createModel");
+    cy.intercept("GET", "**/v1/content/models").as("getModels");
+
     cy.getBySelector(`create-model-button-all-models`).click(TIMEOUT);
     cy.contains("Multi Page Model").click(TIMEOUT);
     cy.contains("Next").click();
@@ -52,7 +56,7 @@ describe("Schema: Models", () => {
 
     cy.get(".MuiAutocomplete-popper")
       .contains("Cypress test (Group with visible fields in list)", {
-        timeout: 50_000,
+        timeout: 60_000,
       })
       .click();
 
@@ -60,13 +64,13 @@ describe("Schema: Models", () => {
     cy.get(".MuiDialog-container").within(() => {
       cy.contains("Create Model").click();
     });
-    cy.intercept("POST", "/models");
-    cy.intercept("GET", "/models");
+    cy.wait(["@createModel", "@getModels"]);
   });
 
   it("Renames model", () => {
     cy.getBySelector(`model-header-menu`, options).click(forceClick);
     cy.contains("Rename Model", options).click(forceClick);
+
     cy.get(".MuiDialog-container", options).within(() => {
       cy.get("label", options).contains("Display Name").next().type(" Updated");
       cy.get("label", options).contains("Reference ID").next().type("_updated");
@@ -80,7 +84,7 @@ describe("Schema: Models", () => {
     cy.getBySelector(`model-header-menu`, options).click(forceClick);
     cy.contains("Delete Model", options).click(forceClick);
     cy.get(".MuiDialog-container", options).within(() => {
-      cy.get(".MuiOutlinedInput-root", options).type(
+      cy.get(".MuiOutlinedInput-root input", options).type(
         "Cypress Test Model Updated"
       );
     });

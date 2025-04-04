@@ -114,6 +114,7 @@ export type StarterBlocksSelectionProps = {
   setActiveStep: (step: "selection" | "form") => void;
   selectBlockType: (blockType: StarterBlockProps) => void;
   selectBlank?: () => void;
+  blockType?: StarterBlockProps;
 };
 
 export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
@@ -121,18 +122,17 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
   setActiveStep,
   selectBlockType,
   selectBlank,
+  blockType,
 }) => {
   const searchRef = useRef<HTMLDivElement>();
   const [filteredBlockTypes, setFilteredBlockTypes] =
     useState<StarterBlockProps[]>(STARTER_BLOCKS);
-  const [activeBlock, setActiveBlock] = useState(null);
 
   const [search, setSearch] = useState("");
 
-  const handleBlockSelect = (blockType: any) => {
+  const handleBlockSelect = (block: StarterBlockProps) => {
     return () => {
-      selectBlockType(blockType);
-      setActiveBlock(blockType);
+      selectBlockType(block);
     };
   };
 
@@ -142,11 +142,11 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
   };
 
   const handleNext = useCallback(() => {
-    if (activeBlock?.name === "blank") return selectBlank();
-    if (!!activeBlock) {
+    if (blockType?.name === "blank") return selectBlank();
+    if (!!blockType) {
       setActiveStep("form");
     }
-  }, [activeBlock, setActiveStep]);
+  }, [blockType, setActiveStep]);
 
   useEffect(() => {
     if (!search) return setFilteredBlockTypes(STARTER_BLOCKS);
@@ -280,7 +280,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
                 >
                   <BlockItem
                     block={block}
-                    isActive={activeBlock?.name === block?.name}
+                    isActive={blockType?.name === block?.name}
                     onClick={handleBlockSelect(block)}
                   />
                 </Grid>
@@ -304,7 +304,13 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
         <Button
           variant="contained"
           onClick={handleNext}
-          disabled={!activeBlock}
+          disabled={
+            !blockType ||
+            !filteredBlockTypes?.length ||
+            !filteredBlockTypes?.filter(
+              (block) => block?.name === blockType?.name
+            )?.length
+          }
           data-cy="select-block-type-next-button"
         >
           Next

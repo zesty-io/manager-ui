@@ -167,6 +167,7 @@ export const ModelList = ({ title, models, type, app = "schema" }: Props) => {
 
       {showCreateModelDialogue && (
         <CreateModelDialogue
+          typeIsSet={true}
           modelType={type}
           onClose={() => setShowCreateModelDialogue(false)}
         />
