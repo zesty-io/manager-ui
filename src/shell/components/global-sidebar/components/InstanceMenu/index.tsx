@@ -67,14 +67,29 @@ export const InstanceMenu: FC<InstanceMenuProps> = ({ openNav }) => {
                 overflow="hidden"
               >
                 {isLoadingInstance ? (
-                  <Skeleton sx={{ bgcolor: "grey.500", width: 70 }} />
+                  <Stack direction="row" gap={1.75}>
+                    <Skeleton
+                      variant="rounded"
+                      width={112}
+                      height={12}
+                      sx={{ bgcolor: "grey.700" }}
+                    />
+                    <Skeleton
+                      variant="rounded"
+                      width={12}
+                      height={12}
+                      sx={{ bgcolor: "grey.700" }}
+                    />
+                  </Stack>
                 ) : (
                   instance?.name
                 )}
               </Typography>
             )}
           </Stack>
-          {openNav && <ArrowDropDownRoundedIcon color="inherit" />}
+          {openNav && !isLoadingInstance && (
+            <ArrowDropDownRoundedIcon color="inherit" />
+          )}
         </Stack>
       </ListItem>
       {Boolean(anchorEl) && (
