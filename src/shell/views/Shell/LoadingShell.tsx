@@ -1,12 +1,31 @@
 import { Box, Skeleton, Stack } from "@mui/material";
+import { useLocalStorage } from "react-use";
+
 import { LoadingQuote } from "../../components/LoadingQuote";
+import { Products } from "../../services/types";
+
+const appLocalStorageMap: Partial<Record<Products, string>> = {
+  settings: "settingsNav",
+  content: "contentNav",
+  media: "mediaNav",
+  apps: "appsNav",
+  reports: "reportsNav",
+  schema: "schemaNav",
+  blocks: "blocksNav",
+};
 
 export const LoadingShell = () => {
+  const id = window.location.pathname.split("/")?.[1];
+  const [width] = useLocalStorage(
+    `zesty:resizableContainer:${appLocalStorageMap[id as Products]}`,
+    220
+  );
+
   return (
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "220px 1fr",
+        gridTemplateColumns: `${width}px 1fr`,
         height: "inherit",
       }}
     >
