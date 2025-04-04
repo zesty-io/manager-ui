@@ -30,6 +30,7 @@ import { LoadingQuote } from "../../components/LoadingQuote";
 import { Products } from "../../services/types";
 
 import styles from "./Shell.less";
+import { LoadingShell } from "./LoadingShell";
 
 export default memo(function Shell() {
   const dispatch = useDispatch();
@@ -182,7 +183,7 @@ export default memo(function Shell() {
                 <Route path="*" component={Missing} />
               </Switch>
             ) : (
-              <LoadingQuote />
+              <LoadingShell />
             )}
           </Sentry.ErrorBoundary>
         </Box>
