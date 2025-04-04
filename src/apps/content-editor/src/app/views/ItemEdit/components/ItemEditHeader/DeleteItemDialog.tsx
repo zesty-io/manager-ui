@@ -47,14 +47,14 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            mb: 1.5,
           }}
         >
           <DeleteRounded color="error" />
         </Box>
-        <Stack mt={1.5} display="inline">
+        <Stack>
           Delete Content Item:
           <Typography variant="inherit" fontWeight={600}>
-            {" "}
             {item?.web?.metaTitle || item?.web?.metaLinkText}
           </Typography>
         </Stack>
