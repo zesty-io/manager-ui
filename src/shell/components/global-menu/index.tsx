@@ -77,7 +77,7 @@ export default memo(function GlobalMenu() {
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
-                pr: 3,
+                pr: openNav ? 3 : 1.5,
                 pl: 1.5,
               }}
             >
@@ -87,12 +87,14 @@ export default memo(function GlobalMenu() {
                 height={24}
                 sx={{ bgcolor: "grey.700" }}
               />
-              <Skeleton
-                variant="rounded"
-                width={132}
-                height={12}
-                sx={{ bgcolor: "grey.700" }}
-              />
+              {openNav && (
+                <Skeleton
+                  variant="rounded"
+                  width={132}
+                  height={12}
+                  sx={{ bgcolor: "grey.700" }}
+                />
+              )}
             </Box>
           ))}
       </Box>
