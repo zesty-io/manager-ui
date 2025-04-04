@@ -62,14 +62,14 @@ export const NavTreeItem: FC<Props> = React.memo(
                 display: "flex",
                 position: "absolute",
                 right: 0,
-                zIndex: -1,
+                zIndex: nodeData?.navSource == "code" ? 2 : -1,
               },
               "&:hover .treeActions": {
                 zIndex: 2,
               },
               // HACK: Makes sure that the label width is adjusted when the overlay buttons are rendered
               "& .treeSpacer": {
-                display: "none",
+                display: nodeData?.navSource == "code" ? "block" : "none",
               },
               "&:hover .treeSpacer": {
                 display: "block",

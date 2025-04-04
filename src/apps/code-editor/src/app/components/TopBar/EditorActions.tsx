@@ -1,25 +1,30 @@
-import { memo, useEffect, useState, ReactNode } from "react";
+import { memo, useEffect, useState } from "react";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
-import LoadingButton from "@mui/lab/LoadingButton";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
-import { Box, ButtonGroup, Button, Tooltip } from "@mui/material";
-import { CheckCircleRounded } from "@mui/icons-material";
+import { Box } from "@mui/material";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { fetchFiles, publishFile, saveFile } from "../../../store/files";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import { useDispatch } from "react-redux";
-import { ReactElement } from "react";
+import { ActionButton } from "./ActionButton";
+import { formatDate } from "../../../../../../utility/formatDate";
+import { fetchAuditTrail } from "../../../store/auditTrail";
 
 interface EditorActionsProps {
   fileZUID: string;
   fileType: string;
-  version: string;
+  version?: number;
   synced: boolean;
   status: string;
   isLive: boolean;
-  code: string;
+  code?: string;
   contentModelZUID?: string;
+  publishedVersion?: number;
+  isDirty: boolean;
+  updatedAt?: string;
+  updatedBy?: string;
+  publishedAt?: string;
+  publishedBy?: string;
 }
 
 export const EditorActions = memo(function EditorActions(
@@ -33,18 +38,18 @@ export const EditorActions = memo(function EditorActions(
   const [fileZUID, setFileZUID] = useState(null);
   const [initialCode, setInitialCode] = useState(props.code);
 
-  const isNotSaved = initialCode !== props.code;
+  const isNotSaved = initialCode !== props.code || !!props?.isDirty;
   const isUnpublished = !props?.isLive || isNotSaved;
-  const saveButtonVariant = isNotSaved ? "contained" : "text";
-  const publishButtonVariant =
-    isUnpublished || isNotSaved ? "contained" : "text";
   const saveShortcut = useMetaKey("s", () => onSave());
   const publishShortcut = useMetaKey("p", () => onPublish());
 
+  const fileLastUpdate =
+    formatDate(props?.updatedAt).includes("Today") ||
+    formatDate(props?.updatedAt).includes("Yesterday");
+
   const getUpdatedFiles = () => {
-    dispatch(fetchFiles("views"));
-    dispatch(fetchFiles("stylesheets"));
-    dispatch(fetchFiles("scripts"));
+    dispatch(fetchFiles(props?.fileType));
+    dispatch(fetchAuditTrail(props.fileZUID));
   };
 
   const onSave = async () => {
@@ -88,93 +93,50 @@ export const EditorActions = memo(function EditorActions(
       alignItems="center"
       sx={{ color: "grey.300" }}
       color="grey.300"
+      pl={isNotSaved ? 1 : 0}
     >
-      <Tooltip
-        enterDelay={500}
-        enterNextDelay={500}
-        title={saveButtonVariant === "text" ? "" : `Save File ${saveShortcut}`}
-        placement="bottom"
-      >
-        <div>
-          <LoadingButton
-            variant={saveButtonVariant}
-            startIcon={
-              isNotSaved ? (
-                <SaveRoundedIcon fontSize="small" />
-              ) : (
-                <CheckCircleRounded fontSize="small" />
-              )
-            }
-            color={isNotSaved ? "primary" : "inherit"}
-            size="small"
-            onClick={onSave}
-            loading={isNotSaved && (isSaving || isPublishing)}
-            sx={{
-              color: isNotSaved ? "primary.contrastText" : "grey.400",
-              pointerEvents: isNotSaved ? "auto" : "none",
-            }}
-            disabled={!canUpdate}
-          >
-            {isNotSaved ? "Save" : "Saved"}
-          </LoadingButton>
-        </div>
-      </Tooltip>
-      <Tooltip
-        enterDelay={500}
-        enterNextDelay={500}
-        title={
-          publishButtonVariant === "text"
-            ? ""
-            : `Publish File ${publishShortcut}`
+      <ActionButton
+        label={isNotSaved ? "Save" : "Saved"}
+        color="primary"
+        variant="contained"
+        size="small"
+        startIcon={<SaveRoundedIcon fontSize="small" />}
+        tooltip={
+          isNotSaved
+            ? `Save File ${saveShortcut}`
+            : `v${props?.version} saved ${!fileLastUpdate ? "" : "on"}
+              ${formatDate(props?.updatedAt)}
+              by ${props?.updatedBy || "Unknown"}
+           `
         }
-        placement="bottom"
-      >
-        <div>
-          <ButtonGroup
-            variant={publishButtonVariant}
-            color="success"
-            size="small"
-            disabled={isPublishing || !canPublish || !canUpdate}
-            sx={{
-              "& .MuiButtonGroup-grouped:not(:last-of-type)": {
-                ...(!isUnpublished && {
-                  border: "none!important",
-                  color: "success.main",
-                }),
-              },
-            }}
-          >
-            <LoadingButton
-              variant={publishButtonVariant}
-              startIcon={
-                isUnpublished ? (
-                  <CloudUploadRoundedIcon fontSize="small" />
-                ) : (
-                  <CheckCircleRounded fontSize="small" />
-                )
-              }
-              size="small"
-              onClick={onPublish}
-              loading={isPublishing}
-              sx={{ pl: 1 }}
-              disabled={!isUnpublished}
-            >
-              {!isUnpublished ? "Published" : "Publish"}
-            </LoadingButton>
+        isActive={isNotSaved}
+        isLoading={isNotSaved && (isSaving || isPublishing)}
+        onClick={onSave}
+        isDisabled={!canUpdate}
+      />
 
-            <Button
-              variant={publishButtonVariant}
-              color={isUnpublished ? "success" : "inherit"}
-              size="small"
-              sx={{
-                width: "32px",
-              }}
-            >
-              <ArrowDropDownRoundedIcon fontSize="small" />
-            </Button>
-          </ButtonGroup>
-        </div>
-      </Tooltip>
+      <ActionButton
+        label={
+          isUnpublished ? `${isNotSaved ? "Save & " : ""}Publish` : "Published"
+        }
+        color="success"
+        inActiveColor="success.main"
+        variant="contained"
+        size="small"
+        startIcon={<CloudUploadRoundedIcon fontSize="small" />}
+        tooltip={
+          isUnpublished
+            ? `Publish File ${publishShortcut}`
+            : `v${props?.version} published ${!props?.publishedAt ? "" : "on"}
+              ${formatDate(props?.publishedAt)}
+              by ${props?.publishedBy || "Unknown"}
+           `
+        }
+        isActive={isUnpublished}
+        isLoading={isUnpublished && isPublishing}
+        onClick={onPublish}
+        isDisabled={!canPublish}
+      />
     </Box>
   );
 });
