@@ -160,7 +160,7 @@ export function RedirectCreator(props) {
       </Box>
       <Box width="fit-content" flexGrow={0}>
         <Button
-          variant="outlined"
+          variant="contained"
           color="primary"
           size="small"
           onClick={handleCreateRedirect}

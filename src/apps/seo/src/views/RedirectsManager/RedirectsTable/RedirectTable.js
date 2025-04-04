@@ -7,9 +7,6 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-
-import { removeRedirect } from "../../../store/redirects";
-
 import { RedirectCreator } from "./RedirectCreator";
 import { RedirectTargetCell } from "./RedirectTargetCell";
 import { DeleteDialog } from "./DeleteDialog";
@@ -52,26 +49,6 @@ export default function RedirectTable(props) {
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
   const [deleteRedirect, setDeleteRedirect] = useState(null);
   const handleRemoveRedirect = useCallback((item) => {
-    // if (item?.targetType === "page") {
-    //   const targetPath = Object.values(props?.content).find(
-    //     (item) => item?.meta?.ZUID === item?.target
-    //   );
-    //   redirect.target = targetPath?.web?.path;
-    //   redirect.targetType = "internal";
-    // }
-
-    // console.debug("item: ", { item, redirects: props.redirects, redirect });
-
-    // const redirect = { ...item };
-
-    // if (redirect?.targetType === "page") {
-    //   redirect.targetType = "internal";
-    // }
-
-    // if (redirect?.targetType === "path") {
-    //   redirect.targetType = "wildcard";
-    // }
-
     setDeleteRedirect(item);
     setDeleteDialogIsOpen(true);
   }, []);
@@ -87,7 +64,7 @@ export default function RedirectTable(props) {
             <Typography variant="body2" fontWeight={600} color="text.primary">
               Incoming Path
             </Typography>
-            <Tooltip title="File Path Only" arrow placement="top-start">
+            <Tooltip title="File Path Only" placement="top-start">
               <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
             </Tooltip>
           </Box>
@@ -118,7 +95,6 @@ export default function RedirectTable(props) {
                   302: Temporarily Moved
                 </>
               }
-              arrow
               placement="top-start"
             >
               <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
@@ -152,7 +128,6 @@ export default function RedirectTable(props) {
                   Wildcard E.g. /blog/*/*/
                 </>
               }
-              arrow
               placement="top-start"
             >
               <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
@@ -260,6 +235,9 @@ export default function RedirectTable(props) {
           bgcolor: "background.paper",
           color: "text.primary",
           fontSize: "typography.body2.fontSize",
+          "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
+            outline: "none!important",
+          },
         }}
         hideFooter
       />
