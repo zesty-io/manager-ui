@@ -126,20 +126,25 @@ export const Field = ({
     // return;
     // firefox requires this event, it does nothing
     //event.dataTransfer.setData("text", "");
+    e.stopPropagation();
+    e.dataTransfer.setData("field", JSON.stringify(field));
     setIsDragging(true);
     setDraggedIndex(index);
   };
 
   const handleDrag = (e: React.DragEvent) => {
+    e.stopPropagation();
     e.preventDefault();
   };
 
-  const handleDragEnd = () => {
+  const handleDragEnd = (e: React.DragEvent) => {
+    e.stopPropagation();
     setIsDragging(false);
     onReorder();
   };
 
   const handleDragEnter = (e: React.DragEvent) => {
+    e.stopPropagation();
     setHoveredIndex(index);
   };
 

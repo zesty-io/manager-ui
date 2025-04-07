@@ -29,6 +29,7 @@ import { NoResults } from "./NoResults";
 import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
 import { SEO_FIELDS, SYSTEM_FIELDS, SystemField } from "./configs";
+import { FieldGroup } from "./FieldGroup";
 
 type Params = {
   id: string;
@@ -54,36 +55,54 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   const showSpinner = isFieldsLoading;
   const model = models?.find((model) => model.ZUID === id);
   const searchRef = useRef<HTMLDivElement>();
-  const [reorderQueue, setReorderQueue] = useState([]);
-  const [localFields, setLocalFields] = useState<ContentModelField[] | null>(
-    null
-  );
-  const [deactivatedFields, setDeactivatedFields] = useState<
-    ContentModelField[] | null
-  >(null);
+  // const [reorderQueue, setReorderQueue] = useState([]);
+  const [localSort, setLocalSort] = useState<any>(null);
   const [isSystemFieldsVisible, setIsSystemFieldsVisible] = useLocalStorage(
     "zesty:schemaSystemFields:open",
     "false"
   );
 
-  useEffect(() => {
-    if (fields?.length && !isEqual(localFields, fields)) {
-      setLocalFields([
-        ...fields.filter(
+  const activeFields = useMemo(
+    () =>
+      fields
+        ?.map((field, index) => ({
+          ...field,
+          group: index < 3 ? "groupA" : index < 6 ? "groupB" : "",
+        }))
+        ?.filter(
           (field) =>
             !field?.deletedAt &&
             !(model?.type === "block" && field.name === "og_image")
-        ),
+        ) ?? [],
+    [fields]
+  );
+
+  const deactivatedFields = useMemo(
+    () => fields?.filter((field) => field?.deletedAt),
+    [fields]
+  );
+
+  useEffect(() => {
+    if (activeFields?.length) {
+      setLocalSort([
+        {
+          groupName: "groupA",
+          fields: activeFields.filter((field) => field.group === "groupA"),
+        },
+        ...activeFields.filter((field) => field.group === ""),
+        {
+          groupName: "groupB",
+          fields: activeFields.filter((field) => field.group === "groupB"),
+        },
       ]);
-      setDeactivatedFields([...fields.filter((field) => field?.deletedAt)]);
     }
-  }, [fields]);
+  }, [activeFields]);
 
   const sortedFields = useMemo(() => {
     if (draggedIndex === null || hoveredIndex === null) {
-      return localFields;
+      return localSort;
     } else {
-      const newFields = [...localFields];
+      const newFields = [...localSort];
       const draggedField = newFields[draggedIndex];
       newFields.splice(draggedIndex, 1);
       newFields.splice(hoveredIndex, 0, draggedField);
@@ -94,13 +113,13 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
     isFieldsLoading,
     draggedIndex,
     hoveredIndex,
-    localFields,
+    localSort,
   ]);
 
   const filteredFields = useMemo(() => {
     if (search) {
       return sortedFields?.filter(
-        (field) =>
+        (field: any) =>
           field.label.toLowerCase().includes(search.toLowerCase()) ||
           field.name.toLowerCase().includes(search.toLowerCase())
       );
@@ -110,24 +129,24 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
   }, [search, sortedFields]);
 
   const handleReorder = () => {
-    const newLocalFields = [...localFields];
+    const newLocalFields = [...localSort];
     const draggedField = newLocalFields[draggedIndex];
     newLocalFields.splice(draggedIndex, 1);
     newLocalFields.splice(hoveredIndex, 0, draggedField);
 
     setDraggedIndex(null);
     setHoveredIndex(null);
-    setLocalFields(newLocalFields);
-    setReorderQueue([
-      ...reorderQueue,
-      {
-        modelZUID: id,
-        fields: filteredFields.map((field, index) => ({
-          ...field,
-          sort: index,
-        })),
-      },
-    ]);
+    setLocalSort(newLocalFields);
+    // setReorderQueue([
+    //   ...reorderQueue,
+    //   {
+    //     modelZUID: id,
+    //     fields: filteredFields.map((field, index) => ({
+    //       ...field,
+    //       sort: index,
+    //     })),
+    //   },
+    // ]);
   };
 
   const handleSearchAgain = () => {
@@ -136,13 +155,25 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
     searchRef.current.focus();
   };
 
-  useEffect(() => {
-    if (reorderQueue.length && !isBulkFieldsUpdating) {
-      bulkUpdateContentModelField(reorderQueue[0]).then(() => {
-        setReorderQueue(reorderQueue.slice(1));
-      });
+  // useEffect(() => {
+  //   if (reorderQueue.length && !isBulkFieldsUpdating) {
+  //     bulkUpdateContentModelField(reorderQueue[0]).then(() => {
+  //       setReorderQueue(reorderQueue.slice(1));
+  //     });
+  //   }
+  // }, [reorderQueue, isBulkFieldsUpdating]);
+
+  const handleDraggedIndex = (index: number) => {
+    if (draggedIndex !== index) {
+      setDraggedIndex(index);
     }
-  }, [reorderQueue, isBulkFieldsUpdating]);
+  };
+
+  const handleHoveredIndex = (index: number) => {
+    if (hoveredIndex !== index) {
+      setHoveredIndex(index);
+    }
+  };
 
   if (showSpinner) {
     return (
@@ -232,7 +263,7 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
             )}
 
           {/* ACTIVE FIELDS ARE PRESENT */}
-          {Boolean(filteredFields?.length) && (
+          {/* {Boolean(filteredFields?.length) && (
             <>
               {filteredFields?.map((field, index) => {
                 return (
@@ -286,6 +317,88 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                 </Button>
               </Box>
             </>
+          )} */}
+
+          {Boolean(filteredFields?.length) && (
+            <Box display="flex" flexDirection="column">
+              {filteredFields?.map((field: any, index: number) => {
+                if (field.groupName) {
+                  return (
+                    <Box key={field.groupName}>
+                      {index !== 0 && (
+                        <AddFieldDivider
+                          indexToInsert={index}
+                          disabled={!!search}
+                          onDividerClick={() => onNewFieldModalClick(index)}
+                        />
+                      )}
+                      <FieldGroup
+                        onDraggedIndexGroup={() => handleDraggedIndex(index)}
+                        onHoveredIndexGroup={() => handleHoveredIndex(index)}
+                        disableDrag={!!search}
+                        onReorder={handleReorder}
+                        groupName={field.groupName}
+                        fields={field.fields}
+                        onNewFieldModalClick={onNewFieldModalClick}
+                      />
+                    </Box>
+                  );
+                } else {
+                  return (
+                    <Box key={field.ZUID}>
+                      {index !== 0 && (
+                        <AddFieldDivider
+                          indexToInsert={index}
+                          disabled={!!search}
+                          onDividerClick={() => onNewFieldModalClick(index)}
+                        />
+                      )}
+                      <Box pl={4}>
+                        <Field
+                          index={index}
+                          field={field}
+                          setDraggedIndex={() => handleDraggedIndex(index)}
+                          setHoveredIndex={() => handleHoveredIndex(index)}
+                          onReorder={handleReorder}
+                          disableDrag={!!search}
+                          withDragIcon
+                          withMenu
+                          withHover
+                        />
+                      </Box>
+                    </Box>
+                  );
+                }
+              })}
+              {/* {groups.map((group) => (
+              // @ts-ignore
+              <FieldGroup key={group} groupName={group} fields={filteredFields?.filter(field => field.group === group)} onNewFieldModalClick={onNewFieldModalClick}/>
+            ))}
+            {filteredFields?.filter(field => !field.group).map((field, index) => (
+              <Box key={field.ZUID}>
+              {index !== 0 && (
+                <AddFieldDivider
+                  indexToInsert={index}
+                  disabled={!!search}
+                  onDividerClick={() => onNewFieldModalClick(index)}
+                />
+              )}
+              <Box pl={4}>
+                <Field
+                  index={index}
+                  field={field}
+                  setDraggedIndex={setDraggedIndex}
+                  setHoveredIndex={setHoveredIndex}
+                  onReorder={handleReorder}
+                  disableDrag={!!search}
+                  withDragIcon
+                  withMenu
+                  withHover
+                />
+              </Box>
+            </Box>
+            ))} */}
+            </Box>
           )}
 
           {/* NO ACTIVE FIELDS BUT HAS INACTIVE FIELDS */}
@@ -323,8 +436,8 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
                     <Field
                       index={index}
                       field={field}
-                      setDraggedIndex={setDraggedIndex}
-                      setHoveredIndex={setHoveredIndex}
+                      setDraggedIndex={() => handleDraggedIndex(index)}
+                      setHoveredIndex={() => handleHoveredIndex(index)}
                       onReorder={handleReorder}
                       disableDrag
                       isDeactivated
