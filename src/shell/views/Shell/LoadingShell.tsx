@@ -12,6 +12,7 @@ const appLocalStorageMap: Partial<Record<Products, string>> = {
   reports: "reportsNav",
   schema: "schemaNav",
   blocks: "blocksNav",
+  code: "codeAppNav",
 };
 const appWithoutSidebar: Partial<Products[]> = [
   "launchpad",

@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useRef, useCallback } from "react";
+import { memo, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Stack, Typography, Box, Divider } from "@mui/material";
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
 import CreateFile from "./CreateFile";
@@ -19,6 +19,7 @@ type NavType = "view" | "script" | "stylesheet" | "file";
 interface SideBarProps {
   navCode: NavCode;
   dispatch: (action: any) => void;
+  isLoading?: boolean;
 }
 
 const filterTreeData = (
@@ -47,12 +48,9 @@ const filterTreeData = (
 export const SideBar = memo(function SideBar({
   navCode,
   dispatch,
+  isLoading,
 }: SideBarProps) {
   const sideBarChildrenContainerRef = useRef(null);
-
-  const [htmlFiles, setHtmlFiles] = useState([]);
-  const [cssFiles, setCssFiles] = useState([]);
-  const [jsFiles, setJsFiles] = useState([]);
 
   const [keyword, setKeyword] = useState("");
   const [fileType, setFileType] = useState("");
@@ -77,15 +75,25 @@ export const SideBar = memo(function SideBar({
     [dispatch]
   );
 
-  useEffect(() => {
-    if (!navCode) return;
-    const parsedHtmlFiles = filterTreeData(navCode?.tree, keyword);
-    const parsedCssFiles = filterTreeData(navCode?.stylesheetsTree, keyword);
-    const parsedJsFiles = filterTreeData(navCode?.scriptsTree, keyword);
-    setHtmlFiles([...parsedHtmlFiles]?.sort((a, b) => byLabel(a, b)));
-    setCssFiles([...parsedCssFiles]?.sort((a, b) => byOrder(a, b)));
-    setJsFiles([...parsedJsFiles]?.sort((a, b) => byOrder(a, b)));
-  }, [navCode, keyword]);
+  const navData = useMemo(() => {
+    if (!navCode) return null;
+
+    return {
+      htmlFiles: navCode?.tree?.sort((a, b) => byLabel(a, b)),
+      cssFiles: navCode?.stylesheetsTree?.sort((a, b) => byLabel(a, b)),
+      jsFiles: navCode?.scriptsTree?.sort((a, b) => byLabel(a, b)),
+    };
+  }, [navCode]);
+
+  const filteredNavData = useMemo(() => {
+    if (!keyword) return navData;
+
+    return {
+      htmlFiles: filterTreeData(navData?.htmlFiles, keyword),
+      cssFiles: filterTreeData(navData?.cssFiles, keyword),
+      jsFiles: filterTreeData(navData?.jsFiles, keyword),
+    };
+  }, [navData, keyword]);
 
   return (
     <>
@@ -106,7 +114,10 @@ export const SideBar = memo(function SideBar({
           titleButtonTooltip="Create File"
           hideSubMenuOnSearch={false}
         >
-          {htmlFiles?.length + cssFiles?.length + jsFiles?.length < 1 ? (
+          {filteredNavData?.htmlFiles?.length +
+            filteredNavData?.cssFiles?.length +
+            filteredNavData?.jsFiles?.length <
+          1 ? (
             <Stack
               gap={1.5}
               alignItems="center"
@@ -138,9 +149,10 @@ export const SideBar = memo(function SideBar({
                 group="views"
                 header="VIEWS"
                 toolTip="Views are template files that can render HTML or various other MIME types."
-                tree={htmlFiles}
+                tree={filteredNavData?.htmlFiles || []}
                 createFile={() => openCreateFileDialog("snippet", "view")}
                 orderFiles={() => openOrderFilesDialog("snippet", "view")}
+                isLoading={!filteredNavData?.htmlFiles?.length && isLoading}
               />
 
               <Divider sx={{ my: 1, border: "none" }} />
@@ -149,13 +161,14 @@ export const SideBar = memo(function SideBar({
                 group="stylesheets"
                 header="SITE.CSS"
                 toolTip="Site.css is a dynamically created file from the instance stylesheet files"
-                tree={cssFiles}
+                tree={filteredNavData?.cssFiles || []}
                 createFile={() =>
                   openCreateFileDialog("text/css", "stylesheet")
                 }
                 orderFiles={() =>
                   openOrderFilesDialog("text/css", "stylesheet")
                 }
+                isLoading={!filteredNavData?.cssFiles?.length && isLoading}
               />
 
               <Divider sx={{ my: 1, border: "none" }} />
@@ -164,13 +177,14 @@ export const SideBar = memo(function SideBar({
                 group="scripts"
                 header="SITE.JS"
                 toolTip="Site.js is a dynamically created file from the instance JavaScript files"
-                tree={jsFiles}
+                tree={filteredNavData?.jsFiles || []}
                 createFile={() =>
                   openCreateFileDialog("text/javascript", "script")
                 }
                 orderFiles={() =>
                   openOrderFilesDialog("text/javascript", "script")
                 }
+                isLoading={!filteredNavData?.jsFiles?.length && isLoading}
               />
             </Box>
           )}

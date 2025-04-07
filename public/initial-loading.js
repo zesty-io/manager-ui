@@ -132,6 +132,7 @@ const appLocalStorageMap = {
   reports: "reportsNav",
   schema: "schemaNav",
   blocks: "blocksNav",
+  code: "codeAppNav",
 };
 
 getFromIndexedDB(`${instanceZUID}:ui`)

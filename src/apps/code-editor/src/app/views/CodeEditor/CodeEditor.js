@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Switch, useRouteMatch } from "react-router-dom";
 import { Grid, Typography, Box } from "@mui/material";
@@ -20,12 +20,17 @@ export default connect((state) => {
   };
 })(function CodeEditor(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
+  const [isFetchingNav, setIsFetchingNav] = useState(true);
 
   // On initial render load files: Templates, Stylesheets, Scripts
   useEffect(() => {
-    props.dispatch(fetchFiles("views"));
-    props.dispatch(fetchFiles("stylesheets"));
-    props.dispatch(fetchFiles("scripts"));
+    Promise.allSettled([
+      props.dispatch(fetchFiles("views")),
+      props.dispatch(fetchFiles("stylesheets")),
+      props.dispatch(fetchFiles("scripts")),
+    ]).finally(() => {
+      setIsFetchingNav(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -73,7 +78,7 @@ export default connect((state) => {
             bgcolor: "grey.900",
           }}
         >
-          <SideBar {...props} />
+          <SideBar {...props} isLoading={isFetchingNav} />
         </Grid>
         <Grid
           item
