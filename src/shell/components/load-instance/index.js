@@ -46,14 +46,19 @@ export default connect((state) => {
         return;
       }
 
-      props.dispatch(fetchInstance()).then((res) => {
-        if (res.status !== 200) {
-          setError("You do not have permission to access this instance");
-        } else {
-          document.title = `Manager - ${res.data?.name} - Zesty`;
-          CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data?.randomHashID}${CONFIG.URL_PREVIEW}`;
-        }
-      });
+      props
+        .dispatch(fetchInstance())
+        .then((res) => {
+          if (res.status !== 200) {
+            setError("You do not have permission to access this instance");
+          } else {
+            document.title = `Manager - ${res.data?.name} - Zesty`;
+            CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data?.randomHashID}${CONFIG.URL_PREVIEW}`;
+          }
+        })
+        .catch(() => {
+          setError("Failed to load instance");
+        });
 
       Promise.all([
         props.dispatch(fetchUser(props.user.ZUID)),
