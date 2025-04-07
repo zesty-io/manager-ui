@@ -255,6 +255,85 @@
       flex-direction: column;
       background-color: var(--sidebar-bg-color);
       grid-area: sidebar;
+      gap: 12px;
+      padding: 12px;
+
+      .app-title {
+        display: flex;
+        align-items: center;
+        height: 24px;
+        justify-content: space-between;
+
+        .skeleton.text {
+          height: 14px;
+          width: 130px;
+        }
+
+        .skeleton {
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      .app-search {
+        width: 100%;
+        height: 36px;
+      }
+
+      .app-sub-menu {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        align-items: center;
+        height: 24px;
+        margin: 6px 4px 6px 0;
+
+        .skeleton.circle {
+          width: 24px;
+          height: 24px;
+          flex-shrink: 0;
+        }
+
+        .skeleton.text {
+          width: 100%;
+          height: 14px;
+        }
+      }
+
+      .nav-tree-title {
+        height: 20px;
+        width: 80px;
+        display: flex;
+        align-items: center;
+
+        .skeleton.text {
+          height: 12px;
+        }
+      }
+
+      .nav-tree {
+        display: flex;
+        flex-direction: column;
+
+        .nav-tree-item {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          justify-content: space-between;
+          height: 24px;
+          margin-right: 24px;
+
+          .skeleton.circle {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+          }
+
+          .skeleton.text {
+            height: 12px;
+          }
+        }
+      }
     }
 
     .global-topbar {
