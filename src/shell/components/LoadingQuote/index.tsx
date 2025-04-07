@@ -1,6 +1,8 @@
 import { Box, Stack, Typography } from "@mui/material";
-import zestyLogoPulse from "../../../../public/images/zestyLogoOnlyPulsate.svg";
 import { useMemo } from "react";
+import { useLocalStorage } from "react-use";
+
+import zestyLogoPulse from "../../../../public/images/zestyLogoOnlyPulsate.svg";
 
 const QUOTES = [
   {
@@ -76,11 +78,26 @@ const QUOTES = [
   },
 ] as const;
 
-export const LoadingQuote = () => {
-  const randomQuote = useMemo(
-    () => QUOTES[Math.floor(Math.random() * QUOTES.length)],
-    []
-  );
+type LoadingQuote = {
+  loadNewQuote?: boolean;
+};
+export const LoadingQuote = ({ loadNewQuote }: LoadingQuote) => {
+  const [LoadingQuote] = useLocalStorage("zesty:loadingQuote", undefined);
+
+  const randomQuote = useMemo(() => {
+    // Makes sure that the quote is only randomized if we specifically tell it to
+    // otherwise it will use the LoadingQuote from local storage
+    // which makes sure the quote is the same across all loading screens
+    if (loadNewQuote || !LoadingQuote) {
+      return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+    } else {
+      try {
+        return LoadingQuote;
+      } catch (error) {
+        return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+      }
+    }
+  }, [loadNewQuote, LoadingQuote]);
 
   return (
     <Stack

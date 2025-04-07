@@ -73,6 +73,13 @@ const QUOTES = [
   },
 ];
 const randomQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+// Store the random quote in localStorage
+try {
+  localStorage.setItem("zesty:loadingQuote", JSON.stringify(randomQuote));
+} catch (err) {
+  console.error("Failed to store quote in localStorage:", err);
+}
+
 const getFromIndexedDB = (key) => {
   return new Promise((resolve, reject) => {
     try {
