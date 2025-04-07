@@ -13,15 +13,20 @@ const appLocalStorageMap: Partial<Record<Products, string>> = {
   schema: "schemaNav",
   blocks: "blocksNav",
 };
+const appWithoutSidebar: Partial<Products[]> = [
+  "launchpad",
+  "redirects",
+  "leads",
+];
 
 export const LoadingShell = () => {
-  const id = window.location.pathname.split("/")?.[1];
+  const app = window.location.pathname.split("/")?.[1];
   const [width] = useLocalStorage(
-    `zesty:resizableContainer:${appLocalStorageMap[id as Products]}`,
+    `zesty:resizableContainer:${appLocalStorageMap[app as Products]}`,
     220
   );
   const [collapsed] = useLocalStorage(
-    `zesty:collapsedContainer:${appLocalStorageMap[id as Products]}`,
+    `zesty:collapsedContainer:${appLocalStorageMap[app as Products]}`,
     false
   );
 
@@ -29,11 +34,14 @@ export const LoadingShell = () => {
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: collapsed ? "1fr" : `${width}px 1fr`,
+        gridTemplateColumns:
+          collapsed || appWithoutSidebar.includes(app as Products)
+            ? "1fr"
+            : `${width}px 1fr`,
         height: "inherit",
       }}
     >
-      {!collapsed && (
+      {!collapsed && !appWithoutSidebar.includes(app as Products) && (
         <Stack
           sx={{
             backgroundColor: "grey.900",
