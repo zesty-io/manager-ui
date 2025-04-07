@@ -356,15 +356,15 @@
           font-weight: 400;
           font-size: 28px;
           line-height: 36px;
-          letter-spacing: -2%;
+          letter-spacing: -0.56px;
           text-align: center;
         }
 
         .quotee {
-          font-weight: 600;
+          font-weight: 400;
           font-size: 20px;
           line-height: 28px;
-          letter-spacing: -2%;
+          letter-spacing: -0.56px;
           text-align: center;
         }
       }
