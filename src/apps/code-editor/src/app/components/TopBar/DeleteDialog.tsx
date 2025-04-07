@@ -59,20 +59,29 @@ export const DeleteDialog = memo(function DeleteDialog(
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            mb: 1.5,
           }}
         >
           <DeleteRounded color="error" />
         </Box>
         <Stack
-          mt={1.5}
           display="flex"
+          flexDirection="row"
           justifyContent="flex-start"
+          alignItems="center"
           columnGap={1}
+          overflow="hidden"
+          textOverflow="ellipsis"
         >
-          <Typography variant="inherit" fontWeight={700}>
+          <Typography
+            variant="inherit"
+            fontWeight={700}
+            flexGrow={0}
+            flexShrink={0}
+          >
             Delete File:
           </Typography>
-          <Typography variant="inherit" fontWeight={400} noWrap>
+          <Typography variant="inherit" fontWeight={600} noWrap flexGrow={0}>
             {`${fileName}`}
           </Typography>
         </Stack>
@@ -82,18 +91,12 @@ export const DeleteDialog = memo(function DeleteDialog(
         </Typography>
       </DialogTitle>
       <DialogActions>
-        <Button
-          size="small"
-          variant="outlined"
-          color="inherit"
-          onClick={onClose}
-        >
+        <Button variant="text" color="inherit" onClick={onClose}>
           Cancel
         </Button>
         <LoadingButton
           data-cy="DeleteContentItemConfirmButton"
           variant="contained"
-          size="small"
           color="error"
           onClick={handleDeleteFile}
           loading={deleting}

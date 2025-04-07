@@ -12,10 +12,7 @@ import {
   Box,
   Autocomplete,
   TextField,
-  FormControl,
 } from "@mui/material";
-import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { createFile, fetchFiles } from "../../../store/files";
@@ -26,12 +23,14 @@ export type CreateFileProps = {
   open: boolean;
   onClose: () => void;
   defaultType: string;
+  title?: string;
 };
 
 const CreateFile = memo(function CreateFile({
   open,
   onClose,
   defaultType,
+  title = "Create File",
 }: CreateFileProps) {
   const history = useHistory();
 
@@ -123,8 +122,12 @@ const CreateFile = memo(function CreateFile({
         },
       }}
     >
-      <DialogTitle>
-        Create File
+      <DialogTitle
+        borderBottom="1px solid"
+        borderColor="border"
+        sx={{ textTransform: "capitalize" }}
+      >
+        {title}
         <IconButton
           onClick={onClose}
           sx={{
@@ -138,13 +141,13 @@ const CreateFile = memo(function CreateFile({
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
-        <Box sx={{ px: 3, py: 3, backgroundColor: "grey.100" }}>
+        <Box sx={{ p: "20px", bgcolor: "grey.50" }}>
           <Box width="100%">
             <Typography
               variant="body2"
               color="text.primary"
               fontWeight={600}
-              mb={0.25}
+              mb="4px"
             >
               File Type
             </Typography>
@@ -223,7 +226,12 @@ const CreateFile = memo(function CreateFile({
           )}
 
           <Box mt={2} width="100%">
-            <Typography variant="body2" color="text.primary" fontWeight={600}>
+            <Typography
+              variant="body2"
+              color="text.primary"
+              fontWeight={600}
+              mb="4px"
+            >
               File Name
             </Typography>
             <TextField
@@ -245,18 +253,13 @@ const CreateFile = memo(function CreateFile({
           display: "flex",
           justifyContent: "flex-end",
           alignItems: "center",
-          px: 3,
-          py: 3,
+          p: "20px",
+          borderTop: "1px solid",
+          borderColor: "border",
         }}
       >
-        <Button
-          variant="outlined"
-          color="inherit"
-          size="small"
-          onClick={onClose}
-          startIcon={<DoDisturbAltIcon />}
-        >
-          Cancel (ESC)
+        <Button variant="outlined" color="inherit" onClick={onClose}>
+          Cancel
         </Button>
         <LoadingButton
           variant="contained"
@@ -264,9 +267,6 @@ const CreateFile = memo(function CreateFile({
           onClick={handleCreateFile}
           disabled={type === "" || type === "0" || !name}
           loading={loading}
-          loadingPosition="start"
-          size="small"
-          startIcon={<CheckCircleIcon />}
         >
           Create File
         </LoadingButton>

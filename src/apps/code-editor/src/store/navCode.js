@@ -1,22 +1,41 @@
 import idb from "utility/idb";
 
+import DocumentScannerRoundedIcon from "@mui/icons-material/DocumentScannerRounded";
+import { resolvePathPart } from "./files";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+
+import { Database } from "@zesty-io/material";
+import { SvgIcon } from "@mui/material";
 import {
-  faStickyNote,
-  faDatabase,
-  faListAlt,
-  faFileCode,
   faBolt,
-  faDirections,
+  faFileCode,
   faLock,
+  faStickyNote,
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  faJs,
   faCss3Alt,
+  faJs,
   faLess,
   faSass,
 } from "@fortawesome/free-brands-svg-icons";
 
-import { resolvePathPart } from "./files";
+const createIcon = (icon) => {
+  if (!icon) return null;
+  const {
+    icon: [width, height, , , svgPathData],
+  } = icon;
+  return () => (
+    <SvgIcon viewBox={`0 0 ${width} ${height}`} sx={{ mr: 1, fontSize: 15 }}>
+      {typeof svgPathData === "string" ? (
+        <path d={svgPathData} />
+      ) : (
+        svgPathData.map((d, i) => (
+          <path style={{ opacity: i === 0 ? 0.4 : 1 }} d={d} />
+        ))
+      )}
+    </SvgIcon>
+  );
+};
 
 export function navCode(
   state = {
@@ -174,27 +193,27 @@ export function collapseNavItem(path) {
 function resolveNavData(file) {
   const ICONS = {
     // Parsley views
-    snippet: faStickyNote,
-    dataset: faDatabase,
-    pageset: faListAlt,
-    templateset: faFileCode,
-
+    snippet: createIcon(faStickyNote),
+    dataset: Database,
+    pageset: FormatListBulletedIcon,
+    templateset: createIcon(faFileCode),
     // Instant api
-    "ajax-json": faBolt,
-    "ajax-html": faBolt,
-    "ajax-parsley": faBolt,
+    "ajax-json": createIcon(faBolt),
+    "ajax-html": createIcon(faBolt),
+    "ajax-parsley": createIcon(faBolt),
+    block: createIcon(faBolt),
 
     // JavaScript
-    "text/js": faJs,
-    "text/javascript": faJs,
+    "text/js": createIcon(faJs),
+    "text/javascript": createIcon(faJs),
 
     // Stylesheets
-    "text/css": faCss3Alt,
-    "text/less": faLess,
-    "text/scss": faSass,
-    "text/sass": faSass,
+    "text/css": createIcon(faCss3Alt),
+    "text/less": createIcon(faLess),
+    "text/scss": createIcon(faSass),
+    "text/sass": createIcon(faSass),
 
-    404: faDirections,
+    404: DocumentScannerRoundedIcon,
   };
 
   const pathPart = resolvePathPart(file.type);
@@ -203,7 +222,7 @@ function resolveNavData(file) {
     ...file,
     label: file.sort ? `(${file.sort}) ${file.fileName}` : file.fileName,
     path: `/code/file/${pathPart}/${file.ZUID}`,
-    icon: file.fileName === "loader" ? faLock : ICONS[file.type],
+    icon: file.fileName === "loader" ? createIcon(faLock) : ICONS[file.type],
   };
 
   // Remove this prop to ensure we don't accidentially
