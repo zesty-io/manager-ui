@@ -79,7 +79,10 @@ const ICONS: Record<string, SvgIconComponent> = {
   homepage: Home as SvgIconComponent,
 } as const;
 
-export const ContentNav = () => {
+type ContentNavProps = {
+  isLoading?: boolean;
+};
+export const ContentNav = ({ isLoading }: ContentNavProps) => {
   const location = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -481,6 +484,7 @@ export const ContentNav = () => {
         onAddClick={() => setIsCreateContentDialogOpen(true)}
         onFilterChange={(keyword) => setKeyword(keyword)}
         titleButtonTooltip="Create Content"
+        isLoading={isLoading}
       >
         {noMatchedItems ? (
           <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
@@ -571,6 +575,7 @@ export const ContentNav = () => {
                 </Stack>
               }
               ErrorComponent={<NavError navName="models" />}
+              isLoading={isLoading}
             />
             <NavTree
               id="dataset_nav"
@@ -628,6 +633,7 @@ export const ContentNav = () => {
                 </Stack>
               }
               ErrorComponent={<NavError navName="datasets" />}
+              isLoading={isLoading}
             />
             <Accordion
               elevation={0}
@@ -700,6 +706,7 @@ export const ContentNav = () => {
 
                     setClosedNavItems(path);
                   }}
+                  isLoading={isLoading}
                 />
               </AccordionDetails>
             </Accordion>

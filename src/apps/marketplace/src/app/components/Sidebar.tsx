@@ -41,66 +41,6 @@ export const Sidebar = () => {
     return [];
   }, [installedApps]);
 
-  if (isLoadingApps) {
-    return (
-      <Box
-        sx={{
-          backgroundColor: "grey.900",
-          height: "100%",
-          width: "inherit",
-          color: "common.white",
-          py: 1.5,
-        }}
-      >
-        <Stack sx={{ gap: 1.5, mb: 1.5 }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            px={1.5}
-          >
-            <Typography
-              variant="h6"
-              fontWeight={700}
-              lineHeight="24px"
-              fontSize={18}
-            >
-              Apps
-            </Typography>
-
-            <IconButtonCustom variant="contained" size="xsmall">
-              <AddRounded fontSize="small" />
-            </IconButtonCustom>
-          </Stack>
-        </Stack>
-        <Stack
-          sx={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            height: 36,
-            ml: 1.5,
-            mr: 2,
-            gap: 1,
-          }}
-        >
-          <Skeleton
-            variant="circular"
-            width={24}
-            height={24}
-            sx={{ backgroundColor: "grey.700", flexShrink: 0 }}
-          />
-          <Skeleton
-            variant="rounded"
-            width="100%"
-            height={24}
-            sx={{ backgroundColor: "grey.700" }}
-          />
-        </Stack>
-      </Box>
-    );
-  }
-
   return (
     <AppSideBar
       data-cy="apps-nav"
@@ -122,6 +62,7 @@ export const Sidebar = () => {
       ]}
       withSearch={false}
       titleButtonTooltip="Visit Marketplace"
+      isLoading={isLoadingApps}
     />
   );
 };
