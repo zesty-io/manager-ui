@@ -13,6 +13,7 @@ import { fetchNav } from "../store/navContent";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ContentNav } from "./components/ContentNav";
+import { LoadingQuote } from "../../../../shell/components/LoadingQuote";
 
 import { ItemList } from "./views/ItemList";
 import { ItemEdit } from "./views/ItemEdit";
@@ -69,7 +70,9 @@ export default function ContentEditor() {
         </ResizableContainer>
       )}
 
-      {!navContent.raw.length ? (
+      {loading ? (
+        <LoadingQuote />
+      ) : !navContent.raw.length ? (
         <Stack
           sx={{ width: "100%", alignItems: "center", justifyContent: "center" }}
         >
