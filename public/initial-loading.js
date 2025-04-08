@@ -155,6 +155,7 @@ getFromIndexedDB(`${instanceZUID}:ui`)
 
     // Show/hide subapp nav depending on which app is open
     if (["", "launchpad", "leads", "redirects"].includes(openApp)) {
+      document.querySelector(".subapp-sidebar").style.display = "none";
       document.querySelector(".subapp").style.gridTemplateAreas =
         '"topbar topbar" "quote quote"';
     } else if (!!appLocalStorageMap[openApp]) {
@@ -167,6 +168,7 @@ getFromIndexedDB(`${instanceZUID}:ui`)
       );
 
       if (appCollapsed === "true") {
+        document.querySelector(".subapp-sidebar").style.display = "none";
         document.querySelector(".subapp").style.gridTemplateAreas =
           '"topbar topbar" "quote quote"';
       } else if (!!appWidth && Number(appWidth) !== 220) {
