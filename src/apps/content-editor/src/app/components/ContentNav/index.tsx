@@ -79,10 +79,7 @@ const ICONS: Record<string, SvgIconComponent> = {
   homepage: Home as SvgIconComponent,
 } as const;
 
-type ContentNavProps = {
-  isLoading?: boolean;
-};
-export const ContentNav = ({ isLoading }: ContentNavProps) => {
+export const ContentNav = () => {
   const location = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -104,8 +101,11 @@ export const ContentNav = ({ isLoading }: ContentNavProps) => {
 
   const { data: currentUserRoles, isError: currentUserRolesError } =
     useGetCurrentUserRolesQuery();
-  const { data: rawNavData, isError: navItemsError } =
-    useGetContentNavItemsQuery(null, { refetchOnMountOrArgChange: true });
+  const {
+    data: rawNavData,
+    isError: navItemsError,
+    isLoading: isLoadingNavData,
+  } = useGetContentNavItemsQuery(null, { refetchOnMountOrArgChange: true });
   const { data: contentItem } = useGetContentItemQuery(
     location.pathname.split("/")[3],
     { skip: !location.pathname.split("/")[3] }
@@ -484,7 +484,7 @@ export const ContentNav = ({ isLoading }: ContentNavProps) => {
         onAddClick={() => setIsCreateContentDialogOpen(true)}
         onFilterChange={(keyword) => setKeyword(keyword)}
         titleButtonTooltip="Create Content"
-        isLoading={isLoading}
+        isLoading={isLoadingNavData}
       >
         {noMatchedItems ? (
           <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
@@ -575,7 +575,7 @@ export const ContentNav = ({ isLoading }: ContentNavProps) => {
                 </Stack>
               }
               ErrorComponent={<NavError navName="models" />}
-              isLoading={isLoading}
+              isLoading={isLoadingNavData}
             />
             <NavTree
               id="dataset_nav"
@@ -633,7 +633,7 @@ export const ContentNav = ({ isLoading }: ContentNavProps) => {
                 </Stack>
               }
               ErrorComponent={<NavError navName="datasets" />}
-              isLoading={isLoading}
+              isLoading={isLoadingNavData}
             />
             <Accordion
               elevation={0}
@@ -706,7 +706,7 @@ export const ContentNav = ({ isLoading }: ContentNavProps) => {
 
                     setClosedNavItems(path);
                   }}
-                  isLoading={isLoading}
+                  isLoading={isLoadingNavData}
                 />
               </AccordionDetails>
             </Accordion>

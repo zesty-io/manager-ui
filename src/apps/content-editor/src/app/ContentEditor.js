@@ -66,7 +66,7 @@ export default function ContentEditor() {
           minWidth={220}
           maxWidth={360}
         >
-          <ContentNav isLoading={loading} />
+          <ContentNav />
         </ResizableContainer>
       )}
 
