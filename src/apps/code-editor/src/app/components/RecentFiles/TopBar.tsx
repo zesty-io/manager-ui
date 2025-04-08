@@ -46,11 +46,16 @@ export const TopBar: FC<TopBarProps> = ({
           inputRef={searchInputRef}
           placeholder="Search Files"
           size="small"
+          color="primary"
           sx={{
             width: "240px",
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 border: "none",
+              },
+              "&.Mui-focused fieldset": {
+                border: "2px  solid",
+                borderColor: "primary.main",
               },
             },
           }}

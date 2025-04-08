@@ -76,24 +76,13 @@ const CreateFile = memo(function CreateFile({
     }
 
     setLoading(true);
-
-    dispatch(createFile(name, type) as any)
+    let redirectPage = "";
+    Promise.resolve(dispatch(createFile(name, type)))
       .then((res: any) => {
-        if (res.status === 201) {
+        if (!res?.error) {
           history.push(`/code/file/${res.pathPart}/${res.data.ZUID}`);
-
-          const fileType = scripts.includes(type)
-            ? "scripts"
-            : stylesheets?.includes(type)
-            ? "stylesheets"
-            : "views";
-
-          dispatch(fetchFiles(fileType));
           handleClearForm();
         }
-      })
-      .catch((err: any) => {
-        console.error(err);
       })
       .finally(() => {
         setLoading(false);

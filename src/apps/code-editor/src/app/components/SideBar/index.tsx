@@ -1,21 +1,21 @@
-import { memo, useState, useEffect, useRef, useCallback } from "react";
+import { memo, useState, useCallback, useMemo } from "react";
 import { Stack, Typography, Box, Divider } from "@mui/material";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
 import {
   AppSideBar,
   SubMenu,
 } from "../../../../../../shell/components/AppSidebar";
+import { ResizableContainer } from "../../../../../../shell/components/ResizeableContainer";
 
 import FileNav from "./FileNav";
-import { ResizableContainer } from "../../../../../../shell/components/ResizeableContainer";
 import OrderFiles from "./OrderFiles";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
 import { FileNodeProps } from "../constants";
 
 interface NavCode {
   raw?: FileNodeProps[];
   tree?: FileNodeProps[];
   stylesheetsTree?: FileNodeProps[];
-  scriptsTree?: FileNodeProps[];
+  scriptsTree: FileNodeProps[];
 }
 
 type NavType = "view" | "script" | "stylesheet" | "file";
@@ -23,7 +23,7 @@ type NavType = "view" | "script" | "stylesheet" | "file";
 interface SideBarProps {
   navCode: NavCode;
   dispatch: (action: any) => void;
-  openCreateFileDialog?: (type: string, nav: NavType) => void;
+  openCreateFileDialog: (type: string, nav: NavType) => void;
 }
 
 const SUB_MENUS: SubMenu[] = [
@@ -35,17 +35,26 @@ const SUB_MENUS: SubMenu[] = [
 ];
 
 const filterTreeData = (
-  treeData: FileNodeProps[],
-  keyword: string
+  treeData: FileNodeProps[] = [],
+  keyword: string = ""
 ): FileNodeProps[] => {
+  const normalizedKeyword = keyword.toLowerCase().trim();
   return treeData
-    .map((item: FileNodeProps) => {
+    .map((item) => {
       const isDir = item?.type === "directory";
-      const searchString =
-        `${item?.ZUID}\n${item?.fileName}\n${item?.label}\n${item?.path}\n${item?.contentModelZUID}\n${item?.contentModelType}`
-          ?.toLowerCase()
-          ?.trim();
-      const isFound: boolean = searchString.includes(keyword);
+      const searchString = [
+        item?.ZUID,
+        item?.fileName,
+        item?.label,
+        item?.path,
+        item?.contentModelZUID,
+        item?.contentModelType,
+      ]
+        .filter(Boolean)
+        .join("\n")
+        .toLowerCase();
+
+      const isFound = searchString.includes(normalizedKeyword);
       if (!isDir && !isFound) return null;
       const itemChildren = filterTreeData(item?.children, keyword);
       if (isDir && !itemChildren?.length && !isFound) return null;
@@ -57,38 +66,39 @@ const filterTreeData = (
     .filter(Boolean);
 };
 
+const byLabel = (a: FileNodeProps, b: FileNodeProps) =>
+  a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+const byOrder = (a: FileNodeProps, b: FileNodeProps) =>
+  (a.sort ?? 0) - (b.sort ?? 0);
+
 export const SideBar = memo(function SideBar({
   navCode,
-  dispatch,
   openCreateFileDialog,
 }: SideBarProps) {
-  const sideBarChildrenContainerRef = useRef(null);
-
-  const [htmlFiles, setHtmlFiles] = useState([]);
-  const [cssFiles, setCssFiles] = useState([]);
-  const [jsFiles, setJsFiles] = useState([]);
-
   const [keyword, setKeyword] = useState("");
   const [fileType, setFileType] = useState("");
   const [isOrderFilesOpen, setIsOrderFilesOpen] = useState(false);
 
-  const openOrderFilesDialog = useCallback(
-    (fileType?: string) => {
-      setFileType(fileType);
-      setIsOrderFilesOpen(true);
-    },
-    [dispatch]
-  );
-
-  useEffect(() => {
-    if (!navCode) return;
-    const parsedHtmlFiles = filterTreeData(navCode?.tree, keyword);
-    const parsedCssFiles = filterTreeData(navCode?.stylesheetsTree, keyword);
-    const parsedJsFiles = filterTreeData(navCode?.scriptsTree, keyword);
-    setHtmlFiles([...parsedHtmlFiles]?.sort((a, b) => byLabel(a, b)));
-    setCssFiles([...parsedCssFiles]?.sort((a, b) => byOrder(a, b)));
-    setJsFiles([...parsedJsFiles]?.sort((a, b) => byOrder(a, b)));
+  const { views, styleSheets, scripts } = useMemo(() => {
+    if (!navCode) return { views: [], styleSheets: [], scripts: [] };
+    return {
+      views: filterTreeData(navCode.tree, keyword).sort(byLabel),
+      styleSheets: filterTreeData(navCode.stylesheetsTree, keyword).sort(
+        byOrder
+      ),
+      scripts: filterTreeData(navCode.scriptsTree, keyword).sort(byOrder),
+    };
   }, [navCode, keyword]);
+  const openOrderFilesDialog = useCallback((type?: string) => {
+    setFileType(type);
+    setIsOrderFilesOpen(true);
+  }, []);
+
+  const closeOrderFilesDialog = useCallback(() => {
+    setFileType("");
+    setIsOrderFilesOpen(false);
+  }, []);
+  const hasResults = views.length + styleSheets.length + scripts.length > 0;
 
   return (
     <>
@@ -104,37 +114,17 @@ export const SideBar = memo(function SideBar({
           headerTitle="Code"
           searchPlaceholder="Filter Files"
           subMenus={SUB_MENUS}
-          ref={sideBarChildrenContainerRef}
-          onAddClick={() => openCreateFileDialog("snippet", "file")}
-          onFilterChange={(keyword) => setKeyword(keyword)}
+          onAddClick={() => openCreateFileDialog?.("snippet", "file")}
+          onFilterChange={setKeyword}
           titleButtonTooltip="Create File"
           hideSubMenuOnSearch={false}
         >
-          {htmlFiles?.length + cssFiles?.length + jsFiles?.length < 1 ? (
-            <Stack
-              gap={1.5}
-              alignItems="center"
-              justifyContent="center"
-              p={1.5}
-            >
-              <img
-                src="/noSearchResults.svg"
-                alt="No search results"
-                width="70px"
-                height="64px"
-              />
-              <Typography color="text.secondary" variant="body2" align="center">
-                No results available for "{keyword}"
-              </Typography>
-            </Stack>
-          ) : (
+          {hasResults ? (
             <Box
               sx={{
-                overflowX: "hidden",
-                overflowY: "auto",
+                overflow: "hidden auto",
                 width: "100%",
-                height: "calc(100vh - 36px - 113px - 36px)",
-                position: "relative",
+                height: "calc(100vh - 185px)", // Adjusted height calculation
               }}
             >
               <FileNav
@@ -142,8 +132,8 @@ export const SideBar = memo(function SideBar({
                 group="views"
                 header="VIEWS"
                 toolTip="Views are template files that can render HTML or various other MIME types."
-                tree={htmlFiles}
-                createFile={() => openCreateFileDialog("snippet", "view")}
+                tree={views}
+                createFile={() => openCreateFileDialog?.("snippet", "view")}
                 orderFiles={() => openOrderFilesDialog("snippet")}
               />
 
@@ -153,9 +143,9 @@ export const SideBar = memo(function SideBar({
                 group="stylesheets"
                 header="SITE.CSS"
                 toolTip="Site.css is a dynamically created file from the instance stylesheet files"
-                tree={cssFiles}
+                tree={styleSheets}
                 createFile={() =>
-                  openCreateFileDialog("text/css", "stylesheet")
+                  openCreateFileDialog?.("text/css", "stylesheet")
                 }
                 orderFiles={() => openOrderFilesDialog("text/css")}
               />
@@ -166,34 +156,40 @@ export const SideBar = memo(function SideBar({
                 group="scripts"
                 header="SITE.JS"
                 toolTip="Site.js is a dynamically created file from the instance JavaScript files"
-                tree={jsFiles}
+                tree={scripts}
                 createFile={() =>
-                  openCreateFileDialog("text/javascript", "script")
+                  openCreateFileDialog?.("text/javascript", "script")
                 }
                 orderFiles={() => openOrderFilesDialog("text/javascript")}
               />
             </Box>
+          ) : (
+            <NoResults keyword={keyword} />
           )}
         </AppSideBar>
       </ResizableContainer>
       <OrderFiles
         type={fileType}
         isOpen={isOrderFilesOpen}
-        onClose={() => {
-          setFileType(null);
-          setIsOrderFilesOpen(false);
-        }}
+        onClose={closeOrderFilesDialog}
       />
     </>
   );
 });
 
-const byLabel = (a: FileNodeProps, b: FileNodeProps) => {
-  return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
-};
-
-const byOrder = (a: FileNodeProps, b: FileNodeProps) => {
-  return (a.sort ?? 0) - (b.sort ?? 0);
-};
+const NoResults = ({ keyword }: { keyword: string }) => (
+  <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
+    <img
+      src="/noSearchResults.svg"
+      alt="No search results"
+      width="70"
+      height="64"
+      loading="lazy"
+    />
+    <Typography color="text.secondary" variant="body2" align="center">
+      {keyword ? `No results for "${keyword}"` : "No files found"}
+    </Typography>
+  </Stack>
+);
 
 export default SideBar;

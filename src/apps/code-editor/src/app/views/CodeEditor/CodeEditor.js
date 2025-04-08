@@ -58,87 +58,100 @@ export default connect((state) => {
   });
 
   return (
-    <WithLoader
-      condition={props?.files?.length}
-      message="Starting Code Editor"
-      width="100vw"
+    <Box
+      sx={{
+        height: "calc(100vh - 40px)",
+        width: "100%",
+        bgcolor: "background.editor",
+        color: "grey.300",
+        position: "relative",
+      }}
     >
-      <Grid
-        container
-        spacing={0}
-        columns={2}
-        sx={{
-          height: "calc(100vh - 40px)",
-          bgcolor: "background.editor",
-          color: "grey.300",
-          position: "relative",
+      <WithLoader
+        condition={!!props?.files?.length}
+        message="Starting Code Editor"
+        width="100%"
+        style={{
+          backgroundColor: "red",
         }}
       >
         <Grid
-          item
-          xs={"auto"}
+          container
+          spacing={0}
+          columns={2}
           sx={{
-            position: "relative",
-            height: "100%",
-            borderRight: "1px solid",
-            borderRightColor: "grey.800",
-            bgcolor: "grey.900",
-          }}
-        >
-          <SideBar {...props} openCreateFileDialog={openCreateFileDialog} />
-        </Grid>
-        <Grid
-          item
-          xs
-          sx={{
-            position: "relative",
             height: "100%",
             width: "100%",
-            overflow: "hidden",
-            bgcolor: "background.editor",
+            position: "relative",
           }}
         >
-          <Switch>
-            <Route exact path="/code">
-              {/* <GettingStarted files={props.files} /> */}
-              <RecentFiles openCreateFileDialog={openCreateFileDialog} />
-            </Route>
-            <Route
-              path="/code/file/:fileType/:fileZUID"
-              render={(routeProps) => {
-                return (
-                  <Workspace
-                    {...routeProps}
-                    dispatch={props.dispatch}
-                    status={props.status}
-                    match={match}
-                  />
-                );
-              }}
-            />
-            <Route path="*">
-              <Box
-                width="100%"
-                height="100%"
-                display="grid"
-                placeContent="center"
-              >
-                <Typography variant="h1">File Not Found</Typography>
-              </Box>
-            </Route>
-          </Switch>
+          <Grid
+            item
+            xs={"auto"}
+            sx={{
+              position: "relative",
+              height: "100%",
+              borderRight: "1px solid",
+              borderRightColor: "grey.800",
+              bgcolor: "grey.900",
+              "& > div": {
+                height: "100%",
+              },
+            }}
+          >
+            <SideBar {...props} openCreateFileDialog={openCreateFileDialog} />
+          </Grid>
+          <Grid
+            item
+            xs
+            sx={{
+              position: "relative",
+              height: "100%",
+              width: "100%",
+              overflow: "hidden",
+              bgcolor: "background.editor",
+            }}
+          >
+            <Switch>
+              <Route exact path="/code">
+                <RecentFiles openCreateFileDialog={openCreateFileDialog} />
+              </Route>
+              <Route
+                path="/code/file/:fileType/:fileZUID"
+                render={(routeProps) => {
+                  return (
+                    <Workspace
+                      {...routeProps}
+                      dispatch={props.dispatch}
+                      status={props.status}
+                      match={match}
+                    />
+                  );
+                }}
+              />
+              <Route path="*">
+                <Box
+                  width="100%"
+                  height="100%"
+                  sx={{ display: "grid", placeContent: "center" }}
+                >
+                  <Typography variant="h1">File Not Found</Typography>
+                </Box>
+              </Route>
+            </Switch>
+          </Grid>
         </Grid>
-      </Grid>
-      <CreateFile
-        open={isCreateFileOpen}
-        onClose={() => {
-          setFileType(null);
-          setNavType(null);
-          setIsCreateFileOpen(false);
-        }}
-        defaultType={fileType}
-        title={`Create ${navType}`}
-      />
-    </WithLoader>
+        <CreateFile
+          open={isCreateFileOpen}
+          onClose={() => {
+            setFileType(null);
+            setNavType(null);
+            setIsCreateFileOpen(false);
+          }}
+          defaultType={fileType}
+          title={`Create ${navType}`}
+        />
+      </WithLoader>
+    </Box>
   );
 });

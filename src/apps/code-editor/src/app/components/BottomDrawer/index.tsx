@@ -157,7 +157,7 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
           bgcolor="background.editor"
           color="grey.300"
           height="40vh"
-          sx={{ overflowY: "auto", bgcolor: "background.editor" }}
+          sx={{ overflowY: "auto" }}
         >
           <WithLoader
             condition={!loading}

@@ -7,6 +7,7 @@ import { DevResources } from "./DevResources";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
 import { NavCodeTypes } from "../constants";
+import { useMemo } from "react";
 
 type RecentFilesProps = {
   openCreateFileDialog: (
@@ -18,18 +19,17 @@ type RecentFilesProps = {
 export const RecentFiles = ({ openCreateFileDialog }: RecentFilesProps) => {
   const searchInputRef = useRef(undefined);
   const files = useSelector((state: AppState) => state?.navCode?.raw);
-  const [recentFiles, setRecentFiles] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
 
-  useEffect(() => {
+  const recentFiles = useMemo(() => {
     if (!files?.length) return;
 
     const sortedFiles: FileProps[] = files
-      ?.sort(
+      .sort(
         (a: NavCodeTypes, b: NavCodeTypes) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       )
-      ?.map((file: NavCodeTypes) => ({
+      .map((file: NavCodeTypes) => ({
         icon: file?.icon,
         fileName: file?.fileName,
         lastSaved: file?.updatedAt,
@@ -38,10 +38,13 @@ export const RecentFiles = ({ openCreateFileDialog }: RecentFilesProps) => {
         ZUID: file?.ZUID,
         path: file?.path,
       }));
+    return sortedFiles;
+  }, [files]);
 
-    setRecentFiles(sortedFiles);
-  }, [files, searchKeyword]);
-
+  const clearSearchInput = () => {
+    setSearchKeyword("");
+    searchInputRef.current?.focus();
+  };
   return (
     <>
       <Box
@@ -70,9 +73,7 @@ export const RecentFiles = ({ openCreateFileDialog }: RecentFilesProps) => {
       <Box
         width="100%"
         height="calc(100% - 84px)"
-        maxHeight="calc(100% - 84px)"
-        minHeight="calc(100% - 84px)"
-        bgcolor="background.editor"
+        bgcolor="#0D1116"
         color="grey.300"
         display="flex"
         flexDirection="row"
@@ -87,15 +88,14 @@ export const RecentFiles = ({ openCreateFileDialog }: RecentFilesProps) => {
             files={recentFiles}
             searchKeyword={searchKeyword}
             searchInputRef={searchInputRef}
-            setSearchKeyword={(text: string) => setSearchKeyword(text)}
+            onClearSearch={clearSearchInput}
           />
         </Box>
         <Box
           flexGrow={0}
+          flexShrink={0}
           sx={{
             width: "320px",
-            minWidth: "320px",
-            maxWidth: "320px",
           }}
         >
           <DevResources />

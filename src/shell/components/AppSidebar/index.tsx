@@ -81,7 +81,7 @@ const darkTheme = {
   },
   "& .MuiTreeItem-content:hover, & .app-sidebar-header-container .MuiListItem-root:hover":
     {
-      bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.07),
+      bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.08),
       "& .MuiButtonBase-root": {
         bgcolor: "transparent",
       },
