@@ -73,10 +73,12 @@ export const CommentsList = ({
     }
 
     setTimeout(() => {
-      const { top, bottom } = topOffsetRef.current?.getBoundingClientRect();
+      if (topOffsetRef.current?.getBoundingClientRect()) {
+        const { top, bottom } = topOffsetRef.current.getBoundingClientRect();
 
-      setPopperTopOffset(top);
-      setPopperBottomOffset(bottom);
+        setPopperTopOffset(top);
+        setPopperBottomOffset(bottom);
+      }
     });
 
     // HACK: Prevents UI flicker when popper renders and is temporarily out of bounds
