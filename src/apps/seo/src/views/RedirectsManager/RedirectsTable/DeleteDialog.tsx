@@ -1,5 +1,4 @@
-import { memo, useState, useCallback } from "react";
-import { useHistory } from "react-router";
+import { memo, useState } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
@@ -34,17 +33,14 @@ export const DeleteDialog = memo(function DeleteDialog(
   const { open, onClose, ZUID, path, type, target, code } = props;
 
   const [deleting, setDeleting] = useState(false);
-  const history = useHistory();
   const dispatch = useDispatch();
 
   const handleDeleteFile = () => {
     if (!ZUID) return;
 
-    try {
-      setDeleting(true);
-      Promise.resolve(dispatch(removeRedirect(ZUID))).then((res: any) => {
-        setDeleting(false);
-        onClose();
+    setDeleting(true);
+    Promise.resolve(dispatch(removeRedirect(ZUID)))
+      .then((res: any) => {
         if (res.status === 200) {
           dispatch(
             notify({
@@ -52,14 +48,12 @@ export const DeleteDialog = memo(function DeleteDialog(
               message: `Redirect Delete: ${path}`,
             })
           );
-        } else {
-          throw new Error(`Redirect Delete failed: ${path}`);
         }
+      })
+      .finally(() => {
+        setDeleting(false);
+        onClose();
       });
-    } catch (err) {
-      setDeleting(false);
-      onClose();
-    }
   };
   return (
     <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>

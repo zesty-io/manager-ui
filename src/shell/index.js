@@ -63,10 +63,10 @@ const appTheme = createTheme(theme, {
     },
 
     action: {
-      active: "rgba(127, 127, 126, 0.68)",
+      active: "rgba(127, 127, 126, 0.7)",
       selected: "rgba(127,127, 126, 0.125)",
-      disabled: "rgba(127,127, 126, 0.48)",
-      disabledBackground: "rgba(127,127, 126, 0.15)",
+      disabled: "rgba(127,127, 126, 0.47)",
+      disabledBackground: "rgba(127,127, 126, 0.28)",
       hover: "rgba(127, 127, 126, 0.07)",
     },
     background: {

@@ -48,6 +48,10 @@ export const CellWrapper = ({ color = "", children, type = "text" }) => {
 export default function RedirectTable(props) {
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
   const [deleteRedirect, setDeleteRedirect] = useState(null);
+  const [pinnedColumns, setPinnedColumns] = useState({
+    left: [],
+    right: ["actions"],
+  });
   const handleRemoveRedirect = useCallback((item) => {
     setDeleteRedirect(item);
     setDeleteDialogIsOpen(true);
@@ -58,13 +62,13 @@ export default function RedirectTable(props) {
       { field: "id", headerName: "Id", hide: true },
       {
         field: "path",
-        flex: 2,
+        minWidth: 206,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Typography variant="body2" fontWeight={600} color="text.primary">
               Incoming Path
             </Typography>
-            <Tooltip title="File Path Only" placement="top-start">
+            <Tooltip title="File Path Only" placement="top">
               <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
             </Tooltip>
           </Box>
@@ -83,6 +87,7 @@ export default function RedirectTable(props) {
       {
         field: "code",
         width: 185,
+        minWidth: 185,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Typography variant="body2" fontWeight={600} color="text.primary">
@@ -95,7 +100,7 @@ export default function RedirectTable(props) {
                   302: Temporarily Moved
                 </>
               }
-              placement="top-start"
+              placement="top"
             >
               <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
             </Tooltip>
@@ -114,26 +119,29 @@ export default function RedirectTable(props) {
       },
       {
         field: "targetType",
-        width: 195,
-        renderHeader: () => (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <Typography variant="body2" fontWeight={600} color="text.primary">
-              Redirect Type
-            </Typography>
-            <Tooltip
-              title={
-                <>
-                  Internal E.g. /about <br />
-                  External E.g. https://zesty.org/ <br />
-                  Wildcard E.g. /blog/*/*/
-                </>
-              }
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
-            </Tooltip>
-          </Box>
-        ),
+        width: 200,
+        minWidth: 200,
+        renderHeader: () => {
+          return (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <Typography variant="body2" fontWeight={600} color="text.primary">
+                Redirect Type
+              </Typography>
+              <Tooltip
+                title={
+                  <>
+                    Internal E.g. /about <br />
+                    External E.g. https://zesty.org/ <br />
+                    Wildcard E.g. /blog/*/*/
+                  </>
+                }
+                placement="top"
+              >
+                <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
+              </Tooltip>
+            </Box>
+          );
+        },
         renderCell: ({ value }) => {
           return (
             <CellWrapper>
@@ -159,12 +167,14 @@ export default function RedirectTable(props) {
       },
       {
         field: "target",
+        minWidth: 190,
+        flex: 1,
         headerName: (
           <Typography variant="body2" fontWeight={600} color="text.primary">
             Redirect Target
           </Typography>
         ),
-        flex: 2,
+
         renderCell: ({ value, row }) => (
           <RedirectTargetCell
             wrapper={CellWrapper}
@@ -177,6 +187,9 @@ export default function RedirectTable(props) {
         field: "actions",
         type: "actions",
         width: 40,
+        minWidth: 40,
+        maxWidth: 40,
+        resizable: false,
         getActions: ({ row }) => [
           <GridActionsCellItem
             icon={<DeleteIcon />}
@@ -238,8 +251,24 @@ export default function RedirectTable(props) {
           "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
             outline: "none!important",
           },
+          "& .MuiDataGrid-pinnedColumnHeaders": {
+            bgcolor: "transparent",
+          },
+
+          "& .MuiDataGrid-columnHeader:hover": {
+            "& .MuiDataGrid-columnSeparator": {
+              visibility: "visible",
+            },
+          },
         }}
         hideFooter
+        pinnedColumns={pinnedColumns}
+        onPinnedColumnsChange={(e) => {
+          setPinnedColumns({
+            left: e?.left,
+            right: [...e?.right?.filter((col) => col !== "actions"), "actions"],
+          });
+        }}
       />
       <DeleteDialog
         open={deleteDialogIsOpen}
