@@ -22,7 +22,11 @@ describe("Settings Actions", () => {
     cy.get("[data-cy=SubApp] .MuiSelect-select").first().click();
     cy.get(".MuiList-root li[aria-selected=false]").last().click();
     cy.get("#SaveSettings").click();
-    cy.contains(SAVED_MESSAGE).should("exist");
+    cy.get('[data-cy="ConfirmSaveSettings"]').should("exist");
+    cy.get('[data-cy="ConfirmSaveSettings"]').click();
+    cy.contains(SAVED_MESSAGE, { matchCase: false, timeout: 15_000 }).should(
+      "exist"
+    );
   });
 
   // skipping flakey test in preparation for CI

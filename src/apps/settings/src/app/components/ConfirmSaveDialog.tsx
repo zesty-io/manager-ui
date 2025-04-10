@@ -62,6 +62,7 @@ const ConfirmSaveDialog: FC<ConfirmSaveDialogProps> = ({
           loading={isSaving}
           focusRipple
           autoFocus
+          data-cy="ConfirmSaveSettings"
         >
           Save
         </LoadingButton>

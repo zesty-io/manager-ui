@@ -77,6 +77,7 @@ export const TopBar: FC<TopBarProps> = ({
             columnGap={1}
           >
             <ActionButton
+              id="SaveSettings"
               label={isNotSaved ? "Save" : "Saved"}
               startIcon={<SaveRoundedIcon fontSize="small" />}
               tooltip={isNotSaved ? `Save Settings ${saveShortcut}` : ""}
