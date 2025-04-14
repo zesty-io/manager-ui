@@ -350,12 +350,14 @@
             <div>
               <h3 class="text">
                 <script>
-                  document.write(`"${randomQuote?.quote}"`);
+                  document.write(
+                    `"${randomQuote?.quote || "Content is king."}"`
+                  );
                 </script>
               </h3>
               <h5 class="quotee">
                 <script>
-                  document.write(`— ${randomQuote?.quotee}`);
+                  document.write(`— ${randomQuote?.quotee || "Bill Gates"}`);
                 </script>
               </h5>
             </div>
