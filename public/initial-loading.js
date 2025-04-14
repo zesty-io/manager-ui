@@ -1,78 +1,62 @@
+const quotesFromApi = fetch(
+  "https://www.zesty.io/-/instant/6-b4e8dbf8d8-kv87rx.json"
+)
+  .then((response) => response.json())
+  .then((data) => {
+    if (!!data.data?.length) {
+      const englishQuotes = data.data.reduce((quotes, currentQuote) => {
+        if (currentQuote.content.lang_id === "1") {
+          quotes.push({
+            quote: currentQuote.content.quote,
+            quotee: currentQuote.content.author,
+          });
+        }
+
+        return quotes;
+      }, []);
+
+      try {
+        const quotesInLocalStorage = !!localStorage.getItem("zesty:quotes")
+          ? JSON.parse(localStorage.getItem("zesty:quotes"))
+          : [];
+
+        // Makes sure locally saved loading quote data is synced with the dataset
+        if (
+          !quotesInLocalStorage.length ||
+          quotesInLocalStorage.length !== englishQuotes.length
+        ) {
+          localStorage.setItem("zesty:quotes", JSON.stringify(englishQuotes));
+        }
+      } catch (err) {
+        console.error("Failed to store quotes in localStorage: ", err);
+      }
+    } else {
+      throw new Error("No quotes found in the response");
+    }
+  })
+  .catch((error) => {
+    console.error("Error fetching quotes from API: ", error);
+  });
+
 const instanceZUID = window.location.hostname.split(".")[0];
-const QUOTES = [
+let quotes = [
   {
     quote: "Content is king.",
     quotee: "Bill Gates",
   },
-  {
-    quote:
-      "Marketing is no longer about the stuff that you make, but about the stories you tell.",
-    quotee: "Seth Godin",
-  },
-  {
-    quote: "Your brand is a story unfolding across all customer touchpoints.",
-    quotee: "Jonah Sachs",
-  },
-  {
-    quote: "The best marketing doesn't feel like marketing.",
-    quotee: "Tom Fishburne",
-  },
-  {
-    quote: "People don't buy what you do; they buy why you do it.",
-    quotee: "Simon Sinek",
-  },
-  {
-    quote:
-      "If you can't explain it simply, you don't understand it well enough.",
-    quotee: "Albert Einstein",
-  },
-  {
-    quote: "The most powerful element in advertising is the truth.",
-    quotee: "Bill Bernbach",
-  },
-  {
-    quote:
-      "A brand is no longer what we tell the consumer it is—it is what consumers tell each other it is.",
-    quotee: "Scott Cook",
-  },
-  {
-    quote: "Communication works for those who work at it.",
-    quotee: "John Powell",
-  },
-  {
-    quote:
-      "The single biggest problem in communication is the illusion that it has taken place.",
-    quotee: "George Bernard Shaw",
-  },
-  {
-    quote: "The art of communication is the language of leadership.",
-    quotee: "James Humes",
-  },
-  {
-    quote:
-      "Engage, enlighten, encourage, and especially…just be yourself! Social media is a community effort; everyone is an asset.",
-    quotee: "Susan Cooper",
-  },
-  {
-    quote:
-      "The most powerful person in the world is the storyteller. The storyteller sets the vision, values, and agenda of an entire generation that is to come.",
-    quotee: "Steve Jobs",
-  },
-  {
-    quote:
-      "Your brand is what people say about you when you're not in the room.",
-    quotee: "Jeff Bezos",
-  },
-  {
-    quote: "Great stories happen to those who can tell them.",
-    quotee: "Ira Glass",
-  },
-  {
-    quote: "No matter what you do, your job is to tell a story.",
-    quotee: "Gary Vaynerchuk",
-  },
 ];
-const randomQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+try {
+  const quotesInLocalStorage = localStorage.getItem("zesty:quotes")
+    ? JSON.parse(localStorage.getItem("zesty:quotes"))
+    : [];
+
+  if (quotesInLocalStorage.length) {
+    quotes = quotesInLocalStorage;
+  }
+} catch (err) {
+  console.error("Failed to parse quotes from localStorage: ", err);
+}
+const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
 // Store the random quote in localStorage
 try {
   localStorage.setItem("zesty:loadingQuote", JSON.stringify(randomQuote));
