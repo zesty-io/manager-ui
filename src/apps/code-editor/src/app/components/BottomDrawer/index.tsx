@@ -14,7 +14,7 @@ import { fetchFields } from "../../../../../../shell/store/fields";
 import { fetchAuditTrail } from "../../../store/auditTrail";
 import { useMetaKey } from "../../../../../../shell/hooks/useMetaKey";
 import { fetchItems } from "../../../../../../shell/store/content";
-import { NavCodeTypes } from "../SideBar/constants";
+import { NavCodeTypes } from "../constants";
 
 interface Field {
   ZUID: string;
@@ -157,7 +157,7 @@ const BottomDrawer = memo(function BottomDrawer({ file }: BottomDrawerProps) {
           bgcolor="background.editor"
           color="grey.300"
           height="40vh"
-          sx={{ overflowY: "auto", bgcolor: "background.editor" }}
+          sx={{ overflowY: "auto" }}
         >
           <WithLoader
             condition={!loading}

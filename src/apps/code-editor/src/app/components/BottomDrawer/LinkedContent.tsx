@@ -3,8 +3,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import { FileCard, FileCardListItem } from "./FileCard";
 import { NavLink } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { NavCodeTypes } from "../SideBar/constants";
 import LaunchIcon from "@mui/icons-material/Launch";
+import { NavCodeTypes } from "../constants";
 
 interface Meta {
   ZUID: string;
