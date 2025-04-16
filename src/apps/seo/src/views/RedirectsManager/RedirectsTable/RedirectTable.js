@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
 import { Box, Tooltip, Typography } from "@mui/material";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
@@ -7,13 +7,11 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import InsertDriveFileRoundedIcon from "@mui/icons-material/InsertDriveFileRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-
-import { removeRedirect } from "../../../store/redirects";
-
 import { RedirectCreator } from "./RedirectCreator";
 import { RedirectTargetCell } from "./RedirectTargetCell";
+import { DeleteDialog } from "./DeleteDialog";
 
-const CellWrapper = ({ color = "", children, type = "text" }) => {
+export const CellWrapper = ({ color = "", children, type = "text" }) => {
   return (
     <Box
       sx={{
@@ -48,8 +46,15 @@ const CellWrapper = ({ color = "", children, type = "text" }) => {
 };
 
 export default function RedirectTable(props) {
-  const handleRemoveRedirect = useCallback((zuid) => {
-    props.dispatch(removeRedirect(zuid));
+  const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
+  const [deleteRedirect, setDeleteRedirect] = useState(null);
+  const [pinnedColumns, setPinnedColumns] = useState({
+    left: [],
+    right: ["actions"],
+  });
+  const handleRemoveRedirect = useCallback((item) => {
+    setDeleteRedirect(item);
+    setDeleteDialogIsOpen(true);
   }, []);
 
   const columns = useMemo(
@@ -57,13 +62,13 @@ export default function RedirectTable(props) {
       { field: "id", headerName: "Id", hide: true },
       {
         field: "path",
-        flex: 2,
+        minWidth: 206,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Typography variant="body2" fontWeight={600} color="text.primary">
               Incoming Path
             </Typography>
-            <Tooltip title="File Path Only" arrow placement="top-start">
+            <Tooltip title="File Path Only" placement="top">
               <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
             </Tooltip>
           </Box>
@@ -82,6 +87,7 @@ export default function RedirectTable(props) {
       {
         field: "code",
         width: 185,
+        minWidth: 185,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Typography variant="body2" fontWeight={600} color="text.primary">
@@ -94,8 +100,7 @@ export default function RedirectTable(props) {
                   302: Temporarily Moved
                 </>
               }
-              arrow
-              placement="top-start"
+              placement="top"
             >
               <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
             </Tooltip>
@@ -114,27 +119,29 @@ export default function RedirectTable(props) {
       },
       {
         field: "targetType",
-        width: 195,
-        renderHeader: () => (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <Typography variant="body2" fontWeight={600} color="text.primary">
-              Redirect Type
-            </Typography>
-            <Tooltip
-              title={
-                <>
-                  Internal E.g. /about <br />
-                  External E.g. https://zesty.org/ <br />
-                  Wildcard E.g. /blog/*/*/
-                </>
-              }
-              arrow
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
-            </Tooltip>
-          </Box>
-        ),
+        width: 200,
+        minWidth: 200,
+        renderHeader: () => {
+          return (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <Typography variant="body2" fontWeight={600} color="text.primary">
+                Redirect Type
+              </Typography>
+              <Tooltip
+                title={
+                  <>
+                    Internal E.g. /about <br />
+                    External E.g. https://zesty.org/ <br />
+                    Wildcard E.g. /blog/*/*/
+                  </>
+                }
+                placement="top"
+              >
+                <InfoIcon fontSize="small" sx={{ color: "action.disabled" }} />
+              </Tooltip>
+            </Box>
+          );
+        },
         renderCell: ({ value }) => {
           return (
             <CellWrapper>
@@ -160,12 +167,14 @@ export default function RedirectTable(props) {
       },
       {
         field: "target",
+        minWidth: 190,
+        flex: 1,
         headerName: (
           <Typography variant="body2" fontWeight={600} color="text.primary">
             Redirect Target
           </Typography>
         ),
-        flex: 2,
+
         renderCell: ({ value, row }) => (
           <RedirectTargetCell
             wrapper={CellWrapper}
@@ -178,12 +187,15 @@ export default function RedirectTable(props) {
         field: "actions",
         type: "actions",
         width: 40,
+        minWidth: 40,
+        maxWidth: 40,
+        resizable: false,
         getActions: ({ row }) => [
           <GridActionsCellItem
             icon={<DeleteIcon />}
             color="action.secondary"
             label="Delete"
-            onClick={() => handleRemoveRedirect(row.ZUID)}
+            onClick={() => handleRemoveRedirect(row)}
           />,
         ],
       },
@@ -236,8 +248,36 @@ export default function RedirectTable(props) {
           bgcolor: "background.paper",
           color: "text.primary",
           fontSize: "typography.body2.fontSize",
+          "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
+            outline: "none!important",
+          },
+          "& .MuiDataGrid-pinnedColumnHeaders": {
+            bgcolor: "transparent",
+          },
+
+          "& .MuiDataGrid-columnHeader:hover": {
+            "& .MuiDataGrid-columnSeparator": {
+              visibility: "visible",
+            },
+          },
         }}
         hideFooter
+        pinnedColumns={pinnedColumns}
+        onPinnedColumnsChange={(e) => {
+          setPinnedColumns({
+            left: e?.left,
+            right: [...e?.right?.filter((col) => col !== "actions"), "actions"],
+          });
+        }}
+      />
+      <DeleteDialog
+        open={deleteDialogIsOpen}
+        onClose={() => setDeleteDialogIsOpen(false)}
+        ZUID={deleteRedirect?.ZUID}
+        path={deleteRedirect?.path}
+        type={deleteRedirect?.targetType}
+        target={deleteRedirect?.target}
+        code={deleteRedirect?.code}
       />
     </Box>
   );
