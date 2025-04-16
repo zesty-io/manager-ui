@@ -1,3 +1,4 @@
+console.log("initial loading script");
 const quotesFromApi = fetch(
   "https://www.zesty.io/-/instant/6-b4e8dbf8d8-kv87rx.json"
 )
@@ -56,13 +57,8 @@ try {
 } catch (err) {
   console.error("Failed to parse quotes from localStorage: ", err);
 }
-const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-// Store the random quote in localStorage
-try {
-  localStorage.setItem("zesty:loadingQuote", JSON.stringify(randomQuote));
-} catch (err) {
-  console.error("Failed to store quote in localStorage:", err);
-}
+
+window.randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
 
 const getFromIndexedDB = (key) => {
   return new Promise((resolve, reject) => {
