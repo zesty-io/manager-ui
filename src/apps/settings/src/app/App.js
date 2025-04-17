@@ -1,18 +1,15 @@
 import { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { SettingsNav } from "./components/Nav";
 
 import { Instance } from "./views/Instance";
 import { Styles } from "./views/Styles";
-import { Browse, Installed } from "./views/Fonts";
 import { Robots } from "./views/Robots";
 import { Bynder } from "./views/Bynder";
-
-import { Head } from "shell/components/Head";
 
 import {
   fetchSettings,
@@ -20,16 +17,19 @@ import {
   fetchStylesCategories,
   fetchFonts,
   fetchFontsInstalled,
-} from "shell/store/settings";
+} from "../../../../shell/store/settings";
 import { ResizableContainer } from "../../../../shell/components/ResizeableContainer";
-
+import Installed from "./views/Fonts/Installed";
+import Browse from "./views/Fonts/Browse";
+import { HeadTags } from "./views/Robots/HeadTags";
 // Makes sure that other apps using legacy theme does not get affected with the palette
 
-import styles from "./App.less";
-export default connect((state) => ({
-  instance: state.instance,
-  settings: state.settings,
-}))(function SettingsApp(props) {
+export default connect((state) => {
+  return {
+    instance: state.instance,
+    settings: state.settings,
+  };
+})(function SettingsApp(props) {
   const location = useLocation();
 
   useEffect(() => {
@@ -48,10 +48,35 @@ export default connect((state) => ({
         props.settings.catFonts.length
       }
       message="Starting Settings"
-      height="100vh"
+      height="calc(100vh - 40px)"
     >
-      <section className={styles.Settings}>
-        <div className={styles.AppWrap}>
+      <Grid
+        container
+        spacing={0}
+        columns={2}
+        sx={{
+          height: "calc(100vh - 40px)",
+          bgcolor: "grey.50",
+          color: "grey.300",
+          position: "relative",
+          outline: "2px solid cyan",
+          outlineOffset: "-2px",
+        }}
+      >
+        <Grid
+          item
+          xs={"auto"}
+          sx={{
+            position: "relative",
+            height: "100%",
+            borderRight: "1px solid",
+            borderRightColor: "grey.400",
+            bgcolor: "grey.900",
+            "& > div": {
+              height: "100%",
+            },
+          }}
+        >
           <ResizableContainer
             id="settingsNav"
             defaultWidth={220}
@@ -60,65 +85,61 @@ export default connect((state) => ({
           >
             <SettingsNav />
           </ResizableContainer>
+        </Grid>
+        <Grid
+          item
+          xs
+          sx={{
+            position: "relative",
+            height: "100%",
+            width: "100%",
+            overflow: "hidden",
+            bgcolor: "grey.50",
+          }}
+        >
           <Box
-            className={styles.OverflowWrap}
+            position="relative"
+            component="main"
             sx={{
-              borderLeft: "1px solid",
-              borderColor: "border",
+              height: "100%",
+              width: "100%",
+              overflow: "hidden",
+              boxSizing: "border-box",
             }}
           >
-            <Box
-              component="main"
-              className={
-                location.pathname === "/settings/instance/bynder"
-                  ? ""
-                  : styles.Content
-              }
-              sx={{
-                height: "100%",
-              }}
-            >
-              <Switch>
-                <Route
-                  exact
-                  path="/settings/styles/:category"
-                  component={Styles}
-                />
-                <Redirect from="/settings/styles" to="/settings/styles/1" />
-                <Route
-                  path="/settings/instance/bynder"
-                  exact
-                  component={Bynder}
-                />
-                <Route
-                  path="/settings/instance/:category"
-                  component={Instance}
-                />
+            <Switch>
+              <Route
+                exact
+                path="/settings/styles/:category"
+                component={Styles}
+              />
+              <Redirect from="/settings/styles" to="/settings/styles/1" />
+              <Route
+                path="/settings/instance/bynder"
+                exact
+                component={Bynder}
+              />
+              <Route path="/settings/instance/:category" component={Instance} />
 
-                <Route path="/settings/fonts/browse" component={Browse} />
-                <Route path="/settings/fonts/installed" component={Installed} />
-                <Redirect from="/settings/fonts" to="/settings/fonts/browse" />
+              <Route path="/settings/fonts/browse" component={Browse} />
+              <Route path="/settings/fonts/installed" component={Installed} />
+              <Redirect from="/settings/fonts" to="/settings/fonts/browse" />
 
-                <Route path="/settings/robots" component={Robots} />
-                <Route
-                  path="/settings/head"
-                  render={() => (
-                    <div className={styles.InstanceHeadTags}>
-                      <Head resourceZUID={props.instance.ZUID} />
-                    </div>
-                  )}
-                />
+              <Route path="/settings/robots" component={Robots} />
+              <Route
+                path="/settings/head"
+                render={() => <HeadTags resourceZUID={props?.instance?.ZUID} />}
+              />
 
-                <Redirect from="/settings" to="/settings/instance/general" />
-                <Redirect
-                  from="/settings/instance"
-                  to="/settings/instance/general"
-                />
-              </Switch>
-            </Box>
+              <Redirect from="/settings" to="/settings/instance/general" />
+              <Redirect
+                from="/settings/instance"
+                to="/settings/instance/general"
+              />
+            </Switch>
           </Box>
-        </div>
-      </section>
+        </Grid>
+      </Grid>
     </WithLoader>
   );
 });

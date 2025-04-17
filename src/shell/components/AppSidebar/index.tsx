@@ -79,9 +79,13 @@ const darkTheme = {
   "& .nav-tree-header .MuiIconButton-root:hover": {
     bgcolor: "grey.800",
   },
-  "& .MuiTreeItem-content:hover": {
-    bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.08),
-  },
+  "& .MuiTreeItem-content:hover, & .app-sidebar-header-container .MuiListItem-root:hover":
+    {
+      bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.08),
+      "& .MuiButtonBase-root": {
+        bgcolor: "transparent",
+      },
+    },
 };
 
 export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(

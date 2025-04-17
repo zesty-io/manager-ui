@@ -221,7 +221,7 @@ export function saveStyleVariable(zuid, data) {
 
 export function updateSettings(zuid, data) {
   return (dispatch) => {
-    request(`${CONFIG.API_INSTANCE}/env/settings/${zuid}`, {
+    return request(`${CONFIG.API_INSTANCE}/env/settings/${zuid}`, {
       method: "PUT",
       json: true,
       body: data,
@@ -233,6 +233,7 @@ export function updateSettings(zuid, data) {
             payload: data,
           });
         }
+        return res;
       })
       .catch((err) => err);
   };
@@ -320,13 +321,16 @@ export function updateSiteFont(zuid, href) {
     });
 }
 
-export function deleteSiteFont(zuid) {
-  return request(`${CONFIG.API_INSTANCE}/web/headtags/${zuid}`, {
-    method: "DELETE",
-  })
-    .then((res) => res.data)
-    .catch((err) => {
-      console.error(err);
-      return err;
-    });
+export async function deleteSiteFont(zuid) {
+  try {
+    const response = await request(
+      `${CONFIG.API_INSTANCE}/web/headtags/${zuid}`,
+      {
+        method: "DELETE",
+      }
+    );
+    return response.data; // return the response data if the request succeeds
+  } catch (err) {
+    throw new Error(`Failed to delete site font: ${err}`); // re-throw with a more descriptive error
+  }
 }

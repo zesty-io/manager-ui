@@ -9,7 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Tooltip } from "@mui/material";
 import { useHistory, useLocation } from "react-router-dom";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Link } from "@mui/material";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import FlashOnRoundedIcon from "@mui/icons-material/FlashOnRounded";
 import RestoreOutlinedIcon from "@mui/icons-material/RestoreOutlined";
@@ -53,8 +53,8 @@ interface TopBarProps {
   setVersionCodeLeft?: (code: string) => void;
   setVersionCodeRight?: (code: string) => void;
   setLoading?: (loading: boolean) => void;
+  icon?: any;
 }
-
 const TopBar = memo(function TopBar(props: TopBarProps) {
   const history = useHistory();
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
@@ -85,21 +85,45 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
           pr={3}
           whiteSpace="nowrap"
         >
-          {props.contentModelZUID ? (
-            <FlashOnRoundedIcon color="info" fontSize="small" />
-          ) : (
-            <DescriptionRoundedIcon fontSize="small" />
-          )}
+          <Box
+            width="18px"
+            height="18px"
+            position="relative"
+            sx={{
+              "& svg": {
+                position: "absolute",
+                left: 0,
+                top: 0,
+                fontSize: "18px",
+                color: !!props.contentModelZUID ? "info.main" : "grey.400",
+              },
+            }}
+          >
+            {!!props.contentModelZUID ? (
+              <Link
+                underline="none"
+                color="secondary"
+                //@ts-expect-error
+                href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.contentModelZUID}.json`}
+                target="_blank"
+                title="Preview JSON"
+                sx={{ m: 0, pr: 2, pl: 3.25, py: 0 }}
+              >
+                <FlashOnRoundedIcon />
+              </Link>
+            ) : (
+              <Box component={props.icon} />
+            )}
+          </Box>
           <Typography
             variant="h6"
             color="grey.300"
             overflow="hidden"
             textOverflow="ellipsis"
             whiteSpace="nowrap"
+            fontWeight={600}
           >
-            {`/${props.fileType}/${props.fileName
-              ?.trim()
-              ?.replace(/^\/+/, "")}`}
+            {`/${props.fileName?.trim()?.replace(/^\/+/, "")}`}
           </Typography>
         </Box>
 
@@ -243,7 +267,6 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
     </>
   );
 });
-
 interface MoreOptionsProps {
   contentModelZUID?: string;
   fileType: string;

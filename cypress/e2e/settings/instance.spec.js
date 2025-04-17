@@ -10,7 +10,9 @@ describe("Instance", () => {
   it("General", () => {
     cy.get("[data-cy=SubApp] textarea").first().clear().type("example");
 
-    cy.get("#saveSettings").click();
+    cy.get("#SaveSettings").click();
+    cy.get('[data-cy="ConfirmSaveSettings"]').should("exist");
+    cy.get('[data-cy="ConfirmSaveSettings"]').click();
 
     cy.contains(SAVED_MESSAGE).should("exist");
   });
@@ -26,9 +28,10 @@ describe("Instance", () => {
       .type("test test test")
       .clear();
 
-    cy.get("#saveSettings").click({ force: true });
-
-    cy.get("#saveSettings").click({ force: true });
+    cy.get("#SaveSettings").should("exist");
+    cy.get("#SaveSettings").click();
+    cy.get('[data-cy="ConfirmSaveSettings"]').should("exist");
+    cy.get('[data-cy="ConfirmSaveSettings"]').click();
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 
@@ -40,7 +43,9 @@ describe("Instance", () => {
       .click();
     cy.get("[data-cy=SubApp] input").last().type("fakeemail@example.com");
 
-    cy.get("#saveSettings").click();
+    cy.get("#SaveSettings").click();
+    cy.get('[data-cy="ConfirmSaveSettings"]').should("exist");
+    cy.get('[data-cy="ConfirmSaveSettings"]').click();
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 
