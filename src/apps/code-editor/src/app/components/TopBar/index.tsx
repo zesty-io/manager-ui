@@ -81,6 +81,8 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
           flexDirection="row"
           justifyContent="flex-start"
           columnGap={1}
+          overflow="hidden"
+          minWidth="150px"
           flexGrow={1}
           pr={3}
           whiteSpace="nowrap"
@@ -120,11 +122,16 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
             color="grey.300"
             overflow="hidden"
             textOverflow="ellipsis"
-            whiteSpace="nowrap"
+            noWrap
             fontWeight={600}
           >
             {`/${props.fileName?.trim()?.replace(/^\/+/, "")}`}
           </Typography>
+          <Typography
+            variant="h6"
+            color="grey.400"
+            fontWeight={600}
+          >{`(v${props?.version})`}</Typography>
         </Box>
 
         {!props.synced && (
