@@ -6,9 +6,9 @@ import FlashOnIcon from "@mui/icons-material/FlashOn";
 import { FileCard, FileCardListItem } from "./FileCard";
 import { List, Divider } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import { NavCodeTypes } from "../SideBar/constants";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import { NavCodeTypes } from "../constants";
 interface ItemWeb {
   path: string;
 }
