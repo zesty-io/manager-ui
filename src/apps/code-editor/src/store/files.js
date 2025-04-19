@@ -1,6 +1,7 @@
 import idb from "utility/idb";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import { fetchHeaders } from "./headers";
 
 export function files(state = [], action) {
   let files;
@@ -416,9 +417,16 @@ export function createFile(name, type, code = "") {
       .then(async (res) => {
         // HACK passing through to invoking function so it can redirect to new file
         res.pathPart = pathPart;
-        await Promise.resolve(dispatch(fetchFiles(pathPart)));
 
+        console.debug("createFile: ", res);
         if (res.status === 201) {
+          await Promise.resolve(dispatch(fetchFiles(pathPart)));
+          await Promise.resolve(dispatch(fetchHeaders())).then((headerRes) => {
+            dispatch({
+              type: "FETCH_HEADERS_SUCCESS",
+              payload: headerRes.data,
+            });
+          });
           dispatch(
             notify({
               kind: "success",

@@ -1,4 +1,4 @@
-import { FC, useState, useMemo } from "react";
+import { FC, useState, useMemo, useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
@@ -27,6 +27,7 @@ type FileNavProps = {
   header: string;
   toolTip: string;
   tree: FileNodeProps[];
+  isSearched?: boolean;
 };
 
 const ActionsButton = ({
@@ -83,13 +84,17 @@ const FileNav: FC<FileNavProps> = ({
   header,
   toolTip,
   tree,
+  isSearched = false,
 }) => {
   const dispatch = useDispatch();
   const canPublish = usePermission("PUBLISH");
-  let { pathname } = useLocation();
-  const [expanded, setExpanded] = useState<string[]>([]);
+  const { pathname } = useLocation();
+  const [expanded, setExpanded] = useState<string[] | null>(null);
+  const didAutoExpand = useRef(false);
+  const expandedFolders = useRef<Set<string>>(new Set());
+  const [treeData, dirPaths] = useMemo(() => {
+    const directoryPaths: string[] = [];
 
-  const treeData = useMemo(() => {
     const createTreeItemData = (treeItem: NavCodeTypes): TreeItem => {
       const {
         path,
@@ -102,20 +107,16 @@ const FileNav: FC<FileNavProps> = ({
         children,
         ...treeData
       } = treeItem;
+
       const isDir: boolean = type === "directory";
-      const itemLocation: string = `/code/file/${group}`;
-      const itemPath: string = path?.trim()?.replace(/^\/+/, "");
+      const itemLocation = `/code/file/${group}`;
+      const itemPath = path?.trim()?.replace(/^\/+/, "");
+      const filePath = isDir ? `${itemLocation}/${itemPath}` : `/${itemPath}`;
 
-      const filePath: string = isDir
-        ? `${itemLocation}/${itemPath}`
-        : `/${itemPath}`;
-
-      if (isDir) setExpanded((prev) => [...prev, `/code/file/views/${path}`]);
+      if (isDir) directoryPaths.push(filePath);
 
       const actions =
-        canPublish &&
-        !treeItem.isLive &&
-        treeItem?.version > treeItem?.publishedVersion
+        canPublish && !isLive && version > publishedVersion
           ? [
               <ActionsButton
                 key="publish"
@@ -128,19 +129,62 @@ const FileNav: FC<FileNavProps> = ({
           : [];
 
       return {
-        icon: treeItem?.icon,
+        icon,
         path: filePath,
-        label: treeItem?.label,
-        children: treeItem?.children?.map((child: NavCodeTypes) =>
-          createTreeItemData(child)
-        ),
-        actions: actions,
+        label,
+        children: children?.map(createTreeItemData),
+        actions,
         nodeData: { ...treeData, navSource: "code", isDir },
       };
     };
 
-    return tree?.map((item) => createTreeItemData(item as NavCodeTypes));
+    const treeItems = tree?.map((item) => createTreeItemData(item));
+    return [treeItems, directoryPaths];
   }, [tree, group, canPublish, dispatch]);
+
+  useEffect(() => {
+    if (isSearched) {
+      setExpanded(dirPaths);
+      didAutoExpand.current = false;
+      return;
+    }
+
+    if (!didAutoExpand.current && dirPaths.length) {
+      setExpanded(dirPaths);
+      didAutoExpand.current = true;
+    }
+  }, [dirPaths, isSearched]);
+
+  useEffect(() => {
+    const newDirPaths: string[] = [];
+
+    const collectDirs = (items: TreeItem[] = []) => {
+      items.forEach((item) => {
+        if (item?.nodeData?.isDir) {
+          newDirPaths.push(item.path);
+          collectDirs(item.children);
+        }
+      });
+    };
+
+    collectDirs(treeData as TreeItem[]);
+    const foldersToExpand = newDirPaths.filter(
+      (path) => !expandedFolders.current.has(path)
+    );
+
+    if (foldersToExpand.length) {
+      setExpanded((prev) => {
+        const merged = [...prev, ...foldersToExpand];
+        merged.forEach((path) => expandedFolders.current.add(path));
+        return merged;
+      });
+    }
+  }, [treeData]);
+
+  const handleToggleCollapse = (nodeIds: string[]) => {
+    nodeIds.forEach((path) => expandedFolders.current.add(path));
+    setExpanded(nodeIds);
+  };
 
   return (
     <>
@@ -149,11 +193,13 @@ const FileNav: FC<FileNavProps> = ({
           <NavTree
             id={id}
             tree={treeData}
-            selected={pathname?.replace(/\/diff.*/, "")}
+            selected={
+              !!expanded || !!didAutoExpand.current
+                ? pathname?.replace(/\/diff.*/, "")
+                : ""
+            }
             expandedItems={expanded}
-            onToggleCollapse={(nodeIds) => {
-              setExpanded(nodeIds);
-            }}
+            onToggleCollapse={handleToggleCollapse}
             HeaderComponent={
               <Stack
                 direction="row"

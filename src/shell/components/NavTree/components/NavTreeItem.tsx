@@ -40,7 +40,7 @@ export const NavTreeItem: FC<Props> = React.memo(
       if (selected === nodeId) {
         setTimeout(() => {
           itemTreeRef.current?.scrollIntoView({
-            behavior: "smooth",
+            behavior: "instant",
             block: "nearest",
           });
         }, 500);

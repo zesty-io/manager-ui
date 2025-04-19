@@ -56,9 +56,7 @@ export const NavTree: FC<Readonly<Props>> = ({
       ) : (
         <TreeView
           data-cy={id}
-          {...(isCodeApp
-            ? { defaultExpanded: expandedItems }
-            : { expanded: expandedItems })}
+          expanded={expandedItems}
           //  @ts-expect-error changed typed definition from mui/lab
           selected={selected}
           defaultCollapseIcon={<ArrowDropDownRoundedIcon />}

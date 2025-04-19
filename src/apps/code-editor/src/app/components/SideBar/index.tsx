@@ -135,6 +135,7 @@ export const SideBar = memo(function SideBar({
                 tree={views}
                 createFile={() => openCreateFileDialog?.("snippet", "view")}
                 orderFiles={() => openOrderFilesDialog("snippet")}
+                isSearched={!!keyword}
               />
 
               <Divider sx={{ my: 1, border: "none" }} />
@@ -148,6 +149,7 @@ export const SideBar = memo(function SideBar({
                   openCreateFileDialog?.("text/css", "stylesheet")
                 }
                 orderFiles={() => openOrderFilesDialog("text/css")}
+                isSearched={!!keyword}
               />
 
               <Divider sx={{ my: 1, border: "none" }} />
@@ -161,6 +163,7 @@ export const SideBar = memo(function SideBar({
                   openCreateFileDialog?.("text/javascript", "script")
                 }
                 orderFiles={() => openOrderFilesDialog("text/javascript")}
+                isSearched={!!keyword}
               />
             </Box>
           ) : (
