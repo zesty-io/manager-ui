@@ -1,6 +1,3 @@
-import { ReactNode } from "react";
-import { ModelType } from "../../../../../../shell/services/types";
-
 export type FileTypes =
   | "text/javascript"
   | "text/less"
@@ -40,6 +37,7 @@ export type FileNodeProps = {
   parentZUID?: string;
   sort?: number;
   children: FileNodeProps[];
+  fileType?: "view" | "stylesheet" | "script";
 };
 
 export type NavCodeTypes = Partial<FileNodeProps>;
