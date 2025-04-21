@@ -27,6 +27,7 @@ export const Editor = memo(function Editor(props) {
         updatedBy={props.updatedBy}
         publishedAt={props.publishedAt}
         publishedBy={props.publishedBy}
+        icon={props.icon}
         isDiffer={false}
       />
 
