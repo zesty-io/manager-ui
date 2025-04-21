@@ -71,6 +71,8 @@
       href="https://fonts.googleapis.com/css?family=Roboto+Mono"
     />
 
+    <link rel="stylesheet" href="/styles/initial-loading-screen.css" />
+
     <style type="text/css">
       * {
         margin: 0;
@@ -79,70 +81,12 @@
       }
       html,
       body {
-        background-color: #f2f7fc;
-        color: #5b667d;
+        background-color: #ffffff;
+        color: #101828;
         font-family: "Mulish", Arial, sans-serif;
         font-size: 16px;
         height: 100%;
         width: 100%;
-      }
-
-      #appBoot {
-        align-items: center;
-        display: flex;
-        justify-content: center;
-        width: 100vw;
-        height: 100vh;
-      }
-
-      #center {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      #center h1 {
-        font-family: "Mulish", Arial, sans-serif;
-        font-size: 2em;
-        font-weight: 300;
-        text-shadow: 1px 1px 1px #d6e5ff;
-      }
-
-      .loader {
-        display: flex;
-        height: 2rem;
-      }
-      .loader .bar {
-        animation: fade 1s infinite ease-in-out;
-        background-color: #5b667d;
-        margin: 0.5rem;
-        opacity: 1;
-        width: 1rem;
-      }
-      .loader .bar:nth-child(1) {
-        animation-delay: -0.16s;
-      }
-      .loader .bar:nth-child(2) {
-        animation-delay: 1s;
-      }
-      .loader .bar:nth-child(3) {
-        animation-delay: -0.32s;
-      }
-      .loader .bar:nth-child(4) {
-        animation-delay: 2s;
-      }
-      .loader .bar:nth-child(5) {
-        animation-delay: -0.16s;
-      }
-
-      @keyframes fade {
-        0%,
-        80%,
-        100% {
-          opacity: 1;
-        }
-        40% {
-          opacity: 0.3;
-        }
       }
     </style>
     <style>
@@ -153,6 +97,7 @@
       }
     </style>
 
+    <script src="/initial-loading.js"></script>
     <script>
       if ("serviceWorker" in navigator) {
         // FIXME: currently causing more harm than good
@@ -174,23 +119,252 @@
   </head>
   <body>
     <main id="root">
-      <div id="appBoot">
-        <div id="center">
-          <img
-            src="https://brand.zesty.io/zesty-io-logo-vertical.svg"
-            alt="Displaying Zesty.io logo while application loads"
-            height="200px"
-            width="297px"
-            style="margin-bottom: 16px"
-          />
-          <div class="loader">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
+      <!-- App load screen -->
+      <div class="initial-loading-screen">
+        <nav class="global-sidebar">
+          <section>
+            <div class="nav-header">
+              <div>
+                <div class="skeleton"></div>
+                <img
+                  src="/images/zestyLogoOnlyGrey.svg"
+                  loading="lazy"
+                  alt="Zesty grey logo"
+                />
+              </div>
+              <div>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+                <div class="skeleton"></div>
+              </div>
+            </div>
+            <ul class="nav-items">
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+              <li>
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </li>
+            </ul>
+          </section>
+
+          <div class="nav-footer">
+            <div class="github">
+              <img
+                src="/images/zestyLogo.svg"
+                alt="Full Zesty Logo"
+                loading="lazy"
+              />
+              <img
+                src="/images/zestyLogoOnly.svg"
+                alt="Full Zesty Logo"
+                loading="lazy"
+              />
+              <div>
+                <img
+                  src="/images/githubLogoSmall.svg"
+                  alt="Github Logo"
+                  loading="lazy"
+                />
+                <div class="skeleton text"></div>
+              </div>
+            </div>
+            <div class="accounts">
+              <div class="skeleton circle"></div>
+              <div>
+                <div class="skeleton text"></div>
+                <div class="skeleton text"></div>
+              </div>
+            </div>
           </div>
-        </div>
+        </nav>
+
+        <section class="subapp">
+          <div class="global-topbar">
+            <div class="left">
+              <div class="search">
+                <div>
+                  <div class="skeleton light circle"></div>
+                  <div class="skeleton light text"></div>
+                </div>
+
+                <div class="skeleton light"></div>
+              </div>
+              <div class="topbar-item">
+                <div class="skeleton light circle"></div>
+                <div class="skeleton light text"></div>
+                <div class="skeleton light"></div>
+              </div>
+            </div>
+
+            <div class="right">
+              <div class="skeleton light"></div>
+              <div class="skeleton light"></div>
+            </div>
+          </div>
+
+          <div class="subapp-sidebar">
+            <div class="app-title">
+              <div class="skeleton text"></div>
+              <div class="skeleton"></div>
+            </div>
+            <div class="app-search skeleton"></div>
+            <div class="app-sub-menu">
+              <div class="skeleton circle"></div>
+              <div class="skeleton text"></div>
+            </div>
+            <div class="nav-tree-title">
+              <div class="skeleton text"></div>
+            </div>
+            <div class="nav-tree">
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+            </div>
+            <div class="nav-tree-title">
+              <div class="skeleton text"></div>
+            </div>
+            <div class="nav-tree">
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+              <div class="nav-tree-item">
+                <div class="skeleton circle"></div>
+                <div class="skeleton text"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quote">
+            <img
+              class="logo"
+              src="/images/zestyLogoOnlyPulsate.svg"
+              alt="Displaying Zesty.io logo while application loads"
+              height="100px"
+              width="100px"
+            />
+            <div>
+              <h3 class="text">
+                <script>
+                  document.write(
+                    `"${window.randomQuote?.quote || "Content is king."}"`
+                  );
+                </script>
+              </h3>
+              <h5 class="quotee">
+                <script>
+                  document.write(
+                    `— ${window.randomQuote?.quotee || "Bill Gates"}`
+                  );
+                </script>
+              </h5>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
     <!-- High z-index to beat the TinyMCE toolbar which has 1300-->

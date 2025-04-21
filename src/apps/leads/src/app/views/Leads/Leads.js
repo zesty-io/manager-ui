@@ -8,6 +8,7 @@ import { LeadsTable } from "../../components/LeadsTable";
 import { GetStarted } from "../GetStarted";
 
 import { fetchLeads } from "../../../store/leads";
+import { LoadingQuote } from "../../../../../../shell/components/LoadingQuote";
 
 import styles from "./Leads.less";
 export default connect((state) => state)(function Leads(props) {
@@ -20,23 +21,20 @@ export default connect((state) => state)(function Leads(props) {
     });
   }, []);
 
+  if (loading) {
+    return <LoadingQuote />;
+  }
+
+  if (!props.leads.length) {
+    return <GetStarted />;
+  }
+
   return (
-    <WithLoader
-      condition={!loading}
-      message="Loading Leads"
-      width="100vw"
-      height="100vh"
-    >
-      {!props.leads.length ? (
-        <GetStarted />
-      ) : (
-        <section className={styles.Leads}>
-          <LeadExporter />
-          <main className={styles.tableWrapper}>
-            <Route component={LeadsTable} />
-          </main>
-        </section>
-      )}
-    </WithLoader>
+    <section className={styles.Leads}>
+      <LeadExporter />
+      <main className={styles.tableWrapper}>
+        <Route component={LeadsTable} />
+      </main>
+    </section>
   );
 });

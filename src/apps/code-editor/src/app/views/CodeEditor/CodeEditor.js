@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { connect } from "react-redux";
 import { Switch, useRouteMatch } from "react-router-dom";
 import { Grid, Typography, Box } from "@mui/material";
@@ -11,6 +11,8 @@ import { fetchFiles } from "../../../store/files";
 import SideBar from "../../components/SideBar";
 import { Route } from "react-router";
 import { GettingStarted } from "../../components/Workspace/components/GettingStarted";
+import { RecentFiles } from "../../components/RecentFiles";
+import CreateFile from "../../components/CreateFile";
 
 export default connect((state) => {
   return {
@@ -20,12 +22,27 @@ export default connect((state) => {
   };
 })(function CodeEditor(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
+  const [isFetchingNav, setIsFetchingNav] = useState(true);
+
+  const [fileType, setFileType] = useState("");
+  const [navType, setNavType] = useState(null);
+  const [isCreateFileOpen, setIsCreateFileOpen] = useState(false);
+
+  const openCreateFileDialog = (type, nav) => {
+    setFileType(type);
+    setNavType(nav);
+    setIsCreateFileOpen(true);
+  };
 
   // On initial render load files: Templates, Stylesheets, Scripts
   useEffect(() => {
-    props.dispatch(fetchFiles("views"));
-    props.dispatch(fetchFiles("stylesheets"));
-    props.dispatch(fetchFiles("scripts"));
+    Promise.allSettled([
+      props.dispatch(fetchFiles("views")),
+      props.dispatch(fetchFiles("stylesheets")),
+      props.dispatch(fetchFiles("scripts")),
+    ]).finally(() => {
+      setIsFetchingNav(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -46,76 +63,104 @@ export default connect((state) => {
   });
 
   return (
-    <WithLoader
-      condition={props?.files?.length}
-      message="Starting Code Editor"
-      width="100vw"
+    <Box
+      sx={{
+        height: "calc(100vh - 40px)",
+        width: "100%",
+        bgcolor: "background.editor",
+        color: "grey.300",
+        position: "relative",
+      }}
     >
-      <Grid
-        container
-        spacing={0}
-        columns={2}
-        sx={{
-          height: "calc(100vh - 40px)",
-          bgcolor: "background.editor",
-          color: "grey.300",
-          position: "relative",
+      <WithLoader
+        condition={!!props?.files?.length}
+        message="Starting Code Editor"
+        width="100%"
+        style={{
+          backgroundColor: "red",
         }}
       >
         <Grid
-          item
-          xs={"auto"}
+          container
+          spacing={0}
+          columns={2}
           sx={{
-            position: "relative",
-            height: "100%",
-            borderRight: "1px solid",
-            borderRightColor: "grey.800",
-            bgcolor: "grey.900",
-          }}
-        >
-          <SideBar {...props} />
-        </Grid>
-        <Grid
-          item
-          xs
-          sx={{
-            position: "relative",
             height: "100%",
             width: "100%",
-            overflow: "hidden",
-            bgcolor: "background.editor",
+            position: "relative",
           }}
         >
-          <Switch>
-            <Route exact path="/code">
-              <GettingStarted files={props.files} />
-            </Route>
-            <Route
-              path="/code/file/:fileType/:fileZUID"
-              render={(routeProps) => {
-                return (
-                  <Workspace
-                    {...routeProps}
-                    dispatch={props.dispatch}
-                    status={props.status}
-                    match={match}
-                  />
-                );
-              }}
+          <Grid
+            item
+            xs={"auto"}
+            sx={{
+              position: "relative",
+              height: "100%",
+              borderRight: "1px solid",
+              borderRightColor: "grey.800",
+              bgcolor: "grey.900",
+              "& > div": {
+                height: "100%",
+              },
+            }}
+          >
+            <SideBar
+              {...props}
+              openCreateFileDialog={openCreateFileDialog}
+              isLoading={isFetchingNav}
             />
-            <Route path="/f/*">
-              <Box
-                width="100%"
-                height="100%"
-                display="grid"
-                placeContent="center"
-              >
-                <Typography variant="h1">File Not Found</Typography>
-              </Box>
-            </Route>
-          </Switch>
+          </Grid>
+          <Grid
+            item
+            xs
+            sx={{
+              position: "relative",
+              height: "100%",
+              width: "100%",
+              overflow: "hidden",
+              bgcolor: "background.editor",
+            }}
+          >
+            <Switch>
+              <Route exact path="/code">
+                <RecentFiles openCreateFileDialog={openCreateFileDialog} />
+              </Route>
+              <Route
+                path="/code/file/:fileType/:fileZUID"
+                render={(routeProps) => {
+                  return (
+                    <Workspace
+                      {...routeProps}
+                      dispatch={props.dispatch}
+                      status={props.status}
+                      match={match}
+                    />
+                  );
+                }}
+              />
+              <Route path="*">
+                <Box
+                  width="100%"
+                  height="100%"
+                  sx={{ display: "grid", placeContent: "center" }}
+                >
+                  <Typography variant="h1">File Not Found</Typography>
+                </Box>
+              </Route>
+            </Switch>
+          </Grid>
         </Grid>
-      </Grid>
-    </WithLoader>
+        <CreateFile
+          open={isCreateFileOpen}
+          onClose={() => {
+            setFileType(null);
+            setNavType(null);
+            setIsCreateFileOpen(false);
+          }}
+          defaultType={fileType}
+          title={`Create ${navType}`}
+        />
+      </WithLoader>
+    </Box>
   );
 });

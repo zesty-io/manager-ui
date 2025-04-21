@@ -413,9 +413,10 @@ export function createFile(name, type, code = "") {
         type,
       },
     })
-      .then((res) => {
+      .then(async (res) => {
         // HACK passing through to invoking function so it can redirect to new file
         res.pathPart = pathPart;
+        await Promise.resolve(dispatch(fetchFiles(pathPart)));
 
         if (res.status === 201) {
           dispatch(

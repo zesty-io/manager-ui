@@ -5,7 +5,7 @@ describe("Head Tags", () => {
       cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/head");
     });
 
-    cy.contains("Create Head Tag").click();
+    cy.contains("Create Head Tag", { timeout: 10000 }).click();
 
     cy.get("[data-cy=newTagCard]")
       .last()
