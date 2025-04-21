@@ -220,6 +220,7 @@ export const AllBlocks = () => {
       {showCreateModelDialogue && (
         <CreateModelDialogue
           modelType="block"
+          typeIsSet={true}
           onClose={() => setShowCreateModelDialogue(false)}
         />
       )}

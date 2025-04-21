@@ -31,7 +31,7 @@ const FileCard: React.FC<FileCardProps> = ({
       sx={{
         boxSizing: "border-box",
         // Temporary: will be updated once the design is final
-        bgcolor: "#2f2f2f",
+        bgcolor: "#0D1116",
         color: "grey.400",
         width: "100%",
         px: 2,
@@ -68,6 +68,7 @@ const FileCard: React.FC<FileCardProps> = ({
         flexGrow={0}
         width="100%"
         boxSizing="border-box"
+        overflow="hidden"
       >
         <Box
           component={Icon}
@@ -76,9 +77,11 @@ const FileCard: React.FC<FileCardProps> = ({
         <Typography
           variant="h6"
           color="grey.300"
+          width="100%"
           sx={{
             pl: "35px",
             boxSizing: "border-box",
+            wordWrap: "break-word",
           }}
         >
           {title}
