@@ -8,6 +8,7 @@ const slice = createSlice({
   initialState: {
     frames: {},
     installed: [],
+    isLoadingApps: false,
   },
   reducers: {
     registerFrame(state, action) {
@@ -16,10 +17,15 @@ const slice = createSlice({
     },
     fetchAppsSuccess(state, action) {
       state.installed = action.payload;
+      state.isLoadingApps = false;
     },
     fetchAppsError(state) {
       state.error = true;
       state.installed = [];
+      state.isLoadingApps = false;
+    },
+    fetchAppsRequest(state) {
+      state.isLoadingApps = true;
     },
   },
 });
@@ -34,6 +40,7 @@ export function fetchInstalledApps() {
     const state = getState();
     const { instance } = state;
     const { ZUID } = instance;
+    dispatch(actions.fetchAppsRequest());
     return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}/app-installs`)
       .then((res) => {
         if (res.status === 200) {

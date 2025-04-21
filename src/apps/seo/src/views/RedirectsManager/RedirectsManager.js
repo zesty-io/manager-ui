@@ -5,6 +5,7 @@ import RedirectImportTable from "./RedirectImportTable";
 import { fetchRedirects } from "../../store/redirects";
 import { Box } from "@mui/material";
 import RedirectActions from "./RedirectActions";
+import { LoadingQuote } from "../../../../../shell/components/LoadingQuote";
 
 export default function RedirectManager(props) {
   const [loading, setLoading] = useState(true);
@@ -25,6 +26,10 @@ export default function RedirectManager(props) {
         setLoading(false);
       });
   }, []);
+
+  if (loading) {
+    return <LoadingQuote />;
+  }
 
   return (
     <>
@@ -55,17 +60,11 @@ export default function RedirectManager(props) {
         boxSizing="border-box"
         position="relative"
       >
-        <WithLoader
-          condition={!loading}
-          message="Loading Redirects"
-          height="100%"
-        >
-          {Object.keys(props.imports).length ? (
-            <RedirectImportTable {...props} />
-          ) : (
-            <RedirectsTable {...props} />
-          )}
-        </WithLoader>
+        {Object.keys(props.imports).length ? (
+          <RedirectImportTable {...props} />
+        ) : (
+          <RedirectsTable {...props} />
+        )}
       </Box>
     </>
   );
