@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Button,
   ToggleButtonGroup,
   ToggleButton,
   TextField,
@@ -12,6 +11,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { createRedirect } from "../../../../store/redirects";
 import ContentSearch from "shell/components/LegacyContentSearch";
 import { Box } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const optionTypes = [
   { label: "Internal", value: "page" },
@@ -25,6 +25,7 @@ export function RedirectCreator(props) {
   const [code, setCode] = useState(301); // Toggle defaults to 301
   const [contentSearchValue, setContentSearchValue] = useState("");
   const [type, setType] = useState(optionTypes[0]); // Set initial type as full object
+  const [isLoading, setIsLoading] = useState(false);
 
   const determineTerm = (term) => {
     // ContentSearch return Object while Search return string
@@ -36,6 +37,7 @@ export function RedirectCreator(props) {
   };
 
   const handleCreateRedirect = () => {
+    setIsLoading(true);
     props
       .dispatch(
         createRedirect({
@@ -48,6 +50,9 @@ export function RedirectCreator(props) {
       .then(() => {
         setFrom("");
         setContentSearchValue("");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -159,8 +164,9 @@ export function RedirectCreator(props) {
         )}
       </Box>
       <Box width="fit-content" flexGrow={0}>
-        <Button
-          variant="outlined"
+        <LoadingButton
+          loading={isLoading}
+          variant="contained"
           color="primary"
           size="small"
           onClick={handleCreateRedirect}
@@ -171,7 +177,7 @@ export function RedirectCreator(props) {
           sx={{ whiteSpace: "nowrap" }}
         >
           Create Redirect
-        </Button>
+        </LoadingButton>
       </Box>
     </Box>
   );

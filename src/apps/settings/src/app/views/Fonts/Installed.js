@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
-import TextField from "@mui/material/TextField";
+import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
+import { TextField, Typography, Stack } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -19,6 +12,11 @@ import { notify } from "shell/store/notifications";
 import { updateSiteFont, deleteSiteFont } from "shell/store/settings";
 
 import styles from "./Fonts.less";
+import { TopBar } from "../../components/TopBar";
+import { Box } from "@mui/material";
+import { MainWrapper } from "../../components/Containers";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { DeleteRounded } from "@mui/icons-material";
 
 export default connect((state) => {
   return {
@@ -32,6 +30,8 @@ export default connect((state) => {
     useState(false);
   const [activeFont, setActiveFont] = useState(null);
   const [activeVariant, setActiveVariant] = useState(null);
+
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     const arrFonts = props.fontsInstalled.map((tag) => {
@@ -92,26 +92,14 @@ export default connect((state) => {
 
   function onSearch(value) {
     setSearch(value);
-    setTimeout(() => {
-      const fontFounded = fonts.find(
-        (font) => font.font.toLowerCase() === value.toLowerCase()
-      );
-      if (fontFounded) {
-        const element = fonts.filter(
-          (font) => font.font.toLowerCase() === value.toLowerCase()
-        );
-        setFonts(element);
-      } else {
-        setFonts([]);
-      }
-
-      if (value === "") {
-        setFonts(defaultFonts);
-      }
-    }, 2000);
+    const fontFounded = defaultFonts.filter((font) =>
+      font.font.toLowerCase()?.includes(value.toLowerCase())
+    );
+    setFonts(fontFounded);
   }
 
-  function uninstallFont(font) {
+  async function uninstallFont(font) {
+    setIsUpdating(true);
     const fontToUpdate = fonts.find((f) => f.font === font);
     const updateVariants = fontToUpdate.variants
       .filter((variant) => variant.value === "1")
@@ -131,7 +119,7 @@ export default connect((state) => {
       request = deleteSiteFont(fontToUpdate.ZUID);
     }
 
-    request
+    Promise.resolve(request)
       .then((res) => {
         props.dispatch(
           notify({
@@ -143,10 +131,14 @@ export default connect((state) => {
       .catch((err) => {
         props.dispatch(
           notify({
-            kind: "warn",
+            kind: "error",
             message: err.message,
           })
         );
+      })
+      .finally(() => {
+        setShowOpenRemoveFontDialog(false);
+        setIsUpdating(false);
       });
   }
 
@@ -177,21 +169,29 @@ export default connect((state) => {
           <div key={index} className={styles.ListFontItem}>
             <header className={styles.FontHeader}>
               <div>
-                <h3>{font.font}</h3>
+                <Typography
+                  variant="body1"
+                  color="text.primary"
+                  fontWeight={700}
+                >
+                  {font.font}
+                </Typography>
               </div>
             </header>
             {font.variants.length === 0 && (
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <p
+                <Typography
+                  variant="body2"
                   className={styles.ParagraphFontInstalled}
-                  style={{
-                    fontFamily: font.font.replace("+", " "),
+                  color="text.secondary"
+                  sx={{
+                    fontFamily: `"${font.font.replace("+", " ")}"`,
                   }}
                 >
                   All their equipment and instruments are alive.
-                </p>
+                </Typography>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   color="error"
                   onClick={() => {
                     setShowOpenRemoveFontDialog(true);
@@ -212,18 +212,20 @@ export default connect((state) => {
                 key={idx}
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
-                <p
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
                   className={styles.ParagraphFontInstalled}
-                  style={{
-                    fontFamily: font.font.replace("+", " "),
+                  sx={{
+                    fontFamily: `"${font.font.replace("+", " ")}"`,
                     fontWeight: parseWeight(variant.label),
                     fontStyle: parseFontStyle(variant.label),
                   }}
                 >
                   All their equipment and instruments are alive.
-                </p>
+                </Typography>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   color="error"
                   id="RemoveFont"
                   onClick={() => {
@@ -257,31 +259,53 @@ export default connect((state) => {
 
   return (
     <>
-      <div className={styles.PageContainer}>
-        <header
-          className={styles.SearchContainer}
-          style={{ justifyContent: "space-between" }}
-        >
-          <TextField
-            placeholder="Search font"
-            type="search"
-            variant="outlined"
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            }}
-            onChange={(evt) => {
-              const term = evt.target.value;
-              onSearch(term);
-            }}
-          />
-        </header>
-        {renderFontsList()}
-      </div>
+      <TopBar title="Installed Fonts">
+        <TextField
+          placeholder="Search font"
+          type="text"
+          variant="outlined"
+          size="small"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(evt) => {
+            const term = evt.target.value;
+            onSearch(term);
+          }}
+          sx={{
+            width: 260,
+            "& fieldset": {
+              backgroundColor: "grey.50",
+            },
+            "& .MuiInputAdornment-root, & input": {
+              zIndex: 1,
+            },
+          }}
+        />
+      </TopBar>
+      <Box
+        px="32px"
+        py="16px"
+        sx={{
+          width: "100%",
+          height: "calc(100% - 84px)",
+          overflowY: "auto",
+          overflowX: "hidden",
+          margin: "0",
+          display: "block",
+          maxHeight: "calc(100% - 84px)",
+          position: "relative",
+          boxSizing: "border-box",
+        }}
+      >
+        <MainWrapper rowGap={3} fullWidth>
+          {renderFontsList()}
+        </MainWrapper>
+      </Box>
       <Dialog
         open={showOpenRemoveFontDialog}
         onClose={() => setShowOpenRemoveFontDialog(false)}
@@ -289,23 +313,43 @@ export default connect((state) => {
         maxWidth={"xs"}
       >
         <DialogTitle>
-          <DeleteIcon
-            color="error"
+          <Box
             sx={{
-              padding: "8px",
-              borderRadius: "20px",
               backgroundColor: "red.100",
-              display: "block",
-              mb: 2,
+              borderRadius: "100%",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mb: 1.5,
             }}
-          />
-          Remove Font
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
+          >
+            <DeleteRounded color="error" />
+          </Box>
+          <Stack
+            display="flex"
+            flexDirection="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            columnGap={1}
+            overflow="hidden"
+            textOverflow="ellipsis"
+          >
+            <Typography
+              variant="inherit"
+              fontWeight={700}
+              flexGrow={0}
+              flexShrink={0}
+            >
+              Remove Font
+            </Typography>
+          </Stack>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             Do you really want to uninstall this font?
-          </DialogContentText>
-        </DialogContent>
+          </Typography>
+        </DialogTitle>
+
         <DialogActions>
           <Button
             onClick={() => setShowOpenRemoveFontDialog(false)}
@@ -313,16 +357,16 @@ export default connect((state) => {
           >
             Cancel
           </Button>
-          <Button
+          <LoadingButton
             variant="contained"
             color="error"
+            loading={isUpdating}
             onClick={() => {
               toggleEnableFont(activeVariant?.label, "0", activeFont?.font);
-              setShowOpenRemoveFontDialog(false);
             }}
           >
             Remove
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </Dialog>
     </>
