@@ -2,20 +2,17 @@ import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 import { Box, Skeleton, Stack } from "@mui/material";
 import { ImageRounded } from "@mui/icons-material";
 import { useSelector } from "react-redux";
+import { useMemo } from "react";
 
 import { FileTypePreview } from "../../../../../../media/src/app/components/FileModal/FileTypePreview";
 import {
   useGetAllBinFilesQuery,
   useGetBinsQuery,
-  useLazyGetFileQuery,
 } from "../../../../../../../shell/services/mediaManager";
 import { AppState } from "../../../../../../../shell/store/types";
-import { useEffect, useMemo, useState } from "react";
-import { File } from "../../../../../../../shell/services/types";
 
 type ImageCellProps = { params: GridRenderCellParams };
 export const ImageCell = ({ params }: ImageCellProps) => {
-  const [fileData, setFileData] = useState<File>(null);
   const instance = useSelector((state: AppState) => state.instance);
   const isFileZUID = !!params.value?.startsWith("3-");
 
@@ -23,7 +20,6 @@ export const ImageCell = ({ params }: ImageCellProps) => {
     instanceId: instance?.ID,
     ecoId: instance?.ecoID,
   });
-  const [getFile] = useLazyGetFileQuery();
 
   // Query below will not necessarily be made on every render as this
   // is already performed on component load, we're simply accessing the cached data
@@ -32,25 +28,12 @@ export const ImageCell = ({ params }: ImageCellProps) => {
       bins?.map((bin) => bin.id),
       { skip: !bins?.length }
     );
-  useEffect(() => {
-    if (isFetchingAllMediaFiles || !isFileZUID) return;
 
-    const matchedFile = allMediaFiles?.find((file) => file.id === params.value);
-
-    if (!matchedFile) {
-      // If cache doesn't have the file data, attempt to look it up from the server
-      getFile(params.value)
-        .unwrap()
-        .then((res) => {
-          setFileData(res);
-        })
-        .catch((err: any) => {
-          console.error(err);
-        });
-    } else {
-      setFileData(matchedFile);
+  const file = useMemo(() => {
+    if (isFileZUID) {
+      return allMediaFiles?.find((file) => file.id === params.value);
     }
-  }, [allMediaFiles, params.value, isFetchingAllMediaFiles]);
+  }, [allMediaFiles, params.value]);
 
   if (!params.value) {
     return (
@@ -95,9 +78,9 @@ export const ImageCell = ({ params }: ImageCellProps) => {
       >
         <FileTypePreview
           isMediaThumbnail
-          src={fileData?.url}
-          filename={fileData?.filename}
-          updatedAt={fileData?.updated_at}
+          src={file?.url}
+          filename={file?.filename}
+          updatedAt={file?.updated_at}
         />
       </Box>
     );
