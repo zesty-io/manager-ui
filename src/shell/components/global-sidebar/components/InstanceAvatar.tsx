@@ -46,7 +46,7 @@ export const InstanceAvatar: FC<InstanceAvatar> = ({
         variant="circular"
         width={32}
         height={32}
-        sx={{ bgcolor: "grey.500" }}
+        sx={{ bgcolor: "grey.700" }}
       />
     );
   }

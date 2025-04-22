@@ -56,9 +56,12 @@ export const SettingsNav = () => {
   const location = useLocation();
   const [keyword, setKeyword] = useState("");
 
-  const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
-  const { data: instanceStylesCategories } =
-    useGetInstanceStylesCategoriesQuery();
+  const { data: rawInstanceSettings, isLoading: isLoadingInstanceSettings } =
+    useGetInstanceSettingsQuery();
+  const {
+    data: instanceStylesCategories,
+    isLoading: isLoadingInstanceStylesCategories,
+  } = useGetInstanceStylesCategoriesQuery();
 
   const instanceSettings: TreeItem[] = useMemo(() => {
     if (rawInstanceSettings?.length) {
@@ -176,6 +179,9 @@ export const SettingsNav = () => {
             HeaderComponent={<HeaderComponent title="Instance Settings" />}
             tree={navItems.instance}
             selected={location.pathname}
+            isLoading={
+              isLoadingInstanceSettings || isLoadingInstanceStylesCategories
+            }
           />
           <Box pt={1.5}>
             <NavTree
@@ -191,6 +197,9 @@ export const SettingsNav = () => {
               HeaderComponent={<HeaderComponent title="Global Meta & SEO" />}
               tree={navItems.meta}
               selected={location.pathname}
+              isLoading={
+                isLoadingInstanceSettings || isLoadingInstanceStylesCategories
+              }
             />
           </Box>
           <Box pt={1.5}>
@@ -199,6 +208,9 @@ export const SettingsNav = () => {
               HeaderComponent={<HeaderComponent title="Styles" />}
               tree={navItems.styles}
               selected={location.pathname}
+              isLoading={
+                isLoadingInstanceSettings || isLoadingInstanceStylesCategories
+              }
             />
           </Box>
           <Box pt={1.5}>
@@ -207,6 +219,9 @@ export const SettingsNav = () => {
               HeaderComponent={<HeaderComponent title="Fonts" />}
               tree={navItems.fonts}
               selected={location.pathname}
+              isLoading={
+                isLoadingInstanceSettings || isLoadingInstanceStylesCategories
+              }
             />
           </Box>
         </>
@@ -224,7 +239,7 @@ const HeaderComponent = ({ title }: HeaderComponentProps) => {
       variant="body2"
       textTransform="uppercase"
       color="text.secondary"
-      sx={{ px: 1.5 }}
+      sx={{ px: 1.5, pb: 1.5 }}
     >
       {title}
     </Typography>
