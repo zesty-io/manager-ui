@@ -1,4 +1,4 @@
-import { memo, useState, useCallback, useMemo } from "react";
+import { memo, useState, useRef, useCallback, useMemo } from "react";
 import { Stack, Typography, Box, Divider } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import {
@@ -23,6 +23,7 @@ type NavType = "view" | "script" | "stylesheet" | "file";
 interface SideBarProps {
   navCode: NavCode;
   dispatch: (action: any) => void;
+  isLoading?: boolean;
   openCreateFileDialog: (type: string, nav: NavType) => void;
 }
 
@@ -73,8 +74,12 @@ const byOrder = (a: FileNodeProps, b: FileNodeProps) =>
 
 export const SideBar = memo(function SideBar({
   navCode,
+  dispatch,
+  isLoading,
   openCreateFileDialog,
 }: SideBarProps) {
+  const sideBarChildrenContainerRef = useRef(null);
+
   const [keyword, setKeyword] = useState("");
   const [fileType, setFileType] = useState("");
   const [isOrderFilesOpen, setIsOrderFilesOpen] = useState(false);
@@ -135,6 +140,7 @@ export const SideBar = memo(function SideBar({
                 tree={views}
                 createFile={() => openCreateFileDialog?.("snippet", "view")}
                 orderFiles={() => openOrderFilesDialog("snippet")}
+                isLoading={isLoading}
               />
 
               <Divider sx={{ my: 1, border: "none" }} />
@@ -147,6 +153,7 @@ export const SideBar = memo(function SideBar({
                 createFile={() =>
                   openCreateFileDialog?.("text/css", "stylesheet")
                 }
+                isLoading={isLoading}
                 orderFiles={() => openOrderFilesDialog("text/css")}
               />
 
@@ -160,6 +167,7 @@ export const SideBar = memo(function SideBar({
                 createFile={() =>
                   openCreateFileDialog?.("text/javascript", "script")
                 }
+                isLoading={isLoading}
                 orderFiles={() => openOrderFilesDialog("text/javascript")}
               />
             </Box>

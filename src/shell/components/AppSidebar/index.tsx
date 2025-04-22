@@ -21,6 +21,7 @@ import {
   ListItemButton,
   SvgIcon,
   Theme,
+  Skeleton,
 } from "@mui/material";
 import { IconButton as IconButtonCustom } from "@zesty-io/material";
 import { SvgIconComponent } from "@mui/icons-material";
@@ -53,6 +54,7 @@ interface Props {
   filterKeyword?: string;
   titleButtonIcon?: SvgIconComponent;
   TitleButtonComponent?: React.ReactNode;
+  isLoading?: boolean;
 }
 
 const darkTheme = {
@@ -106,6 +108,7 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
       filterKeyword = "",
       titleButtonIcon = AddRounded,
       TitleButtonComponent,
+      isLoading,
       children,
       ...props
     },
@@ -227,7 +230,34 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                 <></>
               ) : (
                 <List disablePadding>
-                  {!!subMenus?.length &&
+                  {isLoading ? (
+                    <ListItem
+                      disablePadding
+                      sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        height: 36,
+                        ml: 1.5,
+                        mr: 2,
+                        gap: 1,
+                        width: "inherit",
+                      }}
+                    >
+                      <Skeleton
+                        variant="circular"
+                        width={24}
+                        height={24}
+                        sx={{ backgroundColor: "grey.700", flexShrink: 0 }}
+                      />
+                      <Skeleton
+                        variant="rounded"
+                        width="100%"
+                        height={12}
+                        sx={{ backgroundColor: "grey.700" }}
+                      />
+                    </ListItem>
+                  ) : (
+                    !!subMenus?.length &&
                     subMenus?.map((menu) => {
                       const isActive = menu.substringPathMatch
                         ? location.pathname.includes(menu.path)
@@ -275,7 +305,8 @@ export const AppSideBar = forwardRef<any, PropsWithChildren<Props>>(
                           </ListItemButton>
                         </ListItem>
                       );
-                    })}
+                    })
+                  )}
                 </List>
               )}
             </Stack>
