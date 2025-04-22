@@ -8,9 +8,15 @@ import {
   AppSideBar,
   SubMenu,
 } from "../../../../../shell/components/AppSidebar";
+import { Box, Stack, Skeleton, Typography } from "@mui/material";
+import { IconButton as IconButtonCustom } from "@zesty-io/material";
+import { AddRounded } from "@mui/icons-material";
 
 export const Sidebar = () => {
   const installedApps = useSelector((state: AppState) => state.apps.installed);
+  const isLoadingApps = useSelector(
+    (state: AppState) => state.apps.isLoadingApps
+  );
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -56,6 +62,7 @@ export const Sidebar = () => {
       ]}
       withSearch={false}
       titleButtonTooltip="Visit Marketplace"
+      isLoading={isLoadingApps}
     />
   );
 };

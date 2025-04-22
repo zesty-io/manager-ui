@@ -27,6 +27,7 @@ type FileNavProps = {
   header: string;
   toolTip: string;
   tree: FileNodeProps[];
+  isLoading?: boolean;
 };
 
 const ActionsButton = ({
@@ -83,6 +84,7 @@ const FileNav: FC<FileNavProps> = ({
   header,
   toolTip,
   tree,
+  isLoading,
 }) => {
   const dispatch = useDispatch();
   const canPublish = usePermission("PUBLISH");
@@ -149,6 +151,7 @@ const FileNav: FC<FileNavProps> = ({
           <NavTree
             id={id}
             tree={treeData}
+            isLoading={isLoading}
             selected={pathname?.replace(/\/diff.*/, "")}
             expandedItems={expanded}
             onToggleCollapse={(nodeIds) => {
