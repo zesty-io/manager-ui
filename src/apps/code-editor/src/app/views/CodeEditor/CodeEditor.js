@@ -99,7 +99,7 @@ export default connect((state) => {
               },
             }}
           >
-            <SideBar {...props} openCreateFileDialog={openCreateFileDialog} />
+            <SideBar openCreateFileDialog={openCreateFileDialog} />
           </Grid>
           <Grid
             item

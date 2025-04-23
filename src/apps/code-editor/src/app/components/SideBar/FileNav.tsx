@@ -1,17 +1,10 @@
-import { FC, useState, useMemo, useEffect, useRef } from "react";
+import { FC, useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router";
 import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
-import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
-import { usePermission } from "../../../../../../shell/hooks/use-permissions";
-import { useDispatch } from "react-redux";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
-import { fetchFiles, publishFile } from "../../../store/files";
-import { CircularProgress } from "@mui/material";
-import { fetchAuditTrail } from "../../../store/auditTrail";
-import { FileNodeProps, NavCodeTypes } from "../constants";
 
 const CreateFileToolTip = {
   views: "Create View",
@@ -26,56 +19,51 @@ type FileNavProps = {
   orderFiles?: () => void;
   header: string;
   toolTip: string;
-  tree: FileNodeProps[];
-  isSearched?: boolean;
+  tree: TreeItem[];
+  dirList: string[];
+  isLoading?: boolean;
+  searchTerm?: string;
 };
 
-const ActionsButton = ({
-  ZUID,
-  status,
-  dispatch,
-  fileType,
-}: {
-  ZUID: string;
-  status: string;
-  dispatch: any;
-  fileType: string;
-}) => {
-  const [isLoading, setIsLoading] = useState(false);
-  return (
-    <IconButton
-      key="publish"
-      color="inherit"
-      size="xsmall"
-      sx={{
-        transform: "translateX(5px)",
-      }}
-      onClick={() => {
-        setIsLoading(true);
-        dispatch(publishFile(ZUID, status))
-          .then(() => {
-            dispatch(fetchFiles(fileType));
-            dispatch(fetchAuditTrail(ZUID));
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-      }}
-    >
-      {isLoading ? (
-        <CircularProgress size="16px" />
-      ) : (
-        <CloudUploadRoundedIcon
-          sx={{
-            fontSize: 16,
-            color: (theme) => `${theme.palette.grey[500]}!important`,
-          }}
-        />
-      )}
-    </IconButton>
-  );
-};
+const filterTreeData = (
+  treeData: TreeItem[] = [],
+  keyword: string = ""
+): { tree: TreeItem[]; dir: string[] } => {
+  const normalizedKeyword = keyword.toLowerCase().trim();
+  const dirList: string[] = [];
+  const tree = treeData
+    .map((item) => {
+      const { ZUID, isDir, fileName, contentModelType, contentModelZUID } =
+        item?.nodeData;
+      const searchString = [
+        ZUID,
+        fileName,
+        item?.label,
+        item?.path,
+        contentModelZUID,
+        contentModelType,
+      ]
+        .filter(Boolean)
+        .join("\n")
+        .toLowerCase();
 
+      if (isDir) {
+        dirList.push(item?.path);
+      }
+
+      const isFound = searchString.includes(normalizedKeyword);
+      if (!isDir && !isFound) return null;
+      const itemChildren = filterTreeData(item?.children, keyword);
+      if (isDir && !itemChildren?.tree?.length && !isFound) return null;
+      return {
+        ...item,
+        children: itemChildren.tree,
+      };
+    })
+    .filter(Boolean);
+
+  return { tree, dir: dirList };
+};
 const FileNav: FC<FileNavProps> = ({
   id,
   group,
@@ -84,122 +72,41 @@ const FileNav: FC<FileNavProps> = ({
   header,
   toolTip,
   tree,
-  isSearched = false,
+  dirList = [],
+  searchTerm = "",
 }) => {
-  const dispatch = useDispatch();
-  const canPublish = usePermission("PUBLISH");
-  const { pathname } = useLocation();
-  const [expanded, setExpanded] = useState<string[] | null>(null);
-  const didAutoExpand = useRef(false);
-  const expandedFolders = useRef<Set<string>>(new Set());
-  const [treeData, dirPaths] = useMemo(() => {
-    const directoryPaths: string[] = [];
+  let { pathname } = useLocation();
+  const [expanded, setExpanded] = useState<string[] | null>(dirList);
+  const [searchExpanded, setSearchExpanded] = useState<string[] | null>(null);
 
-    const createTreeItemData = (treeItem: NavCodeTypes): TreeItem => {
-      const {
-        path,
-        icon,
-        label,
-        type,
-        isLive,
-        version,
-        publishedVersion,
-        children,
-        ...treeData
-      } = treeItem;
-
-      const isDir: boolean = type === "directory";
-      const itemLocation = `/code/file/${group}`;
-      const itemPath = path?.trim()?.replace(/^\/+/, "");
-      const filePath = isDir ? `${itemLocation}/${itemPath}` : `/${itemPath}`;
-
-      if (isDir) directoryPaths.push(filePath);
-
-      const actions =
-        canPublish && !isLive && version > publishedVersion
-          ? [
-              <ActionsButton
-                key="publish"
-                ZUID={treeItem?.ZUID}
-                status={treeItem?.status}
-                dispatch={dispatch}
-                fileType={group}
-              />,
-            ]
-          : [];
-
-      return {
-        icon,
-        path: filePath,
-        label,
-        children: children?.map(createTreeItemData),
-        actions,
-        nodeData: { ...treeData, navSource: "code", isDir },
-      };
-    };
-
-    const treeItems = tree?.map((item) => createTreeItemData(item));
-    return [treeItems, directoryPaths];
-  }, [tree, group, canPublish, dispatch]);
-
-  useEffect(() => {
-    if (isSearched) {
-      setExpanded(dirPaths);
-      didAutoExpand.current = false;
-      return;
+  const treeData = useMemo(() => {
+    const { tree: treeRaw } = filterTreeData(tree, searchTerm);
+    if (!searchTerm) {
+      setSearchExpanded(null);
+    } else {
+      if (!searchExpanded) {
+        setSearchExpanded(dirList);
+      }
     }
-
-    if (!didAutoExpand.current && dirPaths.length) {
-      setExpanded(dirPaths);
-      didAutoExpand.current = true;
-    }
-  }, [dirPaths, isSearched]);
-
-  useEffect(() => {
-    const newDirPaths: string[] = [];
-
-    const collectDirs = (items: TreeItem[] = []) => {
-      items.forEach((item) => {
-        if (item?.nodeData?.isDir) {
-          newDirPaths.push(item.path);
-          collectDirs(item.children);
-        }
-      });
-    };
-
-    collectDirs(treeData as TreeItem[]);
-    const foldersToExpand = newDirPaths.filter(
-      (path) => !expandedFolders.current.has(path)
-    );
-
-    if (foldersToExpand.length) {
-      setExpanded((prev) => {
-        const merged = [...prev, ...foldersToExpand];
-        merged.forEach((path) => expandedFolders.current.add(path));
-        return merged;
-      });
-    }
-  }, [treeData]);
-
-  const handleToggleCollapse = (nodeIds: string[]) => {
-    nodeIds.forEach((path) => expandedFolders.current.add(path));
-    setExpanded(nodeIds);
-  };
+    return treeRaw;
+  }, [tree, searchTerm, searchExpanded]);
 
   return (
     <>
-      {!!treeData?.length && (
-        <Box>
+      {treeData?.length > 0 && (
+        <Box width="100%">
           <NavTree
             id={id}
             tree={treeData}
-            selected={
-              !!expanded || !!didAutoExpand.current
-                ? pathname?.replace(/\/diff.*/, "")
-                : ""
-            }
-            expandedItems={expanded}
-            onToggleCollapse={handleToggleCollapse}
+            selected={pathname?.replace(/\/diff.*/, "")}
+            expandedItems={!!searchTerm ? searchExpanded : expanded}
+            onToggleCollapse={(nodeIds) => {
+              if (!!searchTerm) {
+                setSearchExpanded(nodeIds);
+              } else {
+                setExpanded(nodeIds);
+              }
+            }}
             HeaderComponent={
               <Stack
                 direction="row"

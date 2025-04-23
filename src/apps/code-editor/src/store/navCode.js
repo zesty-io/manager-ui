@@ -248,24 +248,19 @@ export const buildNavTree = (nodes, type) => {
       const fileNameParts = node.fileName.replace(/^\//, "").split("/");
       fileNameParts.reduce((prevParts, part, i) => {
         // Are we at the last part of the filename, the "file"
-        const nodeSort = !!node.sort ? `(${node.sort}) ` : "";
         if (fileNameParts.length === i + 1) {
           acc[node.ZUID] = {
             ...node,
 
             // if this was a string split by "/" use the last part as the label
-            label: fileNameParts.length > 1 ? `${nodeSort}${part}` : node.label,
+            label: fileNameParts.length > 1 ? part : node.label,
             parentZUID: prevParts, // previous path parts
           };
           acc[node.ZUID].children = [];
         } else {
           // When it's the first path part use it-as-is to avoid prefixing a forward slash
           let combinedParts = i === 0 ? part : `${prevParts}/${part}`;
-          const sortNumber =
-            acc[combinedParts]?.sort < node.sort
-              ? acc[combinedParts]?.sort
-              : node.sort;
-          const currentSort = i === 0 ? sortNumber : node.sort;
+
           // Add directo to map
           acc[combinedParts] = {
             type: "directory",
@@ -276,7 +271,6 @@ export const buildNavTree = (nodes, type) => {
             path: combinedParts, // previous parent parts combined with current part
             parentZUID: prevParts, // previous path parts
             children: [],
-            sort: currentSort,
           };
 
           return combinedParts;
