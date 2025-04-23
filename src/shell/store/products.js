@@ -1,9 +1,19 @@
 import { isZestyEmail } from "../../utility/isZestyEmail";
 
-export function products(state = ["content", "media"], action) {
+export function products(
+  state = {
+    products: ["content", "media"],
+    isLoadingProducts: true,
+  },
+  action
+) {
   switch (action.type) {
     case "FETCH_PRODUCTS_SUCCESS":
-      return action.payload.data;
+      return {
+        ...state,
+        products: action.payload.data,
+        isLoadingProducts: false,
+      };
 
     default:
       return state;
