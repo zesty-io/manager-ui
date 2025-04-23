@@ -72,10 +72,11 @@ const FileNav: FC<FileNavProps> = ({
   header,
   toolTip,
   tree,
+  isLoading,
   dirList = [],
   searchTerm = "",
 }) => {
-  let { pathname } = useLocation();
+  const { pathname } = useLocation();
   const [expanded, setExpanded] = useState<string[] | null>(dirList);
   const [searchExpanded, setSearchExpanded] = useState<string[] | null>(null);
 
@@ -98,6 +99,7 @@ const FileNav: FC<FileNavProps> = ({
           <NavTree
             id={id}
             tree={treeData}
+            isLoading={isLoading}
             selected={pathname?.replace(/\/diff.*/, "")}
             expandedItems={!!searchTerm ? searchExpanded : expanded}
             onToggleCollapse={(nodeIds) => {

@@ -22,6 +22,7 @@ export default connect((state) => {
   };
 })(function CodeEditor(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
+  const [isFetchingNav, setIsFetchingNav] = useState(true);
 
   const [fileType, setFileType] = useState("");
   const [navType, setNavType] = useState(null);
@@ -35,9 +36,13 @@ export default connect((state) => {
 
   // On initial render load files: Templates, Stylesheets, Scripts
   useEffect(() => {
-    props.dispatch(fetchFiles("views"));
-    props.dispatch(fetchFiles("stylesheets"));
-    props.dispatch(fetchFiles("scripts"));
+    Promise.allSettled([
+      props.dispatch(fetchFiles("views")),
+      props.dispatch(fetchFiles("stylesheets")),
+      props.dispatch(fetchFiles("scripts")),
+    ]).finally(() => {
+      setIsFetchingNav(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -99,7 +104,11 @@ export default connect((state) => {
               },
             }}
           >
-            <SideBar openCreateFileDialog={openCreateFileDialog} />
+            <SideBar
+              {...props}
+              openCreateFileDialog={openCreateFileDialog}
+              isLoading={isFetchingNav}
+            />
           </Grid>
           <Grid
             item

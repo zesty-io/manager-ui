@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, FC } from "react";
 import {
   Stack,
   Typography,
@@ -22,10 +22,12 @@ import { TreeItem } from "../../../../../../shell/components/NavTree";
 import { fetchFiles, publishFile } from "../../../store/files";
 import { fetchAuditTrail } from "../../../store/auditTrail";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
+import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 
 type NavType = "view" | "script" | "stylesheet" | "file";
 
 interface SideBarProps {
+  isLoading?: boolean;
   openCreateFileDialog: (type: string, nav: NavType) => void;
 }
 
@@ -99,7 +101,8 @@ export type TreeItemProps = {
 
 const createTreeData = (
   tree: FileNodeProps[],
-  group: string
+  group: string,
+  canPublish: boolean
 ): TreeDataProps => {
   const dirList: string[] = [];
   const createTreeItemData = (treeItem: FileNodeProps): TreeItem => {
@@ -125,7 +128,9 @@ const createTreeData = (
     if (isDir) dirList.push(filePath);
 
     const actions =
-      !treeItem.isLive && treeItem?.version > treeItem?.publishedVersion
+      canPublish &&
+      !treeItem.isLive &&
+      treeItem?.version > treeItem?.publishedVersion
         ? [
             <ActionsButton
               key="publish"
@@ -152,8 +157,11 @@ const createTreeData = (
   return { tree: treeData, dir: dirList };
 };
 
-export const SideBar = ({ openCreateFileDialog }: SideBarProps) => {
-  const sideBarChildrenContainerRef = useRef(null);
+export const SideBar: FC<SideBarProps> = ({
+  isLoading,
+  openCreateFileDialog,
+}) => {
+  const canPublish = usePermission("PUBLISH");
   const [keyword, setKeyword] = useState("");
   const [fileType, setFileType] = useState("");
   const [isOrderFilesOpen, setIsOrderFilesOpen] = useState(false);
@@ -162,9 +170,13 @@ export const SideBar = ({ openCreateFileDialog }: SideBarProps) => {
 
   const { views, styleSheets, scripts } = useMemo(() => {
     return {
-      views: createTreeData(navCode.tree, "views"),
-      styleSheets: createTreeData(navCode.stylesheetsTree, "stylesheets"),
-      scripts: createTreeData(navCode.scriptsTree, "scripts"),
+      views: createTreeData(navCode.tree, "views", canPublish),
+      styleSheets: createTreeData(
+        navCode.stylesheetsTree,
+        "stylesheets",
+        canPublish
+      ),
+      scripts: createTreeData(navCode.scriptsTree, "scripts", canPublish),
     };
   }, [navCode]);
 
@@ -188,7 +200,6 @@ export const SideBar = ({ openCreateFileDialog }: SideBarProps) => {
       >
         <AppSideBar
           data-cy="codeNav"
-          ref={sideBarChildrenContainerRef}
           mode="dark"
           headerTitle="Code"
           searchPlaceholder="Filter Files"
@@ -205,7 +216,7 @@ export const SideBar = ({ openCreateFileDialog }: SideBarProps) => {
               height: "calc(100vh - 185px)", // Adjusted height calculation
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between",
+              justifyContent: "flex-start",
               alignItems: "flex-start",
               rowGap: 2,
               position: "relative",
@@ -230,6 +241,7 @@ export const SideBar = ({ openCreateFileDialog }: SideBarProps) => {
               createFile={() => openCreateFileDialog?.("snippet", "view")}
               orderFiles={() => openOrderFilesDialog("snippet")}
               searchTerm={keyword}
+              isLoading={isLoading}
             />
             <FileNav
               id="css"
@@ -243,6 +255,7 @@ export const SideBar = ({ openCreateFileDialog }: SideBarProps) => {
               }
               orderFiles={() => openOrderFilesDialog("text/css")}
               searchTerm={keyword}
+              isLoading={isLoading}
             />
             <FileNav
               id="js"
@@ -256,6 +269,7 @@ export const SideBar = ({ openCreateFileDialog }: SideBarProps) => {
               }
               orderFiles={() => openOrderFilesDialog("text/javascript")}
               searchTerm={keyword}
+              isLoading={isLoading}
             />
           </Box>
           <Box className="no-results-container">

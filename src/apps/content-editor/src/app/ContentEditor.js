@@ -1,10 +1,11 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, use } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
-import { alpha, createTheme } from "@mui/material/styles";
+import { Stack, Typography, Link } from "@mui/material";
+import { Database } from "@zesty-io/material";
 
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
@@ -12,6 +13,7 @@ import { fetchNav } from "../store/navContent";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ContentNav } from "./components/ContentNav";
+import { LoadingQuote } from "../../../../shell/components/LoadingQuote";
 
 import { ItemList } from "./views/ItemList";
 import { ItemEdit } from "./views/ItemEdit";
@@ -56,81 +58,83 @@ export default function ContentEditor() {
   }, []);
 
   return (
-    <Fragment>
-      <WithLoader condition={!loading} message="Starting Content Editor">
-        <>
-          {navContent.raw.length === 0 ? (
-            <div className={styles.SchemaRedirect}>
-              <h1 className={styles.display}>
-                Please create a new content model
-              </h1>
-              <AppLink to={`schema/new`}>
-                <FontAwesomeIcon icon={faDatabase} />
-                &nbsp; Schema
-              </AppLink>
-            </div>
-          ) : (
-            <section className={cx(styles.ContentEditor)}>
-              {params.get("isDialog") !== "true" && (
-                <ResizableContainer
-                  id="contentNav"
-                  defaultWidth={220}
-                  minWidth={220}
-                  maxWidth={360}
-                >
-                  <ContentNav />
-                </ResizableContainer>
-              )}
+    <section className={cx(styles.ContentEditor)}>
+      {params.get("isDialog") !== "true" && (
+        <ResizableContainer
+          id="contentNav"
+          defaultWidth={220}
+          minWidth={220}
+          maxWidth={360}
+        >
+          <ContentNav />
+        </ResizableContainer>
+      )}
 
-              <div className={cx(styles.Content)}>
-                <div className={styles.ContentWrap}>
-                  <Switch>
-                    {/* <Route path="/content/releases" component={ReleaseApp} /> */}
-                    <Route exact path="/content" component={Analytics} />
-                    <Route
-                      exact
-                      path="/content/link/new"
-                      component={LinkCreate}
-                    />
-                    <Route
-                      exact
-                      path="/content/:modelZUID/new"
-                      component={ItemCreate}
-                    />
-                    <Route
-                      path="/content/link/:linkZUID"
-                      component={LinkEdit}
-                    />
-                    <Route
-                      exact
-                      path="/content/:modelZUID/import"
-                      component={CSVImport}
-                    />
-                    <Route
-                      path="/content/:modelZUID/:itemZUID"
-                      component={ItemEdit}
-                    />
-                    <Route
-                      exact
-                      path="/content/:modelZUID"
-                      render={() => (
-                        <StagedChangesProvider>
-                          <SelectedItemsProvider>
-                            <TableSortProvider>
-                              <ItemList />
-                            </TableSortProvider>
-                          </SelectedItemsProvider>
-                        </StagedChangesProvider>
-                      )}
-                    />
-                    <Route path="*" component={NotFound} />
-                  </Switch>
-                </div>
-              </div>
-            </section>
-          )}
-        </>
-      </WithLoader>
-    </Fragment>
+      {loading ? (
+        <LoadingQuote />
+      ) : !navContent.raw.length ? (
+        <Stack
+          sx={{ width: "100%", alignItems: "center", justifyContent: "center" }}
+        >
+          <Typography variant="h1" color="text.primary">
+            Please create a new content model
+          </Typography>
+          <Link
+            underline="none"
+            color="secondary"
+            title="Zesty.io Schema"
+            href="/schema/new"
+            sx={{
+              p: 2,
+              fontSize: "16px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Database />
+            &nbsp; Schema
+          </Link>
+        </Stack>
+      ) : (
+        <div className={cx(styles.Content)}>
+          <div className={styles.ContentWrap}>
+            <Switch>
+              {/* <Route path="/content/releases" component={ReleaseApp} /> */}
+              <Route exact path="/content" component={Analytics} />
+              <Route exact path="/content/link/new" component={LinkCreate} />
+              <Route
+                exact
+                path="/content/:modelZUID/new"
+                component={ItemCreate}
+              />
+              <Route path="/content/link/:linkZUID" component={LinkEdit} />
+              <Route
+                exact
+                path="/content/:modelZUID/import"
+                component={CSVImport}
+              />
+              <Route
+                path="/content/:modelZUID/:itemZUID"
+                component={ItemEdit}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID"
+                render={() => (
+                  <StagedChangesProvider>
+                    <SelectedItemsProvider>
+                      <TableSortProvider>
+                        <ItemList />
+                      </TableSortProvider>
+                    </SelectedItemsProvider>
+                  </StagedChangesProvider>
+                )}
+              />
+              <Route path="*" component={NotFound} />
+            </Switch>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
