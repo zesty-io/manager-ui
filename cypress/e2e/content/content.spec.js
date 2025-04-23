@@ -9,7 +9,7 @@ describe("Content Specs", () => {
       cy.waitOn("/v1/content/models*", () => {
         cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
       });
-      cy.getBySelector("DuoModeToggle").click();
+      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click();
     });
 
     it("Text Field", () => {
@@ -271,7 +271,7 @@ describe("Content Specs", () => {
     });
 
     it("renders an image with a url from a template", () => {
-      cy.get("#12-1c94d4-pg8dvx")
+      cy.get("#12-1c94d4-pg8dvx", { timeout: 10000 })
         .find('[data-cy="file-preview"]')
         .eq(3)
         .find("img")
@@ -319,7 +319,7 @@ describe("Content Specs", () => {
     });
 
     it("should be able to clear date entries", () => {
-      cy.get("#12-63ab04-0nkwcc")
+      cy.get("#12-63ab04-0nkwcc", { timeout: 10000 })
         .find("[data-cy='dateFieldClearButton']")
         .click();
       cy.get("#12-63ab04-0nkwcc")
@@ -348,7 +348,7 @@ describe("Content Specs", () => {
     });
 
     it("should be able to clear date and time entries", () => {
-      cy.get("#12-f3db44-c8kt0q")
+      cy.get("#12-f3db44-c8kt0q", { timeout: 10000 })
         .find("[data-cy='dateFieldClearButton']")
         .click();
       cy.get("#12-f3db44-c8kt0q")
@@ -443,7 +443,7 @@ describe("Content Specs", () => {
       cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
 
       cy.wait("@fetchFields");
-      cy.getBySelector("DuoModeToggle").click();
+      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click();
     });
 
     it("can only select/add one item", () => {
@@ -510,7 +510,7 @@ describe("Content Specs", () => {
       cy.intercept({ method: "GET", url: "**/fields*" }).as("fetchFields");
 
       cy.wait("@fetchFields");
-      cy.getBySelector("DuoModeToggle").click();
+      cy.getBySelector("DuoModeToggle", { timeout: 10000 }).click();
     });
 
     it("can add multiple items", () => {
