@@ -3,15 +3,11 @@ import idb from "utility/idb";
 import DocumentScannerRoundedIcon from "@mui/icons-material/DocumentScannerRounded";
 import { resolvePathPart } from "./files";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import { Database } from "@zesty-io/material";
 import { SvgIcon } from "@mui/material";
-import {
-  faBolt,
-  faFileCode,
-  faLock,
-  faStickyNote,
-} from "@fortawesome/free-solid-svg-icons";
+import FlashOnRoundedIcon from "@mui/icons-material/FlashOnRounded";
+import { faFileCode, faLock } from "@fortawesome/free-solid-svg-icons";
 import {
   faCss3Alt,
   faJs,
@@ -25,12 +21,19 @@ const createIcon = (icon) => {
     icon: [width, height, , , svgPathData],
   } = icon;
   return () => (
-    <SvgIcon viewBox={`0 0 ${width} ${height}`} sx={{ mr: 1, fontSize: 15 }}>
+    <SvgIcon
+      viewBox={`0 0 ${width} ${height}`}
+      sx={{ mr: 1, fontSize: "16px", p: "1px" }}
+    >
       {typeof svgPathData === "string" ? (
-        <path d={svgPathData} />
+        <path fill="currentColor" d={svgPathData} />
       ) : (
         svgPathData.map((d, i) => (
-          <path style={{ opacity: i === 0 ? 0.4 : 1 }} d={d} />
+          <path
+            fill="currentColor"
+            style={{ opacity: i === 0 ? 0.4 : 1 }}
+            d={d}
+          />
         ))
       )}
     </SvgIcon>
@@ -193,15 +196,15 @@ export function collapseNavItem(path) {
 function resolveNavData(file) {
   const ICONS = {
     // Parsley views
-    snippet: createIcon(faStickyNote),
+    snippet: InsertDriveFileIcon,
     dataset: Database,
     pageset: FormatListBulletedIcon,
     templateset: createIcon(faFileCode),
     // Instant api
-    "ajax-json": createIcon(faBolt),
-    "ajax-html": createIcon(faBolt),
-    "ajax-parsley": createIcon(faBolt),
-    block: createIcon(faBolt),
+    "ajax-json": FlashOnRoundedIcon,
+    "ajax-html": FlashOnRoundedIcon,
+    "ajax-parsley": FlashOnRoundedIcon,
+    block: FlashOnRoundedIcon,
 
     // JavaScript
     "text/js": createIcon(faJs),

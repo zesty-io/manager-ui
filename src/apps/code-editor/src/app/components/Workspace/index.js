@@ -24,7 +24,10 @@ import moment from "moment-timezone";
 const BOTTOM_DRAWER_HEIGHT = "48px";
 
 const Workspace = connect((state, props) => {
-  const file = state.files.find(
+  const file = state?.files?.find(
+    (file) => file?.ZUID === props?.match.params.fileZUID
+  );
+  const nav = state?.navCode?.raw?.find(
     (file) => file.ZUID === props?.match.params.fileZUID
   );
   const fileUser = state?.users.find((user) => user?.ID === file?.lastEditedID);
@@ -67,6 +70,7 @@ const Workspace = connect((state, props) => {
     );
   const fileInfo = file && {
     ...file,
+    icon: nav?.icon || null,
     updatedBy: `${fileUser?.firstName || ""} ${
       fileUser?.lastName || ""
     }`.trim(),
@@ -94,7 +98,10 @@ const Workspace = connect((state, props) => {
     // If we don't have the file on hand, fetch it from the api
     useEffect(() => {
       // If we already have the file on hand let the refresh happen in the background
-      if (!file) {
+      if (!file || !file.ZUID) {
+        setLoading(true);
+      }
+      if (file.contentModelZUID && !fields.length) {
         setLoading(true);
       }
 
@@ -159,6 +166,7 @@ const Workspace = connect((state, props) => {
                     status={props.status}
                     synced={file?.synced}
                     lineNumber={lineNumber}
+                    icon={file?.icon}
                   />
                 </Route>
                 <Route path={`${match.url}`}>
@@ -186,6 +194,7 @@ const Workspace = connect((state, props) => {
                     updatedBy={file?.updatedBy}
                     publishedAt={file?.publishedAt}
                     publishedBy={file?.publishedBy}
+                    icon={file?.icon}
                   />
                 </Route>
               </Switch>

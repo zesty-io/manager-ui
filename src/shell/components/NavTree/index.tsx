@@ -6,7 +6,7 @@ import { NavTreeItem } from "./components/NavTreeItem";
 import { ContentNavItem } from "../../services/types";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
-import Box from "@mui/material/Box";
+import { Stack, Box, Skeleton } from "@mui/material";
 
 export type TreeItem = {
   icon: any;
@@ -31,6 +31,7 @@ interface Props {
   isHiddenTree?: boolean;
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
   dragAndDrop?: boolean;
+  isLoading?: boolean;
 }
 export const NavTree: FC<Readonly<Props>> = ({
   id,
@@ -44,9 +45,48 @@ export const NavTree: FC<Readonly<Props>> = ({
   isHiddenTree = false,
   onItemDrop,
   dragAndDrop = false,
+  isLoading,
 }) => {
   const history = useHistory();
   const isCodeApp = ["html", "css", "js"].includes(id);
+
+  if (isLoading) {
+    return (
+      <>
+        <Box className="nav-tree-header">{HeaderComponent}</Box>
+        <Stack sx={{ pl: 3.5, pr: 1.5 }}>
+          {Array(10)
+            .fill(0)
+            .map((_, index) => (
+              <Stack
+                key={index}
+                sx={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  height: 24,
+                  mr: 3,
+                  gap: 1,
+                }}
+              >
+                <Skeleton
+                  variant="circular"
+                  width={16}
+                  height={16}
+                  sx={{ backgroundColor: "grey.700", flexShrink: 0 }}
+                />
+                <Skeleton
+                  variant="rounded"
+                  width="100%"
+                  height={12}
+                  sx={{ backgroundColor: "grey.700" }}
+                />
+              </Stack>
+            ))}
+        </Stack>
+      </>
+    );
+  }
 
   return (
     <>

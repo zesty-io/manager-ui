@@ -68,7 +68,6 @@ const appTheme = createTheme(theme, {
       disabled: "rgba(127,127, 126, 0.47)",
       disabledBackground: "rgba(127,127, 126, 0.28)",
       hover: "rgba(127, 127, 126, 0.07)",
-      hoverOpacity: 0.1,
     },
     background: {
       editor: "#0F0F0F",
@@ -111,7 +110,13 @@ MonacoSetup(store);
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
   <StrictMode>
-    <Sentry.ErrorBoundary fallback={() => <AppError />}>
+    <Sentry.ErrorBoundary
+      fallback={() => <AppError />}
+      beforeCapture={(scope) => {
+        scope.setLevel("fatal");
+        scope.setTag("error_boundary", true);
+      }}
+    >
       <ThemeProvider theme={appTheme}>
         <CssBaseline>
           <Provider store={store}>
@@ -187,10 +192,15 @@ try {
       });
 
       store.dispatch(actions.loadedUI(ui));
+
+      // Render App after all store dispatches are complete
+      render();
+    })
+    .catch((err) => {
+      throw err;
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);
-} finally {
-  // Render App once all Cache has been loaded or failed
+  // Render App if there was an error with IndexedDB access
   render();
 }

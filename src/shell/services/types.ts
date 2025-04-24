@@ -435,7 +435,8 @@ export type Products =
   | "redirects"
   | "settings"
   | "release"
-  | "apps";
+  | "apps"
+  | "blocks";
 
 type ContentNavItemType =
   | "dataset"

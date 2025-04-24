@@ -39,6 +39,7 @@ export const Differ = memo(
           isLoading={loading}
           synced={props?.synced}
           code={props?.currentCode}
+          icon={props.icon}
           isDiffer={true}
         />
         <Box

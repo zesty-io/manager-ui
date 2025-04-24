@@ -1,11 +1,8 @@
 import { memo, useEffect, useState } from "react";
 import { connect } from "react-redux";
-
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import { Box, Link, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-
-import Link from "@mui/material/Link";
 
 import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
@@ -19,11 +16,6 @@ import { fetchItemPublishings } from "shell/store/content";
 import { fetchFiles } from "../../../apps/code-editor/src/store/files";
 import { fetchSettings } from "shell/store/settings";
 
-import { loadOpenNav } from "../../store/ui";
-
-import styles from "./LoadInstance.less";
-import { Staging } from "../Staging";
-import { CircularProgress } from "@mui/material";
 import { useGetCurrentUserRolesQuery } from "../../services/accounts";
 
 export default connect((state) => {
@@ -54,32 +46,34 @@ export default connect((state) => {
           } else {
             document.title = `Manager - ${res.data?.name} - Zesty`;
             CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data?.randomHashID}${CONFIG.URL_PREVIEW}`;
+
+            // All other API calls should only be made if user has access to this instance
+            // this prevents a slew of unnecessary 403 errors
+            Promise.all([
+              props.dispatch(fetchUser(props.user.ZUID)),
+              props.dispatch(fetchUserRole()),
+            ]).then(() => {
+              props.dispatch(fetchProducts());
+            });
+
+            refetchCurrentUserRoles();
+            props.dispatch(fetchDomains());
+            props.dispatch(fetchUsers());
+            props.dispatch(detectPlatform());
+            props.dispatch(fetchInstances());
+            props.dispatch(fetchLangauges());
+            props.dispatch(fetchSettings());
+            // Used in Publish Plan and Content sections
+            props.dispatch(fetchItemPublishings());
+            // Used in Code Editor, useFilePath Hook
+            props.dispatch(fetchFiles("views"));
+            props.dispatch(fetchFiles("stylesheets"));
+            props.dispatch(fetchFiles("scripts"));
           }
         })
         .catch(() => {
           setError("Failed to load instance");
         });
-
-      Promise.all([
-        props.dispatch(fetchUser(props.user.ZUID)),
-        props.dispatch(fetchUserRole()),
-      ]).then(() => {
-        props.dispatch(fetchProducts());
-      });
-
-      refetchCurrentUserRoles();
-      props.dispatch(fetchDomains());
-      props.dispatch(fetchUsers());
-      props.dispatch(detectPlatform());
-      props.dispatch(fetchInstances());
-      props.dispatch(fetchLangauges());
-      props.dispatch(fetchSettings());
-      // Used in Publish Plan and Content sections
-      props.dispatch(fetchItemPublishings());
-      // Used in Code Editor, useFilePath Hook
-      props.dispatch(fetchFiles("views"));
-      props.dispatch(fetchFiles("stylesheets"));
-      props.dispatch(fetchFiles("scripts"));
     }, [props.auth.valid]);
 
     useEffect(() => {
@@ -121,39 +115,32 @@ export default connect((state) => {
       //Check if pendo is running correctly open browser console and run pendo.validateInstall()
     }, [props.user, props.instance, props.role]);
 
-    return (
-      <>
-        {error ? (
-          <div className={styles.ErrorMessage}>
-            <h1>{error}</h1>
-            <Link
-              underline="none"
-              color="secondary"
-              title="Zesty Account"
-              href={`${CONFIG.URL_ACCOUNTS}/instances`}
-              sx={{ p: 2 }}
-            >
-              <FontAwesomeIcon icon={faUser} />
-              &nbsp; Go to Accounts
-            </Link>
-          </div>
-        ) : (
-          <>
-            {props.products &&
-            props.instance.ID &&
-            props.instance.domains &&
-            props.user.ID &&
-            props.languages.length &&
-            props.files.length ? (
-              props.children
-            ) : (
-              <Staging>
-                <CircularProgress />
-              </Staging>
-            )}
-          </>
-        )}
-      </>
-    );
+    if (error) {
+      return (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            flexDirection: "column",
+          }}
+        >
+          <Typography variant="h1">{error}</Typography>
+          <Link
+            underline="none"
+            color="secondary"
+            title="Zesty Account"
+            href={`${CONFIG.URL_ACCOUNTS}/instances`}
+            sx={{ p: 2 }}
+          >
+            <FontAwesomeIcon icon={faUser} />
+            &nbsp; Go to Accounts
+          </Link>
+        </Box>
+      );
+    }
+
+    return props.children;
   })
 );

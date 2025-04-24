@@ -78,14 +78,14 @@ const METADATA_COLUMNS = [
     field: "createdBy",
     headerName: "Created By",
     width: 240,
-    filterable: false,
+    filterable: true,
     renderCell: (params: GridRenderCellParams) => <UserCell params={params} />,
   },
   {
     field: "createdOn",
     headerName: "Date Created",
     width: 200,
-    filterable: false,
+    filterable: true,
     valueGetter: (params: any, row: any) => row?.meta?.createdAt,
   },
 
@@ -93,59 +93,68 @@ const METADATA_COLUMNS = [
     field: "lastSaved",
     headerName: "Last Saved",
     width: 200,
-    filterable: false,
+    filterable: true,
     valueGetter: (params: any, row: any) => row?.web?.updatedAt,
   },
   {
     field: "lastPublished",
     headerName: "Last Published",
     width: 200,
-    filterable: false,
+    filterable: true,
     valueGetter: (params: any, row: any) => row?.publishing?.publishAt,
   },
   {
     field: "zuid",
     headerName: "ZUID",
     width: 200,
-    filterable: false,
+    filterable: true,
     valueGetter: (params: any, row: any) => row?.meta?.ZUID,
   },
 ];
 const fieldTypeColumnConfigMap = {
   text: {
     width: 360,
+    filterable: true,
   },
   wysiwyg_basic: {
     width: 360,
     valueFormatter: (value: any) => getHtmlText(value),
+    filterable: true,
   },
   wysiwyg_advanced: {
     width: 360,
     valueFormatter: (value: any) => getHtmlText(value),
+    filterable: true,
   },
   article_writer: {
     width: 360,
     valueFormatter: (value: any) => getHtmlText(value),
+    filterable: true,
   },
   markdown: {
     width: 360,
+    filterable: true,
   },
   textarea: {
     width: 360,
+    filterable: true,
   },
   one_to_many: {
     width: 240,
+    filterable: true,
     renderCell: (params: GridRenderCellParams) => {
       return <OneToManyCell items={params.value?.split(",")} />;
     },
   },
   one_to_one: {
     width: 240,
+    filterable: true,
     renderCell: (params: any) =>
       params.value && <SingleRelationshipCell params={params} />,
   },
   uuid: {
     width: 280,
+    filterable: true,
   },
   number: {
     width: 160,
@@ -153,6 +162,7 @@ const fieldTypeColumnConfigMap = {
       if (!value) return null;
       return new Intl.NumberFormat("en-US").format(value);
     },
+    filterable: true,
     align: "right",
   },
   currency: {
@@ -176,18 +186,22 @@ const fieldTypeColumnConfigMap = {
   },
   dropdown: {
     width: 240,
+    filterable: true,
     renderCell: (params: GridRenderCellParams) => (
       <DropDownCell params={params} />
     ),
   },
   date: {
     width: 160,
+    filterable: true,
   },
   datetime: {
     width: 200,
+    filterable: true,
   },
   link: {
     width: 360,
+    filterable: true,
     renderCell: (params: any) => {
       return (
         <Link
@@ -209,17 +223,20 @@ const fieldTypeColumnConfigMap = {
   },
   internal_link: {
     width: 240,
+    filterable: true,
     renderCell: (params: any) =>
       params.value && <SingleRelationshipCell params={params} />,
   },
   yes_no: {
     width: 120,
+    filterable: true,
     renderCell: (params: GridRenderCellParams) => (
       <BooleanCell params={params} />
     ),
   },
   color: {
     width: 140,
+    filterable: true,
     renderCell: (params: GridRenderCellParams) => {
       return (
         <Box display="flex" alignItems="center" gap={1.5} height="100%">
@@ -242,6 +259,7 @@ const fieldTypeColumnConfigMap = {
   },
   sort: {
     width: 112,
+    filterable: true,
     renderCell: (params: GridRenderCellParams) => <SortCell params={params} />,
   },
 } as const;

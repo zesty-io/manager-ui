@@ -76,7 +76,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
   ] = useCreateHeadTagMutation();
   const { data: bins, isFetching: isFetchingBins } = useGetBinsQuery({
     instanceId: instance?.ID,
-    ecoId: instance?.ecoId,
+    ecoId: instance?.ecoID,
   });
   const { data: allMediaFiles, isFetching: isFetchingAllMediaFiles } =
     useGetAllBinFilesQuery(

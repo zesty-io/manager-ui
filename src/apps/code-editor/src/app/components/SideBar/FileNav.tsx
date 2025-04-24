@@ -5,13 +5,13 @@ import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ReorderRoundedIcon from "@mui/icons-material/ReorderRounded";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
-import { FileNodeProps, NavCodeTypes } from "./constants";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 import { useDispatch } from "react-redux";
 import { NavTree, TreeItem } from "../../../../../../shell/components/NavTree";
 import { fetchFiles, publishFile } from "../../../store/files";
 import { CircularProgress } from "@mui/material";
 import { fetchAuditTrail } from "../../../store/auditTrail";
+import { FileNodeProps, NavCodeTypes } from "../constants";
 
 const CreateFileToolTip = {
   views: "Create View",
@@ -27,6 +27,7 @@ type FileNavProps = {
   header: string;
   toolTip: string;
   tree: FileNodeProps[];
+  isLoading?: boolean;
 };
 
 const ActionsButton = ({
@@ -83,6 +84,7 @@ const FileNav: FC<FileNavProps> = ({
   header,
   toolTip,
   tree,
+  isLoading,
 }) => {
   const dispatch = useDispatch();
   const canPublish = usePermission("PUBLISH");
@@ -149,6 +151,7 @@ const FileNav: FC<FileNavProps> = ({
           <NavTree
             id={id}
             tree={treeData}
+            isLoading={isLoading}
             selected={pathname?.replace(/\/diff.*/, "")}
             expandedItems={expanded}
             onToggleCollapse={(nodeIds) => {
