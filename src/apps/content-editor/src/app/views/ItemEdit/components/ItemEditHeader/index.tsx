@@ -187,25 +187,37 @@ export const ItemEditHeader = ({
                 },
               }}
             >
-              <MoreMenu />
-              <Tooltip
-                title="Duplicate Item"
-                enterDelay={1000}
-                enterNextDelay={1000}
-                placement="bottom-start"
-              >
-                <IconButton
-                  size="small"
-                  onClick={() => setShowDuplicateItemDialog(true)}
-                >
-                  <ContentCopyRounded fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              {type !== "dataset" && type !== "block" && <PreviewMenu />}
-              {type === "block" && (
+              {isLoading &&
+              (!item ||
+                !Object.keys(item.web).length ||
+                !Object.keys(item.meta).length) ? (
+                <Stack direction="row" gap={3}>
+                  <Skeleton variant="circular" width={16} height={16} />
+                  <Skeleton variant="circular" width={16} height={16} />
+                </Stack>
+              ) : (
                 <>
-                  <LanguageSelector />
-                  <VersionSelector />
+                  <MoreMenu />
+                  <Tooltip
+                    title="Duplicate Item"
+                    enterDelay={1000}
+                    enterNextDelay={1000}
+                    placement="bottom-start"
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={() => setShowDuplicateItemDialog(true)}
+                    >
+                      <ContentCopyRounded fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  {type !== "dataset" && type !== "block" && <PreviewMenu />}
+                  {type === "block" && (
+                    <>
+                      <LanguageSelector />
+                      <VersionSelector />
+                    </>
+                  )}
                 </>
               )}
               <ItemEditHeaderActions
