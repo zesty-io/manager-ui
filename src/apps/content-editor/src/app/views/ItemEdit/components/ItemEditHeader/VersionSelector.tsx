@@ -1,4 +1,12 @@
-import { Button, Menu, MenuItem, Box, Tooltip } from "@mui/material";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Box,
+  Tooltip,
+  Stack,
+  Skeleton,
+} from "@mui/material";
 import {
   useGetContentItemVersionsQuery,
   useGetItemPublishingsQuery,
@@ -11,7 +19,10 @@ import { ContentItem } from "../../../../../../../../shell/services/types";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { formatDate } from "../../../../../../../../utility/formatDate";
 
-export const VersionSelector = () => {
+type VersionSelectorProps = {
+  isLoadingItem?: boolean;
+};
+export const VersionSelector = ({ isLoadingItem }: VersionSelectorProps) => {
   const dispatch = useDispatch();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -20,14 +31,16 @@ export const VersionSelector = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { data: versions } = useGetContentItemVersionsQuery({
-    modelZUID,
-    itemZUID,
-  });
-  const { data: itemPublishings } = useGetItemPublishingsQuery({
-    modelZUID,
-    itemZUID,
-  });
+  const { data: versions, isLoading: isLoadingVersions } =
+    useGetContentItemVersionsQuery({
+      modelZUID,
+      itemZUID,
+    });
+  const { data: itemPublishings, isLoading: isLoadingPublishings } =
+    useGetItemPublishingsQuery({
+      modelZUID,
+      itemZUID,
+    });
 
   const item = useSelector(
     (state: AppState) => state.content[itemZUID] as ContentItem
@@ -48,6 +61,19 @@ export const VersionSelector = () => {
       onSelect(version);
     }
   }, [queryParams.get("version"), versions]);
+
+  if (
+    (isLoadingItem && (!item || !Object.keys(item.meta).length)) ||
+    isLoadingVersions ||
+    isLoadingPublishings
+  ) {
+    return (
+      <Stack direction="row" gap={0.5}>
+        <Skeleton variant="rounded" width={25} height={20} />
+        <KeyboardArrowDownRounded fontSize="small" color="action" />
+      </Stack>
+    );
+  }
 
   return (
     <>

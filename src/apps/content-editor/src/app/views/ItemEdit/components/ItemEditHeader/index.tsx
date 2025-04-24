@@ -214,14 +214,15 @@ export const ItemEditHeader = ({
                     </IconButton>
                   </Tooltip>
                   {type !== "dataset" && type !== "block" && <PreviewMenu />}
-                  {type === "block" && (
-                    <>
-                      <LanguageSelector />
-                      <VersionSelector />
-                    </>
-                  )}
                 </>
               )}
+              {type === "block" && (
+                <>
+                  <LanguageSelector />
+                  <VersionSelector isLoadingItem={isLoadingItem} />
+                </>
+              )}
+
               <ItemEditHeaderActions
                 saving={saving}
                 onSave={onSave}
@@ -280,7 +281,7 @@ export const ItemEditHeader = ({
             <Box display="flex" gap={2} alignItems="center">
               <DuoModeSwitch />
               <LanguageSelector />
-              <VersionSelector />
+              <VersionSelector isLoadingItem={isLoadingItem} />
             </Box>
           </Box>
         )}
