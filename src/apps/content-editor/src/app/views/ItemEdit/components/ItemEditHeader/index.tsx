@@ -6,6 +6,7 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  Skeleton,
 } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useHistory, useLocation, useParams } from "react-router";
@@ -82,8 +83,14 @@ type HeaderProps = {
   saving: boolean;
   onSave: () => void;
   hasError: boolean;
+  isLoading?: boolean;
 };
-export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
+export const ItemEditHeader = ({
+  saving,
+  onSave,
+  hasError,
+  isLoading,
+}: HeaderProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -130,23 +137,44 @@ export const ItemEditHeader = ({ saving, onSave, hasError }: HeaderProps) => {
         <Box display="flex" justifyContent="space-between" gap={4}>
           <Box>
             {type !== "block" && <ContentBreadcrumbs />}
-            <Typography
-              variant="h3"
-              fontWeight="700"
-              sx={{
-                display: "-webkit-box",
-                "-webkit-line-clamp": "2",
-                "-webkit-box-orient": "vertical",
-                wordBreak: "break-word",
-                wordWrap: "break-word",
-                hyphens: "auto",
-                overflow: "hidden",
-              }}
-            >
-              {(type === "block"
-                ? `${modelLabel}: ${headerTitle}`
-                : headerTitle) || ""}
-            </Typography>
+            {isLoading && (!modelLabel || !Object.keys(item?.web).length) ? (
+              <Stack>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    width: 667,
+                  }}
+                >
+                  <Skeleton variant="text" />
+                </Typography>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    width: 442,
+                  }}
+                >
+                  <Skeleton variant="text" />
+                </Typography>
+              </Stack>
+            ) : (
+              <Typography
+                variant="h3"
+                fontWeight="700"
+                sx={{
+                  display: "-webkit-box",
+                  "-webkit-line-clamp": "2",
+                  "-webkit-box-orient": "vertical",
+                  wordBreak: "break-word",
+                  wordWrap: "break-word",
+                  hyphens: "auto",
+                  overflow: "hidden",
+                }}
+              >
+                {(type === "block"
+                  ? `${modelLabel}: ${headerTitle}`
+                  : headerTitle) || ""}
+              </Typography>
+            )}
           </Box>
           <Stack gap={1.25}>
             <Box
