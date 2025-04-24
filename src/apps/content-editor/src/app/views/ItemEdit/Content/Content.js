@@ -169,8 +169,8 @@ export default function Content(props) {
         >
           <Box flex={1}>
             <PreviewMode
-              dirty={props.item.dirty}
-              version={props.item.meta.version}
+              dirty={props.item?.dirty}
+              version={props.item?.meta?.version}
               onClose={() => setShowDuoMode(false)}
               onSave={() => props.onSave()}
               hasErrors={props.hasErrors}
