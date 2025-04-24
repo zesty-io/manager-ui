@@ -83,13 +83,13 @@ type HeaderProps = {
   saving: boolean;
   onSave: () => void;
   hasError: boolean;
-  isLoading?: boolean;
+  isLoadingItem?: boolean;
 };
 export const ItemEditHeader = ({
   saving,
   onSave,
   hasError,
-  isLoading,
+  isLoadingItem,
 }: HeaderProps) => {
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
@@ -137,7 +137,8 @@ export const ItemEditHeader = ({
         <Box display="flex" justifyContent="space-between" gap={4}>
           <Box>
             {type !== "block" && <ContentBreadcrumbs />}
-            {isLoading && (!modelLabel || !Object.keys(item?.web).length) ? (
+            {isLoadingItem &&
+            (!modelLabel || !item || !Object.keys(item?.web).length) ? (
               <Stack>
                 <Typography
                   variant="h3"
@@ -185,13 +186,14 @@ export const ItemEditHeader = ({
                 "@container (max-width: 900px)": {
                   flexWrap: "wrap",
                 },
+                minHeight: 32,
               }}
             >
-              {isLoading &&
+              {isLoadingItem &&
               (!item ||
                 !Object.keys(item.web).length ||
                 !Object.keys(item.meta).length) ? (
-                <Stack direction="row" gap={3}>
+                <Stack direction="row" gap={3} mr={1}>
                   <Skeleton variant="circular" width={16} height={16} />
                   <Skeleton variant="circular" width={16} height={16} />
                 </Stack>
@@ -224,6 +226,7 @@ export const ItemEditHeader = ({
                 saving={saving}
                 onSave={onSave}
                 hasError={hasError}
+                isLoadingItem={isLoadingItem}
               />
             </Box>
             <PublishStatus currentVersion={item?.web?.version} />

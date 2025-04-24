@@ -84,7 +84,7 @@ export default function Content(props) {
               itemZUID={props.itemZUID}
               item={props.item}
               dispatch={props.dispatch}
-              isDirty={props.item.dirty}
+              isDirty={props.item?.dirty}
               onSave={props.onSave}
               modelZUID={props.modelZUID}
               saveClicked={props.saveClicked}
