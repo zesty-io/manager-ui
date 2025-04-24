@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { keyframes } from "@mui/system";
+import { keyframes } from "@emotion/react";
 import {
   IconButton,
   Typography,

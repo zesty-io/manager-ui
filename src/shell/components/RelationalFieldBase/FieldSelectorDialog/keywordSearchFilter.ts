@@ -10,7 +10,7 @@ export const keywordSearchFilterOperator: GridFilterOperator = {
     }
 
     return (params): boolean => {
-      const row = params.row;
+      const row = params;
       const searchValue = filterItem.value.toLowerCase();
 
       // Check title

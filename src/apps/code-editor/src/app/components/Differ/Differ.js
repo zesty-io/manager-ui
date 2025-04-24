@@ -10,7 +10,7 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
  * This is done for performance reasons. Constantly re-rendering slows down the editor typing experience.
  * But we still want to broadcast store updates `onChange`
  */
-import { Box } from "@mui/system";
+import { Box } from "@mui/material";
 import { TopBar } from "../TopBar";
 
 export const Differ = memo(

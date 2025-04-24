@@ -269,15 +269,7 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
               data-cy="starter-blocks-container"
             >
               {filteredBlockTypes?.map((block, index) => (
-                <Grid
-                  key={block?.name}
-                  item
-                  xs={1}
-                  sx={{
-                    width: "100%",
-                    position: "relative",
-                  }}
-                >
+                <Grid key={block?.name} size={1}>
                   <BlockItem
                     block={block}
                     isActive={blockType?.name === block?.name}

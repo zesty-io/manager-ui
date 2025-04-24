@@ -2,7 +2,6 @@ import * as moment from "moment";
 import { Component } from "react";
 import { connect } from "react-redux";
 
-import { FieldTypeDate } from "@zesty-io/material";
 import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 
 import { DATE_PRESETS } from "./TableDateFilter.model";
@@ -13,6 +12,7 @@ import {
 } from "../../../../store/filter";
 
 import styles from "./TableDateFilter.less";
+import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 
 const datePresets = [
   { value: DATE_PRESETS.ALL, text: "ALL" },

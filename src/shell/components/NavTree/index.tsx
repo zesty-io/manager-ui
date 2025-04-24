@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { TreeView } from "@mui/x-tree-view";
+import { SimpleTreeView } from "@mui/x-tree-view";
 import { useHistory } from "react-router-dom";
 
 import { NavTreeItem } from "./components/NavTreeItem";
@@ -54,26 +54,26 @@ export const NavTree: FC<Readonly<Props>> = ({
       {error ? (
         ErrorComponent
       ) : (
-        <TreeView
+        <SimpleTreeView
           data-cy={id}
           {...(isCodeApp
-            ? { defaultExpanded: expandedItems }
-            : { expanded: expandedItems })}
-          //  @ts-expect-error changed typed definition from mui/lab
-          selected={selected}
-          defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
-          defaultExpandIcon={<ArrowRightRoundedIcon />}
-          //  @ts-expect-error changed typed definition from mui/lab
-          onNodeSelect={(evt: any, nodeIds: string) => {
+            ? { defaultExpandedItems: expandedItems }
+            : { expandedItems: expandedItems })}
+          selectedItems={[selected]}
+          slots={{
+            collapseIcon: ArrowDropDownRoundedIcon,
+            expandIcon: ArrowRightRoundedIcon,
+          }}
+          onItemClick={(evt: any, itemId: string) => {
             if (
               !!evt.currentTarget.id &&
               evt.target.tagName !== "svg" &&
               evt.target.tagName !== "path"
             ) {
-              history.push(nodeIds);
+              history.push(itemId);
             }
           }}
-          onNodeToggle={(evt: any, nodeIds: string[]) => {
+          onExpandedItemsChange={(evt: any, nodeIds: string[]) => {
             if (
               !evt.currentTarget.id ||
               evt.target.tagName === "svg" ||
@@ -104,7 +104,7 @@ export const NavTree: FC<Readonly<Props>> = ({
               />
             );
           })}
-        </TreeView>
+        </SimpleTreeView>
       )}
     </>
   );
