@@ -37,7 +37,7 @@ export default function PreviewMode(props) {
         } else {
           url = item?.web?.path
             ? `${item.web.path}`
-            : `/-/instant/${item.meta.ZUID}.json`;
+            : `/-/instant/${item?.meta?.ZUID}.json`;
 
           url = `${url}?_bypassError=true&__version=${props.version}`;
         }
