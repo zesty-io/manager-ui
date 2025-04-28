@@ -110,7 +110,13 @@ MonacoSetup(store);
 // TODO: Add a context here that will store all draft comments
 const App = Sentry.withProfiler(() => (
   <StrictMode>
-    <Sentry.ErrorBoundary fallback={() => <AppError />}>
+    <Sentry.ErrorBoundary
+      fallback={() => <AppError />}
+      beforeCapture={(scope) => {
+        scope.setLevel("fatal");
+        scope.setTag("error_boundary", true);
+      }}
+    >
       <ThemeProvider theme={appTheme}>
         <CssBaseline>
           <Provider store={store}>

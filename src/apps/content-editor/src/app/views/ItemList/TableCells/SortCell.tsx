@@ -19,7 +19,13 @@ export const SortCell = ({ params }: { params: GridRenderCellParams }) => {
       onChange={(evt) => {
         handleChange(parseInt(evt.target.value));
       }}
-      height={40}
+      onClick={(e) => e.stopPropagation()}
+      InputProps={{
+        sx: {
+          height: 40,
+          minWidth: "fit-content",
+        },
+      }}
     />
   );
 };
