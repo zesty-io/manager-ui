@@ -35,7 +35,7 @@ export default memo(function Editor({
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
-  const { data: fields, isLoading: isLoadingFields } =
+  const { data: fields, isFetching: isFetchingFields } =
     useGetContentModelFieldsQuery(modelZUID);
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
@@ -377,7 +377,7 @@ export default memo(function Editor({
     }
   }, [isNewItem, setIsLoaded, applyDefaultValuesToItemData]);
 
-  if (isLoadingFields || isLoadingItem) {
+  if (isFetchingFields || isLoadingItem) {
     return <FieldsLoader />;
   }
 
