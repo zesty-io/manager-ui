@@ -15,7 +15,7 @@ import { ContentLinks } from "./Widgets/ContentLinks";
 import { ContentInfo } from "./Widgets/ContentInfo";
 
 export function Actions(props) {
-  if (!props.item.meta || !props.item.web) {
+  if (!props.item?.meta || !props.item?.web) {
     console.error("Actions:missing item");
     return <Fragment />;
   }

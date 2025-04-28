@@ -1,6 +1,13 @@
 import { Editor } from "../../../components/Editor";
 import { PreviewMode } from "../../../components/Editor/PreviewMode";
-import { Box, Stack, IconButton, Tooltip, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Stack,
+  IconButton,
+  Tooltip,
+  useMediaQuery,
+  Skeleton,
+} from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { StartRounded, DesktopMacRounded } from "@mui/icons-material";
 import { Actions } from "./Actions";
@@ -27,6 +34,11 @@ export default function Content(props) {
   const isFocusMode = !showDuoMode && !showSidebar;
 
   const showDuoMode = props?.model?.type === "block" || showDuoModeContextValue;
+  const isLoadingItem =
+    props.loading &&
+    (!props.item ||
+      !Object.keys(props.item?.web).length ||
+      !Object.keys(props.item?.meta).length);
 
   return (
     <Box
@@ -91,6 +103,7 @@ export default function Content(props) {
               fieldErrors={props.fieldErrors}
               onUpdateFieldErrors={props.onUpdateFieldErrors}
               hasErrors={props.hasErrors}
+              isLoadingItem={isLoadingItem}
             />
           </Box>
         </Box>
@@ -106,24 +119,35 @@ export default function Content(props) {
               }),
             }}
           >
-            <Tooltip
-              title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
-              placement="left"
-            >
-              <IconButton
-                size="small"
-                onClick={() => setShowSidebar(!showSidebar)}
-                data-cy="ContentSidebarToggle"
+            {isLoadingItem ? (
+              <Skeleton variant="circular" width={16} height={16} />
+            ) : (
+              <Tooltip
+                title={showSidebar ? "Close Info Bar" : "Open Info Bar"}
+                placement="left"
               >
-                <StartRounded
-                  fontSize="small"
-                  sx={{
-                    transform: showSidebar ? "rotate(0deg)" : "rotate(180deg)",
-                  }}
-                />
-              </IconButton>
-            </Tooltip>
-            {!isDisabled && (
+                <IconButton
+                  size="small"
+                  onClick={() => setShowSidebar(!showSidebar)}
+                  data-cy="ContentSidebarToggle"
+                >
+                  <StartRounded
+                    fontSize="small"
+                    sx={{
+                      transform: showSidebar
+                        ? "rotate(0deg)"
+                        : "rotate(180deg)",
+                    }}
+                  />
+                </IconButton>
+              </Tooltip>
+            )}
+
+            {isLoadingItem ? (
+              <Skeleton variant="circular" width={16} height={16} />
+            ) : isDisabled ? (
+              <></>
+            ) : (
               <Tooltip title="Open DUO Mode" placement="left" dark>
                 <IconButton
                   size="small"

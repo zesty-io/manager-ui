@@ -31,6 +31,7 @@ export default memo(function Editor({
   modelZUID,
   onUpdateFieldErrors,
   fieldErrors,
+  isLoadingItem,
 }) {
   const dispatch = useDispatch();
   const isNewItem = itemZUID.slice(0, 3) === "new";
@@ -376,7 +377,7 @@ export default memo(function Editor({
     }
   }, [isNewItem, setIsLoaded, applyDefaultValuesToItemData]);
 
-  if (isLoadingFields) {
+  if (isLoadingFields || isLoadingItem) {
     return <FieldsLoader />;
   }
 
