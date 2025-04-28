@@ -474,18 +474,20 @@ export default function ItemEdit() {
   }
 
   const isLocked = !checkingLock && lockState.userZUID !== user.ZUID;
+  // console.log(loading, item, Object.keys(item).length);
 
   return (
     <Fragment>
       {notFound ? (
         <NotFound message={notFound} />
       ) : (
-        <WithLoader
-          condition={!loading && item && Object.keys(item).length}
-          message={
-            model?.label ? `Loading ${model.label} Content` : "Loading Content"
-          }
-        >
+        // <WithLoader
+        //   condition={!loading && item && Object.keys(item).length}
+        //   message={
+        //     model?.label ? `Loading ${model.label} Content` : "Loading Content"
+        //   }
+        // >
+        <>
           {isLocked && (
             <Box sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}>
               <LockedItem
@@ -532,6 +534,7 @@ export default function ItemEdit() {
                 onSave={() => save().catch((err) => console.error(err))}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
+                isLoadingItem={loading}
               />
               <Switch>
                 <Route
@@ -671,7 +674,8 @@ export default function ItemEdit() {
               </Switch>
             </Box>
           </DuoModeContext.Provider>
-        </WithLoader>
+        </>
+        // </WithLoader>
       )}
     </Fragment>
   );
