@@ -17,7 +17,7 @@ export const SortCell = ({ params }: { params: GridRenderCellParams }) => {
         (params.value?.toString() || "0")
       }
       onChange={(evt) => {
-        handleChange(parseInt(evt.target.value));
+        handleChange(parseInt(evt.target.value) || 0);
       }}
       onClick={(e) => e.stopPropagation()}
       InputProps={{
