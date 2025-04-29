@@ -74,7 +74,6 @@ export default connect((state) => {
         <Backdrop
           sx={{
             zIndex: (theme) => theme.zIndex.tooltip + 10, // Needs to be on top of everything
-            bgcolor: "background.paper",
           }}
           open={!props.auth.checking && !props.auth.valid}
         >
