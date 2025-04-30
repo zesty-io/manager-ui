@@ -1,14 +1,13 @@
 import { memo, Fragment } from "react";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
-
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import LinkIcon from "@mui/icons-material/Link";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  List,
+  ListItem,
+  Skeleton,
+  Stack,
+} from "@mui/material";
 
 import { PreviewUrl } from "../../../../components/Header/PreviewUrl";
 import { LiveUrl } from "../../../../components/Header/LiveUrl";
@@ -53,32 +52,47 @@ export const ContentLinks = memo(function ContentLinks(props) {
             },
           }}
         >
-          <List>
-            {props.item?.web?.path && (
-              <Fragment>
-                <ListItem
-                  sx={{
-                    fontSize: "14px",
-                    p: 0,
-                    m: 0,
-                  }}
+          {props.isLoadingItem ? (
+            <Stack gap={1.5}>
+              {[...Array(2)].map((_, index) => (
+                <Stack
+                  key={index}
+                  direction="row"
+                  justifyContent="space-between"
                 >
-                  <LiveUrl item={props.item} />
-                </ListItem>
-                <ListItem
-                  sx={{
-                    fontSize: "14px",
-                    p: 0,
-                    m: 0,
-                  }}
-                >
-                  <PreviewUrl item={props.item} />
-                </ListItem>
-              </Fragment>
-            )}
+                  <Skeleton variant="rounded" width={192} height={20} />
+                  <Skeleton variant="rounded" width={60} height={20} />
+                </Stack>
+              ))}
+            </Stack>
+          ) : (
+            <List>
+              {props.item?.web?.path && (
+                <Fragment>
+                  <ListItem
+                    sx={{
+                      fontSize: "14px",
+                      p: 0,
+                      m: 0,
+                    }}
+                  >
+                    <LiveUrl item={props.item} />
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      fontSize: "14px",
+                      p: 0,
+                      m: 0,
+                    }}
+                  >
+                    <PreviewUrl item={props.item} />
+                  </ListItem>
+                </Fragment>
+              )}
 
-            <InstantUrl item={props.item} />
-          </List>
+              <InstantUrl item={props.item} />
+            </List>
+          )}
         </CardContent>
       </Card>
     </Fragment>

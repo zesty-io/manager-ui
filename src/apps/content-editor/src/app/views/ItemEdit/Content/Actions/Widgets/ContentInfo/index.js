@@ -71,7 +71,7 @@ export const ContentInfo = (props) => {
           },
         }}
       >
-        {props.isLoadingItem || true ? (
+        {props.isLoadingItem ? (
           <Stack gap={1.5}>
             <Box>
               <Stack direction="row" justifyContent="space-between" pb={0.5}>

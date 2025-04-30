@@ -37,7 +37,7 @@ export function Actions(props) {
         modelZUID={props.modelZUID}
         itemZUID={props.itemZUID}
       />
-      <ContentLinks item={props.item} />
+      <ContentLinks item={props.item} isLoadingItem={props.isLoadingItem} />
 
       {/* <Release item={props.item} /> */}
 
