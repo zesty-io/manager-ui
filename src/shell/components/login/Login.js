@@ -92,12 +92,9 @@ export default connect((state) => {
         display="flex"
         alignItems="center"
         justifyContent="center"
-        sx={{
-          backgroundColor: "grey.900",
-        }}
       >
         <Paper
-          elevation={0}
+          elevation={8}
           sx={{
             boxSizing: "border-box",
             width: "400px",
@@ -300,15 +297,6 @@ export default connect((state) => {
             </Box>
           )}
         </Paper>
-        <Box
-          component="img"
-          src={zestyLogo}
-          position="fixed"
-          top="32px"
-          left="32px"
-          alt="Zesty.io Logo"
-          loading="lazy"
-        />
       </Box>
     );
   })
