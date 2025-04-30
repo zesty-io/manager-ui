@@ -59,6 +59,7 @@ export function Actions(props) {
           itemZUID={props.itemZUID}
           listed={listed}
           sort={sort}
+          isLoadingItem={props.isLoadingItem}
         />
       )}
 
