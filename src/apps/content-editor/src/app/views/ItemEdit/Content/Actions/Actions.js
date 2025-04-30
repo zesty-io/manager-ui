@@ -15,19 +15,14 @@ import { ContentLinks } from "./Widgets/ContentLinks";
 import { ContentInfo } from "./Widgets/ContentInfo";
 
 export function Actions(props) {
-  if (!props.item?.meta || !props.item?.web) {
-    console.error("Actions:missing item");
-    return <Fragment />;
-  }
-
   const canPublish = usePermission("PUBLISH", props.itemZUID);
   const canDelete = usePermission("DELETE", props.itemZUID);
   const canUpdate = usePermission("UPDATE", props.itemZUID);
   const domain = useDomain();
 
-  const { publishing } = props.item;
-  const { listed, sort } = props.item.meta;
-  const { path, metaTitle, metaLinkText } = props.item.web;
+  const { publishing } = props.item || {};
+  const { listed, sort } = props.item ? props.item.meta : {};
+  const { path, metaTitle, metaLinkText } = props.item ? props.item.web : {};
   const liveURL = domain ? `${domain}${path}` : "";
 
   return (
