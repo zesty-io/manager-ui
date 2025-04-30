@@ -99,6 +99,7 @@ export function Actions(props) {
           modelZUID={props.modelZUID}
           metaTitle={metaTitle}
           altText={props.set.type === "block" && "Variant"}
+          isLoadingItem={props.isLoadingItem}
         />
       )}
     </Fragment>
