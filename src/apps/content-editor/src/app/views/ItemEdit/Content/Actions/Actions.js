@@ -79,6 +79,7 @@ export function Actions(props) {
           itemZUID={props.itemZUID}
           modelZUID={props.modelZUID}
           instanceZUID={props.instance.ZUID}
+          isLoadingItem={props.isLoadingItem}
         />
       )}
       {canPublish && props.set.type !== "block" && (
@@ -87,6 +88,7 @@ export function Actions(props) {
           publishing={publishing}
           modelZUID={props.modelZUID}
           itemZUID={props.itemZUID}
+          isLoadingItem={props.isLoadingItem}
         />
       )}
 
